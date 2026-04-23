@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { defaultLocale } from "@/content";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,14 +13,33 @@ export const metadata: Metadata = {
   description:
     "Sincroniza tus terminales, archivos y el contexto de tu IA entre computadoras al instante. Instalación de Claude Code en 1 clic.",
   authors: [{ name: "TerminalSync" }],
+  // Explicit image + social tags — Next auto-detects opengraph-image.tsx but
+  // spelling them out avoids any ambiguity for scrapers that don't follow the
+  // convention. The referenced /opengraph-image route is the edge-generated PNG.
   openGraph: {
     type: "website",
     siteName: "TerminalSync",
     url: "https://terminalsync.ai",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "TerminalSync — Lleva tu Claude Code a cualquier parte",
+      },
+    ],
   },
-  twitter: { card: "summary_large_image" },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/opengraph-image"],
+    creator: "@terminalsync",
+  },
   icons: {
-    icon: "/favicon.svg",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/brand/logo-square.svg", sizes: "any", type: "image/svg+xml" },
+    ],
+    apple: "/brand/logo-square.svg",
   },
 };
 
@@ -30,10 +50,17 @@ export const viewport: Viewport = {
   ],
 };
 
-// Runs before React hydrates — no flash of the wrong theme.
-const themeScript = `
+// Inline pre-paint script:
+//  1. Sets <html lang> from the URL path so screen readers + search crawlers
+//     (that execute JS) see the right language before hydration. SSG-safe.
+//  2. Sets theme (light/dark) to avoid a flash of the wrong mode.
+const bootScript = `
 (function(){
   try {
+    var p = location.pathname;
+    var lang = p.indexOf('/en') === 0 ? 'en' : 'es';
+    document.documentElement.setAttribute('lang', lang);
+
     var s = localStorage.getItem('terminalsync:theme');
     var prefersDark = window.matchMedia &&
       window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -43,9 +70,15 @@ const themeScript = `
   } catch(e){}
 })();`;
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  // The static default covers /es (middleware redirects / to /es by default)
+  // and the inline script rewrites it for /en pages before first paint.
   return (
-    <html suppressHydrationWarning>
+    <html lang={defaultLocale} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -53,7 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
           rel="stylesheet"
         />
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
       <body>
         {children}

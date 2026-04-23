@@ -10,6 +10,7 @@ import { Trust } from "@/components/landing/Trust";
 import { Affiliates } from "@/components/landing/Affiliates";
 import { Footer } from "@/components/landing/Footer";
 import { AgentWidget } from "@/components/AgentWidget";
+import { StructuredData } from "@/components/StructuredData";
 
 interface Props {
   params: Promise<{ lang: string }>;
@@ -22,6 +23,7 @@ export default async function Landing({ params }: Props) {
 
   return (
     <>
+      <StructuredData dict={d} lang={lang} />
       <Nav dict={d} lang={lang} />
       <Hero dict={d} />
       <Demos dict={d} />

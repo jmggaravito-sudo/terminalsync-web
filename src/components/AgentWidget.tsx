@@ -249,7 +249,14 @@ export function AgentWidget({ dict }: { dict: Dict }) {
           </button>
         </header>
 
-        <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
+        <div
+          ref={listRef}
+          className="flex-1 overflow-y-auto px-3 py-3 space-y-2"
+          role="log"
+          aria-live="polite"
+          aria-relevant="additions text"
+          aria-label={dict.agent.name}
+        >
           {messages.map((m) => (
             <Bubble key={m.id} msg={m} />
           ))}

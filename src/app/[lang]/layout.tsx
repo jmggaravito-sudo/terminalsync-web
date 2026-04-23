@@ -28,12 +28,30 @@ export async function generateMetadata({
       languages: {
         es: "https://terminalsync.ai/es",
         en: "https://terminalsync.ai/en",
+        // x-default is what search engines serve when no other language
+        // matches the user's Accept-Language — we point to the ES root
+        // since middleware redirects there by default.
+        "x-default": "https://terminalsync.ai/es",
       },
     },
     openGraph: {
       title: d.meta.title,
       description: d.meta.description,
       locale: lang === "es" ? "es_ES" : "en_US",
+      images: [
+        {
+          url: "/opengraph-image",
+          width: 1200,
+          height: 630,
+          alt: d.meta.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: d.meta.title,
+      description: d.meta.description,
+      images: ["/opengraph-image"],
     },
   };
 }
