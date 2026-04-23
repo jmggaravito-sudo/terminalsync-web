@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ScrollText } from "lucide-react";
 import { getDict, isLocale } from "@/content";
+import { Logo } from "@/components/Logo";
 
 interface Props {
   params: Promise<{ lang: string }>;
@@ -52,9 +53,7 @@ export default async function AffiliatesLegal({ params }: Props) {
             href={`/${lang}`}
             className="flex items-center gap-2 text-[13px] font-semibold text-[var(--color-fg-strong)]"
           >
-            <div className="h-6 w-6 rounded-md bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-info)] flex items-center justify-center">
-              <div className="h-1.5 w-1.5 rounded-full bg-white" />
-            </div>
+            <Logo size={24} />
             TerminalSync
           </Link>
           <Link

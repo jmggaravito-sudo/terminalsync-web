@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Dict } from "@/content";
+import { Logo } from "@/components/Logo";
 
 export function Footer({ dict }: { dict: Dict }) {
   const year = new Date().getFullYear();
@@ -47,9 +48,7 @@ export function Footer({ dict }: { dict: Dict }) {
       <div className="mx-auto max-w-6xl px-5 md:px-6 py-14 grid grid-cols-2 md:grid-cols-4 gap-8">
         <div className="col-span-2 md:col-span-1">
           <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-info)] flex items-center justify-center">
-              <div className="h-1.5 w-1.5 rounded-full bg-white" />
-            </div>
+            <Logo size={28} />
             <span className="text-[15px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
               TerminalSync
             </span>

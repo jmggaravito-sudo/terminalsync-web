@@ -23,22 +23,39 @@ export default async function OpengraphImage() {
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div
             style={{
-              width: 42,
-              height: 42,
+              width: 44,
+              height: 44,
               borderRadius: 12,
-              background: "linear-gradient(135deg, #2563eb, #0284c7)",
+              background: "linear-gradient(135deg, #3b82f6, #0284c7)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              gap: 3,
               boxShadow: "0 10px 30px -10px rgba(37,99,235,0.5)",
             }}
           >
             <div
               style={{
-                width: 10,
-                height: 10,
-                borderRadius: 999,
-                background: "#fff",
+                width: 8,
+                height: 8,
+                borderRadius: 2,
+                background: "#0b1120",
+              }}
+            />
+            <div
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: 2,
+                background: "#ffffff",
+              }}
+            />
+            <div
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: 2,
+                background: "#f5b391",
               }}
             />
           </div>
