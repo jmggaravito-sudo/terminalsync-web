@@ -10,6 +10,7 @@ export function middleware(req: NextRequest) {
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
+    pathname.startsWith("/oauth") || // OAuth callback is language-agnostic
     pathname.includes(".") ||
     locales.some((l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`))
   ) {
