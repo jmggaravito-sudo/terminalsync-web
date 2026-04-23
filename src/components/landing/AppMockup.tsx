@@ -14,7 +14,7 @@ import type { Dict } from "@/content";
 export function AppMockup({ dict }: { dict: Dict }) {
   const m = dict.hero.mockup;
   return (
-    <div className="relative mockup-scale">
+    <div className="relative mx-auto max-w-[880px] w-full">
       {/* Window chrome */}
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] shadow-floating overflow-hidden">
         {/* Titlebar */}
@@ -27,9 +27,9 @@ export function AppMockup({ dict }: { dict: Dict }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-[180px_1fr] min-h-[420px]">
-          {/* Sidebar */}
-          <aside className="border-r border-[var(--color-border)] bg-[var(--color-panel-2)]/40 p-3 space-y-1 text-[11px]">
+        <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] md:min-h-[420px]">
+          {/* Sidebar — hidden on mobile, visible md+ */}
+          <aside className="hidden md:block border-r border-[var(--color-border)] bg-[var(--color-panel-2)]/40 p-3 space-y-1 text-[11px]">
             <div className="px-2 py-1.5 rounded-md bg-[var(--color-accent)]/10 text-[var(--color-accent)] font-semibold">
               Inicio
             </div>
@@ -66,7 +66,7 @@ export function AppMockup({ dict }: { dict: Dict }) {
           </aside>
 
           {/* Main content */}
-          <div className="p-4 space-y-3">
+          <div className="p-3 sm:p-4 space-y-3 min-w-0">
             {/* Status banner */}
             <div className="rounded-xl border border-[var(--color-ok)]/25 bg-[var(--color-ok)]/5 px-4 py-3 flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-[var(--color-ok)]/12 text-[var(--color-ok)] flex items-center justify-center">
@@ -92,7 +92,7 @@ export function AppMockup({ dict }: { dict: Dict }) {
                 }}
               />
               <div className="relative flex items-center gap-3 p-3">
-                <div className="h-11 w-11 rounded-xl bg-[var(--color-claude)]/12 border border-[var(--color-claude)]/25 flex items-center justify-center">
+                <div className="h-11 w-11 rounded-xl bg-[var(--color-claude)]/12 border border-[var(--color-claude)]/25 flex items-center justify-center shrink-0">
                   <ClaudeMark />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -105,14 +105,17 @@ export function AppMockup({ dict }: { dict: Dict }) {
                   <div className="mt-0.5 text-[12.5px] font-semibold text-[var(--color-fg-strong)] leading-tight">
                     {m.bannerTitle}
                   </div>
-                  <div className="text-[10.5px] text-[var(--color-fg-muted)] leading-snug">
+                  <div className="hidden sm:block text-[10.5px] text-[var(--color-fg-muted)] leading-snug">
                     {m.bannerBody}
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-1 shrink-0">
-                  <button className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 bg-[var(--color-claude)] text-white text-[11px] font-semibold shadow-[0_6px_18px_-6px_var(--color-claude-glow)]">
+                  <button className="inline-flex items-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 bg-[var(--color-claude)] text-white text-[10.5px] sm:text-[11px] font-semibold shadow-[0_6px_18px_-6px_var(--color-claude-glow)] whitespace-nowrap">
                     <Download size={10} strokeWidth={2.4} />
-                    {m.bannerCta}
+                    <span className="hidden xs:inline sm:inline">
+                      {m.bannerCta}
+                    </span>
+                    <span className="xs:hidden sm:hidden">Instalar</span>
                   </button>
                   <span className="inline-flex items-center gap-0.5 text-[9px] text-[var(--color-fg-dim)]">
                     <Clock3 size={8} /> ~30s
@@ -123,8 +126,9 @@ export function AppMockup({ dict }: { dict: Dict }) {
 
             {/* Terminal session grid — three distinct "themes" so the row
                 feels varied like real iTerm tabs (dark classic, white clean
-                for professional APIs, rosé warm for the AI agent). */}
-            <div className="grid grid-cols-3 gap-2.5 pt-1">
+                for professional APIs, rosé warm for the AI agent). Stacks
+                on mobile, 3 cols on sm+. */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
               <TerminalCard
                 title={m.session1}
                 filename="store-v3 ~/front-end"
