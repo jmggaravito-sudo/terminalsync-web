@@ -1,0 +1,200 @@
+@import "tailwindcss";
+
+/* ── Apple-Clean palette — light is the default, dark is an override ─── */
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-bg: #ffffff;
+  --color-panel: #ffffff;
+  --color-panel-2: #f4f5f8;
+  --color-border: #e8eaef;
+  --color-border-strong: #d0d4dc;
+  /* Oxford Gray for body text / near-black for headings */
+  --color-fg: #1f2937;
+  --color-fg-strong: #0b1733;
+  --color-fg-muted: #4b5563;
+  --color-fg-dim: #9ca3af;
+
+  /* Royal Blue primary (buttons + accents) */
+  --color-accent: #2563eb;
+  --color-accent-soft: #3b82f6;
+  --color-accent-glow: color-mix(in oklch, #2563eb 20%, transparent);
+  --color-ok: #059669;
+  --color-warn: #d97706;
+  --color-err: #dc2626;
+  --color-info: #0284c7;
+
+  /* Claude / warm orange for AI blocks */
+  --color-claude: #c85a3a;
+  --color-claude-soft: #e8946d;
+  --color-claude-glow: color-mix(in oklch, #c85a3a 18%, transparent);
+
+  /* Soft floating shadow — long, diffuse ink so cards feel like they hover
+     above white paper, never stamped onto it. */
+  --shadow-floating: 0 18px 48px -24px rgb(15 23 42 / 0.16),
+    0 6px 18px -8px rgb(15 23 42 / 0.06),
+    0 1px 2px rgb(15 23 42 / 0.04);
+  --grid-dot: rgb(15 23 42 / 0.03);
+  --overlay-scrim: rgb(15 23 42 / 0.3);
+}
+
+/* Dark theme override ─────────────────────────────────────────────────── */
+:root[data-theme="dark"] {
+  --color-bg: #08090b;
+  --color-panel: #0f1115;
+  --color-panel-2: #151820;
+  --color-border: #1f2330;
+  --color-border-strong: #2a2f3d;
+  --color-fg: #e6e8ee;
+  --color-fg-strong: #ffffff;
+  --color-fg-muted: #8b93a7;
+  --color-fg-dim: #5a6170;
+
+  --color-accent: #22d3ee;
+  --color-accent-soft: #67e8f9;
+  --color-accent-glow: color-mix(in oklch, #22d3ee 25%, transparent);
+  --color-ok: #34d399;
+  --color-warn: #fbbf24;
+  --color-err: #f87171;
+  --color-info: #60a5fa;
+
+  --color-claude: #d97757;
+  --color-claude-soft: #f5b391;
+  --color-claude-glow: color-mix(in oklch, #d97757 22%, transparent);
+
+  --shadow-floating: 0 24px 60px -20px rgb(0 0 0 / 0.7),
+    0 8px 22px -14px rgb(0 0 0 / 0.5);
+  --grid-dot: rgb(255 255 255 / 0.03);
+  --overlay-scrim: rgb(0 0 0 / 0.5);
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: color-mix(in oklch, var(--color-accent) 30%, transparent);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-strong);
+}
+
+.grid-bg {
+  background-image: radial-gradient(
+    circle at center,
+    var(--grid-dot) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+}
+
+.shadow-floating {
+  box-shadow: var(--shadow-floating);
+}
+
+/* Card lift — visible in light, inert in dark (dark uses borders). */
+.lift {
+  box-shadow: 0 6px 18px -8px rgb(15 23 42 / 0.08),
+    0 1px 3px rgb(15 23 42 / 0.04);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.lift:hover {
+  box-shadow: 0 14px 32px -12px rgb(15 23 42 / 0.16),
+    0 2px 6px rgb(15 23 42 / 0.05);
+  transform: translateY(-1px);
+}
+:root[data-theme="dark"] .lift {
+  box-shadow: none;
+  border-color: var(--color-border);
+}
+:root[data-theme="dark"] .lift:hover {
+  box-shadow: 0 18px 40px -16px rgb(0 0 0 / 0.6);
+  transform: translateY(-1px);
+}
+
+.glow-accent {
+  box-shadow: 0 0 0 1px var(--color-accent-glow),
+    0 12px 32px -10px var(--color-accent-glow);
+}
+
+/* Subtle shimmer for AI blocks */
+@keyframes ai-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.ai-shimmer {
+  animation: ai-shimmer 3.2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.pulse-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+@keyframes sync-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.sync-spin {
+  animation: sync-spin 1.4s linear infinite;
+}
+
+/* Demo animations for the "Wow moments" section ─────────────────────── */
+@keyframes demo-context-drift {
+  0%, 20% { opacity: 1; transform: translateX(0); }
+  40%, 60% { opacity: 0; transform: translateX(20px); }
+  80%, 100% { opacity: 1; transform: translateX(0); }
+}
+.demo-context-drift {
+  animation: demo-context-drift 4s ease-in-out infinite;
+}
+
+@keyframes demo-install-click {
+  0%, 10% { transform: translate(0, 0); opacity: 1; }
+  20%, 30% { transform: translate(-4px, -4px); opacity: 1; }
+  31%, 60% { opacity: 0.6; }
+  61%, 100% { transform: translate(0, 0); opacity: 1; }
+}
+.demo-install-click {
+  animation: demo-install-click 3.5s ease-in-out infinite;
+}
+
+@keyframes demo-fly-up {
+  0% { transform: translateY(0) scale(1); opacity: 0.9; }
+  50% { transform: translateY(-28px) scale(0.9); opacity: 0.5; }
+  100% { transform: translateY(-56px) scale(0.6); opacity: 0; }
+}
+.demo-fly-up {
+  animation: demo-fly-up 3s ease-in infinite;
+}
+
+@keyframes demo-shield-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 var(--color-ok); }
+  50% { transform: scale(1.03); box-shadow: 0 0 0 12px color-mix(in oklch, var(--color-ok) 0%, transparent); }
+}
+.demo-shield-pulse {
+  animation: demo-shield-pulse 2s ease-in-out infinite;
+}
