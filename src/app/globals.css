@@ -137,6 +137,21 @@ body {
     0 12px 32px -10px var(--color-accent-glow);
 }
 
+/* Desktop-app mockup scales down on narrow viewports so the full layout
+   stays intact instead of wrapping awkwardly. `zoom` resizes both the
+   painted element and its layout box, so the surrounding section reserves
+   the right height automatically. Supported in all modern browsers. */
+.mockup-scale {
+  width: 880px;
+  max-width: 880px;
+  margin-inline: auto;
+}
+@media (max-width: 920px) {
+  .mockup-scale {
+    zoom: calc((100vw - 32px) / 880);
+  }
+}
+
 /* Subtle shimmer for AI blocks */
 @keyframes ai-shimmer {
   0% { transform: translateX(-100%); }

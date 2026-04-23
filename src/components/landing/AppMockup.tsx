@@ -14,7 +14,7 @@ import type { Dict } from "@/content";
 export function AppMockup({ dict }: { dict: Dict }) {
   const m = dict.hero.mockup;
   return (
-    <div className="relative mx-auto max-w-[880px]">
+    <div className="relative mockup-scale">
       {/* Window chrome */}
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] shadow-floating overflow-hidden">
         {/* Titlebar */}
