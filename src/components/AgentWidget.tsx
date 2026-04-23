@@ -8,9 +8,69 @@ type ReplyId = "install" | "pricing" | "security";
 
 interface Message {
   id: string;
-  author: "agent" | "user";
+  author: "agent" | "user" | "system";
   body: string;
   at: number;
+}
+
+interface Escalation {
+  topic: string | null;
+}
+
+const SESSION_STORAGE_KEY = "sync-ai-session-v1";
+
+// Inline form labels — matches the page's lang attribute (set by Next.js [lang] route).
+type FormLabels = {
+  formTitle: string;
+  emailLabel: string;
+  problemLabel: string;
+  submit: string;
+  sending: string;
+  received: string;
+  errEmail: string;
+  errProblem: string;
+  errNetwork: string;
+};
+
+const FORM_DICT: Record<string, FormLabels> = {
+  en: {
+    formTitle: "Connect with our team",
+    emailLabel: "Your email",
+    problemLabel: "Tell us what's happening",
+    submit: "Send",
+    sending: "Sending…",
+    received: "✓ Received. We'll reply to your email within a few hours.",
+    errEmail: "Invalid email",
+    errProblem: "Please add a bit more detail (min 10 chars)",
+    errNetwork: "Couldn't send. Try again in a moment.",
+  },
+  es: {
+    formTitle: "Conectarte con nuestro equipo",
+    emailLabel: "Tu email",
+    problemLabel: "Cuéntanos qué pasa",
+    submit: "Enviar",
+    sending: "Enviando…",
+    received: "✓ Recibido. Te respondemos al email en pocas horas.",
+    errEmail: "Email inválido",
+    errProblem: "Por favor da un poco más de detalle (mín. 10 caracteres)",
+    errNetwork: "No se pudo enviar. Reintenta en un momento.",
+  },
+  pt: {
+    formTitle: "Falar com nossa equipe",
+    emailLabel: "Seu email",
+    problemLabel: "Conte o que está acontecendo",
+    submit: "Enviar",
+    sending: "Enviando…",
+    received: "✓ Recebido. Respondemos em poucas horas no email.",
+    errEmail: "Email inválido",
+    errProblem: "Por favor, dê um pouco mais de detalhes (mín. 10 caracteres)",
+    errNetwork: "Não foi possível enviar. Tente novamente.",
+  },
+};
+
+function formLabels(lang: string): FormLabels {
+  const l = (lang || "en").slice(0, 2).toLowerCase();
+  return FORM_DICT[l] || FORM_DICT.en;
 }
 
 export function AgentWidget({ dict }: { dict: Dict }) {
@@ -18,17 +78,30 @@ export function AgentWidget({ dict }: { dict: Dict }) {
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "greeting",
-      author: "agent",
-      body: dict.agent.greeting,
-      at: Date.now(),
-    },
+    { id: "greeting", author: "agent", body: dict.agent.greeting, at: Date.now() },
   ]);
-  // Hide a quick-reply chip after the user has tapped it once.
   const [usedReplies, setUsedReplies] = useState<Set<ReplyId>>(new Set());
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [escalation, setEscalation] = useState<Escalation | null>(null);
 
   const listRef = useRef<HTMLDivElement>(null);
+
+  // Restore (or generate) session id once on mount.
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(SESSION_STORAGE_KEY);
+      if (stored) {
+        setSessionId(stored);
+      } else {
+        const fresh = `web-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        localStorage.setItem(SESSION_STORAGE_KEY, fresh);
+        setSessionId(fresh);
+      }
+    } catch {
+      // localStorage blocked (private mode) — use ephemeral id
+      setSessionId(`web-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
+    }
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -39,7 +112,7 @@ export function AgentWidget({ dict }: { dict: Dict }) {
         });
       });
     }
-  }, [messages, open, typing]);
+  }, [messages, open, typing, escalation]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -56,21 +129,57 @@ export function AgentWidget({ dict }: { dict: Dict }) {
     ]);
   }
 
-  function pushAgent(body: string, delayMs = 700) {
+  function pushAgent(body: string) {
+    setMessages((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), author: "agent", body, at: Date.now() },
+    ]);
+  }
+
+  function pushSystem(body: string) {
+    setMessages((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), author: "system", body, at: Date.now() },
+    ]);
+  }
+
+  async function callAgent(text: string) {
     setTyping(true);
-    window.setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { id: crypto.randomUUID(), author: "agent", body, at: Date.now() },
-      ]);
+    setEscalation(null);
+    try {
+      const res = await fetch("/api/agent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId,
+          message: text,
+          userLocale:
+            (typeof document !== "undefined" && document.documentElement.lang) ||
+            navigator.language ||
+            "en",
+          page:
+            typeof window !== "undefined" ? window.location.pathname : "/",
+        }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      pushAgent(data.response || dict.agent.replies.fallback);
+      if (data.escalated) setEscalation({ topic: data.topic ?? null });
+      if (data.sessionId && data.sessionId !== sessionId) {
+        setSessionId(data.sessionId);
+        try { localStorage.setItem(SESSION_STORAGE_KEY, data.sessionId); } catch {}
+      }
+    } catch {
+      pushAgent(dict.agent.replies.fallback);
+    } finally {
       setTyping(false);
-    }, delayMs);
+    }
   }
 
   function handleQuickReply(id: ReplyId, label: string) {
     pushUser(label);
     setUsedReplies((prev) => new Set(prev).add(id));
-    pushAgent(dict.agent.replies[id]);
+    void callAgent(label);
   }
 
   function handleSend(e?: React.FormEvent) {
@@ -79,7 +188,7 @@ export function AgentWidget({ dict }: { dict: Dict }) {
     if (!text) return;
     pushUser(text);
     setInput("");
-    pushAgent(dict.agent.replies.fallback, 900);
+    void callAgent(text);
   }
 
   return (
@@ -117,7 +226,6 @@ export function AgentWidget({ dict }: { dict: Dict }) {
             : "opacity-0 scale-95 translate-y-2 pointer-events-none"
         }`}
       >
-        {/* Header */}
         <header className="flex items-center gap-3 px-4 py-3 border-b border-[var(--color-border)] bg-gradient-to-br from-[var(--color-accent)]/6 to-transparent">
           <div className="relative h-9 w-9 rounded-full bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-info)] flex items-center justify-center shrink-0">
             <Sparkles size={15} className="text-white" strokeWidth={2.2} />
@@ -128,11 +236,7 @@ export function AgentWidget({ dict }: { dict: Dict }) {
               {dict.agent.name}
             </div>
             <div className="flex items-center gap-1 text-[10.5px] text-[var(--color-fg-muted)]">
-              <CircleDot
-                size={7}
-                className="text-[var(--color-ok)]"
-                fill="currentColor"
-              />
+              <CircleDot size={7} className="text-[var(--color-ok)]" fill="currentColor" />
               {dict.agent.tagline}
             </div>
           </div>
@@ -145,18 +249,27 @@ export function AgentWidget({ dict }: { dict: Dict }) {
           </button>
         </header>
 
-        {/* Message list */}
-        <div
-          ref={listRef}
-          className="flex-1 overflow-y-auto px-3 py-3 space-y-2"
-        >
+        <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
           {messages.map((m) => (
             <Bubble key={m.id} msg={m} />
           ))}
           {typing && <TypingDots label={dict.agent.typing} />}
 
-          {/* Quick replies — visible while at least one hasn't been used */}
-          {messages.length <= 2 + usedReplies.size && (
+          {escalation && !typing && (
+            <SupportForm
+              escalation={escalation}
+              sessionId={sessionId}
+              lastUserMessage={
+                [...messages].reverse().find((m) => m.author === "user")?.body
+              }
+              onSubmitted={() => {
+                setEscalation(null);
+                pushSystem(formLabels(document.documentElement.lang).received);
+              }}
+            />
+          )}
+
+          {messages.length <= 2 + usedReplies.size && !escalation && (
             <div className="pt-1.5 flex flex-wrap gap-1.5">
               {dict.agent.quickReplies
                 .filter((r) => !usedReplies.has(r.id))
@@ -173,7 +286,6 @@ export function AgentWidget({ dict }: { dict: Dict }) {
           )}
         </div>
 
-        {/* Input */}
         <form
           onSubmit={handleSend}
           className="flex items-center gap-2 px-3 py-2.5 border-t border-[var(--color-border)] bg-[var(--color-bg)]"
@@ -187,10 +299,10 @@ export function AgentWidget({ dict }: { dict: Dict }) {
           />
           <button
             type="submit"
-            disabled={!input.trim()}
+            disabled={!input.trim() || typing}
             aria-label={dict.agent.send}
             className={`h-9 w-9 rounded-full flex items-center justify-center transition-all ${
-              input.trim()
+              input.trim() && !typing
                 ? "bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white"
                 : "bg-[var(--color-panel-2)] text-[var(--color-fg-dim)]"
             }`}
@@ -204,11 +316,20 @@ export function AgentWidget({ dict }: { dict: Dict }) {
 }
 
 function Bubble({ msg }: { msg: Message }) {
+  if (msg.author === "system") {
+    return (
+      <div className="flex justify-center">
+        <div className="rounded-lg border border-[var(--color-ok)]/30 bg-[var(--color-ok)]/8 text-[var(--color-ok)] px-3 py-1.5 text-[11.5px]">
+          {msg.body}
+        </div>
+      </div>
+    );
+  }
   const isAgent = msg.author === "agent";
   return (
     <div className={`flex ${isAgent ? "justify-start" : "justify-end"}`}>
       <div
-        className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-snug ${
+        className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-snug whitespace-pre-wrap ${
           isAgent
             ? "bg-[var(--color-panel-2)] text-[var(--color-fg)] rounded-bl-sm"
             : "bg-[var(--color-accent)] text-white rounded-br-sm"
@@ -235,6 +356,105 @@ function TypingDots({ label }: { label: string }) {
         />
       </div>
       <span className="text-[10px] text-[var(--color-fg-dim)]">{label}</span>
+    </div>
+  );
+}
+
+function SupportForm({
+  escalation,
+  sessionId,
+  lastUserMessage,
+  onSubmitted,
+}: {
+  escalation: Escalation;
+  sessionId: string | null;
+  lastUserMessage?: string;
+  onSubmitted: () => void;
+}) {
+  const lang =
+    (typeof document !== "undefined" ? document.documentElement.lang : "en") ||
+    "en";
+  const t = formLabels(lang);
+
+  const [email, setEmail] = useState("");
+  const [problem, setProblem] = useState(lastUserMessage || "");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  async function submit() {
+    setError(null);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError(t.errEmail);
+      return;
+    }
+    if (problem.trim().length < 10) {
+      setError(t.errProblem);
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/agent/escalate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          problem,
+          sessionId,
+          topicHint: escalation.topic ?? "",
+          userLocale: lang,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        const errs = (data.errors || []).join(", ") || `HTTP ${res.status}`;
+        setError(errs);
+        return;
+      }
+      onSubmitted();
+    } catch {
+      setError(t.errNetwork);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-panel-2)] p-3 space-y-2.5">
+      <div className="text-[12px] font-semibold text-[var(--color-fg-strong)]">
+        {t.formTitle}
+      </div>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.currentTarget.value)}
+        placeholder={t.emailLabel}
+        autoComplete="email"
+        className="w-full h-8 px-2.5 rounded-md bg-[var(--color-bg)] border border-[var(--color-border)] text-[12.5px] text-[var(--color-fg)] placeholder-[var(--color-fg-dim)] outline-none focus:border-[var(--color-accent)]"
+      />
+      <textarea
+        value={problem}
+        onChange={(e) => setProblem(e.currentTarget.value)}
+        placeholder={t.problemLabel}
+        rows={3}
+        className="w-full px-2.5 py-1.5 rounded-md bg-[var(--color-bg)] border border-[var(--color-border)] text-[12.5px] text-[var(--color-fg)] placeholder-[var(--color-fg-dim)] outline-none focus:border-[var(--color-accent)] resize-y"
+      />
+      {error && (
+        <div className="text-[11px] text-[var(--color-danger)]">{error}</div>
+      )}
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={submit}
+          disabled={submitting}
+          className={`rounded-md px-3 py-1.5 text-[12px] font-medium transition-all ${
+            submitting
+              ? "bg-[var(--color-panel)] text-[var(--color-fg-dim)] cursor-not-allowed"
+              : "bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white"
+          }`}
+        >
+          {submitting ? t.sending : t.submit}
+        </button>
+      </div>
     </div>
   );
 }
