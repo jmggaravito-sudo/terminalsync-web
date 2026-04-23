@@ -105,6 +105,17 @@ const en: Dict = {
     subtitle: "Start free. Pay only when your workflow asks for it.",
     perMonth: "/mo",
     free: "Free",
+    cycleLabel: {
+      monthly: "Monthly",
+      yearly: "Annual",
+      savingsBadge: "Save 17%",
+      savingsDetail: "2 months free",
+    },
+    trial: {
+      eyebrow: "7-day free trial",
+      explainer:
+        "You enter your card but nothing is charged for the first 7 days. Cancel before day 7 and you pay nothing.",
+    },
     plans: {
       starter: {
         name: "Starter",
@@ -120,17 +131,20 @@ const en: Dict = {
       },
       pro: {
         name: "Pro",
-        price: "$19",
-        priceNote: "/mo",
         badge: "Most popular",
+        priceMonthly: "$19",
+        priceYearly: "$190",
+        priceNoteMonthly: "/mo",
+        priceNoteYearly: "/yr",
+        yearlyEquivalent: "$15.83/mo · billed annually",
         features: [
           "Unlimited terminals",
-          "AI Auto-Pilot (one-click install)",
+          "AI Auto-Pilot (one-click Claude Code install)",
           "AI context sync",
           "90-day history",
           "Up to 5 computers",
         ],
-        cta: "Try Pro free",
+        cta: "Start 7-day free trial",
       },
       agency: {
         name: "Agency",

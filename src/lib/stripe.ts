@@ -13,12 +13,24 @@ export const stripe: Stripe | null = secret
   : null;
 
 export type PlanId = "pro" | "agency";
+export type BillingCycle = "monthly" | "yearly";
 
-export function priceIdFor(plan: PlanId): string | null {
-  if (plan === "pro") return process.env.STRIPE_PRICE_PRO ?? null;
+export function priceIdFor(
+  plan: PlanId,
+  cycle: BillingCycle = "monthly",
+): string | null {
+  if (plan === "pro") {
+    return cycle === "yearly"
+      ? process.env.STRIPE_PRICE_PRO_YEARLY ?? null
+      : process.env.STRIPE_PRICE_PRO_MONTHLY ?? null;
+  }
   if (plan === "agency") return process.env.STRIPE_PRICE_AGENCY ?? null;
   return null;
 }
+
+// 7-day free trial on Pro so users can activate Power-Ups immediately after
+// entering a card, and fall off without charge if they cancel before day 7.
+export const PRO_TRIAL_DAYS = 7;
 
 export function siteUrl(): string {
   if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;

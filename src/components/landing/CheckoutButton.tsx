@@ -6,6 +6,7 @@ import type { Locale } from "@/content";
 
 interface Props {
   plan: "starter" | "pro" | "agency";
+  cycle?: "monthly" | "yearly";
   lang: Locale;
   label: string;
   featured?: boolean;
@@ -14,10 +15,11 @@ interface Props {
 }
 
 // Starter → direct download link (no checkout needed).
-// Pro     → POST /api/checkout, redirect to Stripe.
+// Pro     → POST /api/checkout, redirect to Stripe (carries billing cycle).
 // Agency  → mailto sales team (lead-gen, not self-serve for now).
 export function CheckoutButton({
   plan,
+  cycle,
   lang,
   label,
   featured,
@@ -45,7 +47,7 @@ export function CheckoutButton({
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, lang }),
+        body: JSON.stringify({ plan, cycle: cycle ?? "monthly", lang }),
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !data.url) {
@@ -62,7 +64,7 @@ export function CheckoutButton({
     plan === "starter" ? "#" : plan === "agency" ? "#" : "#pricing";
 
   return (
-    <div className="w-full mt-7">
+    <div className="w-full mt-6">
       <a
         href={href}
         onClick={handleClick}

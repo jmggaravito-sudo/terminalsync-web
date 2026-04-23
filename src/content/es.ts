@@ -105,6 +105,17 @@ const es: Dict = {
     subtitle: "Empieza gratis. Paga solo cuando tu flujo lo pida.",
     perMonth: "/mes",
     free: "Gratis",
+    cycleLabel: {
+      monthly: "Mensual",
+      yearly: "Anual",
+      savingsBadge: "Ahorra 17%",
+      savingsDetail: "2 meses gratis",
+    },
+    trial: {
+      eyebrow: "7 días gratis",
+      explainer:
+        "Ingresas tu tarjeta pero no se cobra nada los primeros 7 días. Cancela antes del día 7 y no te cobramos.",
+    },
     plans: {
       starter: {
         name: "Starter",
@@ -120,17 +131,20 @@ const es: Dict = {
       },
       pro: {
         name: "Pro",
-        price: "$19",
-        priceNote: "/mes",
         badge: "Más popular",
+        priceMonthly: "$19",
+        priceYearly: "$190",
+        priceNoteMonthly: "/mes",
+        priceNoteYearly: "/año",
+        yearlyEquivalent: "$15.83/mes · facturado anual",
         features: [
           "Terminales ilimitadas",
-          "AI Auto-Pilot (instalación 1-clic)",
+          "AI Auto-Pilot (instalación 1-clic de Claude Code)",
           "Sync de contexto de IA",
           "Historial 90 días",
           "Hasta 5 computadoras",
         ],
-        cta: "Probar Pro gratis",
+        cta: "Probar 7 días gratis",
       },
       agency: {
         name: "Agency",

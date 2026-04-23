@@ -64,9 +64,19 @@ export interface Dict {
     subtitle: string;
     perMonth: string;
     free: string;
+    cycleLabel: {
+      monthly: string;
+      yearly: string;
+      savingsBadge: string; // e.g. "Ahorra 17%" / "Save 17%"
+      savingsDetail: string; // e.g. "2 meses gratis"
+    };
+    trial: {
+      eyebrow: string; // "7 días gratis"
+      explainer: string; // "Ingresas tu tarjeta pero no se cobra nada los primeros 7 días. Cancela cuando quieras."
+    };
     plans: {
       starter: Plan;
-      pro: Plan & { badge: string };
+      pro: ProPlan;
       agency: Plan;
     };
   };
@@ -214,6 +224,19 @@ interface Plan {
   name: string;
   price: string;
   priceNote: string;
+  features: string[];
+  cta: string;
+}
+
+// Pro has two recurring prices (monthly/yearly) sharing the same features.
+interface ProPlan {
+  name: string;
+  badge: string;
+  priceMonthly: string;
+  priceYearly: string;
+  priceNoteMonthly: string;
+  priceNoteYearly: string;
+  yearlyEquivalent: string; // "$15.83/mo billed annually" to anchor comparison
   features: string[];
   cta: string;
 }

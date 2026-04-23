@@ -137,6 +137,13 @@ body {
     0 12px 32px -10px var(--color-accent-glow);
 }
 
+/* Price swap on pricing toggle — quick fade-up so the number change reads
+   as intentional without being distracting. */
+@keyframes fade-swap {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* Subtle shimmer for AI blocks */
 @keyframes ai-shimmer {
   0% { transform: translateX(-100%); }
