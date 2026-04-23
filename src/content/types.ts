@@ -101,6 +101,7 @@ export interface Dict {
       | "blog"
       | "contact"
       | "affiliates"
+      | "affiliateTerms"
       | "privacy"
       | "terms"
       | "security",
@@ -134,6 +135,78 @@ export interface Dict {
     comingSoon: string;
     comingSoonBody: string;
     ctaMeanwhile: string;
+  };
+  legal: {
+    affiliates: {
+      pageTitle: string;
+      title: string;
+      subtitle: string;
+      updated: string;
+      intro: string;
+      readFullTerms: string;
+      back: string;
+      acceptance: string;
+      sections: {
+        commissions: {
+          heading: string;
+          items: {
+            percent: { label: string; body: string };
+            recurring: { label: string; body: string };
+            threshold: { label: string; body: string };
+            cycle: { label: string; body: string };
+            hold: { label: string; body: string };
+          };
+        };
+        attribution: {
+          heading: string;
+          items: {
+            duration: { label: string; body: string };
+            lastClick: { label: string; body: string };
+          };
+        };
+        material: {
+          heading: string;
+          items: {
+            authorized: { label: string; body: string };
+            restriction: { label: string; body: string };
+          };
+        };
+        responsibilities: {
+          heading: string;
+          items: {
+            ethics: { label: string; body: string };
+            transparency: { label: string; body: string };
+            selfReferral: { label: string; body: string };
+          };
+        };
+        changes: {
+          heading: string;
+          items: {
+            modifications: { label: string; body: string };
+            termination: { label: string; body: string };
+          };
+        };
+      };
+    };
+  };
+  checkout: {
+    loading: string;
+    errorTitle: string;
+    success: {
+      eyebrow: string;
+      title: string;
+      body: string;
+      ctaDownload: string;
+      ctaHome: string;
+      receipt: string;
+    };
+    cancel: {
+      eyebrow: string;
+      title: string;
+      body: string;
+      ctaRetry: string;
+      ctaContact: string;
+    };
   };
 }
 

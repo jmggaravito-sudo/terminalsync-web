@@ -1,7 +1,15 @@
-import { HandCoins, Infinity as InfinityIcon, Package, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import {
+  HandCoins,
+  Infinity as InfinityIcon,
+  Package,
+  ArrowRight,
+  ScrollText,
+} from "lucide-react";
 import type { Dict } from "@/content";
 
 export function Affiliates({ dict }: { dict: Dict }) {
+  const lang = dict.locale;
   const perks = [
     { Icon: HandCoins, key: "recurring" as const },
     { Icon: InfinityIcon, key: "lifetime" as const },
@@ -24,13 +32,22 @@ export function Affiliates({ dict }: { dict: Dict }) {
             <p className="mt-3 text-[14px] md:text-[15px] text-[var(--color-fg-muted)] leading-relaxed max-w-lg">
               {dict.affiliates.body}
             </p>
-            <a
-              href="#"
-              className="mt-6 inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] glow-accent transition-all hover:-translate-y-px"
-            >
-              {dict.affiliates.cta}
-              <ArrowRight size={14} strokeWidth={2.4} />
-            </a>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <a
+                href="#"
+                className="inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] glow-accent transition-all hover:-translate-y-px"
+              >
+                {dict.affiliates.cta}
+                <ArrowRight size={14} strokeWidth={2.4} />
+              </a>
+              <Link
+                href={`/${lang}/legal/affiliates`}
+                className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[var(--color-fg-muted)] hover:text-[var(--color-fg-strong)] transition-colors"
+              >
+                <ScrollText size={13} strokeWidth={2} />
+                {dict.legal.affiliates.readFullTerms}
+              </Link>
+            </div>
           </div>
 
           <ul className="space-y-2.5">

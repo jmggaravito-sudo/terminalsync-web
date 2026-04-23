@@ -182,6 +182,7 @@ const es: Dict = {
       blog: "Blog",
       contact: "Contacto",
       affiliates: "Afiliados",
+      affiliateTerms: "Términos de afiliados",
       privacy: "Privacidad",
       terms: "Términos",
       security: "Seguridad",
@@ -228,6 +229,123 @@ const es: Dict = {
     comingSoonBody:
       "Estamos terminando de grabar la demo. Mientras tanto, descarga la app y pruébala — toma solo 2 minutos.",
     ctaMeanwhile: "Descargar gratis",
+  },
+  legal: {
+    affiliates: {
+      pageTitle: "Acuerdo de Partners",
+      title: "Acuerdo de Partners",
+      subtitle:
+        "Términos y condiciones para participar en el Programa de Afiliados de TerminalSync.",
+      updated: "Última actualización: 22 de abril de 2026",
+      intro:
+        "Este acuerdo describe los términos y condiciones para participar en el Programa de Afiliados de TerminalSync. Al registrarte, aceptas los siguientes puntos:",
+      readFullTerms: "Leer términos completos",
+      back: "Volver a Afiliados",
+      acceptance:
+        "Al marcar la casilla \"He leído y acepto los términos\" en el formulario de registro, confirmas haber leído, entendido y aceptado este acuerdo en su totalidad.",
+      sections: {
+        commissions: {
+          heading: "1. Comisiones y pagos",
+          items: {
+            percent: {
+              label: "Porcentaje",
+              body: "Recibirás una comisión del 30% recurrente sobre el valor neto de cada suscripción TerminalSync Pro que sea referida a través de tu enlace único.",
+            },
+            recurring: {
+              label: "Recurrencia",
+              body: "La comisión se pagará mensualmente mientras el usuario referido mantenga su suscripción activa y al día.",
+            },
+            threshold: {
+              label: "Umbral de pago",
+              body: "Los pagos se procesarán cuando el saldo acumulado en tu cuenta sea igual o superior a $50 USD.",
+            },
+            cycle: {
+              label: "Ciclo de pago",
+              body: "Los pagos se emiten dentro de los primeros 10 días de cada mes calendario.",
+            },
+            hold: {
+              label: "Periodo de retención",
+              body: "Existe un periodo de seguridad de 15 días tras el pago del cliente antes de que la comisión sea marcada como \"Disponible\", con el fin de gestionar posibles reembolsos o disputas.",
+            },
+          },
+        },
+        attribution: {
+          heading: "2. Sistema de atribución (cookies)",
+          items: {
+            duration: {
+              label: "Duración",
+              body: "Utilizamos cookies de seguimiento con una duración de 30 días.",
+            },
+            lastClick: {
+              label: "Último clic",
+              body: "El sistema de atribución funciona bajo el modelo de \"Last Click\": el último enlace de afiliado en el que el usuario haga clic antes de comprar será el que reciba la comisión.",
+            },
+          },
+        },
+        material: {
+          heading: "3. Material promocional y marca",
+          items: {
+            authorized: {
+              label: "Uso autorizado",
+              body: "TerminalSync otorga una licencia limitada para usar nuestros logotipos, capturas de pantalla y material de marketing disponibles en el Dashboard de Afiliados exclusivamente para la promoción del software.",
+            },
+            restriction: {
+              label: "Restricción de marca",
+              body: "No está permitido comprar dominios que incluyan la palabra \"TerminalSync\" ni realizar campañas de anuncios (Google Ads / Facebook Ads) utilizando el nombre de la marca directamente para competir con el sitio oficial.",
+            },
+          },
+        },
+        responsibilities: {
+          heading: "4. Responsabilidades del Partner",
+          items: {
+            ethics: {
+              label: "Ética",
+              body: "Queda estrictamente prohibido el uso de spam, publicidad engañosa o cualquier práctica que pueda dañar la reputación de TerminalSync.",
+            },
+            transparency: {
+              label: "Transparencia",
+              body: "Debes declarar de forma honesta que eres un afiliado y que recibes una compensación por las ventas recomendadas.",
+            },
+            selfReferral: {
+              label: "Auto-referidos",
+              body: "No está permitido el uso del enlace de afiliado para obtener descuentos en suscripciones personales. Estas comisiones serán anuladas automáticamente.",
+            },
+          },
+        },
+        changes: {
+          heading: "5. Modificaciones y terminación",
+          items: {
+            modifications: {
+              label: "Cambios",
+              body: "TerminalSync se reserva el derecho de ajustar los porcentajes de comisión o los términos del servicio notificando a los partners con 30 días de antelación.",
+            },
+            termination: {
+              label: "Terminación",
+              body: "Cualquiera de las partes puede dar por terminada la relación en cualquier momento. En caso de fraude demostrado, la cuenta será cerrada y las comisiones pendientes serán confiscadas.",
+            },
+          },
+        },
+      },
+    },
+  },
+  checkout: {
+    loading: "Abriendo pago seguro…",
+    errorTitle: "No pudimos abrir el pago",
+    success: {
+      eyebrow: "¡Listo!",
+      title: "Bienvenido a TerminalSync Pro",
+      body: "Ya tienes acceso completo. Te enviamos un correo con el recibo y los pasos para instalar la app.",
+      ctaDownload: "Descargar la app",
+      ctaHome: "Volver al inicio",
+      receipt: "ID de sesión: {{id}}",
+    },
+    cancel: {
+      eyebrow: "Pago cancelado",
+      title: "No te preocupes, tu plan sigue gratis",
+      body: "Cancelaste el pago — no se cobró nada. Puedes intentar de nuevo cuando quieras, o escribirnos si necesitas ayuda.",
+      ctaRetry: "Probar de nuevo",
+      ctaContact: "Hablar con el equipo",
+    },
   },
 };
 

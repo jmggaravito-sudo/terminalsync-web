@@ -1,36 +1,43 @@
+import Link from "next/link";
 import type { Dict } from "@/content";
 
 export function Footer({ dict }: { dict: Dict }) {
   const year = new Date().getFullYear();
+  const lang = dict.locale;
 
   const cols: {
     heading: string;
-    links: { key: string; label: string }[];
+    links: { key: string; label: string; href: string }[];
   }[] = [
     {
       heading: dict.footer.product,
       links: [
-        { key: "features", label: dict.footer.links.features },
-        { key: "demos", label: dict.footer.links.demos },
-        { key: "pricing", label: dict.footer.links.pricing },
-        { key: "download", label: dict.footer.links.download },
+        { key: "features", label: dict.footer.links.features, href: `/${lang}#features` },
+        { key: "demos", label: dict.footer.links.demos, href: `/${lang}#demos` },
+        { key: "pricing", label: dict.footer.links.pricing, href: `/${lang}#pricing` },
+        { key: "download", label: dict.footer.links.download, href: `/${lang}#hero` },
       ],
     },
     {
       heading: dict.footer.company,
       links: [
-        { key: "about", label: dict.footer.links.about },
-        { key: "blog", label: dict.footer.links.blog },
-        { key: "contact", label: dict.footer.links.contact },
-        { key: "affiliates", label: dict.footer.links.affiliates },
+        { key: "about", label: dict.footer.links.about, href: "#" },
+        { key: "blog", label: dict.footer.links.blog, href: "#" },
+        { key: "contact", label: dict.footer.links.contact, href: "mailto:hola@terminalsync.ai" },
+        { key: "affiliates", label: dict.footer.links.affiliates, href: `/${lang}#affiliates` },
       ],
     },
     {
       heading: dict.footer.legal,
       links: [
-        { key: "privacy", label: dict.footer.links.privacy },
-        { key: "terms", label: dict.footer.links.terms },
-        { key: "security", label: dict.footer.links.security },
+        {
+          key: "affiliateTerms",
+          label: dict.footer.links.affiliateTerms,
+          href: `/${lang}/legal/affiliates`,
+        },
+        { key: "privacy", label: dict.footer.links.privacy, href: "#" },
+        { key: "terms", label: dict.footer.links.terms, href: "#" },
+        { key: "security", label: dict.footer.links.security, href: "#" },
       ],
     },
   ];
@@ -59,12 +66,12 @@ export function Footer({ dict }: { dict: Dict }) {
             <ul className="mt-3 space-y-2">
               {col.links.map((l) => (
                 <li key={l.key}>
-                  <a
+                  <Link
                     className="text-[13px] text-[var(--color-fg-muted)] hover:text-[var(--color-fg-strong)] transition-colors"
-                    href="#"
+                    href={l.href}
                   >
                     {l.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

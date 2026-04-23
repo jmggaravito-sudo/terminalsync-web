@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import type { Dict } from "@/content";
+import { CheckoutButton } from "./CheckoutButton";
 
 export function Pricing({ dict }: { dict: Dict }) {
   const plans = [
@@ -68,16 +69,14 @@ export function Pricing({ dict }: { dict: Dict }) {
                 ))}
               </ul>
 
-              <a
-                href="#"
-                className={`mt-7 w-full inline-flex items-center justify-center rounded-xl py-2.5 text-[13px] font-semibold transition-colors ${
-                  featured
-                    ? "bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white shadow-[0_8px_24px_-10px_var(--color-accent-glow)]"
-                    : "bg-[var(--color-panel-2)] hover:bg-[var(--color-bg)] text-[var(--color-fg)] border border-[var(--color-border)]"
-                }`}
-              >
-                {plan.cta}
-              </a>
+              <CheckoutButton
+                plan={key}
+                lang={dict.locale}
+                label={plan.cta}
+                featured={featured}
+                errorTitle={dict.checkout.errorTitle}
+                loadingLabel={dict.checkout.loading}
+              />
             </article>
           );
         })}

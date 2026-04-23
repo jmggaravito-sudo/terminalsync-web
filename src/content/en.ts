@@ -182,6 +182,7 @@ const en: Dict = {
       blog: "Blog",
       contact: "Contact",
       affiliates: "Affiliates",
+      affiliateTerms: "Affiliate terms",
       privacy: "Privacy",
       terms: "Terms",
       security: "Security",
@@ -228,6 +229,123 @@ const en: Dict = {
     comingSoonBody:
       "We're finishing the demo recording. Meanwhile, download the app and try it — takes 2 minutes.",
     ctaMeanwhile: "Download free",
+  },
+  legal: {
+    affiliates: {
+      pageTitle: "Partner Agreement",
+      title: "Partner Agreement",
+      subtitle:
+        "Terms and conditions for joining the TerminalSync Affiliate Program.",
+      updated: "Last updated: April 22, 2026",
+      intro:
+        "This agreement describes the terms and conditions for joining the TerminalSync Affiliate Program. By signing up, you agree to the following:",
+      readFullTerms: "Read full terms",
+      back: "Back to Affiliates",
+      acceptance:
+        "By checking the \"I have read and accept the terms\" box on the signup form, you confirm that you have read, understood and accepted this agreement in full.",
+      sections: {
+        commissions: {
+          heading: "1. Commissions and payouts",
+          items: {
+            percent: {
+              label: "Percentage",
+              body: "You'll earn a recurring 30% commission on the net value of every TerminalSync Pro subscription referred through your unique link.",
+            },
+            recurring: {
+              label: "Recurrence",
+              body: "Commissions are paid monthly for as long as the referred user keeps their subscription active and in good standing.",
+            },
+            threshold: {
+              label: "Payout threshold",
+              body: "Payouts are processed once your accumulated balance reaches $50 USD or more.",
+            },
+            cycle: {
+              label: "Payout cycle",
+              body: "Payouts are issued within the first 10 days of each calendar month.",
+            },
+            hold: {
+              label: "Hold period",
+              body: "There is a 15-day security period after the customer's payment before a commission is marked as \"Available\", to manage potential refunds or disputes.",
+            },
+          },
+        },
+        attribution: {
+          heading: "2. Attribution system (cookies)",
+          items: {
+            duration: {
+              label: "Duration",
+              body: "We use tracking cookies with a 30-day lifetime.",
+            },
+            lastClick: {
+              label: "Last click",
+              body: "Attribution follows the \"Last Click\" model: the last affiliate link the user clicks before purchasing is the one that earns the commission.",
+            },
+          },
+        },
+        material: {
+          heading: "3. Promotional material and brand",
+          items: {
+            authorized: {
+              label: "Authorized use",
+              body: "TerminalSync grants a limited license to use our logos, screenshots and marketing material available in the Affiliate Dashboard exclusively to promote the software.",
+            },
+            restriction: {
+              label: "Brand restriction",
+              body: "You may not buy domains containing the word \"TerminalSync\" nor run ad campaigns (Google Ads / Facebook Ads) using the brand name directly to compete with the official site.",
+            },
+          },
+        },
+        responsibilities: {
+          heading: "4. Partner responsibilities",
+          items: {
+            ethics: {
+              label: "Ethics",
+              body: "Spam, misleading advertising or any practice that could damage TerminalSync's reputation is strictly prohibited.",
+            },
+            transparency: {
+              label: "Transparency",
+              body: "You must honestly disclose that you are an affiliate and that you receive compensation for recommended sales.",
+            },
+            selfReferral: {
+              label: "Self-referrals",
+              body: "Using your own affiliate link to obtain discounts on personal subscriptions is not allowed. Such commissions will be automatically voided.",
+            },
+          },
+        },
+        changes: {
+          heading: "5. Modifications and termination",
+          items: {
+            modifications: {
+              label: "Changes",
+              body: "TerminalSync reserves the right to adjust commission rates or the terms of service by notifying partners 30 days in advance.",
+            },
+            termination: {
+              label: "Termination",
+              body: "Either party may end the relationship at any time. In case of proven fraud, the account will be closed and pending commissions forfeited.",
+            },
+          },
+        },
+      },
+    },
+  },
+  checkout: {
+    loading: "Opening secure checkout…",
+    errorTitle: "We couldn't open checkout",
+    success: {
+      eyebrow: "You're in!",
+      title: "Welcome to TerminalSync Pro",
+      body: "You've got full access now. We sent you an email with the receipt and instructions to install the app.",
+      ctaDownload: "Download the app",
+      ctaHome: "Back to home",
+      receipt: "Session ID: {{id}}",
+    },
+    cancel: {
+      eyebrow: "Payment canceled",
+      title: "No worries, your free plan is still on",
+      body: "You canceled the payment — nothing was charged. Try again whenever, or reach out if you need a hand.",
+      ctaRetry: "Try again",
+      ctaContact: "Talk to the team",
+    },
   },
 };
 
