@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import type { Locale } from "@/content";
 
 interface Props {
-  plan: "starter" | "pro" | "agency";
+  plan: "starter" | "pro" | "dev" | "agency";
   cycle?: "monthly" | "yearly";
   lang: Locale;
   label: string;
@@ -16,6 +16,10 @@ interface Props {
 
 // Starter → direct download link (no checkout needed).
 // Pro     → POST /api/checkout, redirect to Stripe (carries billing cycle).
+// Dev     → POST /api/checkout. Backend returns 503 "Missing Stripe price"
+//           until STRIPE_PRICE_DEV_{MONTHLY,YEARLY} are set in Vercel — we
+//           show that error inline (fail-loud) instead of silently charging
+//           the Pro priceId.
 // Agency  → mailto sales team (lead-gen, not self-serve for now).
 export function CheckoutButton({
   plan,
@@ -44,10 +48,18 @@ export function CheckoutButton({
     setLoading(true);
     setError(null);
     try {
+      // Rewardful injects `window.Rewardful.referral` (UUID) when the visitor
+      // arrived via a tracked affiliate link. We forward it so the Stripe
+      // checkout can credit the affiliate via `client_reference_id`.
+      const referral =
+        typeof window !== "undefined"
+          ? (window as unknown as { Rewardful?: { referral?: string } })
+              .Rewardful?.referral
+          : undefined;
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, cycle: cycle ?? "monthly", lang }),
+        body: JSON.stringify({ plan, cycle: cycle ?? "monthly", lang, referral }),
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !data.url) {

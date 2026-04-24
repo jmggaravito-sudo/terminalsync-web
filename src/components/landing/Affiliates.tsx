@@ -33,13 +33,25 @@ export function Affiliates({ dict }: { dict: Dict }) {
               {dict.affiliates.body}
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <a
-                href="#"
-                className="inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] glow-accent transition-all hover:-translate-y-px"
-              >
-                {dict.affiliates.cta}
-                <ArrowRight size={14} strokeWidth={2.4} />
-              </a>
+              {process.env.NEXT_PUBLIC_REWARDFUL_SIGNUP_URL ? (
+                <a
+                  href={process.env.NEXT_PUBLIC_REWARDFUL_SIGNUP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] glow-accent transition-all hover:-translate-y-px"
+                >
+                  {dict.affiliates.cta}
+                  <ArrowRight size={14} strokeWidth={2.4} />
+                </a>
+              ) : (
+                <Link
+                  href={`/${lang}/legal/affiliates`}
+                  className="inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] glow-accent transition-all hover:-translate-y-px"
+                >
+                  {dict.affiliates.cta}
+                  <ArrowRight size={14} strokeWidth={2.4} />
+                </Link>
+              )}
               <Link
                 href={`/${lang}/legal/affiliates`}
                 className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[var(--color-fg-muted)] hover:text-[var(--color-fg-strong)] transition-colors"

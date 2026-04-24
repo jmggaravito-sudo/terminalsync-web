@@ -74,10 +74,28 @@ export interface Dict {
       eyebrow: string; // "7 días gratis"
       explainer: string; // "Ingresas tu tarjeta pero no se cobra nada los primeros 7 días. Cancela cuando quieras."
     };
+    quiz: {
+      cta: string; // "¿Cuál plan necesito?"
+      title: string;
+      subtitle: string;
+      back: string;
+      next: string;
+      seePlan: string;
+      startOver: string;
+      resultTitle: string; // "Te recomendamos {{plan}}"
+      resultWhy: string; // "Porque vos:"
+      resultCta: string; // "Ir a {{plan}}"
+      questions: Array<{
+        id: string;
+        text: string;
+        options: Array<{ value: string; label: string }>;
+      }>;
+    };
     plans: {
       starter: Plan;
       pro: ProPlan;
-      agency: Plan;
+      dev: ProPlan;
+      team: Plan;
     };
   };
   trust: {

@@ -87,6 +87,24 @@ export default function RootLayout({
           rel="stylesheet"
         />
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
+        {process.env.NEXT_PUBLIC_REWARDFUL_API_KEY && (
+          <>
+            {/* Rewardful snippet — inline queue MUST load before the async
+                script so `window.rewardful(...)` calls made by the page JS
+                are buffered correctly until rw.js is ready. */}
+            <script
+              dangerouslySetInnerHTML={{
+                __html:
+                  "(function(w,r){w._rwq=r;w[r]=w[r]||function(){(w[r].q=w[r].q||[]).push(arguments)}})(window,'rewardful');",
+              }}
+            />
+            <script
+              async
+              src="https://r.wdfl.co/rw.js"
+              data-rewardful={process.env.NEXT_PUBLIC_REWARDFUL_API_KEY}
+            />
+          </>
+        )}
       </head>
       <body>
         {children}

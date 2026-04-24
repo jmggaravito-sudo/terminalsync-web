@@ -8,6 +8,42 @@ import {
 } from "lucide-react";
 import type { Dict } from "@/content";
 
+// Terminal-window chrome themes. Declared BEFORE the component so it's
+// referenced from a fully initialized binding — otherwise React's server
+// rendering of AppMockup can hit the TDZ and throw "THEMES is not defined"
+// (which silently breaks client-side interactivity on the whole page).
+interface Chrome {
+  body: string;
+  title: string;
+  titleBorder: string;
+  filename: string;
+  outerBorder: string;
+}
+
+const THEMES: Record<"dark" | "light" | "rose", Chrome> = {
+  dark: {
+    body: "bg-[#0b0f17]",
+    title: "bg-[#141923]",
+    titleBorder: "border-[#1f2736]",
+    filename: "text-zinc-500",
+    outerBorder: "border-[var(--color-border)]",
+  },
+  light: {
+    body: "bg-[#fafbfc]",
+    title: "bg-[#eef0f4]",
+    titleBorder: "border-[#dce0e8]",
+    filename: "text-zinc-500",
+    outerBorder: "border-[#dce0e8]",
+  },
+  rose: {
+    body: "bg-[#fdeef3]",
+    title: "bg-[#fbe0ea]",
+    titleBorder: "border-[#f3c9d6]",
+    filename: "text-rose-700/70",
+    outerBorder: "border-[#f3c9d6]",
+  },
+};
+
 // Inline mockup of the TerminalSync desktop app. Session cards render as
 // miniature terminal windows with Claude-style startup output so devs
 // immediately recognize the product's domain — not emoji folders.
@@ -200,40 +236,6 @@ export function AppMockup({ dict }: { dict: Dict }) {
     </div>
   );
 }
-
-// Terminal card "chrome" variants — 3 looks so the hero row feels like
-// three different iTerm tabs (classic dark, clean light, warm rosé).
-interface Chrome {
-  body: string;       // terminal body background
-  title: string;      // titlebar background
-  titleBorder: string;
-  filename: string;   // filename text color
-  outerBorder: string;
-}
-
-const THEMES: Record<"dark" | "light" | "rose", Chrome> = {
-  dark: {
-    body: "bg-[#0b0f17]",
-    title: "bg-[#141923]",
-    titleBorder: "border-[#1f2736]",
-    filename: "text-zinc-500",
-    outerBorder: "border-[var(--color-border)]",
-  },
-  light: {
-    body: "bg-[#fafbfc]",
-    title: "bg-[#eef0f4]",
-    titleBorder: "border-[#dce0e8]",
-    filename: "text-zinc-500",
-    outerBorder: "border-[#dce0e8]",
-  },
-  rose: {
-    body: "bg-[#fdeef3]",
-    title: "bg-[#fbe0ea]",
-    titleBorder: "border-[#f3c9d6]",
-    filename: "text-rose-700/70",
-    outerBorder: "border-[#f3c9d6]",
-  },
-};
 
 // Each card is a miniature terminal window — themed chrome, colored mono
 // output, small traffic-light dots in the titlebar. The app label and
