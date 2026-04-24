@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { sendWelcomeEmail } from "@/lib/email";
+import {
+  syncSubscriptionToSupabase,
+  revokeSubscription,
+} from "@/lib/subscriptionsSync";
 
 export const runtime = "nodejs";
 
@@ -101,9 +105,9 @@ async function handle(event: Stripe.Event) {
         trialEnd: sub.trial_end,
         customer: sub.customer,
       });
-      // During trialing, the user already has access — no further action.
-      // On status="active" (trial converted), the invoice.paid handler also
-      // fires; we don't need to double-process here.
+      // Upsert immediately so the Tauri app can flip Power-Ups on as soon
+      // as the user returns — even during the 7-day trial (status='trialing').
+      await syncSubscriptionToSupabase(sub);
       break;
     }
 
@@ -128,8 +132,10 @@ async function handle(event: Stripe.Event) {
         cancel_at_period_end: sub.cancel_at_period_end,
         canceledDuringTrial,
       });
-      // If canceled during trial, access stays until trial_end then Stripe
-      // emits subscription.deleted automatically. Nothing to do here.
+      // Keep Supabase in sync on ANY mutation — status changes (trialing
+      // → active), plan upgrades (Pro → Dev via customer portal), cancel-
+      // at-period-end toggles. The row is authoritative for useMe().plan.
+      await syncSubscriptionToSupabase(sub);
       break;
     }
 
@@ -139,7 +145,10 @@ async function handle(event: Stripe.Event) {
         id: sub.id,
         customer: sub.customer,
       });
-      // TODO: flip the customer's access flag off in the product backend.
+      // Flip the user back to free plan. We DO NOT delete their terminals
+      // — client-side canCreateTerminal() enforces the cap on NEW creates
+      // only. Existing terminals stay readable/writable.
+      await revokeSubscription(sub);
       break;
     }
 
