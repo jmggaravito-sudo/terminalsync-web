@@ -7,7 +7,7 @@ import { CheckoutButton } from "./CheckoutButton";
 import { PlanQuiz } from "./PlanQuiz";
 
 type Cycle = "monthly" | "yearly";
-type PlanKey = "starter" | "pro" | "dev" | "team";
+type PlanKey = "starter" | "pro" | "dev";
 
 export function Pricing({ dict }: { dict: Dict }) {
   const [cycle, setCycle] = useState<Cycle>("yearly");
@@ -109,7 +109,7 @@ export function Pricing({ dict }: { dict: Dict }) {
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+      <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
         <PlanCard
           id="plan-starter"
           name={dict.pricing.plans.starter.name}
@@ -141,20 +141,6 @@ export function Pricing({ dict }: { dict: Dict }) {
           cycle={cycle}
           dict={dict}
           highlighted={highlighted === "dev"}
-        />
-
-        <PlanCard
-          id="plan-team"
-          name={dict.pricing.plans.team.name}
-          price={dict.pricing.plans.team.price}
-          priceNote={dict.pricing.plans.team.priceNote}
-          features={dict.pricing.plans.team.features}
-          cta={dict.pricing.plans.team.cta}
-          checkoutPlan="agency" /* back-compat: team still hits the same sales mailto */
-          lang={dict.locale}
-          loadingLabel={dict.checkout.loading}
-          errorTitle={dict.checkout.errorTitle}
-          highlighted={highlighted === "team"}
         />
       </div>
 

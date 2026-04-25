@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import type { Dict } from "@/content";
 
-type PlanKey = "starter" | "pro" | "dev" | "team";
+type PlanKey = "starter" | "pro" | "dev";
 
 interface Props {
   dict: Dict;
@@ -20,9 +20,8 @@ interface Props {
   onClose: () => void;
   /**
    * Called when the user commits to a recommended plan. We scroll the
-   * pricing section into view with the card highlighted (landing handles
-   * the scroll/focus). For "team" the caller can route to a sales mailto;
-   * for "starter" / "pro" / "dev" it can open checkout.
+   * pricing section into view with the card highlighted; the caller can
+   * also open checkout for the chosen tier (starter / pro / dev).
    */
   onCommit: (plan: PlanKey) => void;
 }
@@ -317,11 +316,6 @@ function ResultCard({
           <ArrowRight size={13} />
         </button>
       </div>
-      {planKey === "team" && (
-        <p className="mt-2 text-center text-[10.5px] text-[var(--color-fg-dim)]">
-          Te redirigimos a nuestro equipo de ventas.
-        </p>
-      )}
     </div>
   );
 }
@@ -329,17 +323,18 @@ function ResultCard({
 // ── Scoring logic ──────────────────────────────────────────────────────
 //
 // Rules (kept readable on purpose — this is marketing, not a tax engine):
-//   1. "team" role alone → Team plan, regardless of rest.
-//   2. "developer" role OR "projects" pain → Dev.
-//   3. "creator" role + "chats" pain + "one" device → Free is enough.
-//   4. Anything else (including "idk") → Pro (safe middle).
+//   1. "team" role OR "developer" role OR "projects" pain → Dev (more
+//      terminals + .env vault + setup.sh fit team-lead workflows).
+//   2. "creator" role + "chats" pain + "one" device → Free is enough.
+//   3. Anything else (including "idk") → Pro (safe middle).
 //
 // Bias toward Pro on ambiguity — conversion-friendliest tier for unsure
 // users. Only recommend Free when signals are strongly "light usage".
 
 function scoreAnswers(a: Answers): PlanKey {
-  if (a.role === "team") return "team";
-  if (a.role === "developer" || a.pain === "projects") return "dev";
+  if (a.role === "team" || a.role === "developer" || a.pain === "projects") {
+    return "dev";
+  }
   if (a.role === "creator" && a.pain === "chats" && a.volume === "one") {
     return "starter";
   }

@@ -212,18 +212,6 @@ const en: Dict = {
         ],
         cta: "Start 7-day free trial",
       },
-      team: {
-        name: "Team",
-        price: "$49",
-        priceNote: "/person/mo",
-        features: [
-          "Everything in Dev, for each member",
-          "20 active terminals per person",
-          "Unified team billing",
-          "Priority email support",
-        ],
-        cta: "Contact sales",
-      },
     },
   },
   trust: {
@@ -294,7 +282,7 @@ const en: Dict = {
       install:
         "Super easy! Download TerminalSync, in the dashboard you'll see the \"AI Power-Ups\" card → click \"Install Claude Code\" → paste your Anthropic API key and you're done. Takes ~30 seconds and we set up everything for you.",
       pricing:
-        "3 plans: Starter ($0 free), Pro ($19/mo with AI Auto-Pilot + unlimited terminals) and Agency ($49/mo for teams). You can try Pro free — no credit card. Want the download link?",
+        "3 plans: Starter ($0 free, 1 terminal), Pro ($19/mo with Claude Code Power-Ups + 5 terminals) and Dev ($39/mo with Git-Native Sync, .env Vault and 20 terminals). You can try Pro or Dev free for 7 days — no credit card. Want the download link?",
       security:
         "Your code and API key are encrypted with AES-256 on your computer BEFORE uploading to Drive. Zero-Knowledge: neither we nor Google can read your content. You hold the master key in your local keychain.",
       fallback:

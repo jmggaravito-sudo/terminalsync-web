@@ -96,7 +96,6 @@ export interface Dict {
       starter: Plan;
       pro: ProPlan;
       dev: ProPlan;
-      team: Plan;
     };
   };
   trust: {
