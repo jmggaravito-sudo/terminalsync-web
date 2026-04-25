@@ -27,6 +27,10 @@ const en: Dict = {
     ctaPrimary: "Download Free for Desktop",
     ctaSecondary: "See how it works",
     trustLine: "Free forever · No credit card",
+    nextUp: {
+      eyebrow: "Coming soon",
+      body: "Your Codex Desktop, everywhere. Set it up once, open it on any Mac, done. Same engine that already syncs Claude Code and MCP.",
+    },
     mockup: {
       appName: "Terminal Sync",
       statusOk: "Your files are safe and synced",

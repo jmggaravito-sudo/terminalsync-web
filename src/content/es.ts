@@ -27,6 +27,10 @@ const es: Dict = {
     ctaPrimary: "Descargar Gratis para Desktop",
     ctaSecondary: "Ver cómo funciona",
     trustLine: "Gratis para siempre · Sin tarjeta de crédito",
+    nextUp: {
+      eyebrow: "Próximamente",
+      body: "Tu Codex Desktop ahora viaja con vos. Configurá una vez, abrí en cualquier Mac, listo. Mismo motor que ya sincroniza Claude Code y MCP.",
+    },
     mockup: {
       appName: "Terminal Sync",
       statusOk: "Todo está seguro y guardado",

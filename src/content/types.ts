@@ -20,6 +20,7 @@ export interface Dict {
     ctaPrimary: string;
     ctaSecondary: string;
     trustLine: string;
+    nextUp: { eyebrow: string; body: string };
     mockup: {
       appName: string;
       statusOk: string;

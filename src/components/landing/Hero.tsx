@@ -69,6 +69,18 @@ export function Hero({ dict }: { dict: Dict }) {
         <p className="mt-4 text-[12px] text-[var(--color-fg-dim)]">
           {dict.hero.trustLine}
         </p>
+
+        {/* "Next up" teaser — surfaces the upcoming Codex Desktop sync to
+            OpenAI Plus/Pro/Team users browsing the page. Sits below the
+            trust line so it doesn't compete with the primary CTA. */}
+        <div className="mt-7 inline-flex max-w-xl items-start gap-2.5 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)]/60 px-4 py-2.5 text-left">
+          <span className="mt-0.5 inline-flex shrink-0 items-center rounded-full border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/8 px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--color-accent)]">
+            {dict.hero.nextUp.eyebrow}
+          </span>
+          <span className="text-[12.5px] text-[var(--color-fg-muted)] leading-relaxed">
+            {dict.hero.nextUp.body}
+          </span>
+        </div>
       </div>
 
       <div className="relative mx-auto max-w-6xl px-3 sm:px-5 md:px-6 pb-16 md:pb-20">
