@@ -1,11 +1,47 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
-import { sendWelcomeEmail } from "@/lib/email";
+import {
+  sendWelcomeEmail,
+  sendTrialEndingEmail,
+  sendPaymentFailedEmail,
+  sendCancellationEmail,
+} from "@/lib/email";
 import {
   syncSubscriptionToSupabase,
   revokeSubscription,
 } from "@/lib/subscriptionsSync";
+
+/** Friendly plan + cycle label from Stripe metadata. Falls back to a
+ *  generic name if metadata wasn't propagated (older subs). */
+function planLabel(metadata: Stripe.Metadata | null | undefined): string {
+  const plan = metadata?.plan;
+  const cycle = metadata?.cycle;
+  if (!plan) return "Terminal Sync";
+  const proper = plan.charAt(0).toUpperCase() + plan.slice(1);
+  if (cycle === "yearly") return `${proper} anual`;
+  if (cycle === "monthly") return `${proper} mensual`;
+  return proper;
+}
+
+/** Pull customer email + first name from Stripe. Used by the trial-ending
+ *  + payment-failed + cancellation handlers since the Subscription /
+ *  Invoice objects only carry the customer id. */
+async function fetchCustomerProfile(
+  customerId: string,
+): Promise<{ email: string | null; firstName: string }> {
+  if (!stripe) return { email: null, firstName: "hola" };
+  try {
+    const c = await stripe.customers.retrieve(customerId);
+    if (c.deleted) return { email: null, firstName: "hola" };
+    const email = c.email ?? null;
+    const firstName = (c.name ?? "").split(" ")[0] || "hola";
+    return { email, firstName };
+  } catch (err) {
+    console.error("[stripe] customers.retrieve failed", { customerId, err });
+    return { email: null, firstName: "hola" };
+  }
+}
 
 export const runtime = "nodejs";
 
@@ -112,13 +148,30 @@ async function handle(event: Stripe.Event) {
     }
 
     case "customer.subscription.trial_will_end": {
-      // Fires ~3 days before trial ends. Chance to remind the user.
+      // Fires ~3 days before trial ends. Last touchpoint to convert.
       const sub = event.data.object as Stripe.Subscription;
       console.log("[stripe] subscription.trial_will_end", {
         id: sub.id,
         trialEnd: sub.trial_end,
       });
-      // TODO: send "your trial ends in 3 days" email via Resend.
+      if (!sub.trial_end) break;
+      const customerId =
+        typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+      const { email, firstName } = await fetchCustomerProfile(customerId);
+      if (email) {
+        try {
+          await sendTrialEndingEmail({
+            to: email,
+            firstName,
+            planName: planLabel(sub.metadata),
+            trialEnd: new Date(sub.trial_end * 1000),
+            subscriptionId: sub.id,
+          });
+          console.log("[stripe] trial-ending email sent");
+        } catch (err) {
+          console.error("[stripe] trial-ending email failed", err);
+        }
+      }
       break;
     }
 
@@ -149,6 +202,31 @@ async function handle(event: Stripe.Event) {
       // — client-side canCreateTerminal() enforces the cap on NEW creates
       // only. Existing terminals stay readable/writable.
       await revokeSubscription(sub);
+
+      // Send the cancellation confirmation last so revoke happens even if
+      // the email fails (data integrity > inbox notification).
+      const customerId =
+        typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+      const { email, firstName } = await fetchCustomerProfile(customerId);
+      if (email) {
+        try {
+          await sendCancellationEmail({
+            to: email,
+            firstName,
+            planName: planLabel(sub.metadata),
+            // Stripe surfaces feedback under cancellation_details when the
+            // user picks a reason in the customer portal.
+            reason:
+              sub.cancellation_details?.feedback ??
+              sub.cancellation_details?.comment ??
+              undefined,
+            subscriptionId: sub.id,
+          });
+          console.log("[stripe] cancellation email sent");
+        } catch (err) {
+          console.error("[stripe] cancellation email failed", err);
+        }
+      }
       break;
     }
 
@@ -168,7 +246,36 @@ async function handle(event: Stripe.Event) {
         id: invoice.id,
         customer: invoice.customer,
       });
-      // TODO: email customer + pause product access.
+      // Stripe will retry the card 3 times over ~2 weeks. We don't revoke
+      // access here — that's what subscription.deleted is for. Email the
+      // user so they have a chance to fix the card before access drops.
+      const customerId =
+        typeof invoice.customer === "string"
+          ? invoice.customer
+          : invoice.customer?.id;
+      if (!customerId || !invoice.id) break;
+      const { email, firstName } = await fetchCustomerProfile(customerId);
+      if (email) {
+        try {
+          // Generic plan label for the email — fetching the linked
+          // subscription to get its metadata is a round-trip we skip
+          // (Stripe's API location for `invoice.subscription` keeps
+          // moving across SDK versions). User sees "Terminal Sync" + the
+          // amount, and the CTA opens their portal where Stripe shows
+          // exact plan details.
+          await sendPaymentFailedEmail({
+            to: email,
+            firstName,
+            planName: "Terminal Sync",
+            amountCents: invoice.amount_due ?? 0,
+            currency: invoice.currency ?? "usd",
+            invoiceId: invoice.id,
+          });
+          console.log("[stripe] payment-failed email sent");
+        } catch (err) {
+          console.error("[stripe] payment-failed email failed", err);
+        }
+      }
       break;
     }
 
