@@ -7,6 +7,7 @@ import { WelcomeEmail } from "../../emails/welcome";
 import { TrialEndingEmail } from "../../emails/trial-ending";
 import { PaymentFailedEmail } from "../../emails/payment-failed";
 import { CancellationConfirmedEmail } from "../../emails/cancellation-confirmed";
+import { signBillingToken, signUnsubToken } from "./signedTokens";
 
 const key = process.env.RESEND_API_KEY;
 const resend = key ? new Resend(key) : null;
@@ -15,14 +16,18 @@ const SUPPORT_FROM = "Juan de TerminalSync <support@terminalsync.ai>";
 const BILLING_FROM = "Terminal Sync <billing@terminalsync.ai>";
 
 function unsubUrl(email: string): string {
-  return `https://terminalsync.ai/es/unsubscribe?e=${encodeURIComponent(email)}`;
+  // HMAC-signed so random visitors can't unsub other people by enumerating
+  // emails. 90-day expiry mirrors RFC 8058 norms.
+  return `https://terminalsync.ai/es/unsubscribe?t=${encodeURIComponent(signUnsubToken(email))}`;
 }
 
-function manageBillingUrl(): string {
-  // TODO: route this through /api/billing/portal which creates a Stripe
-  // Customer Portal session signed for the user. For now point to a
-  // marketing page that opens the portal manually.
-  return "https://terminalsync.ai/es/billing";
+function manageBillingUrl(customerId?: string): string {
+  // When the caller has the Stripe customer ID, sign it into the URL so
+  // the /es/billing page can skip asking for the email — one-click portal.
+  // When it's missing (legacy callers), fall back to the bare page where
+  // the user types their email manually.
+  if (!customerId) return "https://terminalsync.ai/es/billing";
+  return `https://terminalsync.ai/es/billing?t=${encodeURIComponent(signBillingToken(customerId))}`;
 }
 
 export async function sendWelcomeEmail(opts: {
