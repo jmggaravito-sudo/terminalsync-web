@@ -165,6 +165,7 @@ async function handle(event: Stripe.Event) {
             firstName,
             planName: planLabel(sub.metadata),
             trialEnd: new Date(sub.trial_end * 1000),
+            customerId,
             subscriptionId: sub.id,
           });
           console.log("[stripe] trial-ending email sent");

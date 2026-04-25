@@ -24,8 +24,8 @@ function unsubUrl(email: string): string {
 function manageBillingUrl(customerId?: string): string {
   // When the caller has the Stripe customer ID, sign it into the URL so
   // the /es/billing page can skip asking for the email — one-click portal.
-  // When it's missing (legacy callers), fall back to the bare page where
-  // the user types their email manually.
+  // When it's missing, fall back to the bare page where the user types
+  // their email manually.
   if (!customerId) return "https://terminalsync.ai/es/billing";
   return `https://terminalsync.ai/es/billing?t=${encodeURIComponent(signBillingToken(customerId))}`;
 }
@@ -67,6 +67,9 @@ export async function sendTrialEndingEmail(opts: {
   trialEnd: Date;
   /** Subscription ID for idempotency — Stripe can re-fire trial_will_end. */
   subscriptionId: string;
+  /** Stripe customer ID — when present, the billing link is signed and
+   *  one-click; otherwise it falls back to /es/billing. */
+  customerId?: string;
 }) {
   if (!resend) {
     console.warn("[email] RESEND_API_KEY missing — skipping trial-ending");
