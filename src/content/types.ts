@@ -69,7 +69,11 @@ export interface Dict {
       envFiles: string;
       localFolders: string;
       yourCloud: string;
+      skillsSync: string;
+      pluginsSync: string;
+      memoryBridge: string;
     };
+    upcomingLabel: string;
     legend: { yes: string; no: string; partial: string; soon: string };
     footnote: string;
   };

@@ -37,10 +37,9 @@ function CellIcon({ value, legend }: { value: Cell; legend: Dict["comparison"]["
 export function Comparison({ dict }: { dict: Dict }) {
   const c = dict.comparison;
 
-  // Each row: [labelKey, claudeDesktop, codexDesktop, terminalSync].
-  // Order matters — start with what users care most about, end with the
-  // privacy clincher.
-  const rows: [keyof typeof c.rows, Cell, Cell, Cell][] = [
+  // Available now — order matters: start with what users care most about,
+  // end with the privacy clincher.
+  const liveRows: [keyof typeof c.rows, Cell, Cell, Cell][] = [
     ["claudeConfig", "partial", "no", "yes"],
     ["coworkSessions", "soon", "no", "yes"],
     ["mcpServers", "partial", "no", "yes"],
@@ -48,6 +47,15 @@ export function Comparison({ dict }: { dict: Dict }) {
     ["envFiles", "no", "no", "yes"],
     ["localFolders", "no", "no", "yes"],
     ["yourCloud", "no", "no", "yes"],
+  ];
+
+  // Public roadmap — features in the GitHub roadmap that aren't shipped yet.
+  // Showing them keeps power users (the ones who care about Skills + memory)
+  // from bouncing because they think the product is too basic.
+  const upcomingRows: [keyof typeof c.rows, Cell, Cell, Cell][] = [
+    ["skillsSync", "no", "no", "soon"],
+    ["pluginsSync", "no", "no", "soon"],
+    ["memoryBridge", "no", "no", "soon"],
   ];
 
   return (
@@ -91,7 +99,50 @@ export function Comparison({ dict }: { dict: Dict }) {
               </tr>
             </thead>
             <tbody>
-              {rows.map(([key, claude, codex, ts], i) => (
+              {liveRows.map(([key, claude, codex, ts], i) => (
+                <tr
+                  key={key}
+                  className={
+                    i % 2 === 0
+                      ? "bg-transparent"
+                      : "bg-[var(--color-panel-2)]/30"
+                  }
+                >
+                  <td className="px-5 py-3.5 text-[13.5px] text-[var(--color-fg)]">
+                    {c.rows[key]}
+                  </td>
+                  <td className="px-3 py-3.5">
+                    <div className="flex justify-center">
+                      <CellIcon value={claude} legend={c.legend} />
+                    </div>
+                  </td>
+                  <td className="px-3 py-3.5">
+                    <div className="flex justify-center">
+                      <CellIcon value={codex} legend={c.legend} />
+                    </div>
+                  </td>
+                  <td className="px-3 py-3.5 bg-[var(--color-accent)]/4">
+                    <div className="flex justify-center">
+                      <CellIcon value={ts} legend={c.legend} />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+
+              {/* Visual divider so users see clearly what's live vs roadmap. */}
+              <tr>
+                <td colSpan={4} className="px-5 pt-5 pb-2">
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex items-center gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-[var(--color-info)] border border-[var(--color-info)]/30 bg-[var(--color-info)]/8 px-2.5 py-1 rounded-full">
+                      <Clock size={10} strokeWidth={2.6} />
+                      {c.upcomingLabel}
+                    </span>
+                    <div className="h-px flex-1 bg-[var(--color-border)]" />
+                  </div>
+                </td>
+              </tr>
+
+              {upcomingRows.map(([key, claude, codex, ts], i) => (
                 <tr
                   key={key}
                   className={
@@ -128,10 +179,40 @@ export function Comparison({ dict }: { dict: Dict }) {
       {/* Mobile: one card per feature so the comparison stays readable on
           narrow screens without horizontal scroll. */}
       <div className="mt-10 md:hidden space-y-3">
-        {rows.map(([key, claude, codex, ts]) => (
+        {liveRows.map(([key, claude, codex, ts]) => (
           <div
             key={key}
             className="rounded-xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4"
+          >
+            <div className="text-[13.5px] font-semibold text-[var(--color-fg-strong)] mb-3">
+              {c.rows[key]}
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <MobileCell label={c.columns.claudeDesktop} value={claude} legend={c.legend} />
+              <MobileCell label={c.columns.codexDesktop} value={codex} legend={c.legend} />
+              <MobileCell
+                label={c.columns.terminalSync}
+                value={ts}
+                legend={c.legend}
+                highlight
+              />
+            </div>
+          </div>
+        ))}
+
+        {/* Mobile divider for upcoming */}
+        <div className="flex items-center gap-3 pt-4">
+          <span className="inline-flex items-center gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-[var(--color-info)] border border-[var(--color-info)]/30 bg-[var(--color-info)]/8 px-2.5 py-1 rounded-full">
+            <Clock size={10} strokeWidth={2.6} />
+            {c.upcomingLabel}
+          </span>
+          <div className="h-px flex-1 bg-[var(--color-border)]" />
+        </div>
+
+        {upcomingRows.map(([key, claude, codex, ts]) => (
+          <div
+            key={key}
+            className="rounded-xl border border-[var(--color-info)]/30 bg-[var(--color-panel)] p-4"
           >
             <div className="text-[13.5px] font-semibold text-[var(--color-fg-strong)] mb-3">
               {c.rows[key]}

@@ -29,7 +29,7 @@ const es: Dict = {
     trustLine: "Gratis para siempre · Sin tarjeta de crédito",
     nextUp: {
       eyebrow: "Próximamente",
-      body: "Tu Codex Desktop ahora viaja con vos. Configurá una vez, abrí en cualquier Mac, listo. Mismo motor que ya sincroniza Claude Code y MCP.",
+      body: "Codex Desktop · Skills & Plugins de Claude y Codex · Long-term Memory Bridge para que tu IA no olvide quién sos al cambiar de Mac. Roadmap público en GitHub.",
     },
     mockup: {
       appName: "Terminal Sync",
@@ -102,7 +102,11 @@ const es: Dict = {
       envFiles: "Archivos .env cifrados",
       localFolders: "Carpetas locales (no-Git)",
       yourCloud: "En tu nube, no la del vendor",
+      skillsSync: "Skills custom (Claude + Codex)",
+      pluginsSync: "Plugins + auto-reinstall en Mac nueva",
+      memoryBridge: "Memoria Universal de Agentes (cross-vendor)",
     },
+    upcomingLabel: "Próximamente",
     legend: { yes: "Sí", no: "No", partial: "Parcial", soon: "Próximamente" },
     footnote:
       "Cifrado AES-256-GCM antes de salir de tu Mac. Ni Anthropic, ni OpenAI, ni nosotros vemos tus archivos.",

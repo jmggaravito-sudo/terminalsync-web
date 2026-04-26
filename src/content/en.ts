@@ -29,7 +29,7 @@ const en: Dict = {
     trustLine: "Free forever · No credit card",
     nextUp: {
       eyebrow: "Coming soon",
-      body: "Your Codex Desktop, everywhere. Set it up once, open it on any Mac, done. Same engine that already syncs Claude Code and MCP.",
+      body: "Codex Desktop · Skills & Plugins for Claude and Codex · Long-term Memory Bridge so your AI never forgets who you are when you switch Macs. Public roadmap on GitHub.",
     },
     mockup: {
       appName: "Terminal Sync",
@@ -102,7 +102,11 @@ const en: Dict = {
       envFiles: "Encrypted .env files",
       localFolders: "Local folders (non-Git)",
       yourCloud: "In your cloud, not the vendor's",
+      skillsSync: "Custom skills (Claude + Codex)",
+      pluginsSync: "Plugins + auto-reinstall on new Mac",
+      memoryBridge: "Universal Agent Memory (cross-vendor)",
     },
+    upcomingLabel: "Coming soon",
     legend: { yes: "Yes", no: "No", partial: "Partial", soon: "Coming soon" },
     footnote:
       "AES-256-GCM encrypted before it leaves your Mac. Neither Anthropic, OpenAI, nor we can see your files.",
