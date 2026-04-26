@@ -117,6 +117,9 @@ export interface Dict {
       yourCloud: string;
       skillsSync: string;
       pluginsSync: string;
+      projectMemory: string;
+      githubOnboarding: string;
+      coworkUpcoming: string;
       memoryBridge: string;
     };
     upcomingLabel: string;

@@ -41,20 +41,21 @@ export function Comparison({ dict }: { dict: Dict }) {
   // end with the privacy clincher.
   const liveRows: [keyof typeof c.rows, Cell, Cell, Cell][] = [
     ["claudeConfig", "partial", "no", "yes"],
-    ["coworkSessions", "soon", "no", "yes"],
     ["mcpServers", "partial", "no", "yes"],
     ["codexAuth", "no", "yes", "yes"],
+    ["skillsSync", "no", "no", "yes"],
+    ["pluginsSync", "no", "no", "yes"],
+    ["projectMemory", "no", "no", "yes"],
+    ["githubOnboarding", "no", "no", "yes"],
     ["envFiles", "no", "no", "yes"],
     ["localFolders", "no", "no", "yes"],
     ["yourCloud", "no", "no", "yes"],
   ];
 
-  // Public roadmap — features in the GitHub roadmap that aren't shipped yet.
-  // Showing them keeps power users (the ones who care about Skills + memory)
-  // from bouncing because they think the product is too basic.
+  // Public roadmap — features tracked in GitHub but not yet shipped. Showing
+  // them keeps power users from bouncing while we work through Phase 1+2.
   const upcomingRows: [keyof typeof c.rows, Cell, Cell, Cell][] = [
-    ["skillsSync", "no", "no", "soon"],
-    ["pluginsSync", "no", "no", "soon"],
+    ["coworkUpcoming", "soon", "no", "soon"],
     ["memoryBridge", "no", "no", "soon"],
   ];
 
