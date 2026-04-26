@@ -26,6 +26,7 @@ export function Footer({ dict }: { dict: Dict }) {
         { key: "blog", label: dict.footer.links.blog, href: "#" },
         { key: "contact", label: dict.footer.links.contact, href: "mailto:hola@terminalsync.ai" },
         { key: "affiliates", label: dict.footer.links.affiliates, href: `/${lang}#affiliates` },
+        { key: "publishers", label: dict.footer.links.publishers, href: `/${lang}/publishers` },
       ],
     },
     {

@@ -257,6 +257,7 @@ const en: Dict = {
       blog: "Blog",
       contact: "Contact",
       affiliates: "Affiliates",
+      publishers: "Publish a connector",
       affiliateTerms: "Affiliate terms",
       privacy: "Privacy",
       terms: "Terms",

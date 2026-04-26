@@ -129,6 +129,7 @@ export interface Dict {
       | "blog"
       | "contact"
       | "affiliates"
+      | "publishers"
       | "affiliateTerms"
       | "privacy"
       | "terms"
