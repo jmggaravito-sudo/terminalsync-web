@@ -11,6 +11,7 @@ import {
   syncSubscriptionToSupabase,
   revokeSubscription,
 } from "@/lib/subscriptionsSync";
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 /** Friendly plan + cycle label from Stripe metadata. Falls back to a
  *  generic name if metadata wasn't propagated (older subs). */
@@ -94,6 +95,15 @@ async function handle(event: Stripe.Event) {
       // first charge because of the 7-day trial — perfect moment to activate
       // Power-Ups + send the welcome email.
       const session = event.data.object as Stripe.Checkout.Session;
+
+      // Marketplace one-time charges arrive here with mode='payment' and
+      // a metadata.source flag — route them to the connector install flow
+      // instead of the subscription welcome email path.
+      if (session.metadata?.source === "terminalsync_marketplace") {
+        await handleMarketplaceCheckout(session);
+        break;
+      }
+
       const plan = session.metadata?.plan;
       const cycle = session.metadata?.cycle;
       const email = session.customer_details?.email;
@@ -279,10 +289,107 @@ async function handle(event: Stripe.Event) {
       break;
     }
 
+    case "account.updated": {
+      // Stripe Connect: a publisher finished (or updated) their Express
+      // onboarding. Sync payout_enabled into Supabase so paid listings can
+      // route money to them.
+      const acct = event.data.object as Stripe.Account;
+      const sb = getSupabaseAdmin();
+      if (!sb) break;
+      const payoutEnabled =
+        acct.payouts_enabled === true && acct.details_submitted === true;
+      const { error } = await sb
+        .from("publishers")
+        .update({ payout_enabled: payoutEnabled })
+        .eq("stripe_account_id", acct.id);
+      if (error) {
+        console.error("[stripe] account.updated upsert failed", error.message);
+      } else {
+        console.log("[stripe] publisher payout state synced", { account: acct.id, payoutEnabled });
+      }
+      break;
+    }
+
+    case "transfer.created": {
+      const transfer = event.data.object as Stripe.Transfer;
+      const sb = getSupabaseAdmin();
+      if (!sb) break;
+      // Match by source_transaction (the underlying charge) → flips the
+      // pending payout row to 'paid' and stamps the transfer id.
+      const charge =
+        typeof transfer.source_transaction === "string"
+          ? transfer.source_transaction
+          : transfer.source_transaction?.id;
+      if (!charge) break;
+      const { error } = await sb
+        .from("marketplace_payouts")
+        .update({ stripe_transfer_id: transfer.id, status: "paid" })
+        .eq("stripe_charge_id", charge);
+      if (error) console.error("[marketplace] payout sync failed", error.message);
+      break;
+    }
+
     default:
       // Other events (e.g. payment_intent.*) are expected and non-fatal.
       break;
   }
+}
+
+async function handleMarketplaceCheckout(session: Stripe.Checkout.Session) {
+  const listingId = session.metadata?.listing_id;
+  const buyerUserId = session.metadata?.buyer_user_id;
+  const publisherId = session.metadata?.publisher_id;
+  if (!listingId || !buyerUserId || !publisherId) {
+    console.warn("[marketplace] checkout missing metadata", session.id);
+    return;
+  }
+
+  const sb = getSupabaseAdmin();
+  if (!sb) return;
+
+  const latestVersion = await sb
+    .from("connector_versions")
+    .select("id")
+    .eq("listing_id", listingId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const chargeId =
+    typeof session.payment_intent === "string" ? session.payment_intent : null;
+
+  const upsert = await sb.from("connector_installs").upsert(
+    {
+      user_id: buyerUserId,
+      listing_id: listingId,
+      version_id: latestVersion.data?.id ?? null,
+      status: "active",
+      stripe_charge_id: chargeId,
+      amount_paid_cents: session.amount_total ?? null,
+      installed_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id,listing_id" },
+  );
+  if (upsert.error) {
+    console.error("[marketplace] install upsert failed", upsert.error.message);
+    return;
+  }
+
+  const grossCents = Number(session.metadata?.gross_cents ?? 0);
+  const tsTakeCents = Number(session.metadata?.ts_take_cents ?? 0);
+  const publisherCents = grossCents - tsTakeCents;
+  const payout = await sb.from("marketplace_payouts").insert({
+    publisher_id: publisherId,
+    gross_cents: grossCents,
+    ts_take_cents: tsTakeCents,
+    publisher_cents: publisherCents,
+    stripe_charge_id: chargeId,
+    status: "pending",
+  });
+  if (payout.error) {
+    console.error("[marketplace] payout row insert failed", payout.error.message);
+  }
+  console.log("[marketplace] install + pending payout", { buyerUserId, listingId, grossCents });
 }
 
 // ─── PROVISIONING (next step, not in this file) ───────────────────────

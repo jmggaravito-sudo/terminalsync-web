@@ -83,8 +83,10 @@ export async function ensureListingPrice(
 ): Promise<{ productId: string; priceId: string }> {
   if (!stripe) throw new Error("Stripe not configured");
 
-  let productId = listing.stripeProductId;
-  if (!productId) {
+  let productId: string;
+  if (listing.stripeProductId) {
+    productId = listing.stripeProductId;
+  } else {
     const product = await stripe.products.create({
       name: `Connector — ${listing.name}`,
       metadata: { listing_id: listing.id, source: "terminalsync_marketplace" },
@@ -92,8 +94,10 @@ export async function ensureListingPrice(
     productId = product.id;
   }
 
-  let priceId = listing.stripePriceId;
-  if (!priceId) {
+  let priceId: string;
+  if (listing.stripePriceId) {
+    priceId = listing.stripePriceId;
+  } else {
     const price = await stripe.prices.create({
       product: productId,
       currency: listing.currency,

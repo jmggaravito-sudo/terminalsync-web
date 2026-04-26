@@ -1,9 +1,14 @@
 /**
  * Connectors content loader.
  *
- * Each connector is a Markdown file at `content/connectors/<lang>/<slug>.md`
- * with YAML frontmatter. The `<Connectors>` index and the detail page both
- * read from here — edit the .md files to update copy without a code change.
+ * Two sources merge into the public `/connectors` catalog:
+ *   1. First-party — Markdown files at `content/connectors/<lang>/<slug>.md`
+ *      with YAML frontmatter. Curated by the TS team. Edit the .md files
+ *      to update copy without a code change.
+ *   2. Marketplace — third-party `connector_listings` rows in Supabase
+ *      with status='approved'. Lives behind `listMarketplaceConnectors()`.
+ *
+ * Use `listAllConnectors(lang)` to get both sources merged for the index.
  */
 
 import fs from "node:fs";
@@ -11,11 +16,12 @@ import path from "node:path";
 import matter from "gray-matter";
 import { remark } from "remark";
 import html from "remark-html";
+import { getSupabaseAdmin } from "./supabaseAdmin";
 
 export interface ConnectorMeta {
   slug: string;
   name: string;
-  logo: string; // path relative to /public
+  logo: string; // path relative to /public, or absolute https URL for marketplace
   category:
     | "productivity"
     | "database"
@@ -34,6 +40,14 @@ export interface ConnectorMeta {
   affiliate: boolean;
   /** Short one-line tagline for the index card. */
   tagline: string;
+  /** Where this connector comes from. Drives the "By @publisher" badge. */
+  source?: "first-party" | "marketplace";
+  /** Marketplace-only fields. */
+  pricingType?: "free" | "one_time";
+  priceCents?: number | null;
+  publisherDisplayName?: string;
+  installCount?: number;
+  ratingAvg?: number | null;
 }
 
 export interface ConnectorDoc extends ConnectorMeta {
@@ -125,4 +139,72 @@ export async function listSlugs(): Promise<string[]> {
     .readdirSync(dir)
     .filter((f) => f.endsWith(".md"))
     .map((f) => f.replace(/\.md$/, ""));
+}
+
+/** Marketplace-sourced connectors (Supabase). Returns an empty array when
+ *  the admin client isn't configured (local dev sandboxes) so the index
+ *  page still renders the first-party catalog. */
+export async function listMarketplaceConnectors(): Promise<ConnectorMeta[]> {
+  const sb = getSupabaseAdmin();
+  if (!sb) return [];
+  const { data, error } = await sb
+    .from("connector_listings")
+    .select(`
+      id, slug, name, tagline, category, logo_url,
+      pricing_type, price_cents, install_count, rating_avg,
+      publisher:publishers ( display_name )
+    `)
+    .eq("status", "approved")
+    .order("install_count", { ascending: false });
+  if (error || !data) return [];
+  type Row = {
+    id: string;
+    slug: string;
+    name: string;
+    tagline: string;
+    category: string;
+    logo_url: string;
+    pricing_type: string;
+    price_cents: number | null;
+    install_count: number;
+    rating_avg: number | null;
+    publisher: { display_name: string } | { display_name: string }[] | null;
+  };
+  return (data as Row[]).map((row) => {
+    const pub = Array.isArray(row.publisher) ? row.publisher[0] : row.publisher;
+    const meta: ConnectorMeta = {
+      slug: row.slug,
+      name: row.name,
+      logo: row.logo_url,
+      category: row.category as ConnectorMeta["category"],
+      status: "available",
+      simpleTitle: row.name,
+      simpleSubtitle: row.tagline,
+      devTitle: row.name,
+      devSubtitle: row.tagline,
+      ctaUrl: "",
+      affiliate: false,
+      tagline: row.tagline,
+      source: "marketplace",
+      pricingType: row.pricing_type as "free" | "one_time",
+      priceCents: row.price_cents,
+      publisherDisplayName: pub?.display_name,
+      installCount: row.install_count,
+      ratingAvg: row.rating_avg,
+    };
+    return meta;
+  });
+}
+
+/** Merged catalog for the public /connectors index. Marketplace listings
+ *  appear after first-party in the default ordering; the index page can
+ *  re-sort by rating, recency, etc. First-party slugs win on collision. */
+export async function listAllConnectors(lang: string): Promise<ConnectorMeta[]> {
+  const [firstParty, marketplace] = await Promise.all([
+    listConnectors(lang).then((items) => items.map((m) => ({ ...m, source: "first-party" as const }))),
+    listMarketplaceConnectors(),
+  ]);
+  const seen = new Set(firstParty.map((m) => m.slug));
+  const merged = [...firstParty, ...marketplace.filter((m) => !seen.has(m.slug))];
+  return merged;
 }
