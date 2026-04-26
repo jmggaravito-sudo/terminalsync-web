@@ -7,8 +7,8 @@ simpleTitle: "Your Beehiiv newsletter, written by your AI"
 simpleSubtitle: "Posts, segments and broadcasts — requested in chat, ready to review."
 devTitle: "Beehiiv MCP Connector"
 devSubtitle: "Posts, subscriptions and segments as tools — draft, schedule and analyze from the IDE."
-ctaUrl: "https://www.beehiiv.com/?via=REPLACE_WITH_JUANS_BEEHIIV_PARTNER"
-affiliate: true
+ctaUrl: "https://www.beehiiv.com/"
+affiliate: false
 tagline: "Newsletter without opening the editor"
 ---
 

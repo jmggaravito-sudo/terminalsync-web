@@ -7,8 +7,8 @@ simpleTitle: "Your AI builds and analyzes forms for you"
 simpleSubtitle: "Design a form in chat, read the responses, export insights — without opening Typeform."
 devTitle: "Typeform MCP Connector"
 devSubtitle: "Forms, responses and webhooks as tools — build, query and route from the IDE."
-ctaUrl: "https://www.typeform.com/?utm_source=REPLACE_WITH_JUANS_TYPEFORM_AFFILIATE"
-affiliate: true
+ctaUrl: "https://www.typeform.com/"
+affiliate: false
 tagline: "Forms and responses without clicking"
 ---
 

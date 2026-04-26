@@ -7,8 +7,8 @@ simpleTitle: "Workflows automáticos creados por chat"
 simpleSubtitle: "Conectá 2.500+ apps. Decile a Claude qué querés y él arma el workflow en Pipedream."
 devTitle: "Pipedream MCP Connector"
 devSubtitle: "Workflows, sources and SQL data stores as tools — codegen Node steps from natural language."
-ctaUrl: "https://pipedream.com/?via=REPLACE_WITH_JUANS_PIPEDREAM_REFERRAL"
-affiliate: true
+ctaUrl: "https://pipedream.com/"
+affiliate: false
 tagline: "Workflows construidos hablando"
 ---
 

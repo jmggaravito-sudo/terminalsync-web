@@ -7,8 +7,8 @@ simpleTitle: "Tu IA edita Framer mientras vos diseñás"
 simpleSubtitle: "Cambios de texto, breakpoints y CMS — pedidos por chat, aplicados en el canvas."
 devTitle: "Framer MCP Connector"
 devSubtitle: "Plugin API + CMS bridge — read components, push CMS rows, trigger publishes."
-ctaUrl: "https://www.framer.com/?via=REPLACE_WITH_JUANS_FRAMER_PARTNER"
-affiliate: true
+ctaUrl: "https://www.framer.com/"
+affiliate: false
 tagline: "Diseñá hablando, no clickeando"
 ---
 

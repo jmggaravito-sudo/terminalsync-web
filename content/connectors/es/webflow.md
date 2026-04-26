@@ -7,8 +7,8 @@ simpleTitle: "Que tu IA edite tu sitio sin abrir Webflow"
 simpleSubtitle: "Cambios de copy, posts del CMS y publicaciones — pedidos en lenguaje natural."
 devTitle: "Webflow MCP Connector"
 devSubtitle: "Designer + CMS APIs as tools — query collections, push items, publish staging."
-ctaUrl: "https://webflow.com/?utm_source=REPLACE_WITH_JUANS_WEBFLOW_AFFILIATE"
-affiliate: true
+ctaUrl: "https://webflow.com/"
+affiliate: false
 tagline: "Editá tu sitio hablando"
 ---
 

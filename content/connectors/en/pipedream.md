@@ -7,8 +7,8 @@ simpleTitle: "Workflows built by talking"
 simpleSubtitle: "Connect 2,500+ apps. Tell Claude what you need and it builds the workflow in Pipedream."
 devTitle: "Pipedream MCP Connector"
 devSubtitle: "Workflows, sources and SQL data stores as tools — codegen Node steps from natural language."
-ctaUrl: "https://pipedream.com/?via=REPLACE_WITH_JUANS_PIPEDREAM_REFERRAL"
-affiliate: true
+ctaUrl: "https://pipedream.com/"
+affiliate: false
 tagline: "Workflows you build by talking"
 ---
 

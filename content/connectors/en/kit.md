@@ -7,8 +7,8 @@ simpleTitle: "Your newsletter, run by your AI"
 simpleSubtitle: "Drafts, segments and broadcasts — written in chat with your voice."
 devTitle: "Kit (ConvertKit) MCP Connector"
 devSubtitle: "Subscribers, sequences and broadcasts as tools — query, segment, schedule from the IDE."
-ctaUrl: "https://kit.com/?lmref=REPLACE_WITH_JUANS_KIT_AFFILIATE"
-affiliate: true
+ctaUrl: "https://kit.com/"
+affiliate: false
 tagline: "Newsletter without opening the dashboard"
 ---
 
