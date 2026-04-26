@@ -26,7 +26,7 @@ const es: Dict = {
       "Claude, Codex, MCP, .env y carpetas locales — sincronizados entre tus Macs en tu propio Drive. Ni Anthropic ni OpenAI ven tus archivos. La única llave la tenés vos.",
     ctaPrimary: "Sincronizar mi stack — 7 días gratis",
     ctaSecondary: "Ver cómo funciona",
-    trustLine: "Gratis para siempre · Sin tarjeta de crédito",
+    trustLine: "Sin tarjeta · Setup en 2 minutos · Privacidad zero-knowledge · Cancelable cuando quieras",
     nextUp: {
       eyebrow: "Próximamente",
       body: "Codex Desktop · Skills & Plugins de Claude y Codex · Long-term Memory Bridge para que tu IA no olvide quién sos al cambiar de Mac. Roadmap público en GitHub.",
@@ -82,6 +82,129 @@ const es: Dict = {
         body: "Olvídate de NPM, Node.js y configuraciones de terminal. Preparamos tu entorno por ti.",
       },
     },
+  },
+  toolBreakdown: {
+    eyebrow: "Cobertura por herramienta",
+    title: "Esto es lo que viaja con vos",
+    subtitle:
+      "Lo que ya está sincronizando hoy y lo que está en el roadmap público. Sin promesas vagas — chequealo en GitHub.",
+    upcomingLabel: "Próximamente",
+    tools: {
+      claudeCode: {
+        name: "Claude Code",
+        tagline: "Tu CLI + Desktop con todo lo que configuraste",
+        live: [
+          "Servidores MCP (Notion, GitHub, custom)",
+          "Configuración local (settings.json)",
+          "Memoria de proyecto (CLAUDE.md, MEMORY.md)",
+        ],
+        upcoming: [
+          "Skills custom",
+          "Plugins + auto-reinstall",
+          "Per-project memory completa",
+        ],
+      },
+      cowork: {
+        name: "Claude Cowork",
+        tagline: "Tus sesiones agéntico-sandbox entre Macs",
+        live: [
+          "Sesiones de Cowork (validado 2026-04-25)",
+          "Working files de cada sesión",
+          "Backup automático antes de mergear",
+        ],
+        upcoming: [
+          "Lock por sesión (warning si está abierta en otra Mac)",
+          "Sync bidireccional con LWW + tombstones",
+        ],
+      },
+      codex: {
+        name: "Codex Desktop",
+        tagline: "Tu OpenAI agent listo en cualquier máquina",
+        live: [
+          "Auth.json + tokens cifrados",
+          "Configuración (config.toml)",
+          "Estado global (.codex-global-state.json)",
+        ],
+        upcoming: [
+          "Skills custom (cuando OpenAI los expanda)",
+          "Plugins manifest",
+        ],
+      },
+    },
+  },
+  beforeAfter: {
+    eyebrow: "El cambio real",
+    title: "Cómo se siente cambiar de Mac",
+    subtitle:
+      "Antes: media mañana perdida. Después: dos minutos y seguís donde dejaste.",
+    before: {
+      heading: "Sin Terminal Sync",
+      items: [
+        "Buscás dónde quedaron tus archivos .env",
+        "Reconfigurás MCP servers uno por uno",
+        "Re-instalás plugins de Claude Code de memoria",
+        "Tu Cowork no tiene historial — empezás de cero",
+        "Te falta el setup.sh, las skills custom, los aliases",
+        "30-60 minutos antes de poder trabajar",
+      ],
+    },
+    after: {
+      heading: "Con Terminal Sync",
+      items: [
+        "Instalás la app en la Mac nueva",
+        "Login con tu cuenta",
+        "Tus carpetas, MCPs, .env y configs aparecen cifrados desde tu Drive",
+        "Cowork muestra tus sesiones del otro Mac",
+        "Claude reconoce tu memoria de cada proyecto",
+        "2 minutos y seguís donde dejaste",
+      ],
+    },
+  },
+  midCta: {
+    eyebrow: "Probalo gratis",
+    title: "Tu próximo cambio de Mac no debería costarte 2 horas.",
+    body: "7 días de Pro sin tarjeta. Si te convence, $19/mes. Si no, dejás de usarlo y listo.",
+    ctaPrimary: "Empezar prueba gratis",
+    ctaSecondary: "Ver precios",
+  },
+  faq: {
+    eyebrow: "Preguntas frecuentes",
+    title: "Lo que la gente nos pregunta primero",
+    subtitle: "Si te queda alguna duda, escribinos a support@terminalsync.ai",
+    items: [
+      {
+        q: "¿No me alcanza con Git para sincronizar mi código?",
+        a: "Git sincroniza lo que vos trackeás (código fuente). Terminal Sync mueve lo que Git deliberadamente NO trackea: tus .env con secretos, configs de Claude/Codex/MCP, sesiones de Cowork, memorias de proyecto, skills custom. Son herramientas complementarias — Git para el repo, Terminal Sync para todo lo demás.",
+      },
+      {
+        q: "¿Pero Claude Desktop ya no sincroniza entre Macs?",
+        a: "Anthropic sincroniza features cloud (Projects, Memory web, Styles, Workflows, conversaciones). Lo que NO sincroniza es lo local: tus servidores MCP custom (Notion, GitHub), tus skills, tus plugins instalados, tus sesiones de Cowork. Eso es lo que cubrimos nosotros.",
+      },
+      {
+        q: "¿Mis archivos quedan en su servidor?",
+        a: "No. Cifrado AES-256-GCM en tu Mac antes de salir. Sube a TU Google Drive, no al nuestro. Ni Anthropic, ni OpenAI, ni nosotros podemos ver tus archivos. Sos vos quien tiene la única llave.",
+      },
+      {
+        q: "¿Funciona si solo tengo una Mac?",
+        a: "Sí, pero el valor es menor. Te sirve como backup cifrado y para cuando agregues una segunda máquina. La gracia real aparece desde la segunda Mac.",
+      },
+      {
+        q: "¿Qué pasa si cancelo mi suscripción?",
+        a: "La app sigue funcionando en modo Free (1 terminal). Tus archivos siguen en tu Drive — vos seguís siendo el dueño. Podés exportar todo cuando quieras.",
+      },
+      {
+        q: "¿Está open source?",
+        a: "El motor de cifrado y sincronización va a ser auditable. La app cliente es propietaria por ahora pero el core de seguridad lo publicamos para que cualquiera pueda revisarlo.",
+      },
+      {
+        q: "¿Funciona con Cursor / Cline / Aider?",
+        a: "Hoy nos enfocamos en Claude (Code + Desktop + Cowork) y Codex Desktop. Si hay demanda real de la comunidad, agregamos más herramientas — el motor es agnóstico, solo cambia qué paths sincroniza.",
+      },
+      {
+        q: "¿Y si Anthropic eventualmente sincroniza todo lo que ustedes hacen?",
+        a: "Bien por ellos, mal para nosotros en ese subset. Por eso nuestro roadmap (visible en GitHub) se mueve hacia primitives locales que NINGÚN vendor va a hacer porque les rompería su lock-in: memoria unificada cross-vendor, skills que compilan a múltiples AIs, project briefs en filesystem.",
+      },
+    ],
   },
   comparison: {
     eyebrow: "Honestidad brutal",

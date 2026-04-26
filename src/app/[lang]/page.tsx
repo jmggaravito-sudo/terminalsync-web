@@ -4,10 +4,14 @@ import { Nav } from "@/components/landing/Nav";
 import { Hero } from "@/components/landing/Hero";
 import { Demos } from "@/components/landing/Demos";
 import { Benefits } from "@/components/landing/Benefits";
+import { ToolBreakdown } from "@/components/landing/ToolBreakdown";
 import { Comparison } from "@/components/landing/Comparison";
+import { BeforeAfter } from "@/components/landing/BeforeAfter";
+import { MidCta } from "@/components/landing/MidCta";
 import { Personas } from "@/components/landing/Personas";
 import { Pricing } from "@/components/landing/Pricing";
 import { Trust } from "@/components/landing/Trust";
+import { FAQ } from "@/components/landing/FAQ";
 import { Affiliates } from "@/components/landing/Affiliates";
 import { Footer } from "@/components/landing/Footer";
 import { AgentWidget } from "@/components/AgentWidget";
@@ -29,10 +33,14 @@ export default async function Landing({ params }: Props) {
       <Hero dict={d} />
       <Demos dict={d} />
       <Benefits dict={d} />
+      <ToolBreakdown dict={d} />
       <Comparison dict={d} />
+      <BeforeAfter dict={d} />
+      <MidCta dict={d} />
       <Personas dict={d} />
       <Pricing dict={d} />
       <Trust dict={d} />
+      <FAQ dict={d} />
       <Affiliates dict={d} />
       <Footer dict={d} />
       <AgentWidget dict={d} />

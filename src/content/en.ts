@@ -26,7 +26,7 @@ const en: Dict = {
       "Claude, Codex, MCP, .env and local folders — synced between your Macs in your own Drive. Neither Anthropic nor OpenAI sees your files. You hold the only key.",
     ctaPrimary: "Sync my stack — 7-day free trial",
     ctaSecondary: "See how it works",
-    trustLine: "Free forever · No credit card",
+    trustLine: "No credit card · 2-minute setup · Zero-knowledge privacy · Cancel anytime",
     nextUp: {
       eyebrow: "Coming soon",
       body: "Codex Desktop · Skills & Plugins for Claude and Codex · Long-term Memory Bridge so your AI never forgets who you are when you switch Macs. Public roadmap on GitHub.",
@@ -82,6 +82,129 @@ const en: Dict = {
         body: "Forget NPM, Node.js and terminal configs. We prepare your environment for you.",
       },
     },
+  },
+  toolBreakdown: {
+    eyebrow: "Per-tool coverage",
+    title: "Here's what travels with you",
+    subtitle:
+      "What's syncing today and what's on the public roadmap. No vague promises — verify it on GitHub.",
+    upcomingLabel: "Coming soon",
+    tools: {
+      claudeCode: {
+        name: "Claude Code",
+        tagline: "Your CLI + Desktop with everything you set up",
+        live: [
+          "MCP servers (Notion, GitHub, custom)",
+          "Local config (settings.json)",
+          "Project memory (CLAUDE.md, MEMORY.md)",
+        ],
+        upcoming: [
+          "Custom skills",
+          "Plugins + auto-reinstall",
+          "Per-project memory in full",
+        ],
+      },
+      cowork: {
+        name: "Claude Cowork",
+        tagline: "Your agent-sandbox sessions across Macs",
+        live: [
+          "Cowork sessions (validated 2026-04-25)",
+          "Working files for each session",
+          "Automatic backup before merging",
+        ],
+        upcoming: [
+          "Per-session lock (warning if open on another Mac)",
+          "Bidirectional sync with LWW + tombstones",
+        ],
+      },
+      codex: {
+        name: "Codex Desktop",
+        tagline: "Your OpenAI agent ready on any machine",
+        live: [
+          "auth.json + encrypted tokens",
+          "Configuration (config.toml)",
+          "Global state (.codex-global-state.json)",
+        ],
+        upcoming: [
+          "Custom skills (when OpenAI expands them)",
+          "Plugins manifest",
+        ],
+      },
+    },
+  },
+  beforeAfter: {
+    eyebrow: "The real change",
+    title: "How switching Macs actually feels",
+    subtitle:
+      "Before: half a morning gone. After: two minutes and you're back where you left off.",
+    before: {
+      heading: "Without Terminal Sync",
+      items: [
+        "You hunt for where your .env files ended up",
+        "You reconfigure MCP servers one by one",
+        "You re-install Claude Code plugins from memory",
+        "Cowork has no history — you start from zero",
+        "Your setup.sh, custom skills, aliases are missing",
+        "30-60 minutes before you can actually work",
+      ],
+    },
+    after: {
+      heading: "With Terminal Sync",
+      items: [
+        "You install the app on the new Mac",
+        "Sign in with your account",
+        "Folders, MCPs, .env and configs appear from your Drive (encrypted)",
+        "Cowork shows your sessions from the other Mac",
+        "Claude recognizes your memory for each project",
+        "2 minutes and you're back where you left off",
+      ],
+    },
+  },
+  midCta: {
+    eyebrow: "Try it free",
+    title: "Your next Mac switch shouldn't cost you 2 hours.",
+    body: "7 days of Pro, no credit card. If it clicks, $19/month. If not, you stop using it. Done.",
+    ctaPrimary: "Start free trial",
+    ctaSecondary: "See pricing",
+  },
+  faq: {
+    eyebrow: "Frequently asked",
+    title: "What people ask first",
+    subtitle: "Still got questions? Email support@terminalsync.ai",
+    items: [
+      {
+        q: "Isn't Git enough to sync my code?",
+        a: "Git syncs what you track (source code). Terminal Sync moves what Git deliberately doesn't track: your .env with secrets, Claude/Codex/MCP configs, Cowork sessions, project memories, custom skills. Complementary tools — Git for the repo, Terminal Sync for everything else.",
+      },
+      {
+        q: "But doesn't Claude Desktop already sync between Macs?",
+        a: "Anthropic syncs cloud features (Projects, Memory web, Styles, Workflows, conversations). What it doesn't sync is the local stuff: your custom MCP servers (Notion, GitHub), your skills, your installed plugins, your Cowork sessions. That's what we cover.",
+      },
+      {
+        q: "Do my files end up on your servers?",
+        a: "No. AES-256-GCM encrypted on your Mac before leaving. Uploaded to YOUR Google Drive, not ours. Neither Anthropic, OpenAI, nor we can see your files. You hold the only key.",
+      },
+      {
+        q: "Does it work with just one Mac?",
+        a: "Yes, but the value is smaller. You get encrypted backup and you're set up for when you add a second machine. The real magic kicks in from machine #2.",
+      },
+      {
+        q: "What happens if I cancel my subscription?",
+        a: "The app keeps running in Free mode (1 terminal). Your files stay in your Drive — you remain the owner. You can export everything anytime.",
+      },
+      {
+        q: "Is it open source?",
+        a: "The encryption and sync engine will be auditable. The client app is proprietary for now, but the security core is published so anyone can review it.",
+      },
+      {
+        q: "Does it work with Cursor / Cline / Aider?",
+        a: "Today we focus on Claude (Code + Desktop + Cowork) and Codex Desktop. If there's real community demand, we add more tools — the engine is tool-agnostic, only the synced paths change.",
+      },
+      {
+        q: "What if Anthropic eventually syncs everything you do?",
+        a: "Good for them, bad for us in that subset. That's why our roadmap (public on GitHub) shifts toward local primitives no vendor will build because it would break their lock-in: cross-vendor unified memory, skills that compile to multiple AIs, project briefs in plain filesystem.",
+      },
+    ],
   },
   comparison: {
     eyebrow: "Brutal honesty",

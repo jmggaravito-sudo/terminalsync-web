@@ -51,6 +51,52 @@ export interface Dict {
       autoInstall: { title: string; body: string };
     };
   };
+  toolBreakdown: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    upcomingLabel: string;
+    tools: {
+      claudeCode: {
+        name: string;
+        tagline: string;
+        live: string[];
+        upcoming: string[];
+      };
+      cowork: {
+        name: string;
+        tagline: string;
+        live: string[];
+        upcoming: string[];
+      };
+      codex: {
+        name: string;
+        tagline: string;
+        live: string[];
+        upcoming: string[];
+      };
+    };
+  };
+  beforeAfter: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    before: { heading: string; items: string[] };
+    after: { heading: string; items: string[] };
+  };
+  midCta: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    ctaPrimary: string;
+    ctaSecondary: string;
+  };
+  faq: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    items: Array<{ q: string; a: string }>;
+  };
   comparison: {
     eyebrow: string;
     title: string;
