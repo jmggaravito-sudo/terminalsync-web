@@ -29,3 +29,6 @@ next-env.d.ts
 
 # Vercel
 .vercel
+
+# Terminal Sync vault — encrypted env blobs go to user's Drive, not the repo
+.terminalsync/
