@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { getDict, isLocale } from "@/content";
-import { Nav } from "@/components/landing/Nav";
 import { Hero } from "@/components/landing/Hero";
 import { Demos } from "@/components/landing/Demos";
 import { Benefits } from "@/components/landing/Benefits";
@@ -29,7 +28,6 @@ export default async function Landing({ params }: Props) {
   return (
     <>
       <StructuredData dict={d} lang={lang} />
-      <Nav dict={d} lang={lang} />
       <Hero dict={d} />
       <Demos dict={d} />
       <Benefits dict={d} />

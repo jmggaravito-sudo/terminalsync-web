@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getDict, isLocale } from "@/content";
+import { Nav } from "@/components/landing/Nav";
 
 interface Props {
   children: React.ReactNode;
@@ -59,5 +60,14 @@ export async function generateMetadata({
 export default async function LangLayout({ children, params }: Props) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  return <>{children}</>;
+  const d = getDict(lang);
+  // Nav lives at the layout so every page under /[lang]/ gets the language
+  // switcher + cross-page navigation. Pages should no longer render <Nav>
+  // themselves (would duplicate the bar).
+  return (
+    <>
+      <Nav dict={d} lang={lang} />
+      {children}
+    </>
+  );
 }
