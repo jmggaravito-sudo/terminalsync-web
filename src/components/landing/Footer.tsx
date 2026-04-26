@@ -17,6 +17,9 @@ export function Footer({ dict }: { dict: Dict }) {
         { key: "demos", label: dict.footer.links.demos, href: `/${lang}#demos` },
         { key: "pricing", label: dict.footer.links.pricing, href: `/${lang}#pricing` },
         { key: "download", label: dict.footer.links.download, href: `/${lang}#hero` },
+        { key: "marketplace", label: dict.footer.links.marketplace, href: `/${lang}/marketplace` },
+        { key: "connectors", label: dict.footer.links.connectors, href: `/${lang}/connectors` },
+        { key: "skills", label: dict.footer.links.skills, href: `/${lang}/skills` },
       ],
     },
     {
@@ -26,6 +29,7 @@ export function Footer({ dict }: { dict: Dict }) {
         { key: "blog", label: dict.footer.links.blog, href: "#" },
         { key: "contact", label: dict.footer.links.contact, href: "mailto:hola@terminalsync.ai" },
         { key: "affiliates", label: dict.footer.links.affiliates, href: `/${lang}#affiliates` },
+        { key: "publishers", label: dict.footer.links.publishers, href: `/${lang}/publishers` },
       ],
     },
     {

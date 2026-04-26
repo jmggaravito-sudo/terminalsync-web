@@ -68,7 +68,7 @@ export default async function ConnectorsIndex({ params }: Props) {
         </p>
       </section>
 
-      <section className="mx-auto max-w-5xl px-6 pb-32">
+      <section className="mx-auto max-w-5xl px-6 pb-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {connectors.map((c) => (
             <ConnectorCard
@@ -79,6 +79,30 @@ export default async function ConnectorsIndex({ params }: Props) {
             />
           ))}
         </div>
+      </section>
+
+      <section className="mx-auto max-w-5xl px-6 pb-32">
+        <Link
+          href={`/${lang}/publishers`}
+          className="group flex items-center justify-between gap-4 rounded-2xl border border-[var(--color-accent)]/25 bg-[var(--color-accent)]/5 hover:bg-[var(--color-accent)]/10 p-5 transition-colors"
+        >
+          <div>
+            <p className="text-[13.5px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
+              {lang === "es"
+                ? "¿Construís conectores MCP? Publicalos acá."
+                : "Building MCP connectors? Publish them here."}
+            </p>
+            <p className="mt-1 text-[12.5px] text-[var(--color-fg-muted)]">
+              {lang === "es"
+                ? "Cobrás el 90%. Los primeros 50 publishers no pagan comisión durante 6 meses."
+                : "You keep 90%. First 50 publishers pay 0% for 6 months."}
+            </p>
+          </div>
+          <ArrowUpRight
+            size={18}
+            className="text-[var(--color-accent)] shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+          />
+        </Link>
       </section>
     </main>
   );
