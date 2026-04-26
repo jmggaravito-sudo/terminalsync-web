@@ -51,6 +51,28 @@ export interface Dict {
       autoInstall: { title: string; body: string };
     };
   };
+  comparison: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    columns: {
+      feature: string;
+      claudeDesktop: string;
+      codexDesktop: string;
+      terminalSync: string;
+    };
+    rows: {
+      claudeConfig: string;
+      coworkSessions: string;
+      mcpServers: string;
+      codexAuth: string;
+      envFiles: string;
+      localFolders: string;
+      yourCloud: string;
+    };
+    legend: { yes: string; no: string; partial: string; soon: string };
+    footnote: string;
+  };
   personas: {
     title: string;
     subtitle: string;

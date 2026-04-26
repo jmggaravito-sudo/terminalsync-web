@@ -18,13 +18,13 @@ const en: Dict = {
     signIn: "Sign in",
   },
   hero: {
-    eyebrow: "AI Power-Ups · Official with Anthropic",
-    titlePre: "Take your ",
-    titleHighlight: "Claude Code",
-    titlePost: " anywhere.",
+    eyebrow: "Your AI stack · In your cloud · Across your Macs",
+    titlePre: "Your AI environment, ",
+    titleHighlight: "truly nomadic",
+    titlePost: ".",
     subtitle:
-      "Sync your terminals, files and AI context across computers instantly. One-click Claude Code install.",
-    ctaPrimary: "Download Free for Desktop",
+      "Claude, Codex, MCP, .env and local folders — synced between your Macs in your own Drive. Neither Anthropic nor OpenAI sees your files. You hold the only key.",
+    ctaPrimary: "Sync my stack — 7-day free trial",
     ctaSecondary: "See how it works",
     trustLine: "Free forever · No credit card",
     nextUp: {
@@ -82,6 +82,30 @@ const en: Dict = {
         body: "Forget NPM, Node.js and terminal configs. We prepare your environment for you.",
       },
     },
+  },
+  comparison: {
+    eyebrow: "Brutal honesty",
+    title: "What actually travels between your machines?",
+    subtitle:
+      "Anthropic and OpenAI sync their own stuff in their own clouds. We sync your entire stack — including the parts they don't touch — in your own Drive.",
+    columns: {
+      feature: "What syncs",
+      claudeDesktop: "Claude Desktop",
+      codexDesktop: "Codex Desktop",
+      terminalSync: "Terminal Sync",
+    },
+    rows: {
+      claudeConfig: "Claude Code config + memory",
+      coworkSessions: "Claude Cowork sessions",
+      mcpServers: "MCP servers (Notion, GitHub, custom)",
+      codexAuth: "Codex Desktop auth + config",
+      envFiles: "Encrypted .env files",
+      localFolders: "Local folders (non-Git)",
+      yourCloud: "In your cloud, not the vendor's",
+    },
+    legend: { yes: "Yes", no: "No", partial: "Partial", soon: "Coming soon" },
+    footnote:
+      "AES-256-GCM encrypted before it leaves your Mac. Neither Anthropic, OpenAI, nor we can see your files.",
   },
   personas: {
     title: "Is this for you?",

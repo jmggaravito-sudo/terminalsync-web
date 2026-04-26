@@ -4,6 +4,7 @@ import { Nav } from "@/components/landing/Nav";
 import { Hero } from "@/components/landing/Hero";
 import { Demos } from "@/components/landing/Demos";
 import { Benefits } from "@/components/landing/Benefits";
+import { Comparison } from "@/components/landing/Comparison";
 import { Personas } from "@/components/landing/Personas";
 import { Pricing } from "@/components/landing/Pricing";
 import { Trust } from "@/components/landing/Trust";
@@ -28,6 +29,7 @@ export default async function Landing({ params }: Props) {
       <Hero dict={d} />
       <Demos dict={d} />
       <Benefits dict={d} />
+      <Comparison dict={d} />
       <Personas dict={d} />
       <Pricing dict={d} />
       <Trust dict={d} />

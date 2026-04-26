@@ -18,13 +18,13 @@ const es: Dict = {
     signIn: "Iniciar sesión",
   },
   hero: {
-    eyebrow: "AI Power-Ups · Oficial con Anthropic",
-    titlePre: "Lleva tu ",
-    titleHighlight: "Claude Code",
-    titlePost: " a cualquier parte.",
+    eyebrow: "Tu stack AI · En tu nube · Entre tus Macs",
+    titlePre: "Tu entorno de IA, ",
+    titleHighlight: "realmente nómada",
+    titlePost: ".",
     subtitle:
-      "Sincroniza tus terminales, archivos y el contexto de tu IA entre computadoras al instante. Instalación de Claude Code en 1 clic.",
-    ctaPrimary: "Descargar Gratis para Desktop",
+      "Claude, Codex, MCP, .env y carpetas locales — sincronizados entre tus Macs en tu propio Drive. Ni Anthropic ni OpenAI ven tus archivos. La única llave la tenés vos.",
+    ctaPrimary: "Sincronizar mi stack — 7 días gratis",
     ctaSecondary: "Ver cómo funciona",
     trustLine: "Gratis para siempre · Sin tarjeta de crédito",
     nextUp: {
@@ -82,6 +82,30 @@ const es: Dict = {
         body: "Olvídate de NPM, Node.js y configuraciones de terminal. Preparamos tu entorno por ti.",
       },
     },
+  },
+  comparison: {
+    eyebrow: "Honestidad brutal",
+    title: "¿Qué viaja entre tus máquinas?",
+    subtitle:
+      "Anthropic y OpenAI sincronizan lo suyo en sus nubes. Nosotros sincronizamos todo tu stack — incluyendo lo que ellos no tocan — en tu propio Drive.",
+    columns: {
+      feature: "Lo que viaja",
+      claudeDesktop: "Claude Desktop",
+      codexDesktop: "Codex Desktop",
+      terminalSync: "Terminal Sync",
+    },
+    rows: {
+      claudeConfig: "Config + memoria de Claude Code",
+      coworkSessions: "Sesiones de Claude Cowork",
+      mcpServers: "Servidores MCP (Notion, GitHub, custom)",
+      codexAuth: "Auth + config de Codex Desktop",
+      envFiles: "Archivos .env cifrados",
+      localFolders: "Carpetas locales (no-Git)",
+      yourCloud: "En tu nube, no la del vendor",
+    },
+    legend: { yes: "Sí", no: "No", partial: "Parcial", soon: "Próximamente" },
+    footnote:
+      "Cifrado AES-256-GCM antes de salir de tu Mac. Ni Anthropic, ni OpenAI, ni nosotros vemos tus archivos.",
   },
   personas: {
     title: "¿Esto es para ti?",
