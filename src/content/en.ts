@@ -46,40 +46,41 @@ const en: Dict = {
   demos: {
     title: "Three ‘wow’ moments",
     subtitle:
-      "Watch why people ditch their old workflow after 30 seconds with TerminalSync.",
+      "Why serious devs ditch their old workflow within 30 seconds of trying it.",
     items: {
       context: {
-        kicker: "Demo · Context",
-        title: "Close on your Mac, open on your PC. Exactly the same.",
-        body: "No re-indexing, no copy-paste, no setup. Your Claude was waiting for you.",
+        kicker: "Demo · Continuity",
+        title: "Close on one Mac, open on the other. Exactly the same.",
+        body: "Your Claude, your Codex, your Cowork — all waiting with configs, MCPs, sessions and memories intact. Zero re-indexing, zero re-login.",
       },
       install: {
-        kicker: "Demo · 1-Click Install",
-        title: "One click. Claude Code is ready.",
-        body: "No NPM, no Node, no docs. One orange button and you're asking questions.",
+        kicker: "Demo · 2-minute setup",
+        title: "One click. Your entire AI stack is ready.",
+        body: "Claude Code installed, MCPs configured, .env from your Drive, Cowork sessions downloaded. No NPM, no Node, no docs.",
       },
       shield: {
         kicker: "Demo · The Shield",
-        title: "AES-256 before it leaves your computer.",
-        body: "Neither Google nor we can see your code. You hold the only key.",
+        title: "AES-256-GCM before it leaves your Mac.",
+        body: "Neither Google, nor Anthropic, nor OpenAI, nor we can see your files. Your cloud, your keys, you own it all.",
       },
     },
   },
   benefits: {
-    title: "Why TerminalSync",
-    subtitle: "What no other file sync can do for your AI.",
+    title: "Why Terminal Sync",
+    subtitle:
+      "What no generic file sync — and no AI vendor — can do for you.",
     items: {
       context: {
-        title: "Context Sync",
-        body: "You don't just move code — you move your AI's memory. Zero re-indexing, zero lost context.",
+        title: "Context continuity",
+        body: "Not just your code. Your Claude memory, your Cowork sessions, your Codex configs. Switch Macs and your full AI stack is waiting.",
       },
       privacy: {
-        title: "Zero-Knowledge Privacy",
-        body: "Your files are encrypted on your PC before hitting Drive. Neither we nor Google can read your code.",
+        title: "Zero-knowledge privacy",
+        body: "AES-256-GCM encrypted on your Mac before leaving. Goes to YOUR Drive, not ours. Neither AI vendors nor we can see it.",
       },
       autoInstall: {
-        title: "Automatic Setup",
-        body: "Forget NPM, Node.js and terminal configs. We prepare your environment for you.",
+        title: "Setup that feels magical",
+        body: "Fresh Mac? Sign in and everything appears. Claude Code, Codex, MCPs, .env, plugins, skills — no manual reinstalls.",
       },
     },
   },
@@ -236,22 +237,23 @@ const en: Dict = {
   },
   personas: {
     title: "Is this for you?",
-    subtitle: "Three kinds of people who can't live without TerminalSync anymore.",
+    subtitle:
+      "Three profiles who don't get how they lived without Terminal Sync.",
     items: {
       nomad: {
-        title: "The Nomad Developer",
-        body: "You switch between the office Mac and home PC. Your work should follow you anywhere — no USB sticks, no emergency GitHub pushes.",
+        title: "The Nomad Dev",
+        body: "You work on MacBook + Mac mini, or office + home. Switching machines wastes 30 minutes reconfiguring .env, MCPs, skills. With Terminal Sync, you open and pick up where you left off.",
         tag: "Developer",
       },
       beginner: {
-        title: "The AI Beginner",
-        body: "You want to use Claude Code but the terminal scares you. We install everything for you: one click and you're asking questions.",
-        tag: "Explorer",
+        title: "The Multi-AI Power User",
+        body: "You pay for Claude Pro + ChatGPT Plus. You have active Cowork sessions, Codex set up, custom MCPs. You want EVERYTHING to travel — not just Claude or just Codex.",
+        tag: "AI Power User",
       },
       agency: {
-        title: "The Agency Owner",
-        body: "Your team should have the same environment always. Distribute shared terminals and make sure everyone works alike.",
-        tag: "Leader",
+        title: "The Indie Hacker / Founder",
+        body: "5+ projects in parallel, each with its own .env, credentials, Claude context. Need it all encrypted and portable, without git-pushing things that don't belong in the repo.",
+        tag: "Founder",
       },
     },
   },
@@ -366,13 +368,13 @@ const en: Dict = {
     },
   },
   trust: {
-    title: "Your code is yours. Full stop.",
-    body: "Your API key never touches our servers. It stays encrypted in your personal cloud. You can audit the code: TerminalSync is open-source.",
-    guarantee: "Try it free. No credit card.",
+    title: "Your files are yours. Full stop.",
+    body: "Your secrets, configs, sessions — all encrypted on your Mac before leaving. Goes to YOUR Drive, not ours. The encryption engine will be publicly auditable.",
+    guarantee: "Try it 7 days free. No credit card.",
     features: {
-      e2ee: "E2E encrypted",
-      keychain: "API key in your keychain",
-      opensource: "Open source",
+      e2ee: "AES-256-GCM encrypted",
+      keychain: "Keys in your Keychain",
+      opensource: "Auditable encryption engine",
       noVendor: "No vendor lock-in",
     },
   },

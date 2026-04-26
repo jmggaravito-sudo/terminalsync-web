@@ -44,42 +44,43 @@ const es: Dict = {
     },
   },
   demos: {
-    title: "Tres momentos en los que dices ‘wow’",
+    title: "Tres momentos en los que decís ‘wow’",
     subtitle:
-      "Mira por qué la gente deja su flujo antiguo después de 30 segundos con TerminalSync.",
+      "Por qué los devs serios dejan su flujo viejo a los 30 segundos de probarlo.",
     items: {
       context: {
-        kicker: "Demo · El Contexto",
-        title: "Cierras en tu Mac, abres en tu PC. Todo exactamente igual.",
-        body: "No vuelves a indexar, ni a copiar-pegar historial, ni a configurar nada. Tu Claude te estaba esperando.",
+        kicker: "Demo · Continuidad",
+        title: "Cerrás en tu Mac, abrís en la otra. Todo exactamente igual.",
+        body: "Tu Claude, tu Codex, tu Cowork — todos te estaban esperando con tus configs, MCPs, sesiones y memorias intactas. Cero re-indexing, cero re-login.",
       },
       install: {
-        kicker: "Demo · 1-Click Install",
-        title: "Un clic. Y Claude Code queda listo.",
-        body: "Sin NPM, sin Node, sin leer la documentación. Un botón naranja y listo para preguntar.",
+        kicker: "Demo · Setup en 2 minutos",
+        title: "Un clic. Y todo tu stack AI queda listo.",
+        body: "Claude Code instalado, MCPs configurados, .env desde tu Drive, sesiones de Cowork descargadas. Sin NPM, sin Node, sin leer documentación de nada.",
       },
       shield: {
         kicker: "Demo · El Escudo",
-        title: "AES-256 antes de salir de tu computadora.",
-        body: "Ni Google ni nosotros podemos ver tu código. Tú tienes la única llave.",
+        title: "AES-256-GCM antes de salir de tu Mac.",
+        body: "Ni Google, ni Anthropic, ni OpenAI, ni nosotros vemos tus archivos. Tu nube, tus llaves, vos sos el dueño total.",
       },
     },
   },
   benefits: {
-    title: "Por qué TerminalSync",
-    subtitle: "Lo que ningún otro sync de archivos puede hacer por tu IA.",
+    title: "Por qué Terminal Sync",
+    subtitle:
+      "Lo que ningún sync de archivos genérico — ni los AI vendors — pueden hacer por vos.",
     items: {
       context: {
-        title: "Sincronización de Contexto",
-        body: "No solo mueves código, mueves la memoria de tu IA. Cero re-indexación, cero contexto perdido.",
+        title: "Continuidad de contexto",
+        body: "No solo se mueve tu código. Se mueve la memoria de Claude, las sesiones de Cowork, los configs de Codex. Cambiás de Mac y todo tu stack AI te está esperando.",
       },
       privacy: {
-        title: "Privacidad Zero-Knowledge",
-        body: "Tus archivos se cifran en tu PC antes de subir a Drive. Ni nosotros ni Google podemos ver tu código.",
+        title: "Privacidad zero-knowledge",
+        body: "Cifrado AES-256-GCM en tu Mac antes de salir. Va a TU Drive, no al nuestro. Ni los vendors de IA, ni nosotros podemos verlo.",
       },
       autoInstall: {
-        title: "Instalación Automática",
-        body: "Olvídate de NPM, Node.js y configuraciones de terminal. Preparamos tu entorno por ti.",
+        title: "Setup que se siente mágico",
+        body: "Mac fresca? Login y todo aparece. Claude Code, Codex, MCPs, .env, plugins, skills — sin reinstalar nada manualmente.",
       },
     },
   },
@@ -235,23 +236,24 @@ const es: Dict = {
       "Cifrado AES-256-GCM antes de salir de tu Mac. Ni Anthropic, ni OpenAI, ni nosotros vemos tus archivos.",
   },
   personas: {
-    title: "¿Esto es para ti?",
-    subtitle: "Tres tipos de personas que ya no pueden vivir sin TerminalSync.",
+    title: "¿Esto es para vos?",
+    subtitle:
+      "Tres perfiles que ya no entienden cómo vivían sin Terminal Sync.",
     items: {
       nomad: {
-        title: "El Programador Nómada",
-        body: "Cambias entre Mac de la oficina y PC de la casa. Tu trabajo debe seguirte a donde vayas — sin USBs, sin pushes de emergencia a GitHub.",
+        title: "El Dev Nómada",
+        body: "Trabajás en MacBook + Mac mini, o oficina + casa. Cambiás de equipo y perdés media hora reconfigurando .env, MCPs, skills. Con Terminal Sync abrís y seguís donde dejaste.",
         tag: "Developer",
       },
       beginner: {
-        title: "El Principiante en IA",
-        body: "Quieres usar Claude Code pero la terminal te intimida. Instalamos todo por ti: un clic y ya estás preguntando.",
-        tag: "Explorador",
+        title: "El Power User Multi-AI",
+        body: "Pagás Claude Pro + ChatGPT Plus. Tenés Cowork sessions activas, Codex configurado, MCPs custom. Querés que TODO viaje, no solo Claude o solo Codex.",
+        tag: "AI Power User",
       },
       agency: {
-        title: "El Dueño de Agencia",
-        body: "Tu equipo debe tener el mismo entorno siempre. Distribuye terminales compartidas y asegúrate que todos trabajen igual.",
-        tag: "Líder",
+        title: "El Indie Hacker / Founder",
+        body: "5+ proyectos paralelos, cada uno con su .env, sus credenciales, su contexto en Claude. Necesitás todo encriptado y portable, sin pegarte mil git push de cosas que no van al repo.",
+        tag: "Founder",
       },
     },
   },
@@ -366,14 +368,14 @@ const es: Dict = {
     },
   },
   trust: {
-    title: "Tu código es tuyo. Punto.",
-    body: "Tu API Key nunca toca nuestros servidores. Se guarda cifrada en tu nube personal. Puedes auditar el código: TerminalSync es open-source.",
-    guarantee: "Pruébalo gratis. Sin tarjeta de crédito.",
+    title: "Tus archivos son tuyos. Punto.",
+    body: "Tus secretos, tus configs, tus sesiones — todo se cifra en tu Mac antes de salir. Va a TU Drive, no al nuestro. El motor de cifrado va a ser auditable públicamente.",
+    guarantee: "Probalo 7 días gratis. Sin tarjeta.",
     features: {
-      e2ee: "Cifrado E2EE",
-      keychain: "API Key en tu keychain",
-      opensource: "Código abierto",
-      noVendor: "Sin lock-in de proveedor",
+      e2ee: "Cifrado AES-256-GCM",
+      keychain: "Llaves en tu Keychain",
+      opensource: "Motor de cifrado auditable",
+      noVendor: "Sin lock-in de vendor",
     },
   },
   affiliates: {
