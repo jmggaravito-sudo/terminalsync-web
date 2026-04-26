@@ -87,7 +87,7 @@ const en: Dict = {
     eyebrow: "Brutal honesty",
     title: "What actually travels between your machines?",
     subtitle:
-      "Anthropic and OpenAI sync their own stuff in their own clouds. We sync your entire stack — including the parts they don't touch — in your own Drive.",
+      "Git syncs your tracked code. Anthropic and OpenAI sync their chats in their clouds. We move everything none of them touch — .env, AI configs, memories, sessions, skills — in your own Drive.",
     columns: {
       feature: "What syncs",
       claudeDesktop: "Claude Desktop",
@@ -100,7 +100,7 @@ const en: Dict = {
       mcpServers: "MCP servers (Notion, GitHub, custom)",
       codexAuth: "Codex Desktop auth + config",
       envFiles: "Encrypted .env files",
-      localFolders: "Local folders (non-Git)",
+      localFolders: "Files Git doesn't track (.env, drafts, data)",
       yourCloud: "In your cloud, not the vendor's",
       skillsSync: "Custom skills (Claude + Codex)",
       pluginsSync: "Plugins + auto-reinstall on new Mac",

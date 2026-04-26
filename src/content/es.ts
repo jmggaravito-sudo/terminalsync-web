@@ -87,7 +87,7 @@ const es: Dict = {
     eyebrow: "Honestidad brutal",
     title: "¿Qué viaja entre tus máquinas?",
     subtitle:
-      "Anthropic y OpenAI sincronizan lo suyo en sus nubes. Nosotros sincronizamos todo tu stack — incluyendo lo que ellos no tocan — en tu propio Drive.",
+      "Git sincroniza tu código tracked. Anthropic y OpenAI sincronizan sus chats en sus nubes. Nosotros movemos lo que ninguno toca — .env, configs de IA, memorias, sesiones, skills — en tu propio Drive.",
     columns: {
       feature: "Lo que viaja",
       claudeDesktop: "Claude Desktop",
@@ -100,7 +100,7 @@ const es: Dict = {
       mcpServers: "Servidores MCP (Notion, GitHub, custom)",
       codexAuth: "Auth + config de Codex Desktop",
       envFiles: "Archivos .env cifrados",
-      localFolders: "Carpetas locales (no-Git)",
+      localFolders: "Archivos que Git no trackea (.env, drafts, datos)",
       yourCloud: "En tu nube, no la del vendor",
       skillsSync: "Skills custom (Claude + Codex)",
       pluginsSync: "Plugins + auto-reinstall en Mac nueva",
