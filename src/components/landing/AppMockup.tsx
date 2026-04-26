@@ -5,6 +5,13 @@ import {
   Clock3,
   Layout as LayoutIcon,
   Bot,
+  Code2,
+  Terminal as TerminalIcon,
+  Briefcase,
+  StickyNote,
+  Github,
+  AlertTriangle,
+  Star,
 } from "lucide-react";
 import type { Dict } from "@/content";
 
@@ -20,7 +27,7 @@ interface Chrome {
   outerBorder: string;
 }
 
-const THEMES: Record<"dark" | "light" | "rose", Chrome> = {
+const THEMES: Record<"dark" | "light" | "rose" | "amber" | "violet" | "emerald", Chrome> = {
   dark: {
     body: "bg-[#0b0f17]",
     title: "bg-[#141923]",
@@ -42,15 +49,37 @@ const THEMES: Record<"dark" | "light" | "rose", Chrome> = {
     filename: "text-rose-700/70",
     outerBorder: "border-[#f3c9d6]",
   },
+  amber: {
+    body: "bg-[#1a1408]",
+    title: "bg-[#241b0d]",
+    titleBorder: "border-[#3a2e16]",
+    filename: "text-amber-300/60",
+    outerBorder: "border-[#3a2e16]",
+  },
+  violet: {
+    body: "bg-[#10081a]",
+    title: "bg-[#180c25]",
+    titleBorder: "border-[#2b1840]",
+    filename: "text-violet-300/60",
+    outerBorder: "border-[#2b1840]",
+  },
+  emerald: {
+    body: "bg-[#06140e]",
+    title: "bg-[#0a1d14]",
+    titleBorder: "border-[#173028]",
+    filename: "text-emerald-300/60",
+    outerBorder: "border-[#173028]",
+  },
 };
 
-// Inline mockup of the TerminalSync desktop app. Session cards render as
-// miniature terminal windows with Claude-style startup output so devs
-// immediately recognize the product's domain — not emoji folders.
+// Inline mockup of the TerminalSync desktop app. Mirrors the actual app's
+// home grid: 6 session cards in a 2×3 (sm+) or 3×2 (mobile) layout. Each
+// card is a miniature terminal window themed by session category, with
+// AI-tool chip + portable badge + storage chip mimicking the real cards.
 export function AppMockup({ dict }: { dict: Dict }) {
   const m = dict.hero.mockup;
   return (
-    <div className="relative mx-auto max-w-[880px] w-full">
+    <div className="relative mx-auto max-w-[960px] w-full">
       {/* Window chrome */}
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] shadow-floating overflow-hidden">
         {/* Titlebar */}
@@ -63,42 +92,54 @@ export function AppMockup({ dict }: { dict: Dict }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] md:min-h-[420px]">
-          {/* Sidebar — hidden on mobile, visible md+ */}
-          <aside className="hidden md:block border-r border-[var(--color-border)] bg-[var(--color-panel-2)]/40 p-3 space-y-1 text-[11px]">
-            <div className="px-2 py-1.5 rounded-md bg-[var(--color-accent)]/10 text-[var(--color-accent)] font-semibold">
-              Inicio
+        <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] md:min-h-[520px]">
+          {/* Sidebar — mirrors actual app structure (Inicio + cloud links +
+              navigation + collapsible Terminales/Conectores). */}
+          <aside className="hidden md:flex flex-col border-r border-[var(--color-border)] bg-[var(--color-panel-2)]/40 p-3 space-y-0.5 text-[11px]">
+            <SideItem label="Inicio" active />
+            <SideItem
+              label="Claude AI"
+              icon={<Sparkles size={11} className="text-[var(--color-claude)]" strokeWidth={2} />}
+            />
+            <SideItem
+              label="Claude Cowork"
+              icon={<Bot size={11} className="text-[var(--color-claude)]" strokeWidth={2} />}
+            />
+            <div className="h-px bg-[var(--color-border)] my-2" />
+            <SideItem label="Recientes" />
+            <SideItem label="Favoritas" />
+            <SideItem label="Biblioteca" />
+            <SideItem label="Historial" />
+            <SideItem label="Comandos" />
+            <div className="pt-3 pb-1 px-2 text-[9px] uppercase tracking-[0.14em] text-[var(--color-fg-dim)] font-semibold flex items-center justify-between">
+              <span>Terminales</span>
+              <span className="text-[var(--color-fg-muted)] font-mono">6</span>
             </div>
-            <div className="px-2 py-1.5 text-[var(--color-fg-muted)]">
-              Recientes
-            </div>
-            <div className="px-2 py-1.5 text-[var(--color-fg-muted)]">
-              Favoritas
-            </div>
-            <div className="pt-3 pb-1 px-2 text-[9px] uppercase tracking-[0.14em] text-[var(--color-fg-dim)] font-semibold">
-              Mis terminales
-            </div>
-            <div className="px-2 py-1.5 text-[var(--color-fg-muted)] flex items-center gap-1.5">
-              <LayoutIcon
-                size={11}
-                className="text-emerald-500"
-                strokeWidth={2}
-              />
-              <span className="truncate">Main Store</span>
-              <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--color-accent)] pulse-dot" />
-            </div>
-            <div className="px-2 py-1.5 text-[var(--color-fg-muted)] flex items-center gap-1.5">
-              <ShieldCheck
-                size={11}
-                className="text-sky-500"
-                strokeWidth={2}
-              />
-              <span className="truncate">Auth-API</span>
-            </div>
-            <div className="px-2 py-1.5 text-[var(--color-fg-muted)] flex items-center gap-1.5">
-              <Bot size={11} className="text-[var(--color-claude)]" strokeWidth={2} />
-              <span className="truncate">Research-Bot</span>
-            </div>
+            <SideItem
+              label="Main Store"
+              icon={<Code2 size={11} className="text-cyan-400" strokeWidth={2} />}
+              dot
+            />
+            <SideItem
+              label="Auth-API"
+              icon={<ShieldCheck size={11} className="text-sky-400" strokeWidth={2} />}
+            />
+            <SideItem
+              label="Research-Bot"
+              icon={<Bot size={11} className="text-[var(--color-claude)]" strokeWidth={2} />}
+            />
+            <SideItem
+              label="Marketing-Site"
+              icon={<StickyNote size={11} className="text-amber-300" strokeWidth={2} />}
+            />
+            <SideItem
+              label="Data-Pipeline"
+              icon={<TerminalIcon size={11} className="text-violet-300" strokeWidth={2} />}
+            />
+            <SideItem
+              label="Mobile-App"
+              icon={<Briefcase size={11} className="text-emerald-300" strokeWidth={2} />}
+            />
           </aside>
 
           {/* Main content */}
@@ -113,7 +154,7 @@ export function AppMockup({ dict }: { dict: Dict }) {
                   {m.statusOk}
                 </div>
                 <div className="text-[11px] text-[var(--color-fg-muted)]">
-                  3 terminales · 2.3 GB en Drive
+                  6 terminales · 4.7 GB en Drive · cifrado E2EE
                 </div>
               </div>
             </div>
@@ -160,27 +201,27 @@ export function AppMockup({ dict }: { dict: Dict }) {
               </div>
             </div>
 
-            {/* Terminal session grid — three distinct "themes" so the row
-                feels varied like real iTerm tabs (dark classic, white clean
-                for professional APIs, rosé warm for the AI agent). Stacks
-                on mobile, 3 cols on sm+. */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+            {/* Terminal grid — 6 cards in 2×3 (sm+) / 3×2 (mobile). Each
+                card is themed by session category and shows real-app
+                signals: AI tool chip, GitHub portable badge, storage
+                warning. Order alternates colors so the row reads varied. */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
               <TerminalCard
                 title={m.session1}
                 filename="store-v3 ~/front-end"
-                Icon={LayoutIcon}
-                iconColor="text-emerald-500"
-                accentRing="ring-emerald-400/30"
-                glow="shadow-[0_8px_24px_-12px_rgba(52,211,153,0.35)]"
+                Icon={Code2}
+                iconColor="text-cyan-400"
+                accentRing="ring-cyan-400/30"
+                glow="shadow-[0_8px_24px_-12px_rgba(34,211,238,0.35)]"
                 live={m.live}
-                meta="Session · main · Synced"
-                metaDot="bg-emerald-500"
+                meta="claude · main"
+                metaDot="bg-cyan-400"
+                aiBadge="claude"
+                portable
                 chrome={THEMES.dark}
                 lines={[
-                  { text: "$ npm run deploy", c: "text-emerald-400" },
-                  { text: "▸ building…", c: "text-zinc-400" },
+                  { text: "$ npm run deploy", c: "text-cyan-300" },
                   { text: "✓ 248 files bundled", c: "text-emerald-400" },
-                  { text: "✓ uploaded → vercel", c: "text-emerald-400" },
                   { text: "→ live in 4.2s", c: "text-sky-300" },
                 ]}
               />
@@ -191,14 +232,13 @@ export function AppMockup({ dict }: { dict: Dict }) {
                 iconColor="text-sky-600"
                 accentRing="ring-sky-400/40"
                 glow="shadow-[0_8px_24px_-12px_rgba(14,165,233,0.22)]"
-                meta="Terminal · :8080 · Encryption"
+                meta="codex · :8080"
                 metaDot="bg-sky-500"
+                aiBadge="codex"
                 chrome={THEMES.light}
                 lines={[
                   { text: "→ auth-gateway v3.1", c: "text-sky-700" },
-                  { text: "→ listening on :8080", c: "text-sky-700" },
                   { text: "✓ AES-256-GCM ready", c: "text-emerald-600" },
-                  { text: "✓ jwt secret loaded", c: "text-emerald-600" },
                   { text: "→ 1,247 req/s", c: "text-amber-700" },
                 ]}
               />
@@ -209,15 +249,69 @@ export function AppMockup({ dict }: { dict: Dict }) {
                 iconColor="text-[var(--color-claude)]"
                 accentRing="ring-rose-400/40"
                 glow="shadow-[0_8px_24px_-12px_rgba(236,107,124,0.35)]"
-                meta="Agent · Claude-3.5 · Persistent"
+                meta="claude · persistent"
                 metaDot="bg-[var(--color-claude)]"
+                aiBadge="claude"
+                favorite
                 chrome={THEMES.rose}
                 lines={[
                   { text: "> /init", c: "text-rose-900/75" },
-                  { text: "✓ Claude 3.5 Sonnet", c: "text-[var(--color-claude)]" },
                   { text: "✓ context: persistent", c: "text-emerald-700" },
-                  { text: "✓ memory: loaded", c: "text-emerald-700" },
                   { text: "> _", c: "text-rose-950", blink: true },
+                ]}
+              />
+              <TerminalCard
+                title="Marketing-Site"
+                filename="docs ~/marketing"
+                Icon={StickyNote}
+                iconColor="text-amber-400"
+                accentRing="ring-amber-400/30"
+                glow="shadow-[0_8px_24px_-12px_rgba(251,191,36,0.30)]"
+                meta="claude · synced"
+                metaDot="bg-amber-400"
+                aiBadge="claude"
+                portable
+                chrome={THEMES.amber}
+                lines={[
+                  { text: "$ astro build", c: "text-amber-300" },
+                  { text: "✓ 47 pages OK", c: "text-emerald-400" },
+                  { text: "→ uploaded", c: "text-sky-300" },
+                ]}
+              />
+              <TerminalCard
+                title="Data-Pipeline"
+                filename="etl ~/data-jobs"
+                Icon={TerminalIcon}
+                iconColor="text-violet-400"
+                accentRing="ring-violet-400/30"
+                glow="shadow-[0_8px_24px_-12px_rgba(167,139,250,0.30)]"
+                meta="codex · ETL"
+                metaDot="bg-violet-400"
+                aiBadge="codex"
+                storageWarn
+                chrome={THEMES.violet}
+                lines={[
+                  { text: "$ python etl.py", c: "text-violet-300" },
+                  { text: "→ 1.2M rows", c: "text-zinc-400" },
+                  { text: "✓ saved", c: "text-emerald-400" },
+                ]}
+              />
+              <TerminalCard
+                title="Mobile-App"
+                filename="ios ~/mobile"
+                Icon={Briefcase}
+                iconColor="text-emerald-400"
+                accentRing="ring-emerald-400/30"
+                glow="shadow-[0_8px_24px_-12px_rgba(52,211,153,0.30)]"
+                meta="claude · expo"
+                metaDot="bg-emerald-400"
+                aiBadge="claude"
+                portable
+                chrome={THEMES.emerald}
+                lines={[
+                  { text: "$ npx expo start", c: "text-emerald-300" },
+                  { text: "→ Metro :8081", c: "text-zinc-400" },
+                  { text: "✓ QR ready", c: "text-emerald-400" },
                 ]}
               />
             </div>
@@ -237,10 +331,41 @@ export function AppMockup({ dict }: { dict: Dict }) {
   );
 }
 
+// ── Sidebar item — mirrors the real app's nav. Active state uses the
+//    accent fill, idle is muted-fg; the small pulse dot indicates a live
+//    sync on the linked terminal.
+function SideItem({
+  label,
+  icon,
+  active,
+  dot,
+}: {
+  label: string;
+  icon?: React.ReactNode;
+  active?: boolean;
+  dot?: boolean;
+}) {
+  return (
+    <div
+      className={`px-2 py-1.5 rounded-md flex items-center gap-1.5 ${
+        active
+          ? "bg-[var(--color-accent)]/10 text-[var(--color-accent)] font-semibold"
+          : "text-[var(--color-fg-muted)]"
+      }`}
+    >
+      {icon}
+      <span className="truncate">{label}</span>
+      {dot && (
+        <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--color-accent)] pulse-dot" />
+      )}
+    </div>
+  );
+}
+
 // Each card is a miniature terminal window — themed chrome, colored mono
-// output, small traffic-light dots in the titlebar. The app label and
-// metadata sit OUTSIDE the window so the card reads as "my real project"
-// at a glance.
+// output, small traffic-light dots in the titlebar. The label, AI chip,
+// portable indicator, and storage warning sit OUTSIDE the window so the
+// card reads as "my real project" at a glance.
 function TerminalCard({
   title,
   filename,
@@ -253,6 +378,10 @@ function TerminalCard({
   metaDot,
   lines,
   chrome,
+  aiBadge,
+  portable,
+  favorite,
+  storageWarn,
 }: {
   title: string;
   filename: string;
@@ -265,6 +394,10 @@ function TerminalCard({
   metaDot: string;
   lines: { text: string; c: string; blink?: boolean }[];
   chrome: Chrome;
+  aiBadge?: "claude" | "codex" | "idx";
+  portable?: boolean;
+  favorite?: boolean;
+  storageWarn?: boolean;
 }) {
   return (
     <div className="group">
@@ -292,23 +425,61 @@ function TerminalCard({
         </div>
 
         {/* Code body */}
-        <div className="px-2.5 py-2 font-mono leading-[1.45] text-[9.5px] space-y-[1px]">
+        <div className="px-2 py-1.5 font-mono leading-[1.4] text-[8.5px] space-y-[1px]">
           {lines.map((l, i) => (
             <div key={i} className={l.c}>
               {l.text}
               {l.blink && (
-                <span className="inline-block w-[5px] h-[10px] -mb-[1px] ml-[2px] bg-current pulse-dot" />
+                <span className="inline-block w-[4px] h-[8px] -mb-[1px] ml-[2px] bg-current pulse-dot" />
               )}
             </div>
           ))}
         </div>
+
+        {/* Top-right badges row — AI tool chip + portable + storage warn.
+            Absolutely positioned so they don't shrink the code area. */}
+        {(aiBadge || portable || favorite || storageWarn) && (
+          <div className="absolute top-[22px] right-1 flex items-center gap-0.5">
+            {favorite && (
+              <span className="inline-flex items-center justify-center h-3.5 w-3.5 rounded bg-amber-400/90 text-amber-950">
+                <Star size={7} strokeWidth={2.6} fill="currentColor" />
+              </span>
+            )}
+            {portable && (
+              <span
+                className="inline-flex items-center justify-center h-3.5 w-3.5 rounded bg-zinc-900/80 text-zinc-100"
+                title="Portable (GitHub)"
+              >
+                <Github size={7} strokeWidth={2.6} />
+              </span>
+            )}
+            {storageWarn && (
+              <span
+                className="inline-flex items-center justify-center h-3.5 w-3.5 rounded bg-amber-500/85 text-amber-950"
+                title="Storage warning"
+              >
+                <AlertTriangle size={7} strokeWidth={2.8} />
+              </span>
+            )}
+            {aiBadge === "claude" && (
+              <span className="inline-flex items-center gap-0.5 h-3.5 px-1 rounded bg-[var(--color-claude)]/90 text-white text-[7.5px] font-bold uppercase tracking-wider">
+                claude
+              </span>
+            )}
+            {aiBadge === "codex" && (
+              <span className="inline-flex items-center gap-0.5 h-3.5 px-1 rounded bg-[#10a37f]/90 text-white text-[7.5px] font-bold uppercase tracking-wider">
+                codex
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Metadata row below the card */}
-      <div className="mt-2 flex items-center gap-1.5">
+      <div className="mt-1.5 flex items-center gap-1.5">
         <Icon size={11} strokeWidth={2.2} className={`${iconColor} shrink-0`} />
         <div className="min-w-0">
-          <div className="text-[10.5px] font-semibold text-[var(--color-fg-strong)] truncate">
+          <div className="text-[10px] font-semibold text-[var(--color-fg-strong)] truncate">
             {title}
           </div>
           <div className="flex items-center gap-1 text-[9px] font-mono text-[var(--color-fg-muted)] truncate">
