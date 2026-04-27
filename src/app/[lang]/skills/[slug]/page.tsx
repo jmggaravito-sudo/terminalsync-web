@@ -43,8 +43,37 @@ export default async function SkillDetail({ params }: Props) {
   // install-skill?id=<slug>). For now this is just a visual CTA.
   const installDeepLink = `terminalsync://install-skill?id=${skill.slug}`;
 
+  // Schema.org SoftwareApplication so Google rich-snippets can surface
+  // the skill name + tagline + author in search results. SoftwareApplication
+  // is the closest fit (vs Article) since users perceive skills as
+  // installable products. Free skills get offer.price = 0.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: skill.name,
+    description: skill.description,
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "macOS, Windows, Linux",
+    author: { "@type": "Organization", name: skill.author },
+    url: `https://terminalsync.ai/${lang}/skills/${skill.slug}`,
+    image: `https://terminalsync.ai/${lang}/skills/${skill.slug}/opengraph-image`,
+    softwareRequirements: skill.vendors
+      .map((v) => (v === "claude" ? "Claude Code" : "OpenAI Codex"))
+      .join(", "),
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+  };
+
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="mx-auto max-w-3xl px-6 pt-24 pb-16">
         <Link
           href={`/${lang}/skills`}

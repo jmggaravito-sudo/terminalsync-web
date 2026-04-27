@@ -65,8 +65,33 @@ export default async function ConnectorDetail({ params }: Props) {
         : "Set up the connector once on one machine. Terminal Sync keeps your claude_desktop_config.json encrypted in your Drive, so on any other machine where you open Claude Code, the connector is already there.",
   };
 
+  // Schema.org SoftwareApplication for rich snippets in Google. Affiliate-
+  // only listings still price as 0 (the user pays the upstream SaaS, not us).
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: doc.name,
+    description: doc.tagline,
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "macOS, Windows, Linux",
+    author: { "@type": "Organization", name: "Terminal Sync" },
+    url: `https://terminalsync.ai/${lang}/connectors/${doc.slug}`,
+    image: `https://terminalsync.ai/${lang}/connectors/${doc.slug}/opengraph-image`,
+    softwareRequirements: "Claude Code, Claude Desktop, or OpenAI Codex",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+  };
+
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="mx-auto max-w-3xl px-6 pt-20 pb-10">
         <Link
           href={`/${lang}/connectors`}
