@@ -8,6 +8,13 @@ simpleSubtitle: "Without giving it full access — only the tables you pick, wit
 devTitle: "Supabase MCP Connector"
 devSubtitle: "Expose Postgres schemas + RLS-scoped queries to Claude Code."
 ctaUrl: "https://supabase.com/partners/REPLACE_WITH_JUANS_SUPABASE_AFFILIATE"
+manifest:
+  mcpServers:
+    supabase:
+      command: npx
+      args: ["-y", "@supabase/mcp-server-supabase"]
+      env:
+        SUPABASE_ACCESS_TOKEN: "${SECRET:SUPABASE_ACCESS_TOKEN}"
 affiliate: true
 tagline: "Your Postgres, within reach of the agent"
 ---

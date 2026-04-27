@@ -8,6 +8,13 @@ simpleSubtitle: "Conectá 2.500+ apps. Decile a Claude qué querés y él arma e
 devTitle: "Pipedream MCP Connector"
 devSubtitle: "Workflows, sources and SQL data stores as tools — codegen Node steps from natural language."
 ctaUrl: "https://pipedream.com/"
+manifest:
+  mcpServers:
+    pipedream:
+      command: npx
+      args: ["-y", "@pipedream/mcp"]
+      env:
+        PIPEDREAM_API_KEY: "${SECRET:PIPEDREAM_API_KEY}"
 affiliate: false
 tagline: "Workflows construidos hablando"
 ---

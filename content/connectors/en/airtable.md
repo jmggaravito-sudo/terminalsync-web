@@ -8,6 +8,13 @@ simpleSubtitle: "Airtable holds your CRMs, inventory, and trackers — now Claud
 devTitle: "Airtable MCP Connector"
 devSubtitle: "Base + table introspection with read/write to Claude Code."
 ctaUrl: "https://airtable.com/invite"
+manifest:
+  mcpServers:
+    airtable:
+      command: npx
+      args: ["-y", "airtable-mcp-server"]
+      env:
+        AIRTABLE_API_KEY: "${SECRET:AIRTABLE_API_KEY}"
 affiliate: false
 tagline: "CRM + inventory within AI reach"
 ---

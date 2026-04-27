@@ -8,6 +8,13 @@ simpleSubtitle: "So your AI can read your recipes, notes and projects without yo
 devTitle: "Notion MCP Connector"
 devSubtitle: "Expose Notion databases + pages to Claude Code via the Model Context Protocol."
 ctaUrl: "https://affiliate.notion.so/REPLACE_WITH_JUANS_NOTION_AFFILIATE"
+manifest:
+  mcpServers:
+    notion:
+      command: npx
+      args: ["-y", "@notionhq/notion-mcp-server"]
+      env:
+        NOTION_API_KEY: "${SECRET:NOTION_API_KEY}"
 affiliate: true
 tagline: "Make your AI understand your workspace"
 ---
