@@ -10,6 +10,11 @@ devSubtitle: "Base + table introspection with read/write to Claude Code."
 ctaUrl: "https://airtable.com/invite"
 affiliate: false
 tagline: "CRM + inventory within AI reach"
+manifest:
+  command: npx
+  args: ["-y", "airtable-mcp-server"]
+  env:
+    AIRTABLE_API_KEY: "${SECRET:AIRTABLE_API_KEY}"
 ---
 
 If you use Airtable as your CRM, inventory, or order tracker, you can now ask Claude *"which clients haven't replied in 2 weeks?"* or *"mark order 487 as shipped"* without opening the app.

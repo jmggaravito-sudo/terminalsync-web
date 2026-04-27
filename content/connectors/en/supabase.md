@@ -10,6 +10,11 @@ devSubtitle: "Expose Postgres schemas + RLS-scoped queries to Claude Code."
 ctaUrl: "https://supabase.com/partners/REPLACE_WITH_JUANS_SUPABASE_AFFILIATE"
 affiliate: true
 tagline: "Your Postgres, within reach of the agent"
+manifest:
+  command: npx
+  args: ["-y", "@supabase/mcp-server-supabase@latest"]
+  env:
+    SUPABASE_ACCESS_TOKEN: "${SECRET:SUPABASE_ACCESS_TOKEN}"
 ---
 
 If your app stores data in Supabase, you can now ask Claude things like *"how many users signed up last week?"* or *"export March orders to CSV"* — and it generates the query, runs it, and gives you the answer.

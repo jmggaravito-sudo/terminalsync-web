@@ -10,6 +10,12 @@ devSubtitle: "Trigger Make scenarios + build new ones from natural language."
 ctaUrl: "https://www.make.com/en/register?pc=REPLACE_WITH_JUANS_MAKE_AFFILIATE"
 affiliate: true
 tagline: "Automate by talking, not clicking"
+manifest:
+  command: npx
+  args: ["-y", "@integromat/mcp-server"]
+  env:
+    MAKE_API_TOKEN: "${SECRET:MAKE_API_TOKEN}"
+    MAKE_ZONE: "${SECRET:MAKE_ZONE}"
 ---
 
 Make (formerly Integromat) connects your apps without code: Slack, Gmail, Notion, Stripe, WhatsApp, you name it. But building a scenario from scratch takes 20 minutes of drag-and-drop.
