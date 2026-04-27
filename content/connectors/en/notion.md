@@ -10,6 +10,11 @@ devSubtitle: "Expose Notion databases + pages to Claude Code via the Model Conte
 ctaUrl: "https://affiliate.notion.so/REPLACE_WITH_JUANS_NOTION_AFFILIATE"
 affiliate: true
 tagline: "Make your AI understand your workspace"
+manifest:
+  command: npx
+  args: ["-y", "@notionhq/notion-mcp-server"]
+  env:
+    OPENAPI_MCP_HEADERS: '{"Authorization":"Bearer ${SECRET:NOTION_API_KEY}","Notion-Version":"2022-06-28"}'
 ---
 
 Your Notion has years of work: recipes, decisions, links, client notes. Today, when you ask Claude for something, you have to copy-paste the context every time.

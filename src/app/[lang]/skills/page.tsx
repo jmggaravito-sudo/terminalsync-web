@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, Sparkles } from "lucide-react";
-import { listSkills, type SkillMeta } from "@/lib/skills";
-import { SkillLogo } from "./Logo";
+import { listSkills } from "@/lib/skills";
+import { SkillsBrowser } from "./SkillsBrowser";
 
 export const revalidate = 3600;
 
@@ -13,9 +13,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params;
   const isEs = lang === "es";
-  const title = isEs
-    ? "Skills · Terminal Sync"
-    : "Skills · Terminal Sync";
+  const title = isEs ? "Skills · Terminal Sync" : "Skills · Terminal Sync";
   const description = isEs
     ? "Skills listas para Claude Code y Codex. Instalalas una vez y se sincronizan en todas tus máquinas."
     : "Ready-to-install skills for Claude Code and Codex. Install once, sync across every machine.";
@@ -49,46 +47,76 @@ export default async function SkillsIndex({ params }: Props) {
   const skills = await listSkills(lang);
   const categoryLabels = isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS_EN;
 
+  // Pre-compute the per-vendor breakdown for the stats row so the hero shows
+  // tangible numbers instead of "X skills" alone.
+  const vendorCount = new Set<string>();
+  skills.forEach((s) => s.vendors.forEach((v) => vendorCount.add(v)));
+
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
-      <section className="mx-auto max-w-5xl px-6 pt-24 pb-10">
-        <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--color-accent)] mb-4">
-          <Sparkles size={14} />
-          <span>{isEs ? "Skills" : "Skills"}</span>
-        </div>
-        <h1 className="text-[40px] md:text-[56px] font-semibold tracking-tight leading-[1.05]">
-          {isEs
-            ? "Tu Claude y Codex, con superpoderes específicos."
-            : "Your Claude and Codex, with specific superpowers."}
-        </h1>
-        <p className="mt-4 text-[16px] text-[var(--color-fg-muted)] max-w-2xl leading-relaxed">
-          {isEs
-            ? "Skills son recetas de prompt instaladas localmente. Instalá una y tu IA aprende a hacer una cosa muy bien — armar ads, revisar código, redactar emails. Funciona en Claude Code y Codex, sincronizado en todas tus máquinas."
-            : "Skills are prompt recipes installed locally. Install one and your AI learns to do one thing very well — create ads, review code, draft emails. Works on Claude Code and Codex, synced across every machine."}
-        </p>
-        <div className="mt-6 flex flex-wrap items-center gap-2 text-[12px] font-mono">
-          <span className="rounded-md bg-[var(--color-panel)] border border-[var(--color-border)] px-2 py-1 text-[var(--color-fg-muted)]">
-            {skills.length} skills
-          </span>
-          <span className="rounded-md bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/30 px-2 py-1 text-[var(--color-accent)]">
-            Claude · Codex
-          </span>
+      {/* Hero — wrapped in subtle radial gradients for depth */}
+      <section className="relative overflow-hidden border-b border-[var(--color-border)]/60">
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--color-accent)/8,_transparent_50%),radial-gradient(ellipse_at_bottom_left,_var(--color-info)/6,_transparent_50%)]"
+        />
+        <div className="relative mx-auto max-w-5xl px-6 pt-24 pb-14">
+          <Link
+            href={`/${lang}/marketplace`}
+            className="inline-flex items-center gap-1.5 text-[11.5px] font-mono uppercase tracking-[0.18em] text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] transition-colors mb-5"
+          >
+            ← Marketplace
+          </Link>
+
+          <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-accent)] mb-4">
+            <Sparkles size={13} strokeWidth={2.4} />
+            <span>Skills</span>
+          </div>
+          <h1 className="text-[44px] md:text-[60px] font-semibold tracking-tight leading-[1.02]">
+            {isEs
+              ? "Tu Claude y Codex,"
+              : "Your Claude and Codex,"}
+            <br />
+            <span className="text-[var(--color-fg-muted)]">
+              {isEs ? "con superpoderes específicos." : "with specific superpowers."}
+            </span>
+          </h1>
+          <p className="mt-5 text-[16px] text-[var(--color-fg-muted)] max-w-2xl leading-relaxed">
+            {isEs
+              ? "Skills son recetas de prompt instaladas localmente. Instalá una y tu IA aprende a hacer una cosa muy bien — armar ads, revisar código, redactar emails. Funciona en Claude Code y Codex, sincronizado en todas tus máquinas."
+              : "Skills are prompt recipes installed locally. Install one and your AI learns to do one thing very well — create ads, review code, draft emails. Works on Claude Code and Codex, synced across every machine."}
+          </p>
+
+          {/* Stats row — gives the hero density without crowding */}
+          <div className="mt-8 flex flex-wrap items-center gap-2.5">
+            <Stat value={skills.length} label="skills" />
+            <Stat value={vendorCount.size} label="vendors" />
+            <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--color-fg-dim)] ml-1">
+              · {isEs ? "free + paid" : "free + paid"}
+            </span>
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-5xl px-6 pb-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {skills.map((s) => (
-            <SkillCard
-              key={s.slug}
-              lang={lang}
-              skill={s}
-              categoryLabel={categoryLabels[s.category] || s.category}
-            />
-          ))}
-        </div>
+      {/* Browser */}
+      <section className="mx-auto max-w-5xl px-6 pt-10 pb-14">
+        <SkillsBrowser
+          lang={lang}
+          skills={skills}
+          categoryLabels={categoryLabels}
+          copy={{
+            all: isEs ? "Todos" : "All",
+            filterByCategory: isEs ? "Categoría" : "Category",
+            filterByVendor: isEs ? "Vendor" : "Vendor",
+            empty: isEs
+              ? "No hay skills que matcheen estos filtros."
+              : "No skills match these filters.",
+            clearFilters: isEs ? "Limpiar filtros" : "Clear filters",
+          }}
+        />
       </section>
 
+      {/* Publisher CTA */}
       <section className="mx-auto max-w-5xl px-6 pb-32">
         <Link
           href={`/${lang}/publishers`}
@@ -116,50 +144,15 @@ export default async function SkillsIndex({ params }: Props) {
   );
 }
 
-function SkillCard({
-  lang,
-  skill,
-  categoryLabel,
-}: {
-  lang: string;
-  skill: SkillMeta;
-  categoryLabel: string;
-}) {
+function Stat({ value, label }: { value: number; label: string }) {
   return (
-    <Link
-      href={`/${lang}/skills/${skill.slug}`}
-      className="group relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5 transition-all hover:border-[var(--color-accent)]/40 hover:shadow-lg hover:-translate-y-0.5"
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="h-11 w-11 rounded-xl bg-[var(--color-panel-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden">
-          <SkillLogo src={skill.logo} size={28} className="h-7 w-7" />
-        </div>
-        <ArrowUpRight
-          size={16}
-          className="text-[var(--color-fg-dim)] group-hover:text-[var(--color-accent)] transition-colors shrink-0 mt-1"
-        />
-      </div>
-
-      <h3 className="mt-4 text-[16px] font-semibold tracking-tight">
-        {skill.name}
-      </h3>
-      <p className="mt-1 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
-        {skill.tagline}
-      </p>
-
-      <div className="mt-4 pt-3 border-t border-[var(--color-border)]/50 flex items-center justify-between text-[11px] font-mono uppercase tracking-[0.1em]">
-        <span className="text-[var(--color-fg-dim)]">{categoryLabel}</span>
-        <div className="flex gap-1">
-          {skill.vendors.map((v) => (
-            <span
-              key={v}
-              className="rounded bg-[var(--color-accent)]/10 text-[var(--color-accent)] border border-[var(--color-accent)]/20 px-1.5 py-0.5"
-            >
-              {v}
-            </span>
-          ))}
-        </div>
-      </div>
-    </Link>
+    <div className="inline-flex items-baseline gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-panel)] px-3 py-1.5">
+      <span className="text-[14px] font-semibold tracking-tight text-[var(--color-fg-strong)] tabular-nums">
+        {value}
+      </span>
+      <span className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
+        {label}
+      </span>
+    </div>
   );
 }

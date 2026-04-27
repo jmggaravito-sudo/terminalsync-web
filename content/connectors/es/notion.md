@@ -10,6 +10,11 @@ devSubtitle: "Expose Notion databases + pages to Claude Code via the Model Conte
 ctaUrl: "https://affiliate.notion.so/REPLACE_WITH_JUANS_NOTION_AFFILIATE"
 affiliate: true
 tagline: "Que tu IA entienda tu workspace"
+manifest:
+  command: npx
+  args: ["-y", "@notionhq/notion-mcp-server"]
+  env:
+    OPENAPI_MCP_HEADERS: '{"Authorization":"Bearer ${SECRET:NOTION_API_KEY}","Notion-Version":"2022-06-28"}'
 ---
 
 Tu Notion tiene años de trabajo: recetas, decisiones, links, notas de clientes. Hoy, cuando le pedís algo a Claude, tenés que copiar y pegar el contexto cada vez.

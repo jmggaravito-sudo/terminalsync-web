@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, Sparkles } from "lucide-react";
-import { listConnectors, type ConnectorMeta } from "@/lib/connectors";
-import { ConnectorLogo } from "./Logo";
+import { listConnectors } from "@/lib/connectors";
+import { ConnectorsBrowser } from "./ConnectorsBrowser";
 
 export const revalidate = 3600; // hourly — edits to .md files picked up on next deploy
 
@@ -12,14 +12,13 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params;
-  const title =
-    lang === "es"
-      ? "Connectors · Terminal Sync"
-      : "Connectors · Terminal Sync";
-  const description =
-    lang === "es"
-      ? "Dale superpoderes a tu Claude Code: conectalo a Notion, Supabase, Make, Gmail y más. Un solo setup, sincronizado en todas tus máquinas."
-      : "Give your Claude Code superpowers: connect it to Notion, Supabase, Make, Gmail and more. One setup, synced across every machine.";
+  const isEs = lang === "es";
+  const title = isEs
+    ? "Connectors · Terminal Sync"
+    : "Connectors · Terminal Sync";
+  const description = isEs
+    ? "Dale superpoderes a tu Claude Code: conectalo a Notion, Stripe, GitHub, Webflow y más. Un solo setup, sincronizado en todas tus máquinas."
+    : "Give your Claude Code superpowers: connect it to Notion, Stripe, GitHub, Webflow and more. One setup, synced across every machine.";
   return {
     title,
     description,
@@ -46,39 +45,71 @@ const CATEGORY_LABELS_EN: Record<string, string> = {
 
 export default async function ConnectorsIndex({ params }: Props) {
   const { lang } = await params;
+  const isEs = lang === "es";
   const connectors = await listConnectors(lang);
-  const categoryLabels = lang === "es" ? CATEGORY_LABELS_ES : CATEGORY_LABELS_EN;
+  const categoryLabels = isEs ? CATEGORY_LABELS_ES : CATEGORY_LABELS_EN;
+
+  const installable = connectors.filter((c) => c.manifest).length;
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
-      <section className="mx-auto max-w-5xl px-6 pt-24 pb-10">
-        <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--color-accent)] mb-4">
-          <Sparkles size={14} />
-          <span>{lang === "es" ? "Conectores" : "Connectors"}</span>
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b border-[var(--color-border)]/60">
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--color-accent)/8,_transparent_50%),radial-gradient(ellipse_at_bottom_left,_var(--color-info)/6,_transparent_50%)]"
+        />
+        <div className="relative mx-auto max-w-5xl px-6 pt-24 pb-14">
+          <Link
+            href={`/${lang}/marketplace`}
+            className="inline-flex items-center gap-1.5 text-[11.5px] font-mono uppercase tracking-[0.18em] text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] transition-colors mb-5"
+          >
+            ← Marketplace
+          </Link>
+
+          <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--color-accent)] mb-4">
+            <Sparkles size={13} strokeWidth={2.4} />
+            <span>{isEs ? "Conectores" : "Connectors"}</span>
+          </div>
+          <h1 className="text-[44px] md:text-[60px] font-semibold tracking-tight leading-[1.02]">
+            {isEs ? "Tu Claude Code," : "Your Claude Code,"}
+            <br />
+            <span className="text-[var(--color-fg-muted)]">
+              {isEs ? "con acceso a tu mundo." : "plugged into your world."}
+            </span>
+          </h1>
+          <p className="mt-5 text-[16px] text-[var(--color-fg-muted)] max-w-2xl leading-relaxed">
+            {isEs
+              ? "Notion, Stripe, GitHub, Webflow, Supabase — configurá el conector una vez y viaja contigo a todas tus máquinas. Cifrado end-to-end, llaves en el Keychain del sistema."
+              : "Notion, Stripe, GitHub, Webflow, Supabase — set up the connector once and it follows you to every machine. End-to-end encrypted, keys in your system Keychain."}
+          </p>
+
+          <div className="mt-8 flex flex-wrap items-center gap-2.5">
+            <Stat value={connectors.length} label={isEs ? "conectores" : "connectors"} />
+            <Stat value={installable} label={isEs ? "1-click install" : "1-click install"} />
+            <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--color-fg-dim)] ml-1">
+              · MCP standard
+            </span>
+          </div>
         </div>
-        <h1 className="text-[40px] md:text-[56px] font-semibold tracking-tight leading-[1.05]">
-          {lang === "es"
-            ? "Tu Claude Code, con acceso a tu mundo."
-            : "Your Claude Code, plugged into your world."}
-        </h1>
-        <p className="mt-4 text-[16px] text-[var(--color-fg-muted)] max-w-2xl leading-relaxed">
-          {lang === "es"
-            ? "Notion, Supabase, Make, Gmail, Drive — configurá el conector una vez y viaja contigo a todas tus máquinas. Cifrado end-to-end, llaves en el Keychain del sistema."
-            : "Notion, Supabase, Make, Gmail, Drive — set up the connector once and it follows you to every machine. End-to-end encrypted, keys in your system Keychain."}
-        </p>
       </section>
 
-      <section className="mx-auto max-w-5xl px-6 pb-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {connectors.map((c) => (
-            <ConnectorCard
-              key={c.slug}
-              lang={lang}
-              connector={c}
-              categoryLabel={categoryLabels[c.category] || c.category}
-            />
-          ))}
-        </div>
+      <section className="mx-auto max-w-5xl px-6 pt-10 pb-14">
+        <ConnectorsBrowser
+          lang={lang}
+          connectors={connectors}
+          categoryLabels={categoryLabels}
+          copy={{
+            all: isEs ? "Todos" : "All",
+            filterByCategory: isEs ? "Categoría" : "Category",
+            oneClickInstall: isEs ? "1-click install" : "1-click install",
+            empty: isEs
+              ? "No hay conectores que matcheen estos filtros."
+              : "No connectors match these filters.",
+            clearFilters: isEs ? "Limpiar filtros" : "Clear filters",
+            soon: isEs ? "Pronto" : "Soon",
+          }}
+        />
       </section>
 
       <section className="mx-auto max-w-5xl px-6 pb-32">
@@ -88,12 +119,12 @@ export default async function ConnectorsIndex({ params }: Props) {
         >
           <div>
             <p className="text-[13.5px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-              {lang === "es"
+              {isEs
                 ? "¿Construís conectores MCP? Publicalos acá."
                 : "Building MCP connectors? Publish them here."}
             </p>
             <p className="mt-1 text-[12.5px] text-[var(--color-fg-muted)]">
-              {lang === "es"
+              {isEs
                 ? "Cobrás el 90%. Los primeros 50 publishers no pagan comisión durante 6 meses."
                 : "You keep 90%. First 50 publishers pay 0% for 6 months."}
             </p>
@@ -108,50 +139,15 @@ export default async function ConnectorsIndex({ params }: Props) {
   );
 }
 
-function ConnectorCard({
-  lang,
-  connector,
-  categoryLabel,
-}: {
-  lang: string;
-  connector: ConnectorMeta;
-  categoryLabel: string;
-}) {
-  const soon = connector.status === "soon";
+function Stat({ value, label }: { value: number; label: string }) {
   return (
-    <Link
-      href={`/${lang}/connectors/${connector.slug}`}
-      className={`group relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5 transition-all hover:border-[var(--color-accent)]/40 hover:shadow-lg hover:-translate-y-0.5 ${
-        soon ? "opacity-70" : ""
-      }`}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="h-11 w-11 rounded-xl bg-[var(--color-panel-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden">
-          <ConnectorLogo src={connector.logo} size={28} className="h-7 w-7" />
-        </div>
-        <ArrowUpRight
-          size={16}
-          className="text-[var(--color-fg-dim)] group-hover:text-[var(--color-accent)] transition-colors shrink-0 mt-1"
-        />
-      </div>
-
-      <div className="mt-4 flex items-center gap-2">
-        <h3 className="text-[16px] font-semibold tracking-tight">
-          {connector.name}
-        </h3>
-        {soon && (
-          <span className="text-[10px] font-mono uppercase tracking-[0.12em] border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 text-[var(--color-accent)] rounded px-1.5 py-0.5">
-            {lang === "es" ? "Pronto" : "Soon"}
-          </span>
-        )}
-      </div>
-      <p className="mt-1 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
-        {connector.tagline}
-      </p>
-
-      <div className="mt-4 pt-3 border-t border-[var(--color-border)]/50 text-[11px] text-[var(--color-fg-dim)] font-mono uppercase tracking-[0.1em]">
-        {categoryLabel}
-      </div>
-    </Link>
+    <div className="inline-flex items-baseline gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-panel)] px-3 py-1.5">
+      <span className="text-[14px] font-semibold tracking-tight text-[var(--color-fg-strong)] tabular-nums">
+        {value}
+      </span>
+      <span className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
+        {label}
+      </span>
+    </div>
   );
 }
