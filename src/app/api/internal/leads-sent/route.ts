@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { authenticateInternal } from "@/lib/internalAuth";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const runtime = "nodejs";
@@ -31,18 +32,8 @@ export const runtime = "nodejs";
  *  failed webhooks safely. */
 export async function POST(req: Request) {
   // ── auth ───────────────────────────────────────────────────────────────
-  const expected = process.env.INTERNAL_LEADS_TOKEN;
-  if (!expected) {
-    return NextResponse.json(
-      { error: "Internal endpoint not configured (INTERNAL_LEADS_TOKEN missing)" },
-      { status: 503 },
-    );
-  }
-  const auth = req.headers.get("authorization");
-  const token = auth?.startsWith("Bearer ") ? auth.slice(7) : null;
-  if (!token || !timingSafeEqual(token, expected)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = authenticateInternal(req);
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   // ── parse + validate ───────────────────────────────────────────────────
   let body: Record<string, unknown>;
@@ -122,15 +113,6 @@ export async function POST(req: Request) {
 }
 
 // ── helpers ──────────────────────────────────────────────────────────────
-
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let mismatch = 0;
-  for (let i = 0; i < a.length; i++) {
-    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  return mismatch === 0;
-}
 
 function stringIn<T extends string>(v: unknown, allow: readonly T[]): T | null {
   if (typeof v !== "string") return null;
