@@ -48,6 +48,13 @@ export interface ConnectorMeta {
   publisherDisplayName?: string;
   installCount?: number;
   ratingAvg?: number | null;
+  /** Optional MCP manifest. When present, the detail page renders the
+   *  dual-install UI (TerminalSync deep-link + manual JSON copy block).
+   *  Frontmatter shape: `manifest: { command, args, env, ... }` —
+   *  validated structurally by validateManifest() in marketplace/manifest.ts
+   *  whenever a third-party submits one. First-party connectors that have
+   *  no hosted MCP (pure affiliate landings) leave this undefined. */
+  manifest?: Record<string, unknown>;
 }
 
 export interface ConnectorDoc extends ConnectorMeta {
@@ -129,6 +136,10 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMe
     ctaUrl: get("ctaUrl"),
     affiliate: data.affiliate === true,
     tagline: get("tagline"),
+    manifest:
+      data.manifest && typeof data.manifest === "object" && !Array.isArray(data.manifest)
+        ? (data.manifest as Record<string, unknown>)
+        : undefined,
   };
 }
 

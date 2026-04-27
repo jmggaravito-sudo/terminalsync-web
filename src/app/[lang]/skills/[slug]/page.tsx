@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Download, Share2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { getSkill, listSkillSlugs } from "@/lib/skills";
 import { SkillLogo } from "../Logo";
+import { InstallOptions } from "@/components/marketplace/InstallOptions";
 
 export const revalidate = 3600;
 
@@ -38,10 +39,10 @@ export default async function SkillDetail({ params }: Props) {
   const skill = await getSkill(lang, slug);
   if (!skill) notFound();
 
-  // Deep-link the desktop client will resolve when the install handshake is
-  // wired (see the brief for the other terminal session — terminalsync://
-  // install-skill?id=<slug>). For now this is just a visual CTA.
-  const installDeepLink = `terminalsync://install-skill?id=${skill.slug}`;
+  // Skills install into ~/.claude/skills/<slug>/SKILL.md (and the codex twin).
+  // The InstallOptions component handles both the recommended (TerminalSync
+  // deep-link) and manual (download SKILL.md) paths.
+  const skillInstallPath = `~/.claude/skills/${skill.slug}/SKILL.md`;
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
@@ -77,31 +78,15 @@ export default async function SkillDetail({ params }: Props) {
                   {v}
                 </span>
               ))}
-              <span className="text-[var(--color-fg-dim)]">{isEs ? "por" : "by"} {skill.author}</span>
+              <span className="text-[var(--color-fg-dim)]">
+                {isEs ? "por" : "by"} {skill.author}
+              </span>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <a
-            href={installDeepLink}
-            className="inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] glow-accent transition-all hover:-translate-y-px"
-          >
-            <Download size={14} strokeWidth={2.4} />
-            {isEs ? "Instalar en TerminalSync" : "Install in TerminalSync"}
-          </a>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[var(--color-fg-muted)] hover:text-[var(--color-fg-strong)] transition-colors"
-            data-share-skill={skill.slug}
-          >
-            <Share2 size={13} />
-            {isEs ? "Compartir" : "Share"}
-          </button>
-        </div>
-
         <article
-          className="prose prose-invert mt-12 max-w-none text-[14.5px] leading-[1.7]
+          className="prose prose-invert mt-10 max-w-none text-[14.5px] leading-[1.7]
             prose-headings:font-semibold prose-headings:tracking-tight
             prose-h2:text-[20px] prose-h2:mt-10 prose-h2:mb-3
             prose-h3:text-[16px] prose-h3:mt-6 prose-h3:mb-2
@@ -114,17 +99,13 @@ export default async function SkillDetail({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: skill.bodyHtml }}
         />
 
-        <div className="mt-14 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
-          {isEs ? (
-            <>
-              <strong className="text-[var(--color-fg-strong)]">¿Cómo funciona la instalación?</strong> El botón de arriba abre TerminalSync (la app desktop) y baja el <code>SKILL.md</code> a <code>~/.claude/skills/{skill.slug}/</code>. Si tenés Codex, también lo escribe en <code>~/.codex/skills/{skill.slug}/</code>. Skills Sync lo replica en todas tus máquinas automáticamente.
-            </>
-          ) : (
-            <>
-              <strong className="text-[var(--color-fg-strong)]">How does the install work?</strong> The button above opens TerminalSync (the desktop app) and downloads <code>SKILL.md</code> into <code>~/.claude/skills/{skill.slug}/</code>. If you have Codex, it also writes to <code>~/.codex/skills/{skill.slug}/</code>. Skills Sync replicates it across every machine automatically.
-            </>
-          )}
-        </div>
+        <InstallOptions
+          lang={lang}
+          kind="skill"
+          slug={skill.slug}
+          name={skill.name}
+          installPath={skillInstallPath}
+        />
       </section>
     </main>
   );

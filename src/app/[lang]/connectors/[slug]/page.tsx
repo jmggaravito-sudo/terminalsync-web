@@ -5,6 +5,7 @@ import { ArrowLeft, Check } from "lucide-react";
 import { getConnector, listSlugs } from "@/lib/connectors";
 import { ConnectorDualView } from "./DualView";
 import { ConnectorLogo } from "../Logo";
+import { InstallOptions } from "@/components/marketplace/InstallOptions";
 
 export const revalidate = 3600;
 
@@ -104,6 +105,21 @@ export default async function ConnectorDetail({ params }: Props) {
           }}
         />
 
+        {/* Dual-install — only renders when the connector ships a manifest.
+            Affiliate-only landings (no hosted MCP) skip this and fall straight
+            through to the legacy CTA below. */}
+        {doc.manifest && doc.status === "available" && (
+          <InstallOptions
+            lang={lang}
+            kind="connector"
+            slug={doc.slug}
+            name={doc.name}
+            installPath="~/Library/Application Support/Claude/claude_desktop_config.json"
+            manifest={doc.manifest}
+            hasSecrets={hasSecretPlaceholders(doc.manifest)}
+          />
+        )}
+
         {/* CTA */}
         <div className="mt-10 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-6">
           {doc.status === "soon" ? (
@@ -152,5 +168,16 @@ export default async function ConnectorDetail({ params }: Props) {
         </div>
       </section>
     </main>
+  );
+}
+
+/** Returns true if the manifest's env contains any ${SECRET:...} placeholder.
+ *  Drives the "API key in plaintext" warning in the manual install UI — only
+ *  shown when there's actually a sensitive value the user has to substitute. */
+function hasSecretPlaceholders(manifest: Record<string, unknown>): boolean {
+  const env = manifest.env;
+  if (!env || typeof env !== "object" || Array.isArray(env)) return false;
+  return Object.values(env as Record<string, unknown>).some(
+    (v) => typeof v === "string" && /\$\{SECRET:/.test(v),
   );
 }

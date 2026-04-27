@@ -10,6 +10,11 @@ devSubtitle: "Workflows, sources and SQL data stores as tools — codegen Node s
 ctaUrl: "https://pipedream.com/"
 affiliate: false
 tagline: "Workflows you build by talking"
+manifest:
+  command: npx
+  args: ["-y", "@pipedream/mcp"]
+  env:
+    PIPEDREAM_API_KEY: "${SECRET:PIPEDREAM_API_KEY}"
 ---
 
 Pipedream connects 2,500+ apps with the flexibility of a real code editor (Node, Python, Go) — but that same flexibility means more friction when you just want to fire off a quick workflow.
