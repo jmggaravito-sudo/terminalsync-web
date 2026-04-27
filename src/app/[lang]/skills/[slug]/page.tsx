@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { getSkill, listSkillSlugs } from "@/lib/skills";
 import { SkillLogo } from "../Logo";
 import { InstallOptions } from "@/components/marketplace/InstallOptions";
+import { skillJsonLd } from "@/lib/jsonld";
 
 export const revalidate = 3600;
 
@@ -44,8 +45,14 @@ export default async function SkillDetail({ params }: Props) {
   // deep-link) and manual (download SKILL.md) paths.
   const skillInstallPath = `~/.claude/skills/${skill.slug}/SKILL.md`;
 
+  const ldJson = skillJsonLd(skill, lang);
+
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ldJson) }}
+      />
       <section className="mx-auto max-w-3xl px-6 pt-24 pb-16">
         <Link
           href={`/${lang}/skills`}

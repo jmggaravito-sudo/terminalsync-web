@@ -6,6 +6,7 @@ import { getConnector, listSlugs } from "@/lib/connectors";
 import { ConnectorDualView } from "./DualView";
 import { ConnectorLogo } from "../Logo";
 import { InstallOptions } from "@/components/marketplace/InstallOptions";
+import { connectorJsonLd } from "@/lib/jsonld";
 
 export const revalidate = 3600;
 
@@ -66,8 +67,14 @@ export default async function ConnectorDetail({ params }: Props) {
         : "Set up the connector once on one machine. Terminal Sync keeps your claude_desktop_config.json encrypted in your Drive, so on any other machine where you open Claude Code, the connector is already there.",
   };
 
+  const ldJson = connectorJsonLd(doc, lang);
+
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ldJson) }}
+      />
       <section className="mx-auto max-w-3xl px-6 pt-20 pb-10">
         <Link
           href={`/${lang}/connectors`}
