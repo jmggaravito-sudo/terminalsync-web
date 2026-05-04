@@ -66,21 +66,21 @@ const es: Dict = {
     },
   },
   benefits: {
-    title: "Por qué Terminal Sync",
+    title: "Tu agente nunca se queda solo",
     subtitle:
-      "Lo que ningún sync de archivos genérico — ni los AI vendors — pueden hacer por vos.",
+      "Tres garantías que ningún terminal — ni los AI vendors — te dan: persistencia real, acceso desde cualquier lugar, y un sistema que te avisa antes de que tengas que preguntar.",
     items: {
-      context: {
-        title: "Continuidad de contexto",
-        body: "No solo se mueve tu código. Se mueve la memoria de Claude, las sesiones de Cowork, los configs de Codex. Cambiás de Mac y todo tu stack AI te está esperando.",
+      uninterrupted: {
+        title: "Trabajo Ininterrumpido",
+        body: "Tu trabajo está blindado: si el internet falla, tu agente (Claude/Codex) NO se detendrá. La terminal sigue trabajando en segundo plano y te notificamos apenas recupere la conexión o termine la tarea.",
       },
-      privacy: {
-        title: "Privacidad zero-knowledge",
-        body: "Cifrado AES-256-GCM en tu Mac antes de salir. Va a TU Drive, no al nuestro. Ni los vendors de IA, ni nosotros podemos verlo.",
+      anywhere: {
+        title: 'Movilidad "Anywhere Access"',
+        body: "Botón 'Móvil' arriba → genera un link HTTPS para abrir esta sesión exacta desde tu celular o cualquier navegador. Mismo estado, mismo contexto, sin reconfigurar nada.",
       },
-      autoInstall: {
-        title: "Setup que se siente mágico",
-        body: "Mac fresca? Login y todo aparece. Claude Code, Codex, MCPs, .env, plugins, skills — sin reinstalar nada manualmente.",
+      notifications: {
+        title: "Notificaciones Automáticas",
+        body: "Aviso por Email, WhatsApp o Telegram cuando tu tarea finalice o el agente requiera tu intervención. No volvés a quedarte mirando una pantalla esperando un Y/n.",
       },
     },
   },

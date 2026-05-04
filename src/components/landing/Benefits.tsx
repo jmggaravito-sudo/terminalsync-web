@@ -1,25 +1,25 @@
-import { Zap, ShieldCheck, Cloud } from "lucide-react";
+import { ShieldCheck, Smartphone, BellRing } from "lucide-react";
 import type { Dict } from "@/content";
 
 export function Benefits({ dict }: { dict: Dict }) {
   const items = [
     {
-      key: "context" as const,
-      Icon: Zap,
-      tintBg: "bg-[var(--color-warn)]/12",
-      tintFg: "text-[var(--color-warn)]",
-    },
-    {
-      key: "privacy" as const,
+      key: "uninterrupted" as const,
       Icon: ShieldCheck,
       tintBg: "bg-[var(--color-ok)]/12",
       tintFg: "text-[var(--color-ok)]",
     },
     {
-      key: "autoInstall" as const,
-      Icon: Cloud,
+      key: "anywhere" as const,
+      Icon: Smartphone,
       tintBg: "bg-[var(--color-accent)]/12",
       tintFg: "text-[var(--color-accent)]",
+    },
+    {
+      key: "notifications" as const,
+      Icon: BellRing,
+      tintBg: "bg-[var(--color-warn)]/12",
+      tintFg: "text-[var(--color-warn)]",
     },
   ];
 

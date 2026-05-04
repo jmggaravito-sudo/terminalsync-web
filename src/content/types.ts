@@ -46,9 +46,9 @@ export interface Dict {
     title: string;
     subtitle: string;
     items: {
-      context: { title: string; body: string };
-      privacy: { title: string; body: string };
-      autoInstall: { title: string; body: string };
+      uninterrupted: { title: string; body: string };
+      anywhere: { title: string; body: string };
+      notifications: { title: string; body: string };
     };
   };
   toolBreakdown: {
