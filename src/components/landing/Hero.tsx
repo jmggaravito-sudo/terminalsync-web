@@ -50,7 +50,7 @@ export function Hero({ dict }: { dict: Dict }) {
 
         <div className="mt-8 flex items-center justify-center gap-3 flex-wrap">
           <a
-            href="#pricing"
+            href="/api/download"
             data-cta="hero-primary"
             className="inline-flex items-center gap-2 rounded-2xl px-5 sm:px-6 py-3 text-[14px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] transition-all glow-accent hover:-translate-y-px"
           >
