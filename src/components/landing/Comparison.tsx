@@ -3,9 +3,126 @@ import type { Dict } from "@/content";
 
 type Cell = "yes" | "no" | "partial" | "soon";
 
+// Column keys must match `dict.comparison.columns`. Order = visual order
+// of the rendered table (left to right). Terminal Sync goes first after
+// the feature label so the reader reads "what we do" before competitors.
+const COLUMN_KEYS = ["terminalSync", "warp", "cursor", "vercel", "itermTmux"] as const;
+type ColumnKey = (typeof COLUMN_KEYS)[number];
+
+// Rows grouped by theme. Each group has a localized heading from
+// `dict.comparison.groups` and a list of row keys + cell values per
+// column (in COLUMN_KEYS order). Last entry per group MAY be marked
+// `soon` to flag roadmap items inline rather than in a separate block.
+type Row = {
+  key: keyof Dict["comparison"]["rows"];
+  cells: Record<ColumnKey, Cell>;
+};
+type Group = {
+  key: keyof Dict["comparison"]["groups"];
+  rows: Row[];
+};
+
+const GROUPS: Group[] = [
+  {
+    key: "persistence",
+    rows: [
+      {
+        key: "resurrection",
+        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "partial" },
+      },
+      {
+        key: "uninterruptedWork",
+        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "partial" },
+      },
+      {
+        key: "backgroundDaemon",
+        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "partial" },
+      },
+    ],
+  },
+  {
+    key: "mobility",
+    rows: [
+      {
+        key: "multiDeviceProfile",
+        cells: { terminalSync: "yes", warp: "partial", cursor: "partial", vercel: "no", itermTmux: "no" },
+      },
+      {
+        key: "anywhereAccess",
+        cells: { terminalSync: "soon", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+      },
+      {
+        key: "pairProgramming",
+        cells: { terminalSync: "soon", warp: "no", cursor: "no", vercel: "no", itermTmux: "partial" },
+      },
+    ],
+  },
+  {
+    key: "security",
+    rows: [
+      {
+        key: "aes256",
+        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+      },
+      {
+        key: "secretsVault",
+        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "partial", itermTmux: "no" },
+      },
+      {
+        key: "apiKeysKeychain",
+        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+      },
+    ],
+  },
+  {
+    key: "ai",
+    rows: [
+      {
+        key: "aiContinuity",
+        cells: { terminalSync: "yes", warp: "no", cursor: "partial", vercel: "no", itermTmux: "no" },
+      },
+      {
+        key: "aiConfigSync",
+        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+      },
+      {
+        key: "oneClickInstall",
+        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+      },
+    ],
+  },
+  {
+    key: "productivity",
+    rows: [
+      {
+        key: "multiCloudSync",
+        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+      },
+      {
+        key: "silenceNotifications",
+        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+      },
+      {
+        key: "setupOnArrival",
+        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+      },
+      {
+        key: "gitNativeSync",
+        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "partial" },
+      },
+    ],
+  },
+];
+
 // Cell -> visual. Kept as a const map so the table rows below stay readable
 // without inline conditionals each time.
-function CellIcon({ value, legend }: { value: Cell; legend: Dict["comparison"]["legend"] }) {
+function CellIcon({
+  value,
+  legend,
+}: {
+  value: Cell;
+  legend: Dict["comparison"]["legend"];
+}) {
   if (value === "yes") {
     return (
       <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-[var(--color-ok)]/12 text-[var(--color-ok)]">
@@ -37,28 +154,6 @@ function CellIcon({ value, legend }: { value: Cell; legend: Dict["comparison"]["
 export function Comparison({ dict }: { dict: Dict }) {
   const c = dict.comparison;
 
-  // Available now — order matters: start with what users care most about,
-  // end with the privacy clincher.
-  const liveRows: [keyof typeof c.rows, Cell, Cell, Cell][] = [
-    ["claudeConfig", "partial", "no", "yes"],
-    ["mcpServers", "partial", "no", "yes"],
-    ["codexAuth", "no", "yes", "yes"],
-    ["skillsSync", "no", "no", "yes"],
-    ["pluginsSync", "no", "no", "yes"],
-    ["projectMemory", "no", "no", "yes"],
-    ["githubOnboarding", "no", "no", "yes"],
-    ["envFiles", "no", "no", "yes"],
-    ["localFolders", "no", "no", "yes"],
-    ["yourCloud", "no", "no", "yes"],
-  ];
-
-  // Public roadmap — features tracked in GitHub but not yet shipped. Showing
-  // them keeps power users from bouncing while we work through Phase 1+2.
-  const upcomingRows: [keyof typeof c.rows, Cell, Cell, Cell][] = [
-    ["coworkUpcoming", "soon", "no", "soon"],
-    ["memoryBridge", "no", "no", "soon"],
-  ];
-
   return (
     <section
       id="comparison"
@@ -79,98 +174,32 @@ export function Comparison({ dict }: { dict: Dict }) {
         </p>
       </div>
 
-      {/* Desktop / tablet: real table. Mobile: stacked cards (below). */}
+      {/* Desktop / tablet: 6-column table. Mobile: stacked cards (below). */}
       <div className="mt-10 hidden md:block">
         <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] overflow-hidden">
           <table className="w-full text-left">
             <thead>
               <tr className="bg-[var(--color-panel-2)]/60">
-                <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--color-fg-muted)]">
+                <th className="px-4 py-4 text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--color-fg-muted)]">
                   {c.columns.feature}
                 </th>
-                <th className="px-3 py-4 text-center text-[12.5px] font-semibold text-[var(--color-fg-muted)]">
-                  {c.columns.claudeDesktop}
-                </th>
-                <th className="px-3 py-4 text-center text-[12.5px] font-semibold text-[var(--color-fg-muted)]">
-                  {c.columns.codexDesktop}
-                </th>
-                <th className="px-3 py-4 text-center text-[12.5px] font-semibold text-[var(--color-accent)]">
-                  {c.columns.terminalSync}
-                </th>
+                {COLUMN_KEYS.map((col) => (
+                  <th
+                    key={col}
+                    className={`px-2 py-4 text-center text-[12.5px] font-semibold ${
+                      col === "terminalSync"
+                        ? "text-[var(--color-accent)]"
+                        : "text-[var(--color-fg-muted)]"
+                    }`}
+                  >
+                    {c.columns[col]}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {liveRows.map(([key, claude, codex, ts], i) => (
-                <tr
-                  key={key}
-                  className={
-                    i % 2 === 0
-                      ? "bg-transparent"
-                      : "bg-[var(--color-panel-2)]/30"
-                  }
-                >
-                  <td className="px-5 py-3.5 text-[13.5px] text-[var(--color-fg)]">
-                    {c.rows[key]}
-                  </td>
-                  <td className="px-3 py-3.5">
-                    <div className="flex justify-center">
-                      <CellIcon value={claude} legend={c.legend} />
-                    </div>
-                  </td>
-                  <td className="px-3 py-3.5">
-                    <div className="flex justify-center">
-                      <CellIcon value={codex} legend={c.legend} />
-                    </div>
-                  </td>
-                  <td className="px-3 py-3.5 bg-[var(--color-accent)]/4">
-                    <div className="flex justify-center">
-                      <CellIcon value={ts} legend={c.legend} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-
-              {/* Visual divider so users see clearly what's live vs roadmap. */}
-              <tr>
-                <td colSpan={4} className="px-5 pt-5 pb-2">
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex items-center gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-[var(--color-info)] border border-[var(--color-info)]/30 bg-[var(--color-info)]/8 px-2.5 py-1 rounded-full">
-                      <Clock size={10} strokeWidth={2.6} />
-                      {c.upcomingLabel}
-                    </span>
-                    <div className="h-px flex-1 bg-[var(--color-border)]" />
-                  </div>
-                </td>
-              </tr>
-
-              {upcomingRows.map(([key, claude, codex, ts], i) => (
-                <tr
-                  key={key}
-                  className={
-                    i % 2 === 0
-                      ? "bg-transparent"
-                      : "bg-[var(--color-panel-2)]/30"
-                  }
-                >
-                  <td className="px-5 py-3.5 text-[13.5px] text-[var(--color-fg)]">
-                    {c.rows[key]}
-                  </td>
-                  <td className="px-3 py-3.5">
-                    <div className="flex justify-center">
-                      <CellIcon value={claude} legend={c.legend} />
-                    </div>
-                  </td>
-                  <td className="px-3 py-3.5">
-                    <div className="flex justify-center">
-                      <CellIcon value={codex} legend={c.legend} />
-                    </div>
-                  </td>
-                  <td className="px-3 py-3.5 bg-[var(--color-accent)]/4">
-                    <div className="flex justify-center">
-                      <CellIcon value={ts} legend={c.legend} />
-                    </div>
-                  </td>
-                </tr>
+              {GROUPS.map((group, gi) => (
+                <GroupBody key={group.key} group={group} c={c} firstGroup={gi === 0} />
               ))}
             </tbody>
           </table>
@@ -179,54 +208,34 @@ export function Comparison({ dict }: { dict: Dict }) {
 
       {/* Mobile: one card per feature so the comparison stays readable on
           narrow screens without horizontal scroll. */}
-      <div className="mt-10 md:hidden space-y-3">
-        {liveRows.map(([key, claude, codex, ts]) => (
-          <div
-            key={key}
-            className="rounded-xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4"
-          >
-            <div className="text-[13.5px] font-semibold text-[var(--color-fg-strong)] mb-3">
-              {c.rows[key]}
-            </div>
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <MobileCell label={c.columns.claudeDesktop} value={claude} legend={c.legend} />
-              <MobileCell label={c.columns.codexDesktop} value={codex} legend={c.legend} />
-              <MobileCell
-                label={c.columns.terminalSync}
-                value={ts}
-                legend={c.legend}
-                highlight
-              />
-            </div>
-          </div>
-        ))}
-
-        {/* Mobile divider for upcoming */}
-        <div className="flex items-center gap-3 pt-4">
-          <span className="inline-flex items-center gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-[var(--color-info)] border border-[var(--color-info)]/30 bg-[var(--color-info)]/8 px-2.5 py-1 rounded-full">
-            <Clock size={10} strokeWidth={2.6} />
-            {c.upcomingLabel}
-          </span>
-          <div className="h-px flex-1 bg-[var(--color-border)]" />
-        </div>
-
-        {upcomingRows.map(([key, claude, codex, ts]) => (
-          <div
-            key={key}
-            className="rounded-xl border border-[var(--color-info)]/30 bg-[var(--color-panel)] p-4"
-          >
-            <div className="text-[13.5px] font-semibold text-[var(--color-fg-strong)] mb-3">
-              {c.rows[key]}
-            </div>
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <MobileCell label={c.columns.claudeDesktop} value={claude} legend={c.legend} />
-              <MobileCell label={c.columns.codexDesktop} value={codex} legend={c.legend} />
-              <MobileCell
-                label={c.columns.terminalSync}
-                value={ts}
-                legend={c.legend}
-                highlight
-              />
+      <div className="mt-10 md:hidden space-y-6">
+        {GROUPS.map((group) => (
+          <div key={group.key}>
+            <h3 className="text-[11.5px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent)] mb-3">
+              {c.groups[group.key]}
+            </h3>
+            <div className="space-y-3">
+              {group.rows.map((row) => (
+                <div
+                  key={row.key}
+                  className="rounded-xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4"
+                >
+                  <div className="text-[13.5px] font-semibold text-[var(--color-fg-strong)] mb-3">
+                    {c.rows[row.key]}
+                  </div>
+                  <div className="grid grid-cols-5 gap-1.5 text-center">
+                    {COLUMN_KEYS.map((col) => (
+                      <MobileCell
+                        key={col}
+                        label={c.columns[col]}
+                        value={row.cells[col]}
+                        legend={c.legend}
+                        highlight={col === "terminalSync"}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         ))}
@@ -247,6 +256,56 @@ export function Comparison({ dict }: { dict: Dict }) {
   );
 }
 
+// One group block: a heading row spanning all columns, then the data rows.
+// Striped via row index for readability.
+function GroupBody({
+  group,
+  c,
+  firstGroup,
+}: {
+  group: Group;
+  c: Dict["comparison"];
+  firstGroup: boolean;
+}) {
+  return (
+    <>
+      <tr>
+        <td
+          colSpan={COLUMN_KEYS.length + 1}
+          className={`px-4 ${firstGroup ? "pt-5" : "pt-7"} pb-2`}
+        >
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center text-[10.5px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent)] border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 px-2.5 py-1 rounded-full">
+              {c.groups[group.key]}
+            </span>
+            <div className="h-px flex-1 bg-[var(--color-border)]" />
+          </div>
+        </td>
+      </tr>
+      {group.rows.map((row, ri) => (
+        <tr
+          key={row.key}
+          className={ri % 2 === 0 ? "bg-transparent" : "bg-[var(--color-panel-2)]/30"}
+        >
+          <td className="px-4 py-3.5 text-[13.5px] text-[var(--color-fg)]">
+            {c.rows[row.key]}
+          </td>
+          {COLUMN_KEYS.map((col) => (
+            <td
+              key={col}
+              className={`px-2 py-3.5 ${col === "terminalSync" ? "bg-[var(--color-accent)]/4" : ""}`}
+            >
+              <div className="flex justify-center">
+                <CellIcon value={row.cells[col]} legend={c.legend} />
+              </div>
+            </td>
+          ))}
+        </tr>
+      ))}
+    </>
+  );
+}
+
 function MobileCell({
   label,
   value,
@@ -260,14 +319,15 @@ function MobileCell({
 }) {
   return (
     <div
-      className={`rounded-lg p-2 ${
+      className={`rounded-lg p-1.5 ${
         highlight ? "bg-[var(--color-accent)]/8" : "bg-[var(--color-panel-2)]/40"
       }`}
     >
       <div
-        className={`text-[10px] uppercase tracking-[0.08em] font-medium mb-1 ${
+        className={`text-[9px] uppercase tracking-[0.06em] font-medium mb-1 truncate ${
           highlight ? "text-[var(--color-accent)]" : "text-[var(--color-fg-dim)]"
         }`}
+        title={label}
       >
         {label}
       </div>

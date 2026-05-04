@@ -103,24 +103,41 @@ export interface Dict {
     subtitle: string;
     columns: {
       feature: string;
-      claudeDesktop: string;
-      codexDesktop: string;
       terminalSync: string;
+      warp: string;
+      cursor: string;
+      vercel: string;
+      itermTmux: string;
+    };
+    groups: {
+      persistence: string;
+      mobility: string;
+      security: string;
+      ai: string;
+      productivity: string;
     };
     rows: {
-      claudeConfig: string;
-      coworkSessions: string;
-      mcpServers: string;
-      codexAuth: string;
-      envFiles: string;
-      localFolders: string;
-      yourCloud: string;
-      skillsSync: string;
-      pluginsSync: string;
-      projectMemory: string;
-      githubOnboarding: string;
-      coworkUpcoming: string;
-      memoryBridge: string;
+      // Persistence
+      resurrection: string;
+      uninterruptedWork: string;
+      backgroundDaemon: string;
+      // Mobility
+      multiDeviceProfile: string;
+      anywhereAccess: string;
+      pairProgramming: string;
+      // Security
+      aes256: string;
+      secretsVault: string;
+      apiKeysKeychain: string;
+      // AI native
+      aiContinuity: string;
+      aiConfigSync: string;
+      oneClickInstall: string;
+      // Productivity
+      multiCloudSync: string;
+      silenceNotifications: string;
+      setupOnArrival: string;
+      gitNativeSync: string;
     };
     upcomingLabel: string;
     legend: { yes: string; no: string; partial: string; soon: string };
