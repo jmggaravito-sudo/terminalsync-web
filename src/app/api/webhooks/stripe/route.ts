@@ -4,6 +4,7 @@ import { stripe } from "@/lib/stripe";
 import {
   sendWelcomeEmail,
   sendTrialEndingEmail,
+  sendChargeSuccessEmail,
   sendPaymentFailedEmail,
   sendCancellationEmail,
 } from "@/lib/email";
@@ -247,7 +248,77 @@ async function handle(event: Stripe.Event) {
         id: invoice.id,
         amount: invoice.amount_paid,
         customer: invoice.customer,
+        billingReason: invoice.billing_reason,
       });
+
+      // Only fire the "trial converted" celebration email on the FIRST
+      // paid invoice. Subsequent renewals (subscription_cycle on a
+      // long-running sub) get silent — no email noise. We detect the
+      // first conversion by `subscription_create` (Stripe's reason for
+      // the invoice that finalizes a trial) or by `subscription_cycle`
+      // when the prior status was trialing.
+      const isFirstChargePostTrial =
+        invoice.billing_reason === "subscription_create" ||
+        invoice.billing_reason === "subscription_cycle";
+      if (!isFirstChargePostTrial) break;
+
+      const customerId =
+        typeof invoice.customer === "string"
+          ? invoice.customer
+          : invoice.customer?.id;
+      if (!customerId || !invoice.id) break;
+
+      // Pull the linked subscription for plan metadata + next renewal.
+      const subId =
+        typeof (invoice as unknown as { subscription?: string | Stripe.Subscription })
+          .subscription === "string"
+          ? ((invoice as unknown as { subscription: string }).subscription)
+          : ((invoice as unknown as { subscription?: { id: string } })
+              .subscription?.id ?? null);
+      if (!subId || !stripe) break;
+      let sub: Stripe.Subscription | null = null;
+      try {
+        sub = await stripe.subscriptions.retrieve(subId);
+      } catch (err) {
+        console.error("[stripe] subscriptions.retrieve failed", err);
+        break;
+      }
+
+      // De-dupe: only send on the conversion (sub left trialing). When
+      // status is still 'trialing' or this is a renewal months later,
+      // skip — the X-Entity-Ref-ID on invoiceId is the safety net.
+      const justConverted =
+        sub.status === "active" &&
+        (invoice.billing_reason === "subscription_create" ||
+          invoice.billing_reason === "subscription_cycle");
+      if (!justConverted) break;
+
+      const { email, firstName } = await fetchCustomerProfile(customerId);
+      if (!email) break;
+
+      const periodEnd =
+        (sub as unknown as { current_period_end?: number }).current_period_end ??
+        null;
+      const nextRenewal = periodEnd
+        ? new Date(periodEnd * 1000)
+        : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+
+      try {
+        await sendChargeSuccessEmail({
+          to: email,
+          firstName,
+          planName: planLabel(sub.metadata),
+          amountCents: invoice.amount_paid ?? 0,
+          currency: invoice.currency ?? "usd",
+          nextRenewal,
+          invoiceId: invoice.id,
+          invoiceUrl: invoice.hosted_invoice_url ?? undefined,
+          customerId,
+        });
+        console.log("[stripe] charge-success email sent");
+      } catch (err) {
+        console.error("[stripe] charge-success email failed", err);
+      }
       break;
     }
 

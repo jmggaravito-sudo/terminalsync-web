@@ -343,11 +343,11 @@ const en: Dict = {
         priceNoteYearly: "/yr",
         yearlyEquivalent: "$15.83/mo · billed annually",
         features: [
-          "5 active terminals",
+          "10 active terminals",
           "AI Auto-Pilot (one-click Claude Code install)",
           "Full Claude sync (chats, projects, Cowork)",
           "90-day history",
-          "Up to 5 computers",
+          "Up to 3 computers",
         ],
         cta: "Start 7-day free trial",
       },
@@ -361,7 +361,8 @@ const en: Dict = {
         yearlyEquivalent: "$32.50/mo · billed annually",
         features: [
           "Everything in Pro, plus:",
-          "20 active terminals",
+          "Unlimited terminals",
+          "Up to 5 computers",
           "Git-Native Sync (respects .gitignore)",
           "Encrypted .env Vault across machines",
           "Auto setup.sh on any new machine",
