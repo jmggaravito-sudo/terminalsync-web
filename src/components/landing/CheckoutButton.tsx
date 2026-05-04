@@ -72,8 +72,12 @@ export function CheckoutButton({
     }
   }
 
+  // starter (Free) → direct DMG download via the /api/download route
+  //                   (which redirects to the latest version on R2).
+  // agency          → mailto: opens with a pre-filled subject.
+  // pro / dev       → fall through to handleClick which POSTs /api/checkout.
   const href =
-    plan === "starter" ? "#" : plan === "agency" ? "#" : "#pricing";
+    plan === "starter" ? "/api/download" : plan === "agency" ? "#" : "#pricing";
 
   return (
     <div className="w-full mt-6">

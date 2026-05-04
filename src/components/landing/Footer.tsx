@@ -16,7 +16,7 @@ export function Footer({ dict }: { dict: Dict }) {
         { key: "features", label: dict.footer.links.features, href: `/${lang}#features` },
         { key: "demos", label: dict.footer.links.demos, href: `/${lang}#demos` },
         { key: "pricing", label: dict.footer.links.pricing, href: `/${lang}#pricing` },
-        { key: "download", label: dict.footer.links.download, href: `/${lang}#hero` },
+        { key: "download", label: dict.footer.links.download, href: "/api/download" },
         { key: "marketplace", label: dict.footer.links.marketplace, href: `/${lang}/marketplace` },
         { key: "connectors", label: dict.footer.links.connectors, href: `/${lang}/connectors` },
         { key: "skills", label: dict.footer.links.skills, href: `/${lang}/skills` },
