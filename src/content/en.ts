@@ -3,11 +3,9 @@ import type { Dict } from "./types";
 const en: Dict = {
   locale: "en",
   meta: {
-    title: "TerminalSync — Take your Claude Code anywhere",
+    title: "TerminalSync — Memory, privacy and mobility for your AI",
     description:
-      "Sync your terminals, files and AI context across computers instantly. One-click Claude Code install.",
-    keywords:
-      "sync claude code, install claude code easy, terminal sync ai, claude cloud, claude anywhere",
+      "Your AI agent (Claude/Codex) keeps running even if the internet drops or you switch Macs. AES-256 zero-knowledge encryption. Access from any device.",
   },
   nav: {
     features: "Features",
@@ -66,21 +64,21 @@ const en: Dict = {
     },
   },
   benefits: {
-    title: "Why Terminal Sync",
+    title: "Your agent is never left alone",
     subtitle:
-      "What no generic file sync — and no AI vendor — can do for you.",
+      "Three guarantees no terminal — and no AI vendor — gives you: real persistence, access from anywhere, and a system that pings you before you have to ask.",
     items: {
-      context: {
-        title: "Context continuity",
-        body: "Not just your code. Your Claude memory, your Cowork sessions, your Codex configs. Switch Macs and your full AI stack is waiting.",
+      uninterrupted: {
+        title: "Uninterrupted Work",
+        body: "Your work is bulletproof: if the internet drops, your agent (Claude/Codex) does NOT stop. The terminal keeps running in the background and we notify you the moment connectivity returns or the task finishes.",
       },
-      privacy: {
-        title: "Zero-knowledge privacy",
-        body: "AES-256-GCM encrypted on your Mac before leaving. Goes to YOUR Drive, not ours. Neither AI vendors nor we can see it.",
+      anywhere: {
+        title: "Anywhere Access",
+        body: "'Mobile' button up top → generates an HTTPS link to open this exact session from your phone or any browser. Same state, same context, no reconfiguring.",
       },
-      autoInstall: {
-        title: "Setup that feels magical",
-        body: "Fresh Mac? Sign in and everything appears. Claude Code, Codex, MCPs, .env, plugins, skills — no manual reinstalls.",
+      notifications: {
+        title: "Automatic Notifications",
+        body: "Pings via Email, WhatsApp or Telegram when your task finishes or the agent needs your input. No more staring at a screen waiting on a Y/n.",
       },
     },
   },
@@ -88,48 +86,46 @@ const en: Dict = {
     eyebrow: "Per-tool coverage",
     title: "Here's what travels with you",
     subtitle:
-      "What's syncing today and what's on the public roadmap. No vague promises — verify it on GitHub.",
+      "What's working today and what's still on the public roadmap. No vague promises — all trackable on GitHub.",
     upcomingLabel: "Coming soon",
     tools: {
       claudeCode: {
         name: "Claude Code",
-        tagline: "Your CLI + Desktop with everything you set up",
+        tagline: "Your AI agent with everything you set up",
         live: [
-          "MCP servers (Notion, GitHub, custom)",
-          "Local config (settings.json)",
-          "Per-project memory (CLAUDE.md, session JSONL)",
+          "MCP servers (Notion, GitHub, etc) travel with your account",
+          "Your personal Claude configuration",
+          "Per-project memory (CLAUDE.md and conversations)",
           "Custom skills",
-          "Plugin manifest",
+          "Plugins auto-reinstall on any Mac",
+          "Conversation alive when you reopen (via session resurrection)",
         ],
-        upcoming: [
-          "Auto-reinstall plugins on fresh Mac",
-        ],
+        upcoming: [],
       },
       cowork: {
         name: "Claude Cowork",
-        tagline: "Your agent-sandbox sessions across Macs",
+        tagline: "Your agent sessions across Macs",
         live: [
-          "Validated empirically (2026-04-25, manual transfer)",
+          "Automatic bidirectional sync",
+          "Sessions available on any device",
         ],
         upcoming: [
-          "Automatic bidirectional sync",
           "Per-session lock (warning if open on another Mac)",
           "Automatic backup before merging",
         ],
       },
       codex: {
-        name: "Codex Desktop",
-        tagline: "Your OpenAI agent ready on any machine",
+        name: "Codex",
+        tagline: "Your OpenAI agent ready on any device",
         live: [
-          "auth.json + encrypted tokens",
-          "Configuration (config.toml)",
-          "Global state (.codex-global-state.json)",
-          "Skills + plugin manifest",
-          "Auto-resume with per-terminal AI picker",
+          "Encrypted tokens and authentication",
+          "Full Codex configuration",
+          "Global state of your sessions",
+          "Skills and plugins auto-reinstalled",
+          "AI picker — pick Claude or Codex per terminal",
+          "Conversation alive when you reopen (via session resurrection)",
         ],
-        upcoming: [
-          "Plugins auto-reinstall",
-        ],
+        upcoming: [],
       },
     },
   },
@@ -208,35 +204,39 @@ const en: Dict = {
     ],
   },
   comparison: {
-    eyebrow: "Brutal honesty",
-    title: "What actually travels between your machines?",
+    eyebrow: "The honest comparison",
+    title: "What no other AI does for you",
     subtitle:
-      "Git syncs your tracked code. Anthropic and OpenAI sync their chats in their clouds. We move everything none of them touch — .env, AI configs, memories, sessions, skills — in your own Drive.",
+      "Stacked against the tools you're already using every day. If something is partial or still in progress, the table says so.",
+    pitch:
+      "Vercel ties you to the cloud and bills you by the minute. Claude Code and Codex in their raw form are powerful but amnesic — every time you close the terminal you lose context, they don't roam between Macs, they don't have a secrets vault, they don't ping you when they get stuck. Terminal Sync is the layer that gives your AI agents memory, privacy, and mobility — without paying for cloud and without handing your code to anyone.",
     columns: {
-      feature: "What syncs",
-      claudeDesktop: "Claude Desktop",
-      codexDesktop: "Codex Desktop",
+      feature: "Feature",
       terminalSync: "Terminal Sync",
+      vercel: "Vercel",
+      claudeCode: "Claude Code alone",
+      codex: "Codex alone",
     },
     rows: {
-      claudeConfig: "Claude Code config + memory",
-      coworkSessions: "Claude Cowork sessions",
-      mcpServers: "MCP servers (Notion, GitHub, custom)",
-      codexAuth: "Codex Desktop auth + config",
-      envFiles: "Encrypted .env files",
-      localFolders: "Files Git doesn't track (.env, drafts, data)",
-      yourCloud: "In your cloud, not the vendor's",
-      skillsSync: "Custom skills (Claude + Codex)",
-      pluginsSync: "Plugin manifest (Claude + Codex)",
-      projectMemory: "Per-project memory (CLAUDE.md, session JSONL)",
-      githubOnboarding: "Discovery + clone of your GitHub repos",
-      coworkUpcoming: "Cowork sessions + per-session lock",
-      memoryBridge: "Universal Memory cross-vendor (Claude ↔ Codex)",
+      offlineLocal: "Works offline / local-first",
+      aes256: "AES-256 zero-knowledge encryption",
+      secretsVault: "Built-in secrets vault",
+      resurrection: "Session resurrection (close it all, comes back where you left off)",
+      internetImmunity: "Persistence even if the internet drops",
+      aiConversationSync: "AI conversation sync between Macs",
+      multiModel: "Multi-model (Claude + Codex + others)",
+      anywhereAccess: "Anywhere Access (mobile + any browser)",
+      stuckNotifications: "Notifications when the agent gets stuck",
+      replyInjection: "Reply-injection from your phone",
+      noVendorLockIn: "No vendor lock-in (your files in your cloud)",
+      zeroRuntime: "$0 runtime cost (runs on your Mac)",
+      zeroStorage: "$0 storage cost (uses your own Drive)",
+      deviceRoaming: "Roaming between devices",
+      multipleSessions: "Multiple simultaneous sessions",
     },
-    upcomingLabel: "Coming soon",
     legend: { yes: "Yes", no: "No", partial: "Partial", soon: "Coming soon" },
     footnote:
-      "AES-256-GCM encrypted before it leaves your Mac. Neither Anthropic, OpenAI, nor we can see your files.",
+      "Comparison based on each tool's public docs as of 2026-05-04. AES-256-GCM encrypted before it leaves your Mac — neither Anthropic, OpenAI, Vercel, nor we can see your files.",
   },
   personas: {
     title: "Is this for you?",

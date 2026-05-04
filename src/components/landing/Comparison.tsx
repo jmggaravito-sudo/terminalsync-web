@@ -3,9 +3,90 @@ import type { Dict } from "@/content";
 
 type Cell = "yes" | "no" | "partial" | "soon";
 
-// Cell -> visual. Kept as a const map so the table rows below stay readable
-// without inline conditionals each time.
-function CellIcon({ value, legend }: { value: Cell; legend: Dict["comparison"]["legend"] }) {
+// Column keys must match `dict.comparison.columns`. Order = visual order
+// of the rendered table (left to right). Terminal Sync first, then the
+// three tools the audience already uses (per Funcionalidades.md doc):
+// Vercel, Claude Code alone, Codex alone.
+const COLUMN_KEYS = ["terminalSync", "vercel", "claudeCode", "codex"] as const;
+type ColumnKey = (typeof COLUMN_KEYS)[number];
+
+type Row = {
+  key: keyof Dict["comparison"]["rows"];
+  cells: Record<ColumnKey, Cell>;
+};
+
+// Values mirror the comparativo at the bottom of
+// `0TerminalSync/Funcionalidades.md` — single source of truth.
+const ROWS: Row[] = [
+  {
+    key: "offlineLocal",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "partial", codex: "partial" },
+  },
+  {
+    key: "aes256",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "secretsVault",
+    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "resurrection",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "internetImmunity",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "partial", codex: "partial" },
+  },
+  {
+    key: "aiConversationSync",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "multiModel",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "anywhereAccess",
+    cells: { terminalSync: "yes", vercel: "yes", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "stuckNotifications",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "replyInjection",
+    cells: { terminalSync: "soon", vercel: "no", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "noVendorLockIn",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "yes", codex: "yes" },
+  },
+  {
+    key: "zeroRuntime",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "yes", codex: "yes" },
+  },
+  {
+    key: "zeroStorage",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "yes", codex: "yes" },
+  },
+  {
+    key: "deviceRoaming",
+    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "multipleSessions",
+    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "partial", codex: "partial" },
+  },
+];
+
+function CellIcon({
+  value,
+  legend,
+}: {
+  value: Cell;
+  legend: Dict["comparison"]["legend"];
+}) {
   if (value === "yes") {
     return (
       <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-[var(--color-ok)]/12 text-[var(--color-ok)]">
@@ -37,28 +118,6 @@ function CellIcon({ value, legend }: { value: Cell; legend: Dict["comparison"]["
 export function Comparison({ dict }: { dict: Dict }) {
   const c = dict.comparison;
 
-  // Available now — order matters: start with what users care most about,
-  // end with the privacy clincher.
-  const liveRows: [keyof typeof c.rows, Cell, Cell, Cell][] = [
-    ["claudeConfig", "partial", "no", "yes"],
-    ["mcpServers", "partial", "no", "yes"],
-    ["codexAuth", "no", "yes", "yes"],
-    ["skillsSync", "no", "no", "yes"],
-    ["pluginsSync", "no", "no", "yes"],
-    ["projectMemory", "no", "no", "yes"],
-    ["githubOnboarding", "no", "no", "yes"],
-    ["envFiles", "no", "no", "yes"],
-    ["localFolders", "no", "no", "yes"],
-    ["yourCloud", "no", "no", "yes"],
-  ];
-
-  // Public roadmap — features tracked in GitHub but not yet shipped. Showing
-  // them keeps power users from bouncing while we work through Phase 1+2.
-  const upcomingRows: [keyof typeof c.rows, Cell, Cell, Cell][] = [
-    ["coworkUpcoming", "soon", "no", "soon"],
-    ["memoryBridge", "no", "no", "soon"],
-  ];
-
   return (
     <section
       id="comparison"
@@ -79,7 +138,7 @@ export function Comparison({ dict }: { dict: Dict }) {
         </p>
       </div>
 
-      {/* Desktop / tablet: real table. Mobile: stacked cards (below). */}
+      {/* Desktop / tablet: 5-column table. Mobile: stacked cards (below). */}
       <div className="mt-10 hidden md:block">
         <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] overflow-hidden">
           <table className="w-full text-left">
@@ -88,88 +147,39 @@ export function Comparison({ dict }: { dict: Dict }) {
                 <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--color-fg-muted)]">
                   {c.columns.feature}
                 </th>
-                <th className="px-3 py-4 text-center text-[12.5px] font-semibold text-[var(--color-fg-muted)]">
-                  {c.columns.claudeDesktop}
-                </th>
-                <th className="px-3 py-4 text-center text-[12.5px] font-semibold text-[var(--color-fg-muted)]">
-                  {c.columns.codexDesktop}
-                </th>
-                <th className="px-3 py-4 text-center text-[12.5px] font-semibold text-[var(--color-accent)]">
-                  {c.columns.terminalSync}
-                </th>
+                {COLUMN_KEYS.map((col) => (
+                  <th
+                    key={col}
+                    className={`px-3 py-4 text-center text-[12.5px] font-semibold ${
+                      col === "terminalSync"
+                        ? "text-[var(--color-accent)]"
+                        : "text-[var(--color-fg-muted)]"
+                    }`}
+                  >
+                    {c.columns[col]}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {liveRows.map(([key, claude, codex, ts], i) => (
+              {ROWS.map((row, ri) => (
                 <tr
-                  key={key}
-                  className={
-                    i % 2 === 0
-                      ? "bg-transparent"
-                      : "bg-[var(--color-panel-2)]/30"
-                  }
+                  key={row.key}
+                  className={ri % 2 === 0 ? "bg-transparent" : "bg-[var(--color-panel-2)]/30"}
                 >
                   <td className="px-5 py-3.5 text-[13.5px] text-[var(--color-fg)]">
-                    {c.rows[key]}
+                    {c.rows[row.key]}
                   </td>
-                  <td className="px-3 py-3.5">
-                    <div className="flex justify-center">
-                      <CellIcon value={claude} legend={c.legend} />
-                    </div>
-                  </td>
-                  <td className="px-3 py-3.5">
-                    <div className="flex justify-center">
-                      <CellIcon value={codex} legend={c.legend} />
-                    </div>
-                  </td>
-                  <td className="px-3 py-3.5 bg-[var(--color-accent)]/4">
-                    <div className="flex justify-center">
-                      <CellIcon value={ts} legend={c.legend} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-
-              {/* Visual divider so users see clearly what's live vs roadmap. */}
-              <tr>
-                <td colSpan={4} className="px-5 pt-5 pb-2">
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex items-center gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-[var(--color-info)] border border-[var(--color-info)]/30 bg-[var(--color-info)]/8 px-2.5 py-1 rounded-full">
-                      <Clock size={10} strokeWidth={2.6} />
-                      {c.upcomingLabel}
-                    </span>
-                    <div className="h-px flex-1 bg-[var(--color-border)]" />
-                  </div>
-                </td>
-              </tr>
-
-              {upcomingRows.map(([key, claude, codex, ts], i) => (
-                <tr
-                  key={key}
-                  className={
-                    i % 2 === 0
-                      ? "bg-transparent"
-                      : "bg-[var(--color-panel-2)]/30"
-                  }
-                >
-                  <td className="px-5 py-3.5 text-[13.5px] text-[var(--color-fg)]">
-                    {c.rows[key]}
-                  </td>
-                  <td className="px-3 py-3.5">
-                    <div className="flex justify-center">
-                      <CellIcon value={claude} legend={c.legend} />
-                    </div>
-                  </td>
-                  <td className="px-3 py-3.5">
-                    <div className="flex justify-center">
-                      <CellIcon value={codex} legend={c.legend} />
-                    </div>
-                  </td>
-                  <td className="px-3 py-3.5 bg-[var(--color-accent)]/4">
-                    <div className="flex justify-center">
-                      <CellIcon value={ts} legend={c.legend} />
-                    </div>
-                  </td>
+                  {COLUMN_KEYS.map((col) => (
+                    <td
+                      key={col}
+                      className={`px-3 py-3.5 ${col === "terminalSync" ? "bg-[var(--color-accent)]/4" : ""}`}
+                    >
+                      <div className="flex justify-center">
+                        <CellIcon value={row.cells[col]} legend={c.legend} />
+                      </div>
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>
@@ -180,53 +190,24 @@ export function Comparison({ dict }: { dict: Dict }) {
       {/* Mobile: one card per feature so the comparison stays readable on
           narrow screens without horizontal scroll. */}
       <div className="mt-10 md:hidden space-y-3">
-        {liveRows.map(([key, claude, codex, ts]) => (
+        {ROWS.map((row) => (
           <div
-            key={key}
+            key={row.key}
             className="rounded-xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4"
           >
             <div className="text-[13.5px] font-semibold text-[var(--color-fg-strong)] mb-3">
-              {c.rows[key]}
+              {c.rows[row.key]}
             </div>
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <MobileCell label={c.columns.claudeDesktop} value={claude} legend={c.legend} />
-              <MobileCell label={c.columns.codexDesktop} value={codex} legend={c.legend} />
-              <MobileCell
-                label={c.columns.terminalSync}
-                value={ts}
-                legend={c.legend}
-                highlight
-              />
-            </div>
-          </div>
-        ))}
-
-        {/* Mobile divider for upcoming */}
-        <div className="flex items-center gap-3 pt-4">
-          <span className="inline-flex items-center gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-[var(--color-info)] border border-[var(--color-info)]/30 bg-[var(--color-info)]/8 px-2.5 py-1 rounded-full">
-            <Clock size={10} strokeWidth={2.6} />
-            {c.upcomingLabel}
-          </span>
-          <div className="h-px flex-1 bg-[var(--color-border)]" />
-        </div>
-
-        {upcomingRows.map(([key, claude, codex, ts]) => (
-          <div
-            key={key}
-            className="rounded-xl border border-[var(--color-info)]/30 bg-[var(--color-panel)] p-4"
-          >
-            <div className="text-[13.5px] font-semibold text-[var(--color-fg-strong)] mb-3">
-              {c.rows[key]}
-            </div>
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <MobileCell label={c.columns.claudeDesktop} value={claude} legend={c.legend} />
-              <MobileCell label={c.columns.codexDesktop} value={codex} legend={c.legend} />
-              <MobileCell
-                label={c.columns.terminalSync}
-                value={ts}
-                legend={c.legend}
-                highlight
-              />
+            <div className="grid grid-cols-4 gap-2 text-center">
+              {COLUMN_KEYS.map((col) => (
+                <MobileCell
+                  key={col}
+                  label={c.columns[col]}
+                  value={row.cells[col]}
+                  legend={c.legend}
+                  highlight={col === "terminalSync"}
+                />
+              ))}
             </div>
           </div>
         ))}
@@ -242,6 +223,15 @@ export function Comparison({ dict }: { dict: Dict }) {
         <LegendItem icon={<MinusCircle size={11} strokeWidth={2.4} />} color="warn" label={c.legend.partial} />
         <LegendItem icon={<Clock size={11} strokeWidth={2.4} />} color="info" label={c.legend.soon} />
         <LegendItem icon={<X size={11} strokeWidth={2.4} />} color="dim" label={c.legend.no} />
+      </div>
+
+      {/* The pitch — one paragraph that summarizes WHY this comparison
+          matters. Lifted verbatim from Funcionalidades.md so landing
+          and internal doc stay in sync. */}
+      <div className="mt-12 max-w-3xl mx-auto rounded-2xl border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 p-6 md:p-8">
+        <p className="text-[14.5px] md:text-[15px] leading-relaxed text-[var(--color-fg)]">
+          {c.pitch}
+        </p>
       </div>
     </section>
   );
@@ -265,9 +255,10 @@ function MobileCell({
       }`}
     >
       <div
-        className={`text-[10px] uppercase tracking-[0.08em] font-medium mb-1 ${
+        className={`text-[10px] uppercase tracking-[0.06em] font-medium mb-1 truncate ${
           highlight ? "text-[var(--color-accent)]" : "text-[var(--color-fg-dim)]"
         }`}
+        title={label}
       >
         {label}
       </div>

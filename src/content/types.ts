@@ -2,7 +2,7 @@ export type Locale = "es" | "en";
 
 export interface Dict {
   locale: Locale;
-  meta: { title: string; description: string; keywords: string };
+  meta: { title: string; description: string };
   nav: {
     features: string;
     demos: string;
@@ -46,9 +46,9 @@ export interface Dict {
     title: string;
     subtitle: string;
     items: {
-      context: { title: string; body: string };
-      privacy: { title: string; body: string };
-      autoInstall: { title: string; body: string };
+      uninterrupted: { title: string; body: string };
+      anywhere: { title: string; body: string };
+      notifications: { title: string; body: string };
     };
   };
   toolBreakdown: {
@@ -101,28 +101,31 @@ export interface Dict {
     eyebrow: string;
     title: string;
     subtitle: string;
+    pitch: string;
     columns: {
       feature: string;
-      claudeDesktop: string;
-      codexDesktop: string;
       terminalSync: string;
+      vercel: string;
+      claudeCode: string;
+      codex: string;
     };
     rows: {
-      claudeConfig: string;
-      coworkSessions: string;
-      mcpServers: string;
-      codexAuth: string;
-      envFiles: string;
-      localFolders: string;
-      yourCloud: string;
-      skillsSync: string;
-      pluginsSync: string;
-      projectMemory: string;
-      githubOnboarding: string;
-      coworkUpcoming: string;
-      memoryBridge: string;
+      offlineLocal: string;
+      aes256: string;
+      secretsVault: string;
+      resurrection: string;
+      internetImmunity: string;
+      aiConversationSync: string;
+      multiModel: string;
+      anywhereAccess: string;
+      stuckNotifications: string;
+      replyInjection: string;
+      noVendorLockIn: string;
+      zeroRuntime: string;
+      zeroStorage: string;
+      deviceRoaming: string;
+      multipleSessions: string;
     };
-    upcomingLabel: string;
     legend: { yes: string; no: string; partial: string; soon: string };
     footnote: string;
   };

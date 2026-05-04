@@ -302,6 +302,7 @@ export function AgentWidget({ dict }: { dict: Dict }) {
             value={input}
             onChange={(e) => setInput(e.currentTarget.value)}
             placeholder={dict.agent.placeholder}
+            aria-label={dict.agent.placeholder}
             className="flex-1 h-9 px-3 rounded-full bg-[var(--color-panel-2)] border border-[var(--color-border)] text-[12.5px] text-[var(--color-fg)] placeholder-[var(--color-fg-dim)] outline-none focus:border-[var(--color-accent)] focus:bg-[var(--color-panel)] focus:ring-4 focus:ring-[var(--color-accent-glow)] transition-all"
           />
           <button

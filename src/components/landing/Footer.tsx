@@ -25,8 +25,8 @@ export function Footer({ dict }: { dict: Dict }) {
     {
       heading: dict.footer.company,
       links: [
-        { key: "about", label: dict.footer.links.about, href: "#" },
-        { key: "blog", label: dict.footer.links.blog, href: "#" },
+        { key: "about", label: dict.footer.links.about, href: `/${lang}/about` },
+        { key: "blog", label: dict.footer.links.blog, href: `/${lang}/blog` },
         { key: "contact", label: dict.footer.links.contact, href: "mailto:hola@terminalsync.ai" },
         { key: "affiliates", label: dict.footer.links.affiliates, href: `/${lang}#affiliates` },
         { key: "publishers", label: dict.footer.links.publishers, href: `/${lang}/publishers` },
@@ -40,9 +40,9 @@ export function Footer({ dict }: { dict: Dict }) {
           label: dict.footer.links.affiliateTerms,
           href: `/${lang}/legal/affiliates`,
         },
-        { key: "privacy", label: dict.footer.links.privacy, href: "#" },
-        { key: "terms", label: dict.footer.links.terms, href: "#" },
-        { key: "security", label: dict.footer.links.security, href: "#" },
+        { key: "privacy", label: dict.footer.links.privacy, href: `/${lang}/legal/privacy` },
+        { key: "terms", label: dict.footer.links.terms, href: `/${lang}/legal/terms` },
+        { key: "security", label: dict.footer.links.security, href: `/${lang}/legal/security` },
       ],
     },
   ];

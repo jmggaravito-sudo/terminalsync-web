@@ -81,9 +81,26 @@ export function StructuredData({ dict, lang }: Props) {
     // Once you have >5 real reviews, swap this with AggregateRating.
   };
 
+  // FAQPage — pulls the visible FAQ items into Google's rich-result eligible
+  // schema. Each Q/A becomes a Question with an acceptedAnswer. The text is
+  // intentionally the same string the user reads on the page (Google
+  // requires answer + page content to match).
+  const faq = {
+    "@type": "FAQPage",
+    "@id": `${BASE}#faq`,
+    mainEntity: dict.faq.items.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.a,
+      },
+    })),
+  };
+
   const json = {
     "@context": "https://schema.org",
-    "@graph": [org, website, software],
+    "@graph": [org, website, software, faq],
   };
 
   return (

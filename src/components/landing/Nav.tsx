@@ -42,7 +42,8 @@ export function Nav({ dict, lang }: Props) {
           </div>
           <LanguageSwitcher current={lang} />
           <a
-            href="#hero"
+            href="#pricing"
+            data-cta="nav-download"
             className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[12.5px] font-semibold transition-all shadow-[0_6px_20px_-8px_var(--color-accent-glow)] hover:shadow-[0_10px_26px_-8px_var(--color-accent-glow)]"
           >
             <Download size={12} strokeWidth={2.4} />
