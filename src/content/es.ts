@@ -343,11 +343,11 @@ const es: Dict = {
         priceNoteYearly: "/año",
         yearlyEquivalent: "$15.83/mes · facturado anual",
         features: [
-          "5 terminales activas",
+          "10 terminales activas",
           "AI Auto-Pilot (instalación 1-clic de Claude Code)",
           "Sync completo de Claude (chats, projects, Cowork)",
           "Historial 90 días",
-          "Hasta 5 computadoras",
+          "Hasta 3 computadoras",
         ],
         cta: "Probar 7 días gratis",
       },
@@ -361,7 +361,8 @@ const es: Dict = {
         yearlyEquivalent: "$32.50/mes · facturado anual",
         features: [
           "Todo lo de Pro, más:",
-          "20 terminales activas",
+          "Terminales ilimitadas",
+          "Hasta 5 computadoras",
           "Git-Native Sync (respeta .gitignore)",
           ".env Vault cifrado entre máquinas",
           "Auto setup.sh al abrir en un equipo nuevo",

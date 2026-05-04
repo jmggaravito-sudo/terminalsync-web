@@ -5,6 +5,8 @@
 import { Resend } from "resend";
 import { WelcomeEmail } from "../../emails/welcome";
 import { TrialEndingEmail } from "../../emails/trial-ending";
+import { TrialChargingTomorrowEmail } from "../../emails/trial-charging-tomorrow";
+import { ChargeSuccessEmail } from "../../emails/charge-success";
 import { PaymentFailedEmail } from "../../emails/payment-failed";
 import { CancellationConfirmedEmail } from "../../emails/cancellation-confirmed";
 import { signBillingToken, signUnsubToken } from "./signedTokens";
@@ -98,6 +100,115 @@ export async function sendTrialEndingEmail(opts: {
     // practice retries can dupe — key on subscriptionId so we never
     // send two reminders for the same trial.
     headers: { "X-Entity-Ref-ID": `trial-ending:${opts.subscriptionId}` },
+  });
+
+  if (result.error) throw result.error;
+  return { id: result.data?.id };
+}
+
+// ── Trial charging tomorrow (24h before conversion) ─────────────────────
+// Fired by Vercel Cron, NOT by Stripe. Stripe's trial_will_end fires at
+// the 3-day mark; this is the closer reminder so the user can't claim
+// they were surprised by the charge. Idempotent on subscriptionId.
+
+export async function sendTrialChargingTomorrowEmail(opts: {
+  to: string;
+  firstName: string;
+  planName: string;
+  trialEnd: Date;
+  /** Amount in cents that will be charged (Stripe upcoming invoice). */
+  amountCents: number;
+  /** Currency lowercase code, e.g. "usd". */
+  currency: string;
+  /** Subscription ID for idempotency. */
+  subscriptionId: string;
+  customerId?: string;
+}) {
+  if (!resend) {
+    console.warn(
+      "[email] RESEND_API_KEY missing — skipping trial-charging-tomorrow",
+    );
+    return { skipped: true as const };
+  }
+
+  const trialEndStr = opts.trialEnd.toLocaleDateString("es-AR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const chargeAmount = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: opts.currency.toUpperCase(),
+  }).format(opts.amountCents / 100);
+
+  const result = await resend.emails.send({
+    from: BILLING_FROM,
+    to: [opts.to],
+    subject: `Mañana se renueva tu ${opts.planName} (${chargeAmount})`,
+    react: TrialChargingTomorrowEmail({
+      firstName: opts.firstName,
+      planName: opts.planName,
+      trialEndDate: trialEndStr,
+      chargeAmount,
+      manageBillingUrl: manageBillingUrl(opts.customerId),
+      unsubscribeUrl: unsubUrl(opts.to),
+    }),
+    headers: {
+      "X-Entity-Ref-ID": `trial-charging-tomorrow:${opts.subscriptionId}`,
+    },
+  });
+
+  if (result.error) throw result.error;
+  return { id: result.data?.id };
+}
+
+// ── Charge success (first paid invoice after trial) ─────────────────────
+// Fired from invoice.paid when billing_reason === "subscription_cycle" and
+// the subscription just exited trialing. Idempotent on invoiceId.
+
+export async function sendChargeSuccessEmail(opts: {
+  to: string;
+  firstName: string;
+  planName: string;
+  amountCents: number;
+  currency: string;
+  /** Next billing period date (one year/month from now). */
+  nextRenewal: Date;
+  /** Stripe invoice ID for idempotency. */
+  invoiceId: string;
+  /** Stripe-hosted invoice URL (PDF). Optional. */
+  invoiceUrl?: string;
+  customerId?: string;
+}) {
+  if (!resend) {
+    console.warn("[email] RESEND_API_KEY missing — skipping charge-success");
+    return { skipped: true as const };
+  }
+
+  const chargeAmount = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: opts.currency.toUpperCase(),
+  }).format(opts.amountCents / 100);
+  const nextRenewalStr = opts.nextRenewal.toLocaleDateString("es-AR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  const result = await resend.emails.send({
+    from: BILLING_FROM,
+    to: [opts.to],
+    subject: `✅ Cobramos ${chargeAmount} — tu ${opts.planName} sigue activo`,
+    react: ChargeSuccessEmail({
+      firstName: opts.firstName,
+      planName: opts.planName,
+      chargeAmount,
+      nextRenewalDate: nextRenewalStr,
+      manageBillingUrl: manageBillingUrl(opts.customerId),
+      invoiceUrl: opts.invoiceUrl,
+      unsubscribeUrl: unsubUrl(opts.to),
+    }),
+    headers: { "X-Entity-Ref-ID": `charge-success:${opts.invoiceId}` },
   });
 
   if (result.error) throw result.error;
