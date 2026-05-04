@@ -4,122 +4,82 @@ import type { Dict } from "@/content";
 type Cell = "yes" | "no" | "partial" | "soon";
 
 // Column keys must match `dict.comparison.columns`. Order = visual order
-// of the rendered table (left to right). Terminal Sync goes first after
-// the feature label so the reader reads "what we do" before competitors.
-// We compare against the tools your audience already uses: the two AI
-// CLIs (Claude Code / Codex) and the two AI desktop apps (Claude Desktop
-// / ChatGPT). Drops dev-specific competitors (Warp, Cursor, Vercel) so
-// non-programmer users still recognize what we're stacked against.
-const COLUMN_KEYS = ["terminalSync", "claudeCode", "codex", "claudeDesktop", "chatgpt"] as const;
+// of the rendered table (left to right). Terminal Sync first, then the
+// three tools the audience already uses (per Funcionalidades.md doc):
+// Vercel, Claude Code alone, Codex alone.
+const COLUMN_KEYS = ["terminalSync", "vercel", "claudeCode", "codex"] as const;
 type ColumnKey = (typeof COLUMN_KEYS)[number];
 
-// Rows grouped by theme. Each group has a localized heading from
-// `dict.comparison.groups` and a list of row keys + cell values per
-// column (in COLUMN_KEYS order). Last entry per group MAY be marked
-// `soon` to flag roadmap items inline rather than in a separate block.
 type Row = {
   key: keyof Dict["comparison"]["rows"];
   cells: Record<ColumnKey, Cell>;
 };
-type Group = {
-  key: keyof Dict["comparison"]["groups"];
-  rows: Row[];
-};
 
-const GROUPS: Group[] = [
+// Values mirror the comparativo at the bottom of
+// `0TerminalSync/Funcionalidades.md` — single source of truth.
+const ROWS: Row[] = [
   {
-    key: "persistence",
-    rows: [
-      {
-        key: "resurrection",
-        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "partial", chatgpt: "partial" },
-      },
-      {
-        key: "uninterruptedWork",
-        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
-      },
-      {
-        key: "backgroundDaemon",
-        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
-      },
-    ],
+    key: "offlineLocal",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "partial", codex: "partial" },
   },
   {
-    key: "mobility",
-    rows: [
-      {
-        key: "multiDeviceProfile",
-        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "yes", chatgpt: "yes" },
-      },
-      {
-        key: "anywhereAccess",
-        cells: { terminalSync: "soon", claudeCode: "no", codex: "no", claudeDesktop: "yes", chatgpt: "yes" },
-      },
-      {
-        key: "pairProgramming",
-        cells: { terminalSync: "soon", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
-      },
-    ],
+    key: "aes256",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
   },
   {
-    key: "security",
-    rows: [
-      {
-        key: "aes256",
-        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
-      },
-      {
-        key: "secretsVault",
-        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
-      },
-      {
-        key: "apiKeysKeychain",
-        cells: { terminalSync: "yes", claudeCode: "partial", codex: "no", claudeDesktop: "no", chatgpt: "no" },
-      },
-    ],
+    key: "secretsVault",
+    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "no", codex: "no" },
   },
   {
-    key: "ai",
-    rows: [
-      {
-        key: "aiContinuity",
-        cells: { terminalSync: "yes", claudeCode: "partial", codex: "partial", claudeDesktop: "partial", chatgpt: "partial" },
-      },
-      {
-        key: "aiConfigSync",
-        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "partial", chatgpt: "partial" },
-      },
-      {
-        key: "oneClickInstall",
-        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "yes", chatgpt: "yes" },
-      },
-    ],
+    key: "resurrection",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
   },
   {
-    key: "productivity",
-    rows: [
-      {
-        key: "multiCloudSync",
-        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
-      },
-      {
-        key: "silenceNotifications",
-        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
-      },
-      {
-        key: "setupOnArrival",
-        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
-      },
-      {
-        key: "gitNativeSync",
-        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
-      },
-    ],
+    key: "internetImmunity",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "partial", codex: "partial" },
+  },
+  {
+    key: "aiConversationSync",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "multiModel",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "anywhereAccess",
+    cells: { terminalSync: "yes", vercel: "yes", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "stuckNotifications",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "replyInjection",
+    cells: { terminalSync: "soon", vercel: "no", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "noVendorLockIn",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "yes", codex: "yes" },
+  },
+  {
+    key: "zeroRuntime",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "yes", codex: "yes" },
+  },
+  {
+    key: "zeroStorage",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "yes", codex: "yes" },
+  },
+  {
+    key: "deviceRoaming",
+    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "no", codex: "no" },
+  },
+  {
+    key: "multipleSessions",
+    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "partial", codex: "partial" },
   },
 ];
 
-// Cell -> visual. Kept as a const map so the table rows below stay readable
-// without inline conditionals each time.
 function CellIcon({
   value,
   legend,
@@ -178,19 +138,19 @@ export function Comparison({ dict }: { dict: Dict }) {
         </p>
       </div>
 
-      {/* Desktop / tablet: 6-column table. Mobile: stacked cards (below). */}
+      {/* Desktop / tablet: 5-column table. Mobile: stacked cards (below). */}
       <div className="mt-10 hidden md:block">
         <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] overflow-hidden">
           <table className="w-full text-left">
             <thead>
               <tr className="bg-[var(--color-panel-2)]/60">
-                <th className="px-4 py-4 text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--color-fg-muted)]">
+                <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.1em] text-[var(--color-fg-muted)]">
                   {c.columns.feature}
                 </th>
                 {COLUMN_KEYS.map((col) => (
                   <th
                     key={col}
-                    className={`px-2 py-4 text-center text-[12.5px] font-semibold ${
+                    className={`px-3 py-4 text-center text-[12.5px] font-semibold ${
                       col === "terminalSync"
                         ? "text-[var(--color-accent)]"
                         : "text-[var(--color-fg-muted)]"
@@ -202,8 +162,25 @@ export function Comparison({ dict }: { dict: Dict }) {
               </tr>
             </thead>
             <tbody>
-              {GROUPS.map((group, gi) => (
-                <GroupBody key={group.key} group={group} c={c} firstGroup={gi === 0} />
+              {ROWS.map((row, ri) => (
+                <tr
+                  key={row.key}
+                  className={ri % 2 === 0 ? "bg-transparent" : "bg-[var(--color-panel-2)]/30"}
+                >
+                  <td className="px-5 py-3.5 text-[13.5px] text-[var(--color-fg)]">
+                    {c.rows[row.key]}
+                  </td>
+                  {COLUMN_KEYS.map((col) => (
+                    <td
+                      key={col}
+                      className={`px-3 py-3.5 ${col === "terminalSync" ? "bg-[var(--color-accent)]/4" : ""}`}
+                    >
+                      <div className="flex justify-center">
+                        <CellIcon value={row.cells[col]} legend={c.legend} />
+                      </div>
+                    </td>
+                  ))}
+                </tr>
               ))}
             </tbody>
           </table>
@@ -212,33 +189,24 @@ export function Comparison({ dict }: { dict: Dict }) {
 
       {/* Mobile: one card per feature so the comparison stays readable on
           narrow screens without horizontal scroll. */}
-      <div className="mt-10 md:hidden space-y-6">
-        {GROUPS.map((group) => (
-          <div key={group.key}>
-            <h3 className="text-[11.5px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent)] mb-3">
-              {c.groups[group.key]}
-            </h3>
-            <div className="space-y-3">
-              {group.rows.map((row) => (
-                <div
-                  key={row.key}
-                  className="rounded-xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4"
-                >
-                  <div className="text-[13.5px] font-semibold text-[var(--color-fg-strong)] mb-3">
-                    {c.rows[row.key]}
-                  </div>
-                  <div className="grid grid-cols-5 gap-1.5 text-center">
-                    {COLUMN_KEYS.map((col) => (
-                      <MobileCell
-                        key={col}
-                        label={c.columns[col]}
-                        value={row.cells[col]}
-                        legend={c.legend}
-                        highlight={col === "terminalSync"}
-                      />
-                    ))}
-                  </div>
-                </div>
+      <div className="mt-10 md:hidden space-y-3">
+        {ROWS.map((row) => (
+          <div
+            key={row.key}
+            className="rounded-xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4"
+          >
+            <div className="text-[13.5px] font-semibold text-[var(--color-fg-strong)] mb-3">
+              {c.rows[row.key]}
+            </div>
+            <div className="grid grid-cols-4 gap-2 text-center">
+              {COLUMN_KEYS.map((col) => (
+                <MobileCell
+                  key={col}
+                  label={c.columns[col]}
+                  value={row.cells[col]}
+                  legend={c.legend}
+                  highlight={col === "terminalSync"}
+                />
               ))}
             </div>
           </div>
@@ -256,57 +224,16 @@ export function Comparison({ dict }: { dict: Dict }) {
         <LegendItem icon={<Clock size={11} strokeWidth={2.4} />} color="info" label={c.legend.soon} />
         <LegendItem icon={<X size={11} strokeWidth={2.4} />} color="dim" label={c.legend.no} />
       </div>
-    </section>
-  );
-}
 
-// One group block: a heading row spanning all columns, then the data rows.
-// Striped via row index for readability.
-function GroupBody({
-  group,
-  c,
-  firstGroup,
-}: {
-  group: Group;
-  c: Dict["comparison"];
-  firstGroup: boolean;
-}) {
-  return (
-    <>
-      <tr>
-        <td
-          colSpan={COLUMN_KEYS.length + 1}
-          className={`px-4 ${firstGroup ? "pt-5" : "pt-7"} pb-2`}
-        >
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center text-[10.5px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent)] border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 px-2.5 py-1 rounded-full">
-              {c.groups[group.key]}
-            </span>
-            <div className="h-px flex-1 bg-[var(--color-border)]" />
-          </div>
-        </td>
-      </tr>
-      {group.rows.map((row, ri) => (
-        <tr
-          key={row.key}
-          className={ri % 2 === 0 ? "bg-transparent" : "bg-[var(--color-panel-2)]/30"}
-        >
-          <td className="px-4 py-3.5 text-[13.5px] text-[var(--color-fg)]">
-            {c.rows[row.key]}
-          </td>
-          {COLUMN_KEYS.map((col) => (
-            <td
-              key={col}
-              className={`px-2 py-3.5 ${col === "terminalSync" ? "bg-[var(--color-accent)]/4" : ""}`}
-            >
-              <div className="flex justify-center">
-                <CellIcon value={row.cells[col]} legend={c.legend} />
-              </div>
-            </td>
-          ))}
-        </tr>
-      ))}
-    </>
+      {/* The pitch — one paragraph that summarizes WHY this comparison
+          matters. Lifted verbatim from Funcionalidades.md so landing
+          and internal doc stay in sync. */}
+      <div className="mt-12 max-w-3xl mx-auto rounded-2xl border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 p-6 md:p-8">
+        <p className="text-[14.5px] md:text-[15px] leading-relaxed text-[var(--color-fg)]">
+          {c.pitch}
+        </p>
+      </div>
+    </section>
   );
 }
 
@@ -323,12 +250,12 @@ function MobileCell({
 }) {
   return (
     <div
-      className={`rounded-lg p-1.5 ${
+      className={`rounded-lg p-2 ${
         highlight ? "bg-[var(--color-accent)]/8" : "bg-[var(--color-panel-2)]/40"
       }`}
     >
       <div
-        className={`text-[9px] uppercase tracking-[0.06em] font-medium mb-1 truncate ${
+        className={`text-[10px] uppercase tracking-[0.06em] font-medium mb-1 truncate ${
           highlight ? "text-[var(--color-accent)]" : "text-[var(--color-fg-dim)]"
         }`}
         title={label}

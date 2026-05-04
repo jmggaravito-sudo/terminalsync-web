@@ -101,45 +101,31 @@ export interface Dict {
     eyebrow: string;
     title: string;
     subtitle: string;
+    pitch: string;
     columns: {
       feature: string;
       terminalSync: string;
+      vercel: string;
       claudeCode: string;
       codex: string;
-      claudeDesktop: string;
-      chatgpt: string;
-    };
-    groups: {
-      persistence: string;
-      mobility: string;
-      security: string;
-      ai: string;
-      productivity: string;
     };
     rows: {
-      // Persistence
-      resurrection: string;
-      uninterruptedWork: string;
-      backgroundDaemon: string;
-      // Mobility
-      multiDeviceProfile: string;
-      anywhereAccess: string;
-      pairProgramming: string;
-      // Security
+      offlineLocal: string;
       aes256: string;
       secretsVault: string;
-      apiKeysKeychain: string;
-      // AI native
-      aiContinuity: string;
-      aiConfigSync: string;
-      oneClickInstall: string;
-      // Productivity
-      multiCloudSync: string;
-      silenceNotifications: string;
-      setupOnArrival: string;
-      gitNativeSync: string;
+      resurrection: string;
+      internetImmunity: string;
+      aiConversationSync: string;
+      multiModel: string;
+      anywhereAccess: string;
+      stuckNotifications: string;
+      replyInjection: string;
+      noVendorLockIn: string;
+      zeroRuntime: string;
+      zeroStorage: string;
+      deviceRoaming: string;
+      multipleSessions: string;
     };
-    upcomingLabel: string;
     legend: { yes: string; no: string; partial: string; soon: string };
     footnote: string;
   };
