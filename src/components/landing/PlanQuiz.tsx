@@ -332,12 +332,21 @@ function ResultCard({
 // users. Only recommend Free when signals are strongly "light usage".
 
 function scoreAnswers(a: Answers): PlanKey {
+  // Devs / teams / project-code people always go to Dev. Git-Native Sync,
+  // .env Vault and unlimited terminals are the differentiators they need.
   if (a.role === "team" || a.role === "developer" || a.pain === "projects") {
     return "dev";
   }
+  // "Many" computers (>3) blows past the Pro device cap (3 PCs), so anyone
+  // working across many machines goes to Dev for the 5-PC quota.
+  if (a.volume === "many") {
+    return "dev";
+  }
+  // Solo creator on a single device → Free is plenty.
   if (a.role === "creator" && a.pain === "chats" && a.volume === "one") {
     return "starter";
   }
+  // Default: Pro (10 terminales, 3 PCs) covers the 80% case.
   return "pro";
 }
 
