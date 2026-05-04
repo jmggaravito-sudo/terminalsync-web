@@ -100,10 +100,9 @@ const es: Dict = {
           "Memoria por proyecto (CLAUDE.md y conversaciones)",
           "Skills personalizados",
           "Plugins se reinstalan automáticamente en cualquier Mac",
+          "Conversación viva al reabrir (vía resurrección de sesión)",
         ],
-        upcoming: [
-          "Auto-resume de la conversación al reabrir",
-        ],
+        upcoming: [],
       },
       cowork: {
         name: "Claude Cowork",
@@ -126,10 +125,9 @@ const es: Dict = {
           "Estado global de tus sesiones",
           "Skills y plugins reinstalados automáticamente",
           "AI picker — elegís Claude o Codex por terminal",
+          "Conversación viva al reabrir (vía resurrección de sesión)",
         ],
-        upcoming: [
-          "Auto-resume de la conversación al reabrir",
-        ],
+        upcoming: [],
       },
     },
   },
