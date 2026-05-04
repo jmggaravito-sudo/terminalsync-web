@@ -3,11 +3,9 @@ import type { Dict } from "./types";
 const en: Dict = {
   locale: "en",
   meta: {
-    title: "TerminalSync — Take your Claude Code anywhere",
+    title: "TerminalSync — Memory, privacy and mobility for your AI",
     description:
-      "Sync your terminals, files and AI context across computers instantly. One-click Claude Code install.",
-    keywords:
-      "sync claude code, install claude code easy, terminal sync ai, claude cloud, claude anywhere",
+      "Your AI agent (Claude/Codex) keeps running even if the internet drops or you switch Macs. AES-256 zero-knowledge encryption. Access from any device.",
   },
   nav: {
     features: "Features",

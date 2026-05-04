@@ -205,3 +205,66 @@ body {
 .demo-shield-pulse {
   animation: demo-shield-pulse 2s ease-in-out infinite;
 }
+
+/* Prose for legal/about/blog pages — readable line length, generous
+ * line-height, predictable heading rhythm. Token colors only so the
+ * dark theme keeps working. */
+.prose-legal {
+  color: var(--color-fg);
+  font-size: 15.5px;
+  line-height: 1.7;
+}
+.prose-legal h2 {
+  color: var(--color-fg-strong);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-top: 2.25rem;
+  margin-bottom: 0.65rem;
+}
+.prose-legal h2:first-child {
+  margin-top: 0;
+}
+.prose-legal h3 {
+  color: var(--color-fg-strong);
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.prose-legal p {
+  color: var(--color-fg-muted);
+  margin-bottom: 1rem;
+}
+.prose-legal p:last-child {
+  margin-bottom: 0;
+}
+.prose-legal ul {
+  list-style: disc;
+  margin-left: 1.4rem;
+  margin-bottom: 1rem;
+  color: var(--color-fg-muted);
+}
+.prose-legal li {
+  margin-bottom: 0.4rem;
+}
+.prose-legal a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-legal a:hover {
+  color: var(--color-accent-soft);
+}
+.prose-legal code {
+  background: var(--color-panel-2);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 13px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+.prose-legal strong {
+  color: var(--color-fg-strong);
+  font-weight: 600;
+}

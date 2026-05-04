@@ -7,11 +7,15 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://terminalsync.ai"),
   title: {
-    default: "TerminalSync — Lleva tu Claude Code a cualquier parte",
-    template: "%s · TerminalSync",
+    default: "TerminalSync — Memoria, privacidad y movilidad para tu IA",
+    // Plain "%s" without "· TerminalSync" — the per-page title already
+    // includes the brand. The previous template doubled it (e.g.
+    // "TerminalSync — Lleva ... · TerminalSync"), pushing past Google's
+    // 60-char SERP truncation.
+    template: "%s",
   },
   description:
-    "Sincroniza tus terminales, archivos y el contexto de tu IA entre computadoras al instante. Instalación de Claude Code en 1 clic.",
+    "Tu agente IA (Claude/Codex) sigue corriendo aunque se caiga internet o cambies de Mac. Cifrado AES-256 zero-knowledge. Acceso desde cualquier dispositivo.",
   authors: [{ name: "TerminalSync" }],
   // Explicit image + social tags — Next auto-detects opengraph-image.tsx but
   // spelling them out avoids any ambiguity for scrapers that don't follow the

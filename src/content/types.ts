@@ -2,7 +2,7 @@ export type Locale = "es" | "en";
 
 export interface Dict {
   locale: Locale;
-  meta: { title: string; description: string; keywords: string };
+  meta: { title: string; description: string };
   nav: {
     features: string;
     demos: string;

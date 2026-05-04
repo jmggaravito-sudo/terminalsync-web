@@ -23,7 +23,6 @@ export async function generateMetadata({
   return {
     title: d.meta.title,
     description: d.meta.description,
-    keywords: d.meta.keywords,
     alternates: {
       canonical: `https://terminalsync.ai/${lang}`,
       languages: {
@@ -61,13 +60,25 @@ export default async function LangLayout({ children, params }: Props) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const d = getDict(lang);
+  const skipLabel = lang === "es" ? "Saltar al contenido principal" : "Skip to main content";
   // Nav lives at the layout so every page under /[lang]/ gets the language
   // switcher + cross-page navigation. Pages should no longer render <Nav>
   // themselves (would duplicate the bar).
+  //
+  // Skip-link is the FIRST focusable element so keyboard + screen-reader
+  // users can bypass the header (logo + 5 nav links + lang switcher + 2
+  // CTAs = ~9 stops) and jump straight to <main>. WCAG 2.4.1 Bypass
+  // Blocks. Only visible while focused.
   return (
     <>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-[var(--color-accent)] focus:px-4 focus:py-2 focus:text-white focus:font-semibold focus:shadow-lg"
+      >
+        {skipLabel}
+      </a>
       <Nav dict={d} lang={lang} />
-      {children}
+      <main id="main">{children}</main>
     </>
   );
 }
