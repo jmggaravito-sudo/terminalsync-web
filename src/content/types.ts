@@ -104,10 +104,10 @@ export interface Dict {
     columns: {
       feature: string;
       terminalSync: string;
-      warp: string;
-      cursor: string;
-      vercel: string;
-      itermTmux: string;
+      claudeCode: string;
+      codex: string;
+      claudeDesktop: string;
+      chatgpt: string;
     };
     groups: {
       persistence: string;

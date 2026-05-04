@@ -6,7 +6,11 @@ type Cell = "yes" | "no" | "partial" | "soon";
 // Column keys must match `dict.comparison.columns`. Order = visual order
 // of the rendered table (left to right). Terminal Sync goes first after
 // the feature label so the reader reads "what we do" before competitors.
-const COLUMN_KEYS = ["terminalSync", "warp", "cursor", "vercel", "itermTmux"] as const;
+// We compare against the tools your audience already uses: the two AI
+// CLIs (Claude Code / Codex) and the two AI desktop apps (Claude Desktop
+// / ChatGPT). Drops dev-specific competitors (Warp, Cursor, Vercel) so
+// non-programmer users still recognize what we're stacked against.
+const COLUMN_KEYS = ["terminalSync", "claudeCode", "codex", "claudeDesktop", "chatgpt"] as const;
 type ColumnKey = (typeof COLUMN_KEYS)[number];
 
 // Rows grouped by theme. Each group has a localized heading from
@@ -28,15 +32,15 @@ const GROUPS: Group[] = [
     rows: [
       {
         key: "resurrection",
-        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "partial" },
+        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "partial", chatgpt: "partial" },
       },
       {
         key: "uninterruptedWork",
-        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "partial" },
+        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
       },
       {
         key: "backgroundDaemon",
-        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "partial" },
+        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
       },
     ],
   },
@@ -45,15 +49,15 @@ const GROUPS: Group[] = [
     rows: [
       {
         key: "multiDeviceProfile",
-        cells: { terminalSync: "yes", warp: "partial", cursor: "partial", vercel: "no", itermTmux: "no" },
+        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "yes", chatgpt: "yes" },
       },
       {
         key: "anywhereAccess",
-        cells: { terminalSync: "soon", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+        cells: { terminalSync: "soon", claudeCode: "no", codex: "no", claudeDesktop: "yes", chatgpt: "yes" },
       },
       {
         key: "pairProgramming",
-        cells: { terminalSync: "soon", warp: "no", cursor: "no", vercel: "no", itermTmux: "partial" },
+        cells: { terminalSync: "soon", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
       },
     ],
   },
@@ -62,15 +66,15 @@ const GROUPS: Group[] = [
     rows: [
       {
         key: "aes256",
-        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
       },
       {
         key: "secretsVault",
-        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "partial", itermTmux: "no" },
+        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
       },
       {
         key: "apiKeysKeychain",
-        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+        cells: { terminalSync: "yes", claudeCode: "partial", codex: "no", claudeDesktop: "no", chatgpt: "no" },
       },
     ],
   },
@@ -79,15 +83,15 @@ const GROUPS: Group[] = [
     rows: [
       {
         key: "aiContinuity",
-        cells: { terminalSync: "yes", warp: "no", cursor: "partial", vercel: "no", itermTmux: "no" },
+        cells: { terminalSync: "yes", claudeCode: "partial", codex: "partial", claudeDesktop: "partial", chatgpt: "partial" },
       },
       {
         key: "aiConfigSync",
-        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "partial", chatgpt: "partial" },
       },
       {
         key: "oneClickInstall",
-        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "yes", chatgpt: "yes" },
       },
     ],
   },
@@ -96,19 +100,19 @@ const GROUPS: Group[] = [
     rows: [
       {
         key: "multiCloudSync",
-        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
       },
       {
         key: "silenceNotifications",
-        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
       },
       {
         key: "setupOnArrival",
-        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "no" },
+        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
       },
       {
         key: "gitNativeSync",
-        cells: { terminalSync: "yes", warp: "no", cursor: "no", vercel: "no", itermTmux: "partial" },
+        cells: { terminalSync: "yes", claudeCode: "no", codex: "no", claudeDesktop: "no", chatgpt: "no" },
       },
     ],
   },
