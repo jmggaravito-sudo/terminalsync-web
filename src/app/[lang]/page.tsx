@@ -14,6 +14,7 @@ import { FAQ } from "@/components/landing/FAQ";
 import { Affiliates } from "@/components/landing/Affiliates";
 import { Footer } from "@/components/landing/Footer";
 import { AgentWidget } from "@/components/AgentWidget";
+import { CookieBanner } from "@/components/CookieBanner";
 import { StructuredData } from "@/components/StructuredData";
 
 interface Props {
@@ -42,6 +43,7 @@ export default async function Landing({ params }: Props) {
       <Affiliates dict={d} />
       <Footer dict={d} />
       <AgentWidget dict={d} />
+      <CookieBanner dict={d} />
     </>
   );
 }

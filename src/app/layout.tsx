@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { defaultLocale } from "@/content";
+import { RewardfulLoader } from "@/components/RewardfulLoader";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -91,27 +92,13 @@ export default function RootLayout({
           rel="stylesheet"
         />
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
-        {process.env.NEXT_PUBLIC_REWARDFUL_API_KEY && (
-          <>
-            {/* Rewardful snippet — inline queue MUST load before the async
-                script so `window.rewardful(...)` calls made by the page JS
-                are buffered correctly until rw.js is ready. */}
-            <script
-              dangerouslySetInnerHTML={{
-                __html:
-                  "(function(w,r){w._rwq=r;w[r]=w[r]||function(){(w[r].q=w[r].q||[]).push(arguments)}})(window,'rewardful');",
-              }}
-            />
-            <script
-              async
-              src="https://r.wdfl.co/rw.js"
-              data-rewardful={process.env.NEXT_PUBLIC_REWARDFUL_API_KEY}
-            />
-          </>
-        )}
+        {/* Rewardful is now loaded by RewardfulLoader in <body>, gated on
+            cookie consent. Without consent the affiliate cookie is never
+            set — keeps the privacy-first claims of the landing honest. */}
       </head>
       <body>
         {children}
+        <RewardfulLoader />
         <Analytics />
         <SpeedInsights />
       </body>
