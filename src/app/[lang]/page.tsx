@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import dynamic from "next/dynamic";
 import { getDict, isLocale } from "@/content";
+import { currencyForCountry } from "@/lib/geoCurrency";
 import { Hero } from "@/components/landing/Hero";
 import { Demos } from "@/components/landing/Demos";
 import { Benefits } from "@/components/landing/Benefits";
@@ -40,6 +42,14 @@ export default async function Landing({ params }: Props) {
   if (!isLocale(lang)) notFound();
   const d = getDict(lang);
 
+  // Vercel injects the visitor's country as `x-vercel-ip-country` on
+  // every request. We read it server-side and pass a currency hint to
+  // <Pricing /> so non-USD visitors see "≈ $80,000 COP" next to "$19".
+  // Stripe still charges in USD; this is display-only.
+  const h = await headers();
+  const country = h.get("x-vercel-ip-country");
+  const currencyHint = currencyForCountry(country);
+
   return (
     <>
       <StructuredData dict={d} lang={lang} />
@@ -51,7 +61,7 @@ export default async function Landing({ params }: Props) {
       <BeforeAfter dict={d} />
       <MidCta dict={d} />
       <Personas dict={d} />
-      <Pricing dict={d} />
+      <Pricing dict={d} currencyHint={currencyHint} />
       <Trust dict={d} />
       <FAQ dict={d} />
       <Affiliates dict={d} />
