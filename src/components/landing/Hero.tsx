@@ -67,7 +67,7 @@ export function Hero({ dict }: { dict: Dict }) {
           </button>
         </div>
 
-        <p className="mt-4 text-[12px] text-[var(--color-fg-dim)]">
+        <p className="mt-4 text-[13px] font-semibold text-[var(--color-fg)]">
           {dict.hero.trustLine}
         </p>
 
