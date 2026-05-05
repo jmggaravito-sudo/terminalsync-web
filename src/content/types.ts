@@ -318,6 +318,22 @@ export interface Dict {
       ctaContact: string;
     };
   };
+  // Windows / Linux early-access banner. Replaces the macOS download
+  // CTA on Hero when the visitor isn't on macOS. {platform} is
+  // substituted with `labelWindows` or `labelLinux` at render time.
+  windowsEarlyAccess: {
+    labelWindows: string;
+    labelLinux: string;
+    title: string;
+    body: string;
+    emailPlaceholder: string;
+    cta: string;
+    ctaSubmitting: string;
+    successTitle: string;
+    successBody: string;
+    errorPrefix: string;
+    privacyNote: string;
+  };
 }
 
 interface Plan {

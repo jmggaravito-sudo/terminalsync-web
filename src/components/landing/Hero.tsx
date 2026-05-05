@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Download, PlayCircle } from "lucide-react";
 import type { Dict } from "@/content";
 import { AppMockup } from "./AppMockup";
+import { WindowsEarlyAccess } from "./WindowsEarlyAccess";
 import { VideoLightbox } from "@/components/VideoLightbox";
 
 // When the real demo video is ready, set this to a YouTube nocookie / Vimeo
@@ -70,6 +71,14 @@ export function Hero({ dict }: { dict: Dict }) {
         <p className="mt-4 text-[12px] text-[var(--color-fg-dim)]">
           {dict.hero.trustLine}
         </p>
+
+        {/* Renders only for Windows / Linux visitors. Mac users see
+            nothing here (the primary download CTA above already covers
+            them). The component runs platform detection client-side
+            after mount, so SSR ships an empty shell — no layout shift
+            for Mac visitors. */}
+        <WindowsEarlyAccess dict={dict} />
+
 
         {/* "Next up" teaser — surfaces the upcoming Codex Desktop sync to
             OpenAI Plus/Pro/Team users browsing the page. Sits below the

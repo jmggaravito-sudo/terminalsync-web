@@ -574,6 +574,19 @@ const es: Dict = {
       ctaContact: "Hablar con el equipo",
     },
   },
+  windowsEarlyAccess: {
+    labelWindows: "Windows",
+    labelLinux: "Linux",
+    title: "Terminal Sync para {platform} — acceso anticipado",
+    body: "Te avisamos en 2-3 semanas, apenas el instalador firmado esté listo. Sin SmartScreen, sin warnings — instalá y usá.",
+    emailPlaceholder: "tu@correo.com",
+    cta: "Anotarme",
+    ctaSubmitting: "Anotando…",
+    successTitle: "¡Listo, estás en la lista!",
+    successBody: "Te escribimos apenas Terminal Sync para {platform} esté disponible. Mientras tanto, si tenés una Mac a mano, ya podés usarlo.",
+    errorPrefix: "No pudimos guardar tu correo:",
+    privacyNote: "Solo te escribimos para el lanzamiento. Sin spam, te das de baja con un clic.",
+  },
 };
 
 export default es;
