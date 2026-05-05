@@ -56,10 +56,17 @@ export async function POST(req: Request) {
     );
   }
 
-  const secret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!secret) {
+  // Stripe sends LIVE events signed with STRIPE_WEBHOOK_SECRET and TEST
+  // events signed with STRIPE_TEST_WEBHOOK_SECRET. Same endpoint URL is
+  // registered for both modes in our Stripe account, so we accept either
+  // signature here. Without this, the E2E test scripts firing test
+  // events at production landed as `pending_webhooks=1` (signature
+  // mismatch → 400) and Supabase never picked up the events.
+  const liveSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const testSecret = process.env.STRIPE_TEST_WEBHOOK_SECRET;
+  if (!liveSecret && !testSecret) {
     return NextResponse.json(
-      { error: "Missing STRIPE_WEBHOOK_SECRET" },
+      { error: "Missing STRIPE_WEBHOOK_SECRET (and no test fallback)" },
       { status: 503 },
     );
   }
@@ -70,11 +77,20 @@ export async function POST(req: Request) {
   }
 
   const raw = await req.text();
-  let event: Stripe.Event;
-  try {
-    event = stripe.webhooks.constructEvent(raw, signature, secret);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Invalid signature";
+  let event: Stripe.Event | null = null;
+  let lastError: unknown = null;
+  for (const secret of [liveSecret, testSecret]) {
+    if (!secret) continue;
+    try {
+      event = stripe.webhooks.constructEvent(raw, signature, secret);
+      break;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  if (!event) {
+    const message =
+      lastError instanceof Error ? lastError.message : "Invalid signature";
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
