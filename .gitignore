@@ -32,3 +32,4 @@ next-env.d.ts
 
 # Terminal Sync vault — encrypted env blobs go to user's Drive, not the repo
 .terminalsync/
+supabase/.temp/
