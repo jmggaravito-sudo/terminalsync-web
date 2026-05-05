@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import dynamic from "next/dynamic";
 import { getDict, isLocale } from "@/content";
 import { Hero } from "@/components/landing/Hero";
 import { Demos } from "@/components/landing/Demos";
@@ -10,13 +11,25 @@ import { MidCta } from "@/components/landing/MidCta";
 import { Personas } from "@/components/landing/Personas";
 import { Pricing } from "@/components/landing/Pricing";
 import { Trust } from "@/components/landing/Trust";
-import { FAQ } from "@/components/landing/FAQ";
-import { Affiliates } from "@/components/landing/Affiliates";
 import { Footer } from "@/components/landing/Footer";
 import { AgentWidget } from "@/components/AgentWidget";
 import { CookieBanner } from "@/components/CookieBanner";
 import { StickyDownloadCTA } from "@/components/StickyDownloadCTA";
 import { StructuredData } from "@/components/StructuredData";
+
+// Below-the-fold sections — split as their own JS chunks so the initial
+// route bundle is smaller. FAQ is a "use client" accordion (chunk size
+// matters more); Affiliates is a server component that pulls a few
+// extra icons. Both render server-side as usual; only the JS hydration
+// for FAQ is deferred until that chunk arrives.
+const FAQ = dynamic(() =>
+  import("@/components/landing/FAQ").then((m) => ({ default: m.FAQ })),
+);
+const Affiliates = dynamic(() =>
+  import("@/components/landing/Affiliates").then((m) => ({
+    default: m.Affiliates,
+  })),
+);
 
 interface Props {
   params: Promise<{ lang: string }>;

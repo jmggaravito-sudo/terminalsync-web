@@ -31,13 +31,13 @@ const en: Dict = {
     },
     mockup: {
       appName: "Terminal Sync",
-      statusOk: "Your files are safe and synced",
-      bannerTitle: "Install Claude Code in seconds",
-      bannerBody: "We set everything up for you — just start asking.",
+      statusOk: "Everything safe and synced",
+      bannerTitle: "Your AI ready in seconds",
+      bannerBody: "We set everything up for you — just open and start asking.",
       bannerCta: "Install Claude Code",
-      session1: "Front-end Main Store",
-      session2: "Auth-API Service",
-      session3: "LangChain-Agent-Local",
+      session1: "Market research",
+      session2: "Writing assistant",
+      session3: "Sales analysis",
       live: "LIVE",
     },
   },
@@ -170,8 +170,8 @@ const en: Dict = {
     subtitle: "Still got questions? Email support@terminalsync.ai",
     items: [
       {
-        q: "Isn't Git enough to sync my code?",
-        a: "Git syncs what you track (source code). Terminal Sync moves what Git deliberately doesn't track: your .env with secrets, Claude/Codex/MCP configs, Cowork sessions, project memories, custom skills. Complementary tools — Git for the repo, Terminal Sync for everything else.",
+        q: "How is this different from syncing my folder via Drive or iCloud?",
+        a: "Drive and iCloud sync files unencrypted — the provider can see the content whenever it wants. Terminal Sync encrypts EVERYTHING with AES-256 before it leaves your Mac. Your files travel to Drive/iCloud/Dropbox as opaque blobs: neither Google, Apple, Anthropic, nor we can open them. The master key lives in your OS keychain.",
       },
       {
         q: "But doesn't Claude Desktop already sync between Macs?",
@@ -194,8 +194,8 @@ const en: Dict = {
         a: "The encryption and sync engine will be auditable. The client app is proprietary for now, but the security core is published so anyone can review it.",
       },
       {
-        q: "Does it work with Cursor / Cline / Aider?",
-        a: "Today we focus on Claude (Code + Desktop + Cowork) and Codex Desktop. If there's real community demand, we add more tools — the engine is tool-agnostic, only the synced paths change.",
+        q: "Does it work with any AI or just Claude and Codex?",
+        a: "Today we have it polished for Claude (Code + Desktop) and Codex. The engine is tool-agnostic — we add others (Cursor, Cline, Aider, Gemini CLI, etc.) based on real demand. If you want us to support something specific, write us and we'll add it to the public roadmap.",
       },
       {
         q: "What if Anthropic eventually syncs everything you do?",

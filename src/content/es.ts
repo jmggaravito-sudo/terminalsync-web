@@ -32,12 +32,12 @@ const es: Dict = {
     mockup: {
       appName: "Terminal Sync",
       statusOk: "Todo está seguro y guardado",
-      bannerTitle: "Instala Claude Code en segundos",
-      bannerBody: "Configuramos todo por ti para que solo tengas que empezar a preguntar.",
+      bannerTitle: "Tu IA lista en segundos",
+      bannerBody: "Configuramos todo por ti — solo abrí y empezá a pedir.",
       bannerCta: "Instalar Claude Code",
-      session1: "Front-end Main Store",
-      session2: "Auth-API Service",
-      session3: "LangChain-Agent-Local",
+      session1: "Investigación de mercado",
+      session2: "Asistente de redacción",
+      session3: "Análisis de ventas",
       live: "EN VIVO",
     },
   },
@@ -170,8 +170,8 @@ const es: Dict = {
     subtitle: "Si te queda alguna duda, escribinos a support@terminalsync.ai",
     items: [
       {
-        q: "¿No me alcanza con Git para sincronizar mi código?",
-        a: "Git sincroniza lo que vos trackeás (código fuente). Terminal Sync mueve lo que Git deliberadamente NO trackea: tus .env con secretos, configs de Claude/Codex/MCP, sesiones de Cowork, memorias de proyecto, skills custom. Son herramientas complementarias — Git para el repo, Terminal Sync para todo lo demás.",
+        q: "¿Cuál es la diferencia con sincronizar mi carpeta en Drive o iCloud?",
+        a: "Drive e iCloud sincronizan archivos sin cifrar — el proveedor puede ver el contenido cuando quiera. Terminal Sync cifra TODO con AES-256 antes de salir de tu Mac. Tus archivos viajan a Drive/iCloud/Dropbox como blobs opacos: ni Google, ni Apple, ni Anthropic, ni nosotros podemos abrirlos. La llave maestra vive en el llavero de tu sistema operativo.",
       },
       {
         q: "¿Pero Claude Desktop ya no sincroniza entre Macs?",
@@ -194,8 +194,8 @@ const es: Dict = {
         a: "El motor de cifrado y sincronización va a ser auditable. La app cliente es propietaria por ahora pero el core de seguridad lo publicamos para que cualquiera pueda revisarlo.",
       },
       {
-        q: "¿Funciona con Cursor / Cline / Aider?",
-        a: "Hoy nos enfocamos en Claude (Code + Desktop + Cowork) y Codex Desktop. Si hay demanda real de la comunidad, agregamos más herramientas — el motor es agnóstico, solo cambia qué paths sincroniza.",
+        q: "¿Funciona con cualquier IA o solo con Claude y Codex?",
+        a: "Hoy lo tenemos pulido para Claude (Code + Desktop) y Codex. El motor es agnóstico — agregamos otras herramientas (Cursor, Cline, Aider, Gemini CLI, etc.) según la demanda real. Si querés que soportemos algo específico, escribinos y lo subimos al roadmap público.",
       },
       {
         q: "¿Y si Anthropic eventualmente sincroniza todo lo que ustedes hacen?",
