@@ -63,6 +63,49 @@ const es: Dict = {
       },
     },
   },
+  multiAI: {
+    eyebrow: "AI Workflow Unificado",
+    title: "Dejá de saltar entre herramientas de IA",
+    subtitle:
+      "Hoy tu flujo se ve así: Claude en una terminal, Codex en otra, contexto perdido entre las dos. TerminalSync es la capa que las conecta.",
+    problem: {
+      title: "Sin TerminalSync",
+      items: [
+        "Claude en una ventana",
+        "Codex en otra",
+        "El contexto no viaja entre ellas",
+        "Te repetís a vos mismo todo el tiempo",
+        "Cada cambio de IA = empezar de cero",
+        "Tu flujo se rompe constantemente",
+      ],
+    },
+    solution: {
+      title: "Con TerminalSync",
+      items: [
+        "Un único entorno",
+        "Contexto compartido",
+        "Tus IAs trabajando juntas",
+        "Memoria de proyecto que viaja con vos",
+        "Sin repetir, sin saltar, sin fricción",
+        "El flujo no se rompe nunca",
+      ],
+    },
+    useCases: {
+      title: "Usá la IA correcta para cada momento — sin cambiar de setup",
+      cards: [
+        {
+          tool: "Claude",
+          verb: "para razonar",
+          body: "Análisis profundo, planificación, escritura. Claude ya conoce tu proyecto.",
+        },
+        {
+          tool: "Codex",
+          verb: "para ejecutar",
+          body: "Edición de código, refactors, automatizaciones. Mismo contexto, otra herramienta.",
+        },
+      ],
+    },
+  },
   benefits: {
     title: "Tu agente nunca se queda solo",
     subtitle:
@@ -195,7 +238,19 @@ const es: Dict = {
       },
       {
         q: "¿Funciona con cualquier IA o solo con Claude y Codex?",
-        a: "Hoy lo tenemos pulido para Claude (Code + Desktop) y Codex. El motor es agnóstico — agregamos otras herramientas (Cursor, Cline, Aider, Gemini CLI, etc.) según la demanda real. Si querés que soportemos algo específico, escribinos y lo subimos al roadmap público.",
+        a: "Hoy lo tenemos pulido para Claude (Code + Desktop) y Codex. El motor es agnóstico — agregamos otras herramientas (Cursor, Cline, Aider, etc.) según la demanda real. Si querés que soportemos algo específico, escribinos y lo subimos al roadmap público.",
+      },
+      {
+        q: "¿En qué se diferencia de un IDE en la nube tipo Codespaces o Gitpod?",
+        a: "No te mudás a un entorno nuevo — TU entorno te sigue a vos. Tu Mac, tus archivos, tus IAs configuradas como ya las tenías. Sin alquiler de cómputo, sin facturación por minuto, sin lock-in. Y todo cifrado AES-256 en tu propia nube.",
+      },
+      {
+        q: "¿En qué se diferencia de usar Claude o Codex por separado?",
+        a: "Claude y Codex por separado no se hablan: cada uno tiene su contexto, sus archivos, su memoria. TerminalSync los conecta en un único flujo. Le pedís a Claude que analice algo y a Codex que lo ejecute, sin re-explicar nada — comparten el mismo proyecto y la misma memoria.",
+      },
+      {
+        q: "¿Necesito configurar algo?",
+        a: "No. Ese es exactamente el punto. Instalás, iniciás sesión y ya tenés todo listo. La primera vez tomás 2 minutos para vincular tu Drive (o iCloud o Dropbox); de ahí en adelante, abrís cualquier Mac y todo está en su lugar.",
       },
       {
         q: "¿Y si Anthropic eventualmente sincroniza todo lo que ustedes hacen?",

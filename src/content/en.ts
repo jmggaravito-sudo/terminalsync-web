@@ -63,6 +63,49 @@ const en: Dict = {
       },
     },
   },
+  multiAI: {
+    eyebrow: "Unified AI Workflow",
+    title: "Stop juggling AI tools",
+    subtitle:
+      "Right now your flow looks like this: Claude in one terminal, Codex in another, context lost between them. TerminalSync is the layer that brings them together.",
+    problem: {
+      title: "Without TerminalSync",
+      items: [
+        "Claude in one window",
+        "Codex in another",
+        "Context doesn't travel between them",
+        "You repeat yourself constantly",
+        "Every AI switch = starting from scratch",
+        "Your flow breaks all the time",
+      ],
+    },
+    solution: {
+      title: "With TerminalSync",
+      items: [
+        "One environment",
+        "Shared context",
+        "Your AI tools working together",
+        "Project memory travels with you",
+        "No repeating, no switching, no friction",
+        "Your flow never breaks",
+      ],
+    },
+    useCases: {
+      title: "Use the right AI for each moment — without changing setup",
+      cards: [
+        {
+          tool: "Claude",
+          verb: "for reasoning",
+          body: "Deep analysis, planning, writing. Claude already knows your project.",
+        },
+        {
+          tool: "Codex",
+          verb: "for execution",
+          body: "Code edits, refactors, automations. Same context, different tool.",
+        },
+      ],
+    },
+  },
   benefits: {
     title: "Your agent is never left alone",
     subtitle:
@@ -195,7 +238,19 @@ const en: Dict = {
       },
       {
         q: "Does it work with any AI or just Claude and Codex?",
-        a: "Today we have it polished for Claude (Code + Desktop) and Codex. The engine is tool-agnostic — we add others (Cursor, Cline, Aider, Gemini CLI, etc.) based on real demand. If you want us to support something specific, write us and we'll add it to the public roadmap.",
+        a: "Today we have it polished for Claude (Code + Desktop) and Codex. The engine is tool-agnostic — we add others (Cursor, Cline, Aider, etc.) based on real demand. If you want us to support something specific, write us and we'll add it to the public roadmap.",
+      },
+      {
+        q: "How is this different from a cloud IDE like Codespaces or Gitpod?",
+        a: "You're not moving to a new environment — YOUR environment follows you. Your Mac, your files, your AI tools configured as you already had them. No compute rental, no per-minute billing, no lock-in. And everything is AES-256 encrypted in your own cloud.",
+      },
+      {
+        q: "How is this different from using Claude or Codex on their own?",
+        a: "Claude and Codex on their own don't talk to each other: each has its own context, files, memory. TerminalSync connects them in a single flow. You ask Claude to analyze something and Codex to execute it, without re-explaining anything — they share the same project and the same memory.",
+      },
+      {
+        q: "Do I need to configure anything?",
+        a: "No. That's exactly the point. You install, sign in, and everything is ready. First time takes 2 minutes to link your Drive (or iCloud or Dropbox); after that, you open any Mac and everything is in place.",
       },
       {
         q: "What if Anthropic eventually syncs everything you do?",
