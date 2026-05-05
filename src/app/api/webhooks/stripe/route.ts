@@ -331,8 +331,6 @@ async function handle(event: Stripe.Event) {
       const transfer = event.data.object as Stripe.Transfer;
       const sb = getSupabaseAdmin();
       if (!sb) break;
-      // Match by source_transaction (the underlying charge) → flips the
-      // pending payout row to 'paid' and stamps the transfer id.
       const charge =
         typeof transfer.source_transaction === "string"
           ? transfer.source_transaction
@@ -343,6 +341,41 @@ async function handle(event: Stripe.Event) {
         .update({ stripe_transfer_id: transfer.id, status: "paid" })
         .eq("stripe_charge_id", charge);
       if (error) console.error("[marketplace] payout sync failed", error.message);
+      break;
+    }
+
+    case "charge.refunded": {
+      // Buyer refund → drop install + mark payout refunded so reporting
+      // and any future clawback logic has the right state. We only act on
+      // FULL refunds — partial refunds get logged for now (the schema
+      // doesn't track partial amounts).
+      const charge = event.data.object as Stripe.Charge;
+      const sb = getSupabaseAdmin();
+      if (!sb) break;
+      if (!charge.id) break;
+
+      const refundedAll = charge.amount_refunded >= charge.amount;
+      if (!refundedAll) {
+        console.log("[marketplace] partial refund logged", { charge: charge.id });
+        break;
+      }
+
+      const installUpd = await sb
+        .from("connector_installs")
+        .update({ status: "uninstalled" })
+        .eq("stripe_charge_id", charge.id);
+      if (installUpd.error) {
+        console.error("[marketplace] refund install sync failed", installUpd.error.message);
+      }
+
+      const payoutUpd = await sb
+        .from("marketplace_payouts")
+        .update({ status: "refunded" })
+        .eq("stripe_charge_id", charge.id);
+      if (payoutUpd.error) {
+        console.error("[marketplace] refund payout sync failed", payoutUpd.error.message);
+      }
+      console.log("[marketplace] refund synced", { charge: charge.id });
       break;
     }
 

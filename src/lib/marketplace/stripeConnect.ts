@@ -87,10 +87,16 @@ export async function ensureListingPrice(
   if (listing.stripeProductId) {
     productId = listing.stripeProductId;
   } else {
-    const product = await stripe.products.create({
-      name: `Connector — ${listing.name}`,
-      metadata: { listing_id: listing.id, source: "terminalsync_marketplace" },
-    });
+    // Idempotency key keyed on the listing id — a retry after a partial
+    // failure (Stripe created the Product but our DB write afterwards
+    // failed) returns the SAME Product, never an orphaned duplicate.
+    const product = await stripe.products.create(
+      {
+        name: `Connector — ${listing.name}`,
+        metadata: { listing_id: listing.id, source: "terminalsync_marketplace" },
+      },
+      { idempotencyKey: `marketplace_product_${listing.id}` },
+    );
     productId = product.id;
   }
 
@@ -98,13 +104,34 @@ export async function ensureListingPrice(
   if (listing.stripePriceId) {
     priceId = listing.stripePriceId;
   } else {
-    const price = await stripe.prices.create({
-      product: productId,
-      currency: listing.currency,
-      unit_amount: listing.priceCents,
-    });
+    // Includes amount+currency in the key so changing the price gets a NEW
+    // Price (Stripe Prices are immutable; idempotency must reflect that).
+    const price = await stripe.prices.create(
+      {
+        product: productId,
+        currency: listing.currency,
+        unit_amount: listing.priceCents,
+        metadata: { listing_id: listing.id, source: "terminalsync_marketplace" },
+      },
+      {
+        idempotencyKey: `marketplace_price_${listing.id}_${listing.priceCents}_${listing.currency}`,
+      },
+    );
     priceId = price.id;
   }
 
   return { productId, priceId };
+}
+
+/** Verify a Stripe Price exists and is active. Use right before flipping a
+ *  listing to 'approved' so we never leave a listing pointing at a price
+ *  that 500s on checkout. */
+export async function verifyPriceLive(priceId: string): Promise<boolean> {
+  if (!stripe) throw new Error("Stripe not configured");
+  try {
+    const price = await stripe.prices.retrieve(priceId);
+    return price.active === true;
+  } catch {
+    return false;
+  }
 }

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { authedFetch } from "@/lib/supabase/browser";
 
 interface Listing {
   id: string;
@@ -28,7 +29,7 @@ export function ListingsClient({ lang }: { lang: string }) {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/marketplace/listings?status=mine")
+    authedFetch("/api/marketplace/listings?status=mine")
       .then((r) => r.json().then((d) => ({ ok: r.ok, data: d })))
       .then(({ ok, data }) => {
         if (cancelled) return;

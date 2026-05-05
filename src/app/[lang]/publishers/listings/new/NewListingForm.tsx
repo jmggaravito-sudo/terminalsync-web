@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { authedFetch } from "@/lib/supabase/browser";
 
 const CATEGORIES = ["productivity", "database", "automation", "storage", "messaging", "dev"] as const;
 
@@ -40,9 +41,8 @@ export function NewListingForm({ lang }: { lang: string }) {
     const priceCents = pricingType === "one_time" ? Math.round(parseFloat(priceUsd) * 100) : undefined;
 
     try {
-      const res = await fetch("/api/marketplace/listings", {
+      const res = await authedFetch("/api/marketplace/listings", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           listing: {
             slug,

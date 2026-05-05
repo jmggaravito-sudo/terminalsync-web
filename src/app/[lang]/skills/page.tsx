@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, Sparkles } from "lucide-react";
-import { listSkills, type SkillMeta } from "@/lib/skills";
-import { SkillLogo } from "./Logo";
+import { listSkills } from "@/lib/skills";
+import { SkillsExplorer } from "./Explorer";
 
 export const revalidate = 3600;
 
@@ -76,18 +76,16 @@ export default async function SkillsIndex({ params }: Props) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-5xl px-6 pb-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {skills.map((s) => (
-            <SkillCard
-              key={s.slug}
-              lang={lang}
-              skill={s}
-              categoryLabel={categoryLabels[s.category] || s.category}
-            />
-          ))}
-        </div>
-      </section>
+      <SkillsExplorer
+        lang={lang}
+        skills={skills}
+        categoryLabels={categoryLabels}
+        uiText={{
+          all: isEs ? "Todos" : "All",
+          searchPlaceholder: isEs ? "Buscar skills…" : "Search skills…",
+          noResults: isEs ? "Sin resultados." : "No results.",
+        }}
+      />
 
       <section className="mx-auto max-w-5xl px-6 pb-32">
         <Link
@@ -116,50 +114,3 @@ export default async function SkillsIndex({ params }: Props) {
   );
 }
 
-function SkillCard({
-  lang,
-  skill,
-  categoryLabel,
-}: {
-  lang: string;
-  skill: SkillMeta;
-  categoryLabel: string;
-}) {
-  return (
-    <Link
-      href={`/${lang}/skills/${skill.slug}`}
-      className="group relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5 transition-all hover:border-[var(--color-accent)]/40 hover:shadow-lg hover:-translate-y-0.5"
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="h-11 w-11 rounded-xl bg-[var(--color-panel-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden">
-          <SkillLogo src={skill.logo} size={28} className="h-7 w-7" />
-        </div>
-        <ArrowUpRight
-          size={16}
-          className="text-[var(--color-fg-dim)] group-hover:text-[var(--color-accent)] transition-colors shrink-0 mt-1"
-        />
-      </div>
-
-      <h3 className="mt-4 text-[16px] font-semibold tracking-tight">
-        {skill.name}
-      </h3>
-      <p className="mt-1 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
-        {skill.tagline}
-      </p>
-
-      <div className="mt-4 pt-3 border-t border-[var(--color-border)]/50 flex items-center justify-between text-[11px] font-mono uppercase tracking-[0.1em]">
-        <span className="text-[var(--color-fg-dim)]">{categoryLabel}</span>
-        <div className="flex gap-1">
-          {skill.vendors.map((v) => (
-            <span
-              key={v}
-              className="rounded bg-[var(--color-accent)]/10 text-[var(--color-accent)] border border-[var(--color-accent)]/20 px-1.5 py-0.5"
-            >
-              {v}
-            </span>
-          ))}
-        </div>
-      </div>
-    </Link>
-  );
-}
