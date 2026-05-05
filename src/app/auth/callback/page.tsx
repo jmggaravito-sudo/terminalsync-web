@@ -69,6 +69,23 @@ export default function AuthCallbackPage() {
     async function completeWebSession() {
       try {
         const url = new URL(window.location.href);
+
+        // Supabase redirects errors as `?error=...&error_code=...&error_description=...`.
+        // Surface them verbatim so the user knows what to do (the
+        // common one is `otp_expired` when an email scanner pre-fetched
+        // the token before the user clicked).
+        const errCode = url.searchParams.get("error_code") || url.searchParams.get("error");
+        const errDesc = url.searchParams.get("error_description");
+        if (errCode) {
+          const friendly =
+            errCode === "otp_expired" || errCode === "access_denied"
+              ? "Tu link mágico ya fue usado o expiró. Pedinos uno nuevo desde la página de login."
+              : `${errCode}${errDesc ? ` — ${errDesc}` : ""}`;
+          setError(friendly);
+          setStage("error");
+          return;
+        }
+
         // PKCE flow: Supabase puts ?code=... in the query.
         const code = url.searchParams.get("code");
         if (code) {
@@ -78,9 +95,32 @@ export default function AuthCallbackPage() {
           setTimeout(() => router.replace("/es/marketplace"), 800);
           return;
         }
-        // Implicit hash flow: detectSessionInUrl in getSupabaseBrowser
-        // auto-parses the access_token from the hash on construction,
-        // but it can race the React mount. Poll briefly.
+
+        // Implicit hash flow: parse access_token + refresh_token from
+        // the hash and call setSession explicitly. We don't rely on
+        // supabase-js's `detectSessionInUrl` auto-handler because it
+        // can race the React mount on iOS Safari.
+        const hashStr = window.location.hash.startsWith("#")
+          ? window.location.hash.slice(1)
+          : window.location.hash;
+        if (hashStr) {
+          const hashParams = new URLSearchParams(hashStr);
+          const accessToken = hashParams.get("access_token");
+          const refreshToken = hashParams.get("refresh_token");
+          if (accessToken && refreshToken) {
+            const { error: e } = await sb!.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+            if (e) throw e;
+            setStage("session");
+            setTimeout(() => router.replace("/es/marketplace"), 800);
+            return;
+          }
+        }
+
+        // Last-resort: poll getSession in case detectSessionInUrl is
+        // still processing on a slow device.
         for (let i = 0; i < 6; i++) {
           const { data } = await sb!.auth.getSession();
           if (data.session) {
@@ -90,11 +130,9 @@ export default function AuthCallbackPage() {
           }
           await new Promise((r) => setTimeout(r, 250));
         }
-        // Some email clients (notably Gmail's link wrapper) follow the
-        // redirect server-side which consumes the token before the
-        // browser sees it. The user needs a fresh link in that case.
+
         setError(
-          "Tu email lo consumió antes de llegar acá. Pedinos un link nuevo y abrilo desde una pestaña distinta.",
+          "No encontré ni código ni token en este enlace. Suele pasar cuando tu cliente de email pre-fetchea el link (Gmail con scanning de seguridad). Pedinos un link nuevo y abrilo en una pestaña aparte sin previsualizar el correo.",
         );
         setStage("error");
       } catch (e) {
