@@ -16,18 +16,18 @@ const en: Dict = {
     signIn: "Sign in",
   },
   hero: {
-    eyebrow: "Your AI stack · In your cloud · Across your Macs",
-    titlePre: "Your AI environment, ",
-    titleHighlight: "truly nomadic",
+    eyebrow: "Persistence · Anywhere Access · AES-256 Encryption",
+    titlePre: "Your AI agent ",
+    titleHighlight: "never stops",
     titlePost: ".",
     subtitle:
-      "Claude, Codex, MCP, .env and local folders — synced between your Macs in your own Drive. Neither Anthropic nor OpenAI sees your files. You hold the only key.",
-    ctaPrimary: "Sync my stack — 7-day free trial",
+      "Close the app, lose internet, switch devices — your Claude or Codex keeps running. When you come back, everything is exactly where you left it. Bank-grade encryption, in your own cloud, accessible from any device.",
+    ctaPrimary: "Download free for Mac",
     ctaSecondary: "See how it works",
-    trustLine: "No credit card · 2-minute setup · Zero-knowledge privacy · Cancel anytime",
+    trustLine: "No credit card · 2-minute setup · AES-256 zero-knowledge encryption · Cancel anytime",
     nextUp: {
-      eyebrow: "Coming soon",
-      body: "Automatic Cowork sessions sync (manual today) · Cross-vendor Universal Memory (Claude ↔ Codex) · Auto-reinstall of plugins on fresh Mac. Public roadmap on GitHub.",
+      eyebrow: "Latest",
+      body: "Anywhere Access via Cloudflare Tunnel — open your session from your phone with zero install. Built-in auto-update. Per-terminal secrets vault. Full roadmap on GitHub.",
     },
     mockup: {
       appName: "Terminal Sync",
@@ -44,22 +44,22 @@ const en: Dict = {
   demos: {
     title: "Three ‘wow’ moments",
     subtitle:
-      "Why serious devs ditch their old workflow within 30 seconds of trying it.",
+      "Why people who try TerminalSync drop their old tools within 30 seconds.",
     items: {
       context: {
-        kicker: "Demo · Continuity",
-        title: "Close on one Mac, open on the other. Exactly the same.",
-        body: "Your Claude, your Codex, your Cowork — all waiting with configs, MCPs, sessions and memories intact. Zero re-indexing, zero re-login.",
+        kicker: "Demo · Persistence",
+        title: "Close everything. Your agent keeps working alone.",
+        body: "Internet drops, your Mac restarts, you accidentally close the app — your Claude or Codex doesn't stop. When you come back, the conversation is exactly where you left it.",
       },
       install: {
-        kicker: "Demo · 2-minute setup",
-        title: "One click. Your entire AI stack is ready.",
-        body: "Claude Code installed, MCPs configured, .env from your Drive, Cowork sessions downloaded. No NPM, no Node, no docs.",
+        kicker: "Demo · Any device",
+        title: "Generate a link, open your session from your phone.",
+        body: "'Mobile' button → unique HTTPS link → your same desktop in your phone, tablet, or any borrowed Mac. Same context, same conversations.",
       },
       shield: {
-        kicker: "Demo · The Shield",
-        title: "AES-256-GCM before it leaves your Mac.",
-        body: "Neither Google, nor Anthropic, nor OpenAI, nor we can see your files. Your cloud, your keys, you own it all.",
+        kicker: "Demo · Privacy",
+        title: "AES-256 encryption before it leaves your Mac.",
+        body: "Your files travel encrypted to your own Drive (or iCloud or Dropbox). Neither Google, nor Anthropic, nor OpenAI, nor we see what's inside. The master key lives in your Keychain.",
       },
     },
   },
@@ -131,37 +131,37 @@ const en: Dict = {
   },
   beforeAfter: {
     eyebrow: "The real change",
-    title: "How switching Macs actually feels",
+    title: "What it feels like to work with your AI agent",
     subtitle:
-      "Before: half a morning gone. After: two minutes and you're back where you left off.",
+      "Before: lost mornings and conversations that start from scratch. After: your agent keeps going where you left off, no matter what.",
     before: {
       heading: "Without Terminal Sync",
       items: [
-        "You hunt for where your .env files ended up",
-        "You reconfigure MCP servers one by one",
-        "You re-install Claude Code plugins from memory",
-        "Cowork has no history — you start from zero",
-        "Your setup.sh, custom skills, aliases are missing",
-        "30-60 minutes before you can actually work",
+        "Close the app, lose your AI conversation",
+        "Internet drops, your agent stops",
+        "Want to keep going from your phone — you can't",
+        "Your API keys live in scattered files on your Mac",
+        "Switch devices, start everything from zero",
+        "Stare at the screen waiting for the AI to reply",
       ],
     },
     after: {
       heading: "With Terminal Sync",
       items: [
-        "You install the app on the new Mac",
-        "Sign in with your account",
-        "Folders, MCPs, .env and configs appear from your Drive (encrypted)",
-        "Cowork shows your sessions from the other Mac",
-        "Claude recognizes your memory for each project",
-        "2 minutes and you're back where you left off",
+        "Close everything, reopen — your AI is still running",
+        "Internet drops — your agent works locally anyway",
+        "Generate a link, open the session on your phone",
+        "AES-256 encrypted vault for your secrets",
+        "Your account and config follow you across devices",
+        "WhatsApp/Email/Telegram alert when it finishes or needs you",
       ],
     },
   },
   midCta: {
     eyebrow: "Try it free",
-    title: "Your next Mac switch shouldn't cost you 2 hours.",
-    body: "7 days of Pro, no credit card. If it clicks, $19/month. If not, you stop using it. Done.",
-    ctaPrimary: "Start free trial",
+    title: "Stop staring at the screen waiting on your AI.",
+    body: "7 days of Pro, no credit card. If it clicks, you stay. If not, you stop using it. Done.",
+    ctaPrimary: "Download free",
     ctaSecondary: "See pricing",
   },
   faq: {
@@ -241,22 +241,22 @@ const en: Dict = {
   personas: {
     title: "Is this for you?",
     subtitle:
-      "Three profiles who don't get how they lived without Terminal Sync.",
+      "Three profiles who don't get how they worked without Terminal Sync.",
     items: {
       nomad: {
-        title: "The Nomad Dev",
-        body: "You work on MacBook + Mac mini, or office + home. Switching machines wastes 30 minutes reconfiguring .env, MCPs, skills. With Terminal Sync, you open and pick up where you left off.",
-        tag: "Developer",
-      },
-      beginner: {
-        title: "The Multi-AI Power User",
-        body: "You pay for Claude Pro + ChatGPT Plus. You have active Cowork sessions, Codex set up, custom MCPs. You want EVERYTHING to travel — not just Claude or just Codex.",
+        title: "Lives in their AI agent",
+        body: "You spend hours with Claude or Codex shipping projects. When the app freezes, internet drops, or you accidentally close it, you lose all the context. With TerminalSync your agent keeps running and you come back exactly where you left off.",
         tag: "AI Power User",
       },
+      beginner: {
+        title: "Switches devices often",
+        body: "MacBook + Mac mini, or office + home, or you're traveling. You even want to keep going from your phone while your agent processes something. Your account and your session follow you wherever you are.",
+        tag: "Multi-device",
+      },
       agency: {
-        title: "The Indie Hacker / Founder",
-        body: "5+ projects in parallel, each with its own .env, credentials, Claude context. Need it all encrypted and portable, without git-pushing things that don't belong in the repo.",
-        tag: "Founder",
+        title: "Handles sensitive data",
+        body: "You work with API keys, client credentials, contracts, private data. You don't want them living in a vendor's cloud that could one day read them. AES-256 encryption before it leaves your Mac — not even we can open them.",
+        tag: "Privacy-first",
       },
     },
   },
