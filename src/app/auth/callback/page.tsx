@@ -68,24 +68,34 @@ export default function AuthCallbackPage() {
 
     async function completeWebSession() {
       try {
-        const { data, error: e } = await sb!.auth.getSession();
-        if (e) throw e;
-        if (data.session) {
-          setStage("session");
-          // Park them on the marketplace home — most magic-link clicks
-          // come from the publisher / marketplace flow.
-          setTimeout(() => router.replace("/es/marketplace"), 800);
-          return;
-        }
-        // Hash present but no session yet → supabase-js may still be
-        // processing it. Give it a tick.
-        const next = await sb!.auth.getSession();
-        if (next.data.session) {
+        const url = new URL(window.location.href);
+        // PKCE flow: Supabase puts ?code=... in the query.
+        const code = url.searchParams.get("code");
+        if (code) {
+          const { error: e } = await sb!.auth.exchangeCodeForSession(code);
+          if (e) throw e;
           setStage("session");
           setTimeout(() => router.replace("/es/marketplace"), 800);
           return;
         }
-        setError("No pudimos crear la sesión.");
+        // Implicit hash flow: detectSessionInUrl in getSupabaseBrowser
+        // auto-parses the access_token from the hash on construction,
+        // but it can race the React mount. Poll briefly.
+        for (let i = 0; i < 6; i++) {
+          const { data } = await sb!.auth.getSession();
+          if (data.session) {
+            setStage("session");
+            setTimeout(() => router.replace("/es/marketplace"), 800);
+            return;
+          }
+          await new Promise((r) => setTimeout(r, 250));
+        }
+        // Some email clients (notably Gmail's link wrapper) follow the
+        // redirect server-side which consumes the token before the
+        // browser sees it. The user needs a fresh link in that case.
+        setError(
+          "Tu email lo consumió antes de llegar acá. Pedinos un link nuevo y abrilo desde una pestaña distinta.",
+        );
         setStage("error");
       } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
