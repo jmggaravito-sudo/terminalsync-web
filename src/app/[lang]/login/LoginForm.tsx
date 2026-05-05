@@ -42,29 +42,74 @@ export function LoginForm({ lang }: { lang: string }) {
       typeof window !== "undefined"
         ? `${window.location.origin}/${lang}/login?next=${encodeURIComponent(next)}`
         : undefined;
-    const { error: err } = await sb.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: redirectTo },
-    });
-    if (err) {
-      setError(err.message);
+    try {
+      const { error: err } = await sb.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: redirectTo },
+      });
+      if (err) {
+        // Some networks (corp proxies, ad blockers, browser extensions,
+        // service workers from older deploys) return a fetch TypeError
+        // even though the OTP request actually reached Supabase and
+        // the email got sent. We've confirmed end-to-end that emails
+        // arrive in those cases. Treat network-shaped errors as a
+        // soft success and tell the user to check their inbox — false
+        // positive cost is a confused retry; false negative cost is
+        // the user thinks login is broken.
+        const msg = err.message || "";
+        const isNetworkBlip =
+          msg.toLowerCase().includes("fetch") ||
+          msg.toLowerCase().includes("load failed") ||
+          msg.toLowerCase().includes("network");
+        if (isNetworkBlip) {
+          setSent(true);
+        } else {
+          setError(err.message);
+        }
+        setSubmitting(false);
+        return;
+      }
+      setSent(true);
       setSubmitting(false);
-      return;
+    } catch (e) {
+      // Same idea — supabase-js sometimes throws instead of returning
+      // an `error` object. Any network-level throw → soft success.
+      const msg = e instanceof Error ? e.message : String(e);
+      if (msg.toLowerCase().includes("fetch") || msg.toLowerCase().includes("load failed")) {
+        setSent(true);
+      } else {
+        setError(msg);
+      }
+      setSubmitting(false);
     }
-    setSent(true);
-    setSubmitting(false);
   }
 
   if (sent) {
     return (
-      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-5">
+      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-5 space-y-2">
         <p className="text-[14px] font-semibold text-emerald-400">
           {isEs ? "Revisá tu correo" : "Check your inbox"}
         </p>
-        <p className="mt-1.5 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
+        <p className="text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
           {isEs
             ? `Te mandamos el enlace a ${email}. Hacé click y volvé acá.`
             : `We sent the link to ${email}. Click it and come back here.`}
+        </p>
+        <p className="text-[12px] text-[var(--color-fg-dim)] leading-relaxed">
+          {isEs
+            ? "¿No te llegó en 30 seg? Revisá Spam / Promociones. Si todo bien sigue vacío, "
+            : "Not in 30s? Check Spam / Promotions. Still empty? "}
+          <button
+            type="button"
+            onClick={() => {
+              setSent(false);
+              setError(null);
+            }}
+            className="text-[var(--color-accent)] hover:underline underline-offset-2"
+          >
+            {isEs ? "reintentar" : "retry"}
+          </button>
+          .
         </p>
       </div>
     );
