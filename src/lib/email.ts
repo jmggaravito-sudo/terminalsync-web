@@ -7,6 +7,9 @@ import { WelcomeEmail } from "../../emails/welcome";
 import { TrialEndingEmail } from "../../emails/trial-ending";
 import { PaymentFailedEmail } from "../../emails/payment-failed";
 import { CancellationConfirmedEmail } from "../../emails/cancellation-confirmed";
+import { MarketplaceListingApprovedEmail } from "../../emails/marketplace-listing-approved";
+import { MarketplaceListingRejectedEmail } from "../../emails/marketplace-listing-rejected";
+import { MarketplaceNewSubmissionEmail } from "../../emails/marketplace-new-submission";
 import { signBillingToken, signUnsubToken } from "./signedTokens";
 
 const key = process.env.RESEND_API_KEY;
@@ -14,6 +17,7 @@ const resend = key ? new Resend(key) : null;
 
 const SUPPORT_FROM = "Juan de TerminalSync <support@terminalsync.ai>";
 const BILLING_FROM = "Terminal Sync <billing@terminalsync.ai>";
+const MARKETPLACE_FROM = "TerminalSync Marketplace <marketplace@terminalsync.ai>";
 
 function unsubUrl(email: string): string {
   // HMAC-signed so random visitors can't unsub other people by enumerating
@@ -175,6 +179,105 @@ export async function sendCancellationEmail(opts: {
     headers: { "X-Entity-Ref-ID": `cancellation:${opts.subscriptionId}` },
   });
 
+  if (result.error) throw result.error;
+  return { id: result.data?.id };
+}
+
+// ── Marketplace: listing approved (to publisher) ─────────────────────────
+
+export async function sendListingApprovedEmail(opts: {
+  to: string;
+  publisherName: string;
+  listingName: string;
+  listingSlug: string;
+  isPaid: boolean;
+  listingId: string;
+}) {
+  if (!resend) {
+    console.warn("[email] RESEND_API_KEY missing — skipping listing-approved");
+    return { skipped: true as const };
+  }
+  const result = await resend.emails.send({
+    from: MARKETPLACE_FROM,
+    to: [opts.to],
+    subject: `Tu listing "${opts.listingName}" está aprobado`,
+    react: MarketplaceListingApprovedEmail({
+      publisherName: opts.publisherName,
+      listingName: opts.listingName,
+      listingSlug: opts.listingSlug,
+      isPaid: opts.isPaid,
+      unsubscribeUrl: unsubUrl(opts.to),
+    }),
+    headers: { "X-Entity-Ref-ID": `marketplace-approved:${opts.listingId}` },
+  });
+  if (result.error) throw result.error;
+  return { id: result.data?.id };
+}
+
+// ── Marketplace: listing rejected (to publisher) ─────────────────────────
+
+export async function sendListingRejectedEmail(opts: {
+  to: string;
+  publisherName: string;
+  listingName: string;
+  reviewNotes: string;
+  listingId: string;
+}) {
+  if (!resend) {
+    console.warn("[email] RESEND_API_KEY missing — skipping listing-rejected");
+    return { skipped: true as const };
+  }
+  const result = await resend.emails.send({
+    from: MARKETPLACE_FROM,
+    to: [opts.to],
+    subject: `Tu listing "${opts.listingName}" necesita ajustes`,
+    react: MarketplaceListingRejectedEmail({
+      publisherName: opts.publisherName,
+      listingName: opts.listingName,
+      reviewNotes: opts.reviewNotes,
+      unsubscribeUrl: unsubUrl(opts.to),
+    }),
+    headers: { "X-Entity-Ref-ID": `marketplace-rejected:${opts.listingId}` },
+  });
+  if (result.error) throw result.error;
+  return { id: result.data?.id };
+}
+
+// ── Marketplace: new submission alert (to admins) ────────────────────────
+
+export async function sendNewSubmissionAdminAlert(opts: {
+  to: string[];
+  listingName: string;
+  listingSlug: string;
+  category: string;
+  pricing: string;
+  publisherName: string;
+  publisherEmail: string;
+  listingId: string;
+}) {
+  if (!resend) {
+    console.warn("[email] RESEND_API_KEY missing — skipping admin alert");
+    return { skipped: true as const };
+  }
+  if (opts.to.length === 0) {
+    console.warn("[email] ADMIN_EMAILS empty — skipping admin alert");
+    return { skipped: true as const };
+  }
+  const result = await resend.emails.send({
+    from: MARKETPLACE_FROM,
+    to: opts.to,
+    subject: `Nueva submission marketplace: ${opts.listingName}`,
+    react: MarketplaceNewSubmissionEmail({
+      listingName: opts.listingName,
+      listingSlug: opts.listingSlug,
+      category: opts.category,
+      pricing: opts.pricing,
+      publisherName: opts.publisherName,
+      publisherEmail: opts.publisherEmail,
+      unsubscribeUrl: unsubUrl(opts.to[0]),
+    }),
+    headers: { "X-Entity-Ref-ID": `marketplace-submission:${opts.listingId}` },
+  });
   if (result.error) throw result.error;
   return { id: result.data?.id };
 }

@@ -7,6 +7,7 @@ import {
   type McpManifest,
 } from "@/lib/marketplace/manifest";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { sendNewSubmissionAdminAlert } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -37,6 +38,15 @@ export async function GET(req: Request) {
       .order("updated_at", { ascending: false });
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ listings: data });
+  }
+
+  // Public list only exposes approved. Pending/rejected are admin-only —
+  // see GET /api/marketplace/admin/queue for the review feed.
+  if (status !== "approved") {
+    return NextResponse.json(
+      { error: "Only status=approved or status=mine are accepted on this endpoint" },
+      { status: 400 },
+    );
   }
 
   const { data, error } = await sb
@@ -126,6 +136,32 @@ export async function POST(req: Request) {
     // JS client, but we can delete the orphan to keep state clean.
     await sb.from("connector_listings").delete().eq("id", insert.data.id);
     return NextResponse.json({ error: versionInsert.error.message }, { status: 500 });
+  }
+
+  // Notify admins of the new submission. Best-effort; don't 500 the publisher
+  // if Resend hiccups — the listing is already in the DB.
+  const adminEmails = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const pubInfo = await sb
+    .from("publishers")
+    .select("display_name")
+    .eq("id", pub.data.id)
+    .maybeSingle();
+  try {
+    await sendNewSubmissionAdminAlert({
+      to: adminEmails,
+      listingName: v.data.name,
+      listingSlug: v.data.slug,
+      category: v.data.category,
+      pricing: v.data.pricingType === "free" ? "Free" : `$${((v.data.priceCents ?? 0) / 100).toFixed(2)}`,
+      publisherName: pubInfo.data?.display_name ?? "Publisher",
+      publisherEmail: user.email ?? "(no email)",
+      listingId: insert.data.id,
+    });
+  } catch (err) {
+    console.error("[marketplace] admin alert failed:", err);
   }
 
   return NextResponse.json({

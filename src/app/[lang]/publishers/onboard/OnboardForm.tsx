@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { authedFetch, getSupabaseBrowser } from "@/lib/supabase/browser";
 
-// Minimal form — POSTs to /api/marketplace/publishers and redirects the user
-// to the Stripe-hosted onboarding link returned by the server. The auth
-// handshake (Bearer token from Supabase) is wired in by whichever component
-// owns the auth header — see src/lib/marketplace/auth.ts.
+// Form POSTs to /api/marketplace/publishers and redirects to Stripe-hosted
+// onboarding. Auth via authedFetch which attaches the Supabase JWT.
 
 export function OnboardForm({ lang }: { lang: string }) {
   const isEs = lang === "es";
@@ -15,20 +14,33 @@ export function OnboardForm({ lang }: { lang: string }) {
   const [bio, setBio] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const sb = getSupabaseBrowser();
+    if (!sb) { setSignedIn(false); return; }
+    sb.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    const { data: sub } = sb.auth.onAuthStateChange((_e, session) => setSignedIn(!!session));
+    return () => sub.subscription.unsubscribe();
+  }, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
     try {
-      const res = await fetch(`/api/marketplace/publishers?lang=${lang}`, {
+      const res = await authedFetch(`/api/marketplace/publishers?lang=${lang}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // TODO: attach Authorization: Bearer <supabase-jwt> via the shared
-        // auth helper that owns the session on the client side.
         body: JSON.stringify({ displayName, slug, website: website || undefined, bio: bio || undefined }),
       });
       const data = await res.json();
+      if (res.status === 401) {
+        throw new Error(
+          isEs
+            ? "Iniciá sesión con tu cuenta antes de registrarte como publisher."
+            : "Sign in with your account before registering as a publisher.",
+        );
+      }
       if (!res.ok) throw new Error(data.error ?? "Onboarding failed");
       window.location.href = data.onboardingUrl;
     } catch (err) {
@@ -76,13 +88,23 @@ export function OnboardForm({ lang }: { lang: string }) {
           className={inputCls}
         />
       </Field>
+      {signedIn === false && (
+        <a
+          href={`/${lang}/login?next=${encodeURIComponent(`/${lang}/publishers/onboard`)}`}
+          className="block rounded-xl border border-amber-500/40 bg-amber-500/10 px-3.5 py-2.5 text-[12.5px] text-amber-400 hover:bg-amber-500/15 transition-colors"
+        >
+          {isEs
+            ? "Necesitás iniciar sesión antes de continuar. Click acá para entrar →"
+            : "Sign in with your account first. Click here to log in →"}
+        </a>
+      )}
       {error && (
         <p className="text-[13px] text-red-500">{error}</p>
       )}
       <button
         type="submit"
-        disabled={submitting}
-        className="inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] glow-accent transition-all hover:-translate-y-px disabled:opacity-50"
+        disabled={submitting || signedIn === false}
+        className="inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] glow-accent transition-all hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {submitting ? (isEs ? "Conectando con Stripe…" : "Connecting to Stripe…") : (isEs ? "Continuar a Stripe" : "Continue to Stripe")}
       </button>

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Plug, Sparkles, Zap } from "lucide-react";
-import { listConnectors, type ConnectorMeta } from "@/lib/connectors";
+import { listAllConnectors, type ConnectorMeta } from "@/lib/connectors";
 import { listSkills, type SkillMeta } from "@/lib/skills";
 import { ConnectorLogo } from "@/app/[lang]/connectors/Logo";
 import { SkillLogo } from "@/app/[lang]/skills/Logo";
+import { MarketplaceAppBanner } from "@/components/marketplace/AppBanner";
 
 export const revalidate = 3600;
 
@@ -32,7 +33,7 @@ export default async function MarketplaceHub({ params }: Props) {
   const { lang } = await params;
   const isEs = lang === "es";
   const [connectors, skills] = await Promise.all([
-    listConnectors(lang),
+    listAllConnectors(lang),
     listSkills(lang),
   ]);
 
@@ -141,7 +142,7 @@ export default async function MarketplaceHub({ params }: Props) {
       </section>
 
       {/* Become a publisher CTA */}
-      <section className="mx-auto max-w-5xl px-6 pb-32">
+      <section className="mx-auto max-w-5xl px-6 pb-12">
         <Link
           href={`/${lang}/publishers`}
           className="block rounded-3xl border border-[var(--color-accent)]/25 bg-gradient-to-br from-[var(--color-accent)]/8 via-[var(--color-info)]/6 to-transparent p-8 md:p-10 hover:border-[var(--color-accent)]/45 transition-colors"
@@ -169,6 +170,9 @@ export default async function MarketplaceHub({ params }: Props) {
           </div>
         </Link>
       </section>
+
+      {/* TerminalSync app promo banner — last */}
+      <MarketplaceAppBanner lang={lang} />
     </main>
   );
 }

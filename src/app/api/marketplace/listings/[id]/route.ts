@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { authenticate, isAdmin } from "@/lib/marketplace/auth";
-import { ensureListingPrice } from "@/lib/marketplace/stripeConnect";
+import { ensureListingPrice, verifyPriceLive } from "@/lib/marketplace/stripeConnect";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { sendListingApprovedEmail, sendListingRejectedEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -21,7 +22,6 @@ export async function GET(req: Request, { params }: Params) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   if (!listing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  // Hide non-approved listings unless the requester is the owner or admin.
   if (listing.status !== "approved") {
     const user = await authenticate(req);
     const owner = user && (await ownsListing(user.id, listing.publisher_id));
@@ -40,9 +40,7 @@ export async function GET(req: Request, { params }: Params) {
 }
 
 /** PATCH /api/marketplace/listings/[id]
- *  - Admin: { action: 'approve' | 'reject', notes?: string }
- *  - Owner: edit draft fields (subset). Approved listings can only be
- *    edited via a new version (POST /listings/[id]/versions, future).
+ *  Admin actions: approve | reject | unpublish (takedown of approved listing).
  */
 export async function PATCH(req: Request, { params }: Params) {
   const { id } = await params;
@@ -63,8 +61,11 @@ export async function PATCH(req: Request, { params }: Params) {
     return await handleAdminTransition(sb, id, body.action, body.notes);
   }
 
-  // Owner edit path: out-of-scope for MVP scaffold (one-shot submission).
-  // When implemented: validate body, ensure listing.status='draft', update.
+  if (body.action === "unpublish") {
+    if (!isAdmin(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return await handleUnpublish(sb, id, body.notes);
+  }
+
   return NextResponse.json({ error: "Owner edits not yet supported in MVP" }, { status: 501 });
 }
 
@@ -76,7 +77,7 @@ async function handleAdminTransition(
 ) {
   const listing = await sb
     .from("connector_listings")
-    .select("id, status, name, pricing_type, price_cents, currency, stripe_product_id, stripe_price_id, publisher_id")
+    .select("id, slug, status, name, pricing_type, price_cents, currency, stripe_product_id, stripe_price_id, publisher_id")
     .eq("id", listingId)
     .maybeSingle();
   if (listing.error) return NextResponse.json({ error: listing.error.message }, { status: 500 });
@@ -85,16 +86,44 @@ async function handleAdminTransition(
     return NextResponse.json({ error: `Listing is ${listing.data.status}, not pending` }, { status: 409 });
   }
 
+  // Resolve publisher info + email once for both approve/reject paths.
+  const publisher = await sb
+    .from("publishers")
+    .select("id, display_name, user_id")
+    .eq("id", listing.data.publisher_id)
+    .maybeSingle();
+  let publisherEmail: string | null = null;
+  if (publisher.data?.user_id) {
+    const { data: userRow } = await sb.auth.admin.getUserById(publisher.data.user_id);
+    publisherEmail = userRow?.user?.email ?? null;
+  }
+
   if (action === "reject") {
     const upd = await sb
       .from("connector_listings")
       .update({ status: "rejected", rejected_at: new Date().toISOString(), review_notes: notes ?? null })
       .eq("id", listingId);
     if (upd.error) return NextResponse.json({ error: upd.error.message }, { status: 500 });
+
+    if (publisherEmail) {
+      try {
+        await sendListingRejectedEmail({
+          to: publisherEmail,
+          publisherName: publisher.data?.display_name ?? "Publisher",
+          listingName: listing.data.name,
+          reviewNotes: notes ?? "",
+          listingId: listing.data.id,
+        });
+      } catch (err) {
+        console.error("[marketplace] reject email failed:", err);
+      }
+    }
+
     return NextResponse.json({ status: "rejected" });
   }
 
-  // Approve: lazily create Stripe Product + Price for paid listings.
+  // Approve flow (Fix #4 hardening): idempotent Stripe + persist before
+  // verify + verify before flipping status.
   let stripeProductId = listing.data.stripe_product_id;
   let stripePriceId = listing.data.stripe_price_id;
   if (listing.data.pricing_type === "one_time" && listing.data.price_cents) {
@@ -115,6 +144,28 @@ async function handleAdminTransition(
         { status: 502 },
       );
     }
+
+    if (
+      stripeProductId !== listing.data.stripe_product_id ||
+      stripePriceId !== listing.data.stripe_price_id
+    ) {
+      const persistIds = await sb
+        .from("connector_listings")
+        .update({ stripe_product_id: stripeProductId, stripe_price_id: stripePriceId })
+        .eq("id", listingId)
+        .eq("status", "pending");
+      if (persistIds.error) {
+        return NextResponse.json({ error: persistIds.error.message }, { status: 500 });
+      }
+    }
+
+    const live = await verifyPriceLive(stripePriceId!);
+    if (!live) {
+      return NextResponse.json(
+        { error: "Stripe Price is not active. Re-approve to recreate." },
+        { status: 502 },
+      );
+    }
   }
 
   const upd = await sb
@@ -129,14 +180,87 @@ async function handleAdminTransition(
     .eq("id", listingId);
   if (upd.error) return NextResponse.json({ error: upd.error.message }, { status: 500 });
 
-  // Stamp the publisher's first-approval timestamp (waiver eligibility).
   await sb
     .from("publishers")
     .update({ approved_at: new Date().toISOString() })
     .eq("id", listing.data.publisher_id)
     .is("approved_at", null);
 
+  if (publisherEmail) {
+    try {
+      await sendListingApprovedEmail({
+        to: publisherEmail,
+        publisherName: publisher.data?.display_name ?? "Publisher",
+        listingName: listing.data.name,
+        listingSlug: listing.data.slug,
+        isPaid: listing.data.pricing_type === "one_time",
+        listingId: listing.data.id,
+      });
+    } catch (err) {
+      console.error("[marketplace] approve email failed:", err);
+    }
+  }
+
   return NextResponse.json({ status: "approved", stripePriceId });
+}
+
+/** Admin takedown of an approved listing. Sets status back to 'rejected'
+ *  with [TAKEDOWN] prefix in review_notes. Stripe IDs are kept so a future
+ *  re-approval reuses them. */
+async function handleUnpublish(
+  sb: NonNullable<ReturnType<typeof getSupabaseAdmin>>,
+  listingId: string,
+  notes?: string,
+) {
+  const listing = await sb
+    .from("connector_listings")
+    .select("id, slug, status, name, publisher_id")
+    .eq("id", listingId)
+    .maybeSingle();
+  if (listing.error) return NextResponse.json({ error: listing.error.message }, { status: 500 });
+  if (!listing.data) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (listing.data.status !== "approved") {
+    return NextResponse.json(
+      { error: `Listing is ${listing.data.status}, not approved — only approved listings can be unpublished` },
+      { status: 409 },
+    );
+  }
+
+  const reason = notes?.trim() || "Admin takedown";
+  const upd = await sb
+    .from("connector_listings")
+    .update({
+      status: "rejected",
+      rejected_at: new Date().toISOString(),
+      review_notes: `[TAKEDOWN] ${reason}`,
+    })
+    .eq("id", listingId);
+  if (upd.error) return NextResponse.json({ error: upd.error.message }, { status: 500 });
+
+  const publisher = await sb
+    .from("publishers")
+    .select("display_name, user_id")
+    .eq("id", listing.data.publisher_id)
+    .maybeSingle();
+  if (publisher.data?.user_id) {
+    const { data: userRow } = await sb.auth.admin.getUserById(publisher.data.user_id);
+    const email = userRow?.user?.email;
+    if (email) {
+      try {
+        await sendListingRejectedEmail({
+          to: email,
+          publisherName: publisher.data.display_name ?? "Publisher",
+          listingName: listing.data.name,
+          reviewNotes: `Tu listing fue dado de baja del marketplace. Razón: ${reason}`,
+          listingId: listing.data.id,
+        });
+      } catch (err) {
+        console.error("[marketplace] takedown email failed:", err);
+      }
+    }
+  }
+
+  return NextResponse.json({ status: "unpublished" });
 }
 
 async function ownsListing(userId: string, publisherId: string): Promise<boolean> {

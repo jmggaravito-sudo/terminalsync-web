@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, Sparkles } from "lucide-react";
-import { listConnectors, type ConnectorMeta } from "@/lib/connectors";
-import { ConnectorLogo } from "./Logo";
+import { listAllConnectors } from "@/lib/connectors";
+import { ConnectorsExplorer } from "./Explorer";
 
 export const revalidate = 3600; // hourly — edits to .md files picked up on next deploy
 
@@ -46,8 +46,9 @@ const CATEGORY_LABELS_EN: Record<string, string> = {
 
 export default async function ConnectorsIndex({ params }: Props) {
   const { lang } = await params;
-  const connectors = await listConnectors(lang);
+  const connectors = await listAllConnectors(lang);
   const categoryLabels = lang === "es" ? CATEGORY_LABELS_ES : CATEGORY_LABELS_EN;
+  const isEs = lang === "es";
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
@@ -68,18 +69,17 @@ export default async function ConnectorsIndex({ params }: Props) {
         </p>
       </section>
 
-      <section className="mx-auto max-w-5xl px-6 pb-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {connectors.map((c) => (
-            <ConnectorCard
-              key={c.slug}
-              lang={lang}
-              connector={c}
-              categoryLabel={categoryLabels[c.category] || c.category}
-            />
-          ))}
-        </div>
-      </section>
+      <ConnectorsExplorer
+        lang={lang}
+        connectors={connectors}
+        categoryLabels={categoryLabels}
+        uiText={{
+          all: isEs ? "Todos" : "All",
+          searchPlaceholder: isEs ? "Buscar por nombre o tag…" : "Search by name or tag…",
+          noResults: isEs ? "Sin resultados." : "No results.",
+          soon: isEs ? "Pronto" : "Soon",
+        }}
+      />
 
       <section className="mx-auto max-w-5xl px-6 pb-32">
         <Link
@@ -108,50 +108,3 @@ export default async function ConnectorsIndex({ params }: Props) {
   );
 }
 
-function ConnectorCard({
-  lang,
-  connector,
-  categoryLabel,
-}: {
-  lang: string;
-  connector: ConnectorMeta;
-  categoryLabel: string;
-}) {
-  const soon = connector.status === "soon";
-  return (
-    <Link
-      href={`/${lang}/connectors/${connector.slug}`}
-      className={`group relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5 transition-all hover:border-[var(--color-accent)]/40 hover:shadow-lg hover:-translate-y-0.5 ${
-        soon ? "opacity-70" : ""
-      }`}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="h-11 w-11 rounded-xl bg-[var(--color-panel-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden">
-          <ConnectorLogo src={connector.logo} size={28} className="h-7 w-7" />
-        </div>
-        <ArrowUpRight
-          size={16}
-          className="text-[var(--color-fg-dim)] group-hover:text-[var(--color-accent)] transition-colors shrink-0 mt-1"
-        />
-      </div>
-
-      <div className="mt-4 flex items-center gap-2">
-        <h3 className="text-[16px] font-semibold tracking-tight">
-          {connector.name}
-        </h3>
-        {soon && (
-          <span className="text-[10px] font-mono uppercase tracking-[0.12em] border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 text-[var(--color-accent)] rounded px-1.5 py-0.5">
-            {lang === "es" ? "Pronto" : "Soon"}
-          </span>
-        )}
-      </div>
-      <p className="mt-1 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
-        {connector.tagline}
-      </p>
-
-      <div className="mt-4 pt-3 border-t border-[var(--color-border)]/50 text-[11px] text-[var(--color-fg-dim)] font-mono uppercase tracking-[0.1em]">
-        {categoryLabel}
-      </div>
-    </Link>
-  );
-}
