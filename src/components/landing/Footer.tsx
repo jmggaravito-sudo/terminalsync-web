@@ -1,6 +1,36 @@
 import Link from "next/link";
+import { Github, Instagram, Facebook } from "lucide-react";
 import type { Dict } from "@/content";
 import { Logo } from "@/components/Logo";
+
+// Social handles confirmed live by JM. Add new ones here as accounts
+// come online — same handles also live in StructuredData.tsx's
+// `sameAs` array (keep in sync for SEO / Knowledge Graph).
+const SOCIALS: Array<{
+  key: string;
+  href: string;
+  Icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
+  label: string;
+}> = [
+  {
+    key: "instagram",
+    href: "https://www.instagram.com/terminalsync_ai",
+    Icon: Instagram,
+    label: "Instagram",
+  },
+  {
+    key: "facebook",
+    href: "https://www.facebook.com/Terminalsyncai",
+    Icon: Facebook,
+    label: "Facebook",
+  },
+  {
+    key: "github",
+    href: "https://github.com/jmggaravito-sudo/terminalsync-web",
+    Icon: Github,
+    label: "GitHub",
+  },
+];
 
 export function Footer({ dict }: { dict: Dict }) {
   const year = new Date().getFullYear();
@@ -60,6 +90,21 @@ export function Footer({ dict }: { dict: Dict }) {
           <p className="mt-3 text-[12.5px] text-[var(--color-fg-muted)] max-w-[14rem] leading-relaxed">
             {dict.footer.tagline}
           </p>
+          {/* Social row — same handles emit as `sameAs` in JSON-LD. */}
+          <div className="mt-5 flex items-center gap-3">
+            {SOCIALS.map(({ key, href, Icon, label }) => (
+              <a
+                key={key}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="inline-flex items-center justify-center h-8 w-8 rounded-md text-[var(--color-fg-muted)] hover:text-[var(--color-fg-strong)] hover:bg-[var(--color-panel)] transition-colors"
+              >
+                <Icon size={16} strokeWidth={1.8} />
+              </a>
+            ))}
+          </div>
         </div>
         {cols.map((col) => (
           <div key={col.heading}>

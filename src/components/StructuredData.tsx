@@ -25,6 +25,7 @@ export function StructuredData({ dict, lang }: Props) {
     sameAs: [
       "https://github.com/jmggaravito-sudo/terminalsync-web",
       "https://www.instagram.com/terminalsync_ai",
+      "https://www.facebook.com/Terminalsyncai",
     ],
     contactPoint: [
       {
