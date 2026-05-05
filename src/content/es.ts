@@ -17,12 +17,12 @@ const es: Dict = {
   },
   hero: {
     eyebrow: "AI Workflow OS · Claude + Codex",
-    titlePre: "Cualquier computadora es ",
-    titleHighlight: "tu computadora",
+    titlePre: "Tus IAs y tu entorno, ",
+    titleHighlight: "sincronizados y seguros",
     titlePost: ".",
     subtitle:
-      "Tu terminal, tus archivos y todas tus IAs — en un solo lugar. Trabajá con Claude, Codex y todas las herramientas que ya usás, sin cambiar de aplicación, sin perder contexto, sin romper tu flujo. Iniciá sesión en cualquier equipo y seguí donde quedaste.",
-    ctaPrimary: "Empezá gratis",
+      "Tu terminal, archivos y herramientas siempre listos en cualquier computadora. Abrí sesión y continuá donde lo dejaste.",
+    ctaPrimary: "Probalo gratis",
     ctaSecondary: "Ver cómo funciona",
     trustLine: "Sin setup · Sin perder contexto · Funciona en cualquier equipo · Cifrado AES-256 zero-knowledge",
     nextUp: {
