@@ -16,18 +16,18 @@ const es: Dict = {
     signIn: "Iniciar sesión",
   },
   hero: {
-    eyebrow: "Persistencia · Anywhere Access · Cifrado AES-256",
-    titlePre: "Tu agente IA ",
-    titleHighlight: "nunca se detiene",
+    eyebrow: "AI Workflow OS · Claude + Codex",
+    titlePre: "Cualquier computadora es ",
+    titleHighlight: "tu computadora",
     titlePost: ".",
     subtitle:
-      "Cerrás la app, se cae internet, cambiás de equipo — tu Claude o Codex sigue corriendo. Cuando vuelvas, todo está exactamente donde lo dejaste. Cifrado de grado bancario, en tu nube, accesible desde cualquier dispositivo.",
-    ctaPrimary: "Descargar gratis para Mac",
+      "Tu terminal, tus archivos y todas tus IAs — en un solo lugar. Trabajá con Claude, Codex y todas las herramientas que ya usás, sin cambiar de aplicación, sin perder contexto, sin romper tu flujo. Iniciá sesión en cualquier equipo y seguí donde quedaste.",
+    ctaPrimary: "Empezá gratis",
     ctaSecondary: "Ver cómo funciona",
-    trustLine: "Sin tarjeta · Setup en 2 minutos · Cifrado AES-256 zero-knowledge · Cancelable cuando quieras",
+    trustLine: "Sin setup · Sin perder contexto · Funciona en cualquier equipo · Cifrado AES-256 zero-knowledge",
     nextUp: {
       eyebrow: "Lo último",
-      body: "Anywhere Access vía Cloudflare Tunnel — abrí tu sesión desde el celular sin instalar nada. Auto-update integrado. Vault de secretos por terminal. Roadmap completo en GitHub.",
+      body: "Anywhere Access vía Cloudflare Tunnel — abrí tu sesión desde el celular sin instalar nada. Multi-AI workflow unificado: Claude y Codex con el mismo contexto. Vault de secretos por terminal.",
     },
     mockup: {
       appName: "Terminal Sync",
