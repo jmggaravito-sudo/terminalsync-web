@@ -11,6 +11,7 @@ export function middleware(req: NextRequest) {
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/oauth") || // OAuth callback is language-agnostic
+    pathname === "/download" || // top-level redirect to /api/download
     pathname.includes(".") ||
     locales.some((l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`))
   ) {
