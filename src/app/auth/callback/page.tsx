@@ -34,36 +34,16 @@ export default function AuthCallbackPage() {
       setStage("error");
       return;
     }
-    // Read the hash before supabase-js consumes it.
-    const hash = typeof window !== "undefined" ? window.location.hash : "";
-    const isDesktop =
-      typeof navigator !== "undefined" &&
-      /Macintosh|Windows|Linux/.test(navigator.userAgent) &&
-      !/iPhone|iPad|Android/.test(navigator.userAgent);
-
-    // Best-effort deep link to the desktop app. Browsers that have it
-    // installed will prompt and switch; browsers without it just show
-    // a "no app available" toast and stay here. We don't block on it.
-    if (isDesktop && hash) {
-      setStage("deeplink");
-      const dl = `terminalsync://auth/callback${hash}`;
-      // Brief delay so the branded card renders first.
-      const t = window.setTimeout(() => {
-        try {
-          window.location.href = dl;
-        } catch {
-          /* ignore — fall through to web session below */
-        }
-      }, 700);
-      // After 2s, also try the web-session path so the user isn't
-      // stranded if they don't have the app.
-      const t2 = window.setTimeout(() => void completeWebSession(), 2200);
-      return () => {
-        window.clearTimeout(t);
-        window.clearTimeout(t2);
-      };
-    }
-    // Mobile / non-desktop browsers go straight to web session.
+    // Always go straight to the web session on this page. Earlier
+    // versions auto-dispatched `terminalsync://auth/callback#hash`
+    // when the UA looked like macOS, but that ate the token before
+    // the web session could parse it AND opened the desktop app
+    // unexpectedly when the user was just trying to do magic-link
+    // auth in Safari/Chrome. JM 2026-05-05.
+    //
+    // Users who actually want the desktop app's auth flow open it
+    // FROM the desktop app (which uses the OAuth deep-link flow at
+    // /oauth/callback, not this page).
     void completeWebSession();
 
     async function completeWebSession() {
