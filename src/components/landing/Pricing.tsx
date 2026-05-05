@@ -3,13 +3,26 @@
 import { useState } from "react";
 import { Check, Sparkles, ArrowRight, Zap } from "lucide-react";
 import type { Dict } from "@/content";
+import { type CurrencyHint, formatLocal } from "@/lib/geoCurrency";
 import { CheckoutButton } from "./CheckoutButton";
 import { PlanQuiz } from "./PlanQuiz";
 
 type Cycle = "monthly" | "yearly";
 type PlanKey = "starter" | "pro" | "dev";
 
-export function Pricing({ dict }: { dict: Dict }) {
+export function Pricing({
+  dict,
+  currencyHint,
+}: {
+  dict: Dict;
+  /**
+   * Optional currency hint inferred from the request's geo headers
+   * server-side. When present, prices show "$19/mo (≈ $80,000 COP)" so
+   * non-USD visitors can mentally benchmark cost. Stripe still charges
+   * in USD — the hint is display-only.
+   */
+  currencyHint?: CurrencyHint | null;
+}) {
   const [cycle, setCycle] = useState<Cycle>("yearly");
   const [quizOpen, setQuizOpen] = useState(false);
   const [highlighted, setHighlighted] = useState<PlanKey | null>(null);
@@ -130,6 +143,7 @@ export function Pricing({ dict }: { dict: Dict }) {
           copy={dict.pricing.plans.pro}
           cycle={cycle}
           dict={dict}
+          currencyHint={currencyHint ?? null}
           featured
           highlighted={highlighted === "pro"}
         />
@@ -140,9 +154,18 @@ export function Pricing({ dict }: { dict: Dict }) {
           copy={dict.pricing.plans.dev}
           cycle={cycle}
           dict={dict}
+          currencyHint={currencyHint ?? null}
           highlighted={highlighted === "dev"}
         />
       </div>
+
+      {currencyHint && (
+        <p className="mt-6 text-center text-[12px] text-[var(--color-fg-dim)] max-w-xl mx-auto leading-relaxed">
+          {dict.locale === "es"
+            ? `Detectamos que estás en una región con ${currencyHint.code}. Mostramos el precio aproximado en tu moneda al lado del USD — el cobro real sigue en USD y tu banco hace la conversión.`
+            : `We detected you're in a ${currencyHint.code} region. We show an approximate local price next to USD — actual charge is still in USD and your bank handles the conversion.`}
+        </p>
+      )}
 
       <PlanQuiz
         dict={dict}
@@ -198,6 +221,7 @@ function CycleCard({
   copy,
   cycle,
   dict,
+  currencyHint,
   featured,
   highlighted,
 }: {
@@ -206,12 +230,21 @@ function CycleCard({
   copy: Dict["pricing"]["plans"]["pro"];
   cycle: Cycle;
   dict: Dict;
+  currencyHint: CurrencyHint | null;
   featured?: boolean;
   highlighted?: boolean;
 }) {
   const price = cycle === "yearly" ? copy.priceYearly : copy.priceMonthly;
   const note =
     cycle === "yearly" ? copy.priceNoteYearly : copy.priceNoteMonthly;
+  // Parse the USD price ($19, $39, $190, $390) into a number for the
+  // local currency approximation. Strips $ and any decimals — all our
+  // prices are integer dollars.
+  const usdValue = Number(price.replace(/[^0-9.]/g, ""));
+  const localApprox =
+    currencyHint && Number.isFinite(usdValue)
+      ? formatLocal(usdValue, currencyHint)
+      : null;
   return (
     <article
       id={id}
@@ -244,8 +277,14 @@ function CycleCard({
         <span className="text-[12px] text-[var(--color-fg-muted)]">{note}</span>
       </div>
 
+      {localApprox && (
+        <div className="text-[11.5px] text-[var(--color-fg-muted)] -mt-1">
+          ≈ {localApprox} {currencyHint!.code}
+        </div>
+      )}
+
       {cycle === "yearly" ? (
-        <div className="text-[11.5px] text-[var(--color-ok)] font-medium -mt-1">
+        <div className={`text-[11.5px] text-[var(--color-ok)] font-medium ${localApprox ? "" : "-mt-1"}`}>
           {copy.yearlyEquivalent}
         </div>
       ) : (

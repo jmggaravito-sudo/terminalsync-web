@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { listSlugs as listConnectorSlugs } from "@/lib/connectors";
 import { listSkillSlugs } from "@/lib/skills";
+import { TOOL_SLUGS } from "@/lib/vsPages";
 
 const BASE = "https://terminalsync.ai";
 const LANGS = ["es", "en"] as const;
@@ -28,6 +29,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "connectors",
     "publishers",
     "legal/affiliates",
+    "legal/privacy",
+    "legal/terms",
+    "legal/security",
+    "about",
+    "blog",
   ];
   for (const lang of LANGS) {
     for (const p of STATIC_PATHS) {
@@ -57,6 +63,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const slug of connectorSlugs) {
       entries.push({
         url: `${BASE}/${lang}/connectors/${slug}`,
+        lastModified: now,
+        changeFrequency: "monthly",
+        priority: 0.7,
+      });
+    }
+    // /vs/<tool> SEO comparison pages — TerminalSync vs Cursor / Cline /
+    // Aider / etc. High-priority because each captures long-tail intent.
+    for (const tool of TOOL_SLUGS) {
+      entries.push({
+        url: `${BASE}/${lang}/vs/${tool}`,
         lastModified: now,
         changeFrequency: "monthly",
         priority: 0.7,

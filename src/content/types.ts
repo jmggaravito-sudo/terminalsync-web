@@ -51,6 +51,17 @@ export interface Dict {
       notifications: { title: string; body: string };
     };
   };
+  multiAI: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    problem: { title: string; items: string[] };
+    solution: { title: string; items: string[] };
+    useCases: {
+      title: string;
+      cards: Array<{ tool: string; verb: string; body: string }>;
+    };
+  };
   toolBreakdown: {
     eyebrow: string;
     title: string;
