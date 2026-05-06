@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { getDict, isLocale } from "@/content";
 import { currencyForCountry } from "@/lib/geoCurrency";
 import { Hero } from "@/components/landing/Hero";
+import { MemoryPersistent } from "@/components/landing/MemoryPersistent";
 import { MultiAI } from "@/components/landing/MultiAI";
 import { Demos } from "@/components/landing/Demos";
 import { Benefits } from "@/components/landing/Benefits";
@@ -56,6 +57,7 @@ export default async function Landing({ params }: Props) {
       <StructuredData dict={d} lang={lang} />
       <Hero dict={d} />
       <MultiAI dict={d} />
+      <MemoryPersistent dict={d} />
       <Demos dict={d} />
       <Benefits dict={d} />
       <ToolBreakdown dict={d} />

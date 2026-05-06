@@ -63,6 +63,54 @@ const es: Dict = {
       },
     },
   },
+  memory: {
+    eyebrow: "Memoria persistente",
+    badge: "Próximamente",
+    title: "Tu IA aprende de vos. Y no se olvida nunca.",
+    subtitle:
+      "Memoria local, cifrada y portable que crece con cada sesión. Tu agente recuerda tus preferencias, decisiones de arquitectura y convenciones — el día 30 te conoce mejor que un junior nuevo.",
+    pillars: [
+      {
+        title: "100% local, 100% privado",
+        body: "La base de conocimiento vive en SQLite en tu Mac. Sin servidores nuestros, sin claves API, sin vendor lock-in. Si querés sincronizarla entre tus equipos, lo hacemos cifrada con AES-256 a tu propia nube.",
+      },
+      {
+        title: "Funciona con cualquier IA",
+        body: "Compatible vía MCP con Claude Code, Codex, Cursor, Windsurf y cualquier agente que soporte el protocolo. Una sola memoria, todos tus agentes.",
+      },
+      {
+        title: "Búsqueda semántica",
+        body: "Tu agente encuentra el contexto relevante automáticamente. Preguntás 'cómo manejábamos auth' y trae las decisiones, los patrones y las razones — no solo palabras clave.",
+      },
+    ],
+    timeline: {
+      heading: "Sin memoria persistente vs. con memoria persistente",
+      withoutLabel: "Sin TerminalSync Memory",
+      withLabel: "Con TerminalSync Memory",
+      withoutItems: [
+        { when: "Día 1", line: "Le explicás que preferís TypeScript con strict mode." },
+        { when: "Día 3", line: "“¿Qué lenguaje preferís?” — re-explicás todo." },
+        { when: "Día 14", line: "Otra vez. Empezás de cero." },
+        { when: "Día 30", line: "Dejás de explicar y aceptás respuestas genéricas." },
+      ],
+      withItems: [
+        { when: "Día 1", line: "Le explicás que preferís TypeScript con strict mode." },
+        { when: "Día 3", line: "“Como preferís TypeScript, voy a inicializar con strict.”" },
+        { when: "Día 14", line: "“Siguiendo tu convención de error types explícitos…”" },
+        { when: "Día 30", line: "Conoce tu stack mejor que un dev que recién arranca." },
+      ],
+    },
+    cta: {
+      heading: "Avisame cuando esté",
+      body: "Te mandamos un email cuando la memoria persistente esté disponible. Sin spam, sin newsletters — solo el lanzamiento.",
+      placeholder: "tu@email.com",
+      button: "Avisame",
+      submitting: "Enviando…",
+      success: "✓ Listo. Te escribimos cuando esté.",
+      errorEmail: "Email inválido",
+      errorGeneric: "No se pudo enviar. Reintentá en un momento.",
+    },
+  },
   multiAI: {
     eyebrow: "AI Workflow Unificado",
     title: "Dejá de saltar entre herramientas de IA",
