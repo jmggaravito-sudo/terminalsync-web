@@ -119,17 +119,19 @@ export interface Dict {
       vercel: string;
       claudeCode: string;
       codex: string;
+      gemini: string;
     };
     rows: {
+      persistentMemory: string;
+      resurrection: string;
+      multiModel: string;
+      responsiveNotifications: string;
+      webMobileMirror: string;
       offlineLocal: string;
       aes256: string;
       secretsVault: string;
-      resurrection: string;
       internetImmunity: string;
       aiConversationSync: string;
-      multiModel: string;
-      anywhereAccess: string;
-      stuckNotifications: string;
       replyInjection: string;
       noVendorLockIn: string;
       zeroRuntime: string;
