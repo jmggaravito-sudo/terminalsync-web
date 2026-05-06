@@ -6,6 +6,7 @@ import type { Dict } from "@/content";
 import { AppMockup } from "./AppMockup";
 import { VideoLightbox } from "@/components/VideoLightbox";
 import { ClaudeMark, OpenAIMark, GeminiMark } from "@/components/brand/AILogos";
+import { WindowsEarlyAccess } from "./WindowsEarlyAccess";
 
 // When the real demo video is ready, set this to a YouTube nocookie / Vimeo
 // / Mux embed URL. Leave empty (null) to show the polished placeholder.
@@ -97,6 +98,11 @@ export function Hero({ dict }: { dict: Dict }) {
             macOS
           </span>
         </div>
+
+        {/* Windows visitors get the waitlist banner instead of being
+            ignored — the macOS pill stays so the platform context is
+            obvious, but they get a clear path to express interest. */}
+        <WindowsEarlyAccess dict={dict} />
 
         <p className="mt-4 text-[13px] font-semibold text-[var(--color-fg)]">
           {dict.hero.trustLine}
