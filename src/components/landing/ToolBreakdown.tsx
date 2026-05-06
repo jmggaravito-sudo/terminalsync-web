@@ -1,4 +1,4 @@
-import { Check, Clock, Code2, Users, Cpu } from "lucide-react";
+import { Check, Clock, Code2, Sparkles, Cpu } from "lucide-react";
 import type { Dict } from "@/content";
 
 // Per-tool coverage cards — concrete answer to "what actually syncs from
@@ -15,16 +15,16 @@ export function ToolBreakdown({ dict }: { dict: Dict }) {
       tintFg: "text-[var(--color-claude)]",
     },
     {
-      key: "cowork" as const,
-      Icon: Users,
-      tintBg: "bg-[var(--color-accent)]/10",
-      tintFg: "text-[var(--color-accent)]",
-    },
-    {
       key: "codex" as const,
       Icon: Cpu,
       tintBg: "bg-[var(--color-info)]/10",
       tintFg: "text-[var(--color-info)]",
+    },
+    {
+      key: "gemini" as const,
+      Icon: Sparkles,
+      tintBg: "bg-[var(--color-accent)]/10",
+      tintFg: "text-[var(--color-accent)]",
     },
   ];
 

@@ -16,7 +16,7 @@ const es: Dict = {
     signIn: "Iniciar sesión",
   },
   hero: {
-    eyebrow: "AI Workflow OS · Claude + Codex",
+    eyebrow: "AI Workflow OS · Claude · Codex · Gemini",
     titlePre: "Tus IAs y tu entorno, ",
     titleHighlight: "sincronizados y seguros",
     titlePost: ".",
@@ -91,7 +91,7 @@ const es: Dict = {
       ],
     },
     useCases: {
-      title: "Usá la IA correcta para cada momento — sin cambiar de setup",
+      title: "Tres AI agents. Una sola Mac. Todos sincronizados.",
       cards: [
         {
           tool: "Claude",
@@ -102,6 +102,11 @@ const es: Dict = {
           tool: "Codex",
           verb: "para ejecutar",
           body: "Edición de código, refactors, automatizaciones. Mismo contexto, otra herramienta.",
+        },
+        {
+          tool: "Gemini CLI",
+          verb: "para contexto largo",
+          body: "1M tokens de ventana, multimodal nativo (PDFs, imágenes, video). Free tier sin API key.",
         },
       ],
     },
@@ -145,17 +150,18 @@ const es: Dict = {
         ],
         upcoming: [],
       },
-      cowork: {
-        name: "Claude Cowork",
-        tagline: "Tus sesiones de agente entre Macs",
+      gemini: {
+        name: "Gemini CLI",
+        tagline: "El agente IA open-source de Google",
         live: [
-          "Sync automático bidireccional",
-          "Sesiones disponibles en cualquier dispositivo",
+          "Ventana de contexto de 1M tokens — la más grande del mercado",
+          "Multimodal nativo: texto, imágenes, PDFs y video",
+          "Free tier generoso (60 req/min, 1000/día) sin API key",
+          "Auth con tu cuenta de Google directo desde la app",
+          "Apache 2.0 — open source, sin lock-in",
+          "Sub-agents y settings roaman cifrados entre tus Macs",
         ],
-        upcoming: [
-          "Lock por sesión (aviso si está abierta en otra Mac)",
-          "Backup automático antes de mergear",
-        ],
+        upcoming: [],
       },
       codex: {
         name: "Codex",

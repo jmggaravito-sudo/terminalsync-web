@@ -74,7 +74,7 @@ export interface Dict {
         live: string[];
         upcoming: string[];
       };
-      cowork: {
+      gemini: {
         name: string;
         tagline: string;
         live: string[];

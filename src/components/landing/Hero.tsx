@@ -5,6 +5,7 @@ import { Download, PlayCircle } from "lucide-react";
 import type { Dict } from "@/content";
 import { AppMockup } from "./AppMockup";
 import { VideoLightbox } from "@/components/VideoLightbox";
+import { ClaudeMark, OpenAIMark, GeminiMark } from "@/components/brand/AILogos";
 
 // When the real demo video is ready, set this to a YouTube nocookie / Vimeo
 // / Mux embed URL. Leave empty (null) to show the polished placeholder.
@@ -23,9 +24,20 @@ export function Hero({ dict }: { dict: Dict }) {
         }}
       />
       <div className="relative mx-auto max-w-5xl px-5 md:px-6 pt-12 sm:pt-16 md:pt-20 pb-10 text-center">
-        <span className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-claude)] border border-[var(--color-claude)]/30 bg-[var(--color-claude)]/5 px-3 py-1 rounded-full">
+        {/* AI agent logo row — replaces the text-only eyebrow. Shows
+            Claude / Codex / Gemini at a glance: the three agents the
+            product ships with. Color brand marks for instant recognition;
+            "+" separators keep it visually a "set" rather than a list. */}
+        <div className="inline-flex items-center gap-3 text-[var(--color-fg-muted)]">
+          <ClaudeMark size={28} aria-label="Anthropic Claude" />
+          <span className="text-[14px] font-mono opacity-50">+</span>
+          <OpenAIMark size={28} className="text-[var(--color-fg-strong)]" aria-label="OpenAI Codex" />
+          <span className="text-[14px] font-mono opacity-50">+</span>
+          <GeminiMark size={28} aria-label="Google Gemini" />
+        </div>
+        <p className="mt-2 text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-fg-dim)]">
           {dict.hero.eyebrow}
-        </span>
+        </p>
 
         {/* Fluid hero headline — scales cleanly from ~32px on phones to 64px
             on wide screens without breakpoint jumps. `break-words` stops long
