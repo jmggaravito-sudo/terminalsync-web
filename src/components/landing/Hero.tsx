@@ -36,7 +36,10 @@ export function Hero({ dict }: { dict: Dict }) {
           <span className="text-[18px] font-mono opacity-40">+</span>
           <GeminiMark size={44} aria-label="Google Gemini" />
         </div>
-        <p className="mt-3 text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-fg-dim)]">
+        {/* Tagline under the logo row — natural sentence-case to feel
+            human, not a spec sheet. Slightly larger than a mono eyebrow
+            because it's now a meaningful phrase, not a label. */}
+        <p className="mt-4 text-[13px] sm:text-[14px] font-medium tracking-tight text-[var(--color-fg-muted)]">
           {dict.hero.eyebrow}
         </p>
 

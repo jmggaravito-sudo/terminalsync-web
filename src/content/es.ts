@@ -16,10 +16,10 @@ const es: Dict = {
     signIn: "Iniciar sesión",
   },
   hero: {
-    eyebrow: "AI Workflow OS · Claude · Codex · Gemini",
-    titlePre: "Empezá donde dejaste. ",
-    titleHighlight: "Todos los días",
-    titlePost: ".",
+    eyebrow: "Empezá donde dejaste. Todos los días.",
+    titlePre: "Tus IAs y tu entorno, ",
+    titleHighlight: "sincronizados y seguros",
+    titlePost: " en un solo lugar.",
     subtitle:
       "Tu Claude, Codex y Gemini siguen trabajando — aunque cierres la Mac, cambies de país, o se caiga el internet. Tu memoria, tus archivos y tus IAs te siguen.",
     ctaPrimary: "Probalo gratis",
@@ -67,8 +67,19 @@ const es: Dict = {
     eyebrow: "Memoria persistente",
     badge: "Incluida",
     title: "Tu IA aprende de vos. Y no se olvida nunca.",
-    subtitle:
-      "Memoria local, cifrada y portable que crece con cada sesión. Tu agente recuerda tus preferencias, decisiones de arquitectura y convenciones — el día 30 te conoce mejor que un junior nuevo. Incluida en TerminalSync, sin configuración.",
+    subtitle: "Cada sesión la hace más útil.",
+    recallsLead: "Recuerda:",
+    recalls: [
+      "cómo trabajás",
+      "qué herramientas usás",
+      "cómo organizás tus proyectos",
+      "qué decisiones ya tomaste",
+    ],
+    closing: {
+      outcome:
+        "El día 30 entiende mejor tu flujo que alguien nuevo entrando a tu equipo.",
+      reassurance: "Todo local, cifrado y portable. Sin configuración.",
+    },
     pillars: [
       {
         title: "100% local, 100% privado",
@@ -76,7 +87,7 @@ const es: Dict = {
       },
       {
         title: "Funciona con cualquier IA",
-        body: "Compatible vía MCP con Claude Code, Codex, Cursor, Windsurf y cualquier agente que soporte el protocolo. Una sola memoria, todos tus agentes.",
+        body: "Compatible vía MCP con Claude Code, Codex y cualquier agente que soporte el protocolo. Una sola memoria, todos tus agentes.",
       },
       {
         title: "Búsqueda semántica",
