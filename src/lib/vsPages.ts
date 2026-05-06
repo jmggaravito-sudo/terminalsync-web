@@ -58,7 +58,7 @@ export const TOOLS: Record<string, VsTool> = {
       es: [
         "Tu agente sigue corriendo aunque cierres Cursor o se caiga internet — Cursor depende de su nube para la inferencia.",
         "Cifrado AES-256 zero-knowledge antes de salir de tu Mac. Cursor sube tu código a sus servidores para que el modelo lo procese.",
-        "Anywhere Access — abrí tu sesión desde el celular sin instalar nada. Cursor solo en desktop.",
+        "Tu sesión en cualquier dispositivo — abrila desde el celular sin instalar nada. Cursor solo en desktop.",
         "Notificaciones cuando el agente se queda esperando. Con Cursor te toca mirar la pantalla.",
       ],
       en: [
@@ -103,7 +103,7 @@ export const TOOLS: Record<string, VsTool> = {
         "Persistencia real: tu sesión sigue corriendo aunque cierres VS Code o reinicies macOS. Cline se reinicia con cada apertura.",
         "Vault de secretos integrado — tus API keys cifradas con AES-256, no en archivos planos en el repo.",
         "Sync entre dispositivos: Cline no roamea su estado. TerminalSync mueve tu Cline (y tu Claude, y tu Codex) a cualquier Mac.",
-        "Anywhere Access desde el celular — Cline solo vive en el VS Code de tu Mac.",
+        "Tu sesión en cualquier dispositivo desde el celular — Cline solo vive en el VS Code de tu Mac.",
       ],
       en: [
         "Real persistence: your session keeps running even if you close VS Code or restart macOS. Cline restarts on every open.",

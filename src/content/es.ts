@@ -27,7 +27,7 @@ const es: Dict = {
     trustLine: "Sin setup · Sin perder contexto · Funciona en cualquier equipo · Cifrado AES-256 zero-knowledge",
     nextUp: {
       eyebrow: "Lo último",
-      body: "Anywhere Access vía Cloudflare Tunnel — abrí tu sesión desde el celular sin instalar nada. Multi-AI workflow unificado: Claude y Codex con el mismo contexto. Vault de secretos por terminal.",
+      body: "Tu sesión en cualquier dispositivo — abrí desde el celular sin instalar nada. Flujo unificado entre Claude y Codex con el mismo contexto. Bóveda de secretos por terminal.",
     },
     mockup: {
       appName: "Terminal Sync",
@@ -164,8 +164,8 @@ const es: Dict = {
         body: "Tu trabajo está blindado: si el internet falla, tu agente (Claude/Codex) NO se detendrá. La terminal sigue trabajando en segundo plano y te notificamos apenas recupere la conexión o termine la tarea.",
       },
       anywhere: {
-        title: 'Movilidad "Anywhere Access"',
-        body: "Botón 'Móvil' arriba → genera un link HTTPS para abrir esta sesión exacta desde tu celular o cualquier navegador. Mismo estado, mismo contexto, sin reconfigurar nada.",
+        title: "Tu sesión en cualquier dispositivo",
+        body: "Botón 'Móvil' arriba → genera un link seguro para abrir esta misma sesión desde tu celular o cualquier navegador. Mismo estado, mismo contexto, sin reconfigurar nada.",
       },
       notifications: {
         title: "Notificaciones Automáticas",
@@ -484,7 +484,7 @@ const es: Dict = {
         yearlyEquivalent: "$15.83/mes · facturado anual",
         features: [
           "5 terminales con persistencia + resurrección",
-          "Anywhere Access (móvil + cualquier navegador)",
+          "Tu sesión en cualquier dispositivo (móvil + navegador)",
           "Notificaciones por Email / WhatsApp / Telegram",
           "Sync completo de Claude y Codex entre dispositivos",
           "Historial 90 días",
