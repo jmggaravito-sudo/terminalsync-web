@@ -21,7 +21,7 @@ const es: Dict = {
     titleHighlight: "sincronizados y seguros",
     titlePost: ".",
     subtitle:
-      "Tu terminal, archivos y herramientas siempre listos en cualquier computadora. Abrí sesión y continuá donde lo dejaste.",
+      "Tu terminal, archivos y memoria persistente siempre listos. Abrí sesión en cualquier computadora y seguí trabajando al instante.",
     ctaPrimary: "Probalo gratis",
     ctaSecondary: "Ver cómo funciona",
     trustLine: "Sin setup · Sin perder contexto · Funciona en cualquier equipo · Cifrado AES-256 zero-knowledge",

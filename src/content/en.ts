@@ -21,7 +21,7 @@ const en: Dict = {
     titleHighlight: "synced and secure",
     titlePost: ".",
     subtitle:
-      "Your terminal, files, and tools always ready on any computer. Sign in and pick up where you left off.",
+      "Your terminal, files, and persistent memory always ready. Sign in from any computer and keep working instantly.",
     ctaPrimary: "Try it free",
     ctaSecondary: "See how it works",
     trustLine: "No setup · No context loss · Works across any machine · AES-256 zero-knowledge encryption",
