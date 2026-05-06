@@ -51,6 +51,25 @@ export interface Dict {
       notifications: { title: string; body: string };
     };
   };
+  memory: {
+    eyebrow: string;
+    badge: string;
+    title: string;
+    subtitle: string;
+    pillars: Array<{ title: string; body: string }>;
+    timeline: {
+      heading: string;
+      withoutLabel: string;
+      withLabel: string;
+      withoutItems: Array<{ when: string; line: string }>;
+      withItems: Array<{ when: string; line: string }>;
+    };
+    cta: {
+      heading: string;
+      body: string;
+      button: string;
+    };
+  };
   multiAI: {
     eyebrow: string;
     title: string;

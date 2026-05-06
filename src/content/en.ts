@@ -63,6 +63,49 @@ const en: Dict = {
       },
     },
   },
+  memory: {
+    eyebrow: "Persistent memory",
+    badge: "Included",
+    title: "Your AI learns you. And it never forgets.",
+    subtitle:
+      "Local, encrypted, portable memory that grows with every session. Your agent remembers your preferences, architecture decisions and conventions — by day 30 it knows you better than a new junior. Built into TerminalSync, zero configuration.",
+    pillars: [
+      {
+        title: "100% local, 100% private",
+        body: "The knowledge base lives in SQLite on your Mac. No servers of ours, no API keys, no vendor lock-in. If you want to sync between machines, we do it AES-256 encrypted to your own cloud.",
+      },
+      {
+        title: "Works with any AI",
+        body: "Compatible via MCP with Claude Code, Codex, Cursor, Windsurf and any agent that supports the protocol. One memory, all your agents.",
+      },
+      {
+        title: "Semantic search",
+        body: "Your agent finds the relevant context automatically. Ask 'how were we handling auth' and it brings back decisions, patterns, and reasons — not just keyword hits.",
+      },
+    ],
+    timeline: {
+      heading: "Without persistent memory vs. with persistent memory",
+      withoutLabel: "Without TerminalSync Memory",
+      withLabel: "With TerminalSync Memory",
+      withoutItems: [
+        { when: "Day 1", line: "You explain you prefer TypeScript with strict mode." },
+        { when: "Day 3", line: "“What language do you prefer?” — re-explain everything." },
+        { when: "Day 14", line: "Again. Starting from zero." },
+        { when: "Day 30", line: "You stop explaining and accept generic answers." },
+      ],
+      withItems: [
+        { when: "Day 1", line: "You explain you prefer TypeScript with strict mode." },
+        { when: "Day 3", line: "“Since you prefer TypeScript, I'll init with strict.”" },
+        { when: "Day 14", line: "“Following your explicit error-types convention…”" },
+        { when: "Day 30", line: "Knows your stack better than a fresh-onboard dev." },
+      ],
+    },
+    cta: {
+      heading: "Try persistent memory today",
+      body: "Active by default from your first session. No extra install, no API keys, no server of ours in the middle.",
+      button: "Download free",
+    },
+  },
   multiAI: {
     eyebrow: "Unified AI Workflow",
     title: "Stop juggling AI tools",
