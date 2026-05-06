@@ -16,12 +16,12 @@ const es: Dict = {
     signIn: "Iniciar sesión",
   },
   hero: {
-    eyebrow: "AI Workflow OS · Claude + Codex",
+    eyebrow: "AI Workflow OS · Claude · Codex · Gemini",
     titlePre: "Tus IAs y tu entorno, ",
     titleHighlight: "sincronizados y seguros",
     titlePost: ".",
     subtitle:
-      "Tu terminal, archivos y herramientas siempre listos en cualquier computadora. Abrí sesión y continuá donde lo dejaste.",
+      "Tu terminal, archivos y memoria persistente siempre listos. Abrí sesión en cualquier computadora y seguí trabajando al instante.",
     ctaPrimary: "Probalo gratis",
     ctaSecondary: "Ver cómo funciona",
     trustLine: "Sin setup · Sin perder contexto · Funciona en cualquier equipo · Cifrado AES-256 zero-knowledge",
@@ -91,7 +91,7 @@ const es: Dict = {
       ],
     },
     useCases: {
-      title: "Usá la IA correcta para cada momento — sin cambiar de setup",
+      title: "Tres AI agents. Una sola Mac. Todos sincronizados.",
       cards: [
         {
           tool: "Claude",
@@ -102,6 +102,11 @@ const es: Dict = {
           tool: "Codex",
           verb: "para ejecutar",
           body: "Edición de código, refactors, automatizaciones. Mismo contexto, otra herramienta.",
+        },
+        {
+          tool: "Gemini CLI",
+          verb: "para contexto largo",
+          body: "1M tokens de ventana, multimodal nativo (PDFs, imágenes, video). Free tier sin API key.",
         },
       ],
     },
@@ -145,17 +150,18 @@ const es: Dict = {
         ],
         upcoming: [],
       },
-      cowork: {
-        name: "Claude Cowork",
-        tagline: "Tus sesiones de agente entre Macs",
+      gemini: {
+        name: "Gemini CLI",
+        tagline: "El agente IA open-source de Google",
         live: [
-          "Sync automático bidireccional",
-          "Sesiones disponibles en cualquier dispositivo",
+          "Ventana de contexto de 1M tokens — la más grande del mercado",
+          "Multimodal nativo: texto, imágenes, PDFs y video",
+          "Free tier generoso (60 req/min, 1000/día) sin API key",
+          "Auth con tu cuenta de Google directo desde la app",
+          "Apache 2.0 — open source, sin lock-in",
+          "Sub-agents y settings roaman cifrados entre tus Macs",
         ],
-        upcoming: [
-          "Lock por sesión (aviso si está abierta en otra Mac)",
-          "Backup automático antes de mergear",
-        ],
+        upcoming: [],
       },
       codex: {
         name: "Codex",
@@ -264,24 +270,26 @@ const es: Dict = {
     subtitle:
       "Comparado con las herramientas que ya usás todos los días. Si algo es parcial o todavía está en progreso, lo decimos en la tabla.",
     pitch:
-      "Vercel te ata al cloud y te factura por minuto. Claude Code y Codex en su versión cruda son potentes pero amnésicos — cada vez que cerrás la terminal perdés el contexto, no roamean entre Macs, no tienen vault de secretos, no te avisan cuando se traban. Terminal Sync es la capa que les pone memoria, privacidad y movilidad a tus agentes IA — sin pagar cloud y sin entregar tu código a nadie.",
+      "Vercel te ata al cloud y te factura por minuto. Claude Code, Codex y Gemini CLI en su versión cruda son potentes pero amnésicos — cada vez que cerrás la terminal perdés el contexto, no roamean entre Macs, no tienen vault de secretos, no te avisan por Telegram cuando se traban. Terminal Sync es la capa que les pone memoria persistente, privacidad y movilidad a tus tres agentes IA — sin pagar cloud y sin entregar tu código a nadie.",
     columns: {
       feature: "Funcionalidad",
       terminalSync: "Terminal Sync",
       vercel: "Vercel",
       claudeCode: "Claude Code solo",
       codex: "Codex solo",
+      gemini: "Gemini CLI solo",
     },
     rows: {
+      persistentMemory: "Memoria persistente entre sesiones (tu agente recuerda)",
+      resurrection: "Resurrección de sesión (cerrás todo, vuelve donde quedaste)",
+      multiModel: "Multi-modelo (Claude + Codex + Gemini + otros)",
+      responsiveNotifications: "Notificaciones interactivas por correo, Telegram y WhatsApp",
+      webMobileMirror: "Misma sesión en el navegador o el celular, idéntica a tu Mac",
       offlineLocal: "Funciona offline / local-first",
       aes256: "Cifrado AES-256 zero-knowledge",
       secretsVault: "Vault de secretos integrado",
-      resurrection: "Resurrección de sesión (cerrás todo, vuelve donde quedaste)",
       internetImmunity: "Persistencia ante caída de internet",
       aiConversationSync: "Sync de conversaciones IA entre Macs",
-      multiModel: "Multi-modelo (Claude + Codex + otros)",
-      anywhereAccess: "Anywhere Access (móvil + cualquier navegador)",
-      stuckNotifications: "Notificaciones cuando el agente se traba",
       replyInjection: "Reply-injection desde celular",
       noVendorLockIn: "Sin vendor lock-in (tus archivos en tu cloud)",
       zeroRuntime: "Costo de runtime $0 (corre en tu Mac)",
@@ -292,6 +300,40 @@ const es: Dict = {
     legend: { yes: "Sí", no: "No", partial: "Parcial", soon: "Próximamente" },
     footnote:
       "Comparativo basado en docs públicas de cada herramienta al 2026-05-04. Cifrado AES-256-GCM antes de salir de tu Mac — ni Anthropic, ni OpenAI, ni Vercel, ni nosotros vemos tus archivos.",
+    tooltips: {
+      persistentMemory:
+        "Tu agente IA recuerda contexto, decisiones y archivos vistos entre sesiones. No tenés que re-explicar todo cada vez que abrís una conversación nueva.",
+      resurrection:
+        "Si cerrás la app, se va la luz, o reiniciás tu Mac, al volver seguís exactamente donde estabas — comando a medio escribir, output del agente, todo intacto.",
+      multiModel:
+        "Una sola interfaz para Claude Code, Codex y Gemini CLI. Cambiás de modelo sin perder contexto y usás el mejor para cada tarea.",
+      responsiveNotifications:
+        "Cuando tu agente termina algo, falla, o te pide una decisión, te avisa por correo, Telegram y (próximamente) WhatsApp. Respondés desde donde estés.",
+      webMobileMirror:
+        "Tu sesión activa se ve y se controla igual desde tu Mac, desde un navegador o desde tu celular. Misma terminal, mismo contexto, mismo agente.",
+      offlineLocal:
+        "Funciona sin internet. Tu Mac es la fuente de verdad — la sincronización con la nube es asíncrona y nunca bloquea tu trabajo.",
+      aes256:
+        "Todo se cifra en tu Mac antes de salir, con la clave maestra guardada en tu Keychain. Ni Anthropic, ni OpenAI, ni Google, ni nosotros podemos abrir tus archivos.",
+      secretsVault:
+        "Vault integrado para API keys, tokens y credenciales. Disponibles en tus terminales como variables de entorno — nunca escritos en archivos planos.",
+      internetImmunity:
+        "Si tu internet se cae mientras un agente está corriendo, sigue trabajando localmente. Cuando volvés a tener señal, sincroniza solo.",
+      aiConversationSync:
+        "Las conversaciones con tu agente se sincronizan entre tus Macs y dispositivos. Empezás en el MacBook, seguís en el Mac mini sin pegar contexto.",
+      replyInjection:
+        "Desde tu celular podés inyectar respuestas a un agente que está esperando input en tu Mac. Ideal para desbloquear un comando cuando estás afuera.",
+      noVendorLockIn:
+        "Tus archivos viven en tu propio Google Drive (iCloud, S3, Dropbox próximamente). Si te vas de Terminal Sync, te llevás todo. Sin export-fee.",
+      zeroRuntime:
+        "No corremos tus agentes en nuestros servidores. Todo se ejecuta en tu Mac, así que el costo de runtime es cero — solo pagás el modelo IA al provider que elijas.",
+      zeroStorage:
+        "Tu propio Drive es el almacenamiento. No te cobramos por GB. Si ya tenés Google One o iCloud+, lo usás y listo.",
+      deviceRoaming:
+        "Cambiás de Mac (oficina, casa, viaje) y tu sesión, archivos y contexto te siguen. Sin re-instalar agentes ni re-pegar API keys.",
+      multipleSessions:
+        "Múltiples terminales corriendo en paralelo, cada una con su agente, su contexto y su carpeta. Saltás entre ellas con un click.",
+    },
   },
   personas: {
     title: "¿Esto es para vos?",

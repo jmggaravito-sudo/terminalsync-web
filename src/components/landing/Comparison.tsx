@@ -1,13 +1,20 @@
 import { Check, X, Clock, MinusCircle } from "lucide-react";
 import type { Dict } from "@/content";
+import { HelpTip } from "@/components/ui/HelpTip";
 
 type Cell = "yes" | "no" | "partial" | "soon";
 
 // Column keys must match `dict.comparison.columns`. Order = visual order
 // of the rendered table (left to right). Terminal Sync first, then the
-// three tools the audience already uses (per Funcionalidades.md doc):
-// Vercel, Claude Code alone, Codex alone.
-const COLUMN_KEYS = ["terminalSync", "vercel", "claudeCode", "codex"] as const;
+// four tools the audience compares against: Vercel cloud workspace,
+// and the three raw AI agent CLIs (Claude Code, Codex, Gemini CLI).
+const COLUMN_KEYS = [
+  "terminalSync",
+  "vercel",
+  "claudeCode",
+  "codex",
+  "gemini",
+] as const;
 type ColumnKey = (typeof COLUMN_KEYS)[number];
 
 type Row = {
@@ -15,68 +22,74 @@ type Row = {
   cells: Record<ColumnKey, Cell>;
 };
 
-// Values mirror the comparativo at the bottom of
-// `0TerminalSync/Funcionalidades.md` — single source of truth.
+// Order = order of importance per JM. Memoria persistente is the
+// headline differentiator (engram-backed via MCP), then session
+// resurrection (Zellij engine), then multi-model + interactive
+// notifications + browser/mobile mirroring. Everything else after.
 const ROWS: Row[] = [
   {
-    key: "offlineLocal",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "partial", codex: "partial" },
-  },
-  {
-    key: "aes256",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
-  },
-  {
-    key: "secretsVault",
-    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "no", codex: "no" },
+    key: "persistentMemory",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
   },
   {
     key: "resurrection",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
-  },
-  {
-    key: "internetImmunity",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "partial", codex: "partial" },
-  },
-  {
-    key: "aiConversationSync",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
   },
   {
     key: "multiModel",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
   },
   {
-    key: "anywhereAccess",
-    cells: { terminalSync: "yes", vercel: "yes", claudeCode: "no", codex: "no" },
+    key: "responsiveNotifications",
+    cells: { terminalSync: "soon", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
   },
   {
-    key: "stuckNotifications",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no" },
+    key: "webMobileMirror",
+    cells: { terminalSync: "yes", vercel: "yes", claudeCode: "no", codex: "no", gemini: "no" },
   },
   {
-    key: "replyInjection",
-    cells: { terminalSync: "soon", vercel: "no", claudeCode: "no", codex: "no" },
+    key: "aiConversationSync",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
+  },
+  {
+    key: "internetImmunity",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "partial", codex: "partial", gemini: "partial" },
+  },
+  {
+    key: "aes256",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
+  },
+  {
+    key: "secretsVault",
+    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "no", codex: "no", gemini: "no" },
+  },
+  {
+    key: "offlineLocal",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "partial", codex: "partial", gemini: "partial" },
   },
   {
     key: "noVendorLockIn",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "yes", codex: "yes" },
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "yes", codex: "yes", gemini: "yes" },
   },
   {
     key: "zeroRuntime",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "yes", codex: "yes" },
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "yes", codex: "yes", gemini: "yes" },
   },
   {
     key: "zeroStorage",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "yes", codex: "yes" },
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "yes", codex: "yes", gemini: "yes" },
   },
   {
     key: "deviceRoaming",
-    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "no", codex: "no" },
+    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "no", codex: "no", gemini: "no" },
   },
   {
     key: "multipleSessions",
-    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "partial", codex: "partial" },
+    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "partial", codex: "partial", gemini: "partial" },
+  },
+  {
+    key: "replyInjection",
+    cells: { terminalSync: "soon", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
   },
 ];
 
@@ -168,7 +181,13 @@ export function Comparison({ dict }: { dict: Dict }) {
                   className={ri % 2 === 0 ? "bg-transparent" : "bg-[var(--color-panel-2)]/30"}
                 >
                   <td className="px-5 py-3.5 text-[13.5px] text-[var(--color-fg)]">
-                    {c.rows[row.key]}
+                    <span className="inline-flex items-center">
+                      {c.rows[row.key]}
+                      <HelpTip
+                        text={c.tooltips[row.key]}
+                        ariaLabel={`${c.rows[row.key]} — más info`}
+                      />
+                    </span>
                   </td>
                   {COLUMN_KEYS.map((col) => (
                     <td
@@ -195,10 +214,14 @@ export function Comparison({ dict }: { dict: Dict }) {
             key={row.key}
             className="rounded-xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4"
           >
-            <div className="text-[13.5px] font-semibold text-[var(--color-fg-strong)] mb-3">
+            <div className="text-[13.5px] font-semibold text-[var(--color-fg-strong)] mb-3 inline-flex items-center">
               {c.rows[row.key]}
+              <HelpTip
+                text={c.tooltips[row.key]}
+                ariaLabel={`${c.rows[row.key]} — más info`}
+              />
             </div>
-            <div className="grid grid-cols-4 gap-2 text-center">
+            <div className="grid grid-cols-5 gap-1.5 text-center">
               {COLUMN_KEYS.map((col) => (
                 <MobileCell
                   key={col}
