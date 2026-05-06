@@ -17,11 +17,11 @@ const es: Dict = {
   },
   hero: {
     eyebrow: "AI Workflow OS · Claude · Codex · Gemini",
-    titlePre: "Tus IAs y tu entorno, ",
-    titleHighlight: "sincronizados y seguros",
+    titlePre: "Empezá donde dejaste. ",
+    titleHighlight: "Todos los días",
     titlePost: ".",
     subtitle:
-      "Tu terminal, archivos y memoria persistente siempre listos. Abrí sesión en cualquier computadora y seguí trabajando al instante.",
+      "Tu Claude, Codex y Gemini siguen trabajando — aunque cierres la Mac, cambies de país, o se caiga el internet. Tu memoria, tus archivos y tus IAs te siguen.",
     ctaPrimary: "Probalo gratis",
     ctaSecondary: "Ver cómo funciona",
     trustLine: "Sin setup · Sin perder contexto · Funciona en cualquier equipo · Cifrado AES-256 zero-knowledge",
