@@ -23,7 +23,11 @@ export function Pricing({
    */
   currencyHint?: CurrencyHint | null;
 }) {
-  const [cycle, setCycle] = useState<Cycle>("yearly");
+  // Default to monthly: most visitors expect month-to-month pricing as
+  // the baseline they compare against. Showing yearly first feels like
+  // an upsell. The yearly toggle keeps the savings badge as a discovery
+  // for users who want to commit.
+  const [cycle, setCycle] = useState<Cycle>("monthly");
   const [quizOpen, setQuizOpen] = useState(false);
   const [highlighted, setHighlighted] = useState<PlanKey | null>(null);
 
