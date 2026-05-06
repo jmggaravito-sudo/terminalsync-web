@@ -270,6 +270,20 @@ export interface Dict {
     tagline: string;
     copyright: string;
   };
+  // Windows-only early-access banner. Replaces the macOS download CTA
+  // when a Windows visitor lands on the page. Linux is not on the
+  // roadmap so we don't surface anything to those visitors.
+  windowsEarlyAccess: {
+    title: string;
+    body: string;
+    cta: string;
+    ctaSubmitting: string;
+    emailPlaceholder: string;
+    successTitle: string;
+    successBody: string;
+    privacyNote: string;
+    errorPrefix: string;
+  };
   theme: { light: string; dark: string; system: string };
   agent: {
     open: string;

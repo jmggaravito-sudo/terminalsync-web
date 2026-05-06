@@ -559,6 +559,17 @@ const en: Dict = {
     tagline: "Separate your work from your machine.",
     copyright: "© {{year}} TerminalSync. All rights reserved.",
   },
+  windowsEarlyAccess: {
+    title: "TerminalSync for Windows — coming soon",
+    body: "We detected you're on Windows. The Mac app ships now; the Windows version is in development. Drop your email and we'll let you know the day it's ready.",
+    cta: "Notify me",
+    ctaSubmitting: "Saving…",
+    emailPlaceholder: "you@email.com",
+    successTitle: "You're on the list",
+    successBody: "We'll email you the moment the signed Windows installer is ready to download.",
+    privacyNote: "We only email when it's ready. No spam, no third-party sharing.",
+    errorPrefix: "Something went wrong:",
+  },
   theme: {
     light: "Light",
     dark: "Dark",
