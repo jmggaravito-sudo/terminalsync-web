@@ -65,10 +65,10 @@ const es: Dict = {
   },
   memory: {
     eyebrow: "Memoria persistente",
-    badge: "Próximamente",
+    badge: "Incluida",
     title: "Tu IA aprende de vos. Y no se olvida nunca.",
     subtitle:
-      "Memoria local, cifrada y portable que crece con cada sesión. Tu agente recuerda tus preferencias, decisiones de arquitectura y convenciones — el día 30 te conoce mejor que un junior nuevo.",
+      "Memoria local, cifrada y portable que crece con cada sesión. Tu agente recuerda tus preferencias, decisiones de arquitectura y convenciones — el día 30 te conoce mejor que un junior nuevo. Incluida en TerminalSync, sin configuración.",
     pillars: [
       {
         title: "100% local, 100% privado",
@@ -101,14 +101,9 @@ const es: Dict = {
       ],
     },
     cta: {
-      heading: "Avisame cuando esté",
-      body: "Te mandamos un email cuando la memoria persistente esté disponible. Sin spam, sin newsletters — solo el lanzamiento.",
-      placeholder: "tu@email.com",
-      button: "Avisame",
-      submitting: "Enviando…",
-      success: "✓ Listo. Te escribimos cuando esté.",
-      errorEmail: "Email inválido",
-      errorGeneric: "No se pudo enviar. Reintentá en un momento.",
+      heading: "Probá la memoria persistente hoy",
+      body: "Viene activa por default desde la primera sesión. Sin instalación extra, sin claves de API, sin servidor nuestro en el medio.",
+      button: "Descargar gratis",
     },
   },
   multiAI: {

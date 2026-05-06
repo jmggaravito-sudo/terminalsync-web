@@ -67,12 +67,7 @@ export interface Dict {
     cta: {
       heading: string;
       body: string;
-      placeholder: string;
       button: string;
-      submitting: string;
-      success: string;
-      errorEmail: string;
-      errorGeneric: string;
     };
   };
   multiAI: {

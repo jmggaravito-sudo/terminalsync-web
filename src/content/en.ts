@@ -65,10 +65,10 @@ const en: Dict = {
   },
   memory: {
     eyebrow: "Persistent memory",
-    badge: "Coming soon",
+    badge: "Included",
     title: "Your AI learns you. And it never forgets.",
     subtitle:
-      "Local, encrypted, portable memory that grows with every session. Your agent remembers your preferences, architecture decisions and conventions — by day 30 it knows you better than a new junior.",
+      "Local, encrypted, portable memory that grows with every session. Your agent remembers your preferences, architecture decisions and conventions — by day 30 it knows you better than a new junior. Built into TerminalSync, zero configuration.",
     pillars: [
       {
         title: "100% local, 100% private",
@@ -101,14 +101,9 @@ const en: Dict = {
       ],
     },
     cta: {
-      heading: "Notify me when it ships",
-      body: "We email you when persistent memory is available. No spam, no newsletters — just the launch.",
-      placeholder: "you@email.com",
-      button: "Notify me",
-      submitting: "Sending…",
-      success: "✓ Done. We'll email you when it's live.",
-      errorEmail: "Invalid email",
-      errorGeneric: "Couldn't send. Try again in a moment.",
+      heading: "Try persistent memory today",
+      body: "Active by default from your first session. No extra install, no API keys, no server of ours in the middle.",
+      button: "Download free",
     },
   },
   multiAI: {
