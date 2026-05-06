@@ -263,7 +263,7 @@ const en: Dict = {
   midCta: {
     eyebrow: "Try it free",
     title: "Stop staring at the screen waiting on your AI.",
-    body: "7 days of Pro, no credit card. If it clicks, you stay. If not, you stop using it. Done.",
+    body: "7 days of Pro free. Cancel before day 7 and you're not charged. If it clicks, you stay. If not, you stop using it. Done.",
     ctaPrimary: "Download free",
     ctaSecondary: "See pricing",
   },
@@ -526,7 +526,7 @@ const en: Dict = {
   trust: {
     title: "Your files are yours. Full stop.",
     body: "Your secrets, configs, sessions — all encrypted on your Mac before leaving. Goes to YOUR Drive, not ours. The encryption engine will be publicly auditable.",
-    guarantee: "Try it 7 days free. No credit card.",
+    guarantee: "Try it 7 days free. Cancel before day 7 and you're not charged.",
     features: {
       e2ee: "AES-256-GCM encrypted",
       keychain: "Keys in your Keychain",
@@ -606,7 +606,7 @@ const en: Dict = {
       install:
         "Super easy! Download TerminalSync, in the dashboard you'll see the \"AI Power-Ups\" card → click \"Install Claude Code\" → paste your Anthropic API key and you're done. Takes ~30 seconds and we set up everything for you.",
       pricing:
-        "3 plans: Starter ($0 free, 1 terminal), Pro ($19/mo with Claude Code Power-Ups + 5 terminals) and Dev ($39/mo with Git-Native Sync, .env Vault and 20 terminals). You can try Pro or Dev free for 7 days — no credit card. Want the download link?",
+        "3 plans: Starter ($0 free, 1 terminal), Pro ($19/mo with Claude Code Power-Ups + 5 terminals) and Dev ($39/mo with Git-Native Sync, .env Vault and 20 terminals). You can try Pro or Dev free for 7 days — cancel before day 7 and you're not charged. Want the download link?",
       security:
         "Your code and API key are encrypted with AES-256 on your computer BEFORE uploading to Drive. Zero-Knowledge: neither we nor Google can read your content. You hold the master key in your local keychain.",
       fallback:

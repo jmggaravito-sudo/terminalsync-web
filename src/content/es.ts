@@ -263,7 +263,7 @@ const es: Dict = {
   midCta: {
     eyebrow: "Probalo gratis",
     title: "Dejá de mirar la pantalla esperando a tu IA.",
-    body: "7 días de Pro sin tarjeta. Si te convence, te quedás. Si no, dejás de usarlo y listo.",
+    body: "7 días de Pro gratis. Cancelás antes del día 7 y no te cobramos. Si te convence, te quedás. Si no, dejás de usarlo y listo.",
     ctaPrimary: "Descargar gratis",
     ctaSecondary: "Ver precios",
   },
@@ -526,7 +526,7 @@ const es: Dict = {
   trust: {
     title: "Tus archivos son tuyos. Punto.",
     body: "Tus secretos, tus configs, tus sesiones — todo se cifra en tu Mac antes de salir. Va a TU Drive, no al nuestro. El motor de cifrado va a ser auditable públicamente.",
-    guarantee: "Probalo 7 días gratis. Sin tarjeta.",
+    guarantee: "Probalo 7 días gratis. Cancelás antes del día 7 y no te cobramos.",
     features: {
       e2ee: "Cifrado AES-256-GCM",
       keychain: "Llaves en tu Keychain",
@@ -606,7 +606,7 @@ const es: Dict = {
       install:
         "¡Súper fácil! Descarga TerminalSync, en el dashboard verás la tarjeta \"AI Power-Ups\" → clic en \"Instalar Claude Code\" → pegas tu API key de Anthropic y listo. Toma ~30 segundos y nosotros configuramos todo por ti.",
       pricing:
-        "Tenemos 3 planes: Starter ($0 gratis, 1 terminal), Pro ($19/mes con Power-Ups de Claude Code + 5 terminales) y Dev ($39/mes con Git-Native Sync, .env Vault y 20 terminales). Podés probar Pro o Dev gratis 7 días, sin tarjeta. ¿Querés el link de descarga?",
+        "Tenemos 3 planes: Starter ($0 gratis, 1 terminal), Pro ($19/mes con Power-Ups de Claude Code + 5 terminales) y Dev ($39/mes con Git-Native Sync, .env Vault y 20 terminales). Podés probar Pro o Dev gratis 7 días — cancelás antes del día 7 y no te cobramos. ¿Querés el link de descarga?",
       security:
         "Tu código y tu API key se cifran con AES-256 en tu computadora ANTES de subir a Drive. Usamos Zero-Knowledge: ni nosotros ni Google podemos leer tu contenido. La llave maestra la tienes tú en tu keychain local.",
       fallback:
