@@ -5,7 +5,7 @@ const es: Dict = {
   meta: {
     title: "TerminalSync — Memoria, privacidad y movilidad para tu IA",
     description:
-      "Tu agente IA (Claude/Codex) sigue corriendo aunque se caiga internet o cambies de Mac. Cifrado AES-256 zero-knowledge. Acceso desde cualquier dispositivo.",
+      "Tu agente IA (Claude, Codex o Gemini) sigue corriendo aunque se caiga internet o cambies de Mac. Cifrado AES-256 zero-knowledge. Acceso desde cualquier dispositivo.",
   },
   nav: {
     features: "Funciones",
@@ -27,7 +27,7 @@ const es: Dict = {
     trustLine: "Sin setup · Sin perder contexto · Funciona en cualquier equipo · Cifrado AES-256 zero-knowledge",
     nextUp: {
       eyebrow: "Lo último",
-      body: "Tu sesión en cualquier dispositivo — abrí desde el celular sin instalar nada. Flujo unificado entre Claude y Codex con el mismo contexto. Bóveda de secretos por terminal.",
+      body: "Tu sesión en cualquier dispositivo — abrí desde el celular sin instalar nada. Flujo unificado entre Claude, Codex y Gemini con el mismo contexto. Bóveda de secretos por terminal.",
     },
     mockup: {
       appName: "Terminal Sync",
@@ -49,7 +49,7 @@ const es: Dict = {
       context: {
         kicker: "Demo · Persistencia",
         title: "Cerrás todo. Tu agente sigue trabajando solo.",
-        body: "El internet se cae, se reinicia tu Mac, cerrás la app sin querer — tu Claude o Codex no se detienen. Cuando volvés, la conversación está exactamente donde la dejaste.",
+        body: "El internet se cae, se reinicia tu Mac, cerrás la app sin querer — tu Claude, Codex o Gemini no se detienen. Cuando volvés, la conversación está exactamente donde la dejaste.",
       },
       install: {
         kicker: "Demo · Cualquier dispositivo",
@@ -87,7 +87,7 @@ const es: Dict = {
       },
       {
         title: "Funciona con cualquier IA",
-        body: "Compatible vía MCP con Claude Code, Codex y cualquier agente que soporte el protocolo. Una sola memoria, todos tus agentes.",
+        body: "Compatible vía MCP con Claude Code, Codex, Gemini CLI y cualquier agente que soporte el protocolo. Una sola memoria, todos tus agentes.",
       },
       {
         title: "Búsqueda semántica",
@@ -96,19 +96,19 @@ const es: Dict = {
     ],
     timeline: {
       heading: "Sin memoria persistente vs. con memoria persistente",
-      withoutLabel: "Sin TerminalSync Memory",
-      withLabel: "Con TerminalSync Memory",
+      withoutLabel: "Sin memoria persistente",
+      withLabel: "Con memoria persistente",
       withoutItems: [
-        { when: "Día 1", line: "Le explicás que preferís TypeScript con strict mode." },
-        { when: "Día 3", line: "“¿Qué lenguaje preferís?” — re-explicás todo." },
-        { when: "Día 14", line: "Otra vez. Empezás de cero." },
-        { when: "Día 30", line: "Dejás de explicar y aceptás respuestas genéricas." },
+        { when: "Día 1", line: "Le explicás cómo trabajás." },
+        { when: "Día 3", line: "Te vuelve a preguntar lo mismo." },
+        { when: "Día 14", line: "Otra vez arrancás desde cero." },
+        { when: "Día 30", line: "Terminás adaptándote vos a la IA." },
       ],
       withItems: [
-        { when: "Día 1", line: "Le explicás que preferís TypeScript con strict mode." },
-        { when: "Día 3", line: "“Como preferís TypeScript, voy a inicializar con strict.”" },
-        { when: "Día 14", line: "“Siguiendo tu convención de error types explícitos…”" },
-        { when: "Día 30", line: "Conoce tu stack mejor que un dev que recién arranca." },
+        { when: "Día 1", line: "Le explicás cómo trabajás." },
+        { when: "Día 3", line: "Ya recuerda tus preferencias." },
+        { when: "Día 14", line: "Sigue tus convenciones automáticamente." },
+        { when: "Día 30", line: "Entiende tu flujo mejor que alguien nuevo en el proyecto." },
       ],
     },
     cta: {
@@ -121,7 +121,7 @@ const es: Dict = {
     eyebrow: "AI Workflow Unificado",
     title: "Dejá de saltar entre herramientas de IA",
     subtitle:
-      "Hoy tu flujo se ve así: Claude en una terminal, Codex en otra, contexto perdido entre las dos. TerminalSync es la capa que las conecta.",
+      "Hoy tu flujo se ve así: Claude en una terminal, Codex en otra, Gemini en otra, contexto perdido entre las tres. TerminalSync es la capa que las conecta.",
     problem: {
       title: "Sin TerminalSync",
       items: [
@@ -172,7 +172,7 @@ const es: Dict = {
     items: {
       uninterrupted: {
         title: "Trabajo Ininterrumpido",
-        body: "Tu trabajo está blindado: si el internet falla, tu agente (Claude/Codex) NO se detendrá. La terminal sigue trabajando en segundo plano y te notificamos apenas recupere la conexión o termine la tarea.",
+        body: "Tu trabajo está blindado: si el internet falla, tu agente (Claude, Codex o Gemini) NO se detendrá. La terminal sigue trabajando en segundo plano y te notificamos apenas recupere la conexión o termine la tarea.",
       },
       anywhere: {
         title: "Tu sesión en cualquier dispositivo",
@@ -225,7 +225,7 @@ const es: Dict = {
           "Configuración completa de Codex",
           "Estado global de tus sesiones",
           "Skills y plugins reinstalados automáticamente",
-          "AI picker — elegís Claude o Codex por terminal",
+          "AI picker — elegís Claude, Codex o Gemini por terminal",
           "Conversación viva al reabrir (vía resurrección de sesión)",
         ],
         upcoming: [],
@@ -297,16 +297,16 @@ const es: Dict = {
         a: "El motor de cifrado y sincronización va a ser auditable. La app cliente es propietaria por ahora pero el core de seguridad lo publicamos para que cualquiera pueda revisarlo.",
       },
       {
-        q: "¿Funciona con cualquier IA o solo con Claude y Codex?",
-        a: "Hoy lo tenemos pulido para Claude (Code + Desktop) y Codex. El motor es agnóstico — agregamos otras herramientas (Cursor, Cline, Aider, etc.) según la demanda real. Si querés que soportemos algo específico, escribinos y lo subimos al roadmap público.",
+        q: "¿Funciona con cualquier IA o solo con Claude, Codex y Gemini?",
+        a: "Hoy lo tenemos pulido para Claude (Code + Desktop), Codex y Gemini CLI. El motor es agnóstico — agregamos otras herramientas (Cursor, Cline, Aider, etc.) según la demanda real. Si querés que soportemos algo específico, escribinos y lo subimos al roadmap público.",
       },
       {
         q: "¿En qué se diferencia de un IDE en la nube tipo Codespaces o Gitpod?",
         a: "No te mudás a un entorno nuevo — TU entorno te sigue a vos. Tu Mac, tus archivos, tus IAs configuradas como ya las tenías. Sin alquiler de cómputo, sin facturación por minuto, sin lock-in. Y todo cifrado AES-256 en tu propia nube.",
       },
       {
-        q: "¿En qué se diferencia de usar Claude o Codex por separado?",
-        a: "Claude y Codex por separado no se hablan: cada uno tiene su contexto, sus archivos, su memoria. TerminalSync los conecta en un único flujo. Le pedís a Claude que analice algo y a Codex que lo ejecute, sin re-explicar nada — comparten el mismo proyecto y la misma memoria.",
+        q: "¿En qué se diferencia de usar Claude, Codex o Gemini por separado?",
+        a: "Claude, Codex y Gemini por separado no se hablan entre sí: cada uno tiene su contexto, sus archivos, su memoria. TerminalSync los conecta en un único flujo. Le pedís a Claude que razone, a Codex que ejecute, y a Gemini que procese un PDF largo — sin re-explicar nada. Los tres comparten el mismo proyecto y la misma memoria.",
       },
       {
         q: "¿Necesito configurar algo?",
@@ -396,7 +396,7 @@ const es: Dict = {
     items: {
       nomad: {
         title: "El que vive en su agente IA",
-        body: "Pasás horas con Claude o Codex armando proyectos. Cuando se traba la app, internet se cae, o cerrás sin querer, perdés todo el contexto. Con TerminalSync tu agente sigue corriendo y volvés exactamente donde quedaste.",
+        body: "Pasás horas con Claude, Codex o Gemini armando proyectos. Cuando se traba la app, internet se cae, o cerrás sin querer, perdés todo el contexto. Con TerminalSync tu agente sigue corriendo y volvés exactamente donde quedaste.",
         tag: "Power User IA",
       },
       beginner: {
@@ -497,7 +497,7 @@ const es: Dict = {
           "5 terminales con persistencia + resurrección",
           "Tu sesión en cualquier dispositivo (móvil + navegador)",
           "Notificaciones por Email / WhatsApp / Telegram",
-          "Sync completo de Claude y Codex entre dispositivos",
+          "Sync completo de Claude, Codex y Gemini entre dispositivos",
           "Historial 90 días",
           "Hasta 5 dispositivos",
         ],

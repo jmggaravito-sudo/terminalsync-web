@@ -5,7 +5,7 @@ const en: Dict = {
   meta: {
     title: "TerminalSync — Memory, privacy and mobility for your AI",
     description:
-      "Your AI agent (Claude/Codex) keeps running even if the internet drops or you switch Macs. AES-256 zero-knowledge encryption. Access from any device.",
+      "Your AI agent (Claude, Codex, or Gemini) keeps running even if the internet drops or you switch Macs. AES-256 zero-knowledge encryption. Access from any device.",
   },
   nav: {
     features: "Features",
@@ -27,7 +27,7 @@ const en: Dict = {
     trustLine: "No setup · No context loss · Works across any machine · AES-256 zero-knowledge encryption",
     nextUp: {
       eyebrow: "Latest",
-      body: "Anywhere Access via Cloudflare Tunnel — open your session from your phone with zero install. Unified multi-AI workflow: Claude and Codex sharing the same context. Per-terminal secrets vault.",
+      body: "Your session on any device — open from your phone with zero install. Unified multi-AI workflow: Claude, Codex, and Gemini sharing the same context. Per-terminal secrets vault.",
     },
     mockup: {
       appName: "Terminal Sync",
@@ -49,7 +49,7 @@ const en: Dict = {
       context: {
         kicker: "Demo · Persistence",
         title: "Close everything. Your agent keeps working alone.",
-        body: "Internet drops, your Mac restarts, you accidentally close the app — your Claude or Codex doesn't stop. When you come back, the conversation is exactly where you left it.",
+        body: "Internet drops, your Mac restarts, you accidentally close the app — your Claude, Codex, or Gemini doesn't stop. When you come back, the conversation is exactly where you left it.",
       },
       install: {
         kicker: "Demo · Any device",
@@ -66,7 +66,7 @@ const en: Dict = {
   memory: {
     eyebrow: "Persistent memory",
     badge: "Included",
-    title: "Your AI learns you. And it never forgets.",
+    title: "Your AI learns how you work. And never forgets.",
     subtitle: "Every session makes it more useful.",
     recallsLead: "It remembers:",
     recalls: [
@@ -87,7 +87,7 @@ const en: Dict = {
       },
       {
         title: "Works with any AI",
-        body: "Compatible via MCP with Claude Code, Codex and any agent that supports the protocol. One memory, all your agents.",
+        body: "Compatible via MCP with Claude Code, Codex, Gemini CLI and any agent that supports the protocol. One memory, all your agents.",
       },
       {
         title: "Semantic search",
@@ -96,19 +96,19 @@ const en: Dict = {
     ],
     timeline: {
       heading: "Without persistent memory vs. with persistent memory",
-      withoutLabel: "Without TerminalSync Memory",
-      withLabel: "With TerminalSync Memory",
+      withoutLabel: "Without persistent memory",
+      withLabel: "With persistent memory",
       withoutItems: [
-        { when: "Day 1", line: "You explain you prefer TypeScript with strict mode." },
-        { when: "Day 3", line: "“What language do you prefer?” — re-explain everything." },
-        { when: "Day 14", line: "Again. Starting from zero." },
-        { when: "Day 30", line: "You stop explaining and accept generic answers." },
+        { when: "Day 1", line: "You explain how you work." },
+        { when: "Day 3", line: "It asks you the same thing again." },
+        { when: "Day 14", line: "Starting from zero. Again." },
+        { when: "Day 30", line: "You end up adapting yourself to the AI." },
       ],
       withItems: [
-        { when: "Day 1", line: "You explain you prefer TypeScript with strict mode." },
-        { when: "Day 3", line: "“Since you prefer TypeScript, I'll init with strict.”" },
-        { when: "Day 14", line: "“Following your explicit error-types convention…”" },
-        { when: "Day 30", line: "Knows your stack better than a fresh-onboard dev." },
+        { when: "Day 1", line: "You explain how you work." },
+        { when: "Day 3", line: "It already remembers your preferences." },
+        { when: "Day 14", line: "It follows your conventions automatically." },
+        { when: "Day 30", line: "It understands your flow better than someone new on the project." },
       ],
     },
     cta: {
@@ -121,7 +121,7 @@ const en: Dict = {
     eyebrow: "Unified AI Workflow",
     title: "Stop juggling AI tools",
     subtitle:
-      "Right now your flow looks like this: Claude in one terminal, Codex in another, context lost between them. TerminalSync is the layer that brings them together.",
+      "Right now your flow looks like this: Claude in one terminal, Codex in another, Gemini in another, context lost between the three. TerminalSync is the layer that brings them together.",
     problem: {
       title: "Without TerminalSync",
       items: [
@@ -172,7 +172,7 @@ const en: Dict = {
     items: {
       uninterrupted: {
         title: "Uninterrupted Work",
-        body: "Your work is bulletproof: if the internet drops, your agent (Claude/Codex) does NOT stop. The terminal keeps running in the background and we notify you the moment connectivity returns or the task finishes.",
+        body: "Your work is bulletproof: if the internet drops, your agent (Claude, Codex, or Gemini) does NOT stop. The terminal keeps running in the background and we notify you the moment connectivity returns or the task finishes.",
       },
       anywhere: {
         title: "Anywhere Access",
@@ -225,7 +225,7 @@ const en: Dict = {
           "Full Codex configuration",
           "Global state of your sessions",
           "Skills and plugins auto-reinstalled",
-          "AI picker — pick Claude or Codex per terminal",
+          "AI picker — pick Claude, Codex, or Gemini per terminal",
           "Conversation alive when you reopen (via session resurrection)",
         ],
         upcoming: [],
@@ -297,16 +297,16 @@ const en: Dict = {
         a: "The encryption and sync engine will be auditable. The client app is proprietary for now, but the security core is published so anyone can review it.",
       },
       {
-        q: "Does it work with any AI or just Claude and Codex?",
-        a: "Today we have it polished for Claude (Code + Desktop) and Codex. The engine is tool-agnostic — we add others (Cursor, Cline, Aider, etc.) based on real demand. If you want us to support something specific, write us and we'll add it to the public roadmap.",
+        q: "Does it work with any AI or just Claude, Codex, and Gemini?",
+        a: "Today we have it polished for Claude (Code + Desktop), Codex, and Gemini CLI. The engine is tool-agnostic — we add others (Cursor, Cline, Aider, etc.) based on real demand. If you want us to support something specific, write us and we'll add it to the public roadmap.",
       },
       {
         q: "How is this different from a cloud IDE like Codespaces or Gitpod?",
         a: "You're not moving to a new environment — YOUR environment follows you. Your Mac, your files, your AI tools configured as you already had them. No compute rental, no per-minute billing, no lock-in. And everything is AES-256 encrypted in your own cloud.",
       },
       {
-        q: "How is this different from using Claude or Codex on their own?",
-        a: "Claude and Codex on their own don't talk to each other: each has its own context, files, memory. TerminalSync connects them in a single flow. You ask Claude to analyze something and Codex to execute it, without re-explaining anything — they share the same project and the same memory.",
+        q: "How is this different from using Claude, Codex, or Gemini on their own?",
+        a: "Claude, Codex, and Gemini on their own don't talk to each other: each has its own context, files, memory. TerminalSync connects them in a single flow. You ask Claude to reason, Codex to execute, and Gemini to process a long PDF — without re-explaining anything. All three share the same project and the same memory.",
       },
       {
         q: "Do I need to configure anything?",
@@ -324,7 +324,7 @@ const en: Dict = {
     subtitle:
       "Stacked against the tools you're already using every day. If something is partial or still in progress, the table says so.",
     pitch:
-      "Vercel ties you to the cloud and bills you by the minute. Claude Code and Codex in their raw form are powerful but amnesic — every time you close the terminal you lose context, they don't roam between Macs, they don't have a secrets vault, they don't ping you when they get stuck. Terminal Sync is the layer that gives your AI agents memory, privacy, and mobility — without paying for cloud and without handing your code to anyone.",
+      "Vercel ties you to the cloud and bills you by the minute. Claude Code, Codex, and Gemini CLI in their raw form are powerful but amnesic — every time you close the terminal you lose context, they don't roam between Macs, they don't have a secrets vault, they don't ping you when they get stuck. Terminal Sync is the layer that gives your three AI agents persistent memory, privacy, and mobility — without paying for cloud and without handing your code to anyone.",
     columns: {
       feature: "Feature",
       terminalSync: "Terminal Sync",
@@ -396,7 +396,7 @@ const en: Dict = {
     items: {
       nomad: {
         title: "Lives in their AI agent",
-        body: "You spend hours with Claude or Codex shipping projects. When the app freezes, internet drops, or you accidentally close it, you lose all the context. With TerminalSync your agent keeps running and you come back exactly where you left off.",
+        body: "You spend hours with Claude, Codex, or Gemini shipping projects. When the app freezes, internet drops, or you accidentally close it, you lose all the context. With TerminalSync your agent keeps running and you come back exactly where you left off.",
         tag: "AI Power User",
       },
       beginner: {
@@ -497,7 +497,7 @@ const en: Dict = {
           "5 terminals with persistence + resurrection",
           "Anywhere Access (mobile + any browser)",
           "Notifications via Email / WhatsApp / Telegram",
-          "Full Claude and Codex sync across devices",
+          "Full Claude, Codex, and Gemini sync across devices",
           "90-day history",
           "Up to 5 devices",
         ],

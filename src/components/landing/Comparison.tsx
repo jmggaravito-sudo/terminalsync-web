@@ -248,14 +248,11 @@ export function Comparison({ dict }: { dict: Dict }) {
         <LegendItem icon={<X size={11} strokeWidth={2.4} />} color="dim" label={c.legend.no} />
       </div>
 
-      {/* The pitch — one paragraph that summarizes WHY this comparison
-          matters. Lifted verbatim from Funcionalidades.md so landing
-          and internal doc stay in sync. */}
-      <div className="mt-12 max-w-3xl mx-auto rounded-2xl border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 p-6 md:p-8">
-        <p className="text-[14.5px] md:text-[15px] leading-relaxed text-[var(--color-fg)]">
-          {c.pitch}
-        </p>
-      </div>
+      {/* Pitch paragraph removed per JM 2026-05-06: it added length
+          without insight and dragged the table down with vendor-bashing
+          tone (Vercel/Anthropic/OpenAI). The comparison rows themselves
+          carry the message. The dict still keeps `pitch` so re-enabling
+          is a one-line revert. */}
     </section>
   );
 }
