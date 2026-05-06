@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : `${t.name} vs TerminalSync — honest comparison`;
   const description =
     lang === "es"
-      ? `Comparativa side-by-side entre ${t.name} y TerminalSync. Persistencia, cifrado AES-256, Anywhere Access, notificaciones. Sin trampas — si algo es parcial, lo decimos.`
+      ? `Comparativa side-by-side entre ${t.name} y TerminalSync. Persistencia, cifrado AES-256, sesión en cualquier dispositivo, notificaciones. Sin trampas — si algo es parcial, lo decimos.`
       : `Side-by-side comparison between ${t.name} and TerminalSync. Persistence, AES-256 encryption, Anywhere Access, notifications. No tricks — if something is partial, we say so.`;
   return {
     title,
