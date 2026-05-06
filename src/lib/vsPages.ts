@@ -123,6 +123,56 @@ export const TOOLS: Record<string, VsTool> = {
       noVendorLockIn: "yes",
     },
   },
+  zellij: {
+    slug: "zellij",
+    name: "Zellij",
+    category: {
+      es: "Multiplexor de terminal con session resurrection nativa",
+      en: "Terminal multiplexer with native session resurrection",
+    },
+    strengths: {
+      es: [
+        "Session resurrection out-of-the-box: detachás, reiniciás la Mac, reattachás — tus panes y el historial del buffer vuelven sin plugins extra (a diferencia de tmux, que necesita tmux-resurrect).",
+        "Layouts declarativos en KDL — versionables, compartibles, perfectos para flujos repetibles tipo \"abrime claude + logs + tests en el layout dev\".",
+        "Plugins en WebAssembly — extensible y sandboxeado. Escribís un plugin en Rust/Go/Zig y corre seguro.",
+        "UX moderna sin curva tmux: barra de estado con atajos visibles, floating panes, stacked panes, modo locked para no chocar con keybindings de Neovim.",
+        "FOSS (MIT) — sin lock-in, configuración portable.",
+      ],
+      en: [
+        "Session resurrection out-of-the-box: detach, reboot the Mac, reattach — your panes and buffer history come back without extra plugins (unlike tmux, which needs tmux-resurrect).",
+        "Declarative KDL layouts — versionable, shareable, perfect for repeatable flows like \"open claude + logs + tests in the dev layout\".",
+        "WebAssembly plugins — extensible and sandboxed. Write a plugin in Rust/Go/Zig and it runs safely.",
+        "Modern UX without the tmux learning curve: status bar with visible shortcuts, floating panes, stacked panes, locked mode to avoid keybinding conflicts with Neovim.",
+        "FOSS (MIT) — no lock-in, portable config.",
+      ],
+    },
+    whyTS: {
+      es: [
+        "Resurrection cross-machine: Zellij resucita tu sesión solo en la misma Mac. TerminalSync sincroniza el estado cifrado para que sigas en tu torre lo que dejaste en el laptop — incluido tu agente Claude Code corriendo.",
+        "Vault de secretos AES-256: Zellij no toca credenciales. TerminalSync guarda tus API keys (Anthropic, OpenAI, Notion, Vercel...) en el OS Keychain y las roamea cifradas zero-knowledge.",
+        "Sync del ecosistema Claude Code completo: tu `claude_desktop_config.json`, MCP servers, skills, OAuth tokens. Zellij sincroniza paneles, no tu agente ni sus integraciones.",
+        "Anywhere Access desde celular o navegador: Zellij requiere un terminal local con SSH. TerminalSync abre tu sesión desde donde sea, sin instalar.",
+        "Notificaciones cuando el agente termina o se queda esperando confirmación. Zellij no observa lo que corre dentro de sus panes.",
+      ],
+      en: [
+        "Cross-machine resurrection: Zellij resurrects your session only on the same Mac. TerminalSync syncs encrypted state so you continue on your tower what you left on your laptop — including your running Claude Code agent.",
+        "AES-256 secrets vault: Zellij doesn't touch credentials. TerminalSync keeps your API keys (Anthropic, OpenAI, Notion, Vercel...) in the OS Keychain and roams them zero-knowledge encrypted.",
+        "Sync of the full Claude Code ecosystem: your `claude_desktop_config.json`, MCP servers, skills, OAuth tokens. Zellij syncs panes, not your agent or its integrations.",
+        "Anywhere Access from phone or browser: Zellij needs a local terminal with SSH. TerminalSync opens your session from anywhere, zero install.",
+        "Notifications when the agent finishes or waits on confirmation. Zellij doesn't observe what runs inside its panes.",
+      ],
+    },
+    cells: {
+      resurrection: "partial",
+      uninterruptedWork: "partial",
+      anywhereAccess: "no",
+      aes256: "no",
+      secretsVault: "no",
+      multiCloudSync: "no",
+      stuckNotifications: "no",
+      noVendorLockIn: "yes",
+    },
+  },
   aider: {
     slug: "aider",
     name: "Aider",
