@@ -300,6 +300,40 @@ const en: Dict = {
     legend: { yes: "Yes", no: "No", partial: "Partial", soon: "Coming soon" },
     footnote:
       "Comparison based on each tool's public docs as of 2026-05-04. AES-256-GCM encrypted before it leaves your Mac — neither Anthropic, OpenAI, Vercel, nor we can see your files.",
+    tooltips: {
+      persistentMemory:
+        "Your AI agent remembers context, decisions, and files seen across sessions. You don't have to re-explain everything when you open a new conversation.",
+      resurrection:
+        "If you close the app, lose power, or reboot your Mac, when you come back you're exactly where you left off — half-typed command, agent output, everything intact.",
+      multiModel:
+        "One interface for Claude Code, Codex, and Gemini CLI. Switch models without losing context and use the best one for each task.",
+      responsiveNotifications:
+        "When your agent finishes something, fails, or needs a call from you, it pings you via email, Telegram, and (soon) WhatsApp. Reply from wherever you are.",
+      webMobileMirror:
+        "Your active session looks and feels the same from your Mac, a browser, or your phone. Same terminal, same context, same agent.",
+      offlineLocal:
+        "Works without internet. Your Mac is the source of truth — cloud sync is asynchronous and never blocks your work.",
+      aes256:
+        "Everything is encrypted on your Mac before it leaves, with the master key stored in your Keychain. Neither Anthropic, OpenAI, Google, nor we can open your files.",
+      secretsVault:
+        "Built-in vault for API keys, tokens, and credentials. Available to your terminals as environment variables — never written to plain files.",
+      internetImmunity:
+        "If your internet drops while an agent is running, it keeps working locally. When you're back online, it syncs on its own.",
+      aiConversationSync:
+        "Your agent conversations sync across your Macs and devices. Start on the MacBook, continue on the Mac mini without pasting context.",
+      replyInjection:
+        "From your phone, inject replies into an agent that's waiting for input on your Mac. Perfect for unblocking a command while you're out.",
+      noVendorLockIn:
+        "Your files live in your own Google Drive (iCloud, S3, Dropbox coming soon). If you leave Terminal Sync, you take everything with you. No export fee.",
+      zeroRuntime:
+        "We don't run your agents on our servers. Everything runs on your Mac, so runtime cost is zero — you only pay the AI provider you choose.",
+      zeroStorage:
+        "Your own Drive is the storage. We don't charge per GB. If you already have Google One or iCloud+, you just use it.",
+      deviceRoaming:
+        "Switch Macs (office, home, travel) and your session, files, and context follow. No re-installing agents, no re-pasting API keys.",
+      multipleSessions:
+        "Multiple terminals running in parallel, each with its own agent, context, and folder. Hop between them with a click.",
+    },
   },
   personas: {
     title: "Is this for you?",

@@ -1,5 +1,6 @@
 import { Check, X, Clock, MinusCircle } from "lucide-react";
 import type { Dict } from "@/content";
+import { HelpTip } from "@/components/ui/HelpTip";
 
 type Cell = "yes" | "no" | "partial" | "soon";
 
@@ -180,7 +181,13 @@ export function Comparison({ dict }: { dict: Dict }) {
                   className={ri % 2 === 0 ? "bg-transparent" : "bg-[var(--color-panel-2)]/30"}
                 >
                   <td className="px-5 py-3.5 text-[13.5px] text-[var(--color-fg)]">
-                    {c.rows[row.key]}
+                    <span className="inline-flex items-center">
+                      {c.rows[row.key]}
+                      <HelpTip
+                        text={c.tooltips[row.key]}
+                        ariaLabel={`${c.rows[row.key]} — más info`}
+                      />
+                    </span>
                   </td>
                   {COLUMN_KEYS.map((col) => (
                     <td
@@ -207,8 +214,12 @@ export function Comparison({ dict }: { dict: Dict }) {
             key={row.key}
             className="rounded-xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4"
           >
-            <div className="text-[13.5px] font-semibold text-[var(--color-fg-strong)] mb-3">
+            <div className="text-[13.5px] font-semibold text-[var(--color-fg-strong)] mb-3 inline-flex items-center">
               {c.rows[row.key]}
+              <HelpTip
+                text={c.tooltips[row.key]}
+                ariaLabel={`${c.rows[row.key]} — más info`}
+              />
             </div>
             <div className="grid grid-cols-5 gap-1.5 text-center">
               {COLUMN_KEYS.map((col) => (

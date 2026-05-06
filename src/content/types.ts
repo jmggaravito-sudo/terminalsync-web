@@ -141,6 +141,24 @@ export interface Dict {
     };
     legend: { yes: string; no: string; partial: string; soon: string };
     footnote: string;
+    tooltips: {
+      persistentMemory: string;
+      resurrection: string;
+      multiModel: string;
+      responsiveNotifications: string;
+      webMobileMirror: string;
+      offlineLocal: string;
+      aes256: string;
+      secretsVault: string;
+      internetImmunity: string;
+      aiConversationSync: string;
+      replyInjection: string;
+      noVendorLockIn: string;
+      zeroRuntime: string;
+      zeroStorage: string;
+      deviceRoaming: string;
+      multipleSessions: string;
+    };
   };
   personas: {
     title: string;
