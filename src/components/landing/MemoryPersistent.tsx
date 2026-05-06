@@ -41,6 +41,38 @@ export function MemoryPersistent({ dict }: { dict: Dict }) {
         </p>
       </div>
 
+      {/* Recalls + closing block — concrete examples that make the
+          abstract idea of "memory" tangible. Renders only when the
+          dict carries the new fields, so older locales / partial
+          updates fall back gracefully to the original layout. */}
+      {m.recalls && m.recalls.length > 0 && (
+        <div className="mt-8 max-w-xl mx-auto text-center">
+          {m.recallsLead && (
+            <p className="text-[14px] text-[var(--color-fg-muted)] font-medium">
+              {m.recallsLead}
+            </p>
+          )}
+          <ul className="mt-3 space-y-2 text-[14.5px] text-[var(--color-fg)] leading-relaxed">
+            {m.recalls.map((line) => (
+              <li key={line} className="flex items-start justify-center gap-2">
+                <span className="mt-2 inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-accent)] shrink-0" />
+                <span>{line}</span>
+              </li>
+            ))}
+          </ul>
+          {m.closing && (
+            <div className="mt-6 space-y-2">
+              <p className="text-[15px] font-semibold text-[var(--color-fg-strong)] leading-relaxed">
+                {m.closing.outcome}
+              </p>
+              <p className="text-[13.5px] text-[var(--color-fg-muted)]">
+                {m.closing.reassurance}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* 3 pillars */}
       <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
         {m.pillars.map((p, i) => {

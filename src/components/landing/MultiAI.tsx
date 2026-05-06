@@ -1,4 +1,5 @@
-import { Check, X, Sparkles, Brain, Wrench } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Check, X, Sparkles, Brain, Wrench, FileText } from "lucide-react";
 import type { Dict } from "@/content";
 
 /**
@@ -20,10 +21,11 @@ import type { Dict } from "@/content";
 export function MultiAI({ dict }: { dict: Dict }) {
   const m = dict.multiAI;
 
-  // Pair each use-case card with an icon. Cap of 2 cards by current
-  // dict; if we add more (e.g., when Gemini ships) the icon list
-  // extends here without re-typing everything.
-  const useCaseIcons = [Brain, Wrench];
+  // One icon per use-case card. Order matches the dict cards:
+  //   0 Claude → Brain (reasoning)
+  //   1 Codex → Wrench (execution)
+  //   2 Gemini → FileText (long context, multimodal docs)
+  const useCaseIcons = [Brain, Wrench, FileText];
 
   return (
     <section
@@ -98,31 +100,57 @@ export function MultiAI({ dict }: { dict: Dict }) {
         <p className="text-center text-[15px] text-[var(--color-fg-strong)] font-medium max-w-xl mx-auto leading-relaxed">
           {m.useCases.title}
         </p>
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
-          {m.useCases.cards.map((c, i) => {
-            const Icon = useCaseIcons[i] ?? Sparkles;
-            return (
-              <article
-                key={c.tool}
-                className="lift rounded-2xl bg-[var(--color-panel)] border border-[var(--color-border)] p-6"
-              >
-                <div className="h-11 w-11 rounded-xl bg-[var(--color-accent)]/12 text-[var(--color-accent)] flex items-center justify-center">
-                  <Icon size={20} strokeWidth={2.2} />
-                </div>
-                <h4 className="mt-4 text-[16px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-                  <span className="text-[var(--color-accent)]">{c.tool}</span>{" "}
-                  <span className="text-[var(--color-fg-muted)] font-normal">
-                    {c.verb}
-                  </span>
-                </h4>
-                <p className="mt-2 text-[13.5px] text-[var(--color-fg-muted)] leading-relaxed">
-                  {c.body}
-                </p>
-              </article>
-            );
-          })}
-        </div>
+        {/* Triangular layout when there are 3 cards: first two side by
+            side, third centered below. JM's request — visually echoes
+            "Claude + Codex working together, Gemini supporting from
+            below". Falls back to a normal grid if cards.length !== 3. */}
+        {m.useCases.cards.length === 3 ? (
+          <div className="mt-6 max-w-3xl mx-auto space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {m.useCases.cards.slice(0, 2).map((c, i) => (
+                <UseCaseCard key={c.tool} card={c} icon={useCaseIcons[i] ?? Sparkles} />
+              ))}
+            </div>
+            <div className="md:max-w-[calc(50%-10px)] mx-auto">
+              {m.useCases.cards.slice(2, 3).map((c) => (
+                <UseCaseCard
+                  key={c.tool}
+                  card={c}
+                  icon={useCaseIcons[2] ?? Sparkles}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
+            {m.useCases.cards.map((c, i) => (
+              <UseCaseCard key={c.tool} card={c} icon={useCaseIcons[i] ?? Sparkles} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
+  );
+}
+
+interface UseCaseCardProps {
+  card: { tool: string; verb: string; body: string };
+  icon: LucideIcon;
+}
+
+function UseCaseCard({ card: c, icon: Icon }: UseCaseCardProps) {
+  return (
+    <article className="lift rounded-2xl bg-[var(--color-panel)] border border-[var(--color-border)] p-6">
+      <div className="h-11 w-11 rounded-xl bg-[var(--color-accent)]/12 text-[var(--color-accent)] flex items-center justify-center">
+        <Icon size={20} strokeWidth={2.2} />
+      </div>
+      <h4 className="mt-4 text-[16px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
+        <span className="text-[var(--color-accent)]">{c.tool}</span>{" "}
+        <span className="text-[var(--color-fg-muted)] font-normal">{c.verb}</span>
+      </h4>
+      <p className="mt-2 text-[13.5px] text-[var(--color-fg-muted)] leading-relaxed">
+        {c.body}
+      </p>
+    </article>
   );
 }

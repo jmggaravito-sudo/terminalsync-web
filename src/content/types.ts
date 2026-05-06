@@ -56,6 +56,15 @@ export interface Dict {
     badge: string;
     title: string;
     subtitle: string;
+    /** One-liner under the subtitle introducing the bullets list. */
+    recallsLead?: string;
+    /** Concrete things the AI recalls — rendered as a clean bulleted
+     *  list under the lead. Keep each item short (<60 chars). */
+    recalls?: string[];
+    /** Two-line closing block: outcome ('it understands you better
+     *  than someone new') + reassurance ('local, encrypted, no
+     *  setup'). */
+    closing?: { outcome: string; reassurance: string };
     pillars: Array<{ title: string; body: string }>;
     timeline: {
       heading: string;
