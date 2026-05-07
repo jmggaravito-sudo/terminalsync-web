@@ -5,6 +5,37 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+/**
+ * Calls /api/welcome-trigger after a successful auth exchange. The endpoint
+ * checks user.created_at server-side, so calling it on every login is safe
+ * — only fresh signups actually fire the email. We pass the access_token
+ * as Bearer so the server can resolve the canonical user row, and we read
+ * `tsync_landing` from cookies to choose the dev vs consumer email variant.
+ *
+ * Failures are silent on purpose: a flaky n8n shouldn't block the user from
+ * entering the marketplace. We log to console for visibility.
+ */
+async function fireWelcomeIfFresh(sb: SupabaseClient, lang: "es" | "en") {
+  try {
+    const { data } = await sb.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) return;
+    const cookieMatch = document.cookie.match(/(?:^|;\s*)tsync_landing=([^;]+)/);
+    const source = cookieMatch?.[1] === "dev" ? "dev" : "consumer";
+    await fetch("/api/welcome-trigger", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ lang, source }),
+    });
+  } catch (e) {
+    console.warn("[welcome-trigger] failed:", e);
+  }
+}
 
 /**
  * Universal magic-link callback. Handles Supabase OTP / magic-link
@@ -117,6 +148,7 @@ function CallbackInner() {
         if (code) {
           const { error: e } = await sb!.auth.exchangeCodeForSession(code);
           if (e) throw e;
+          await fireWelcomeIfFresh(sb!, lang);
           setStage("session");
           setTimeout(() => router.replace(next), 800);
           return;
@@ -139,8 +171,9 @@ function CallbackInner() {
               refresh_token: refreshToken,
             });
             if (e) throw e;
+            await fireWelcomeIfFresh(sb!, lang);
             setStage("session");
-            setTimeout(() => router.replace("/es/marketplace"), 800);
+            setTimeout(() => router.replace(next), 800);
             return;
           }
         }
@@ -150,8 +183,9 @@ function CallbackInner() {
         for (let i = 0; i < 6; i++) {
           const { data } = await sb!.auth.getSession();
           if (data.session) {
+            await fireWelcomeIfFresh(sb!, lang);
             setStage("session");
-            setTimeout(() => router.replace("/es/marketplace"), 800);
+            setTimeout(() => router.replace(next), 800);
             return;
           }
           await new Promise((r) => setTimeout(r, 250));

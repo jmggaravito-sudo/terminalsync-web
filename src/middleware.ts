@@ -35,7 +35,24 @@ export function middleware(req: NextRequest) {
     pathname.includes(".") ||
     locales.some((l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`))
   ) {
-    return NextResponse.next();
+    // Stamp the landing source as a cookie so the post-signup welcome flow
+    // can pick the right copy variant (dev vs consumer). The cookie persists
+    // across pages until the user signs up; the auth callback reads it and
+    // forwards it to n8n. We only set it if absent so a visitor who first
+    // saw /for-developers and later browses to / keeps the dev attribution.
+    const res = NextResponse.next();
+    if (!req.cookies.get("tsync_landing")) {
+      const isDev = /^\/(?:es|en)\/for-developers(?:\/|$)/.test(pathname);
+      const isConsumerHome = /^\/(?:es|en)\/?$/.test(pathname);
+      if (isDev || isConsumerHome) {
+        res.cookies.set("tsync_landing", isDev ? "dev" : "consumer", {
+          maxAge: 60 * 60 * 24 * 30, // 30 days
+          sameSite: "lax",
+          path: "/",
+        });
+      }
+    }
+    return res;
   }
 
   // Parse Accept-Language for the best match.
