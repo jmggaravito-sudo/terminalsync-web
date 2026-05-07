@@ -120,6 +120,15 @@ async function handle(event: Stripe.Event) {
         break;
       }
 
+      // Stack Pack (bundle) one-time charges. Same event type, different
+      // source flag — grants the bundle to the buyer and creates an
+      // install row per included connector so the desktop app picks them
+      // all up on the next /installed sync.
+      if (session.metadata?.source === "terminalsync_bundle") {
+        await handleBundleCheckout(session);
+        break;
+      }
+
       const plan = session.metadata?.plan;
       const cycle = session.metadata?.cycle;
       const email = session.customer_details?.email;
@@ -375,6 +384,38 @@ async function handle(event: Stripe.Event) {
       if (payoutUpd.error) {
         console.error("[marketplace] refund payout sync failed", payoutUpd.error.message);
       }
+
+      // Bundle purchases share the same charge.refunded path. We mark
+      // the purchase refunded AND drop the bundle's per-listing
+      // installs that were granted at purchase time so the desktop
+      // app removes them on next sync.
+      const bundleRefund = await sb
+        .from("bundle_purchases")
+        .update({ status: "refunded", refunded_at: new Date().toISOString() })
+        .eq("stripe_charge_id", charge.id)
+        .select("id, user_id, bundle_id");
+      if (bundleRefund.error) {
+        console.error("[bundle] refund sync failed", bundleRefund.error.message);
+      } else if (bundleRefund.data && bundleRefund.data.length > 0) {
+        // For each refunded purchase, mark its bundle's listings
+        // uninstalled FOR THIS USER ONLY (don't touch other users).
+        for (const purchase of bundleRefund.data) {
+          const listingsRes = await sb
+            .from("bundle_listings")
+            .select("listing_id")
+            .eq("bundle_id", purchase.bundle_id);
+          const listingIds = (listingsRes.data ?? []).map((l) => l.listing_id);
+          if (listingIds.length > 0) {
+            await sb
+              .from("connector_installs")
+              .update({ status: "uninstalled" })
+              .eq("user_id", purchase.user_id)
+              .in("listing_id", listingIds);
+          }
+        }
+        console.log("[bundle] refund synced", { charge: charge.id, count: bundleRefund.data.length });
+      }
+
       console.log("[marketplace] refund synced", { charge: charge.id });
       break;
     }
@@ -440,6 +481,110 @@ async function handleMarketplaceCheckout(session: Stripe.Checkout.Session) {
     console.error("[marketplace] payout row insert failed", payout.error.message);
   }
   console.log("[marketplace] install + pending payout", { buyerUserId, listingId, grossCents });
+}
+
+async function handleBundleCheckout(session: Stripe.Checkout.Session) {
+  const bundleId = session.metadata?.bundle_id;
+  const buyerUserId = session.metadata?.buyer_user_id;
+  if (!bundleId || !buyerUserId) {
+    console.warn("[bundle] checkout missing metadata", session.id);
+    return;
+  }
+
+  const sb = getSupabaseAdmin();
+  if (!sb) return;
+
+  const chargeId =
+    typeof session.payment_intent === "string" ? session.payment_intent : null;
+  const amountPaid = session.amount_total ?? 0;
+  const currency = session.currency ?? "usd";
+
+  // 1) Upsert the purchase row. unique(user_id, bundle_id) means a
+  //    refund-then-rebuy by the same user updates the same row back to
+  //    'active'. Replays of the same webhook also no-op gracefully.
+  const purchase = await sb
+    .from("bundle_purchases")
+    .upsert(
+      {
+        user_id: buyerUserId,
+        bundle_id: bundleId,
+        stripe_charge_id: chargeId,
+        stripe_session_id: session.id,
+        amount_paid_cents: amountPaid,
+        currency,
+        status: "active",
+        purchased_at: new Date().toISOString(),
+        refunded_at: null,
+      },
+      { onConflict: "user_id,bundle_id" },
+    )
+    .select("id")
+    .maybeSingle();
+  if (purchase.error) {
+    console.error("[bundle] purchase upsert failed", purchase.error.message);
+    return;
+  }
+
+  // 2) Grant access to every listing in the bundle by inserting an
+  //    install row per listing for this user. The desktop app already
+  //    knows how to consume connector_installs rows on its next sync —
+  //    no extra surface needed.
+  const blRes = await sb
+    .from("bundle_listings")
+    .select("listing_id")
+    .eq("bundle_id", bundleId);
+  if (blRes.error) {
+    console.error("[bundle] failed to load listings", blRes.error.message);
+    return;
+  }
+  const listingIds = (blRes.data ?? []).map((b) => b.listing_id);
+
+  // For each listing, fetch the latest version_id so the install row
+  // pins to a specific manifest. Using the same pattern as
+  // handleMarketplaceCheckout above for consistency.
+  for (const listingId of listingIds) {
+    const versionRes = await sb
+      .from("connector_versions")
+      .select("id")
+      .eq("listing_id", listingId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const versionId = versionRes.data?.id ?? null;
+    const upRes = await sb.from("connector_installs").upsert(
+      {
+        user_id: buyerUserId,
+        listing_id: listingId,
+        version_id: versionId,
+        status: "active",
+        // Tag the install with the charge so a future refund can find
+        // and revert these specific rows.
+        stripe_charge_id: chargeId,
+        amount_paid_cents: 0, // bundle cost is on the purchase row, not per-listing
+        installed_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id,listing_id" },
+    );
+    if (upRes.error) {
+      console.error("[bundle] install upsert failed", { listingId, err: upRes.error.message });
+    }
+  }
+
+  // 3) Bump the purchase counter (best-effort, not atomic — same
+  //    pattern as install_count on connector_listings).
+  const bundleRow = await sb
+    .from("bundles")
+    .select("purchase_count")
+    .eq("id", bundleId)
+    .maybeSingle();
+  if (bundleRow.data) {
+    await sb
+      .from("bundles")
+      .update({ purchase_count: (bundleRow.data.purchase_count ?? 0) + 1 })
+      .eq("id", bundleId);
+  }
+
+  console.log("[bundle] purchase complete", { bundleId, buyerUserId, listings: listingIds.length });
 }
 
 // ─── PROVISIONING (next step, not in this file) ───────────────────────
