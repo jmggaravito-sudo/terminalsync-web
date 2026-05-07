@@ -481,7 +481,7 @@ const es: Dict = {
           "Cifrado AES-256 zero-knowledge",
           "Sync con Google Drive (tu cuenta)",
           "Notificaciones de silencio en el agente",
-          "1 dispositivo vinculado",
+          "2 dispositivos vinculados (laptop + escritorio)",
         ],
         cta: "Descargar gratis",
       },
