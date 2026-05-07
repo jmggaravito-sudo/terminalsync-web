@@ -57,19 +57,21 @@ export default async function Landing({ params }: Props) {
     <>
       <StructuredData dict={d} lang={lang} />
       <Hero dict={d} />
-      {/* Savings calculator right after the Hero — first ROI hook
-          before the visitor commits to scrolling. The big number does
-          the selling; sliders make it personal. */}
+      {/* Order JM 2026-05-07:
+          Hero → Demos → Comparison → SavingsCalculator → moat
+          deep-dives. The calculator follows the comparison so the
+          visitor sees "no one else does this" then immediately
+          "this is what you'd save". */}
+      <Demos dict={d} />
+      <Comparison dict={d} />
       <SavingsCalculator
         dict={d}
         currencyHint={currencyHint ?? undefined}
       />
       <MultiAI dict={d} />
       <MemoryPersistent dict={d} />
-      <Demos dict={d} />
       <Benefits dict={d} />
       <ToolBreakdown dict={d} />
-      <Comparison dict={d} />
       <BeforeAfter dict={d} />
       <MidCta dict={d} />
       <Personas dict={d} />
