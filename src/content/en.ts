@@ -481,7 +481,7 @@ const en: Dict = {
           "AES-256 zero-knowledge encryption",
           "Google Drive sync (your account)",
           "Silence detection for your AI agent",
-          "1 linked device",
+          "2 linked devices (laptop + desktop)",
         ],
         cta: "Download free",
       },
