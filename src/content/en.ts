@@ -366,6 +366,12 @@ const en: Dict = {
         },
         hoursPerDay: { label: "AI hours/day", suffix: "h/day" },
         daysPerMonth: { label: "Working days/month", suffix: "days/mo" },
+        taskMix: {
+          label: "Task mix",
+          help: "Heavy tasks (architecture, complex debugging, design decisions) push up the cost when you stick to one AI. The mix shields you by routing each task to the right model.",
+          lightLabel: "Simple code",
+          heavyLabel: "Heavy reasoning",
+        },
       },
       results: {
         soloLabel: "Single AI only",

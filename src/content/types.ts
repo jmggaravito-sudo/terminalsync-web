@@ -181,6 +181,12 @@ export interface Dict {
         rate: { label: string; help: string };
         hoursPerDay: { label: string; suffix: string };
         daysPerMonth: { label: string; suffix: string };
+        taskMix?: {
+          label: string;
+          help: string;
+          lightLabel: string;
+          heavyLabel: string;
+        };
       };
       results: {
         soloLabel: string;
