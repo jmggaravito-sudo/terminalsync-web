@@ -46,16 +46,24 @@ export function HelpTip({
       </button>
 
       {open ? (
+        // Anchored at the RIGHT edge of the trigger and growing
+        // leftward (right-0). The previous left-1/2 + translate-x
+        // centering overflowed the parent on long rows where the
+        // trigger sits near the right edge — JM 2026-05-07. Width
+        // is min(16rem, 88vw) so the tooltip never exceeds the
+        // viewport on phones.
         <span
           id={tipId}
           role="tooltip"
-          className="absolute bottom-full left-1/2 z-30 mb-2 w-64 max-w-[80vw] -translate-x-1/2 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel-2)]/95 px-3 py-2 text-[12px] leading-relaxed text-[var(--color-fg)] shadow-xl backdrop-blur-sm pointer-events-none"
+          className="absolute bottom-full right-0 z-30 mb-2 w-[min(16rem,88vw)] rounded-lg border border-[var(--color-border)] bg-[var(--color-panel-2)]/95 px-3 py-2 text-[12px] leading-relaxed text-[var(--color-fg)] shadow-xl backdrop-blur-sm pointer-events-none"
         >
           {text}
-          {/* small arrow pointing down to the icon */}
+          {/* small arrow pointing down to the icon, sitting at the
+              right side of the tooltip since the tooltip itself is
+              right-aligned to the trigger now */}
           <span
             aria-hidden="true"
-            className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2 rotate-45 h-2 w-2 border-b border-r border-[var(--color-border)] bg-[var(--color-panel-2)]/95"
+            className="absolute right-2 top-full -translate-y-1/2 rotate-45 h-2 w-2 border-b border-r border-[var(--color-border)] bg-[var(--color-panel-2)]/95"
           />
         </span>
       ) : null}
