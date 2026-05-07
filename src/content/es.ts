@@ -386,8 +386,8 @@ const es: Dict = {
       breakdown: {
         heading: "Cómo lo calculamos",
         hoursYear: "Horas con IA al año",
-        apiCostSolo: "Costo API solo (≈ $10/h)",
-        apiCostMix: "Costo API mix (≈ $1.50/h)",
+        apiCostSolo: "Costo API solo (≈ $2.00/h)",
+        apiCostMix: "Costo API mix (≈ $0.30/h)",
         devTimeSolo: "Tu tiempo a tarifa plena",
         devTimeWithTs: "Tu tiempo, 25 % menos horas",
         subscription: "TerminalSync Pro anual ($228)",

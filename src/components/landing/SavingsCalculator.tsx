@@ -19,21 +19,31 @@ import { formatLocal } from "@/lib/geoCurrency";
 
 // Tunable constants — keep these here (not in dict) so adjusting model
 // pricing is a code-change, not a translation update.
-// Solo-vendor and mix costs are linearly interpolated by `heavyMix` —
-// the % of the user's tasks that are heavy reasoning vs simple code.
 //
-//   heavyMix = 0  (all simple code edits) → solo $5/h, mix $0.50/h
-//   heavyMix = 1  (all heavy reasoning)   → solo $15/h, mix $2.50/h
+// CALIBRATED 2026-05-07 against verified list prices fetched live from
+// Anthropic, OpenAI and Google docs. Single source of truth lives in
+// PRICING.md in the terminal-sync repo (and the cron job that keeps
+// it fresh every 15 days).
 //
-// The intuition: simple tasks are cheap on Codex / free on Gemini, but
-// in single-vendor mode you still pay long-context+vision overhead on
-// Claude Pro/Codex Pro for every prompt. Heavy tasks need Claude no
-// matter what, so the gap shrinks but mix still wins via Codex/Gemini
-// for the in-between.
-const SOLO_BASE = 5; // USD/h baseline (all light)
-const SOLO_HEAVY_PREMIUM = 10; // USD/h extra at 100% heavy
-const MIX_BASE = 0.5; // USD/h baseline (Gemini free + Codex micro)
-const MIX_HEAVY_PREMIUM = 2; // USD/h extra at 100% heavy
+// Per-hour costs assume a heavy active-coding hour: ~200K input tokens
+// + ~80K output. Numbers below are rounded composites across the
+// likely model the user lands on for each task class.
+//
+// Solo (single-vendor):
+//   - Light (all simple code edits): user lands on Sonnet 4.6 ($3/$15)
+//     → ~200k×$3 + ~80k×$15 ≈ $1.80/h, plus session overhead → $2/h
+//   - Heavy (all reasoning): user pushes to Opus 4.7 ($5/$25)
+//     → ~200k×$5 + ~80k×$25 ≈ $3/h, plus retries → $4/h
+//
+// Mix (smart routing across 3 AIs):
+//   - Light: most goes to Codex GPT-5 ($1.25/$10) + Gemini Flash-Lite
+//     free → ~$0.30/h
+//   - Heavy: Claude Sonnet for reasoning + Codex for execution
+//     + Gemini Pro 2.5 for long-context reads → ~$1.20/h
+const SOLO_BASE = 2.0; // USD/h baseline (all light) — Sonnet 4.6 single
+const SOLO_HEAVY_PREMIUM = 2.0; // → $4/h at all-heavy (Opus 4.7)
+const MIX_BASE = 0.3; // USD/h baseline (Codex micro + Gemini free)
+const MIX_HEAVY_PREMIUM = 0.9; // → $1.20/h at all-heavy (Sonnet+Codex)
 
 // Time savings also vary by mix: light-task days have more rate-limit
 // waits and more model-swapping (more savings via TS); heavy-reasoning
