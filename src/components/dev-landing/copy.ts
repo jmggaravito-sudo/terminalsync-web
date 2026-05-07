@@ -27,6 +27,33 @@ export interface DevCopy {
     title: string;
     items: { title: string; body: string }[];
   };
+  comparison: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    columns: {
+      capability: string;
+      terminalSync: string;
+      claudeCode: string;
+      codex: string;
+      gemini: string;
+      cursor: string;
+    };
+    rows: {
+      sharedMemory: string;
+      gitAware: string;
+      envVault: string;
+      semanticRecall: string;
+      mcpInterop: string;
+      offlineLocal: string;
+      e2eEncryption: string;
+      noLockIn: string;
+      headlessCli: string;
+      multiMachine: string;
+    };
+    legend: { yes: string; partial: string; soon: string; no: string };
+    footnote: string;
+  };
   codeExample: {
     eyebrow: string;
     title: string;
@@ -65,8 +92,8 @@ const en: DevCopy = {
     subtitle:
       "Sync your three agents on the same project, on any machine, with AES-256 encryption that not even we can open.",
     ctaPrimary: "Try free · 7 days Pro",
-    ctaSecondary: "View on GitHub",
-    trustLine: "macOS · Linux · Windows (waitlist) · Open core, MIT-licensed CLI",
+    ctaSecondary: "Browse the Marketplace",
+    trustLine: "macOS · Linux · Windows (waitlist) · Encrypted client-side, your keys",
   },
   features: {
     eyebrow: "what you actually get",
@@ -88,6 +115,35 @@ const en: DevCopy = {
           "Local SQLite + libsql with semantic search across every Claude/Codex/Gemini session you've ever run. Recall by intent, not just keyword. Zero-knowledge encryption — keys live in your OS keychain.",
       },
     ],
+  },
+  comparison: {
+    eyebrow: "deep technical comparison",
+    title: "What the other tools don't ship.",
+    subtitle:
+      "Most AI coding tools optimize for one model in one IDE. TerminalSync is the layer underneath — vendor-neutral, encrypted, and Git-aware.",
+    columns: {
+      capability: "Capability",
+      terminalSync: "TerminalSync",
+      claudeCode: "Claude Code",
+      codex: "Codex CLI",
+      gemini: "Gemini CLI",
+      cursor: "Cursor",
+    },
+    rows: {
+      sharedMemory: "Shared memory across Claude + Codex + Gemini",
+      gitAware: "Git-aware memory snapshots (per branch)",
+      envVault: ".env vault encrypted across machines",
+      semanticRecall: "Semantic recall across past sessions",
+      mcpInterop: "MCP-native, works with any MCP client",
+      offlineLocal: "Offline-first, local SQLite store",
+      e2eEncryption: "Client-side AES-256, keys in OS keychain",
+      noLockIn: "Cancel anytime, keep your data",
+      headlessCli: "Headless CLI / scriptable",
+      multiMachine: "Multi-machine sync (Drive, your bucket)",
+    },
+    legend: { yes: "Ships today", partial: "Partial", soon: "Coming", no: "Not available" },
+    footnote:
+      "Comparison reflects shipped capabilities as of May 2026. Cursor IDE column included because it's the closest substitute for the persistence + memory story, even though it's a different surface (IDE vs. layer-underneath).",
   },
   codeExample: {
     eyebrow: "drop-in CLI",
@@ -121,8 +177,8 @@ const en: DevCopy = {
     title: "Dev FAQ",
     items: [
       {
-        q: "Is the CLI open source?",
-        a: "Yes — the CLI is MIT-licensed on GitHub. The desktop app, sync engine, and managed Drive layer are closed source (that's where the 'paid' part lives). You can run the CLI standalone against your own Drive without ever touching our servers.",
+        q: "Where does my encrypted data live?",
+        a: "In your Google Drive — your account, your bucket. The desktop app reads and writes directly to Drive over your OAuth grant; we don't proxy or copy your memory. AES-256 keys live in your OS keychain, never on our servers. Revoke our app access in Drive at any time and the sync stops while your historical data stays where it is.",
       },
       {
         q: "How is this different from a chat history export?",
@@ -146,7 +202,7 @@ const en: DevCopy = {
     title: "Stop re-explaining your codebase. Ship.",
     body: "Free tier covers 2 devices and forever-persistent memory. No card required.",
     primary: "Download free",
-    secondary: "Read the docs",
+    secondary: "Browse Stack Packs",
   },
 };
 
@@ -163,8 +219,8 @@ const es: DevCopy = {
     subtitle:
       "Sincronizá tus tres agentes en el mismo proyecto, en cualquier máquina, con cifrado AES-256 que ni nosotros podemos abrir.",
     ctaPrimary: "Probalo gratis · 7 días Pro",
-    ctaSecondary: "Ver en GitHub",
-    trustLine: "macOS · Linux · Windows (waitlist) · Core abierto, CLI con licencia MIT",
+    ctaSecondary: "Ver el Marketplace",
+    trustLine: "macOS · Linux · Windows (waitlist) · Cifrado en tu cliente, tus llaves",
   },
   features: {
     eyebrow: "lo que realmente recibís",
@@ -186,6 +242,35 @@ const es: DevCopy = {
           "SQLite + libsql local con búsqueda semántica sobre cada sesión Claude/Codex/Gemini. Recall por intención, no por keyword. Zero-knowledge: la llave vive en tu keychain del SO.",
       },
     ],
+  },
+  comparison: {
+    eyebrow: "comparación técnica a fondo",
+    title: "Lo que las otras herramientas no traen.",
+    subtitle:
+      "Las herramientas de IA optimizan un modelo en un IDE. TerminalSync es la capa de abajo — vendor-neutral, cifrada y Git-aware.",
+    columns: {
+      capability: "Capacidad",
+      terminalSync: "TerminalSync",
+      claudeCode: "Claude Code",
+      codex: "Codex CLI",
+      gemini: "Gemini CLI",
+      cursor: "Cursor",
+    },
+    rows: {
+      sharedMemory: "Memoria compartida entre Claude + Codex + Gemini",
+      gitAware: "Snapshots de memoria Git-aware (por branch)",
+      envVault: ".env vault cifrado entre máquinas",
+      semanticRecall: "Recall semántico sobre sesiones pasadas",
+      mcpInterop: "MCP-native, funciona con cualquier cliente MCP",
+      offlineLocal: "Offline-first, store local en SQLite",
+      e2eEncryption: "AES-256 en tu cliente, llaves en keychain del SO",
+      noLockIn: "Cancelás cuando quieras, te quedás con tu data",
+      headlessCli: "CLI headless / scriptable",
+      multiMachine: "Sync multi-máquina (Drive, tu bucket)",
+    },
+    legend: { yes: "Hoy", partial: "Parcial", soon: "Pronto", no: "No disponible" },
+    footnote:
+      "Comparación al estado de mayo 2026. Incluimos Cursor IDE como columna porque es el substituto más cercano en persistencia + memoria, aunque es otra surface (IDE vs. capa de abajo).",
   },
   codeExample: {
     eyebrow: "CLI drop-in",
@@ -219,8 +304,8 @@ const es: DevCopy = {
     title: "FAQ para devs",
     items: [
       {
-        q: "¿El CLI es open source?",
-        a: "Sí — el CLI es MIT en GitHub. El desktop app, el sync engine y la capa managed de Drive son closed source (ahí vive la parte paga). Podés correr el CLI standalone contra tu propio Drive sin tocar nuestros servidores.",
+        q: "¿Dónde vive mi data cifrada?",
+        a: "En tu Google Drive — tu cuenta, tu bucket. La app lee y escribe directo en Drive con tu OAuth; nosotros no proxyeamos ni copiamos tu memoria. Las llaves AES-256 viven en tu keychain del SO, nunca en nuestros servidores. Revocás permisos en Drive y la sincronización para — tu memoria histórica se queda donde está.",
       },
       {
         q: "¿Esto en qué se diferencia de un export del historial?",
@@ -244,7 +329,7 @@ const es: DevCopy = {
     title: "Dejá de re-explicar tu codebase. Shippealo.",
     body: "El tier Free cubre 2 dispositivos y memoria persistente para siempre. Sin tarjeta.",
     primary: "Descargar gratis",
-    secondary: "Leer los docs",
+    secondary: "Ver Stack Packs",
   },
 };
 

@@ -1,9 +1,23 @@
+import Link from "next/link";
 import { ArrowRight, DollarSign, Repeat, ShieldCheck } from "lucide-react";
+import type { Locale } from "@/content";
 import type { DevCopy } from "./copy";
 
 const ICONS = [DollarSign, Repeat, ShieldCheck];
 
-export function DevAffiliates({ copy }: { copy: DevCopy }) {
+export function DevAffiliates({
+  copy,
+  lang,
+}: {
+  copy: DevCopy;
+  lang: Locale;
+}) {
+  // Mirror the main landing's Affiliates pattern: prefer the
+  // Rewardful signup URL when present (set in Vercel env), fall
+  // back to the legal/affiliates terms page otherwise. Same env
+  // var name so a single config flip lights up both surfaces.
+  const rewardfulUrl = process.env.NEXT_PUBLIC_REWARDFUL_SIGNUP_URL;
+  const fallbackHref = `/${lang}/legal/affiliates`;
   return (
     <section
       id="affiliates"
@@ -48,14 +62,27 @@ export function DevAffiliates({ copy }: { copy: DevCopy }) {
         </div>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a
-            href="mailto:soporte@nexflowai.net?subject=Affiliate%20Application%20-%20TerminalSync"
-            data-cta="dev-affiliate"
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[13.5px] font-semibold px-6 py-3 shadow-[0_8px_24px_-10px_var(--color-accent-glow)] transition-all"
-          >
-            {copy.affiliates.cta}
-            <ArrowRight size={14} strokeWidth={2.4} />
-          </a>
+          {rewardfulUrl ? (
+            <a
+              href={rewardfulUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cta="dev-affiliate"
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[13.5px] font-semibold px-6 py-3 shadow-[0_8px_24px_-10px_var(--color-accent-glow)] transition-all"
+            >
+              {copy.affiliates.cta}
+              <ArrowRight size={14} strokeWidth={2.4} />
+            </a>
+          ) : (
+            <Link
+              href={fallbackHref}
+              data-cta="dev-affiliate"
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[13.5px] font-semibold px-6 py-3 shadow-[0_8px_24px_-10px_var(--color-accent-glow)] transition-all"
+            >
+              {copy.affiliates.cta}
+              <ArrowRight size={14} strokeWidth={2.4} />
+            </Link>
+          )}
         </div>
         <p className="mt-4 text-center text-[12px] font-mono uppercase tracking-[0.12em] text-[var(--color-accent)]">
           {copy.affiliates.note}

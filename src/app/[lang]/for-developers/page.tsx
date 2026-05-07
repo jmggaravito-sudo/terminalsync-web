@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
-import { ArrowRight, BookOpen, Download } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Download, Layers } from "lucide-react";
 import { getDict, isLocale } from "@/content";
 import { currencyForCountry } from "@/lib/geoCurrency";
 import { Pricing } from "@/components/landing/Pricing";
 import { Footer } from "@/components/landing/Footer";
 import { DevHero } from "@/components/dev-landing/DevHero";
 import { DevFeatures } from "@/components/dev-landing/DevFeatures";
+import { DevComparison } from "@/components/dev-landing/DevComparison";
 import { DevAffiliates } from "@/components/dev-landing/DevAffiliates";
 import { DevFAQ } from "@/components/dev-landing/DevFAQ";
 import { getDevCopy } from "@/components/dev-landing/copy";
@@ -59,9 +61,10 @@ export default async function DevLanding({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
-      <DevHero copy={copy} />
+      <DevHero copy={copy} lang={lang} />
       <DevFeatures copy={copy} />
-      <DevAffiliates copy={copy} />
+      <DevComparison copy={copy} />
+      <DevAffiliates copy={copy} lang={lang} />
 
       {/* Pricing reused — Dev plan is the natural conversion target on
           this page. Anchored at #pricing so #pricing links from the
@@ -90,16 +93,14 @@ export default async function DevLanding({ params }: Props) {
               <Download size={14} strokeWidth={2.4} />
               {copy.cta.primary}
             </a>
-            <a
-              href="https://github.com/jmggaravito-sudo/terminalsync#readme"
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              href={`/${lang}/stacks`}
               className="inline-flex items-center gap-2 rounded-full bg-[var(--color-panel)] border border-[var(--color-border)] text-[var(--color-fg)] text-[13.5px] font-semibold px-6 py-3 lift"
             >
-              <BookOpen size={14} strokeWidth={2.2} />
+              <Layers size={14} strokeWidth={2.2} />
               {copy.cta.secondary}
               <ArrowRight size={12} strokeWidth={2.4} />
-            </a>
+            </Link>
           </div>
         </div>
       </section>

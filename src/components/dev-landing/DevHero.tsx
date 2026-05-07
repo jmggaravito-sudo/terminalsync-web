@@ -1,4 +1,6 @@
-import { Download, Github } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Download } from "lucide-react";
+import type { Locale } from "@/content";
 import type { DevCopy } from "./copy";
 
 /**
@@ -9,7 +11,7 @@ import type { DevCopy } from "./copy";
  * lightbox and trust badges since this audience cares more about
  * "is the CLI real" than "is this trustworthy."
  */
-export function DevHero({ copy }: { copy: DevCopy }) {
+export function DevHero({ copy, lang }: { copy: DevCopy; lang: Locale }) {
   return (
     <section className="relative overflow-hidden border-b border-[var(--color-border)]">
       <div
@@ -56,9 +58,9 @@ export function DevHero({ copy }: { copy: DevCopy }) {
             <span className="text-[var(--color-fg-dim)]">$ </span>
             tsync init <span className="text-[var(--color-fg-muted)]">~/projects/api</span>
             {"\n"}
-            <span className="text-[var(--color-ok)]">✓</span> memory synced across 2 devices
+            <span className="text-[var(--color-ok)]">✓</span> synced across 5 machines · git-aware
             {"\n"}
-            <span className="text-[var(--color-ok)]">✓</span> 47 sessions indexed (last 30d)
+            <span className="text-[var(--color-ok)]">✓</span> 47 sessions indexed · .env vault loaded
             {"\n"}
             <span className="text-[var(--color-fg-dim)]">$ </span>
             claude{" "}
@@ -77,15 +79,13 @@ export function DevHero({ copy }: { copy: DevCopy }) {
             <Download size={15} strokeWidth={2.4} />
             {copy.hero.ctaPrimary}
           </a>
-          <a
-            href="https://github.com/jmggaravito-sudo/terminalsync"
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            href={`/${lang}/marketplace`}
             className="inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-[14px] font-semibold text-[var(--color-fg)] bg-[var(--color-panel)] border border-[var(--color-border)] lift"
           >
-            <Github size={15} strokeWidth={2} />
             {copy.hero.ctaSecondary}
-          </a>
+            <ArrowRight size={14} strokeWidth={2.4} />
+          </Link>
         </div>
 
         <p className="mt-5 text-[12px] font-mono text-[var(--color-fg-muted)]">
