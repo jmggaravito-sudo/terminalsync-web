@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
@@ -19,13 +19,57 @@ import { getSupabaseBrowser } from "@/lib/supabase/browser";
  *     we redirect into the marketplace. JM 2026-05-05 the email was
  *     pointing straight at `terminalsync://` (Supabase site_url) which
  *     iOS Safari rejected as "no app installed for this scheme".
+ *
+ * Reads `?next=` and `?lang=` (if LoginForm forwarded them) so EN users
+ * land on /en/marketplace, not /es/marketplace. The previous behaviour
+ * hardcoded /es and dropped the next param entirely — high-friction for
+ * the English creator audience we're about to start outreach to.
  */
+// useSearchParams forces this whole component to render only on the client.
+// Next 15 requires that consumer to be wrapped in <Suspense>, otherwise
+// `next build` fails with a CSR-bailout error on /auth/callback.
 export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={<CallbackShell stage="detecting" lang="es" />}>
+      <CallbackInner />
+    </Suspense>
+  );
+}
+
+function CallbackShell({ stage, lang }: { stage: "detecting" | "session" | "error"; lang: "es" | "en" }) {
+  return (
+    <main className="min-h-screen grid-bg flex items-center justify-center px-5 md:px-6 py-12">
+      <div className="w-full max-w-[440px] rounded-3xl border border-[var(--color-border)] bg-[var(--color-panel)] shadow-floating p-8 text-center">
+        <a
+          href="https://terminalsync.ai"
+          className="inline-flex items-center gap-2 font-semibold text-[14px] text-[var(--color-fg-strong)] no-underline mb-6"
+        >
+          <Logo size={26} />
+          Terminal Sync
+        </a>
+        <div className="mx-auto h-16 w-16 rounded-full flex items-center justify-center bg-[var(--color-ok)]/10 text-[var(--color-ok)]">
+          <Loader2 size={28} className="animate-spin" />
+        </div>
+        <h1 className="mt-5 text-[22px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
+          {lang === "en" ? "Verifying…" : "Verificando…"}
+        </h1>
+        <p className="mt-3 text-[14px] text-[var(--color-fg-muted)] leading-relaxed">
+          {stage === "detecting" ? "" : ""}
+        </p>
+      </div>
+    </main>
+  );
+}
+
+function CallbackInner() {
   const router = useRouter();
-  const [stage, setStage] = useState<"detecting" | "deeplink" | "session" | "error">(
+  const search = useSearchParams();
+  const [stage, setStage] = useState<"detecting" | "session" | "error">(
     "detecting",
   );
   const [error, setError] = useState<string | null>(null);
+  const lang = (search.get("lang") === "en" ? "en" : "es") as "es" | "en";
+  const next = search.get("next") || `/${lang}/marketplace`;
 
   useEffect(() => {
     const sb = getSupabaseBrowser();
@@ -57,10 +101,12 @@ export default function AuthCallbackPage() {
         const errCode = url.searchParams.get("error_code") || url.searchParams.get("error");
         const errDesc = url.searchParams.get("error_description");
         if (errCode) {
-          const friendly =
-            errCode === "otp_expired" || errCode === "access_denied"
-              ? "Tu link mágico ya fue usado o expiró. Pedinos uno nuevo desde la página de login."
-              : `${errCode}${errDesc ? ` — ${errDesc}` : ""}`;
+          const expired = errCode === "otp_expired" || errCode === "access_denied";
+          const friendly = expired
+            ? lang === "en"
+              ? "Your magic link was already used or expired. Request a new one from the login page."
+              : "Tu link mágico ya fue usado o expiró. Pedinos uno nuevo desde la página de login."
+            : `${errCode}${errDesc ? ` — ${errDesc}` : ""}`;
           setError(friendly);
           setStage("error");
           return;
@@ -72,7 +118,7 @@ export default function AuthCallbackPage() {
           const { error: e } = await sb!.auth.exchangeCodeForSession(code);
           if (e) throw e;
           setStage("session");
-          setTimeout(() => router.replace("/es/marketplace"), 800);
+          setTimeout(() => router.replace(next), 800);
           return;
         }
 
@@ -112,7 +158,9 @@ export default function AuthCallbackPage() {
         }
 
         setError(
-          "No encontré ni código ni token en este enlace. Suele pasar cuando tu cliente de email pre-fetchea el link (Gmail con scanning de seguridad). Pedinos un link nuevo y abrilo en una pestaña aparte sin previsualizar el correo.",
+          lang === "en"
+            ? "Couldn't find a code or token in this link. This usually happens when your email client pre-fetches the link (Gmail security scanners do this). Request a new link and open it in a separate tab without previewing the email."
+            : "No encontré ni código ni token en este enlace. Suele pasar cuando tu cliente de email pre-fetchea el link (Gmail con scanning de seguridad). Pedinos un link nuevo y abrilo en una pestaña aparte sin previsualizar el correo.",
         );
         setStage("error");
       } catch (e) {
@@ -150,26 +198,25 @@ export default function AuthCallbackPage() {
         )}
 
         <h1 className="mt-5 text-[22px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-          {stage === "deeplink" && "Abriendo Terminal Sync…"}
-          {stage === "session" && "¡Listo!"}
-          {stage === "detecting" && "Verificando…"}
-          {stage === "error" && "Algo salió mal"}
+          {stage === "session" && (lang === "en" ? "You're in!" : "¡Listo!")}
+          {stage === "detecting" && (lang === "en" ? "Verifying…" : "Verificando…")}
+          {stage === "error" && (lang === "en" ? "Something went wrong" : "Algo salió mal")}
         </h1>
 
         <p className="mt-3 text-[14px] text-[var(--color-fg-muted)] leading-relaxed">
-          {stage === "deeplink" &&
-            "Si tenés la app instalada, debería abrirse en un segundo. Si no, te llevamos al marketplace."}
-          {stage === "session" && "Sesión iniciada. Te llevamos al marketplace."}
-          {stage === "detecting" && "Procesando tu enlace mágico…"}
-          {stage === "error" && (error || "Reintentá desde el login.")}
+          {stage === "session" &&
+            (lang === "en" ? "Session started. Taking you to the marketplace." : "Sesión iniciada. Te llevamos al marketplace.")}
+          {stage === "detecting" &&
+            (lang === "en" ? "Processing your magic link…" : "Procesando tu enlace mágico…")}
+          {stage === "error" && (error || (lang === "en" ? "Try again from the login page." : "Reintentá desde el login."))}
         </p>
 
         {stage === "error" && (
           <a
-            href="/es/login"
+            href={`/${lang}/login`}
             className="mt-6 inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)]"
           >
-            Volver al login
+            {lang === "en" ? "Back to login" : "Volver al login"}
           </a>
         )}
       </div>

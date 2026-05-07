@@ -6,6 +6,25 @@ import { defaultLocale, locales } from "@/content";
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Kill switch — when NEW_SIGNUPS_DISABLED=true, send first-time visitors to
+  // /at-capacity instead of the login form. Existing users (any cookie that
+  // looks like a Supabase auth token) sail through unaffected. Toggle via env
+  // var without redeploying — Vercel propagates env changes in ~30s.
+  if (process.env.NEW_SIGNUPS_DISABLED === "true") {
+    const isLoginPath = /^\/(?:es|en)\/login\/?$/.test(pathname);
+    const isAtCapacity = /^\/(?:es|en)\/at-capacity\/?$/.test(pathname);
+    if (isLoginPath && !isAtCapacity) {
+      const cookies = req.cookies.getAll();
+      const hasAuthSession = cookies.some((c) => c.name.startsWith("sb-"));
+      if (!hasAuthSession) {
+        const lang = pathname.startsWith("/en") ? "en" : "es";
+        const url = req.nextUrl.clone();
+        url.pathname = `/${lang}/at-capacity`;
+        return NextResponse.redirect(url);
+      }
+    }
+  }
+
   // Skip assets, API, and already-localized paths.
   if (
     pathname.startsWith("/_next") ||
