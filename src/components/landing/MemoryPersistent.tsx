@@ -1,4 +1,4 @@
-import { Brain, Lock, Search, Sparkles, X, Check, Download } from "lucide-react";
+import { Sparkles, X, Check, Download } from "lucide-react";
 import type { Dict } from "@/content";
 
 /**
@@ -9,13 +9,15 @@ import type { Dict } from "@/content";
  * Layout:
  *   - Eyebrow with "Incluida" badge (live, accent green)
  *   - Title + subtitle
- *   - 3 pillars grid (local / multi-AI / semantic)
  *   - With-vs-without timeline (Day 1 → Day 30)
  *   - CTA → /api/download (same flow the rest of the landing uses)
+ *
+ * The 3-pillar grid (local / multi-AI / semantic) was removed at JM's
+ * request — it was too generic for non-devs and broke the focus on
+ * the timeline, which is the part that actually converts.
  */
 export function MemoryPersistent({ dict }: { dict: Dict }) {
   const m = dict.memory;
-  const pillarIcons = [Lock, Brain, Search];
 
   return (
     <section
@@ -72,29 +74,6 @@ export function MemoryPersistent({ dict }: { dict: Dict }) {
           )}
         </div>
       )}
-
-      {/* 3 pillars */}
-      <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
-        {m.pillars.map((p, i) => {
-          const Icon = pillarIcons[i] ?? Brain;
-          return (
-            <article
-              key={p.title}
-              className="lift rounded-2xl bg-[var(--color-panel)] border border-[var(--color-border)] p-6"
-            >
-              <div className="h-11 w-11 rounded-xl bg-[var(--color-accent)]/12 text-[var(--color-accent)] flex items-center justify-center">
-                <Icon size={20} strokeWidth={2.2} />
-              </div>
-              <h3 className="mt-4 text-[16px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-                {p.title}
-              </h3>
-              <p className="mt-2 text-[13.5px] text-[var(--color-fg-muted)] leading-relaxed">
-                {p.body}
-              </p>
-            </article>
-          );
-        })}
-      </div>
 
       {/* Timeline: with vs without */}
       <div className="mt-12">
