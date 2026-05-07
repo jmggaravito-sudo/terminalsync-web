@@ -41,7 +41,14 @@ const ROWS: Row[] = [
   },
   {
     key: "responsiveNotifications",
-    cells: { terminalSync: "soon", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
+  },
+  // Reply-injection lives right under the notifications row — they
+  // are the same conversational loop (you get pinged on phone, you
+  // reply from phone, the agent picks it up). JM 2026-05-07.
+  {
+    key: "replyInjection",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
   },
   {
     key: "webMobileMirror",
@@ -86,10 +93,6 @@ const ROWS: Row[] = [
   {
     key: "multipleSessions",
     cells: { terminalSync: "yes", vercel: "partial", claudeCode: "partial", codex: "partial", gemini: "partial" },
-  },
-  {
-    key: "replyInjection",
-    cells: { terminalSync: "soon", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
   },
 ];
 
