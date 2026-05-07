@@ -1,13 +1,48 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Plug, Sparkles, Zap } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Layers, Plug, Sparkles, Zap } from "lucide-react";
 import { listAllConnectors, type ConnectorMeta } from "@/lib/connectors";
 import { listSkills, type SkillMeta } from "@/lib/skills";
 import { ConnectorLogo } from "@/app/[lang]/connectors/Logo";
 import { SkillLogo } from "@/app/[lang]/skills/Logo";
 import { MarketplaceAppBanner } from "@/components/marketplace/AppBanner";
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const revalidate = 3600;
+
+interface StackPackPreview {
+  slug: string;
+  name: string;
+  tagline: string;
+  price_cents: number;
+  currency: string;
+  listing_count: number;
+}
+
+async function listFeaturedStacks(): Promise<StackPackPreview[]> {
+  const sb = getSupabaseAdmin();
+  if (!sb) return [];
+  const { data, error } = await sb
+    .from("bundles")
+    .select(
+      "slug, name, tagline, price_cents, currency, bundle_listings(count)",
+    )
+    .eq("status", "active")
+    .order("sort_order", { ascending: true })
+    .limit(3);
+  if (error || !data) return [];
+  return data.map((b) => ({
+    slug: b.slug,
+    name: b.name,
+    tagline: b.tagline,
+    price_cents: b.price_cents,
+    currency: b.currency,
+    listing_count:
+      Array.isArray(b.bundle_listings) && b.bundle_listings[0]
+        ? (b.bundle_listings[0] as { count: number }).count
+        : 0,
+  }));
+}
 
 interface Props {
   params: Promise<{ lang: string }>;
@@ -32,9 +67,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function MarketplaceHub({ params }: Props) {
   const { lang } = await params;
   const isEs = lang === "es";
-  const [connectors, skills] = await Promise.all([
+  const [connectors, skills, stacks] = await Promise.all([
     listAllConnectors(lang),
     listSkills(lang),
+    listFeaturedStacks(),
   ]);
 
   const featuredConnectors = connectors.slice(0, 3);
@@ -71,9 +107,22 @@ export default async function MarketplaceHub({ params }: Props) {
         </div>
       </section>
 
-      {/* Two-up category cards */}
+      {/* Three-up category cards */}
       <section className="mx-auto max-w-5xl px-6 pb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <CategoryCard
+            href={`/${lang}/stacks`}
+            Icon={Layers}
+            label={isEs ? "Stack Packs" : "Stack Packs"}
+            count={stacks.length}
+            description={
+              isEs
+                ? "Bundles curados listos para arrancar. Pagás una vez y tu IA queda conectada a las apps de tu workflow."
+                : "Curated bundles, ready to roll. Pay once and your AI is wired up to your workflow apps."
+            }
+            cta={isEs ? "Ver packs" : "View packs"}
+            featured
+          />
           <CategoryCard
             href={`/${lang}/connectors`}
             Icon={Plug}
@@ -93,13 +142,40 @@ export default async function MarketplaceHub({ params }: Props) {
             count={skills.length}
             description={
               isEs
-                ? "Recetas de prompt que enseñan tareas concretas a Claude y Codex: escribir ads, revisar PRs, draftear emails."
-                : "Prompt recipes that teach concrete tasks to Claude and Codex: write ads, review PRs, draft emails."
+                ? "Recetas de prompt que enseñan tareas concretas a Claude, Codex y Gemini: escribir ads, revisar PRs, draftear emails."
+                : "Prompt recipes that teach concrete tasks to Claude, Codex, and Gemini: write ads, review PRs, draft emails."
             }
             cta={isEs ? "Ver todos" : "View all"}
           />
         </div>
       </section>
+
+      {/* Featured Stack Packs */}
+      {stacks.length > 0 && (
+        <section className="mx-auto max-w-5xl px-6 pb-12">
+          <div className="flex items-end justify-between gap-4 mb-5">
+            <div>
+              <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--color-accent)] font-semibold">
+                {isEs ? "Empezá rápido" : "Get going fast"}
+              </p>
+              <h2 className="mt-1 text-[22px] md:text-[26px] font-semibold tracking-tight">
+                {isEs ? "Featured · Stack Packs" : "Featured · Stack Packs"}
+              </h2>
+            </div>
+            <Link
+              href={`/${lang}/stacks`}
+              className="inline-flex items-center gap-1 text-[13px] font-medium text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] transition-colors"
+            >
+              {isEs ? "Ver todos" : "View all"} <ArrowRight size={13} />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {stacks.map((s) => (
+              <FeaturedStack key={s.slug} lang={lang} stack={s} isEs={isEs} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Featured connectors */}
       <section className="mx-auto max-w-5xl px-6 pb-12">
@@ -184,6 +260,7 @@ function CategoryCard({
   count,
   description,
   cta,
+  featured,
 }: {
   href: string;
   Icon: typeof Plug;
@@ -191,11 +268,16 @@ function CategoryCard({
   count: number;
   description: string;
   cta: string;
+  featured?: boolean;
 }) {
   return (
     <Link
       href={href}
-      className="group relative rounded-3xl border border-[var(--color-border)] bg-[var(--color-panel)] p-7 transition-all hover:border-[var(--color-accent)]/40 hover:-translate-y-0.5 hover:shadow-lg"
+      className={`group relative rounded-3xl border bg-[var(--color-panel)] p-7 transition-all hover:-translate-y-0.5 hover:shadow-lg ${
+        featured
+          ? "border-[var(--color-accent)]/35 bg-gradient-to-br from-[var(--color-accent)]/8 via-transparent to-transparent hover:border-[var(--color-accent)]/55"
+          : "border-[var(--color-border)] hover:border-[var(--color-accent)]/40"
+      }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="h-12 w-12 rounded-xl bg-[var(--color-accent)]/10 text-[var(--color-accent)] flex items-center justify-center">
@@ -270,6 +352,47 @@ function FeaturedSkill({ lang, skill }: { lang: string; skill: SkillMeta }) {
             {v}
           </span>
         ))}
+      </div>
+    </Link>
+  );
+}
+
+function FeaturedStack({
+  lang,
+  stack,
+  isEs,
+}: {
+  lang: string;
+  stack: StackPackPreview;
+  isEs: boolean;
+}) {
+  const price = (stack.price_cents / 100).toFixed(0);
+  return (
+    <Link
+      href={`/${lang}/stacks/${stack.slug}`}
+      className="group relative rounded-2xl border border-[var(--color-accent)]/25 bg-gradient-to-br from-[var(--color-accent)]/8 via-[var(--color-panel)] to-[var(--color-panel)] p-5 transition-all hover:border-[var(--color-accent)]/55 hover:shadow-lg hover:-translate-y-0.5"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="h-11 w-11 rounded-xl bg-[var(--color-accent)]/15 border border-[var(--color-accent)]/30 text-[var(--color-accent)] flex items-center justify-center">
+          <Layers size={20} strokeWidth={2.2} />
+        </div>
+        <span className="text-[11px] font-mono text-[var(--color-accent)] font-semibold">
+          ${price}
+        </span>
+      </div>
+      <h3 className="mt-4 text-[15px] font-semibold tracking-tight">
+        {stack.name}
+      </h3>
+      <p className="mt-1 text-[12.5px] text-[var(--color-fg-muted)] leading-relaxed line-clamp-2">
+        {stack.tagline}
+      </p>
+      <div className="mt-3 flex items-center justify-between text-[11px] font-mono uppercase tracking-[0.12em] text-[var(--color-fg-dim)]">
+        <span>
+          {stack.listing_count} {isEs ? "connectors" : "connectors"}
+        </span>
+        <span className="text-[var(--color-accent)] group-hover:translate-x-0.5 transition-transform">
+          {isEs ? "ver →" : "view →"}
+        </span>
       </div>
     </Link>
   );
