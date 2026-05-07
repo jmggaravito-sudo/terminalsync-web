@@ -38,9 +38,12 @@ export function LoginForm({ lang }: { lang: string }) {
       setSubmitting(false);
       return;
     }
+    // Forward `lang` and `next` to the callback so EN users don't land on
+    // /es/marketplace and so a deep-link-style redirect (e.g. login?next=
+    // /en/billing) survives the round-trip through email.
     const redirectTo =
       typeof window !== "undefined"
-        ? `${window.location.origin}/${lang}/login?next=${encodeURIComponent(next)}`
+        ? `${window.location.origin}/auth/callback?lang=${lang}&next=${encodeURIComponent(next)}`
         : undefined;
     try {
       const { error: err } = await sb.auth.signInWithOtp({
