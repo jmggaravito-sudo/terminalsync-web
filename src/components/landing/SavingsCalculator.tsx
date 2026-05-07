@@ -19,9 +19,29 @@ import { formatLocal } from "@/lib/geoCurrency";
 
 // Tunable constants — keep these here (not in dict) so adjusting model
 // pricing is a code-change, not a translation update.
-const API_COST_SOLO = 10; // USD/hour, intensive single-vendor usage
-const API_COST_MIX = 1.5; // USD/hour, smart routing across 3 AIs
-const TIME_SAVING = 0.25; // 25% of dev hours saved by avoiding rate limits
+// Solo-vendor and mix costs are linearly interpolated by `heavyMix` —
+// the % of the user's tasks that are heavy reasoning vs simple code.
+//
+//   heavyMix = 0  (all simple code edits) → solo $5/h, mix $0.50/h
+//   heavyMix = 1  (all heavy reasoning)   → solo $15/h, mix $2.50/h
+//
+// The intuition: simple tasks are cheap on Codex / free on Gemini, but
+// in single-vendor mode you still pay long-context+vision overhead on
+// Claude Pro/Codex Pro for every prompt. Heavy tasks need Claude no
+// matter what, so the gap shrinks but mix still wins via Codex/Gemini
+// for the in-between.
+const SOLO_BASE = 5; // USD/h baseline (all light)
+const SOLO_HEAVY_PREMIUM = 10; // USD/h extra at 100% heavy
+const MIX_BASE = 0.5; // USD/h baseline (Gemini free + Codex micro)
+const MIX_HEAVY_PREMIUM = 2; // USD/h extra at 100% heavy
+
+// Time savings also vary by mix: light-task days have more rate-limit
+// waits and more model-swapping (more savings via TS); heavy-reasoning
+// days are bottlenecked on the human + Claude single-thread, so the
+// system can shave less.
+const TIME_SAVING_BASE = 0.30; // 30% saved at all-light
+const TIME_SAVING_HEAVY = 0.20; // 20% saved at all-heavy
+
 const TS_PRO_ANNUAL = 228; // USD — Pro plan @ $19/mo × 12
 
 export function SavingsCalculator({
@@ -39,6 +59,10 @@ export function SavingsCalculator({
   const [rate, setRate] = useState(50);
   const [hpd, setHpd] = useState(6);
   const [dpm, setDpm] = useState(22);
+  // 0..100 — % of work that is "heavy reasoning". Default 50 = balanced
+  // dev who alternates simple edits (Codex/Gemini) with deep reasoning
+  // (Claude). Numbers move both up and down from this center.
+  const [heavyPct, setHeavyPct] = useState(50);
 
   const {
     hoursYear,
@@ -50,18 +74,40 @@ export function SavingsCalculator({
     tsTotal,
     savings,
     roi,
+    soloPerHour,
+    mixPerHour,
+    timeSavingPct,
   } = useMemo(() => {
+    const heavy = heavyPct / 100; // 0..1
+    const soloPerHour = SOLO_BASE + SOLO_HEAVY_PREMIUM * heavy;
+    const mixPerHour = MIX_BASE + MIX_HEAVY_PREMIUM * heavy;
+    const timeSavingPct =
+      TIME_SAVING_BASE - (TIME_SAVING_BASE - TIME_SAVING_HEAVY) * heavy;
+
     const hoursYear = hpd * dpm * 12;
-    const soloApi = hoursYear * API_COST_SOLO;
+    const soloApi = hoursYear * soloPerHour;
     const soloDev = hoursYear * rate;
     const soloTotal = soloApi + soloDev;
-    const tsApi = hoursYear * API_COST_MIX;
-    const tsDev = hoursYear * (1 - TIME_SAVING) * rate;
+    const tsApi = hoursYear * mixPerHour;
+    const tsDev = hoursYear * (1 - timeSavingPct) * rate;
     const tsTotal = tsApi + tsDev + TS_PRO_ANNUAL;
     const savings = Math.max(0, soloTotal - tsTotal);
     const roi = savings / TS_PRO_ANNUAL;
-    return { hoursYear, soloApi, soloDev, soloTotal, tsApi, tsDev, tsTotal, savings, roi };
-  }, [rate, hpd, dpm]);
+    return {
+      hoursYear,
+      soloApi,
+      soloDev,
+      soloTotal,
+      tsApi,
+      tsDev,
+      tsTotal,
+      savings,
+      roi,
+      soloPerHour,
+      mixPerHour,
+      timeSavingPct,
+    };
+  }, [rate, hpd, dpm, heavyPct]);
 
   const fmtUsd = (n: number) =>
     `$${Math.round(n).toLocaleString("en-US")}`;
@@ -121,8 +167,28 @@ export function SavingsCalculator({
             max={30}
             step={1}
             valueLabel={`${dpm} ${c.inputs.daysPerMonth.suffix}`}
-            last
           />
+          {/* Task-mix slider — JM's ask: a dimension that captures
+              "code sencillo vs reasoning pesado". Drives both API
+              cost ramps AND the productivity savings, so the big
+              number reacts in a way users can feel. */}
+          {c.inputs.taskMix ? (
+            <Slider
+              label={c.inputs.taskMix.label}
+              help={c.inputs.taskMix.help}
+              value={heavyPct}
+              onChange={setHeavyPct}
+              min={0}
+              max={100}
+              step={5}
+              valueLabel={`${heavyPct}%`}
+              endpoints={{
+                left: c.inputs.taskMix.lightLabel,
+                right: c.inputs.taskMix.heavyLabel,
+              }}
+              last
+            />
+          ) : null}
 
           <div className="mt-7 pt-6 border-t border-dashed border-[var(--color-border)] grid grid-cols-2 gap-4">
             <CostCard
@@ -176,10 +242,34 @@ export function SavingsCalculator({
               {c.breakdown.heading}
             </div>
             <BreakdownLine label={c.breakdown.hoursYear} value={fmtHours(hoursYear)} />
-            <BreakdownLine label={c.breakdown.apiCostSolo} value={fmtUsd(soloApi)} muted />
-            <BreakdownLine label={c.breakdown.apiCostMix} value={fmtUsd(tsApi)} muted />
+            {/* Per-hour values are computed live from the task-mix
+                slider, so the breakdown moves visibly when the user
+                drags it (proves the math isn't a fixed prop). */}
+            <BreakdownLine
+              label={c.breakdown.apiCostSolo.replace(
+                /≈ \$\d+(\.\d+)?\/h/,
+                `≈ $${soloPerHour.toFixed(2)}/h`,
+              )}
+              value={fmtUsd(soloApi)}
+              muted
+            />
+            <BreakdownLine
+              label={c.breakdown.apiCostMix.replace(
+                /≈ \$\d+(\.\d+)?\/h/,
+                `≈ $${mixPerHour.toFixed(2)}/h`,
+              )}
+              value={fmtUsd(tsApi)}
+              muted
+            />
             <BreakdownLine label={c.breakdown.devTimeSolo} value={fmtUsd(soloDev)} muted />
-            <BreakdownLine label={c.breakdown.devTimeWithTs} value={fmtUsd(tsDev)} muted />
+            <BreakdownLine
+              label={c.breakdown.devTimeWithTs.replace(
+                /\d+\s*%/,
+                `${Math.round(timeSavingPct * 100)}%`,
+              )}
+              value={fmtUsd(tsDev)}
+              muted
+            />
             <BreakdownLine label={c.breakdown.subscription} value={fmtUsd(TS_PRO_ANNUAL)} muted />
             <p className="mt-4 text-[11.5px] leading-relaxed text-[var(--color-fg-dim)]">
               {c.breakdown.timeSaving}
@@ -213,6 +303,7 @@ function Slider({
   max,
   step,
   valueLabel,
+  endpoints,
   last,
 }: {
   label: string;
@@ -223,6 +314,8 @@ function Slider({
   max: number;
   step: number;
   valueLabel: string;
+  /** Optional left/right end labels (e.g. "Simple code" / "Heavy reasoning"). */
+  endpoints?: { left: string; right: string };
   last?: boolean;
 }) {
   const pct = ((value - min) / (max - min)) * 100;
@@ -248,6 +341,12 @@ function Slider({
           background: `linear-gradient(to right, var(--color-accent) 0%, var(--color-accent) ${pct}%, var(--color-panel-2) ${pct}%, var(--color-panel-2) 100%)`,
         }}
       />
+      {endpoints ? (
+        <div className="mt-1 flex justify-between text-[10.5px] font-mono uppercase tracking-[0.1em] text-[var(--color-fg-dim)]">
+          <span>{endpoints.left}</span>
+          <span>{endpoints.right}</span>
+        </div>
+      ) : null}
       {help ? (
         <p className="mt-1.5 text-[11.5px] text-[var(--color-fg-dim)] leading-relaxed">
           {help}

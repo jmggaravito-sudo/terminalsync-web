@@ -366,6 +366,12 @@ const es: Dict = {
         },
         hoursPerDay: { label: "Horas/día con IA", suffix: "h/día" },
         daysPerMonth: { label: "Días/mes trabajando", suffix: "días/mes" },
+        taskMix: {
+          label: "Mezcla de tareas",
+          help: "Más tareas pesadas (arquitectura, debugging complejo, decisiones de diseño) tiran arriba el costo si usás solo Claude. El mix te cubre porque ruteás cada tarea al modelo correcto.",
+          lightLabel: "Código sencillo",
+          heavyLabel: "Reasoning pesado",
+        },
       },
       results: {
         soloLabel: "Solo con una IA",
