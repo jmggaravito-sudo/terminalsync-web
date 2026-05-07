@@ -10,6 +10,7 @@ import { Demos } from "@/components/landing/Demos";
 import { Benefits } from "@/components/landing/Benefits";
 import { ToolBreakdown } from "@/components/landing/ToolBreakdown";
 import { Comparison } from "@/components/landing/Comparison";
+import { SavingsCalculator } from "@/components/landing/SavingsCalculator";
 import { BeforeAfter } from "@/components/landing/BeforeAfter";
 import { MidCta } from "@/components/landing/MidCta";
 import { Personas } from "@/components/landing/Personas";
@@ -62,6 +63,10 @@ export default async function Landing({ params }: Props) {
       <Benefits dict={d} />
       <ToolBreakdown dict={d} />
       <Comparison dict={d} />
+      <SavingsCalculator
+        dict={d}
+        currencyHint={currencyHint ?? undefined}
+      />
       <BeforeAfter dict={d} />
       <MidCta dict={d} />
       <Personas dict={d} />

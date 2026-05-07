@@ -169,6 +169,42 @@ export interface Dict {
     };
     legend: { yes: string; no: string; partial: string; soon: string };
     footnote: string;
+    /**
+     * Inserted here so the calculator sits visually right after the
+     * comparison table — same dict block, easier to keep voice consistent.
+     */
+    calculator?: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      inputs: {
+        rate: { label: string; help: string };
+        hoursPerDay: { label: string; suffix: string };
+        daysPerMonth: { label: string; suffix: string };
+      };
+      results: {
+        soloLabel: string;
+        soloHint: string;
+        withTsLabel: string;
+        withTsHint: string;
+        savingsLabel: string;
+        perYear: string;
+        roiLabel: string;
+        roiSuffix: string;
+      };
+      breakdown: {
+        heading: string;
+        hoursYear: string;
+        apiCostSolo: string;
+        apiCostMix: string;
+        devTimeSolo: string;
+        devTimeWithTs: string;
+        subscription: string;
+        timeSaving: string;
+      };
+      caveat: string;
+      cta: string;
+    };
     tooltips: {
       persistentMemory: string;
       resurrection: string;

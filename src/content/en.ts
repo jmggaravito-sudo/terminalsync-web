@@ -354,6 +354,44 @@ const en: Dict = {
     legend: { yes: "Yes", no: "No", partial: "Partial", soon: "Coming soon" },
     footnote:
       "Comparison based on each tool's public docs as of 2026-05-04. AES-256-GCM encrypted before it leaves your Mac — neither Anthropic, OpenAI, Vercel, nor we can see your files.",
+    calculator: {
+      eyebrow: "Crunch your savings",
+      title: "How much do you save by orchestrating all 3 AIs?",
+      subtitle:
+        "Drag the sliders to your reality. We compute how much extra you pay if you stick to one AI instead of routing each task to the cheapest one that handles it well.",
+      inputs: {
+        rate: {
+          label: "Your hourly rate",
+          help: "What you bill clients per hour, or what your employer pays you per worked hour.",
+        },
+        hoursPerDay: { label: "AI hours/day", suffix: "h/day" },
+        daysPerMonth: { label: "Working days/month", suffix: "days/mo" },
+      },
+      results: {
+        soloLabel: "Single AI only",
+        soloHint: "You pay for long context and tools you don't always need.",
+        withTsLabel: "With TerminalSync",
+        withTsHint: "Each task goes to the cheapest model that handles it well.",
+        savingsLabel: "You save",
+        perYear: "/yr",
+        roiLabel: "ROI",
+        roiSuffix: "× your Pro subscription",
+      },
+      breakdown: {
+        heading: "How we compute it",
+        hoursYear: "AI hours per year",
+        apiCostSolo: "API cost solo (≈ $10/h)",
+        apiCostMix: "API cost mixed (≈ $1.50/h)",
+        devTimeSolo: "Your time at full rate",
+        devTimeWithTs: "Your time, 25% fewer hours",
+        subscription: "TerminalSync Pro yearly ($228)",
+        timeSaving:
+          "The 25% time savings come from skipping rate limits, not swapping context between tools, and routing each task to the cheapest, fastest model.",
+      },
+      caveat:
+        "Estimate based on Anthropic / OpenAI / Google public list prices as of 2026-05-07 and on tool-mixing productivity studies (conservative range 15%, optimistic 40%).",
+      cta: "Try it free",
+    },
     tooltips: {
       persistentMemory:
         "Your AI agent remembers context, decisions, and files seen across sessions. You don't have to re-explain everything when you open a new conversation.",

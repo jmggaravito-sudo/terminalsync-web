@@ -354,6 +354,44 @@ const es: Dict = {
     legend: { yes: "Sí", no: "No", partial: "Parcial", soon: "Próximamente" },
     footnote:
       "Comparativo basado en docs públicas de cada herramienta al 2026-05-04. Cifrado AES-256-GCM antes de salir de tu Mac — ni Anthropic, ni OpenAI, ni Vercel, ni nosotros vemos tus archivos.",
+    calculator: {
+      eyebrow: "Calculá tu ahorro",
+      title: "¿Cuánto te ahorra orquestar las 3 IAs?",
+      subtitle:
+        "Mové los sliders con tu realidad. Calculamos cuánto pagás de más si usás solo una IA en vez de la combinación correcta para cada tarea.",
+      inputs: {
+        rate: {
+          label: "Tu hora vale",
+          help: "Lo que cobrás por hora a un cliente, o lo que te paga tu empresa por hora trabajada.",
+        },
+        hoursPerDay: { label: "Horas/día con IA", suffix: "h/día" },
+        daysPerMonth: { label: "Días/mes trabajando", suffix: "días/mes" },
+      },
+      results: {
+        soloLabel: "Solo con una IA",
+        soloHint: "Pagás contexto largo y tools que no necesitás todo el tiempo.",
+        withTsLabel: "Con TerminalSync",
+        withTsHint: "Cada tarea va al modelo más barato que la resuelve bien.",
+        savingsLabel: "Ahorrás",
+        perYear: "/año",
+        roiLabel: "ROI",
+        roiSuffix: "× tu suscripción Pro",
+      },
+      breakdown: {
+        heading: "Cómo lo calculamos",
+        hoursYear: "Horas con IA al año",
+        apiCostSolo: "Costo API solo (≈ $10/h)",
+        apiCostMix: "Costo API mix (≈ $1.50/h)",
+        devTimeSolo: "Tu tiempo a tarifa plena",
+        devTimeWithTs: "Tu tiempo, 25 % menos horas",
+        subscription: "TerminalSync Pro anual ($228)",
+        timeSaving:
+          "El 25 % de ahorro de tiempo viene de no esperar rate limits, no swappear contexto entre tools, y mandar cada tarea al modelo más barato y rápido.",
+      },
+      caveat:
+        "Estimación basada en precios públicos de Anthropic / OpenAI / Google al 2026-05-07 y en estudios de productividad de tool-mixing (rango conservador 15 %, optimista 40 %).",
+      cta: "Probalo gratis",
+    },
     tooltips: {
       persistentMemory:
         "Tu agente IA recuerda contexto, decisiones y archivos vistos entre sesiones. No tenés que re-explicar todo cada vez que abrís una conversación nueva.",
