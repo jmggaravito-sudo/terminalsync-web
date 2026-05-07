@@ -29,6 +29,7 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
  */
 
 const WEBHOOK_URL = process.env.WELCOME_FLOW_WEBHOOK_URL;
+const WEBHOOK_SECRET = process.env.WELCOME_FLOW_SECRET;
 const NEW_USER_WINDOW_MS = 90 * 1000;
 
 export async function POST(req: NextRequest) {
@@ -82,9 +83,16 @@ export async function POST(req: NextRequest) {
   const name = (user.user_metadata?.name as string | undefined) ||
     user.email.split("@")[0];
 
+  // The n8n workflow's first node (Normalize) checks this header and
+  // throws if it's missing/wrong. Anyone who knows the public webhook
+  // URL but not the secret gets rejected. The secret lives only in
+  // server env vars on both sides — never shipped to the browser.
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (WEBHOOK_SECRET) headers["X-Welcome-Secret"] = WEBHOOK_SECRET;
+
   const r = await fetch(WEBHOOK_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify({ email: user.email, lang, source, name }),
   });
 
