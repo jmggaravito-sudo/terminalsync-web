@@ -7,6 +7,7 @@ import { getDict, isLocale } from "@/content";
 import { currencyForCountry } from "@/lib/geoCurrency";
 import { Pricing } from "@/components/landing/Pricing";
 import { Footer } from "@/components/landing/Footer";
+import { SavingsCalculator } from "@/components/landing/SavingsCalculator";
 import { DevHero } from "@/components/dev-landing/DevHero";
 import { DevFeatures } from "@/components/dev-landing/DevFeatures";
 import { DevComparison } from "@/components/dev-landing/DevComparison";
@@ -64,6 +65,13 @@ export default async function DevLanding({ params }: Props) {
       <DevHero copy={copy} lang={lang} />
       <DevFeatures copy={copy} />
       <DevComparison copy={copy} />
+      {/* Calculator right under the comparison — same pattern as
+          the consumer landing. JM 2026-05-07: every page that
+          shows the table follows it with the savings calculator. */}
+      <SavingsCalculator
+        dict={dict}
+        currencyHint={currencyHint ?? undefined}
+      />
       <DevAffiliates copy={copy} lang={lang} />
 
       {/* Pricing reused — Dev plan is the natural conversion target on
