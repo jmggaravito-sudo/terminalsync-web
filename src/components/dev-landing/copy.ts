@@ -97,17 +97,17 @@ const en: DevCopy = {
   },
   affiliates: {
     eyebrow: "earn while you build",
-    title: "40% recurring. Forever.",
+    title: "30% recurring. For life.",
     body:
       "If your audience codes, they need this. Refer once, get paid every month they stay subscribed.",
     items: [
       {
         kicker: "$19 / mo",
-        body: "Pro plan — average $7.60/mo per active referral, every month.",
+        body: "Pro plan — $5.70/mo per active referral, every month they stay.",
       },
       {
         kicker: "$39 / mo",
-        body: "Dev plan — average $15.60/mo per active referral, every month.",
+        body: "Dev plan — $11.70/mo per active referral, every month they stay.",
       },
       {
         kicker: "Stripe direct",
@@ -115,7 +115,7 @@ const en: DevCopy = {
       },
     ],
     cta: "Apply for affiliate",
-    note: "First 50 affiliates get 50% recurring + lifetime cookie attribution.",
+    note: "Lifetime cookie attribution — they sign up months later, you still get credit.",
   },
   faq: {
     title: "Dev FAQ",
@@ -195,17 +195,17 @@ const es: DevCopy = {
   },
   affiliates: {
     eyebrow: "ganá mientras construís",
-    title: "40% recurrente. Para siempre.",
+    title: "30% recurrente. De por vida.",
     body:
       "Si tu audiencia escribe código, esto les hace falta. Referís una vez, cobrás cada mes que estén suscriptos.",
     items: [
       {
         kicker: "$19 / mes",
-        body: "Plan Pro — promedio $7.60/mes por referido activo, cada mes.",
+        body: "Plan Pro — $5.70/mes por referido activo, cada mes que sigan pagando.",
       },
       {
         kicker: "$39 / mes",
-        body: "Plan Dev — promedio $15.60/mes por referido activo, cada mes.",
+        body: "Plan Dev — $11.70/mes por referido activo, cada mes que sigan pagando.",
       },
       {
         kicker: "Stripe directo",
@@ -213,7 +213,7 @@ const es: DevCopy = {
       },
     ],
     cta: "Postularme como afiliado",
-    note: "Los primeros 50 afiliados reciben 50% recurrente + atribución lifetime.",
+    note: "Atribución lifetime — si se suscriben meses después, igual te lo paga.",
   },
   faq: {
     title: "FAQ para devs",
