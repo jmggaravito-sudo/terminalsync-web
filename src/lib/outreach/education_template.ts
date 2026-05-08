@@ -33,20 +33,16 @@ export interface EducationOutreachTemplates {
 export const EDUCATION_OUTREACH: EducationOutreachTemplates = {
   es: {
     subject:
-      "Programa académico para {{institutionName}} — TerminalSync",
+      "¿Les interesaría TerminalSync para {{institutionName}}?",
     body: `Hola {{contactFirstName}},
 
-Soy {{senderFirstName}}, fundador de TerminalSync. Vi que en {{institutionName}} están enseñando contenido sobre Claude Code y herramientas de IA ({{topicMention}}) — felicitaciones por estar a la vanguardia.
+Soy {{senderFirstName}}, fundador de TerminalSync. Vi que en {{institutionName}} están enseñando contenido sobre Claude Code / IA ({{topicMention}}).
 
-Les escribo para proponerles un programa académico:
+Estamos armando algo pensado para instituciones educativas que enseñan estas herramientas, y antes de seguir desarrollando quería medir el interés.
 
-  • Licencias gratuitas de TerminalSync (plan Dev) para profesores y estudiantes que tomen cursos de IA / desarrollo con AI agents.
-  • Material de apoyo para integrar TerminalSync en su curriculum (memoria persistente entre Claude / Codex / Gemini, MCP servers, .env vault).
-  • Sesión de 30 minutos con su equipo académico para mostrarles cómo otras instituciones están usándolo.
+¿Les interesaría conocerlo cuando esté listo? Una sola palabra ("sí" / "no" / "cuéntame más") me sirve.
 
-¿Tendrían 15 minutos esta semana o la próxima para conversar? Les puedo mandar el deck del programa antes de la llamada.
-
-Si esto le toca a otra persona dentro de {{institutionName}} (coordinador de IA, decano de tecnología), te agradezco si me la podés referir.
+Si esto le toca a otra persona dentro de {{institutionName}}, te agradezco si me la podés referir.
 
 Gracias,
 {{senderFirstName}}
@@ -55,20 +51,16 @@ TerminalSync — terminalsync.ai
   },
   en: {
     subject:
-      "Academic partnership for {{institutionName}} — TerminalSync",
+      "Would TerminalSync be interesting for {{institutionName}}?",
     body: `Hi {{contactFirstName}},
 
-I'm {{senderFirstName}}, founder of TerminalSync. I noticed {{institutionName}} is teaching content on Claude Code / AI development tools ({{topicMention}}) — great to see institutions leading on this.
+I'm {{senderFirstName}}, founder of TerminalSync. I noticed {{institutionName}} teaches content on Claude Code / AI tools ({{topicMention}}).
 
-I'd like to propose an academic program:
+We're putting together something specifically for education institutions teaching these tools, and before going deeper I wanted to gauge interest.
 
-  • Free TerminalSync licenses (Dev tier) for faculty and students taking AI / agent-development courses.
-  • Curriculum-ready material covering shared memory across Claude / Codex / Gemini, MCP servers, and the encrypted .env vault.
-  • A 30-minute session with your academic team showing how other institutions are integrating it.
+Would this be interesting for {{institutionName}} when it's ready? A one-word reply ("yes" / "no" / "tell me more") is plenty.
 
-Would you have 15 minutes this or next week? Happy to send the program deck ahead of the call.
-
-If this is owned by someone else at {{institutionName}} (AI program lead, dean of technology), I'd appreciate an intro.
+If someone else at {{institutionName}} is the right person, I'd appreciate an intro.
 
 Thanks,
 {{senderFirstName}}
