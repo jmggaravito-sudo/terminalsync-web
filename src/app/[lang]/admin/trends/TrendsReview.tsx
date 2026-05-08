@@ -14,6 +14,7 @@ import {
 
 type Status = "pending" | "kept" | "archived" | "promoted" | "all";
 type Source = "all" | "github" | "hackernews" | "reddit" | "youtube" | "product_hunt";
+type SignalType = "all" | "education" | "product" | "tool" | "topic" | "creator" | "unknown";
 
 interface TrendItem {
   id: string;
@@ -51,12 +52,14 @@ const SOURCES: { key: Source; label: string }[] = [
   { key: "github", label: "GitHub" },
   { key: "hackernews", label: "HN" },
   { key: "reddit", label: "Reddit" },
+  { key: "youtube", label: "YouTube" },
 ];
 
 export function TrendsReview({ lang }: { lang: string }) {
   const isEs = lang === "es";
   const [source, setSource] = useState<Source>("all");
   const [status, setStatus] = useState<Status>("pending");
+  const [signalType, setSignalType] = useState<SignalType>("all");
   const [days, setDays] = useState<number>(7);
   const [data, setData] = useState<TrendsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -89,6 +92,7 @@ export function TrendsReview({ lang }: { lang: string }) {
       setError(null);
       const params = new URLSearchParams({ status, days: String(days) });
       if (source !== "all") params.set("source", source);
+      if (signalType !== "all") params.set("signal_type", signalType);
       const res = await fetch(`/api/admin/trends?${params}`);
       const d = await res.json();
       if (!res.ok) throw new Error(d.error ?? "Error");
@@ -96,7 +100,7 @@ export function TrendsReview({ lang }: { lang: string }) {
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unknown error");
     }
-  }, [source, status, days]);
+  }, [source, status, signalType, days]);
 
   useEffect(() => {
     load();
@@ -152,6 +156,29 @@ export function TrendsReview({ lang }: { lang: string }) {
           </ul>
         </section>
       )}
+
+      {/* Signal type filter — surface "education" prominently because
+          that's the JM-requested bucket for university partnerships. */}
+      <div className="flex flex-wrap gap-1.5 items-center">
+        <span className="text-[11px] font-mono text-[var(--color-fg-dim)] mr-1">
+          {isEs ? "Tipo:" : "Type:"}
+        </span>
+        <FilterChip active={signalType === "all"} onClick={() => setSignalType("all")}>
+          {isEs ? "Todos" : "All"}
+        </FilterChip>
+        <FilterChip active={signalType === "education"} onClick={() => setSignalType("education")}>
+          🎓 {isEs ? "Educación" : "Education"}
+        </FilterChip>
+        <FilterChip active={signalType === "product"} onClick={() => setSignalType("product")}>
+          {isEs ? "Producto" : "Product"}
+        </FilterChip>
+        <FilterChip active={signalType === "tool"} onClick={() => setSignalType("tool")}>
+          {isEs ? "Tool" : "Tool"}
+        </FilterChip>
+        <FilterChip active={signalType === "creator"} onClick={() => setSignalType("creator")}>
+          {isEs ? "Creator" : "Creator"}
+        </FilterChip>
+      </div>
 
       {/* Source tabs */}
       <div className="flex flex-wrap gap-1.5">
