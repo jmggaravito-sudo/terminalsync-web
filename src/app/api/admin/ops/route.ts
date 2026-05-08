@@ -630,6 +630,31 @@ export async function GET() {
     byWorkflow.set(e.workflowId, arr);
   }
 
+  // The 250-row global pull is dominated by high-volume bots (Wendy,
+  // Simon, Kelaya). Low-frequency workflows (daily crons, manual ones)
+  // get pushed out, so the dashboard would show "last activity: never"
+  // when in reality they ran 6 hours ago. For every workflow missing
+  // from the global pull, fetch its last 5 executions in parallel.
+  const missing = workflows.filter(
+    (w) => !w.isArchived && !byWorkflow.has(w.id),
+  );
+  if (missing.length > 0) {
+    const fills = await Promise.all(
+      missing.map((w) =>
+        fetch(
+          `${N8N_URL}/api/v1/executions?workflowId=${w.id}&limit=5`,
+          { headers, cache: "no-store" },
+        )
+          .then((r) => (r.ok ? r.json() : { data: [] }))
+          .then((j) => ({ id: w.id, execs: (j.data ?? []) as N8nExecution[] }))
+          .catch(() => ({ id: w.id, execs: [] as N8nExecution[] })),
+      ),
+    );
+    for (const { id, execs } of fills) {
+      if (execs.length > 0) byWorkflow.set(id, execs);
+    }
+  }
+
   const items: OpsWorkflow[] = workflows.map((w) => {
     const meta = WORKFLOW_META[w.id];
     const project = meta?.project ?? projectFromName(w.name);
