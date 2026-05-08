@@ -38,6 +38,14 @@ export const EDUCATION_OUTREACH: EducationOutreachTemplates = {
 
 Soy {{senderFirstName}}, fundador de TerminalSync. Vi que en {{institutionName}} están enseñando contenido sobre Claude Code / IA ({{topicMention}}).
 
+Qué es TerminalSync (terminalsync.ai):
+La única plataforma que sincroniza la memoria entre Claude Code, Codex y Gemini — para que cada agente IA sepa lo que el otro ya hizo, en cualquier máquina del estudiante.
+
+Tres problemas que resuelve cuando enseñás estas herramientas:
+  • Cada agente arranca de cero: lo que el estudiante le explicó a Claude, Codex no lo sabe.
+  • Cambiar de computadora = perder todo el contexto del proyecto.
+  • Claves de API y archivos .env se pierden, se exponen, o terminan subidos a Git por accidente.
+
 Estamos armando algo pensado para instituciones educativas que enseñan estas herramientas, y antes de seguir desarrollando quería medir el interés.
 
 ¿Les interesaría conocerlo cuando esté listo? Una sola palabra ("sí" / "no" / "cuéntame más") me sirve.
@@ -55,6 +63,14 @@ TerminalSync — terminalsync.ai
     body: `Hi {{contactFirstName}},
 
 I'm {{senderFirstName}}, founder of TerminalSync. I noticed {{institutionName}} teaches content on Claude Code / AI tools ({{topicMention}}).
+
+What TerminalSync is (terminalsync.ai):
+The only platform that syncs memory across Claude Code, Codex, and Gemini — so each AI agent knows what the others have already done, on any machine the student uses.
+
+Three problems it solves when you teach these tools:
+  • Every agent starts from zero: what the student told Claude, Codex doesn't know.
+  • Switching machines = losing all the project context.
+  • API keys and .env files get lost, leaked, or pushed to Git by accident.
 
 We're putting together something specifically for education institutions teaching these tools, and before going deeper I wanted to gauge interest.
 
