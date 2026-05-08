@@ -346,8 +346,15 @@ function WorkflowCard({
               )}
             </span>
             {wf.lastExec && (
-              <span>
-                {isEs ? "Última:" : "Last:"} {timeAgo(wf.lastExec.startedAt, isEs)}
+              <span title={new Date(wf.lastExec.startedAt).toLocaleString()}>
+                {isEs ? "Última actividad:" : "Last activity:"}{" "}
+                <span className="text-[var(--color-fg)]">
+                  {formatDateTime(wf.lastExec.startedAt, isEs)}
+                </span>
+                {" · "}
+                <span className="text-[var(--color-fg-dim)]">
+                  {isEs ? "hace" : ""} {timeAgo(wf.lastExec.startedAt, isEs)}
+                </span>
               </span>
             )}
           </div>
@@ -394,6 +401,41 @@ function timeAgo(iso: string, isEs: boolean): string {
   if (h < 24) return `${h}h`;
   const d = Math.round(h / 24);
   return `${d}${isEs ? "d" : "d"}`;
+}
+
+/**
+ * Absolute date+time formatter for "last activity". Uses local time
+ * (browser-side) so JM sees Bogotá time directly. Today/Yesterday get
+ * special-cased so the most common case is the most readable; older
+ * entries get a short month + day.
+ */
+function formatDateTime(iso: string, isEs: boolean): string {
+  const d = new Date(iso);
+  const now = new Date();
+  const sameDay =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate();
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const isYesterday =
+    d.getFullYear() === yesterday.getFullYear() &&
+    d.getMonth() === yesterday.getMonth() &&
+    d.getDate() === yesterday.getDate();
+
+  const time = d.toLocaleTimeString(isEs ? "es-CO" : "en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+  if (sameDay) return `${isEs ? "Hoy" : "Today"} ${time}`;
+  if (isYesterday) return `${isEs ? "Ayer" : "Yesterday"} ${time}`;
+
+  const date = d.toLocaleDateString(isEs ? "es-CO" : "en-US", {
+    day: "numeric",
+    month: "short",
+  });
+  return `${date} ${time}`;
 }
 
 // Empty-state placeholder, currently unused — kept around because the
