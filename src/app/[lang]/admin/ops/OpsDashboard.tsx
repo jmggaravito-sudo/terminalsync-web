@@ -58,13 +58,14 @@ const PROJECT_EMOJI: Record<string, string> = {
   Other: "📦",
 };
 
-const PROJECT_ORDER = ["MTC", "NexFlowAI", "Kelaya", "Selva", "TerminalSync", "Trends", "Other"];
+const PROJECT_ORDER = ["TerminalSync", "Trends", "NexFlowAI", "MTC", "Kelaya", "Selva", "Other"];
 
 export function OpsDashboard({ lang }: { lang: string }) {
   const isEs = lang === "es";
   const [data, setData] = useState<OpsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState<string>("TerminalSync");
 
   useEffect(() => {
     fetch("/api/admin/ops")
@@ -143,21 +144,75 @@ export function OpsDashboard({ lang }: { lang: string }) {
         />
       </section>
 
-      {/* Per-project sections */}
-      {orderedProjects.map((proj) => {
-        const arr = grouped.get(proj)!;
-        const pStats = data.projects.find((p) => p.name === proj);
+      {/* Project menu — horizontal tabs. TerminalSync first per JM. */}
+      <nav className="flex flex-wrap gap-2 border-b border-[var(--color-border)] pb-1">
+        {orderedProjects.map((proj) => {
+          const pStats = data.projects.find((p) => p.name === proj);
+          const isActive = selectedProject === proj;
+          const errorCount = pStats?.errors24h ?? 0;
+          return (
+            <button
+              key={proj}
+              onClick={() => setSelectedProject(proj)}
+              className={`group inline-flex items-center gap-2 rounded-t-xl rounded-b-none border border-b-0 px-4 py-2.5 text-[13px] font-semibold transition-all ${
+                isActive
+                  ? "bg-[var(--color-panel)] border-[var(--color-border)] text-[var(--color-fg-strong)] -mb-px relative z-10"
+                  : "bg-[var(--color-panel-2)]/40 border-transparent text-[var(--color-fg-muted)] hover:bg-[var(--color-panel-2)]/70 hover:text-[var(--color-fg)]"
+              }`}
+            >
+              <span className="text-[16px]">{PROJECT_EMOJI[proj] ?? "📦"}</span>
+              <span>{PROJECT_LABEL[proj] ?? proj}</span>
+              {pStats && (
+                <span
+                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-mono ${
+                    errorCount > 0
+                      ? "bg-red-500/20 text-red-300"
+                      : isActive
+                      ? "bg-[var(--color-accent)]/15 text-[var(--color-accent)]"
+                      : "bg-[var(--color-panel-2)]/80 text-[var(--color-fg-dim)]"
+                  }`}
+                >
+                  {pStats.active}/{pStats.total}
+                </span>
+              )}
+              {errorCount > 0 && (
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+              )}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Selected project's workflows */}
+      {(() => {
+        const arr = grouped.get(selectedProject) ?? [];
+        const pStats = data.projects.find((p) => p.name === selectedProject);
+        if (arr.length === 0) {
+          return (
+            <div className="rounded-2xl border border-dashed border-[var(--color-border)] bg-[var(--color-panel)] p-8 text-center text-[var(--color-fg-muted)]">
+              <Inbox className="mx-auto h-6 w-6 opacity-60" />
+              <p className="mt-2 text-[13px]">
+                {isEs
+                  ? "No hay flujos en este proyecto"
+                  : "No flows in this project"}
+              </p>
+            </div>
+          );
+        }
         return (
-          <section key={proj}>
-            <header className="flex items-baseline justify-between mb-3">
-              <h2 className="text-[18px] font-semibold tracking-tight flex items-center gap-2">
-                <span className="text-[20px]">{PROJECT_EMOJI[proj] ?? "📦"}</span>
-                {PROJECT_LABEL[proj] ?? proj}
+          <section>
+            <header className="flex items-baseline justify-between mb-4">
+              <h2 className="text-[20px] font-semibold tracking-tight flex items-center gap-2">
+                <span className="text-[24px]">
+                  {PROJECT_EMOJI[selectedProject] ?? "📦"}
+                </span>
+                {PROJECT_LABEL[selectedProject] ?? selectedProject}
               </h2>
               {pStats && (
                 <span className="text-[12px] font-mono text-[var(--color-fg-dim)]">
-                  {pStats.active}/{pStats.total} {isEs ? "activos" : "active"} ·{" "}
-                  {pStats.runs24h} {isEs ? "runs hoy" : "runs today"}
+                  {pStats.active}/{pStats.total}{" "}
+                  {isEs ? "activos" : "active"} · {pStats.runs24h}{" "}
+                  {isEs ? "runs hoy" : "runs today"}
                   {pStats.errors24h > 0 && (
                     <span className="ml-1 text-red-400">
                       · {pStats.errors24h} {isEs ? "errores" : "errors"}
@@ -178,7 +233,7 @@ export function OpsDashboard({ lang }: { lang: string }) {
             </ul>
           </section>
         );
-      })}
+      })()}
     </div>
   );
 }
