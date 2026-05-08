@@ -45,7 +45,6 @@ const PROJECT_LABEL: Record<string, string> = {
   Kelaya: "Kelaya",
   Selva: "Selva",
   TerminalSync: "TerminalSync",
-  Trends: "Trends Radar",
   Other: "Otros",
 };
 
@@ -55,11 +54,10 @@ const PROJECT_EMOJI: Record<string, string> = {
   Kelaya: "💆",
   Selva: "👗",
   TerminalSync: "💻",
-  Trends: "📡",
   Other: "📦",
 };
 
-const PROJECT_ORDER = ["TerminalSync", "Trends", "NexFlowAI", "MTC", "Kelaya", "Selva", "Other"];
+const PROJECT_ORDER = ["TerminalSync", "NexFlowAI", "MTC", "Kelaya", "Selva", "Other"];
 
 export function OpsDashboard({ lang }: { lang: string }) {
   const isEs = lang === "es";

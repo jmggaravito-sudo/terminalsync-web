@@ -369,9 +369,9 @@ const WORKFLOW_META: Record<
 
   // ─────────────── TerminalSync ───────────────
   "2gbpZFPPlYMo6k3f": {
-    project: "Trends",
+    project: "TerminalSync",
     description:
-      "Trend Signals Daily — todas las mañanas a las 6am COL captura GitHub trending + HackerNews top + Reddit top de 7 subreddits y lo deja en /admin/trends.",
+      "Trends Radar — todas las mañanas a las 6am COL captura GitHub trending + HackerNews top + Reddit top de 7 subreddits + universidades enseñando IA en YouTube. Resultado en /admin/trends.",
     cadence: "diario 6am COL",
   },
   "7ooGFm2XvT8SLdde": {
