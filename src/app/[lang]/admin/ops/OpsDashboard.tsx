@@ -9,6 +9,7 @@ import {
   ExternalLink,
   Inbox,
 } from "lucide-react";
+import { EmailTemplatesPanel } from "./EmailTemplatesPanel";
 
 interface OpsWorkflow {
   id: string;
@@ -376,6 +377,7 @@ function WorkflowCard({
               ))}
             </div>
           )}
+          <EmailTemplatesPanel workflowId={wf.id} isEs={isEs} />
         </div>
         <a
           href={editorUrl}
