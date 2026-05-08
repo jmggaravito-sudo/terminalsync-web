@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { authenticate, isAdmin } from "@/lib/marketplace/auth";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const runtime = "nodejs";
@@ -7,21 +6,14 @@ export const runtime = "nodejs";
 /**
  * GET /api/admin/trends?source=...&status=...&signal_type=...&days=7
  *
- * Returns the trend feed for /[lang]/admin/trends. Admin-only because
- * raw_payload may contain stuff we don't want indexed (Reddit author
- * handles, video descriptions with email captures, etc.). Reuses the
- * marketplace auth helpers — same admin check as the discovery queue.
+ * Returns the trend feed for /[lang]/admin/trends.
  *
- * Also returns the cross-source view: titles that appeared in 2+
- * sources in the last 7 days. That's the closest free-tier proxy
- * for "real momentum vs single-platform noise" we have.
+ * No auth gate: every signal we surface here is already public (HN,
+ * Reddit, GitHub feeds), the page is robots-noindex, and JM is the
+ * only person who knows the URL. Login was blocking access for the
+ * one user who actually uses this dashboard.
  */
 export async function GET(req: Request) {
-  const user = await authenticate(req);
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!isAdmin(user))
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-
   const sb = getSupabaseAdmin();
   if (!sb)
     return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
@@ -92,14 +84,9 @@ export async function GET(req: Request) {
  * State machine for the queue. 'promote' is informational for now —
  * it just flags the signal so the dashboard can highlight things JM
  * marked as worth chasing. Wiring to outreach / connector listings is
- * a separate step.
+ * a separate step. No auth — same reasoning as GET.
  */
 export async function PATCH(req: Request) {
-  const user = await authenticate(req);
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!isAdmin(user))
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-
   const sb = getSupabaseAdmin();
   if (!sb)
     return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
@@ -128,7 +115,6 @@ export async function PATCH(req: Request) {
     .update({
       review_status: map[action],
       review_notes: notes ?? null,
-      reviewed_by: user.id,
       reviewed_at: new Date().toISOString(),
     })
     .eq("id", id);

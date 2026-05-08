@@ -11,7 +11,6 @@ import {
   Archive,
   CheckCircle2,
 } from "lucide-react";
-import { authedFetch, getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type Status = "pending" | "kept" | "archived" | "promoted" | "all";
 type Source = "all" | "github" | "hackernews" | "reddit" | "youtube" | "product_hunt";
@@ -47,8 +46,6 @@ interface TrendsResponse {
   window: { days: number; since: string };
 }
 
-type AuthState = "checking" | "anon" | "ready" | "forbidden";
-
 const SOURCES: { key: Source; label: string }[] = [
   { key: "all", label: "All" },
   { key: "github", label: "GitHub" },
@@ -58,7 +55,6 @@ const SOURCES: { key: Source; label: string }[] = [
 
 export function TrendsReview({ lang }: { lang: string }) {
   const isEs = lang === "es";
-  const [auth, setAuth] = useState<AuthState>("checking");
   const [source, setSource] = useState<Source>("all");
   const [status, setStatus] = useState<Status>("pending");
   const [days, setDays] = useState<number>(7);
@@ -68,8 +64,6 @@ export function TrendsReview({ lang }: { lang: string }) {
 
   const t = useMemo(
     () => ({
-      anon: isEs ? "Iniciá sesión con tu cuenta admin." : "Sign in with your admin account.",
-      forbidden: isEs ? "Tu cuenta no tiene permisos de admin." : "Your account is not admin.",
       empty: isEs ? "Sin señales en este filtro" : "No signals match this filter",
       loading: isEs ? "Cargando…" : "Loading…",
       checking: isEs ? "Verificando…" : "Checking…",
@@ -95,34 +89,25 @@ export function TrendsReview({ lang }: { lang: string }) {
       setError(null);
       const params = new URLSearchParams({ status, days: String(days) });
       if (source !== "all") params.set("source", source);
-      const res = await authedFetch(`/api/admin/trends?${params}`);
-      if (res.status === 401) { setAuth("anon"); return; }
-      if (res.status === 403) { setAuth("forbidden"); return; }
+      const res = await fetch(`/api/admin/trends?${params}`);
       const d = await res.json();
       if (!res.ok) throw new Error(d.error ?? "Error");
       setData(d);
-      setAuth("ready");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unknown error");
     }
   }, [source, status, days]);
 
   useEffect(() => {
-    const sb = getSupabaseBrowser();
-    if (!sb) { setAuth("anon"); return; }
-    sb.auth.getSession().then(({ data: { session } }) => {
-      if (!session) setAuth("anon");
-      else load();
-    });
-    const { data: sub } = sb.auth.onAuthStateChange(() => load());
-    return () => sub.subscription.unsubscribe();
+    load();
   }, [load]);
 
   async function transition(item: TrendItem, action: "keep" | "archive" | "promote") {
     setBusyId(item.id);
     try {
-      const res = await authedFetch(`/api/admin/trends`, {
+      const res = await fetch(`/api/admin/trends`, {
         method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: item.id, action }),
       });
       const d = await res.json();
@@ -135,20 +120,6 @@ export function TrendsReview({ lang }: { lang: string }) {
     }
   }
 
-  if (auth === "checking") return <Banner tone="muted">{t.checking}</Banner>;
-  if (auth === "anon")
-    return (
-      <Banner tone="warn">
-        {t.anon}{" "}
-        <a
-          href={`/${lang}/login?next=${encodeURIComponent(`/${lang}/admin/trends`)}`}
-          className="underline"
-        >
-          {isEs ? "Entrar →" : "Sign in →"}
-        </a>
-      </Banner>
-    );
-  if (auth === "forbidden") return <Banner tone="warn">{t.forbidden}</Banner>;
   if (error) return <Banner tone="error">{error}</Banner>;
   if (!data) return <Banner tone="muted">{t.loading}</Banner>;
 
