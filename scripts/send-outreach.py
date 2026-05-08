@@ -305,7 +305,7 @@ def main():
         if confirm.lower() != "y":
             print("  ↳ skipped")
             continue
-        status, body = send_via_resend(api_key, from_email, to, subject, html, "jgaravito@terminalsync.ai")
+        status, body = send_via_resend(api_key, from_email, to, subject, html, "replies@terminalsync.ai")
         ok = 200 <= status < 300
         print(f"  {'✅' if ok else '❌'} Resend {status}: {body[:200]}")
 
