@@ -117,6 +117,45 @@ const en: Dict = {
       button: "See plans",
     },
   },
+  crossAi: {
+    eyebrow: "One layer · three agents",
+    title: "What TerminalSync makes Claude, Codex and Gemini share",
+    subtitle:
+      "Switch agents without losing context. Anything in the center of the diagram is alive in all three at once.",
+    diagram: {
+      claude: "Claude",
+      codex: "Codex",
+      gemini: "Gemini",
+      intersection: "TerminalSync",
+      intersectionHint: "All 3 share ↓",
+    },
+    shared: {
+      label: "Available in all 3 at once",
+      items: [
+        "Persistent project memory",
+        "MCP connectors (Postgres, GitHub, Supabase, Slack…)",
+        "Context sync (CLAUDE.md / AGENTS.md / GEMINI.md)",
+        "Skills and custom commands",
+        "Session that survives across agents",
+        ".env vault and project secrets",
+        "Token savings (no re-explaining your stack)",
+      ],
+    },
+    unique: {
+      claude: {
+        title: "Claude only",
+        items: ["Sonnet & Opus", "Plugin Marketplace", "Native Skills"],
+      },
+      codex: {
+        title: "Codex only",
+        items: ["GPT-5", "AGENTS.md format", "OpenAI tools"],
+      },
+      gemini: {
+        title: "Gemini only",
+        items: ["1M token context", "Multimodal (img / video)", "Google Cloud"],
+      },
+    },
+  },
   multiAI: {
     eyebrow: "Unified AI Workflow",
     title: "Stop juggling AI tools",

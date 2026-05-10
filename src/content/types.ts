@@ -90,6 +90,24 @@ export interface Dict {
       cards: Array<{ tool: string; verb: string; body: string }>;
     };
   };
+  crossAi: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    diagram: {
+      claude: string;
+      codex: string;
+      gemini: string;
+      intersection: string;
+      intersectionHint: string;
+    };
+    shared: { label: string; items: string[] };
+    unique: {
+      claude: { title: string; items: string[] };
+      codex: { title: string; items: string[] };
+      gemini: { title: string; items: string[] };
+    };
+  };
   toolBreakdown: {
     eyebrow: string;
     title: string;
