@@ -5,7 +5,7 @@ const es: Dict = {
   meta: {
     title: "TerminalSync — Memoria, privacidad y movilidad para tu IA",
     description:
-      "Tu agente IA (Claude/Codex) sigue corriendo aunque se caiga internet o cambies de Mac. Cifrado AES-256 zero-knowledge. Acceso desde cualquier dispositivo.",
+      "Tus agentes IA (Claude, Gemini y Codex) siguen corriendo aunque se caiga internet o cambies de Mac. Cifrado AES-256 zero-knowledge. Acceso desde cualquier dispositivo.",
   },
   nav: {
     features: "Funciones",
@@ -27,7 +27,7 @@ const es: Dict = {
     trustLine: "Sin setup · Sin perder contexto · Funciona en cualquier equipo · Cifrado AES-256 zero-knowledge",
     nextUp: {
       eyebrow: "Lo último",
-      body: "Tu sesión en cualquier dispositivo — abrí desde el celular sin instalar nada. Flujo unificado entre Claude y Codex con el mismo contexto. Bóveda de secretos por terminal.",
+      body: "Tu sesión en cualquier dispositivo — abrí desde el celular sin instalar nada. Flujo unificado entre Claude, Gemini y Codex con el mismo contexto. Bóveda de secretos por terminal.",
     },
     mockup: {
       appName: "Terminal Sync",
@@ -49,7 +49,7 @@ const es: Dict = {
       context: {
         kicker: "Demo · Persistencia",
         title: "Cerrás todo. Tu agente sigue trabajando solo.",
-        body: "El internet se cae, se reinicia tu Mac, cerrás la app sin querer — tu Claude o Codex no se detienen. Cuando volvés, la conversación está exactamente donde la dejaste.",
+        body: "El internet se cae, se reinicia tu Mac, cerrás la app sin querer — tu Claude, Gemini o Codex no se detienen. Cuando volvés, la conversación está exactamente donde la dejaste.",
       },
       install: {
         kicker: "Demo · Cualquier dispositivo",
@@ -212,7 +212,7 @@ const es: Dict = {
     items: {
       uninterrupted: {
         title: "Trabajo Ininterrumpido",
-        body: "Tu trabajo está blindado: si el internet falla, tu agente (Claude/Codex) NO se detendrá. La terminal sigue trabajando en segundo plano y te notificamos apenas recupere la conexión o termine la tarea.",
+        body: "Tu trabajo está blindado: si el internet falla, tu agente (Claude, Gemini o Codex) NO se detendrá. La terminal sigue trabajando en segundo plano y te notificamos apenas recupere la conexión o termine la tarea.",
       },
       anywhere: {
         title: "Tu sesión en cualquier dispositivo",
@@ -265,7 +265,7 @@ const es: Dict = {
           "Configuración completa de Codex",
           "Estado global de tus sesiones",
           "Skills y plugins reinstalados automáticamente",
-          "AI picker — elegís Claude o Codex por terminal",
+          "AI picker — elegís Claude, Gemini o Codex por terminal",
           "Conversación viva al reabrir (vía resurrección de sesión)",
         ],
         upcoming: [],
@@ -318,7 +318,7 @@ const es: Dict = {
       },
       {
         q: "¿Pero Claude Desktop ya no sincroniza entre Macs?",
-        a: "Anthropic sincroniza features cloud (Projects, Memory web, Styles, Workflows, conversaciones). Lo que NO sincroniza es lo local: tus servidores MCP custom (Notion, GitHub), tus skills, tus plugins instalados, tus sesiones de Cowork. Eso es lo que cubrimos nosotros.",
+        a: "Anthropic sincroniza features cloud (Projects, Memory web, Styles, Workflows, conversaciones). Lo que NO sincroniza es lo local: tus servidores MCP custom (Notion, GitHub), tus skills, tus plugins instalados ni la memoria compartida con Gemini y Codex. Eso es lo que cubrimos nosotros.",
       },
       {
         q: "¿Mis archivos quedan en su servidor?",
@@ -337,16 +337,16 @@ const es: Dict = {
         a: "El motor de cifrado y sincronización va a ser auditable. La app cliente es propietaria por ahora pero el core de seguridad lo publicamos para que cualquiera pueda revisarlo.",
       },
       {
-        q: "¿Funciona con cualquier IA o solo con Claude y Codex?",
-        a: "Hoy lo tenemos pulido para Claude (Code + Desktop) y Codex. El motor es agnóstico — agregamos otras herramientas (Cursor, Cline, Aider, etc.) según la demanda real. Si querés que soportemos algo específico, escribinos y lo subimos al roadmap público.",
+        q: "¿Funciona con cualquier IA o solo con Claude, Gemini y Codex?",
+        a: "Hoy lo tenemos pulido para Claude Code, Gemini CLI y Codex. El motor es agnóstico — agregamos otras herramientas (Cursor, Cline, Aider, etc.) según la demanda real. Si querés que soportemos algo específico, escribinos y lo subimos al roadmap público.",
       },
       {
         q: "¿En qué se diferencia de un IDE en la nube tipo Codespaces o Gitpod?",
         a: "No te mudás a un entorno nuevo — TU entorno te sigue a vos. Tu Mac, tus archivos, tus IAs configuradas como ya las tenías. Sin alquiler de cómputo, sin facturación por minuto, sin lock-in. Y todo cifrado AES-256 en tu propia nube.",
       },
       {
-        q: "¿En qué se diferencia de usar Claude o Codex por separado?",
-        a: "Claude y Codex por separado no se hablan: cada uno tiene su contexto, sus archivos, su memoria. TerminalSync los conecta en un único flujo. Le pedís a Claude que analice algo y a Codex que lo ejecute, sin re-explicar nada — comparten el mismo proyecto y la misma memoria.",
+        q: "¿En qué se diferencia de usar Claude, Gemini o Codex por separado?",
+        a: "Claude, Gemini y Codex por separado no se hablan: cada uno tiene su contexto, sus archivos y su memoria. TerminalSync los conecta en un único flujo. Le pedís a Claude que analice, a Gemini que lea contexto largo y a Codex que ejecute, sin re-explicar nada — comparten el mismo proyecto y la misma memoria.",
       },
       {
         q: "¿Necesito configurar algo?",
@@ -582,7 +582,7 @@ const es: Dict = {
           "Memoria persistente entre IAs (Claude + Gemini + Codex)",
           "Tu sesión en cualquier dispositivo (móvil + navegador)",
           "Notificaciones por Email / WhatsApp / Telegram",
-          "Sync completo de Claude y Codex entre dispositivos",
+          "Sync completo de Claude, Gemini y Codex entre dispositivos",
           "Historial 90 días",
           "Hasta 5 dispositivos",
         ],

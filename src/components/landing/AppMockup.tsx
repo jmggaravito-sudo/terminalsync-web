@@ -93,24 +93,23 @@ export function AppMockup({ dict }: { dict: Dict }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] md:min-h-[520px]">
-          {/* Sidebar — mirrors actual app structure (Inicio + cloud links +
-              navigation + collapsible Terminales/Conectores). */}
+          {/* Sidebar — mirrors the current app structure. */}
           <aside className="hidden md:flex flex-col border-r border-[var(--color-border)] bg-[var(--color-panel-2)]/40 p-3 space-y-0.5 text-[11px]">
             <SideItem label="Inicio" active />
             <SideItem
-              label="Claude AI"
-              icon={<Sparkles size={11} className="text-[var(--color-claude)]" strokeWidth={2} />}
+              label="IAs"
+              icon={<Sparkles size={11} className="text-[var(--color-accent)]" strokeWidth={2} />}
             />
             <SideItem
-              label="Claude Cowork"
-              icon={<Bot size={11} className="text-[var(--color-claude)]" strokeWidth={2} />}
+              label="Comandos"
+              icon={<TerminalIcon size={11} className="text-[var(--color-fg-muted)]" strokeWidth={2} />}
             />
+            <SideItem
+              label="Secretos"
+              icon={<ShieldCheck size={11} className="text-emerald-500" strokeWidth={2} />}
+            />
+            <SideItem label="Ayuda" />
             <div className="h-px bg-[var(--color-border)] my-2" />
-            <SideItem label="Recientes" />
-            <SideItem label="Favoritas" />
-            <SideItem label="Biblioteca" />
-            <SideItem label="Historial" />
-            <SideItem label="Comandos" />
             <div className="pt-3 pb-1 px-2 text-[9px] uppercase tracking-[0.14em] text-[var(--color-fg-dim)] font-semibold flex items-center justify-between">
               <span>Terminales</span>
               <span className="text-[var(--color-fg-muted)] font-mono">6</span>

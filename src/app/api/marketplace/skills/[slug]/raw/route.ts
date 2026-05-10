@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 
 // Allow Tauri (and CLI tooling) to fetch the raw skill payload. Public —
 // these skills are meant to be installed by anyone clicking
-// terminalsync://install-skill?id=<slug>.
+// terminalsync://install?type=skill&slug=<slug>&payload=<base64>.
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",

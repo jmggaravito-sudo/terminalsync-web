@@ -8,7 +8,7 @@ import { formatLocal } from "@/lib/geoCurrency";
 
 /**
  * Sliders + live numbers showing how much a dev saves per year by mixing
- * Claude/Codex/Gemini through TerminalSync vs. paying for a single AI's
+ * Claude/Gemini/Codex through TerminalSync vs. paying for a single AI's
  * heavy plan and burning extra hours.
  *
  * Numbers come from list prices Anthropic/OpenAI/Google + tool-mixing

@@ -38,10 +38,19 @@ export default async function SkillDetail({ params }: Props) {
   const skill = await getSkill(lang, slug);
   if (!skill) notFound();
 
-  // Deep-link the desktop client will resolve when the install handshake is
-  // wired (see the brief for the other terminal session — terminalsync://
-  // install-skill?id=<slug>). For now this is just a visual CTA.
-  const installDeepLink = `terminalsync://install-skill?id=${skill.slug}`;
+  const installPayload = Buffer.from(
+    JSON.stringify({
+      vendors: skill.vendors,
+      name: skill.slug,
+      files: {
+        "SKILL.md": Buffer.from(skill.rawMarkdown, "utf8").toString("base64"),
+      },
+    }),
+    "utf8",
+  ).toString("base64");
+  const installDeepLink =
+    `terminalsync://install?type=skill&slug=${encodeURIComponent(skill.slug)}` +
+    `&payload=${encodeURIComponent(installPayload)}`;
 
   // Schema.org SoftwareApplication so Google rich-snippets can surface
   // the skill name + tagline + author in search results. SoftwareApplication

@@ -5,7 +5,7 @@ const en: Dict = {
   meta: {
     title: "TerminalSync — Memory, privacy and mobility for your AI",
     description:
-      "Your AI agent (Claude/Codex) keeps running even if the internet drops or you switch Macs. AES-256 zero-knowledge encryption. Access from any device.",
+      "Your AI agents (Claude, Gemini and Codex) keep running even if the internet drops or you switch Macs. AES-256 zero-knowledge encryption. Access from any device.",
   },
   nav: {
     features: "Features",
@@ -27,7 +27,7 @@ const en: Dict = {
     trustLine: "No setup · No context loss · Works across any machine · AES-256 zero-knowledge encryption",
     nextUp: {
       eyebrow: "Latest",
-      body: "Anywhere Access via Cloudflare Tunnel — open your session from your phone with zero install. Unified multi-AI workflow: Claude and Codex sharing the same context. Per-terminal secrets vault.",
+      body: "Anywhere Access via Cloudflare Tunnel — open your session from your phone with zero install. Unified multi-AI workflow: Claude, Gemini and Codex sharing the same context. Per-terminal secrets vault.",
     },
     mockup: {
       appName: "Terminal Sync",
@@ -49,7 +49,7 @@ const en: Dict = {
       context: {
         kicker: "Demo · Persistence",
         title: "Close everything. Your agent keeps working alone.",
-        body: "Internet drops, your Mac restarts, you accidentally close the app — your Claude or Codex doesn't stop. When you come back, the conversation is exactly where you left it.",
+        body: "Internet drops, your Mac restarts, you accidentally close the app — your Claude, Gemini or Codex doesn't stop. When you come back, the conversation is exactly where you left it.",
       },
       install: {
         kicker: "Demo · Any device",
@@ -212,7 +212,7 @@ const en: Dict = {
     items: {
       uninterrupted: {
         title: "Uninterrupted Work",
-        body: "Your work is bulletproof: if the internet drops, your agent (Claude/Codex) does NOT stop. The terminal keeps running in the background and we notify you the moment connectivity returns or the task finishes.",
+        body: "Your work is bulletproof: if the internet drops, your agent (Claude, Gemini or Codex) does NOT stop. The terminal keeps running in the background and we notify you the moment connectivity returns or the task finishes.",
       },
       anywhere: {
         title: "Anywhere Access",
@@ -265,7 +265,7 @@ const en: Dict = {
           "Full Codex configuration",
           "Global state of your sessions",
           "Skills and plugins auto-reinstalled",
-          "AI picker — pick Claude or Codex per terminal",
+          "AI picker — pick Claude, Gemini or Codex per terminal",
           "Conversation alive when you reopen (via session resurrection)",
         ],
         upcoming: [],
@@ -318,7 +318,7 @@ const en: Dict = {
       },
       {
         q: "But doesn't Claude Desktop already sync between Macs?",
-        a: "Anthropic syncs cloud features (Projects, Memory web, Styles, Workflows, conversations). What it doesn't sync is the local stuff: your custom MCP servers (Notion, GitHub), your skills, your installed plugins, your Cowork sessions. That's what we cover.",
+        a: "Anthropic syncs cloud features (Projects, Memory web, Styles, Workflows, conversations). What it doesn't sync is the local stuff: your custom MCP servers (Notion, GitHub), your skills, your installed plugins, or shared memory with Gemini and Codex. That's what we cover.",
       },
       {
         q: "Do my files end up on your servers?",
@@ -337,16 +337,16 @@ const en: Dict = {
         a: "The encryption and sync engine will be auditable. The client app is proprietary for now, but the security core is published so anyone can review it.",
       },
       {
-        q: "Does it work with any AI or just Claude and Codex?",
-        a: "Today we have it polished for Claude (Code + Desktop) and Codex. The engine is tool-agnostic — we add others (Cursor, Cline, Aider, etc.) based on real demand. If you want us to support something specific, write us and we'll add it to the public roadmap.",
+        q: "Does it work with any AI or just Claude, Gemini and Codex?",
+        a: "Today we have it polished for Claude Code, Gemini CLI and Codex. The engine is tool-agnostic — we add others (Cursor, Cline, Aider, etc.) based on real demand. If you want us to support something specific, write us and we'll add it to the public roadmap.",
       },
       {
         q: "How is this different from a cloud IDE like Codespaces or Gitpod?",
         a: "You're not moving to a new environment — YOUR environment follows you. Your Mac, your files, your AI tools configured as you already had them. No compute rental, no per-minute billing, no lock-in. And everything is AES-256 encrypted in your own cloud.",
       },
       {
-        q: "How is this different from using Claude or Codex on their own?",
-        a: "Claude and Codex on their own don't talk to each other: each has its own context, files, memory. TerminalSync connects them in a single flow. You ask Claude to analyze something and Codex to execute it, without re-explaining anything — they share the same project and the same memory.",
+        q: "How is this different from using Claude, Gemini or Codex on their own?",
+        a: "Claude, Gemini and Codex on their own don't talk to each other: each has its own context, files and memory. TerminalSync connects them in a single flow. You ask Claude to analyze, Gemini to read long context and Codex to execute, without re-explaining anything — they share the same project and the same memory.",
       },
       {
         q: "Do I need to configure anything?",
@@ -582,7 +582,7 @@ const en: Dict = {
           "Cross-AI persistent memory (Claude + Gemini + Codex)",
           "Anywhere Access (mobile + any browser)",
           "Notifications via Email / WhatsApp / Telegram",
-          "Full Claude and Codex sync across devices",
+          "Full Claude, Gemini and Codex sync across devices",
           "90-day history",
           "Up to 5 devices",
         ],
