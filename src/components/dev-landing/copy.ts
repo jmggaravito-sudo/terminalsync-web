@@ -200,7 +200,7 @@ const en: DevCopy = {
   },
   cta: {
     title: "Stop re-explaining your codebase. Ship.",
-    body: "Free tier covers 2 devices and forever-persistent memory. No card required.",
+    body: "Free covers 2 devices to try the basics. Cross-AI persistent memory unlocks on Pro from $19/mo with a 7-day free trial.",
     primary: "Download free",
     secondary: "Browse Stack Packs",
   },
@@ -327,7 +327,7 @@ const es: DevCopy = {
   },
   cta: {
     title: "Dejá de re-explicar tu codebase. Shippealo.",
-    body: "El tier Free cubre 2 dispositivos y memoria persistente para siempre. Sin tarjeta.",
+    body: "Free cubre 2 dispositivos para probar lo básico. La memoria persistente entre IAs se desbloquea con Pro desde $19/mes, con 7 días gratis.",
     primary: "Descargar gratis",
     secondary: "Ver Stack Packs",
   },

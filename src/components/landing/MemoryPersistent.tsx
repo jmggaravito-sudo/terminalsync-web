@@ -1,4 +1,4 @@
-import { Sparkles, X, Check, Download } from "lucide-react";
+import { Sparkles, X, Check, ArrowRight } from "lucide-react";
 import type { Dict } from "@/content";
 
 /**
@@ -28,7 +28,7 @@ export function MemoryPersistent({ dict }: { dict: Dict }) {
         <span className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent)] border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 px-3 py-1 rounded-full">
           <Sparkles size={11} strokeWidth={2.4} />
           {m.eyebrow}
-          <span className="text-[9.5px] font-bold uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full bg-[var(--color-ok)]/15 text-[var(--color-ok)]">
+          <span className="text-[9.5px] font-bold uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full bg-[var(--color-accent)]/15 text-[var(--color-accent)]">
             {m.badge}
           </span>
         </span>
@@ -134,12 +134,12 @@ export function MemoryPersistent({ dict }: { dict: Dict }) {
           </p>
         </div>
         <a
-          href="/api/download"
+          href="#pricing"
           data-cta="memory-section"
           className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[13px] font-semibold px-5 py-2.5 shadow-[0_8px_24px_-10px_var(--color-accent-glow)] transition-all whitespace-nowrap"
         >
-          <Download size={14} strokeWidth={2.4} />
           {m.cta.button}
+          <ArrowRight size={14} strokeWidth={2.4} />
         </a>
       </div>
     </section>

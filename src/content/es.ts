@@ -65,9 +65,9 @@ const es: Dict = {
   },
   memory: {
     eyebrow: "Memoria persistente",
-    badge: "Incluida",
+    badge: "Pro",
     title: "Tu IA aprende de vos. Y no se olvida nunca.",
-    subtitle: "Cada sesión la hace más útil.",
+    subtitle: "Cada sesión la hace más útil. Disponible en planes Pro y Dev.",
     recallsLead: "Recuerda:",
     recalls: [
       "cómo trabajás",
@@ -112,9 +112,9 @@ const es: Dict = {
       ],
     },
     cta: {
-      heading: "Probá la memoria persistente hoy",
-      body: "Viene activa por default desde la primera sesión. Sin instalación extra, sin claves de API, sin servidor nuestro en el medio.",
-      button: "Descargar gratis",
+      heading: "Desbloquealo con Pro",
+      body: "Memoria compartida entre Claude, Gemini y Codex — local, cifrada, portable entre tus Macs. Disponible desde $19/mes con 7 días gratis.",
+      button: "Ver planes",
     },
   },
   multiAI: {
@@ -539,6 +539,7 @@ const es: Dict = {
         yearlyEquivalent: "$15.83/mes · facturado anual",
         features: [
           "5 terminales con persistencia + resurrección",
+          "Memoria persistente entre IAs (Claude + Gemini + Codex)",
           "Tu sesión en cualquier dispositivo (móvil + navegador)",
           "Notificaciones por Email / WhatsApp / Telegram",
           "Sync completo de Claude y Codex entre dispositivos",
