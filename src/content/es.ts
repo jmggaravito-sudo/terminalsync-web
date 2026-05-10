@@ -132,6 +132,7 @@ const es: Dict = {
     shared: {
       label: "Disponible en los 3 al mismo tiempo",
       items: [
+        "Persistencia real (cerrá la app, vuelve donde la dejaste)",
         "Memoria persistente del proyecto",
         "MCP connectors (Postgres, GitHub, Supabase, Slack…)",
         "Context sync (CLAUDE.md / AGENTS.md / GEMINI.md)",
@@ -381,7 +382,7 @@ const es: Dict = {
       offlineLocal: "Funciona offline / local-first",
       aes256: "Cifrado AES-256 zero-knowledge",
       secretsVault: "Vault de secretos integrado",
-      internetImmunity: "Persistencia ante caída de internet",
+      internetImmunity: "Persistencia real: cerrar app, dormir Mac o caer internet",
       aiConversationSync: "Sync de conversaciones IA entre Macs",
       replyInjection: "Reply-injection desde celular",
       noVendorLockIn: "Sin vendor lock-in (tus archivos en tu cloud)",
@@ -455,7 +456,7 @@ const es: Dict = {
       secretsVault:
         "Vault integrado para API keys, tokens y credenciales. Disponibles en tus terminales como variables de entorno — nunca escritos en archivos planos.",
       internetImmunity:
-        "Si tu internet se cae mientras un agente está corriendo, sigue trabajando localmente. Cuando volvés a tener señal, sincroniza solo.",
+        "Cerrá la app, dormí el Mac o perdé internet — al volver, tu terminal sigue exactamente donde la dejaste. El agente sigue trabajando local mientras tanto y sincroniza solo cuando vuelve la señal.",
       aiConversationSync:
         "Las conversaciones con tu agente se sincronizan entre tus Macs y dispositivos. Empezás en el MacBook, seguís en el Mac mini sin pegar contexto.",
       replyInjection:
