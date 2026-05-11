@@ -21,6 +21,7 @@ import path from "node:path";
 import matter from "gray-matter";
 import { remark } from "remark";
 import html from "remark-html";
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export type CliToolCategory =
   | "dev"
@@ -65,6 +66,25 @@ function resolveLangDir(lang: string): string {
 }
 
 export async function listCliTools(lang: string): Promise<CliToolMeta[]> {
+  // Markdown wins on collision — hand-curated entries are the source of
+  // truth for tools we've documented carefully. DB rows fill in the long
+  // tail of CLIs auto-promoted from discovery.
+  const fileMetas = listCliToolsFromFiles(lang);
+  const fileSlugs = new Set(fileMetas.map((m) => m.slug));
+
+  const dbMetas = await listCliToolsFromDb(lang);
+  const merged: CliToolMeta[] = [...fileMetas];
+  for (const meta of dbMetas) {
+    if (!fileSlugs.has(meta.slug)) merged.push(meta);
+  }
+
+  return merged.sort((a, b) => {
+    if (a.status !== b.status) return a.status === "available" ? -1 : 1;
+    return a.name.localeCompare(b.name);
+  });
+}
+
+function listCliToolsFromFiles(lang: string): CliToolMeta[] {
   const dir = resolveLangDir(lang);
   if (!fs.existsSync(dir)) return [];
   const files = fs
@@ -77,10 +97,70 @@ export async function listCliTools(lang: string): Promise<CliToolMeta[]> {
     const { data } = matter(raw);
     metas.push(normalizeMeta(file.replace(/\.md$/, ""), data));
   }
-  return metas.sort((a, b) => {
-    if (a.status !== b.status) return a.status === "available" ? -1 : 1;
-    return a.name.localeCompare(b.name);
-  });
+  return metas;
+}
+
+/** Fetch approved auto-promoted CLI listings from the DB.
+ *  Returns [] when Supabase is unconfigured or the table doesn't exist
+ *  yet (e.g. local dev before 0010 has been applied). Errors are
+ *  swallowed on purpose so a DB hiccup never breaks the public catalog. */
+export async function listCliToolsFromDb(
+  _lang: string,
+): Promise<CliToolMeta[]> {
+  const sb = getSupabaseAdmin();
+  if (!sb) return [];
+  try {
+    const { data, error } = await sb
+      .from("cli_tool_listings")
+      .select(
+        "slug,name,tagline,description_md,category,logo_url,binary,install_command,auth_command,vendor,homepage,repo_url,status",
+      )
+      .eq("status", "approved");
+    if (error || !data) return [];
+    return data.map((row): CliToolMeta => {
+      const category = (
+        new Set([
+          "dev",
+          "deploy",
+          "database",
+          "payments",
+          "infra",
+          "productivity",
+        ]).has(row.category as string)
+          ? row.category
+          : "dev"
+      ) as CliToolCategory;
+      const slug = String(row.slug ?? "");
+      return {
+        slug,
+        name: String(row.name ?? slug),
+        logo:
+          typeof row.logo_url === "string" && row.logo_url
+            ? row.logo_url
+            : `/cli-tools/${slug}.svg`,
+        category,
+        binary: String(row.binary ?? slug),
+        installCommand: String(row.install_command ?? ""),
+        authCommand:
+          typeof row.auth_command === "string" && row.auth_command
+            ? row.auth_command
+            : undefined,
+        vendor: String(row.vendor ?? "Unknown"),
+        homepage: String(row.homepage ?? ""),
+        repo:
+          typeof row.repo_url === "string" && row.repo_url
+            ? row.repo_url
+            : undefined,
+        status: "available",
+        tagline: String(row.tagline ?? ""),
+        description: String(row.description_md ?? row.tagline ?? ""),
+      };
+    });
+  } catch {
+    // Table not migrated yet, network failed, RLS misconfigured —
+    // anything goes wrong, fall back to file-only mode.
+    return [];
+  }
 }
 
 export async function getCliTool(
