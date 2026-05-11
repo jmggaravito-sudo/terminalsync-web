@@ -365,7 +365,7 @@ function FeaturedConnector({ lang, connector }: { lang: string; connector: Conne
     >
       <div className="flex items-start justify-between gap-3">
         <div className="h-11 w-11 rounded-xl bg-[var(--color-panel-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden">
-          <ConnectorLogo src={connector.logo} size={28} className="h-7 w-7" />
+          <ConnectorLogo src={connector.logo} size={28} className="h-7 w-7" fallbackText={connector.name} />
         </div>
         <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--color-fg-dim)]">
           {connector.category}
