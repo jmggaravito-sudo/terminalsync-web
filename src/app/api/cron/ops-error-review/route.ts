@@ -271,10 +271,11 @@ export async function GET(req: Request) {
   const since = new Date(Date.now() - WINDOW_H * 3600 * 1000).toISOString();
 
   // n8n executions API doesn't take a time filter, so we pull a fat page
-  // (last 500) and filter client-side. JM's average day is well under
-  // 500 executions across every workflow.
+  // and filter client-side. The public API caps at limit=250 — anything
+  // higher returns 400. Errors-only is sparse enough that 250 covers
+  // multiple weeks even on a bad month.
   const r = await fetch(
-    `${N8N_URL}/api/v1/executions?status=error&limit=500`,
+    `${N8N_URL}/api/v1/executions?status=error&limit=250`,
     { headers: { "X-N8N-API-KEY": N8N_API_KEY }, cache: "no-store" },
   );
   if (!r.ok) {
