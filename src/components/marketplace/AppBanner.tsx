@@ -20,8 +20,8 @@ export function MarketplaceAppBanner({ lang }: { lang: string }) {
             </h2>
             <p className="mt-2 text-[13.5px] text-[var(--color-fg-muted)] leading-relaxed">
               {isEs
-                ? "TerminalSync mantiene tu Claude Code y Codex sincronizados, encriptados y listos en cualquier Mac."
-                : "TerminalSync keeps your Claude Code and Codex synced, encrypted, and ready on any Mac."}
+                ? "TerminalSync mantiene tu Claude, Codex y Gemini sincronizados, encriptados y listos en cualquier Mac."
+                : "TerminalSync keeps your Claude, Codex and Gemini synced, encrypted, and ready on any Mac."}
             </p>
             <div className="mt-5 flex items-center gap-2.5 flex-wrap">
               <a

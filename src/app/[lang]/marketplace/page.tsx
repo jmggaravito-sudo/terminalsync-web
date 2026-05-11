@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Layers, Plug, Sparkles, Zap } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Layers, Plug, Sparkles, Terminal, Zap } from "lucide-react";
 import { listAllConnectors, type ConnectorMeta } from "@/lib/connectors";
 import { listSkills, type SkillMeta } from "@/lib/skills";
+import { listCliTools, type CliToolMeta } from "@/lib/cliTools";
 import { ConnectorLogo } from "@/app/[lang]/connectors/Logo";
 import { SkillLogo } from "@/app/[lang]/skills/Logo";
+import { CliToolLogo } from "@/app/[lang]/cli-tools/Logo";
 import { MarketplaceAppBanner } from "@/components/marketplace/AppBanner";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
@@ -55,8 +57,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? "Marketplace · Terminal Sync"
     : "Marketplace · Terminal Sync";
   const description = isEs
-    ? "Connectors y Skills para Claude Code y Codex. Una sola instalación, sincronizada en todas tus máquinas."
-    : "Connectors and Skills for Claude Code and Codex. One install, synced across every machine.";
+    ? "Connectors, CLI Tools y Skills para Claude, Codex y Gemini. Una sola instalación, sincronizada en todas tus máquinas."
+    : "Connectors, CLI Tools and Skills for Claude, Codex and Gemini. One install, synced across every machine.";
   return {
     title,
     description,
@@ -67,14 +69,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function MarketplaceHub({ params }: Props) {
   const { lang } = await params;
   const isEs = lang === "es";
-  const [connectors, skills, stacks] = await Promise.all([
+  const [connectors, skills, cliTools, stacks] = await Promise.all([
     listAllConnectors(lang),
     listSkills(lang),
+    listCliTools(lang),
     listFeaturedStacks(),
   ]);
 
   const featuredConnectors = connectors.slice(0, 3);
   const featuredSkills = skills.slice(0, 3);
+  const featuredCliTools = cliTools.slice(0, 3);
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
@@ -91,38 +95,53 @@ export default async function MarketplaceHub({ params }: Props) {
         </h1>
         <p className="mt-4 text-[16px] text-[var(--color-fg-muted)] max-w-2xl leading-relaxed">
           {isEs
-            ? "Connectors te dan acceso a tus apps (Notion, Webflow, Stripe). Skills le enseñan a tu IA tareas concretas (escribir ads, revisar código). Instalá una vez, viajan contigo a todas tus máquinas."
-            : "Connectors give your AI access to your apps (Notion, Webflow, Stripe). Skills teach it concrete tasks (write ads, review code). Install once, they follow you to every machine."}
+            ? "Connectors te dan acceso a tus apps (Notion, Stripe). Skills le enseñan a tu IA tareas concretas (escribir ads, revisar código). CLI Tools reúnen los comandos oficiales para instalar, autenticar y trabajar desde la terminal correcta."
+            : "Connectors give your AI access to your apps (Notion, Stripe). Skills teach it concrete tasks (write ads, review code). CLI Tools collect the official commands to install, authenticate and work from the right terminal."}
         </p>
         <div className="mt-7 flex flex-wrap gap-2 text-[12px] font-mono">
           <span className="rounded-md bg-[var(--color-panel)] border border-[var(--color-border)] px-2.5 py-1 text-[var(--color-fg-muted)]">
             {connectors.length} {isEs ? "connectors" : "connectors"}
           </span>
           <span className="rounded-md bg-[var(--color-panel)] border border-[var(--color-border)] px-2.5 py-1 text-[var(--color-fg-muted)]">
+            {cliTools.length} CLI tools
+          </span>
+          <span className="rounded-md bg-[var(--color-panel)] border border-[var(--color-border)] px-2.5 py-1 text-[var(--color-fg-muted)]">
             {skills.length} skills
           </span>
           <span className="rounded-md bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/30 px-2.5 py-1 text-[var(--color-accent)]">
-            Claude Code · Codex
+            Claude · Codex · Gemini
           </span>
         </div>
       </section>
 
-      {/* Three-up category cards */}
+      {/* Four-up category cards — Stack Packs sits across the top
+          (full-width on its own row) since it bundles the other three;
+          Connectors + CLI Tools + Skills are the three Power-Ups
+          underneath. */}
+      <section className="mx-auto max-w-5xl px-6 pb-6">
+        <CategoryCard
+          href={`/${lang}/stacks`}
+          Icon={Layers}
+          label={isEs ? "Stack Packs" : "Stack Packs"}
+          count={stacks.length}
+          description={
+            isEs
+              ? "Bundles curados que combinan connectors, CLI tools y skills. Pagás una vez y tu IA queda conectada a las apps de tu workflow."
+              : "Curated bundles of connectors, CLI tools and skills. Pay once and your AI is wired up to your workflow apps."
+          }
+          cta={isEs ? "Ver packs" : "View packs"}
+          featured
+          wide
+        />
+      </section>
+
+      {/* Power-Ups — the three pillars */}
       <section className="mx-auto max-w-5xl px-6 pb-12">
+        <div className="mb-4 flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--color-fg-dim)]">
+          <span>{isEs ? "Power-Ups" : "Power-Ups"}</span>
+          <span className="h-px flex-1 bg-[var(--color-border)]" />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <CategoryCard
-            href={`/${lang}/stacks`}
-            Icon={Layers}
-            label={isEs ? "Stack Packs" : "Stack Packs"}
-            count={stacks.length}
-            description={
-              isEs
-                ? "Bundles curados listos para arrancar. Pagás una vez y tu IA queda conectada a las apps de tu workflow."
-                : "Curated bundles, ready to roll. Pay once and your AI is wired up to your workflow apps."
-            }
-            cta={isEs ? "Ver packs" : "View packs"}
-            featured
-          />
           <CategoryCard
             href={`/${lang}/connectors`}
             Icon={Plug}
@@ -132,6 +151,18 @@ export default async function MarketplaceHub({ params }: Props) {
               isEs
                 ? "Servidores MCP que dan acceso a tus apps reales: Notion, Webflow, Make, Supabase, y más."
                 : "MCP servers that give access to your real apps: Notion, Webflow, Make, Supabase, and more."
+            }
+            cta={isEs ? "Ver todos" : "View all"}
+          />
+          <CategoryCard
+            href={`/${lang}/cli-tools`}
+            Icon={Terminal}
+            label="CLI Tools"
+            count={cliTools.length}
+            description={
+              isEs
+                ? "Los CLIs que un dev usa todo el día — gh, vercel, supabase, stripe, wrangler. Guías, comandos útiles, GitHub Auth Sync y env vault para secretos de proyecto."
+                : "The CLIs a dev uses every day — gh, vercel, supabase, stripe, wrangler. Guides, useful commands, GitHub Auth Sync and env vault for project secrets."
             }
             cta={isEs ? "Ver todos" : "View all"}
           />
@@ -197,6 +228,28 @@ export default async function MarketplaceHub({ params }: Props) {
         </div>
       </section>
 
+      {/* Featured CLI Tools */}
+      {featuredCliTools.length > 0 && (
+        <section className="mx-auto max-w-5xl px-6 pb-12">
+          <div className="flex items-end justify-between gap-4 mb-5">
+            <h2 className="text-[22px] md:text-[26px] font-semibold tracking-tight">
+              {isEs ? "Featured · CLI Tools" : "Featured · CLI Tools"}
+            </h2>
+            <Link
+              href={`/${lang}/cli-tools`}
+              className="inline-flex items-center gap-1 text-[13px] font-medium text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] transition-colors"
+            >
+              {isEs ? "Ver todos" : "View all"} <ArrowRight size={13} />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {featuredCliTools.map((t) => (
+              <FeaturedCliTool key={t.slug} lang={lang} tool={t} />
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Featured skills */}
       <section className="mx-auto max-w-5xl px-6 pb-16">
         <div className="flex items-end justify-between gap-4 mb-5">
@@ -261,6 +314,7 @@ function CategoryCard({
   description,
   cta,
   featured,
+  wide,
 }: {
   href: string;
   Icon: typeof Plug;
@@ -269,11 +323,16 @@ function CategoryCard({
   description: string;
   cta: string;
   featured?: boolean;
+  /** When true, the card stretches full-width (used for the lead
+   *  Stack Packs card that sits above the three Power-Ups). */
+  wide?: boolean;
 }) {
   return (
     <Link
       href={href}
       className={`group relative rounded-3xl border bg-[var(--color-panel)] p-7 transition-all hover:-translate-y-0.5 hover:shadow-lg ${
+        wide ? "block" : ""
+      } ${
         featured
           ? "border-[var(--color-accent)]/35 bg-gradient-to-br from-[var(--color-accent)]/8 via-transparent to-transparent hover:border-[var(--color-accent)]/55"
           : "border-[var(--color-border)] hover:border-[var(--color-accent)]/40"
@@ -318,6 +377,35 @@ function FeaturedConnector({ lang, connector }: { lang: string; connector: Conne
       <p className="mt-1 text-[12.5px] text-[var(--color-fg-muted)] leading-relaxed line-clamp-2">
         {connector.tagline}
       </p>
+    </Link>
+  );
+}
+
+function FeaturedCliTool({ lang, tool }: { lang: string; tool: CliToolMeta }) {
+  return (
+    <Link
+      href={`/${lang}/cli-tools/${tool.slug}`}
+      className="group relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5 transition-all hover:border-[var(--color-accent)]/40 hover:shadow-lg hover:-translate-y-0.5"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="h-11 w-11 rounded-xl bg-[var(--color-panel-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden">
+          <CliToolLogo src={tool.logo} size={28} className="h-7 w-7" />
+        </div>
+        <ArrowUpRight
+          size={14}
+          className="text-[var(--color-fg-dim)] group-hover:text-[var(--color-accent)] transition-colors mt-1"
+        />
+      </div>
+      <h3 className="mt-4 text-[15px] font-semibold tracking-tight">
+        {tool.name}
+      </h3>
+      <p className="mt-1 text-[12.5px] text-[var(--color-fg-muted)] leading-relaxed line-clamp-2">
+        {tool.tagline}
+      </p>
+      <div className="mt-3 inline-flex items-center gap-1 rounded bg-[var(--color-panel-2)] border border-[var(--color-border)] px-1.5 py-0.5 font-mono text-[10.5px] text-[var(--color-fg)]">
+        <span className="text-[var(--color-fg-dim)]">$</span>
+        <span>{tool.binary}</span>
+      </div>
     </Link>
   );
 }
