@@ -389,7 +389,7 @@ function FeaturedCliTool({ lang, tool }: { lang: string; tool: CliToolMeta }) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="h-11 w-11 rounded-xl bg-[var(--color-panel-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden">
-          <CliToolLogo src={tool.logo} size={28} className="h-7 w-7" />
+          <CliToolLogo src={tool.logo} size={28} className="h-7 w-7" fallbackText={tool.name} />
         </div>
         <ArrowUpRight
           size={14}
@@ -418,7 +418,7 @@ function FeaturedSkill({ lang, skill }: { lang: string; skill: SkillMeta }) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="h-11 w-11 rounded-xl bg-[var(--color-panel-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden">
-          <SkillLogo src={skill.logo} size={28} className="h-7 w-7" />
+          <SkillLogo src={skill.logo} size={28} className="h-7 w-7" fallbackText={skill.name} />
         </div>
         <ArrowUpRight
           size={14}
