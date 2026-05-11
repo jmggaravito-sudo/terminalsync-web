@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/promote-connectors",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/ops-error-review",
+      "schedule": "0 7 * * *"
     }
   ]
 }
