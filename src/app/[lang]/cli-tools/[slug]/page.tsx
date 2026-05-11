@@ -160,20 +160,21 @@ export default async function CliToolDetail({ params }: Props) {
           {isEs ? (
             <>
               <strong className="text-[var(--color-fg-strong)]">¿Cómo funciona la sincronización?</strong>{" "}
-              Hoy TerminalSync sincroniza tu sesión de GitHub CLI con un flujo dedicado
-              de Auth Sync. Para los demás CLIs, esta página te da instalación,
-              login y comandos recomendados; los secretos de proyecto que terminen en
-              archivos <code>.env</code> pueden viajar por el vault cifrado de la carpeta.
-              La sincronización automática de auth por cada CLI es una capa futura.
+              TerminalSync usa dos caminos: GitHub CLI tiene un flujo dedicado de
+              Auth Sync porque <code>gh</code> escribe en el keychain; Stripe,
+              Vercel, Wrangler y Supabase usan CLI Auth Sync cuando su auth/config
+              existe como archivo local conocido. Los secretos de proyecto en
+              archivos <code>.env</code> también pueden viajar por el vault cifrado
+              de la carpeta.
             </>
           ) : (
             <>
               <strong className="text-[var(--color-fg-strong)]">How does sync work?</strong>{" "}
-              Today TerminalSync syncs GitHub CLI through a dedicated Auth Sync flow.
-              For the other CLIs, this page gives you install, login and recommended
-              commands; project secrets that land in <code>.env</code> files can travel
-              through the folder's encrypted vault. Automatic per-CLI auth sync is a
-              future layer.
+              TerminalSync uses two paths: GitHub CLI has a dedicated Auth Sync flow
+              because <code>gh</code> writes to the keychain; Stripe, Vercel,
+              Wrangler and Supabase use CLI Auth Sync when their auth/config exists
+              as a known local file. Project secrets in <code>.env</code> files can
+              also travel through the folder's encrypted vault.
             </>
           )}
         </div>

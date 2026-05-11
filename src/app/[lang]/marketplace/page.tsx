@@ -161,8 +161,8 @@ export default async function MarketplaceHub({ params }: Props) {
             count={cliTools.length}
             description={
               isEs
-                ? "Los CLIs que un dev usa todo el día — gh, vercel, supabase, stripe, wrangler. Guías, comandos útiles, GitHub Auth Sync y env vault para secretos de proyecto."
-                : "The CLIs a dev uses every day — gh, vercel, supabase, stripe, wrangler. Guides, useful commands, GitHub Auth Sync and env vault for project secrets."
+                ? "Los CLIs que un dev usa todo el día — gh, vercel, supabase, stripe, wrangler. Comandos útiles, CLI Auth Sync y env vault para secretos de proyecto."
+                : "The CLIs a dev uses every day — gh, vercel, supabase, stripe, wrangler. Useful commands, CLI Auth Sync and env vault for project secrets."
             }
             cta={isEs ? "Ver todos" : "View all"}
           />

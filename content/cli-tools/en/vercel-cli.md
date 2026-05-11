@@ -18,7 +18,7 @@ status: available
 
 ## What TerminalSync adds
 
-- **Deploy runbook.** Install, login, preview and production deploy commands stay attached to the project terminal.
+- **CLI Auth Sync.** If Vercel stores auth in `~/.local/share/com.vercel.cli/auth.json` or `~/.vercel/auth.json`, TerminalSync can encrypt and copy it between Macs.
 - **Env vault.** When you `vercel env pull` into a TerminalSync folder, the resulting `.env.local` can be encrypted into the folder vault. Your secrets follow the folder without leaking into Drive in plaintext.
 - **Session memory.** Your AI remembers which Vercel project + environment you're targeting, so "redeploy preview" doesn't need clarification.
 
