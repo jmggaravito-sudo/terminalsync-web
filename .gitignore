@@ -34,3 +34,4 @@ next-env.d.ts
 .terminalsync/
 supabase/.temp/
 outreach-links.csv
+.env.production

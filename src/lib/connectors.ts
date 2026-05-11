@@ -87,18 +87,94 @@ export async function getConnector(
   lang: string,
   slug: string,
 ): Promise<ConnectorDoc | null> {
+  // Try first-party markdown first (curated content wins on collision).
   const dir = resolveLangDir(lang);
   const file = path.join(dir, `${slug}.md`);
-  if (!fs.existsSync(file)) return null;
-  const raw = fs.readFileSync(file, "utf8");
-  const { data, content } = matter(raw);
+  if (fs.existsSync(file)) {
+    const raw = fs.readFileSync(file, "utf8");
+    const { data, content } = matter(raw);
+    const [simpleSrc, devSrc] = splitSimpleDev(content);
+    const simpleHtml = await renderMarkdown(simpleSrc);
+    const devHtml = await renderMarkdown(devSrc || simpleSrc);
+    return { ...normalizeMeta(slug, data), simpleHtml, devHtml };
+  }
 
-  // Split body by `--- dev ---` marker to produce Simple vs Dev sections.
-  const [simpleSrc, devSrc] = splitSimpleDev(content);
-  const simpleHtml = await renderMarkdown(simpleSrc);
-  const devHtml = await renderMarkdown(devSrc || simpleSrc);
+  // Fallback to Supabase marketplace listing.
+  return getMarketplaceConnector(slug);
+}
 
-  return { ...normalizeMeta(slug, data), simpleHtml, devHtml };
+async function getMarketplaceConnector(
+  slug: string,
+): Promise<ConnectorDoc | null> {
+  const sb = getSupabaseAdmin();
+  if (!sb) return null;
+  const { data, error } = await sb
+    .from("connector_listings")
+    .select(`
+      id, slug, name, tagline, category, logo_url,
+      description_md, setup_md, cta_url, source_url, repo_url, demo_url,
+      pricing_type, price_cents, install_count, rating_avg,
+      publisher:publishers ( display_name )
+    `)
+    .eq("slug", slug)
+    .eq("status", "approved")
+    .maybeSingle();
+  if (error || !data) return null;
+
+  type Row = {
+    id: string;
+    slug: string;
+    name: string;
+    tagline: string;
+    category: string;
+    logo_url: string;
+    description_md: string | null;
+    setup_md: string | null;
+    cta_url: string | null;
+    source_url: string | null;
+    repo_url: string | null;
+    demo_url: string | null;
+    pricing_type: string;
+    price_cents: number | null;
+    install_count: number;
+    rating_avg: number | null;
+    publisher: { display_name: string } | { display_name: string }[] | null;
+  };
+  const row = data as Row;
+  const pub = Array.isArray(row.publisher) ? row.publisher[0] : row.publisher;
+  const cta = row.cta_url ?? row.repo_url ?? row.source_url ?? "";
+
+  // Simple view = tagline + description body. Dev view = setup_md when
+  // present (install command + auth), else falls back to description.
+  const simpleSrc = row.description_md ?? row.tagline ?? "";
+  const devSrc = row.setup_md ?? simpleSrc;
+  const [simpleHtml, devHtml] = await Promise.all([
+    renderMarkdown(simpleSrc),
+    renderMarkdown(devSrc),
+  ]);
+
+  return {
+    slug: row.slug,
+    name: row.name,
+    logo: row.logo_url || `/connectors/${row.slug}.svg`,
+    category: row.category as ConnectorMeta["category"],
+    status: "available",
+    simpleTitle: row.name,
+    simpleSubtitle: row.tagline,
+    devTitle: row.name,
+    devSubtitle: row.tagline,
+    ctaUrl: cta,
+    affiliate: false,
+    tagline: row.tagline,
+    source: "marketplace",
+    pricingType: row.pricing_type as "free" | "one_time",
+    priceCents: row.price_cents,
+    publisherDisplayName: pub?.display_name,
+    installCount: row.install_count,
+    ratingAvg: row.rating_avg,
+    simpleHtml,
+    devHtml,
+  };
 }
 
 function splitSimpleDev(body: string): [string, string] {
@@ -151,10 +227,15 @@ export async function listMarketplaceConnectors(): Promise<ConnectorMeta[]> {
     .from("connector_listings")
     .select(`
       id, slug, name, tagline, category, logo_url,
+      cta_url, source_url, repo_url, demo_url,
       pricing_type, price_cents, install_count, rating_avg,
       publisher:publishers ( display_name )
     `)
     .eq("status", "approved")
+    // Hide marketplace items that never got a CTA URL — those are
+    // garbage rows the auto-publish pass let through, no point
+    // showing a card that links nowhere.
+    .not("cta_url", "is", null)
     .order("install_count", { ascending: false });
   if (error || !data) return [];
   type Row = {
@@ -164,6 +245,10 @@ export async function listMarketplaceConnectors(): Promise<ConnectorMeta[]> {
     tagline: string;
     category: string;
     logo_url: string;
+    cta_url: string | null;
+    source_url: string | null;
+    repo_url: string | null;
+    demo_url: string | null;
     pricing_type: string;
     price_cents: number | null;
     install_count: number;
@@ -175,14 +260,14 @@ export async function listMarketplaceConnectors(): Promise<ConnectorMeta[]> {
     const meta: ConnectorMeta = {
       slug: row.slug,
       name: row.name,
-      logo: row.logo_url,
+      logo: row.logo_url || `/connectors/${row.slug}.svg`,
       category: row.category as ConnectorMeta["category"],
       status: "available",
       simpleTitle: row.name,
       simpleSubtitle: row.tagline,
       devTitle: row.name,
       devSubtitle: row.tagline,
-      ctaUrl: "",
+      ctaUrl: row.cta_url ?? row.repo_url ?? row.source_url ?? "",
       affiliate: false,
       tagline: row.tagline,
       source: "marketplace",

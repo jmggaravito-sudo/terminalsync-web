@@ -7,6 +7,10 @@ import { ConnectorDualView } from "./DualView";
 import { ConnectorLogo } from "../Logo";
 
 export const revalidate = 3600;
+// First-party slugs prerender at build; marketplace slugs render on-demand
+// and are cached by the revalidate above. Default behavior already allows
+// this, declared explicitly so the intent is obvious to the next reader.
+export const dynamicParams = true;
 
 interface Props {
   params: Promise<{ lang: string; slug: string }>;
