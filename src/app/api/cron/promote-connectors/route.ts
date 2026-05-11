@@ -16,6 +16,7 @@
  */
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { resolveLogo } from "@/lib/marketplace/logoResolver";
 
 export const runtime = "nodejs";
 // Keep responses fresh — never cache cron output.
@@ -239,13 +240,32 @@ export async function GET(req: Request) {
     }
 
     const ctaUrl = row.repo_url || row.source_url || row.demo_url;
+
+    // Resolve a real logo before insert. Without this every cron-promoted
+    // row lands with logo_url="" and the catalog renders a blank rounded
+    // square. The resolver cascades brandfetch → github → favicon and
+    // falls back to a placeholder, so it always returns something.
+    let logoUrl = "";
+    try {
+      const resolved = await resolveLogo({
+        homepage: row.demo_url || row.source_url || null,
+        repoUrl: row.repo_url || null,
+        name: row.product_name,
+      });
+      logoUrl = resolved.url;
+    } catch (err) {
+      // Resolver is best-effort — the frontend renders initials when the
+      // image fails, so an empty string still degrades gracefully.
+      console.warn("[promote-connectors] resolveLogo failed:", err);
+    }
+
     const listing = {
       publisher_id: publisherId,
       slug: row.product_slug,
       name: row.product_name,
       tagline: row.raw_description?.slice(0, 200) ?? row.product_name,
       category: safeCategory(row.marketplace_category),
-      logo_url: "",
+      logo_url: logoUrl,
       description_md: descriptionOverride ?? buildDescription(row),
       setup_md: buildSetup(row),
       pricing_type: "free",
