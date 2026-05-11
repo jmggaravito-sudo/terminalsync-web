@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { initialsFrom } from "@/components/marketplace/initialsFrom";
 
 /** Displays a connector logo. If the image fails (missing file, blocked
  *  CDN, etc.) we render initials in a tinted box instead of disappearing —
@@ -41,13 +42,4 @@ export function ConnectorLogo({
       onError={() => setFailed(true)}
     />
   );
-}
-
-function initialsFrom(input: string): string {
-  // Strip path/extension, split on common separators, take first letters.
-  const base = input.replace(/^.*\//, "").replace(/\.[a-z0-9]+$/i, "");
-  const parts = base.split(/[\s_\-.]+/).filter(Boolean);
-  if (parts.length === 0) return "?";
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[1][0]).toUpperCase();
 }
