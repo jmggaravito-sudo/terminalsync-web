@@ -34,6 +34,7 @@
  *   node scripts/auto_promote_connectors.mjs
  */
 import { createClient } from "@supabase/supabase-js";
+import { resolveLogo } from "./lib/logoResolver.mjs";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -159,13 +160,22 @@ async function promote(row, publisherId, { decidedBy, descriptionOverride }) {
     return { ok: false, reason: "already published" };
   }
 
+  // Resolve a real logo before insert. Without this, every row lands with
+  // an empty logo_url and the catalog renders blank rounded squares.
+  // Cascade: brandfetch → github avatar → google favicon → placeholder.
+  const logoResolved = await resolveLogo({
+    homepage: row.demo_url || row.source_url || null,
+    repoUrl: row.repo_url || null,
+    name: row.product_name,
+  });
+
   const listing = {
     publisher_id: publisherId,
     slug,
     name: row.product_name,
     tagline: row.raw_description?.slice(0, 200) ?? row.product_name,
     category: safeCategory(row.marketplace_category),
-    logo_url: "",
+    logo_url: logoResolved.url,
     description_md: descriptionOverride ?? buildDescription(row),
     setup_md: buildSetup(row) ?? "",
     pricing_type: "free",
