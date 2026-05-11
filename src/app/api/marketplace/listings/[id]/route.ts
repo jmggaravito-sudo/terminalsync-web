@@ -3,6 +3,7 @@ import { authenticate, isAdmin } from "@/lib/marketplace/auth";
 import { ensureListingPrice, verifyPriceLive } from "@/lib/marketplace/stripeConnect";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { sendListingApprovedEmail, sendListingRejectedEmail } from "@/lib/email";
+import { resolveLogo } from "@/lib/marketplace/logoResolver";
 
 export const runtime = "nodejs";
 
@@ -77,7 +78,7 @@ async function handleAdminTransition(
 ) {
   const listing = await sb
     .from("connector_listings")
-    .select("id, slug, status, name, pricing_type, price_cents, currency, stripe_product_id, stripe_price_id, publisher_id")
+    .select("id, slug, status, name, pricing_type, price_cents, currency, stripe_product_id, stripe_price_id, publisher_id, logo_url, repo_url, source_url, demo_url")
     .eq("id", listingId)
     .maybeSingle();
   if (listing.error) return NextResponse.json({ error: listing.error.message }, { status: 500 });
@@ -168,6 +169,34 @@ async function handleAdminTransition(
     }
   }
 
+  // Safety net for hand-approved rows that came in with no logo. The
+  // publisher submission flow requires logo_url, but rows promoted from
+  // discovery (or imported in bulk) sometimes land with logo_url=""; the
+  // resolver fills them on approve so the catalog never renders a blank
+  // square. Best-effort — if it fails we just keep whatever was there
+  // and let the frontend initials fallback take over.
+  type ListingRow = {
+    logo_url: string | null;
+    repo_url: string | null;
+    source_url: string | null;
+    demo_url: string | null;
+    name: string;
+  };
+  const listingRow = listing.data as ListingRow;
+  let resolvedLogoUrl: string | null = null;
+  if (!listingRow.logo_url || listingRow.logo_url.trim() === "") {
+    try {
+      const resolved = await resolveLogo({
+        homepage: listingRow.demo_url || listingRow.source_url || null,
+        repoUrl: listingRow.repo_url || null,
+        name: listingRow.name,
+      });
+      resolvedLogoUrl = resolved.url;
+    } catch (err) {
+      console.warn("[approve] resolveLogo failed:", err);
+    }
+  }
+
   const upd = await sb
     .from("connector_listings")
     .update({
@@ -176,6 +205,7 @@ async function handleAdminTransition(
       review_notes: notes ?? null,
       stripe_product_id: stripeProductId,
       stripe_price_id: stripePriceId,
+      ...(resolvedLogoUrl ? { logo_url: resolvedLogoUrl } : {}),
     })
     .eq("id", listingId);
   if (upd.error) return NextResponse.json({ error: upd.error.message }, { status: 500 });

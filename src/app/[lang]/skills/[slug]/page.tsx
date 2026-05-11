@@ -85,7 +85,7 @@ export default async function SkillDetail({ params }: Props) {
 
         <div className="flex items-start gap-5">
           <div className="h-16 w-16 rounded-2xl bg-[var(--color-panel-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden shrink-0">
-            <SkillLogo src={skill.logo} size={40} className="h-10 w-10" />
+            <SkillLogo src={skill.logo} size={40} className="h-10 w-10" fallbackText={skill.name} />
           </div>
           <div className="flex-1 min-w-0">
             <h1 className="text-[32px] md:text-[40px] font-semibold tracking-tight leading-[1.05]">
