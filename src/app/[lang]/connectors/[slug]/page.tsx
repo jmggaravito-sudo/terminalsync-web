@@ -52,6 +52,19 @@ export default async function ConnectorDetail({ params }: Props) {
       lang === "es" ? `Empezar con ${doc.name}` : `Get started with ${doc.name}`,
     ctaFree:
       lang === "es" ? `Abrir ${doc.name}` : `Open ${doc.name}`,
+    ctaInstall:
+      lang === "es" ? "Agregar a Terminal Sync" : "Add to Terminal Sync",
+    ctaInstallSub:
+      lang === "es"
+        ? "Abrimos la app y lo dejamos listo en Claude Code y tus otras computadoras."
+        : "We open the app and set it up in Claude Code (and your other Macs).",
+    ctaSecondary:
+      lang === "es" ? `Ver ${doc.name}` : `View ${doc.name}`,
+    noApp:
+      lang === "es"
+        ? "¿No tenés Terminal Sync todavía?"
+        : "Don't have Terminal Sync yet?",
+    download: lang === "es" ? "Descargar" : "Download",
     affiliateNote:
       lang === "es"
         ? "Si te registrás por este link nos ayudás a mantener Terminal Sync sin cobrar más."
@@ -68,6 +81,12 @@ export default async function ConnectorDetail({ params }: Props) {
         ? "Configurá el conector una vez en una máquina. Terminal Sync sincroniza tu claude_desktop_config.json cifrado en tu Drive, así que en cualquier otra máquina donde abras Claude Code, el conector ya está listo."
         : "Set up the connector once on one machine. Terminal Sync keeps your claude_desktop_config.json encrypted in your Drive, so on any other machine where you open Claude Code, the connector is already there.",
   };
+
+  // Deep link into the desktop app. The app registers the `terminalsync://`
+  // scheme and routes `/install/connector?slug=...` to its install modal.
+  const deepLink = `terminalsync://install/connector?slug=${encodeURIComponent(
+    doc.slug,
+  )}`;
 
   // Schema.org SoftwareApplication for rich snippets in Google. Affiliate-
   // only listings still price as 0 (the user pays the upstream SaaS, not us).
@@ -144,7 +163,50 @@ export default async function ConnectorDetail({ params }: Props) {
                 {t.soonBody}
               </p>
             </div>
+          ) : doc.hasManifest ? (
+            // Installable connector — primary action is the deep link into
+            // the desktop app. SaaS link stays as a low-key secondary so
+            // affiliate revenue still flows when relevant.
+            <>
+              <a
+                href={deepLink}
+                className="inline-flex items-center gap-2 rounded-xl bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white px-5 py-3 text-[14px] font-semibold transition-colors"
+              >
+                {t.ctaInstall}
+              </a>
+              <p className="mt-2 text-[12px] text-[var(--color-fg-muted)]">
+                {t.ctaInstallSub}
+              </p>
+              {doc.ctaUrl && (
+                <div className="mt-4 flex items-center gap-4 text-[12.5px]">
+                  <a
+                    href={doc.ctaUrl}
+                    target="_blank"
+                    rel={doc.affiliate ? "sponsored noopener" : "noopener"}
+                    className="text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] transition-colors underline underline-offset-2"
+                  >
+                    {t.ctaSecondary} →
+                  </a>
+                </div>
+              )}
+              {doc.affiliate && doc.ctaUrl && (
+                <p className="mt-3 text-[11.5px] text-[var(--color-fg-dim)]">
+                  ↳ {t.affiliateNote}
+                </p>
+              )}
+              <div className="mt-5 pt-4 border-t border-[var(--color-border)] flex items-center gap-2 text-[11.5px] text-[var(--color-fg-dim)]">
+                <span>{t.noApp}</span>
+                <Link
+                  href={`/${lang}`}
+                  className="text-[var(--color-accent)] hover:underline"
+                >
+                  {t.download} →
+                </Link>
+              </div>
+            </>
           ) : (
+            // Affiliate-only connector — no MCP server to install. Keep the
+            // old behavior: single external CTA.
             <>
               <a
                 href={doc.ctaUrl}

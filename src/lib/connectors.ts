@@ -40,6 +40,11 @@ export interface ConnectorMeta {
   affiliate: boolean;
   /** Short one-line tagline for the index card. */
   tagline: string;
+  /** True when the connector ships an MCP manifest (installable into a
+   *  client config). False for affiliate-only listings whose only action
+   *  is opening the upstream SaaS. Drives whether we show the "Add to
+   *  Terminal Sync" deep-link CTA. */
+  hasManifest: boolean;
   /** Where this connector comes from. Drives the "By @publisher" badge. */
   source?: "first-party" | "marketplace";
   /** Marketplace-only fields. */
@@ -166,6 +171,7 @@ async function getMarketplaceConnector(
     ctaUrl: cta,
     affiliate: false,
     tagline: row.tagline,
+    hasManifest: false,
     source: "marketplace",
     pricingType: row.pricing_type as "free" | "one_time",
     priceCents: row.price_cents,
@@ -192,6 +198,14 @@ async function renderMarkdown(src: string): Promise<string> {
 function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMeta {
   const get = (k: string, fallback = ""): string =>
     (typeof data[k] === "string" ? (data[k] as string) : fallback).trim();
+  const manifest = data.manifest as
+    | { mcpServers?: Record<string, unknown> }
+    | undefined;
+  const hasManifest =
+    !!manifest &&
+    typeof manifest === "object" &&
+    !!manifest.mcpServers &&
+    Object.keys(manifest.mcpServers).length > 0;
   return {
     slug,
     name: get("name", slug),
@@ -205,6 +219,7 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMe
     ctaUrl: get("ctaUrl"),
     affiliate: data.affiliate === true,
     tagline: get("tagline"),
+    hasManifest,
   };
 }
 
@@ -270,6 +285,10 @@ export async function listMarketplaceConnectors(): Promise<ConnectorMeta[]> {
       ctaUrl: row.cta_url ?? row.repo_url ?? row.source_url ?? "",
       affiliate: false,
       tagline: row.tagline,
+      // Marketplace listings (Supabase rows) don't ship a manifest in this
+      // shape today — they're treated as external CTAs. When the marketplace
+      // gains MCP manifests we'll flip this per-row.
+      hasManifest: false,
       source: "marketplace",
       pricingType: row.pricing_type as "free" | "one_time",
       priceCents: row.price_cents,
