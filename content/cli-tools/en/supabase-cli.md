@@ -20,7 +20,7 @@ status: available
 
 - **Project workflow.** Keep install, login, local stack and migration commands attached to the TerminalSync project, so a second Mac has the same runbook even if you still authenticate Supabase locally.
 - **Memory across sessions.** Your AI remembers which Supabase project you're working on, the latest migration, and your auth/storage schema — so "add an RLS policy" lands in the right file.
-- **MCP bridge.** Pair with the Supabase MCP connector to let your AI query your live database directly through the same auth.
+- **MCP bridge.** Pair with the Supabase MCP connector to let your AI query your live database directly through the connector's own Supabase auth.
 
 ## Typical commands
 

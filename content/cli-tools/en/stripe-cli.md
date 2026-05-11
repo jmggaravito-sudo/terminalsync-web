@@ -20,7 +20,7 @@ status: available
 
 - **Workflow guide.** Install, login and webhook commands live next to the terminal where your AI is working, so a new machine has the right Stripe runbook immediately.
 - **Webhook secret in env vault.** Put the `whsec_…` value from `stripe listen` in a project `.env` file and TerminalSync can keep that file encrypted in the folder vault.
-- **MCP bridge.** Pair with the Stripe MCP connector and Claude can read customers, refund charges and query subscriptions through the same Stripe auth.
+- **MCP bridge.** Pair with the Stripe MCP connector and Claude can read customers, refund charges and query subscriptions through the connector's own Stripe auth.
 
 ## Typical commands
 

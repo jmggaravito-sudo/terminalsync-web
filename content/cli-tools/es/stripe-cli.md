@@ -20,7 +20,7 @@ status: available
 
 - **Guía de workflow.** Instalación, login y comandos de webhooks quedan al lado de la terminal donde trabaja tu IA, así una Mac nueva tiene el runbook correcto.
 - **Webhook secret en env vault.** Guardá el `whsec_…` que imprime `stripe listen` en un `.env` del proyecto y TerminalSync puede mantener ese archivo cifrado en el vault de la carpeta.
-- **Puente MCP.** Combinado con el connector Stripe MCP, Claude puede leer customers, reembolsar charges y consultar subscripciones usando la misma auth.
+- **Puente MCP.** Combinado con el connector Stripe MCP, Claude puede leer customers, reembolsar charges y consultar subscripciones usando la auth propia del connector.
 
 ## Comandos típicos
 
