@@ -18,7 +18,7 @@ status: available
 
 ## What TerminalSync adds
 
-- **Workers runbook.** Install, login, local dev, deploy, tail and D1 commands stay attached to the project terminal.
+- **CLI Auth Sync.** If Wrangler stores auth/config in `~/.wrangler/config/default.toml` or `~/.config/.wrangler/config/default.toml`, TerminalSync can encrypt and restore it.
 - **Secrets in env vault.** Keep recoverable app secrets in a project `.env` file and TerminalSync can encrypt that file into the folder vault. Cloudflare-bound secrets still live in Cloudflare after `wrangler secret put`.
 - **Session memory.** Your AI remembers which Worker project, account and environment you're targeting — so "deploy this to staging" doesn't ask for confirmation it already has.
 

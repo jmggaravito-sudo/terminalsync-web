@@ -18,7 +18,7 @@ status: available
 
 ## Qué le suma TerminalSync
 
-- **Workflow de proyecto.** Instalación, login, stack local y comandos de migración quedan pegados al proyecto TerminalSync, así una segunda Mac tiene el mismo runbook aunque todavía autentiques Supabase localmente.
+- **CLI Auth Sync.** Cuando Supabase guarda auth en `~/.supabase/access-token` o `~/.config/supabase/*`, TerminalSync puede cifrar y restaurar esos archivos en otra Mac.
 - **Memoria de sesión.** Tu IA recuerda en qué proyecto Supabase estás, cuál fue la última migración, y tu schema de auth/storage — así cuando decís "agregale una RLS" cae en el archivo correcto.
 - **Puente MCP.** Combinado con el connector Supabase MCP, tu IA puede consultar tu base de datos viva usando la auth propia del connector.
 

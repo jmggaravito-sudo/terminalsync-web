@@ -18,7 +18,7 @@ status: available
 
 ## What TerminalSync adds
 
-- **Workflow guide.** Install, login and webhook commands live next to the terminal where your AI is working, so a new machine has the right Stripe runbook immediately.
+- **CLI Auth Sync.** If Stripe stores `~/.config/stripe/config.toml` on your Mac, TerminalSync can encrypt and copy that auth/config file to your other machines.
 - **Webhook secret in env vault.** Put the `whsec_…` value from `stripe listen` in a project `.env` file and TerminalSync can keep that file encrypted in the folder vault.
 - **MCP bridge.** Pair with the Stripe MCP connector and Claude can read customers, refund charges and query subscriptions through the connector's own Stripe auth.
 
