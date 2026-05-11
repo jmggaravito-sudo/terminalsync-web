@@ -10,7 +10,7 @@ export const runtime = "nodejs";
  *  DISCOVERY_INGEST_KEY env var. NOT a user-facing endpoint.
  *
  *  Body shape:
- *    { type: "connectors" | "skills", items: [{...}] }
+ *    { type: "connectors" | "skills" | "cli", items: [{...}] }
  *
  *  Behavior:
  *    - Upserts on (repo_url) and falls back to (product_slug) when repo
@@ -18,6 +18,10 @@ export const runtime = "nodejs";
  *      pre-dedups already, this is just a safety net so a retry of the
  *      same scrape doesn't 500.
  *    - Validates known fields; ignores unknown ones.
+ *    - For type="cli", `binary` and `install_command` are REQUIRED.
+ *      They're the signals that distinguish a CLI tool from a connector
+ *      or skill — without them we can't tell users how to install it,
+ *      so the row would be useless in auto-promote.
  *    - Returns counts of inserted vs skipped items.
  */
 export async function POST(req: Request) {
@@ -44,16 +48,32 @@ export async function POST(req: Request) {
   }
 
   const type = body.type;
-  if (type !== "connectors" && type !== "skills") {
-    return NextResponse.json({ error: "type must be 'connectors' or 'skills'" }, { status: 400 });
+  if (type !== "connectors" && type !== "skills" && type !== "cli") {
+    return NextResponse.json(
+      { error: "type must be 'connectors', 'skills', or 'cli'" },
+      { status: 400 },
+    );
   }
   if (!Array.isArray(body.items)) {
     return NextResponse.json({ error: "items must be an array" }, { status: 400 });
   }
 
-  const table = type === "connectors" ? "discovery_connectors" : "discovery_skills";
+  const table =
+    type === "connectors"
+      ? "discovery_connectors"
+      : type === "skills"
+        ? "discovery_skills"
+        : "discovery_cli_tools";
   const allowedCategoriesConn = new Set(["productivity", "database", "automation", "storage", "messaging", "dev"]);
   const allowedCategoriesSkill = new Set(["marketing", "dev", "productivity", "research", "design", "finance"]);
+  const allowedCategoriesCli = new Set([
+    "dev",
+    "deploy",
+    "database",
+    "payments",
+    "infra",
+    "productivity",
+  ]);
   const allowedPricing = new Set(["free", "paid", "freemium", "unknown"]);
 
   const rows: Record<string, unknown>[] = [];
@@ -71,7 +91,12 @@ export async function POST(req: Request) {
     let category: string | null = null;
     if (typeof raw.marketplace_category === "string") {
       const cat = raw.marketplace_category.toLowerCase();
-      const allowed = type === "connectors" ? allowedCategoriesConn : allowedCategoriesSkill;
+      const allowed =
+        type === "connectors"
+          ? allowedCategoriesConn
+          : type === "skills"
+            ? allowedCategoriesSkill
+            : allowedCategoriesCli;
       if (allowed.has(cat)) category = cat;
     }
 
@@ -99,6 +124,30 @@ export async function POST(req: Request) {
       row.vendors = Array.isArray(raw.vendors)
         ? (raw.vendors as unknown[]).filter((v) => typeof v === "string")
         : [];
+    }
+    if (type === "cli") {
+      // CLI rows MUST carry a binary + install command. Without them we
+      // can't tell users how to install the tool, which means the row
+      // can't auto-promote and isn't worth storing.
+      const binary =
+        typeof raw.binary === "string" ? raw.binary.trim() : "";
+      const installCommand =
+        typeof raw.install_command === "string"
+          ? raw.install_command.trim()
+          : "";
+      if (!binary || !installCommand) continue;
+      row.binary = binary.slice(0, 80);
+      row.install_command = installCommand.slice(0, 300);
+      row.auth_command =
+        typeof raw.auth_command === "string"
+          ? raw.auth_command.trim().slice(0, 300) || null
+          : null;
+      row.vendor =
+        typeof raw.vendor === "string"
+          ? raw.vendor.trim().slice(0, 120) || null
+          : null;
+      row.homepage =
+        typeof raw.homepage === "string" ? raw.homepage : null;
     }
     rows.push(row);
   }
