@@ -13,6 +13,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { EmailTemplatesPanel } from "./EmailTemplatesPanel";
+import { AutoRepairPanel } from "./AutoRepairPanel";
 
 interface OpsWorkflow {
   id: string;
@@ -146,7 +147,9 @@ export function OpsDashboard({ lang }: { lang: string }) {
         />
       </section>
 
-      {/* Project menu — horizontal tabs. TerminalSync first per JM. */}
+      {/* Project menu — horizontal tabs. TerminalSync first, Auto-
+          Repair is its own tab at the end so JM can jump straight to
+          pending Claude-proposed fixes. */}
       <nav className="flex flex-wrap gap-2 border-b border-[var(--color-border)] pb-1">
         {orderedProjects.map((proj) => {
           const pStats = data.projects.find((p) => p.name === proj);
@@ -183,10 +186,27 @@ export function OpsDashboard({ lang }: { lang: string }) {
             </button>
           );
         })}
+        <button
+          onClick={() => setSelectedProject("_repair")}
+          className={`group inline-flex items-center gap-2 rounded-t-xl rounded-b-none border border-b-0 px-4 py-2.5 text-[13px] font-semibold transition-all ${
+            selectedProject === "_repair"
+              ? "bg-[var(--color-panel)] border-[var(--color-border)] text-[var(--color-fg-strong)] -mb-px relative z-10"
+              : "bg-[var(--color-panel-2)]/40 border-transparent text-[var(--color-fg-muted)] hover:bg-[var(--color-panel-2)]/70 hover:text-[var(--color-fg)]"
+          }`}
+        >
+          <span className="text-[16px]">🛠️</span>
+          <span>{isEs ? "Auto-Reparación" : "Auto-Repair"}</span>
+        </button>
       </nav>
 
+      {/* Auto-Repair tab — separate render path. Falls through to the
+          per-project workflow listing for every other tab. */}
+      {selectedProject === "_repair" ? (
+        <AutoRepairPanel isEs={isEs} n8nUrl={data.n8nUrl} />
+      ) : null}
+
       {/* Selected project's workflows */}
-      {(() => {
+      {selectedProject !== "_repair" && (() => {
         const arr = grouped.get(selectedProject) ?? [];
         const pStats = data.projects.find((p) => p.name === selectedProject);
         if (arr.length === 0) {
@@ -239,6 +259,7 @@ export function OpsDashboard({ lang }: { lang: string }) {
     </div>
   );
 }
+
 
 function BigStat({
   label,
