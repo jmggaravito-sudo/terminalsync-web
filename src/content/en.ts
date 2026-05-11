@@ -677,25 +677,25 @@ const en: Dict = {
     tagline: "Sales & support · Online",
     close: "Close",
     greeting:
-      "Hi! I'm your TerminalSync assistant. Can I help you set up Claude Code or answer a technical question?",
+      "Hi! I'm your TerminalSync assistant. I can help with setup, plans, connectors, skills, memory, security, or multi-Mac issues.",
     placeholder: "Type your message…",
     send: "Send",
     you: "You",
     typing: "typing…",
     quickReplies: [
-      { id: "install", label: "How do I install Claude Code?" },
-      { id: "pricing", label: "Pricing" },
+      { id: "install", label: "How do I start?" },
+      { id: "pricing", label: "Which plan fits me?" },
       { id: "security", label: "How secure is it?" },
     ],
     replies: {
       install:
-        "Super easy! Download TerminalSync, in the dashboard you'll see the \"AI Power-Ups\" card → click \"Install Claude Code\" → paste your Anthropic API key and you're done. Takes ~30 seconds and we set up everything for you.",
+        "Download TerminalSync, connect your cloud, create a terminal and choose Claude, Gemini or Codex. If you are not sure which one to use, describe the first task and TerminalSync recommends the best AI for that work.",
       pricing:
-        "3 plans: Starter ($0 free, 1 terminal), Pro ($19/mo with Claude Code Power-Ups + 5 terminals) and Dev ($39/mo with Git-Native Sync, .env Vault and 20 terminals). You can try Pro or Dev free for 7 days — cancel before day 7 and you're not charged. Want the download link?",
+        "Free is for trying it with 1 terminal. Pro ($19/mo) is for serious work with 5 terminals, persistent memory across Claude/Gemini/Codex and mobile access. Dev ($39/mo) adds 20 terminals, secrets vault, Git-native sync and auto setup. Paid plans include a 7-day free trial.",
       security:
-        "Your code and API key are encrypted with AES-256 on your computer BEFORE uploading to Drive. Zero-Knowledge: neither we nor Google can read your content. You hold the master key in your local keychain.",
+        "Your files and metadata are encrypted locally with AES-256 before upload to your cloud. TerminalSync is designed as zero-knowledge: we do not read your code or secrets. Your key lives on your Mac/Keychain.",
       fallback:
-        "Thanks for your message. A human on the team will reach out shortly. In the meantime, want to check our FAQ or download the app?",
+        "I can help with setup, multi-Mac sync, connectors, skills, memory, plans or security. If this looks like billing, account access or data-loss risk, I will connect you with a human.",
     },
   },
   video: {

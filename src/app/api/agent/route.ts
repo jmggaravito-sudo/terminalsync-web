@@ -9,6 +9,7 @@
  * The actual brain (Claude + memory + escalation routing) lives in n8n.
  */
 import { NextRequest, NextResponse } from "next/server";
+import { SUPPORT_AGENT_KNOWLEDGE } from "@/lib/supportKnowledge";
 
 const N8N_CHAT_URL =
   process.env.N8N_AGENT_WEBHOOK_URL ||
@@ -45,6 +46,7 @@ export async function POST(req: NextRequest) {
     context: {
       page: body.page || "/",
       user_plan: body.userPlan ?? null,
+      product_knowledge: SUPPORT_AGENT_KNOWLEDGE,
     },
   };
 

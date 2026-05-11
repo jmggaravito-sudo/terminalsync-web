@@ -677,25 +677,25 @@ const es: Dict = {
     tagline: "Ventas y soporte · En línea",
     close: "Cerrar",
     greeting:
-      "¡Hola! Soy tu asistente de TerminalSync. ¿Te ayudo a configurar tu Claude Code o tienes alguna duda técnica?",
+      "¡Hola! Soy tu asistente de TerminalSync. Te puedo ayudar con configuración, planes, conectores, skills, memoria, seguridad o problemas entre Macs.",
     placeholder: "Escribe tu mensaje…",
     send: "Enviar",
     you: "Tú",
     typing: "escribiendo…",
     quickReplies: [
-      { id: "install", label: "¿Cómo instalo Claude Code?" },
-      { id: "pricing", label: "Precios" },
+      { id: "install", label: "¿Cómo empiezo?" },
+      { id: "pricing", label: "¿Qué plan me conviene?" },
       { id: "security", label: "¿Qué tan seguro es?" },
     ],
     replies: {
       install:
-        "¡Súper fácil! Descarga TerminalSync, en el dashboard verás la tarjeta \"AI Power-Ups\" → clic en \"Instalar Claude Code\" → pegas tu API key de Anthropic y listo. Toma ~30 segundos y nosotros configuramos todo por ti.",
+        "Descargá TerminalSync, conectá tu nube, creá una terminal y elegí Claude, Gemini o Codex. Si no sabés cuál usar, describí la primera tarea y TerminalSync te recomienda la IA más conveniente.",
       pricing:
-        "Tenemos 3 planes: Starter ($0 gratis, 1 terminal), Pro ($19/mes con Power-Ups de Claude Code + 5 terminales) y Dev ($39/mes con Git-Native Sync, .env Vault y 20 terminales). Podés probar Pro o Dev gratis 7 días — cancelás antes del día 7 y no te cobramos. ¿Querés el link de descarga?",
+        "Free sirve para probar con 1 terminal. Pro ($19/mes) es para trabajar en serio con 5 terminales, memoria persistente entre Claude/Gemini/Codex y acceso móvil. Dev ($39/mes) suma 20 terminales, vault de secretos, Git-native sync y setup automático. Tenés 7 días gratis en planes pagos.",
       security:
-        "Tu código y tu API key se cifran con AES-256 en tu computadora ANTES de subir a Drive. Usamos Zero-Knowledge: ni nosotros ni Google podemos leer tu contenido. La llave maestra la tienes tú en tu keychain local.",
+        "Tus archivos y metadatos se cifran localmente con AES-256 antes de subir a tu nube. TerminalSync está diseñado como zero-knowledge: nosotros no leemos tu código ni tus secretos. Tu llave vive en tu Mac/Keychain.",
       fallback:
-        "Gracias por tu mensaje. Un humano del equipo te contactará pronto. Mientras tanto, ¿quieres ver nuestras preguntas frecuentes o descargar la app?",
+        "Puedo ayudarte con configuración, sync entre Macs, conectores, skills, memoria, planes o seguridad. Si esto parece un problema de cuenta, cobro o pérdida de datos, te conecto con soporte humano.",
     },
   },
   video: {
