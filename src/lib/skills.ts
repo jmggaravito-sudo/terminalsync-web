@@ -42,6 +42,8 @@ export interface SkillMeta {
 export interface SkillDoc extends SkillMeta {
   /** Rendered HTML for the body (Cuándo usar / Cómo usar / Mejor para). */
   bodyHtml: string;
+  /** Original Markdown, including frontmatter, used for desktop install payloads. */
+  rawMarkdown: string;
 }
 
 const CONTENT_DIR = path.join(process.cwd(), "content", "skills");
@@ -81,7 +83,7 @@ export async function getSkill(
   const raw = fs.readFileSync(file, "utf8");
   const { data, content } = matter(raw);
   const bodyHtml = String(await remark().use(html).process(content));
-  return { ...normalizeMeta(slug, data), bodyHtml };
+  return { ...normalizeMeta(slug, data), bodyHtml, rawMarkdown: raw };
 }
 
 export async function listSkillSlugs(): Promise<string[]> {

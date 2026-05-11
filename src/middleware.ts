@@ -6,6 +6,20 @@ import { defaultLocale, locales } from "@/content";
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Google OAuth verification asks for stable, public privacy/terms URLs.
+  // The canonical legal pages live under /:lang/legal/*, but these aliases
+  // keep /privacy and /terms valid for external compliance consoles.
+  if (pathname === "/privacy" || pathname === "/privacy/") {
+    const url = req.nextUrl.clone();
+    url.pathname = "/en/legal/privacy";
+    return NextResponse.redirect(url, 308);
+  }
+  if (pathname === "/terms" || pathname === "/terms/") {
+    const url = req.nextUrl.clone();
+    url.pathname = "/en/legal/terms";
+    return NextResponse.redirect(url, 308);
+  }
+
   // Kill switch — when NEW_SIGNUPS_DISABLED=true, send first-time visitors to
   // /at-capacity instead of the login form. Existing users (any cookie that
   // looks like a Supabase auth token) sail through unaffected. Toggle via env

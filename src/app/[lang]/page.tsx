@@ -6,6 +6,7 @@ import { currencyForCountry } from "@/lib/geoCurrency";
 import { Hero } from "@/components/landing/Hero";
 import { MemoryPersistent } from "@/components/landing/MemoryPersistent";
 import { MultiAI } from "@/components/landing/MultiAI";
+import { CrossAiVenn } from "@/components/landing/CrossAiVenn";
 import { Demos } from "@/components/landing/Demos";
 import { Benefits } from "@/components/landing/Benefits";
 import { ToolBreakdown } from "@/components/landing/ToolBreakdown";
@@ -69,6 +70,7 @@ export default async function Landing({ params }: Props) {
         currencyHint={currencyHint ?? undefined}
       />
       <MultiAI dict={d} />
+      <CrossAiVenn dict={d} />
       <MemoryPersistent dict={d} />
       <Benefits dict={d} />
       <ToolBreakdown dict={d} />

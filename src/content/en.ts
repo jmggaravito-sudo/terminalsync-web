@@ -5,7 +5,7 @@ const en: Dict = {
   meta: {
     title: "TerminalSync — Memory, privacy and mobility for your AI",
     description:
-      "Your AI agent (Claude/Codex) keeps running even if the internet drops or you switch Macs. AES-256 zero-knowledge encryption. Access from any device.",
+      "Your AI agents (Claude, Gemini and Codex) keep running even if the internet drops or you switch Macs. AES-256 zero-knowledge encryption. Access from any device.",
   },
   nav: {
     features: "Features",
@@ -27,7 +27,7 @@ const en: Dict = {
     trustLine: "No setup · No context loss · Works across any machine · AES-256 zero-knowledge encryption",
     nextUp: {
       eyebrow: "Latest",
-      body: "Anywhere Access via Cloudflare Tunnel — open your session from your phone with zero install. Unified multi-AI workflow: Claude and Codex sharing the same context. Per-terminal secrets vault.",
+      body: "Anywhere Access via Cloudflare Tunnel — open your session from your phone with zero install. Unified multi-AI workflow: Claude, Gemini and Codex sharing the same context. Per-terminal secrets vault.",
     },
     mockup: {
       appName: "Terminal Sync",
@@ -49,7 +49,7 @@ const en: Dict = {
       context: {
         kicker: "Demo · Persistence",
         title: "Close everything. Your agent keeps working alone.",
-        body: "Internet drops, your Mac restarts, you accidentally close the app — your Claude or Codex doesn't stop. When you come back, the conversation is exactly where you left it.",
+        body: "Internet drops, your Mac restarts, you accidentally close the app — your Claude, Gemini or Codex doesn't stop. When you come back, the conversation is exactly where you left it.",
       },
       install: {
         kicker: "Demo · Any device",
@@ -65,9 +65,9 @@ const en: Dict = {
   },
   memory: {
     eyebrow: "Persistent memory",
-    badge: "Included",
+    badge: "Pro",
     title: "Your AI learns you. And it never forgets.",
-    subtitle: "Every session makes it more useful.",
+    subtitle: "Every session makes it more useful. Available on Pro and Dev plans.",
     recallsLead: "It remembers:",
     recalls: [
       "how you work",
@@ -112,9 +112,49 @@ const en: Dict = {
       ],
     },
     cta: {
-      heading: "Try persistent memory today",
-      body: "Active by default from your first session. No extra install, no API keys, no server of ours in the middle.",
-      button: "Download free",
+      heading: "Unlock it with Pro",
+      body: "Memory shared across Claude, Gemini and Codex — local, encrypted, portable across your Macs. Starts at $19/mo with a 7-day free trial.",
+      button: "See plans",
+    },
+  },
+  crossAi: {
+    eyebrow: "One layer · three agents",
+    title: "What TerminalSync makes Claude, Codex and Gemini share",
+    subtitle:
+      "Switch agents without losing context. Anything in the center of the diagram is alive in all three at once.",
+    diagram: {
+      claude: "Claude",
+      codex: "Codex",
+      gemini: "Gemini",
+      intersection: "TerminalSync",
+      intersectionHint: "All 3 share ↓",
+    },
+    shared: {
+      label: "Available in all 3 at once",
+      items: [
+        "Real persistence (close the app, come back where you left off)",
+        "Persistent project memory",
+        "MCP connectors (Postgres, GitHub, Supabase, Slack…)",
+        "Context sync (CLAUDE.md / AGENTS.md / GEMINI.md)",
+        "Skills and custom commands",
+        "Session that survives across agents",
+        ".env vault and project secrets",
+        "Token savings (no re-explaining your stack)",
+      ],
+    },
+    unique: {
+      claude: {
+        title: "Claude only",
+        items: ["Sonnet & Opus", "Plugin Marketplace", "Native Skills"],
+      },
+      codex: {
+        title: "Codex only",
+        items: ["GPT-5", "AGENTS.md format", "OpenAI tools"],
+      },
+      gemini: {
+        title: "Gemini only",
+        items: ["1M token context", "Multimodal (img / video)", "Google Cloud"],
+      },
     },
   },
   multiAI: {
@@ -172,7 +212,7 @@ const en: Dict = {
     items: {
       uninterrupted: {
         title: "Uninterrupted Work",
-        body: "Your work is bulletproof: if the internet drops, your agent (Claude/Codex) does NOT stop. The terminal keeps running in the background and we notify you the moment connectivity returns or the task finishes.",
+        body: "Your work is bulletproof: if the internet drops, your agent (Claude, Gemini or Codex) does NOT stop. The terminal keeps running in the background and we notify you the moment connectivity returns or the task finishes.",
       },
       anywhere: {
         title: "Anywhere Access",
@@ -225,7 +265,7 @@ const en: Dict = {
           "Full Codex configuration",
           "Global state of your sessions",
           "Skills and plugins auto-reinstalled",
-          "AI picker — pick Claude or Codex per terminal",
+          "AI picker — pick Claude, Gemini or Codex per terminal",
           "Conversation alive when you reopen (via session resurrection)",
         ],
         upcoming: [],
@@ -278,7 +318,7 @@ const en: Dict = {
       },
       {
         q: "But doesn't Claude Desktop already sync between Macs?",
-        a: "Anthropic syncs cloud features (Projects, Memory web, Styles, Workflows, conversations). What it doesn't sync is the local stuff: your custom MCP servers (Notion, GitHub), your skills, your installed plugins, your Cowork sessions. That's what we cover.",
+        a: "Anthropic syncs cloud features (Projects, Memory web, Styles, Workflows, conversations). What it doesn't sync is the local stuff: your custom MCP servers (Notion, GitHub), your skills, your installed plugins, or shared memory with Gemini and Codex. That's what we cover.",
       },
       {
         q: "Do my files end up on your servers?",
@@ -297,16 +337,16 @@ const en: Dict = {
         a: "The encryption and sync engine will be auditable. The client app is proprietary for now, but the security core is published so anyone can review it.",
       },
       {
-        q: "Does it work with any AI or just Claude and Codex?",
-        a: "Today we have it polished for Claude (Code + Desktop) and Codex. The engine is tool-agnostic — we add others (Cursor, Cline, Aider, etc.) based on real demand. If you want us to support something specific, write us and we'll add it to the public roadmap.",
+        q: "Does it work with any AI or just Claude, Gemini and Codex?",
+        a: "Today we have it polished for Claude Code, Gemini CLI and Codex. The engine is tool-agnostic — we add others (Cursor, Cline, Aider, etc.) based on real demand. If you want us to support something specific, write us and we'll add it to the public roadmap.",
       },
       {
         q: "How is this different from a cloud IDE like Codespaces or Gitpod?",
         a: "You're not moving to a new environment — YOUR environment follows you. Your Mac, your files, your AI tools configured as you already had them. No compute rental, no per-minute billing, no lock-in. And everything is AES-256 encrypted in your own cloud.",
       },
       {
-        q: "How is this different from using Claude or Codex on their own?",
-        a: "Claude and Codex on their own don't talk to each other: each has its own context, files, memory. TerminalSync connects them in a single flow. You ask Claude to analyze something and Codex to execute it, without re-explaining anything — they share the same project and the same memory.",
+        q: "How is this different from using Claude, Gemini or Codex on their own?",
+        a: "Claude, Gemini and Codex on their own don't talk to each other: each has its own context, files and memory. TerminalSync connects them in a single flow. You ask Claude to analyze, Gemini to read long context and Codex to execute, without re-explaining anything — they share the same project and the same memory.",
       },
       {
         q: "Do I need to configure anything?",
@@ -342,7 +382,7 @@ const en: Dict = {
       offlineLocal: "Works offline / local-first",
       aes256: "AES-256 zero-knowledge encryption",
       secretsVault: "Built-in secrets vault",
-      internetImmunity: "Persistence even if the internet drops",
+      internetImmunity: "Real persistence: close app, sleep Mac, or lose internet",
       aiConversationSync: "AI conversation sync between Macs",
       replyInjection: "Reply-injection from your phone",
       noVendorLockIn: "No vendor lock-in (your files in your cloud)",
@@ -416,7 +456,7 @@ const en: Dict = {
       secretsVault:
         "Built-in vault for API keys, tokens, and credentials. Available to your terminals as environment variables — never written to plain files.",
       internetImmunity:
-        "If your internet drops while an agent is running, it keeps working locally. When you're back online, it syncs on its own.",
+        "Close the app, sleep your Mac, or lose internet — when you come back, your terminal is exactly where you left it. The agent keeps working locally in the meantime and syncs on its own when the signal returns.",
       aiConversationSync:
         "Your agent conversations sync across your Macs and devices. Start on the MacBook, continue on the Mac mini without pasting context.",
       replyInjection:
@@ -539,9 +579,10 @@ const en: Dict = {
         yearlyEquivalent: "$15.83/mo · billed annually",
         features: [
           "5 terminals with persistence + resurrection",
+          "Cross-AI persistent memory (Claude + Gemini + Codex)",
           "Anywhere Access (mobile + any browser)",
           "Notifications via Email / WhatsApp / Telegram",
-          "Full Claude and Codex sync across devices",
+          "Full Claude, Gemini and Codex sync across devices",
           "90-day history",
           "Up to 5 devices",
         ],
@@ -636,25 +677,25 @@ const en: Dict = {
     tagline: "Sales & support · Online",
     close: "Close",
     greeting:
-      "Hi! I'm your TerminalSync assistant. Can I help you set up Claude Code or answer a technical question?",
+      "Hi! I'm your TerminalSync assistant. I can help with setup, plans, connectors, skills, memory, security, or multi-Mac issues.",
     placeholder: "Type your message…",
     send: "Send",
     you: "You",
     typing: "typing…",
     quickReplies: [
-      { id: "install", label: "How do I install Claude Code?" },
-      { id: "pricing", label: "Pricing" },
+      { id: "install", label: "How do I start?" },
+      { id: "pricing", label: "Which plan fits me?" },
       { id: "security", label: "How secure is it?" },
     ],
     replies: {
       install:
-        "Super easy! Download TerminalSync, in the dashboard you'll see the \"AI Power-Ups\" card → click \"Install Claude Code\" → paste your Anthropic API key and you're done. Takes ~30 seconds and we set up everything for you.",
+        "Download TerminalSync, connect your cloud, create a terminal and choose Claude, Gemini or Codex. If you are not sure which one to use, describe the first task and TerminalSync recommends the best AI for that work.",
       pricing:
-        "3 plans: Starter ($0 free, 1 terminal), Pro ($19/mo with Claude Code Power-Ups + 5 terminals) and Dev ($39/mo with Git-Native Sync, .env Vault and 20 terminals). You can try Pro or Dev free for 7 days — cancel before day 7 and you're not charged. Want the download link?",
+        "Free is for trying it with 1 terminal. Pro ($19/mo) is for serious work with 5 terminals, persistent memory across Claude/Gemini/Codex and mobile access. Dev ($39/mo) adds 20 terminals, secrets vault, Git-native sync and auto setup. Paid plans include a 7-day free trial.",
       security:
-        "Your code and API key are encrypted with AES-256 on your computer BEFORE uploading to Drive. Zero-Knowledge: neither we nor Google can read your content. You hold the master key in your local keychain.",
+        "Your files and metadata are encrypted locally with AES-256 before upload to your cloud. TerminalSync is designed as zero-knowledge: we do not read your code or secrets. Your key lives on your Mac/Keychain.",
       fallback:
-        "Thanks for your message. A human on the team will reach out shortly. In the meantime, want to check our FAQ or download the app?",
+        "I can help with setup, multi-Mac sync, connectors, skills, memory, plans or security. If this looks like billing, account access or data-loss risk, I will connect you with a human.",
     },
   },
   video: {
