@@ -18,7 +18,7 @@ interface Props {
 // marketplace promo banner already pitches the app.
 function isMarketplaceContext(pathname: string | null): boolean {
   if (!pathname) return false;
-  return /^\/(es|en)\/(marketplace|admin|publishers|connectors|skills)(\/|$)/.test(pathname);
+  return /^\/(es|en)\/(marketplace|admin|publishers|connectors|skills|cli-tools)(\/|$)/.test(pathname);
 }
 
 export function Nav({ dict, lang }: Props) {
@@ -45,6 +45,9 @@ export function Nav({ dict, lang }: Props) {
             </Link>
             <Link href={`/${lang}/skills`} className="hover:text-[var(--color-fg-strong)] transition-colors">
               Skills
+            </Link>
+            <Link href={`/${lang}/cli-tools`} className="hover:text-[var(--color-fg-strong)] transition-colors">
+              CLI
             </Link>
           </nav>
         ) : (
