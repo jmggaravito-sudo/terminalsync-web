@@ -8,7 +8,7 @@ homepage: https://supabase.com/docs/guides/cli
 repo: https://github.com/supabase/cli
 category: database
 tagline: Local dev, migrations and edge functions for your Supabase project.
-description: Run a full local Supabase stack (Postgres + Auth + Storage + Studio), generate type-safe schemas, push migrations to production and ship edge functions — all without leaving the terminal. TerminalSync keeps your project link and access token synced across every machine.
+description: Run a full local Supabase stack (Postgres + Auth + Storage + Studio), generate type-safe schemas, push migrations to production and ship edge functions — all without leaving the terminal. TerminalSync keeps the Supabase workflow and project context close to the terminal your AI is using.
 status: available
 ---
 
@@ -18,7 +18,7 @@ status: available
 
 ## What TerminalSync adds
 
-- **Link Sync.** `~/.supabase/access-token` and your per-project `supabase/.temp/project-ref` are encrypted and synced. Open the project on any of your Macs and `supabase db push` just works.
+- **Project workflow.** Keep install, login, local stack and migration commands attached to the TerminalSync project, so a second Mac has the same runbook even if you still authenticate Supabase locally.
 - **Memory across sessions.** Your AI remembers which Supabase project you're working on, the latest migration, and your auth/storage schema — so "add an RLS policy" lands in the right file.
 - **MCP bridge.** Pair with the Supabase MCP connector to let your AI query your live database directly through the same auth.
 

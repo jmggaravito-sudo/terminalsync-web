@@ -8,7 +8,7 @@ homepage: https://stripe.com/docs/stripe-cli
 repo: https://github.com/stripe/stripe-cli
 category: payments
 tagline: Forwardeá webhooks, disparar eventos, ver logs — sin tocar el dashboard.
-description: El CLI oficial de Stripe. Forward de webhooks a localhost mientras programás, trigger de cualquier evento para testing, browse de charges y customers desde el shell, y tail de logs en vivo. TerminalSync sincroniza tu auth Stripe entre máquinas, así seguís debuggeando en la laptop que tengas a mano.
+description: El CLI oficial de Stripe. Forward de webhooks a localhost mientras programás, trigger de cualquier evento para testing, browse de charges y customers desde el shell, y tail de logs en vivo. TerminalSync deja el workflow de Stripe cerca de la terminal del proyecto y protege secretos `.env` con el vault cifrado.
 status: available
 ---
 
@@ -18,8 +18,8 @@ status: available
 
 ## Qué le suma TerminalSync
 
-- **Auth Sync.** Tu `~/.config/stripe/config.toml` (test + live mode) viaja cifrado entre máquinas. Login una vez, autenticado en todas.
-- **Webhook secret en env vault.** Cuando `stripe listen` imprime un `whsec_…`, TerminalSync te pregunta si lo guardás cifrado en el `.env` vault del folder, así sobrevive reboots sin filtrarse.
+- **Guía de workflow.** Instalación, login y comandos de webhooks quedan al lado de la terminal donde trabaja tu IA, así una Mac nueva tiene el runbook correcto.
+- **Webhook secret en env vault.** Guardá el `whsec_…` que imprime `stripe listen` en un `.env` del proyecto y TerminalSync puede mantener ese archivo cifrado en el vault de la carpeta.
 - **Puente MCP.** Combinado con el connector Stripe MCP, Claude puede leer customers, reembolsar charges y consultar subscripciones usando la misma auth.
 
 ## Comandos típicos

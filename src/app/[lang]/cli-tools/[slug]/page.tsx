@@ -160,18 +160,20 @@ export default async function CliToolDetail({ params }: Props) {
           {isEs ? (
             <>
               <strong className="text-[var(--color-fg-strong)]">¿Cómo funciona la sincronización?</strong>{" "}
-              Cuando instalás un CLI y hacés login, TerminalSync detecta el archivo
-              de auth (cada CLI usa su propio path estándar), lo cifra con tu master
-              key, y lo replica al resto de tus Macs. La próxima vez que abrís ese
-              folder en otra máquina, el CLI ya está autenticado.
+              Hoy TerminalSync sincroniza tu sesión de GitHub CLI con un flujo dedicado
+              de Auth Sync. Para los demás CLIs, esta página te da instalación,
+              login y comandos recomendados; los secretos de proyecto que terminen en
+              archivos <code>.env</code> pueden viajar por el vault cifrado de la carpeta.
+              La sincronización automática de auth por cada CLI es una capa futura.
             </>
           ) : (
             <>
               <strong className="text-[var(--color-fg-strong)]">How does sync work?</strong>{" "}
-              When you install a CLI and log in, TerminalSync detects the auth
-              file (each CLI uses its own standard path), encrypts it with your
-              master key, and replicates it to your other Macs. Next time you open
-              that folder on another machine, the CLI is already authed.
+              Today TerminalSync syncs GitHub CLI through a dedicated Auth Sync flow.
+              For the other CLIs, this page gives you install, login and recommended
+              commands; project secrets that land in <code>.env</code> files can travel
+              through the folder's encrypted vault. Automatic per-CLI auth sync is a
+              future layer.
             </>
           )}
         </div>

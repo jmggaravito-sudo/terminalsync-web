@@ -57,8 +57,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? "Marketplace · Terminal Sync"
     : "Marketplace · Terminal Sync";
   const description = isEs
-    ? "Connectors y Skills para Claude Code y Codex. Una sola instalación, sincronizada en todas tus máquinas."
-    : "Connectors and Skills for Claude Code and Codex. One install, synced across every machine.";
+    ? "Connectors, CLI Tools y Skills para Claude, Codex y Gemini. Una sola instalación, sincronizada en todas tus máquinas."
+    : "Connectors, CLI Tools and Skills for Claude, Codex and Gemini. One install, synced across every machine.";
   return {
     title,
     description,
@@ -95,8 +95,8 @@ export default async function MarketplaceHub({ params }: Props) {
         </h1>
         <p className="mt-4 text-[16px] text-[var(--color-fg-muted)] max-w-2xl leading-relaxed">
           {isEs
-            ? "Connectors te dan acceso a tus apps (Notion, Stripe). Skills le enseñan a tu IA tareas concretas (escribir ads, revisar código). CLI Tools como gh, vercel o supabase quedan autenticados en todas tus Macs. Instalá una vez, viajan con vos."
-            : "Connectors give your AI access to your apps (Notion, Stripe). Skills teach it concrete tasks (write ads, review code). CLI tools like gh, vercel, supabase stay authed across every Mac. Install once, they follow you."}
+            ? "Connectors te dan acceso a tus apps (Notion, Stripe). Skills le enseñan a tu IA tareas concretas (escribir ads, revisar código). CLI Tools reúnen los comandos oficiales para instalar, autenticar y trabajar desde la terminal correcta."
+            : "Connectors give your AI access to your apps (Notion, Stripe). Skills teach it concrete tasks (write ads, review code). CLI Tools collect the official commands to install, authenticate and work from the right terminal."}
         </p>
         <div className="mt-7 flex flex-wrap gap-2 text-[12px] font-mono">
           <span className="rounded-md bg-[var(--color-panel)] border border-[var(--color-border)] px-2.5 py-1 text-[var(--color-fg-muted)]">
@@ -109,7 +109,7 @@ export default async function MarketplaceHub({ params }: Props) {
             {skills.length} skills
           </span>
           <span className="rounded-md bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/30 px-2.5 py-1 text-[var(--color-accent)]">
-            Claude Code · Codex
+            Claude · Codex · Gemini
           </span>
         </div>
       </section>
@@ -161,8 +161,8 @@ export default async function MarketplaceHub({ params }: Props) {
             count={cliTools.length}
             description={
               isEs
-                ? "Los CLIs que un dev usa todo el día — gh, vercel, supabase, stripe, wrangler. Auth y env vault sincronizados."
-                : "The CLIs a dev uses every day — gh, vercel, supabase, stripe, wrangler. Auth and env vault synced."
+                ? "Los CLIs que un dev usa todo el día — gh, vercel, supabase, stripe, wrangler. Guías, comandos útiles, GitHub Auth Sync y env vault para secretos de proyecto."
+                : "The CLIs a dev uses every day — gh, vercel, supabase, stripe, wrangler. Guides, useful commands, GitHub Auth Sync and env vault for project secrets."
             }
             cta={isEs ? "Ver todos" : "View all"}
           />

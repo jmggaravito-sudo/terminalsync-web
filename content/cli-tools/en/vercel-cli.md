@@ -8,7 +8,7 @@ homepage: https://vercel.com/docs/cli
 repo: https://github.com/vercel/vercel
 category: deploy
 tagline: Deploy, env vars, preview URLs and team scopes from one command.
-description: Vercel's official CLI. Deploy any commit to a preview URL, manage environment variables per environment, link projects, inspect logs and promote to production — all scriptable. TerminalSync syncs your Vercel auth so a fresh machine deploys without re-login.
+description: Vercel's official CLI. Deploy any commit to a preview URL, manage environment variables per environment, link projects, inspect logs and promote to production — all scriptable. TerminalSync keeps deploy commands and encrypted project env files with the terminal.
 status: available
 ---
 
@@ -18,8 +18,8 @@ status: available
 
 ## What TerminalSync adds
 
-- **Auth Sync.** `~/.local/share/com.vercel.cli/auth.json` is encrypted and replicated across your machines. No more "I have to login to Vercel again on this Mac".
-- **Env vault.** When you `vercel env pull` into a TerminalSync folder, the resulting `.env.local` is auto-encrypted at rest. Your secrets follow the folder, never leak into Drive plain.
+- **Deploy runbook.** Install, login, preview and production deploy commands stay attached to the project terminal.
+- **Env vault.** When you `vercel env pull` into a TerminalSync folder, the resulting `.env.local` can be encrypted into the folder vault. Your secrets follow the folder without leaking into Drive in plaintext.
 - **Session memory.** Your AI remembers which Vercel project + environment you're targeting, so "redeploy preview" doesn't need clarification.
 
 ## Typical commands

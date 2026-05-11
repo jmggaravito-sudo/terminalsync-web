@@ -8,7 +8,7 @@ homepage: https://cli.github.com
 repo: https://github.com/cli/cli
 category: dev
 tagline: Issues, PRs, releases y GitHub Actions desde tu shell.
-description: El CLI oficial de GitHub. Leé y creá issues, abrí PRs, corré workflows, manejá releases — todo sin salir del terminal. TerminalSync sincroniza tu auth de `gh` entre todas tus máquinas, así una Mac nueva queda loggeada apenas montás la sesión.
+description: El CLI oficial de GitHub. Leé y creá issues, abrí PRs, corré workflows, manejá releases — todo sin salir del terminal. TerminalSync tiene GitHub Auth Sync dedicado para que tu sesión de `gh` viaje cifrada entre Macs.
 status: available
 ---
 
@@ -18,7 +18,7 @@ status: available
 
 ## Qué le suma TerminalSync
 
-- **Auth Sync.** Tu `~/.config/gh/hosts.yml` viaja cifrado entre todas tus máquinas. Te logueás una vez en la MacBook, abrís la misma sesión en la Mac mini y `gh pr list` funciona al toque.
+- **GitHub Auth Sync.** TerminalSync le pide el token activo a `gh`, lo cifra con tu master key y lo reinstala en otra Mac usando `gh auth login --with-token`. Lo controlás desde Ajustes.
 - **Memoria de sesión.** El agente IA recuerda en qué repo trabajás y qué PRs están abiertas — así cuando le decís "revisame el PR" sabe a cuál.
 - **Puente MCP.** Combinado con el connector GitHub MCP, Claude / Codex / Gemini pueden leer commits o PRs usando la misma auth.
 

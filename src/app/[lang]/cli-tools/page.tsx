@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? "CLI Tools · Terminal Sync"
     : "CLI Tools · Terminal Sync";
   const description = isEs
-    ? "Los CLIs oficiales que un dev usa todo el día — gh, supabase, vercel, stripe, wrangler. Instalá una vez, autenticación y env vault sincronizados en todas tus máquinas."
-    : "The official CLIs a dev uses every day — gh, supabase, vercel, stripe, wrangler. Install once, auth and env vault synced across every machine.";
+    ? "Los CLIs oficiales que un dev usa todo el día — gh, supabase, vercel, stripe, wrangler. Guías de instalación, comandos útiles y secretos de proyecto protegidos por TerminalSync."
+    : "The official CLIs a dev uses every day — gh, supabase, vercel, stripe, wrangler. Install guides, useful commands and project secrets protected by TerminalSync.";
   return {
     title,
     description,
@@ -58,20 +58,20 @@ export default async function CliToolsIndex({ params }: Props) {
         </div>
         <h1 className="text-[40px] md:text-[56px] font-semibold tracking-tight leading-[1.05]">
           {isEs
-            ? "Los CLIs que usás todos los días — autenticados en todas tus Macs."
-            : "The CLIs you use every day — authed on every Mac."}
+            ? "Los CLIs que usás todos los días, listos para trabajar dentro de TerminalSync."
+            : "The CLIs you use every day, ready to work inside TerminalSync."}
         </h1>
         <p className="mt-4 text-[16px] text-[var(--color-fg-muted)] max-w-2xl leading-relaxed">
           {isEs
-            ? "gh, supabase, vercel, stripe, wrangler. Instalá una vez, hacé login una vez, y TerminalSync replica el auth + secretos en todas tus máquinas. Tu Mac nueva deploya en segundos."
-            : "gh, supabase, vercel, stripe, wrangler. Install once, log in once, and TerminalSync replicates auth + secrets across every machine. Your new Mac ships in seconds."}
+            ? "gh, supabase, vercel, stripe, wrangler. Instalá desde la terminal correcta, guardá secretos de proyecto en el vault cifrado y mantené el contexto de trabajo entre tus Macs. GitHub CLI ya tiene Auth Sync dedicado; los demás CLIs quedan como guías y workflows listos."
+            : "gh, supabase, vercel, stripe, wrangler. Install from the right terminal, keep project secrets in the encrypted vault, and carry workflow context across Macs. GitHub CLI has dedicated Auth Sync today; the other CLIs are ready-to-use guides and workflows."}
         </p>
         <div className="mt-6 flex flex-wrap items-center gap-2 text-[12px] font-mono">
           <span className="rounded-md bg-[var(--color-panel)] border border-[var(--color-border)] px-2 py-1 text-[var(--color-fg-muted)]">
             {tools.length} {isEs ? "tools" : "tools"}
           </span>
           <span className="rounded-md bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/30 px-2 py-1 text-[var(--color-accent)]">
-            {isEs ? "auth + env vault sync" : "auth + env vault sync"}
+            {isEs ? "gh auth sync + env vault" : "gh auth sync + env vault"}
           </span>
         </div>
       </section>

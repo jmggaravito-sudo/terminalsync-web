@@ -8,7 +8,7 @@ homepage: https://developers.cloudflare.com/workers/wrangler/
 repo: https://github.com/cloudflare/workers-sdk
 category: deploy
 tagline: Build, preview and deploy Cloudflare Workers, Pages and D1 from one CLI.
-description: Cloudflare's official CLI for the Workers platform — Workers, Pages, D1 (SQLite), R2 (object storage), KV, Queues, Durable Objects. Develop locally, tail production logs, manage secrets, deploy with one command. TerminalSync keeps your Cloudflare auth and secrets synced so a fresh machine ships in seconds.
+description: Cloudflare's official CLI for the Workers platform — Workers, Pages, D1 (SQLite), R2 (object storage), KV, Queues, Durable Objects. Develop locally, tail production logs, manage secrets, deploy with one command. TerminalSync keeps the Workers runbook and project env files with your synced terminal.
 status: available
 ---
 
@@ -18,8 +18,8 @@ status: available
 
 ## What TerminalSync adds
 
-- **Auth Sync.** `~/.wrangler/config/default.toml` is encrypted and synced between machines. No more re-authing on every Mac.
-- **Secrets in env vault.** `wrangler secret put` values are mirrored into TerminalSync's per-folder encrypted vault so you can recover them on a fresh machine without rotating.
+- **Workers runbook.** Install, login, local dev, deploy, tail and D1 commands stay attached to the project terminal.
+- **Secrets in env vault.** Keep recoverable app secrets in a project `.env` file and TerminalSync can encrypt that file into the folder vault. Cloudflare-bound secrets still live in Cloudflare after `wrangler secret put`.
 - **Session memory.** Your AI remembers which Worker project, account and environment you're targeting — so "deploy this to staging" doesn't ask for confirmation it already has.
 
 ## Typical commands

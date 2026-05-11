@@ -8,7 +8,7 @@ homepage: https://stripe.com/docs/stripe-cli
 repo: https://github.com/stripe/stripe-cli
 category: payments
 tagline: Forward webhooks, trigger events, inspect logs — without touching the dashboard.
-description: Stripe's official CLI. Forward webhooks to localhost while you build, trigger any event for testing, browse charges and customers from the shell, and tail real-time logs. TerminalSync syncs your Stripe auth between machines so you can pick up debugging on whichever laptop is in front of you.
+description: Stripe's official CLI. Forward webhooks to localhost while you build, trigger any event for testing, browse charges and customers from the shell, and tail real-time logs. TerminalSync keeps the Stripe workflow close to the project terminal and protects `.env` secrets through the encrypted vault.
 status: available
 ---
 
@@ -18,8 +18,8 @@ status: available
 
 ## What TerminalSync adds
 
-- **Auth Sync.** `~/.config/stripe/config.toml` (test + live mode) is encrypted and synced across machines. Stripe login on one Mac = logged in on every machine.
-- **Webhook secret in env vault.** When `stripe listen` prints a `whsec_…`, TerminalSync prompts to store it encrypted in your folder's `.env` vault so it survives reboots without leaking.
+- **Workflow guide.** Install, login and webhook commands live next to the terminal where your AI is working, so a new machine has the right Stripe runbook immediately.
+- **Webhook secret in env vault.** Put the `whsec_…` value from `stripe listen` in a project `.env` file and TerminalSync can keep that file encrypted in the folder vault.
 - **MCP bridge.** Pair with the Stripe MCP connector and Claude can read customers, refund charges and query subscriptions through the same Stripe auth.
 
 ## Typical commands
