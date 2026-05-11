@@ -126,7 +126,7 @@ export default async function ConnectorDetail({ params }: Props) {
 
         <header className="flex items-start gap-5">
           <div className="h-16 w-16 shrink-0 rounded-2xl bg-[var(--color-panel)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden">
-            <ConnectorLogo src={doc.logo} size={40} className="h-10 w-10" />
+            <ConnectorLogo src={doc.logo} size={40} className="h-10 w-10" fallbackText={doc.name} />
           </div>
           <div className="min-w-0 flex-1">
             <h1 className="text-[28px] md:text-[34px] font-semibold tracking-tight leading-tight">

@@ -109,7 +109,7 @@ function ConnectorCard({ lang, connector, categoryLabel, soonLabel }: { lang: st
     >
       <div className="flex items-start justify-between gap-3">
         <div className="h-11 w-11 rounded-xl bg-[var(--color-panel-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden">
-          <ConnectorLogo src={connector.logo} size={28} className="h-7 w-7" />
+          <ConnectorLogo src={connector.logo} size={28} className="h-7 w-7" fallbackText={connector.name} />
         </div>
         <ArrowUpRight size={16} className="text-[var(--color-fg-dim)] group-hover:text-[var(--color-accent)] transition-colors shrink-0 mt-1" />
       </div>
