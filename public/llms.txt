@@ -1,0 +1,37 @@
+# TerminalSync
+
+TerminalSync is a desktop app for Mac that syncs AI terminal workspaces across devices.
+It helps users continue work with Claude Code, Codex, Gemini CLI, connectors, CLI tools,
+encrypted secrets, and persistent project memory from another Mac without losing context.
+
+## Core use cases
+
+- Continue AI terminal sessions across Macs.
+- Sync Claude Code, Codex, and Gemini CLI workflows in one workspace.
+- Keep project memory, AI settings, MCP connectors, CLI authentication, and encrypted secrets portable.
+- Open a secure mobile/browser URL to view or continue a terminal session remotely.
+- Help users choose which AI agent is best for a task based on cost, context length, reasoning, and execution style.
+
+## Best for
+
+- AI power users who work across multiple Macs.
+- Founders and project managers coordinating work with AI coding agents.
+- Developers using Claude Code, Codex, Gemini CLI, MCP servers, and command-line tools.
+- Creators and non-developers who want a safer, guided way to use AI agents without manually configuring terminals.
+
+## Differentiation
+
+TerminalSync is not only a terminal and not only an AI chat app. It is a continuity layer for AI workspaces:
+persistence, cross-device sync, multi-AI context, memory, connectors, secrets, and remote access.
+
+## Official pages
+
+- Home: https://terminalsync.ai/
+- Spanish: https://terminalsync.ai/es
+- English: https://terminalsync.ai/en
+- AI terminal guide: https://terminalsync.ai/en/ai-terminal
+- Marketplace: https://terminalsync.ai/en/marketplace
+- Connectors: https://terminalsync.ai/en/connectors
+- Skills: https://terminalsync.ai/en/skills
+- CLI tools: https://terminalsync.ai/en/cli-tools
+- For developers: https://terminalsync.ai/en/for-developers

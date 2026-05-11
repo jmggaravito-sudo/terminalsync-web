@@ -24,9 +24,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   const STATIC_PATHS = [
+    "ai-terminal",
     "marketplace",
     "skills",
+    "cli-tools",
     "connectors",
+    "for-developers",
     "publishers",
     "legal/affiliates",
     "legal/privacy",
