@@ -53,8 +53,9 @@ create table if not exists discovery_cli_tools (
   raw_description text,
   marketplace_category text
     check (marketplace_category in ('dev', 'deploy', 'database', 'payments', 'infra', 'productivity')),
-  -- CLI-specific signals
-  binary          text,
+  -- CLI-specific signals. `binary` is a PG reserved keyword, so the
+  -- column is named `cli_binary` and the app layer maps to/from "binary".
+  cli_binary      text,
   install_command text,
   auth_command    text,
   vendor          text,
@@ -83,7 +84,7 @@ create index if not exists idx_discovery_cli_tools_confidence
 
 -- Lookup-by-binary for the auto-promote dedup check
 create index if not exists idx_discovery_cli_tools_binary
-  on discovery_cli_tools (binary) where binary is not null;
+  on discovery_cli_tools (cli_binary) where cli_binary is not null;
 
 -- updated_at trigger reuses the function defined in 0002_discovery.sql
 create trigger discovery_cli_tools_updated before update on discovery_cli_tools
@@ -121,8 +122,9 @@ create table if not exists public.cli_tool_listings (
   rejected_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  -- CLI-specific surface that the public detail page actually renders
-  binary text not null,
+  -- CLI-specific surface that the public detail page actually renders.
+  -- See note on discovery_cli_tools.cli_binary above.
+  cli_binary text not null,
   install_command text not null,
   auth_command text,
   vendor text,
@@ -137,7 +139,7 @@ create table if not exists public.cli_tool_listings (
   -- Binaries are globally unique ("there's only one `gh`"). Enforced so
   -- the auto-promote job can't ship two cards that fight for the same
   -- shell command.
-  unique (binary)
+  unique (cli_binary)
 );
 
 create index if not exists cli_listings_status_idx
@@ -145,7 +147,7 @@ create index if not exists cli_listings_status_idx
 create index if not exists cli_listings_publisher_idx
   on public.cli_tool_listings (publisher_id);
 create index if not exists cli_listings_binary_idx
-  on public.cli_tool_listings (binary);
+  on public.cli_tool_listings (cli_binary);
 create index if not exists cli_listings_repo_url_idx
   on public.cli_tool_listings (repo_url) where repo_url is not null;
 

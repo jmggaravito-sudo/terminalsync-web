@@ -1,5 +1,6 @@
 ---
 name: Supabase CLI
+logo: https://github.com/supabase.png?size=128
 binary: supabase
 installCommand: brew install supabase/tap/supabase
 authCommand: supabase login

@@ -1,5 +1,6 @@
 ---
 name: Stripe CLI
+logo: https://github.com/stripe.png?size=128
 binary: stripe
 installCommand: brew install stripe/stripe-cli/stripe
 authCommand: stripe login

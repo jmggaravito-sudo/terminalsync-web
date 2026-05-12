@@ -1,5 +1,6 @@
 ---
 name: GitHub CLI
+logo: https://github.com/cli.png?size=128
 binary: gh
 installCommand: brew install gh
 authCommand: gh auth login

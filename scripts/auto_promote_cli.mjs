@@ -158,7 +158,7 @@ async function getCuratedPublisherId() {
 
 async function alreadyPublished(slug, binary, repoUrl) {
   const orParts = [`slug.eq.${slug}`];
-  if (binary) orParts.push(`binary.eq.${binary}`);
+  if (binary) orParts.push(`cli_binary.eq.${binary}`);
   if (repoUrl) orParts.push(`repo_url.eq.${repoUrl}`);
   const { data } = await sb
     .from("cli_tool_listings")
@@ -220,7 +220,7 @@ async function promote(row, publisherId, fileBinaries) {
     status: "approved",
     review_notes: `auto-promoted by auto-confidence (confidence ${row.classification_confidence})`,
     approved_at: new Date().toISOString(),
-    binary: row.binary,
+    cli_binary: row.binary,
     install_command: row.install_command,
     auth_command: row.auth_command,
     vendor: row.vendor,
@@ -288,6 +288,11 @@ async function main() {
     process.exit(1);
   }
   console.log(`pending fetched: ${pending.length}`);
+
+  // The DB column is `cli_binary` (PG reserved keyword), but every
+  // downstream check reads `row.binary` — alias once here so the rest
+  // of the script stays clean.
+  for (const r of pending) r.binary = r.cli_binary ?? null;
 
   let promoted = 0;
   let rejected = 0;
