@@ -4,6 +4,7 @@
  * and creates a GHL contact tagged `agent-support-form`.
  */
 import { NextRequest, NextResponse } from "next/server";
+import { getSupportKnowledge, supportLocale } from "@/lib/supportKnowledge";
 
 const N8N_FORM_URL =
   process.env.N8N_AGENT_FORM_WEBHOOK_URL ||
@@ -25,6 +26,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, errors: ["invalid_json"] }, { status: 400 });
   }
 
+  const locale = supportLocale(body.userLocale || req.headers.get("accept-language"));
+  const knowledge = getSupportKnowledge(locale);
+
   const upstreamPayload = {
     channel: "web",
     session_id: body.sessionId || "anon",
@@ -32,6 +36,11 @@ export async function POST(req: NextRequest) {
     problem: (body.problem || "").trim(),
     topic_hint: body.topicHint || "",
     user_locale: body.userLocale || req.headers.get("accept-language") || "en-US",
+    context: {
+      product: "TerminalSync",
+      knowledge_version: knowledge.updated,
+      support_knowledge: knowledge,
+    },
   };
 
   try {

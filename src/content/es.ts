@@ -522,6 +522,8 @@ const es: Dict = {
         priceNote: "para siempre",
         features: [
           "1 terminal activa con persistencia real",
+          "Claude Code, Codex, Gemini CLI o Sin IA",
+          "Tu código sigue en Git; metadata en .terminalsync/",
           "Cifrado AES-256 zero-knowledge",
           "Sync con Google Drive (tu cuenta)",
           "Notificaciones de silencio en el agente",
@@ -539,9 +541,12 @@ const es: Dict = {
         yearlyEquivalent: "$15.83/mes · facturado anual",
         features: [
           "5 terminales con persistencia + resurrección",
+          "Claude + Codex + Gemini en un workspace",
+          "Memoria persistente entre IAs",
+          "Tus terminales IA viajan con el repo",
           "Tu sesión en cualquier dispositivo (móvil + navegador)",
+          "Conectores, skills y CLI tools sincronizados",
           "Notificaciones por Email / WhatsApp / Telegram",
-          "Sync completo de Claude y Codex entre dispositivos",
           "Historial 90 días",
           "Hasta 5 dispositivos",
         ],
@@ -558,9 +563,11 @@ const es: Dict = {
         features: [
           "Todo lo de Pro, más:",
           "20 terminales activas",
-          "Vault de secretos por carpeta",
-          "Git-native sync (snapshots + .gitignore)",
+          "Vault de secretos por carpeta/proyecto",
+          "Git-native sync para repos y snapshots",
+          ".terminalsync/ portable para terminales del repo",
           "Setup-on-arrival automático por proyecto",
+          "Comandos útiles, CLI auth y MCPs por equipo",
           "Pair programming read-only",
         ],
         cta: "Probar 7 días gratis",
@@ -636,21 +643,21 @@ const es: Dict = {
     tagline: "Ventas y soporte · En línea",
     close: "Cerrar",
     greeting:
-      "¡Hola! Soy tu asistente de TerminalSync. ¿Te ayudo a configurar tu Claude Code o tienes alguna duda técnica?",
+      "¡Hola! Soy tu asistente de TerminalSync. Puedo ayudarte con Claude Code, Codex, Gemini, memoria, conectores, planes o problemas técnicos. ¿Qué quieres hacer?",
     placeholder: "Escribe tu mensaje…",
     send: "Enviar",
     you: "Tú",
     typing: "escribiendo…",
     quickReplies: [
-      { id: "install", label: "¿Cómo instalo Claude Code?" },
+      { id: "install", label: "¿Cómo empiezo?" },
       { id: "pricing", label: "Precios" },
       { id: "security", label: "¿Qué tan seguro es?" },
     ],
     replies: {
       install:
-        "¡Súper fácil! Descarga TerminalSync, en el dashboard verás la tarjeta \"AI Power-Ups\" → clic en \"Instalar Claude Code\" → pegas tu API key de Anthropic y listo. Toma ~30 segundos y nosotros configuramos todo por ti.",
+        "Descarga TerminalSync, crea una terminal y elige la IA que quieres usar: Claude Code, Codex, Gemini CLI o Sin IA. Desde Power-Ups puedes configurar conectores, skills y CLI tools. Si me dices tu caso de uso, te recomiendo por dónde empezar.",
       pricing:
-        "Tenemos 3 planes: Starter ($0 gratis, 1 terminal), Pro ($19/mes con Power-Ups de Claude Code + 5 terminales) y Dev ($39/mes con Git-Native Sync, .env Vault y 20 terminales). Podés probar Pro o Dev gratis 7 días — cancelás antes del día 7 y no te cobramos. ¿Querés el link de descarga?",
+        "Tenemos planes para probar, power users y usuarios técnicos/equipos. Starter sirve para empezar; Pro agrega capacidades avanzadas como memoria/power-ups; Dev está pensado para Git-native sync, vault de secretos y workflows más técnicos. Mira la sección de Precios para el detalle actualizado. ¿Quieres que te recomiende un plan según tu uso?",
       security:
         "Tu código y tu API key se cifran con AES-256 en tu computadora ANTES de subir a Drive. Usamos Zero-Knowledge: ni nosotros ni Google podemos leer tu contenido. La llave maestra la tienes tú en tu keychain local.",
       fallback:

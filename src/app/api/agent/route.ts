@@ -9,6 +9,7 @@
  * The actual brain (Claude + memory + escalation routing) lives in n8n.
  */
 import { NextRequest, NextResponse } from "next/server";
+import { getSupportKnowledge, supportLocale } from "@/lib/supportKnowledge";
 
 const N8N_CHAT_URL =
   process.env.N8N_AGENT_WEBHOOK_URL ||
@@ -35,6 +36,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "empty_message" }, { status: 400 });
   }
   const sessionId = body.sessionId || `web-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const locale = supportLocale(body.userLocale || req.headers.get("accept-language"));
+  const knowledge = getSupportKnowledge(locale);
 
   const upstreamPayload = {
     channel: "web",
@@ -45,7 +48,15 @@ export async function POST(req: NextRequest) {
     context: {
       page: body.page || "/",
       user_plan: body.userPlan ?? null,
+      product: "TerminalSync",
+      knowledge_version: knowledge.updated,
+      support_knowledge: knowledge,
     },
+    // Some n8n workflows read top-level fields more easily than nested
+    // context. Keep both so the support brain gets the current product
+    // truth even if its mapper is simple.
+    assistant_instructions: knowledge.role,
+    knowledge_base: knowledge,
   };
 
   try {

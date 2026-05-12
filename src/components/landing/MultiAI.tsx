@@ -95,6 +95,24 @@ export function MultiAI({ dict }: { dict: Dict }) {
         </article>
       </div>
 
+      {/* Git-native portability promise. This is the simplest explanation
+          of our architecture for repo-backed work: TS does not swallow the
+          user's code into a proprietary blob. Git remains the source of
+          truth for code; TerminalSync carries the AI terminal identity and
+          workspace metadata with the repo. */}
+      <div className="mt-6 rounded-2xl border border-[var(--color-accent)]/25 bg-[var(--color-accent)]/6 px-5 py-4 md:px-6 md:py-5 text-center">
+        <p className="text-[16px] md:text-[18px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
+          {dict.locale === "es"
+            ? "Tu código sigue en Git. Tus terminales IA viajan con el repo."
+            : "Your code stays in Git. Your AI terminals travel with the repo."}
+        </p>
+        <p className="mt-1.5 text-[13px] md:text-[13.5px] text-[var(--color-fg-muted)] leading-relaxed">
+          {dict.locale === "es"
+            ? "TerminalSync guarda la identidad del workspace en .terminalsync/; tus archivos reales siguen moviéndose por commits, branches, push y pull."
+            : "TerminalSync stores workspace identity in .terminalsync/; your real files still move through commits, branches, push and pull."}
+        </p>
+      </div>
+
       {/* Use-case cards */}
       <div className="mt-12">
         <p className="text-center text-[15px] text-[var(--color-fg-strong)] font-medium max-w-xl mx-auto leading-relaxed">
