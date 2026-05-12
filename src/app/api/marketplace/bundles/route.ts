@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import {
+  isBundleItemKind,
+  resolveBundleItems,
+  type BundleItemKind,
+  type BundleItemRef,
+} from "@/lib/marketplace/bundleItems";
 
 export const runtime = "nodejs";
 
@@ -9,13 +15,19 @@ export const runtime = "nodejs";
  *  can curate which appears first on /[lang]/stacks without a
  *  database edit — admins set sort_order via the admin endpoint.
  *
- *  Returns the bundle rows + each one's included connector listings
- *  (slug + name + logo + category) so the index page can render rich
- *  cards without an N+1 round-trip per card.
+ *  Each bundle's items array is resolved into normalized item refs
+ *  ({kind, slug, name, tagline, logo}) regardless of which pillar
+ *  the item lives in. Items that don't resolve at render time are
+ *  silently dropped (see resolveBundleItems).
+ *
+ *  Accepts `?lang=` (default "en") so the index page can use the
+ *  caller's locale when reading markdown frontmatter.
  */
-export async function GET() {
+export async function GET(req: Request) {
   const sb = getSupabaseAdmin();
   if (!sb) return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
+  const url = new URL(req.url);
+  const lang = url.searchParams.get("lang") === "es" ? "es" : "en";
 
   const { data: bundles, error } = await sb
     .from("bundles")
@@ -29,35 +41,34 @@ export async function GET() {
   const bundleIds = (bundles ?? []).map((b) => b.id);
   if (bundleIds.length === 0) return NextResponse.json({ bundles: [] });
 
-  // Fetch all bundle_listings + listings in one query, then group by
-  // bundle_id in JS. Cheaper than nested-select Supabase guesses on
-  // FK cardinality, and gives us clean typing.
   const linksRes = await sb
     .from("bundle_listings")
-    .select("bundle_id, sort_order, listing:connector_listings(slug, name, logo_url, category)")
+    .select("bundle_id, kind, item_slug, sort_order")
     .in("bundle_id", bundleIds);
   if (linksRes.error) return NextResponse.json({ error: linksRes.error.message }, { status: 500 });
 
-  type Link = {
+  type Row = {
     bundle_id: string;
+    kind: BundleItemKind;
+    item_slug: string;
     sort_order: number;
-    listing: { slug: string; name: string; logo_url: string; category: string } | null;
   };
-  const linksByBundle = new Map<string, Link[]>();
+  const linksByBundle = new Map<string, BundleItemRef[]>();
   for (const raw of linksRes.data ?? []) {
-    const link = raw as unknown as Link;
-    if (!link.listing) continue;
-    const arr = linksByBundle.get(link.bundle_id) ?? [];
-    arr.push(link);
-    linksByBundle.set(link.bundle_id, arr);
+    const row = raw as Row;
+    if (!isBundleItemKind(row.kind)) continue;
+    const arr = linksByBundle.get(row.bundle_id) ?? [];
+    arr.push({ kind: row.kind, slug: row.item_slug, sortOrder: row.sort_order });
+    linksByBundle.set(row.bundle_id, arr);
   }
 
-  const out = (bundles ?? []).map((b) => {
-    const links = (linksByBundle.get(b.id) ?? []).sort(
-      (a, b) => a.sort_order - b.sort_order,
-    );
-    return { ...b, listings: links.map((l) => l.listing!) };
-  });
+  const out = await Promise.all(
+    (bundles ?? []).map(async (b) => {
+      const refs = linksByBundle.get(b.id) ?? [];
+      const items = await resolveBundleItems(refs, lang);
+      return { ...b, items };
+    }),
+  );
 
   return NextResponse.json({ bundles: out });
 }

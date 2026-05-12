@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { ensureBundlePrice, verifyBundlePriceLive } from "@/lib/marketplace/stripeBundles";
+import {
+  bundleItemExists,
+  isBundleItemKind,
+  type BundleItemKind,
+} from "@/lib/marketplace/bundleItems";
+import { validateBundleItems } from "@/lib/marketplace/schema";
 
 export const runtime = "nodejs";
 
@@ -9,16 +15,20 @@ export const runtime = "nodejs";
  *  is the same: let JM curate without needing the broken Supabase auth
  *  UI to be working. The admin login flow can replace this later.
  *
- *  Three operations:
- *    GET    /api/marketplace/admin/bundles?key=...  → list all bundles
- *           regardless of status (drafts visible)
- *    POST   /api/marketplace/admin/bundles?key=...  → create a draft
+ *  Bundles can mix items from the 3 pillars (connector / skill / cli),
+ *  see `src/lib/marketplace/bundleItems.ts` for the polymorphic model.
+ *
+ *  Operations:
+ *    GET    /api/marketplace/admin/bundles?key=...   → list all bundles
+ *           regardless of status (drafts visible). Embeds the item refs.
+ *    POST   /api/marketplace/admin/bundles?key=...   → create a draft
  *           bundle. Body: {slug, name, tagline, description_md, hero_subtitle?,
- *           hero_image_url?, price_cents, currency?, listing_slugs[],
- *           sort_order?}
- *    PATCH  /api/marketplace/admin/bundles?key=...  → publish or update
- *           an existing bundle. Body: {id, action: "publish"|"archive"|"update",
- *           ...fields to update}
+ *           hero_image_url?, price_cents, currency?, items[], sort_order?}
+ *           Legacy `listing_slugs[]` is accepted for back-compat and
+ *           treated as `items: [{kind: "connector", slug: <s>}]`.
+ *    PATCH  /api/marketplace/admin/bundles?key=...   → publish/archive
+ *           an existing bundle, or replace its items array. Body:
+ *           {id, action: "publish"|"archive"|"update", items?: [...]}
  */
 
 function authorized(req: Request): boolean {
@@ -26,6 +36,38 @@ function authorized(req: Request): boolean {
   const provided = url.searchParams.get("key") ?? req.headers.get("x-api-key");
   const expected = process.env.DISCOVERY_INGEST_KEY;
   return !!expected && provided === expected;
+}
+
+interface ItemRow {
+  bundle_id: string;
+  kind: BundleItemKind;
+  item_slug: string;
+  sort_order: number;
+}
+
+async function fetchItems(
+  sb: ReturnType<typeof getSupabaseAdmin>,
+  bundleIds: string[],
+): Promise<Map<string, ItemRow[]>> {
+  const out = new Map<string, ItemRow[]>();
+  if (!sb || bundleIds.length === 0) return out;
+  const { data, error } = await sb
+    .from("bundle_listings")
+    .select("bundle_id, kind, item_slug, sort_order")
+    .in("bundle_id", bundleIds);
+  if (error || !data) return out;
+  for (const raw of data) {
+    const row = raw as ItemRow;
+    if (!isBundleItemKind(row.kind)) continue;
+    const arr = out.get(row.bundle_id) ?? [];
+    arr.push(row);
+    out.set(row.bundle_id, arr);
+  }
+  for (const [k, arr] of out) {
+    arr.sort((a, b) => a.sort_order - b.sort_order);
+    out.set(k, arr);
+  }
+  return out;
 }
 
 export async function GET(req: Request) {
@@ -41,7 +83,33 @@ export async function GET(req: Request) {
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: false });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ bundles: data ?? [] });
+  const bundles = data ?? [];
+  const items = await fetchItems(sb, bundles.map((b) => b.id));
+  const bundlesOut = bundles.map((b) => ({
+    ...b,
+    items: (items.get(b.id) ?? []).map((it) => ({
+      kind: it.kind,
+      slug: it.item_slug,
+      sortOrder: it.sort_order,
+    })),
+  }));
+  return NextResponse.json({ bundles: bundlesOut });
+}
+
+interface BundlePayload {
+  slug?: string;
+  name?: string;
+  tagline?: string;
+  description_md?: string;
+  hero_subtitle?: string;
+  hero_image_url?: string;
+  price_cents?: number;
+  currency?: string;
+  items?: unknown;
+  // Legacy: kept so existing scripts/curl examples keep working — gets
+  // normalized to items as connector entries.
+  listing_slugs?: string[];
+  sort_order?: number;
 }
 
 export async function POST(req: Request) {
@@ -49,26 +117,14 @@ export async function POST(req: Request) {
   const sb = getSupabaseAdmin();
   if (!sb) return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
 
-  let body: {
-    slug?: string;
-    name?: string;
-    tagline?: string;
-    description_md?: string;
-    hero_subtitle?: string;
-    hero_image_url?: string;
-    price_cents?: number;
-    currency?: string;
-    listing_slugs?: string[];
-    sort_order?: number;
-  };
+  let body: BundlePayload;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const required = ["slug", "name", "tagline", "description_md", "price_cents", "listing_slugs"] as const;
-  for (const k of required) {
+  for (const k of ["slug", "name", "tagline", "description_md", "price_cents"] as const) {
     if (body[k] === undefined || body[k] === null) {
       return NextResponse.json({ error: `${k} is required` }, { status: 400 });
     }
@@ -76,35 +132,28 @@ export async function POST(req: Request) {
   if (typeof body.price_cents !== "number" || body.price_cents <= 0) {
     return NextResponse.json({ error: "price_cents must be a positive integer" }, { status: 400 });
   }
-  if (!Array.isArray(body.listing_slugs) || body.listing_slugs.length === 0) {
-    return NextResponse.json({ error: "listing_slugs must be a non-empty array" }, { status: 400 });
+
+  // Normalize items: prefer `items[]`, fall back to legacy `listing_slugs[]`.
+  let rawItems: unknown = body.items;
+  if (!rawItems && Array.isArray(body.listing_slugs)) {
+    rawItems = body.listing_slugs.map((slug) => ({ kind: "connector", slug }));
+  }
+  const itemsRes = validateBundleItems(rawItems);
+  if (!itemsRes.ok) {
+    return NextResponse.json({ error: "Invalid items", details: itemsRes.errors }, { status: 400 });
   }
 
-  // Resolve listing_slugs → ids. Reject if any slug doesn't match an
-  // approved listing — bundles should never include a draft/rejected
-  // connector.
-  const listingsRes = await sb
-    .from("connector_listings")
-    .select("id, slug, status")
-    .in("slug", body.listing_slugs);
-  if (listingsRes.error) {
-    return NextResponse.json({ error: listingsRes.error.message }, { status: 500 });
-  }
-  const found = listingsRes.data ?? [];
-  const missing = body.listing_slugs.filter((s) => !found.some((f) => f.slug === s));
-  if (missing.length > 0) {
-    return NextResponse.json(
-      { error: `Listings not found: ${missing.join(", ")}` },
-      { status: 400 },
-    );
-  }
-  const notApproved = found.filter((f) => f.status !== "approved");
-  if (notApproved.length > 0) {
-    return NextResponse.json(
-      { error: `Listings must be approved before bundling: ${notApproved.map((l) => l.slug).join(", ")}` },
-      { status: 400 },
-    );
-  }
+  // Soft-validate that each referenced item resolves. We collect warnings
+  // for missing items but still allow the insert so admins can stage
+  // bundles that point at items not yet in the catalog (e.g. a skill
+  // markdown landing in a follow-up PR).
+  const warnings: string[] = [];
+  await Promise.all(
+    itemsRes.data.map(async (it) => {
+      const ok = await bundleItemExists(it.kind, it.slug);
+      if (!ok) warnings.push(`${it.kind}:${it.slug} not found`);
+    }),
+  );
 
   const insert = await sb
     .from("bundles")
@@ -124,12 +173,11 @@ export async function POST(req: Request) {
     .single();
   if (insert.error) return NextResponse.json({ error: insert.error.message }, { status: 500 });
 
-  // Insert bundle_listings rows preserving the order the slugs came in.
-  const slugToId = new Map(found.map((f) => [f.slug, f.id]));
-  const linkRows = body.listing_slugs.map((slug, i) => ({
+  const linkRows = itemsRes.data.map((it, i) => ({
     bundle_id: insert.data.id,
-    listing_id: slugToId.get(slug)!,
-    sort_order: i,
+    kind: it.kind,
+    item_slug: it.slug,
+    sort_order: it.sortOrder ?? i,
   }));
   const linkRes = await sb.from("bundle_listings").insert(linkRows);
   if (linkRes.error) {
@@ -138,7 +186,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: linkRes.error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ id: insert.data.id, slug: insert.data.slug, status: "draft" });
+  return NextResponse.json({
+    id: insert.data.id,
+    slug: insert.data.slug,
+    status: "draft",
+    warnings,
+  });
 }
 
 export async function PATCH(req: Request) {
@@ -146,7 +199,7 @@ export async function PATCH(req: Request) {
   const sb = getSupabaseAdmin();
   if (!sb) return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
 
-  let body: { id?: string; action?: string };
+  let body: { id?: string; action?: string; items?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -168,6 +221,43 @@ export async function PATCH(req: Request) {
     const upd = await sb.from("bundles").update({ status: "archived" }).eq("id", bundle.id);
     if (upd.error) return NextResponse.json({ error: upd.error.message }, { status: 500 });
     return NextResponse.json({ ok: true, status: "archived" });
+  }
+
+  if (body.action === "update") {
+    // Today the only updatable surface from PATCH is the items array.
+    // Bundle fields (name, tagline, …) require a POST-style re-create
+    // until we wire a full update form.
+    if (body.items === undefined) {
+      return NextResponse.json({ error: "items required for action=update" }, { status: 400 });
+    }
+    const itemsRes = validateBundleItems(body.items);
+    if (!itemsRes.ok) {
+      return NextResponse.json({ error: "Invalid items", details: itemsRes.errors }, { status: 400 });
+    }
+    const warnings: string[] = [];
+    await Promise.all(
+      itemsRes.data.map(async (it) => {
+        const ok = await bundleItemExists(it.kind, it.slug);
+        if (!ok) warnings.push(`${it.kind}:${it.slug} not found`);
+      }),
+    );
+
+    // Replace-all strategy: delete then insert. Simpler than diffing and
+    // safe because the table has no FK fanout — only bundle_listings
+    // itself references these rows.
+    const del = await sb.from("bundle_listings").delete().eq("bundle_id", bundle.id);
+    if (del.error) return NextResponse.json({ error: del.error.message }, { status: 500 });
+    const linkRows = itemsRes.data.map((it, i) => ({
+      bundle_id: bundle.id,
+      kind: it.kind,
+      item_slug: it.slug,
+      sort_order: it.sortOrder ?? i,
+    }));
+    if (linkRows.length > 0) {
+      const ins = await sb.from("bundle_listings").insert(linkRows);
+      if (ins.error) return NextResponse.json({ error: ins.error.message }, { status: 500 });
+    }
+    return NextResponse.json({ ok: true, count: linkRows.length, warnings });
   }
 
   if (body.action === "publish") {
