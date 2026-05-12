@@ -20,6 +20,7 @@ interface Bundle {
   status: "draft" | "active" | "archived";
   price_cents: number;
   currency: string;
+  sample_prompts: string[] | null;
   items: BundleItem[];
 }
 
@@ -45,6 +46,7 @@ export function BundlesEditor({ lang }: { lang: string }) {
   const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [items, setItems] = useState<BundleItem[]>([]);
+  const [samplePrompts, setSamplePrompts] = useState<string[]>([]);
   const [activeKind, setActiveKind] = useState<Kind>("connector");
   const [picker, setPicker] = useState<Record<Kind, PickerItem[] | undefined>>({
     connector: undefined,
@@ -54,6 +56,8 @@ export function BundlesEditor({ lang }: { lang: string }) {
   const [query, setQuery] = useState("");
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [savingPrompts, setSavingPrompts] = useState(false);
+  const [promptsSavedAt, setPromptsSavedAt] = useState<number | null>(null);
 
   const t = useMemo(
     () => ({
@@ -89,11 +93,16 @@ export function BundlesEditor({ lang }: { lang: string }) {
     reloadBundles();
   }, [reloadBundles]);
 
-  // When a bundle is selected, copy its items into local edit state.
+  // When a bundle is selected, copy its items + sample prompts into local
+  // edit state so the form can roundtrip changes without mutating server
+  // state on every keystroke.
   useEffect(() => {
     if (!selectedId || !bundles) return;
     const b = bundles.find((x) => x.id === selectedId);
-    if (b) setItems(b.items.map((it) => ({ ...it })));
+    if (b) {
+      setItems(b.items.map((it) => ({ ...it })));
+      setSamplePrompts(Array.isArray(b.sample_prompts) ? [...b.sample_prompts] : []);
+    }
   }, [selectedId, bundles]);
 
   // Lazy-load each pillar's picker list the first time its tab is shown.
@@ -172,6 +181,42 @@ export function BundlesEditor({ lang }: { lang: string }) {
       setSaving(false);
     }
   };
+
+  const savePrompts = async () => {
+    if (!selectedId) return;
+    setSavingPrompts(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `/api/marketplace/admin/bundles?key=${encodeURIComponent(key)}`,
+        {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            id: selectedId,
+            action: "update",
+            samplePrompts: samplePrompts
+              .map((p) => p.trim())
+              .filter((p) => p.length > 0),
+          }),
+        },
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      setPromptsSavedAt(Date.now());
+      await reloadBundles();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Save error");
+    } finally {
+      setSavingPrompts(false);
+    }
+  };
+
+  const addPrompt = () => setSamplePrompts((prev) => [...prev, ""]);
+  const updatePrompt = (i: number, value: string) =>
+    setSamplePrompts((prev) => prev.map((p, idx) => (idx === i ? value : p)));
+  const removePrompt = (i: number) =>
+    setSamplePrompts((prev) => prev.filter((_, idx) => idx !== i));
 
   if (!key) return <Notice tone="warn" text={t.missingKey} />;
   if (error) return <Notice tone="error" text={error} />;
@@ -363,6 +408,77 @@ export function BundlesEditor({ lang }: { lang: string }) {
                     })
                   )}
                 </div>
+              </div>
+            </div>
+
+            {/* Sample prompts editor — non-programmer-friendly examples
+                shown on the public detail page above "what's included". */}
+            <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-fg-dim)]">
+                  {isEs ? "Prompts de ejemplo" : "Sample prompts"} ({samplePrompts.length})
+                </h3>
+                <button
+                  onClick={savePrompts}
+                  disabled={savingPrompts}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[12px] font-semibold px-3 py-1.5 disabled:opacity-50 transition-colors"
+                >
+                  {savingPrompts ? (
+                    <Loader2 size={12} className="animate-spin" strokeWidth={2.4} />
+                  ) : (
+                    <Check size={12} strokeWidth={2.4} />
+                  )}
+                  {savingPrompts
+                    ? t.saving
+                    : isEs
+                      ? "Guardar prompts"
+                      : "Save prompts"}
+                </button>
+              </div>
+              {promptsSavedAt && Date.now() - promptsSavedAt < 4000 && (
+                <p className="mb-2 text-[11px] font-mono text-[var(--color-ok)]">
+                  {t.saved}
+                </p>
+              )}
+              <div className="space-y-2">
+                {samplePrompts.length === 0 && (
+                  <p className="text-[11.5px] text-[var(--color-fg-dim)]">
+                    {isEs
+                      ? "Sin prompts. Agregá ejemplos que el usuario pueda copiar y pegar."
+                      : "No prompts yet. Add examples the user can copy and paste."}
+                  </p>
+                )}
+                {samplePrompts.map((p, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <textarea
+                      value={p}
+                      onChange={(e) => updatePrompt(i, e.target.value)}
+                      rows={2}
+                      placeholder={
+                        isEs
+                          ? "Ej: Listá mis deals abiertos en Salesforce"
+                          : "e.g. List my open deals in Salesforce"
+                      }
+                      className="flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel-2)] px-2.5 py-1.5 text-[12.5px] font-mono outline-none focus:border-[var(--color-accent)]/60 resize-y"
+                    />
+                    <button
+                      onClick={() => removePrompt(i)}
+                      type="button"
+                      aria-label={t.remove}
+                      className="shrink-0 mt-1.5 text-[var(--color-fg-dim)] hover:text-red-400"
+                    >
+                      <Trash2 size={13} strokeWidth={2.4} />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={addPrompt}
+                  type="button"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-[var(--color-border)] hover:border-[var(--color-accent)]/60 text-[var(--color-fg-muted)] text-[11.5px] font-semibold px-2.5 py-1.5"
+                >
+                  <Plus size={11} strokeWidth={2.4} />{" "}
+                  {isEs ? "Agregar prompt" : "Add prompt"}
+                </button>
               </div>
             </div>
           </div>

@@ -78,7 +78,7 @@ export async function GET(req: Request) {
   const { data, error } = await sb
     .from("bundles")
     .select(
-      "id, slug, name, tagline, status, price_cents, currency, purchase_count, sort_order, stripe_product_id, stripe_price_id, created_at, updated_at",
+      "id, slug, name, tagline, status, price_cents, currency, purchase_count, sort_order, stripe_product_id, stripe_price_id, sample_prompts, created_at, updated_at",
     )
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: false });
@@ -199,7 +199,13 @@ export async function PATCH(req: Request) {
   const sb = getSupabaseAdmin();
   if (!sb) return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
 
-  let body: { id?: string; action?: string; items?: unknown };
+  let body: {
+    id?: string;
+    action?: string;
+    items?: unknown;
+    samplePrompts?: unknown;
+    sample_prompts?: unknown;
+  };
   try {
     body = await req.json();
   } catch {
@@ -224,40 +230,70 @@ export async function PATCH(req: Request) {
   }
 
   if (body.action === "update") {
-    // Today the only updatable surface from PATCH is the items array.
-    // Bundle fields (name, tagline, …) require a POST-style re-create
-    // until we wire a full update form.
-    if (body.items === undefined) {
-      return NextResponse.json({ error: "items required for action=update" }, { status: 400 });
+    // PATCH-style update: caller may supply items, samplePrompts, or
+    // both. At least one is required; everything else stays untouched.
+    const promptsRaw = body.samplePrompts ?? body.sample_prompts;
+    const hasItems = body.items !== undefined;
+    const hasPrompts = promptsRaw !== undefined;
+    if (!hasItems && !hasPrompts) {
+      return NextResponse.json(
+        { error: "items or samplePrompts required for action=update" },
+        { status: 400 },
+      );
     }
-    const itemsRes = validateBundleItems(body.items);
-    if (!itemsRes.ok) {
-      return NextResponse.json({ error: "Invalid items", details: itemsRes.errors }, { status: 400 });
-    }
-    const warnings: string[] = [];
-    await Promise.all(
-      itemsRes.data.map(async (it) => {
-        const ok = await bundleItemExists(it.kind, it.slug);
-        if (!ok) warnings.push(`${it.kind}:${it.slug} not found`);
-      }),
-    );
 
-    // Replace-all strategy: delete then insert. Simpler than diffing and
-    // safe because the table has no FK fanout — only bundle_listings
-    // itself references these rows.
-    const del = await sb.from("bundle_listings").delete().eq("bundle_id", bundle.id);
-    if (del.error) return NextResponse.json({ error: del.error.message }, { status: 500 });
-    const linkRows = itemsRes.data.map((it, i) => ({
-      bundle_id: bundle.id,
-      kind: it.kind,
-      item_slug: it.slug,
-      sort_order: it.sortOrder ?? i,
-    }));
-    if (linkRows.length > 0) {
-      const ins = await sb.from("bundle_listings").insert(linkRows);
-      if (ins.error) return NextResponse.json({ error: ins.error.message }, { status: 500 });
+    const warnings: string[] = [];
+
+    if (hasPrompts) {
+      if (!Array.isArray(promptsRaw)) {
+        return NextResponse.json(
+          { error: "samplePrompts must be an array of strings" },
+          { status: 400 },
+        );
+      }
+      const cleaned = (promptsRaw as unknown[])
+        .filter((p): p is string => typeof p === "string" && p.trim().length > 0)
+        .map((p) => p.trim().slice(0, 1000));
+      const upd = await sb
+        .from("bundles")
+        .update({ sample_prompts: cleaned })
+        .eq("id", bundle.id);
+      if (upd.error) {
+        return NextResponse.json({ error: upd.error.message }, { status: 500 });
+      }
     }
-    return NextResponse.json({ ok: true, count: linkRows.length, warnings });
+
+    if (hasItems) {
+      const itemsRes = validateBundleItems(body.items);
+      if (!itemsRes.ok) {
+        return NextResponse.json({ error: "Invalid items", details: itemsRes.errors }, { status: 400 });
+      }
+      await Promise.all(
+        itemsRes.data.map(async (it) => {
+          const ok = await bundleItemExists(it.kind, it.slug);
+          if (!ok) warnings.push(`${it.kind}:${it.slug} not found`);
+        }),
+      );
+
+      // Replace-all strategy: delete then insert. Simpler than diffing and
+      // safe because the table has no FK fanout — only bundle_listings
+      // itself references these rows.
+      const del = await sb.from("bundle_listings").delete().eq("bundle_id", bundle.id);
+      if (del.error) return NextResponse.json({ error: del.error.message }, { status: 500 });
+      const linkRows = itemsRes.data.map((it, i) => ({
+        bundle_id: bundle.id,
+        kind: it.kind,
+        item_slug: it.slug,
+        sort_order: it.sortOrder ?? i,
+      }));
+      if (linkRows.length > 0) {
+        const ins = await sb.from("bundle_listings").insert(linkRows);
+        if (ins.error) return NextResponse.json({ error: ins.error.message }, { status: 500 });
+      }
+      return NextResponse.json({ ok: true, count: linkRows.length, warnings });
+    }
+
+    return NextResponse.json({ ok: true });
   }
 
   if (body.action === "publish") {
