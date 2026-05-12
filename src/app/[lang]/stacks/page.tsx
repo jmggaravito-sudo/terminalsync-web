@@ -2,6 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Package, ShoppingBag } from "lucide-react";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import {
+  isBundleItemKind,
+  resolveBundleItems,
+  type BundleItemKind,
+  type BundleItemRef,
+  type ResolvedBundleItem,
+} from "@/lib/marketplace/bundleItems";
+import { initialsFrom } from "@/components/marketplace/initialsFrom";
 
 export const revalidate = 60;
 
@@ -16,8 +24,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? "Stack Packs · TerminalSync"
     : "Stack Packs · TerminalSync";
   const description = isEs
-    ? "Paquetes curados de conectores listos para tu negocio. Un click, una compra, todo configurado."
-    : "Curated bundles of connectors ready for your business. One click, one purchase, all configured.";
+    ? "Paquetes curados de conectores, skills y CLIs listos para tu negocio. Un click, una compra, todo configurado."
+    : "Curated bundles of connectors, skills, and CLI tools ready for your business. One click, one purchase, all configured.";
   return { title, description, openGraph: { title, description } };
 }
 
@@ -30,10 +38,10 @@ interface BundleCard {
   price_cents: number;
   currency: string;
   purchase_count: number;
-  listings: { slug: string; name: string; logo_url: string; category: string }[];
+  items: ResolvedBundleItem[];
 }
 
-async function fetchBundles(): Promise<BundleCard[]> {
+async function fetchBundles(lang: string): Promise<BundleCard[]> {
   const sb = getSupabaseAdmin();
   if (!sb) return [];
   const { data: bundles, error } = await sb
@@ -47,29 +55,31 @@ async function fetchBundles(): Promise<BundleCard[]> {
 
   const linksRes = await sb
     .from("bundle_listings")
-    .select("bundle_id, sort_order, listing:connector_listings(slug, name, logo_url, category)")
+    .select("bundle_id, kind, item_slug, sort_order")
     .in("bundle_id", bundles.map((b) => b.id));
 
-  type Link = {
+  type Row = {
     bundle_id: string;
+    kind: BundleItemKind;
+    item_slug: string;
     sort_order: number;
-    listing: { slug: string; name: string; logo_url: string; category: string } | null;
   };
-  const linksByBundle = new Map<string, Link[]>();
+  const refsByBundle = new Map<string, BundleItemRef[]>();
   for (const raw of linksRes.data ?? []) {
-    const link = raw as unknown as Link;
-    if (!link.listing) continue;
-    const arr = linksByBundle.get(link.bundle_id) ?? [];
-    arr.push(link);
-    linksByBundle.set(link.bundle_id, arr);
+    const row = raw as Row;
+    if (!isBundleItemKind(row.kind)) continue;
+    const arr = refsByBundle.get(row.bundle_id) ?? [];
+    arr.push({ kind: row.kind, slug: row.item_slug, sortOrder: row.sort_order });
+    refsByBundle.set(row.bundle_id, arr);
   }
 
-  return bundles.map((b) => {
-    const links = (linksByBundle.get(b.id) ?? []).sort(
-      (a, b) => a.sort_order - b.sort_order,
-    );
-    return { ...b, listings: links.map((l) => l.listing!) };
-  });
+  return Promise.all(
+    bundles.map(async (b) => {
+      const refs = refsByBundle.get(b.id) ?? [];
+      const items = await resolveBundleItems(refs, lang);
+      return { ...b, items };
+    }),
+  );
 }
 
 function formatPrice(cents: number, currency: string): string {
@@ -80,10 +90,23 @@ function formatPrice(cents: number, currency: string): string {
   }).format(cents / 100);
 }
 
+function inclusionLine(items: ResolvedBundleItem[], isEs: boolean): string {
+  const counts = { connector: 0, skill: 0, cli: 0 };
+  for (const it of items) counts[it.kind]++;
+  const parts: string[] = [];
+  if (counts.connector > 0)
+    parts.push(`${counts.connector} ${isEs ? "conectores" : "connectors"}`);
+  if (counts.skill > 0)
+    parts.push(`${counts.skill} ${isEs ? "skills" : "skills"}`);
+  if (counts.cli > 0)
+    parts.push(`${counts.cli} CLI`);
+  return parts.join(" · ");
+}
+
 export default async function StacksIndex({ params }: Props) {
   const { lang } = await params;
   const isEs = lang === "es";
-  const bundles = await fetchBundles();
+  const bundles = await fetchBundles(lang);
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
@@ -102,8 +125,8 @@ export default async function StacksIndex({ params }: Props) {
         </h1>
         <p className="mt-5 text-[15.5px] text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed">
           {isEs
-            ? "Conectores curados y configurados para casos de uso reales. Un solo pago, instalación automática en TerminalSync, garantía de 14 días."
-            : "Curated and pre-configured connectors for real use cases. One-time payment, automatic install in TerminalSync, 14-day guarantee."}
+            ? "Conectores, skills y CLIs curados para casos de uso reales. Un solo pago, instalación automática en TerminalSync, garantía de 14 días."
+            : "Connectors, skills, and CLI tools curated for real use cases. One-time payment, automatic install in TerminalSync, 14-day guarantee."}
         </p>
       </section>
 
@@ -149,8 +172,8 @@ export default async function StacksIndex({ params }: Props) {
               </span>
               <span>
                 {isEs
-                  ? "Abrís TerminalSync y los conectores aparecen instalados."
-                  : "Open TerminalSync and the connectors are already installed."}
+                  ? "Abrís TerminalSync y todo aparece instalado."
+                  : "Open TerminalSync and everything is already installed."}
               </span>
             </li>
             <li className="flex gap-3">
@@ -178,6 +201,7 @@ export default async function StacksIndex({ params }: Props) {
 function BundleCardItem({ bundle, lang }: { bundle: BundleCard; lang: string }) {
   const isEs = lang === "es";
   const price = formatPrice(bundle.price_cents, bundle.currency);
+  const summary = inclusionLine(bundle.items, isEs);
   return (
     <Link
       href={`/${lang}/stacks/${bundle.slug}`}
@@ -197,34 +221,34 @@ function BundleCardItem({ bundle, lang }: { bundle: BundleCard; lang: string }) 
         </span>
       </div>
 
-      {/* Connector logos preview */}
+      {/* Mixed-pillar logos preview (no kind chips here — just visual mix). */}
       <div className="mt-5 flex items-center gap-2">
-        {bundle.listings.slice(0, 6).map((l) => (
+        {bundle.items.slice(0, 6).map((it) => (
           <div
-            key={l.slug}
+            key={`${it.kind}:${it.slug}`}
             className="h-8 w-8 rounded-lg bg-[var(--color-panel-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden"
-            title={l.name}
+            title={`${it.name} (${it.kind})`}
           >
-            {l.logo_url ? (
+            {it.logo ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={l.logo_url} alt={l.name} className="h-5 w-5 object-contain" />
+              <img src={it.logo} alt={it.name} className="h-5 w-5 object-contain" />
             ) : (
               <span className="text-[10px] font-mono text-[var(--color-fg-dim)]">
-                {l.name.slice(0, 2).toUpperCase()}
+                {initialsFrom(it.name)}
               </span>
             )}
           </div>
         ))}
-        {bundle.listings.length > 6 && (
+        {bundle.items.length > 6 && (
           <span className="text-[11px] font-mono text-[var(--color-fg-dim)]">
-            +{bundle.listings.length - 6}
+            +{bundle.items.length - 6}
           </span>
         )}
       </div>
 
       <div className="mt-5 flex items-center justify-between">
         <span className="text-[12px] text-[var(--color-fg-dim)]">
-          {bundle.listings.length} {isEs ? "conectores" : "connectors"}
+          {summary || `${bundle.items.length} ${isEs ? "ítems" : "items"}`}
           {bundle.purchase_count > 0 && (
             <> · {bundle.purchase_count} {isEs ? "compras" : "buyers"}</>
           )}
