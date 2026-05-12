@@ -14,6 +14,7 @@ import {
 import { initialsFrom } from "@/components/marketplace/initialsFrom";
 import { BuyButton } from "./BuyButton";
 import { CopyCommand } from "./CopyCommand";
+import { SamplePrompts } from "./SamplePrompts";
 
 export const revalidate = 60;
 
@@ -32,6 +33,7 @@ interface BundleDetail {
   price_cents: number;
   currency: string;
   purchase_count: number;
+  sample_prompts: string[];
   items: ResolvedBundleItem[];
 }
 
@@ -44,7 +46,7 @@ async function fetchBundle(
   const bundleRes = await sb
     .from("bundles")
     .select(
-      "id, slug, name, tagline, description_md, hero_subtitle, hero_image_url, price_cents, currency, purchase_count",
+      "id, slug, name, tagline, description_md, hero_subtitle, hero_image_url, price_cents, currency, purchase_count, sample_prompts",
     )
     .eq("slug", slug)
     .eq("status", "active")
@@ -65,7 +67,14 @@ async function fetchBundle(
   }
   const items = await resolveBundleItems(refs, lang);
 
-  return { ...bundleRes.data, items };
+  const samplePrompts = Array.isArray(
+    (bundleRes.data as { sample_prompts?: unknown }).sample_prompts,
+  )
+    ? ((bundleRes.data as { sample_prompts: unknown[] })
+        .sample_prompts.filter((p): p is string => typeof p === "string"))
+    : [];
+
+  return { ...bundleRes.data, sample_prompts: samplePrompts, items };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -209,6 +218,9 @@ export default async function BundleDetailPage({ params }: Props) {
           </aside>
         </div>
       </section>
+
+      {/* Sample prompts — copy/paste examples (renders nothing if empty) */}
+      <SamplePrompts prompts={bundle.sample_prompts} isEs={isEs} />
 
       {/* What's included — mixed pillar list */}
       <section className="mx-auto max-w-5xl px-6 pb-12">
