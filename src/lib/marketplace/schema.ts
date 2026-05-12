@@ -3,6 +3,18 @@
 // validation lib, swap these out wholesale.
 
 import { isValidPriceCents } from "./pricing";
+import { isBundleItemKind, type BundleItemKind } from "./bundleItems";
+
+export type { BundleItemKind } from "./bundleItems";
+
+/** Input shape for a single item inside a bundle. `sortOrder` is
+ *  optional on the wire — the API derives it from array position when
+ *  callers omit it (so a simple JSON array of {kind, slug} still works). */
+export interface BundleItemInput {
+  kind: BundleItemKind;
+  slug: string;
+  sortOrder?: number;
+}
 
 export type ListingCategory =
   | "productivity"
@@ -158,6 +170,45 @@ export function validateListingDraft(
       priceCents,
     },
   };
+}
+
+/** Validate the `items` array on a bundle create/update payload. Each
+ *  element must be {kind, slug} where `kind` is one of the polymorphic
+ *  pillar names. `sortOrder` is optional; missing values are filled from
+ *  array index by the caller. */
+export function validateBundleItems(
+  raw: unknown,
+): { ok: true; data: BundleItemInput[] } | { ok: false; errors: ValidationError[] } {
+  if (!Array.isArray(raw) || raw.length === 0) {
+    return { ok: false, errors: [{ field: "items", message: "must be a non-empty array" }] };
+  }
+  const errors: ValidationError[] = [];
+  const out: BundleItemInput[] = [];
+  raw.forEach((entry, i) => {
+    const obj = (entry ?? {}) as Record<string, unknown>;
+    const kind = obj.kind;
+    const slug = stringOf(obj.slug);
+    if (!isBundleItemKind(kind)) {
+      errors.push({ field: `items[${i}].kind`, message: "must be 'connector', 'skill', or 'cli'" });
+      return;
+    }
+    if (!slug || !SLUG_RE.test(slug)) {
+      errors.push({ field: `items[${i}].slug`, message: "must be a valid slug" });
+      return;
+    }
+    const sortOrderRaw = obj.sortOrder;
+    let sortOrder: number | undefined;
+    if (sortOrderRaw !== undefined && sortOrderRaw !== null) {
+      if (typeof sortOrderRaw !== "number" || !Number.isFinite(sortOrderRaw)) {
+        errors.push({ field: `items[${i}].sortOrder`, message: "must be a finite number" });
+        return;
+      }
+      sortOrder = sortOrderRaw;
+    }
+    out.push({ kind, slug, sortOrder });
+  });
+  if (errors.length > 0) return { ok: false, errors };
+  return { ok: true, data: out };
 }
 
 function stringOf(v: unknown): string | undefined {

@@ -4,7 +4,16 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { CheckCircle2, ShieldCheck, Download, Package } from "lucide-react";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import {
+  isBundleItemKind,
+  resolveBundleItems,
+  type BundleItemKind,
+  type BundleItemRef,
+  type ResolvedBundleItem,
+} from "@/lib/marketplace/bundleItems";
+import { initialsFrom } from "@/components/marketplace/initialsFrom";
 import { BuyButton } from "./BuyButton";
+import { CopyCommand } from "./CopyCommand";
 
 export const revalidate = 60;
 
@@ -23,18 +32,13 @@ interface BundleDetail {
   price_cents: number;
   currency: string;
   purchase_count: number;
-  listings: {
-    id: string;
-    slug: string;
-    name: string;
-    tagline: string;
-    category: string;
-    logo_url: string;
-    description_md: string;
-  }[];
+  items: ResolvedBundleItem[];
 }
 
-async function fetchBundle(slug: string): Promise<BundleDetail | null> {
+async function fetchBundle(
+  slug: string,
+  lang: string,
+): Promise<BundleDetail | null> {
   const sb = getSupabaseAdmin();
   if (!sb) return null;
   const bundleRes = await sb
@@ -49,29 +53,25 @@ async function fetchBundle(slug: string): Promise<BundleDetail | null> {
 
   const linksRes = await sb
     .from("bundle_listings")
-    .select(
-      "sort_order, listing:connector_listings(id, slug, name, tagline, category, logo_url, description_md)",
-    )
+    .select("kind, item_slug, sort_order")
     .eq("bundle_id", bundleRes.data.id);
 
-  type Link = {
-    sort_order: number;
-    listing: BundleDetail["listings"][number] | null;
-  };
-  const links = (linksRes.data ?? []) as unknown as Link[];
-  const listings = links
-    .filter((l) => l.listing !== null)
-    .sort((a, b) => a.sort_order - b.sort_order)
-    .map((l) => l.listing!);
+  type Row = { kind: BundleItemKind; item_slug: string; sort_order: number };
+  const refs: BundleItemRef[] = [];
+  for (const raw of linksRes.data ?? []) {
+    const row = raw as Row;
+    if (!isBundleItemKind(row.kind)) continue;
+    refs.push({ kind: row.kind, slug: row.item_slug, sortOrder: row.sort_order });
+  }
+  const items = await resolveBundleItems(refs, lang);
 
-  return { ...bundleRes.data, listings };
+  return { ...bundleRes.data, items };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, slug } = await params;
-  const bundle = await fetchBundle(slug);
+  const bundle = await fetchBundle(slug, lang);
   if (!bundle) return {};
-  const isEs = lang === "es";
   const title = `${bundle.name} · TerminalSync Stack Pack`;
   const description = bundle.hero_subtitle ?? bundle.tagline;
   return {
@@ -102,12 +102,42 @@ function formatPrice(cents: number, currency: string): string {
   }).format(cents / 100);
 }
 
+function kindLabel(kind: BundleItemKind, isEs: boolean): string {
+  switch (kind) {
+    case "connector":
+      return isEs ? "Conector" : "Connector";
+    case "skill":
+      return "Skill";
+    case "cli":
+      return "CLI";
+  }
+}
+
+function countsByKind(items: ResolvedBundleItem[]): Record<BundleItemKind, number> {
+  const out: Record<BundleItemKind, number> = { connector: 0, skill: 0, cli: 0 };
+  for (const it of items) out[it.kind]++;
+  return out;
+}
+
+function inclusionSummary(items: ResolvedBundleItem[], isEs: boolean): string {
+  const c = countsByKind(items);
+  const parts: string[] = [];
+  if (c.connector > 0)
+    parts.push(`${c.connector} ${isEs ? "conectores" : "connectors"}`);
+  if (c.skill > 0)
+    parts.push(`${c.skill} ${isEs ? "skills" : "skills"}`);
+  if (c.cli > 0)
+    parts.push(`${c.cli} CLI`);
+  return parts.join(" · ");
+}
+
 export default async function BundleDetailPage({ params }: Props) {
   const { lang, slug } = await params;
-  const bundle = await fetchBundle(slug);
+  const bundle = await fetchBundle(slug, lang);
   if (!bundle) notFound();
   const isEs = lang === "es";
   const price = formatPrice(bundle.price_cents, bundle.currency);
+  const summary = inclusionSummary(bundle.items, isEs);
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
@@ -153,9 +183,7 @@ export default async function BundleDetailPage({ params }: Props) {
               </span>
             </div>
             <p className="mt-2 text-[12.5px] text-[var(--color-fg-muted)]">
-              {isEs
-                ? `Incluye ${bundle.listings.length} conectores configurados.`
-                : `Includes ${bundle.listings.length} configured connectors.`}
+              {summary || (isEs ? "Pack curado" : "Curated pack")}
             </p>
             <div className="mt-5">
               <Suspense fallback={null}>
@@ -182,36 +210,18 @@ export default async function BundleDetailPage({ params }: Props) {
         </div>
       </section>
 
-      {/* What's included */}
+      {/* What's included — mixed pillar list */}
       <section className="mx-auto max-w-5xl px-6 pb-12">
         <h2 className="text-[14px] font-mono uppercase tracking-[0.16em] text-[var(--color-fg-muted)] mb-5">
           {isEs ? "Qué incluye" : "What's included"}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {bundle.listings.map((l) => (
-            <article
-              key={l.id}
-              className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5"
-            >
-              <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-xl bg-[var(--color-panel-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden shrink-0">
-                  {l.logo_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={l.logo_url} alt={l.name} className="h-6 w-6 object-contain" />
-                  ) : (
-                    <span className="text-[11px] font-mono text-[var(--color-fg-dim)]">
-                      {l.name.slice(0, 2).toUpperCase()}
-                    </span>
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <h3 className="text-[14px] font-semibold tracking-tight">{l.name}</h3>
-                  <p className="mt-1 text-[12.5px] text-[var(--color-fg-muted)] leading-relaxed line-clamp-2">
-                    {l.tagline}
-                  </p>
-                </div>
-              </div>
-            </article>
+          {bundle.items.map((item) => (
+            <BundleItemCard
+              key={`${item.kind}:${item.slug}`}
+              item={item}
+              isEs={isEs}
+            />
           ))}
         </div>
       </section>
@@ -241,13 +251,85 @@ export default async function BundleDetailPage({ params }: Props) {
               </h3>
               <p className="mt-2 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
                 {isEs
-                  ? "Los conectores se instalan automáticamente en la app de TerminalSync (gratis para descargar). Si todavía no la tenés, te llevamos al download después de la compra."
-                  : "Connectors install automatically in the TerminalSync app (free download). If you don't have it yet, we'll point you to the download after purchase."}
+                  ? "Conectores y CLI tools se instalan automáticamente en la app de TerminalSync (gratis para descargar). Skills se cargan en tu Claude/Codex con un clic. Si todavía no tenés la app, te llevamos al download después de la compra."
+                  : "Connectors and CLI tools install automatically in the TerminalSync app (free download). Skills load into your Claude/Codex with one click. If you don't have the app yet, we'll point you to the download after purchase."}
               </p>
             </div>
           </div>
         </div>
       </section>
     </main>
+  );
+}
+
+function BundleItemCard({
+  item,
+  isEs,
+}: {
+  item: ResolvedBundleItem;
+  isEs: boolean;
+}) {
+  const label = kindLabel(item.kind, isEs);
+  return (
+    <article className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5 flex flex-col gap-3">
+      <div className="flex items-start gap-3">
+        <div className="h-10 w-10 rounded-xl bg-[var(--color-panel-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden shrink-0">
+          {item.logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={item.logo}
+              alt={item.name}
+              className="h-6 w-6 object-contain"
+            />
+          ) : (
+            <span className="text-[11px] font-mono text-[var(--color-fg-dim)]">
+              {initialsFrom(item.name)}
+            </span>
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="text-[14px] font-semibold tracking-tight">
+              {item.name}
+            </h3>
+            <span className="inline-flex items-center text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--color-accent)] border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 px-1.5 py-0.5 rounded-full">
+              {label}
+            </span>
+          </div>
+          {item.tagline && (
+            <p className="mt-1 text-[12.5px] text-[var(--color-fg-muted)] leading-relaxed line-clamp-2">
+              {item.tagline}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Kind-specific CTA */}
+      {item.kind === "cli" && item.installCommand ? (
+        <div className="space-y-1.5">
+          <CopyCommand command={item.installCommand} isEs={isEs} />
+          <Link
+            href={item.href}
+            className="text-[11.5px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-dim)] hover:text-[var(--color-accent)] transition-colors"
+          >
+            {isEs ? "Ver detalle" : "View details"} →
+          </Link>
+        </div>
+      ) : item.kind === "skill" ? (
+        <Link
+          href={item.href}
+          className="text-[11.5px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-dim)] hover:text-[var(--color-accent)] transition-colors"
+        >
+          {isEs ? "Ver skill" : "View skill"} →
+        </Link>
+      ) : (
+        <Link
+          href={item.href}
+          className="text-[11.5px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-dim)] hover:text-[var(--color-accent)] transition-colors"
+        >
+          {isEs ? "Ver conector" : "View connector"} →
+        </Link>
+      )}
+    </article>
   );
 }

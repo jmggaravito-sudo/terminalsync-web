@@ -397,14 +397,23 @@ async function handle(event: Stripe.Event) {
       if (bundleRefund.error) {
         console.error("[bundle] refund sync failed", bundleRefund.error.message);
       } else if (bundleRefund.data && bundleRefund.data.length > 0) {
-        // For each refunded purchase, mark its bundle's listings
-        // uninstalled FOR THIS USER ONLY (don't touch other users).
+        // For each refunded purchase, mark this user's connector installs
+        // tied to the bundle as 'uninstalled'. Skills and CLI items have
+        // no install table (they're delivered as content / install
+        // command, not as a grant row) so the refund is a no-op for them.
         for (const purchase of bundleRefund.data) {
           const listingsRes = await sb
             .from("bundle_listings")
-            .select("listing_id")
-            .eq("bundle_id", purchase.bundle_id);
-          const listingIds = (listingsRes.data ?? []).map((l) => l.listing_id);
+            .select("kind, item_slug")
+            .eq("bundle_id", purchase.bundle_id)
+            .eq("kind", "connector");
+          const slugs = (listingsRes.data ?? []).map((l) => l.item_slug as string);
+          if (slugs.length === 0) continue;
+          const connRes = await sb
+            .from("connector_listings")
+            .select("id")
+            .in("slug", slugs);
+          const listingIds = (connRes.data ?? []).map((r) => r.id as string);
           if (listingIds.length > 0) {
             await sb
               .from("connector_installs")
@@ -525,19 +534,30 @@ async function handleBundleCheckout(session: Stripe.Checkout.Session) {
     return;
   }
 
-  // 2) Grant access to every listing in the bundle by inserting an
-  //    install row per listing for this user. The desktop app already
-  //    knows how to consume connector_installs rows on its next sync —
-  //    no extra surface needed.
+  // 2) Grant access to every CONNECTOR in the bundle by inserting an
+  //    install row per listing for this user. Skills and CLI tools have
+  //    no install table — skills are markdown the desktop app reads
+  //    server-side, CLI tools are installed by their own package
+  //    manager. The desktop app already knows how to consume
+  //    connector_installs rows on its next sync.
   const blRes = await sb
     .from("bundle_listings")
-    .select("listing_id")
-    .eq("bundle_id", bundleId);
+    .select("kind, item_slug")
+    .eq("bundle_id", bundleId)
+    .eq("kind", "connector");
   if (blRes.error) {
     console.error("[bundle] failed to load listings", blRes.error.message);
     return;
   }
-  const listingIds = (blRes.data ?? []).map((b) => b.listing_id);
+  const slugs = (blRes.data ?? []).map((b) => b.item_slug as string);
+  let listingIds: string[] = [];
+  if (slugs.length > 0) {
+    const connRes = await sb
+      .from("connector_listings")
+      .select("id")
+      .in("slug", slugs);
+    listingIds = (connRes.data ?? []).map((r) => r.id as string);
+  }
 
   // For each listing, fetch the latest version_id so the install row
   // pins to a specific manifest. Using the same pattern as
