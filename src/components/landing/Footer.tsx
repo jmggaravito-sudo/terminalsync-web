@@ -47,9 +47,19 @@ export function Footer({ dict }: { dict: Dict }) {
         { key: "demos", label: dict.footer.links.demos, href: `/${lang}#demos` },
         { key: "pricing", label: dict.footer.links.pricing, href: `/${lang}#pricing` },
         { key: "download", label: dict.footer.links.download, href: "/api/download" },
+        {
+          key: "ai-terminal",
+          label: lang === "es" ? "Terminal IA" : "AI terminal",
+          href: `/${lang}/ai-terminal`,
+        },
         { key: "marketplace", label: dict.footer.links.marketplace, href: `/${lang}/marketplace` },
         { key: "connectors", label: dict.footer.links.connectors, href: `/${lang}/connectors` },
         { key: "skills", label: dict.footer.links.skills, href: `/${lang}/skills` },
+        {
+          key: "guides",
+          label: lang === "es" ? "Guías IA" : "AI guides",
+          href: `/${lang}/guides/best-ai-terminal-for-mac`,
+        },
       ],
     },
     {

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { listSlugs as listConnectorSlugs } from "@/lib/connectors";
 import { listSkillSlugs } from "@/lib/skills";
 import { TOOL_SLUGS } from "@/lib/vsPages";
+import { GEO_PAGE_SLUGS } from "@/lib/geoPages";
 
 const BASE = "https://terminalsync.ai";
 const LANGS = ["es", "en"] as const;
@@ -79,6 +80,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: now,
         changeFrequency: "monthly",
         priority: 0.7,
+      });
+    }
+    for (const slug of GEO_PAGE_SLUGS) {
+      entries.push({
+        url: `${BASE}/${lang}/guides/${slug}`,
+        lastModified: now,
+        changeFrequency: "monthly",
+        priority: 0.75,
       });
     }
   }

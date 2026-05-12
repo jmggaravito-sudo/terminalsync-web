@@ -24,6 +24,17 @@ encrypted secrets, and persistent project memory from another Mac without losing
 TerminalSync is not only a terminal and not only an AI chat app. It is a continuity layer for AI workspaces:
 persistence, cross-device sync, multi-AI context, memory, connectors, secrets, and remote access.
 
+## High-intent guides
+
+- Sync Claude Code between Macs: https://terminalsync.ai/en/guides/sync-claude-code-between-macs
+- Sync Codex between Macs: https://terminalsync.ai/en/guides/sync-codex-between-macs
+- Sync Gemini CLI between Macs: https://terminalsync.ai/en/guides/sync-gemini-cli-between-macs
+- TerminalSync vs Warp: https://terminalsync.ai/en/guides/terminal-sync-vs-warp
+- TerminalSync vs Cursor: https://terminalsync.ai/en/guides/terminal-sync-vs-cursor
+- Persistent memory for AI agents: https://terminalsync.ai/en/guides/persistent-memory-for-ai-agents
+- Best AI terminal for Mac: https://terminalsync.ai/en/guides/best-ai-terminal-for-mac
+- AI terminal for project managers: https://terminalsync.ai/en/guides/ai-terminal-for-project-managers
+
 ## Official pages
 
 - Home: https://terminalsync.ai/
