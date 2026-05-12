@@ -113,7 +113,7 @@ export async function listCliToolsFromDb(
     const { data, error } = await sb
       .from("cli_tool_listings")
       .select(
-        "slug,name,tagline,description_md,category,logo_url,binary,install_command,auth_command,vendor,homepage,repo_url,status",
+        "slug,name,tagline,description_md,category,logo_url,cli_binary,install_command,auth_command,vendor,homepage,repo_url,status",
       )
       .eq("status", "approved");
     if (error || !data) return [];
@@ -139,7 +139,7 @@ export async function listCliToolsFromDb(
             ? row.logo_url
             : `/cli-tools/${slug}.svg`,
         category,
-        binary: String(row.binary ?? slug),
+        binary: String(row.cli_binary ?? slug),
         installCommand: String(row.install_command ?? ""),
         authCommand:
           typeof row.auth_command === "string" && row.auth_command

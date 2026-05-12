@@ -1,5 +1,6 @@
 ---
 name: Wrangler
+logo: https://github.com/cloudflare.png?size=128
 binary: wrangler
 installCommand: npm i -g wrangler
 authCommand: wrangler login

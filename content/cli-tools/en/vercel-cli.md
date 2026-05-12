@@ -1,5 +1,6 @@
 ---
 name: Vercel CLI
+logo: https://github.com/vercel.png?size=128
 binary: vercel
 installCommand: npm i -g vercel
 authCommand: vercel login

@@ -136,7 +136,8 @@ export async function POST(req: Request) {
           ? raw.install_command.trim()
           : "";
       if (!binary || !installCommand) continue;
-      row.binary = binary.slice(0, 80);
+      // DB column is `cli_binary` — `binary` is a PG reserved keyword.
+      row.cli_binary = binary.slice(0, 80);
       row.install_command = installCommand.slice(0, 300);
       row.auth_command =
         typeof raw.auth_command === "string"
