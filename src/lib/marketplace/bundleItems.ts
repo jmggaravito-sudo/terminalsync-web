@@ -30,6 +30,11 @@ export interface BundleItemRef {
   kind: BundleItemKind;
   slug: string;
   sortOrder: number;
+  /** Optional per-item rationale from the curator (e.g. "para responder
+   *  mensajes sin tener que copiar y pegar"). Rendered on the public
+   *  detail page so non-programmers know WHY each item belongs in the
+   *  bundle without reading the kind badge. */
+  whyItHelps?: string;
 }
 
 export interface ResolvedBundleItem {
@@ -37,6 +42,9 @@ export interface ResolvedBundleItem {
   slug: string;
   name: string;
   tagline: string;
+  /** Carries through from BundleItemRef so the page can render the
+   *  curator's plain-language rationale per item. */
+  whyItHelps?: string;
   /** https URL or /public-relative path. May be empty when nothing is set. */
   logo: string;
   /** Best CTA URL for the kind: deep-link for connector w/ manifest,
@@ -269,10 +277,10 @@ export async function resolveBundleItems(
   lang: string,
 ): Promise<ResolvedBundleItem[]> {
   const resolved = await Promise.all(
-    items.map(async (it) => {
+    items.map(async (it): Promise<ResolvedBundleItem | null> => {
       const r = await resolveBundleItem(it.kind, it.slug, lang);
       if (!r) return null;
-      return { ...r, sortOrder: it.sortOrder };
+      return { ...r, sortOrder: it.sortOrder, whyItHelps: it.whyItHelps };
     }),
   );
   return resolved

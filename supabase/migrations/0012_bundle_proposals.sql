@@ -99,3 +99,12 @@ alter table bundle_proposals enable row level security;
 -- public detail page can render them above "what's included".
 alter table bundles
   add column if not exists sample_prompts text[] not null default '{}';
+
+-- ─── C. Add why_it_helps to bundle_listings ───────────────────────────
+-- The curator's per-item rationale ("para responder mensajes sin tener
+-- que copiar y pegar") is the most user-friendly piece of copy the AI
+-- produces. We persist it so the public bundle page can render it next
+-- to each item — non-programmers don't read "Connector" badges, they
+-- read "porque esto te ayuda a X".
+alter table bundle_listings
+  add column if not exists why_it_helps text;

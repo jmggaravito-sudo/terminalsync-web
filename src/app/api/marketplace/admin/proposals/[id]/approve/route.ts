@@ -149,6 +149,7 @@ export async function POST(
       kind: it.kind,
       item_slug: it.slug,
       sort_order: it.sortOrder ?? i,
+      why_it_helps: it.whyItHelps || null,
     }));
   if (linkRows.length === 0) {
     // Roll back the bundle so we don't leave an empty pack lying around.

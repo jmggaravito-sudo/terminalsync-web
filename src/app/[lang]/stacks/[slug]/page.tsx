@@ -111,14 +111,18 @@ function formatPrice(cents: number, currency: string): string {
   }).format(cents / 100);
 }
 
+// User-facing labels (no dev jargon). The curator pipeline targets
+// non-programmers, so we never show "Connector" / "MCP" / "CLI" on
+// public pages. Internal kind values stay the same — this is purely
+// the display name.
 function kindLabel(kind: BundleItemKind, isEs: boolean): string {
   switch (kind) {
     case "connector":
-      return isEs ? "Conector" : "Connector";
+      return isEs ? "Integración" : "Integration";
     case "skill":
-      return "Skill";
+      return isEs ? "Receta" : "Recipe";
     case "cli":
-      return "CLI";
+      return isEs ? "Herramienta" : "Tool";
   }
 }
 
@@ -132,11 +136,11 @@ function inclusionSummary(items: ResolvedBundleItem[], isEs: boolean): string {
   const c = countsByKind(items);
   const parts: string[] = [];
   if (c.connector > 0)
-    parts.push(`${c.connector} ${isEs ? "conectores" : "connectors"}`);
+    parts.push(`${c.connector} ${isEs ? "integraciones" : "integrations"}`);
   if (c.skill > 0)
-    parts.push(`${c.skill} ${isEs ? "skills" : "skills"}`);
+    parts.push(`${c.skill} ${isEs ? "recetas" : "recipes"}`);
   if (c.cli > 0)
-    parts.push(`${c.cli} CLI`);
+    parts.push(`${c.cli} ${isEs ? "herramientas" : "tools"}`);
   return parts.join(" · ");
 }
 
@@ -263,8 +267,8 @@ export default async function BundleDetailPage({ params }: Props) {
               </h3>
               <p className="mt-2 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
                 {isEs
-                  ? "Conectores y CLI tools se instalan automáticamente en la app de TerminalSync (gratis para descargar). Skills se cargan en tu Claude/Codex con un clic. Si todavía no tenés la app, te llevamos al download después de la compra."
-                  : "Connectors and CLI tools install automatically in the TerminalSync app (free download). Skills load into your Claude/Codex with one click. If you don't have the app yet, we'll point you to the download after purchase."}
+                  ? "Todo se instala automáticamente en la app de TerminalSync (gratis para descargar). Las recetas se cargan en tu IA con un clic. Si todavía no tenés la app, te llevamos a la descarga después de la compra."
+                  : "Everything installs automatically in the TerminalSync app (free download). Recipes load into your AI with one click. If you don't have the app yet, we'll point you to the download after purchase."}
               </p>
             </div>
           </div>
@@ -308,9 +312,13 @@ function BundleItemCard({
               {label}
             </span>
           </div>
-          {item.tagline && (
+          {/* Prefer the curator's per-item rationale (plain-language
+              "why this helps you") over the raw catalog tagline, which
+              tends to be more technical. Falls back to tagline when no
+              whyItHelps was set (manually-added items, legacy bundles). */}
+          {(item.whyItHelps || item.tagline) && (
             <p className="mt-1 text-[12.5px] text-[var(--color-fg-muted)] leading-relaxed line-clamp-2">
-              {item.tagline}
+              {item.whyItHelps || item.tagline}
             </p>
           )}
         </div>

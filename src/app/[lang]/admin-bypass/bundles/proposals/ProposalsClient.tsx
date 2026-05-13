@@ -518,13 +518,28 @@ function ProposalCard({
   );
 }
 
+// Same user-facing labels as the public bundle page — admin previews
+// what the user will see, so dev terms don't leak into JM's review.
+function adminKindLabel(kind: string): string {
+  switch (kind) {
+    case "connector":
+      return "Integración";
+    case "skill":
+      return "Receta";
+    case "cli":
+      return "Herramienta";
+    default:
+      return kind;
+  }
+}
+
 function ItemRow({ item }: { item: ProposedItem }) {
   return (
     <li className="flex flex-wrap items-baseline gap-2 text-[12.5px]">
       <span className="inline-flex items-center text-[9.5px] font-mono uppercase tracking-[0.14em] text-[var(--color-accent)] border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 px-1.5 py-0.5 rounded-full shrink-0">
-        {item.kind}
+        {adminKindLabel(item.kind)}
       </span>
-      <code className="font-mono text-[var(--color-fg)]">{item.slug}</code>
+      <code className="font-mono text-[var(--color-fg-dim)] text-[11px]">{item.slug}</code>
       {item.whyItHelps && (
         <span className="text-[11.5px] text-[var(--color-fg-muted)]">
           — {item.whyItHelps}
