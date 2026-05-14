@@ -712,6 +712,17 @@ export async function GET() {
     projects.set(it.project, cur);
   }
 
+  // Totals must agree with the per-workflow counts the dashboard renders.
+  // recentExecs only contains the global 250-row pull; low-frequency
+  // workflows whose executions were back-filled per-workflow (the
+  // `missing` branch above) are NOT in there, so summing recentExecs
+  // under-counted both runs and errors — the dashboard reported
+  // "errors24h: 0" while several daily crons had been red all morning.
+  // Reduce over `items` instead so the totals are exactly the sum of
+  // the cards.
+  const runs24h = items.reduce((s, i) => s + i.todayCount, 0);
+  const errors24h = items.reduce((s, i) => s + i.todayError, 0);
+
   return NextResponse.json({
     items,
     projects: Array.from(projects.entries()).map(([name, stats]) => ({
@@ -721,8 +732,8 @@ export async function GET() {
     totals: {
       workflows: items.length,
       active: items.filter((i) => i.active).length,
-      runs24h: recentExecs.length,
-      errors24h: recentExecs.filter((e) => e.status === "error").length,
+      runs24h,
+      errors24h,
     },
     n8nUrl: N8N_URL,
   });
