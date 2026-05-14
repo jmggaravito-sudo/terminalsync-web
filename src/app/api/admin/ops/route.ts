@@ -25,9 +25,30 @@ const N8N_API_KEY = process.env.N8N_API_KEY ?? "";
  * register it. The dashboard falls back to project-from-prefix detection
  * for any ID not in this map, so adding entries is purely additive.
  */
+/**
+ * Per-workflow output destination. When a workflow accumulates rows
+ * into a sheet/table/admin page over time, the dashboard surfaces a
+ * "Ver resultados" button so JM can click straight to the artifact
+ * (instead of scrolling individual exec drill-downs to reconstruct).
+ *
+ * - `resultUrl` can be an internal Next route (e.g. `/admin/trends`)
+ *   or an absolute URL (Sheets, GHL pipeline, etc.). Internal routes
+ *   get the current `[lang]` prefix applied client-side.
+ * - `resultLabel` is the button label. Keep it 2-3 words.
+ *
+ * Workflows that don't produce a long-lived artifact (event-driven
+ * bots whose "result" is a sent WhatsApp message and lives in the
+ * customer's chat) are intentionally NOT entered here.
+ */
 const WORKFLOW_META: Record<
   string,
-  { project: string; description: string; cadence?: string }
+  {
+    project: string;
+    description: string;
+    cadence?: string;
+    resultUrl?: string;
+    resultLabel?: string;
+  }
 > = {
   // ─────────────── MueveTuCarro ───────────────
   FMrDyieW4XjSnmpr: {
@@ -373,42 +394,56 @@ const WORKFLOW_META: Record<
     description:
       "Trends Radar — todas las mañanas a las 6am COL captura GitHub trending + HackerNews top + Reddit top de 7 subreddits + universidades enseñando IA en YouTube. Resultado en /admin/trends.",
     cadence: "diario 6am COL",
+    resultUrl: "/admin/trends",
+    resultLabel: "Ver trends",
   },
   "7ooGFm2XvT8SLdde": {
     project: "TerminalSync",
     description:
       "Captura diaria Influencers (YT + X) — busca creators que mencionan AI tools, los acumula en la DB. NO manda emails — está pausado hasta que digás 'launch'.",
     cadence: "diario",
+    resultUrl: "/admin/discovery",
+    resultLabel: "Ver influencers",
   },
   "3ad53aIJo6QA1vI0": {
     project: "TerminalSync",
     description:
       "Captura diaria Marketplace Publishers — busca herramientas/marketplaces que podrían ser publishers de TerminalSync. Cross-dedup con la DB de creators.",
     cadence: "diario",
+    resultUrl: "/admin/marketplace",
+    resultLabel: "Ver marketplace",
   },
   "5JJPordwuTwaPPPK": {
     project: "TerminalSync",
     description:
       "Re-enrich Influencers DB — refresca emails y datos de contacto de los creators ya capturados. Mantiene la DB actualizada para cuando lances outreach.",
     cadence: "cada 6 horas",
+    resultUrl: "/admin/discovery",
+    resultLabel: "Ver DB",
   },
   "6LuNDI8Hs90WyiUO": {
     project: "TerminalSync",
     description:
       "Connectors & Skills Discovery — scrapea YouTube + X buscando productos nuevos para listar en el marketplace. Aprobás los buenos en /admin/discovery.",
     cadence: "diario",
+    resultUrl: "/admin/discovery",
+    resultLabel: "Aprobar discovery",
   },
   kOrTycM21z6YxsmG: {
     project: "TerminalSync",
     description:
       "Thunderbit Discovery (multi-source) — scraper alterno con Thunderbit + fallback gracioso si falla la API.",
     cadence: "diario",
+    resultUrl: "/admin/discovery",
+    resultLabel: "Ver discovery",
   },
   lmbQv6R17dqY8pvO: {
     project: "TerminalSync",
     description:
       "No-Dev Prospects — busca usuarios potenciales que NO son devs en Reddit, Indie Hackers y forums. Te ayuda a entender el mercado del lado consumidor.",
     cadence: "diario",
+    resultUrl: "/admin-bypass/prospects",
+    resultLabel: "Ver prospects",
   },
   Gifqx1Fjbtp6z1Ud: {
     project: "TerminalSync",
@@ -433,6 +468,8 @@ const WORKFLOW_META: Record<
     description:
       "Welcome Flow (consumer + dev) — email de bienvenida después del signup. Distinto copy según sea consumer o dev plan.",
     cadence: "cuando hay signup",
+    resultUrl: "/admin/launch-metrics",
+    resultLabel: "Métricas signup",
   },
   i5Miq18SAdvaTnbK: {
     project: "TerminalSync",
@@ -457,6 +494,8 @@ const WORKFLOW_META: Record<
     description:
       "Sender · Influencer Emails (PAUSED) — el envío real de emails a creators. PAUSADO hasta el launch.",
     cadence: "deprecated (pausado)",
+    resultUrl: "/admin/launch-metrics",
+    resultLabel: "Métricas outreach",
   },
   vN2iycD5AI2xRXqF: {
     project: "TerminalSync",
@@ -553,6 +592,14 @@ interface OpsWorkflow {
   project: string;
   description: string | null;
   cadence: string | null;
+  /**
+   * Where the accumulated output of this workflow lives. `null` for
+   * event-driven bots whose "result" is the conversation itself. The
+   * dashboard renders it as a "Ver resultados" button next to the
+   * "Open in n8n" link.
+   */
+  resultUrl: string | null;
+  resultLabel: string | null;
   updatedAt: string | null;
   todayCount: number;
   todaySuccess: number;
@@ -672,6 +719,8 @@ export async function GET() {
       project,
       description: meta?.description ?? null,
       cadence: meta?.cadence ?? null,
+      resultUrl: meta?.resultUrl ?? null,
+      resultLabel: meta?.resultLabel ?? null,
       updatedAt: w.updatedAt ?? null,
       todayCount: todayFor.length,
       todaySuccess: todayFor.filter((e) => e.status === "success").length,

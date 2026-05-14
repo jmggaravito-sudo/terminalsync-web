@@ -22,6 +22,11 @@ interface OpsWorkflow {
   project: string;
   description: string | null;
   cadence: string | null;
+  /** Where this workflow's accumulated output lives (admin page, sheet,
+   *  CRM pipeline). Null for event-driven bots whose only "result" is
+   *  the conversation itself. */
+  resultUrl: string | null;
+  resultLabel: string | null;
   updatedAt: string | null;
   todayCount: number;
   todaySuccess: number;
@@ -230,6 +235,7 @@ export function OpsDashboard({ lang }: { lang: string }) {
                   wf={wf}
                   n8nUrl={data.n8nUrl}
                   isEs={isEs}
+                  lang={lang}
                 />
               ))}
             </ul>
@@ -270,12 +276,22 @@ function WorkflowCard({
   wf,
   n8nUrl,
   isEs,
+  lang,
 }: {
   wf: OpsWorkflow;
   n8nUrl: string;
   isEs: boolean;
+  lang: string;
 }) {
   const editorUrl = `${n8nUrl}/workflow/${wf.id}`;
+  // Internal admin routes need the [lang] prefix; absolute URLs (Sheets,
+  // GHL, etc.) pass through untouched.
+  const resultHref = wf.resultUrl
+    ? wf.resultUrl.startsWith("/")
+      ? `/${lang}${wf.resultUrl}`
+      : wf.resultUrl
+    : null;
+  const resultIsExternal = !!wf.resultUrl && !wf.resultUrl.startsWith("/");
 
   // Decide overall mood: red if errors today, amber if paused, green if active.
   const mood: "ok" | "warn" | "err" | "off" =
@@ -367,16 +383,30 @@ function WorkflowCard({
           )}
           <EmailTemplatesPanel workflowId={wf.id} isEs={isEs} />
         </div>
-        <a
-          href={editorUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="shrink-0 inline-flex items-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel-2)]/60 hover:bg-[var(--color-panel-2)] px-2.5 py-1.5 text-[11px] font-medium text-[var(--color-fg-muted)] transition-colors"
-          title={isEs ? "Abrir en n8n" : "Open in n8n"}
-        >
-          <ExternalLink size={11} />
-          n8n
-        </a>
+        <div className="shrink-0 flex flex-col gap-1.5">
+          {resultHref && (
+            <a
+              href={resultHref}
+              target={resultIsExternal ? "_blank" : undefined}
+              rel={resultIsExternal ? "noopener noreferrer" : undefined}
+              className="inline-flex items-center gap-1 rounded-lg bg-[var(--color-accent)]/15 hover:bg-[var(--color-accent)]/25 border border-[var(--color-accent)]/40 px-2.5 py-1.5 text-[11px] font-medium text-[var(--color-accent)] transition-colors"
+              title={isEs ? "Ver resultados acumulados" : "View accumulated results"}
+            >
+              <ExternalLink size={11} />
+              {wf.resultLabel ?? (isEs ? "Ver resultados" : "View results")}
+            </a>
+          )}
+          <a
+            href={editorUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel-2)]/60 hover:bg-[var(--color-panel-2)] px-2.5 py-1.5 text-[11px] font-medium text-[var(--color-fg-muted)] transition-colors"
+            title={isEs ? "Abrir en n8n" : "Open in n8n"}
+          >
+            <ExternalLink size={11} />
+            n8n
+          </a>
+        </div>
       </div>
     </li>
   );
