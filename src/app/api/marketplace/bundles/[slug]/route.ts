@@ -40,16 +40,21 @@ export async function GET(req: Request, { params }: Params) {
 
   const linksRes = await sb
     .from("bundle_listings")
-    .select("kind, item_slug, sort_order")
+    .select("kind, item_slug, sort_order, why_it_helps")
     .eq("bundle_id", bundle.id);
   if (linksRes.error) return NextResponse.json({ error: linksRes.error.message }, { status: 500 });
 
-  type Row = { kind: BundleItemKind; item_slug: string; sort_order: number };
+  type Row = { kind: BundleItemKind; item_slug: string; sort_order: number; why_it_helps: string | null };
   const refs: BundleItemRef[] = [];
   for (const raw of linksRes.data ?? []) {
     const row = raw as Row;
     if (!isBundleItemKind(row.kind)) continue;
-    refs.push({ kind: row.kind, slug: row.item_slug, sortOrder: row.sort_order });
+    refs.push({
+      kind: row.kind,
+      slug: row.item_slug,
+      sortOrder: row.sort_order,
+      whyItHelps: row.why_it_helps ?? undefined,
+    });
   }
   const items = await resolveBundleItems(refs, lang);
 

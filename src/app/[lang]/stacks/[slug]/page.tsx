@@ -14,6 +14,7 @@ import {
 import { initialsFrom } from "@/components/marketplace/initialsFrom";
 import { BuyButton } from "./BuyButton";
 import { CopyCommand } from "./CopyCommand";
+import { SamplePrompts } from "./SamplePrompts";
 
 export const revalidate = 60;
 
@@ -32,6 +33,7 @@ interface BundleDetail {
   price_cents: number;
   currency: string;
   purchase_count: number;
+  sample_prompts: string[];
   items: ResolvedBundleItem[];
 }
 
@@ -44,7 +46,7 @@ async function fetchBundle(
   const bundleRes = await sb
     .from("bundles")
     .select(
-      "id, slug, name, tagline, description_md, hero_subtitle, hero_image_url, price_cents, currency, purchase_count",
+      "id, slug, name, tagline, description_md, hero_subtitle, hero_image_url, price_cents, currency, purchase_count, sample_prompts",
     )
     .eq("slug", slug)
     .eq("status", "active")
@@ -65,7 +67,14 @@ async function fetchBundle(
   }
   const items = await resolveBundleItems(refs, lang);
 
-  return { ...bundleRes.data, items };
+  const samplePrompts = Array.isArray(
+    (bundleRes.data as { sample_prompts?: unknown }).sample_prompts,
+  )
+    ? ((bundleRes.data as { sample_prompts: unknown[] })
+        .sample_prompts.filter((p): p is string => typeof p === "string"))
+    : [];
+
+  return { ...bundleRes.data, sample_prompts: samplePrompts, items };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -102,14 +111,18 @@ function formatPrice(cents: number, currency: string): string {
   }).format(cents / 100);
 }
 
+// User-facing labels (no dev jargon). The curator pipeline targets
+// non-programmers, so we never show "Connector" / "MCP" / "CLI" on
+// public pages. Internal kind values stay the same — this is purely
+// the display name.
 function kindLabel(kind: BundleItemKind, isEs: boolean): string {
   switch (kind) {
     case "connector":
-      return isEs ? "Conector" : "Connector";
+      return isEs ? "Integración" : "Integration";
     case "skill":
-      return "Skill";
+      return isEs ? "Receta" : "Recipe";
     case "cli":
-      return "CLI";
+      return isEs ? "Herramienta" : "Tool";
   }
 }
 
@@ -123,11 +136,11 @@ function inclusionSummary(items: ResolvedBundleItem[], isEs: boolean): string {
   const c = countsByKind(items);
   const parts: string[] = [];
   if (c.connector > 0)
-    parts.push(`${c.connector} ${isEs ? "conectores" : "connectors"}`);
+    parts.push(`${c.connector} ${isEs ? "integraciones" : "integrations"}`);
   if (c.skill > 0)
-    parts.push(`${c.skill} ${isEs ? "skills" : "skills"}`);
+    parts.push(`${c.skill} ${isEs ? "recetas" : "recipes"}`);
   if (c.cli > 0)
-    parts.push(`${c.cli} CLI`);
+    parts.push(`${c.cli} ${isEs ? "herramientas" : "tools"}`);
   return parts.join(" · ");
 }
 
@@ -210,6 +223,9 @@ export default async function BundleDetailPage({ params }: Props) {
         </div>
       </section>
 
+      {/* Sample prompts — copy/paste examples (renders nothing if empty) */}
+      <SamplePrompts prompts={bundle.sample_prompts} isEs={isEs} />
+
       {/* What's included — mixed pillar list */}
       <section className="mx-auto max-w-5xl px-6 pb-12">
         <h2 className="text-[14px] font-mono uppercase tracking-[0.16em] text-[var(--color-fg-muted)] mb-5">
@@ -251,8 +267,8 @@ export default async function BundleDetailPage({ params }: Props) {
               </h3>
               <p className="mt-2 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
                 {isEs
-                  ? "Conectores y CLI tools se instalan automáticamente en la app de TerminalSync (gratis para descargar). Skills se cargan en tu Claude/Codex con un clic. Si todavía no tenés la app, te llevamos al download después de la compra."
-                  : "Connectors and CLI tools install automatically in the TerminalSync app (free download). Skills load into your Claude/Codex with one click. If you don't have the app yet, we'll point you to the download after purchase."}
+                  ? "Todo se instala automáticamente en la app de TerminalSync (gratis para descargar). Las recetas se cargan en tu IA con un clic. Si todavía no tenés la app, te llevamos a la descarga después de la compra."
+                  : "Everything installs automatically in the TerminalSync app (free download). Recipes load into your AI with one click. If you don't have the app yet, we'll point you to the download after purchase."}
               </p>
             </div>
           </div>
@@ -296,9 +312,13 @@ function BundleItemCard({
               {label}
             </span>
           </div>
-          {item.tagline && (
+          {/* Prefer the curator's per-item rationale (plain-language
+              "why this helps you") over the raw catalog tagline, which
+              tends to be more technical. Falls back to tagline when no
+              whyItHelps was set (manually-added items, legacy bundles). */}
+          {(item.whyItHelps || item.tagline) && (
             <p className="mt-1 text-[12.5px] text-[var(--color-fg-muted)] leading-relaxed line-clamp-2">
-              {item.tagline}
+              {item.whyItHelps || item.tagline}
             </p>
           )}
         </div>

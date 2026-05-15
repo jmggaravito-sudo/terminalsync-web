@@ -16,6 +16,60 @@ export interface BundleItemInput {
   sortOrder?: number;
 }
 
+/** Shape of a single proposed item inside a bundle proposal. Carries an
+ *  extra `whyItHelps` blurb so the reviewer can see Claude's reasoning
+ *  for picking this specific item next to the slug in the queue UI. */
+export interface ProposedItem {
+  kind: BundleItemKind;
+  slug: string;
+  sortOrder: number;
+  whyItHelps: string;
+}
+
+/** Public shape of a row in the `bundle_proposals` table after it's
+ *  been read back by the admin list endpoint. snake_case → camelCase
+ *  is done at the API boundary; consumers see camelCase. */
+export interface BundleProposal {
+  id: string;
+  persona: string;
+  personaLabel: string;
+  painPoint: string;
+  name: string;
+  slug: string;
+  tagline: string;
+  descriptionMd: string;
+  setupMd: string;
+  samplePrompts: string[];
+  proposedItems: ProposedItem[];
+  priceCents: number;
+  currency: string;
+  status: "pending" | "approved" | "rejected" | "superseded";
+  publishedBundleId: string | null;
+  proposedBy: string;
+  reviewerNotes: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Public shape of a Stack Pack as exposed by the admin list endpoint.
+ *  Mirrors the `bundles` table columns plus `samplePrompts` added in
+ *  migration 0012. Public detail pages use this same field. */
+export interface Bundle {
+  id: string;
+  slug: string;
+  name: string;
+  tagline: string;
+  descriptionMd: string;
+  heroSubtitle: string | null;
+  heroImageUrl: string | null;
+  priceCents: number;
+  currency: string;
+  status: "draft" | "active" | "archived";
+  samplePrompts: string[];
+  items: BundleItemInput[];
+}
+
 export type ListingCategory =
   | "productivity"
   | "database"
@@ -209,6 +263,149 @@ export function validateBundleItems(
   });
   if (errors.length > 0) return { ok: false, errors };
   return { ok: true, data: out };
+}
+
+/** Validate a single proposal payload from the n8n ingest endpoint.
+ *  Slug uniqueness is NOT checked here — collisions are resolved on
+ *  approval, not at insert time. Item slugs are accepted as-is (the
+ *  reviewer catches bad refs visually). */
+export interface ProposalIngestInput {
+  persona: string;
+  personaLabel: string;
+  painPoint: string;
+  name: string;
+  slug: string;
+  tagline: string;
+  descriptionMd: string;
+  setupMd: string;
+  samplePrompts: string[];
+  proposedItems: ProposedItem[];
+  priceCents?: number;
+  currency?: string;
+  proposedBy?: string;
+}
+
+export function validateProposal(
+  raw: unknown,
+):
+  | { ok: true; data: ProposalIngestInput }
+  | { ok: false; errors: ValidationError[] } {
+  const errors: ValidationError[] = [];
+  const obj = (raw ?? {}) as Record<string, unknown>;
+
+  const persona = stringOf(obj.persona);
+  if (!persona || persona.length > 60) {
+    errors.push({ field: "persona", message: "must be 1-60 chars" });
+  }
+  const personaLabel = stringOf(obj.personaLabel ?? obj.persona_label);
+  if (!personaLabel || personaLabel.length > 160) {
+    errors.push({ field: "personaLabel", message: "must be 1-160 chars" });
+  }
+  const painPoint = stringOf(obj.painPoint ?? obj.pain_point);
+  if (!painPoint || painPoint.length > 200) {
+    errors.push({ field: "painPoint", message: "must be 1-200 chars" });
+  }
+  const name = stringOf(obj.name);
+  if (!name || name.length < 2 || name.length > 80) {
+    errors.push({ field: "name", message: "must be 2-80 chars" });
+  }
+  const slug = stringOf(obj.slug);
+  if (!slug || !SLUG_RE.test(slug)) {
+    errors.push({ field: "slug", message: "lowercase letters/digits/hyphens, 3-40 chars" });
+  }
+  const tagline = stringOf(obj.tagline);
+  if (!tagline || tagline.length < 8 || tagline.length > 200) {
+    errors.push({ field: "tagline", message: "must be 8-200 chars" });
+  }
+  const descriptionMd = stringOf(obj.descriptionMd ?? obj.description_md) ?? "";
+  if (!descriptionMd || descriptionMd.length < 20 || descriptionMd.length > 8000) {
+    errors.push({ field: "descriptionMd", message: "must be 20-8000 chars" });
+  }
+  const setupMd = stringOf(obj.setupMd ?? obj.setup_md) ?? "";
+  if (!setupMd || setupMd.length < 10 || setupMd.length > 8000) {
+    errors.push({ field: "setupMd", message: "must be 10-8000 chars" });
+  }
+
+  const promptsRaw = obj.samplePrompts ?? obj.sample_prompts;
+  let samplePrompts: string[] = [];
+  if (promptsRaw !== undefined && promptsRaw !== null) {
+    if (!Array.isArray(promptsRaw)) {
+      errors.push({ field: "samplePrompts", message: "must be an array of strings" });
+    } else {
+      samplePrompts = promptsRaw
+        .filter((p): p is string => typeof p === "string" && p.trim().length > 0)
+        .map((p) => p.trim().slice(0, 1000));
+      if (samplePrompts.length > 10) {
+        errors.push({ field: "samplePrompts", message: "max 10 prompts" });
+      }
+    }
+  }
+
+  const itemsRaw = obj.proposedItems ?? obj.proposed_items;
+  const proposedItems: ProposedItem[] = [];
+  if (!Array.isArray(itemsRaw) || itemsRaw.length === 0) {
+    errors.push({ field: "proposedItems", message: "must be a non-empty array" });
+  } else {
+    itemsRaw.forEach((entry, i) => {
+      const ent = (entry ?? {}) as Record<string, unknown>;
+      const kind = ent.kind;
+      const itemSlug = stringOf(ent.slug);
+      if (!isBundleItemKind(kind)) {
+        errors.push({
+          field: `proposedItems[${i}].kind`,
+          message: "must be 'connector', 'skill', or 'cli'",
+        });
+        return;
+      }
+      if (!itemSlug) {
+        errors.push({
+          field: `proposedItems[${i}].slug`,
+          message: "must be a non-empty string",
+        });
+        return;
+      }
+      const sortRaw = ent.sortOrder ?? ent.sort_order;
+      const sortOrder =
+        typeof sortRaw === "number" && Number.isFinite(sortRaw) ? sortRaw : i;
+      const whyRaw = ent.whyItHelps ?? ent.why_it_helps;
+      const whyItHelps =
+        typeof whyRaw === "string" ? whyRaw.trim().slice(0, 500) : "";
+      proposedItems.push({ kind, slug: itemSlug, sortOrder, whyItHelps });
+    });
+  }
+
+  const priceCents =
+    typeof obj.priceCents === "number"
+      ? obj.priceCents
+      : typeof obj.price_cents === "number"
+        ? (obj.price_cents as number)
+        : undefined;
+  if (priceCents !== undefined && (!Number.isInteger(priceCents) || priceCents <= 0)) {
+    errors.push({ field: "priceCents", message: "must be a positive integer (cents)" });
+  }
+  const currency = stringOf(obj.currency);
+  const proposedBy = stringOf(obj.proposedBy ?? obj.proposed_by);
+
+  if (errors.length > 0) return { ok: false, errors };
+
+  return {
+    ok: true,
+    data: {
+      persona: persona!,
+      personaLabel: personaLabel!,
+      painPoint: painPoint!,
+      name: name!,
+      slug: slug!,
+      tagline: tagline!,
+      descriptionMd,
+      setupMd,
+      samplePrompts,
+      proposedItems,
+      priceCents,
+      currency,
+      proposedBy,
+    },
+  };
 }
 
 function stringOf(v: unknown): string | undefined {
