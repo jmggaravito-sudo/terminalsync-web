@@ -31,7 +31,7 @@ async function listFeaturedStacks(): Promise<StackPackPreview[]> {
     )
     .eq("status", "active")
     .order("sort_order", { ascending: true })
-    .limit(3);
+    .limit(6);
   if (error || !data) return [];
   return data.map((b) => ({
     slug: b.slug,
@@ -126,14 +126,42 @@ export default async function MarketplaceHub({ params }: Props) {
           count={stacks.length}
           description={
             isEs
-              ? "Bundles curados que combinan connectors, CLI tools y skills. Pagás una vez y tu IA queda conectada a las apps de tu workflow."
-              : "Curated bundles of connectors, CLI tools and skills. Pay once and your AI is wired up to your workflow apps."
+              ? "Paquetes listos para usar. Pagás una vez y tu IA queda conectada a las apps que ya usás cada día."
+              : "Ready-made packs. Pay once and your AI is wired up to the apps you already use every day."
           }
           cta={isEs ? "Ver packs" : "View packs"}
           featured
           wide
         />
       </section>
+
+      {/* Featured Stack Packs — moved above Power-Ups so the commercial
+          offering (paid bundles) lands above the free pillars. */}
+      {stacks.length > 0 && (
+        <section className="mx-auto max-w-5xl px-6 pb-12">
+          <div className="flex items-end justify-between gap-4 mb-5">
+            <div>
+              <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--color-accent)] font-semibold">
+                {isEs ? "Empezá rápido" : "Get going fast"}
+              </p>
+              <h2 className="mt-1 text-[22px] md:text-[26px] font-semibold tracking-tight">
+                {isEs ? "Featured · Stack Packs" : "Featured · Stack Packs"}
+              </h2>
+            </div>
+            <Link
+              href={`/${lang}/stacks`}
+              className="inline-flex items-center gap-1 text-[13px] font-medium text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] transition-colors"
+            >
+              {isEs ? "Ver todos" : "View all"} <ArrowRight size={13} />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {stacks.map((s) => (
+              <FeaturedStack key={s.slug} lang={lang} stack={s} isEs={isEs} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Power-Ups — the three pillars */}
       <section className="mx-auto max-w-5xl px-6 pb-12">
@@ -149,8 +177,8 @@ export default async function MarketplaceHub({ params }: Props) {
             count={connectors.length}
             description={
               isEs
-                ? "Servidores MCP que dan acceso a tus apps reales: Notion, Webflow, Make, Supabase, y más."
-                : "MCP servers that give access to your real apps: Notion, Webflow, Make, Supabase, and more."
+                ? "Conectá tu IA con tus apps reales: Notion, Webflow, Make, Supabase, y más. Para que lea, escriba y actúe sin copiar y pegar."
+                : "Connect your AI to your real apps: Notion, Webflow, Make, Supabase, and more. So it reads, writes and acts without copy-paste."
             }
             cta={isEs ? "Ver todos" : "View all"}
           />
@@ -180,33 +208,6 @@ export default async function MarketplaceHub({ params }: Props) {
           />
         </div>
       </section>
-
-      {/* Featured Stack Packs */}
-      {stacks.length > 0 && (
-        <section className="mx-auto max-w-5xl px-6 pb-12">
-          <div className="flex items-end justify-between gap-4 mb-5">
-            <div>
-              <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--color-accent)] font-semibold">
-                {isEs ? "Empezá rápido" : "Get going fast"}
-              </p>
-              <h2 className="mt-1 text-[22px] md:text-[26px] font-semibold tracking-tight">
-                {isEs ? "Featured · Stack Packs" : "Featured · Stack Packs"}
-              </h2>
-            </div>
-            <Link
-              href={`/${lang}/stacks`}
-              className="inline-flex items-center gap-1 text-[13px] font-medium text-[var(--color-fg-muted)] hover:text-[var(--color-accent)] transition-colors"
-            >
-              {isEs ? "Ver todos" : "View all"} <ArrowRight size={13} />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {stacks.map((s) => (
-              <FeaturedStack key={s.slug} lang={lang} stack={s} isEs={isEs} />
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* Featured connectors */}
       <section className="mx-auto max-w-5xl px-6 pb-12">
