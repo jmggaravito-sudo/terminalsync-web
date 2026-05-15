@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useAdminKey } from "@/lib/marketplace/useAdminKey";
 import { ArrowDown, ArrowUp, Check, Loader2, Plus, Trash2 } from "lucide-react";
 
 type Kind = "connector" | "skill" | "cli";
@@ -39,8 +39,7 @@ const KINDS: { kind: Kind; label: string }[] = [
 
 export function BundlesEditor({ lang }: { lang: string }) {
   const isEs = lang === "es";
-  const search = useSearchParams();
-  const key = search.get("key") || "";
+  const { key, loaded: keyLoaded } = useAdminKey();
 
   const [bundles, setBundles] = useState<Bundle[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -218,6 +217,7 @@ export function BundlesEditor({ lang }: { lang: string }) {
   const removePrompt = (i: number) =>
     setSamplePrompts((prev) => prev.filter((_, idx) => idx !== i));
 
+  if (!keyLoaded) return null;
   if (!key) return <Notice tone="warn" text={t.missingKey} />;
   if (error) return <Notice tone="error" text={error} />;
   if (!bundles) return <Notice tone="info" text={t.loading} />;

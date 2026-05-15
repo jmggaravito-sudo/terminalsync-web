@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useAdminKey } from "@/lib/marketplace/useAdminKey";
 import { Github, ExternalLink, Youtube } from "lucide-react";
 
 type Type = "connectors" | "skills";
@@ -42,8 +42,7 @@ const CATEGORIES_SKILLS = ["marketing", "dev", "productivity", "research", "desi
 
 export function DiscoveryReviewBypass({ lang }: { lang: string }) {
   const isEs = lang === "es";
-  const search = useSearchParams();
-  const key = search.get("key") || "";
+  const { key, loaded: keyLoaded } = useAdminKey();
   const [type, setType] = useState<Type>("connectors");
   const [status, setStatus] = useState<Status>("pending");
   const [data, setData] = useState<QueueResponse | null>(null);
@@ -127,6 +126,7 @@ export function DiscoveryReviewBypass({ lang }: { lang: string }) {
     }
   }
 
+  if (!keyLoaded) return null;
   if (!key) return <Banner tone="warn">{t.missingKey}</Banner>;
   if (error) return <Banner tone="error">{error}</Banner>;
   if (!data) return <Banner tone="muted">{t.loading}</Banner>;
