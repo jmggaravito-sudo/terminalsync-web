@@ -58,6 +58,12 @@ export function Nav({ dict, lang }: Props) {
             <a href="#features" className="hover:text-[var(--color-fg-strong)] transition-colors">
               {dict.nav.features}
             </a>
+            <Link
+              href={`/${lang}/marketplace`}
+              className="hover:text-[var(--color-fg-strong)] transition-colors font-medium text-[var(--color-fg-strong)]"
+            >
+              {lang === "es" ? "Marketplace" : "Marketplace"}
+            </Link>
             <a href="#pricing" className="hover:text-[var(--color-fg-strong)] transition-colors">
               {dict.nav.pricing}
             </a>
