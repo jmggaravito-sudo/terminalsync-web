@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useAdminKey } from "@/lib/marketplace/useAdminKey";
 import { ExternalLink, Mail, Building2, MapPin } from "lucide-react";
 
 type Status = "pending" | "qualified" | "contacted" | "replied" | "converted" | "rejected";
@@ -39,8 +39,7 @@ interface QueueResponse {
 
 export function ProspectsReview({ lang }: { lang: string }) {
   const isEs = lang === "es";
-  const search = useSearchParams();
-  const key = search.get("key") || "";
+  const { key, loaded: keyLoaded } = useAdminKey();
   const [status, setStatus] = useState<Status>("pending");
   const [data, setData] = useState<QueueResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -103,6 +102,7 @@ export function ProspectsReview({ lang }: { lang: string }) {
     }
   }
 
+  if (!keyLoaded) return null;
   if (!key) return <Banner tone="warn">{t.missingKey}</Banner>;
   if (error) return <Banner tone="error">{error}</Banner>;
   if (!data) return <Banner tone="muted">{t.loading}</Banner>;

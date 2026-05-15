@@ -7,7 +7,7 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
-import { useSearchParams } from "next/navigation";
+import { useAdminKey } from "@/lib/marketplace/useAdminKey";
 import {
   Check,
   Edit3,
@@ -38,8 +38,7 @@ interface Banner {
 
 export function ProposalsClient({ lang }: { lang: string }) {
   const isEs = lang === "es";
-  const search = useSearchParams();
-  const key = search.get("key") || "";
+  const { key, loaded: keyLoaded } = useAdminKey();
 
   const [proposals, setProposals] = useState<BundleProposal[] | null>(null);
   const [stats, setStats] = useState<QueueStats | null>(null);
@@ -199,6 +198,9 @@ export function ProposalsClient({ lang }: { lang: string }) {
     }
   };
 
+  // Wait for the cookie-read pass before flashing the "Missing key"
+  // banner — the key may resolve from cookie a tick after first paint.
+  if (!keyLoaded) return null;
   if (!key) return <Notice tone="warn" text={t.missingKey} />;
 
   return (
