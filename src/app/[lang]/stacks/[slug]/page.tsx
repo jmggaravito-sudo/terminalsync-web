@@ -12,6 +12,7 @@ import {
   type ResolvedBundleItem,
 } from "@/lib/marketplace/bundleItems";
 import { initialsFrom } from "@/components/marketplace/initialsFrom";
+import { GlossaryText } from "@/components/marketplace/GlossaryText";
 import { BuyButton } from "./BuyButton";
 import { CopyCommand } from "./CopyCommand";
 import { SamplePrompts } from "./SamplePrompts";
@@ -175,7 +176,7 @@ export default async function BundleDetailPage({ params }: Props) {
               {bundle.name}
             </h1>
             <p className="mt-4 text-[16px] text-[var(--color-fg-muted)] leading-relaxed">
-              {bundle.hero_subtitle ?? bundle.tagline}
+              <GlossaryText text={bundle.hero_subtitle ?? bundle.tagline} />
             </p>
             {bundle.purchase_count > 0 && (
               <p className="mt-3 text-[12px] font-mono text-[var(--color-fg-dim)]">
@@ -250,7 +251,7 @@ export default async function BundleDetailPage({ params }: Props) {
           </h2>
           <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-6">
             <pre className="whitespace-pre-wrap font-sans text-[14px] text-[var(--color-fg)] leading-relaxed">
-              {bundle.description_md}
+              <GlossaryText text={bundle.description_md} />
             </pre>
           </div>
         </section>
@@ -318,7 +319,7 @@ function BundleItemCard({
               whyItHelps was set (manually-added items, legacy bundles). */}
           {(item.whyItHelps || item.tagline) && (
             <p className="mt-1 text-[12.5px] text-[var(--color-fg-muted)] leading-relaxed line-clamp-2">
-              {item.whyItHelps || item.tagline}
+              <GlossaryText text={item.whyItHelps || item.tagline} />
             </p>
           )}
         </div>
