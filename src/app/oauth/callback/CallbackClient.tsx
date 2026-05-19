@@ -14,7 +14,7 @@ interface Params {
 
 // Auto-trigger the deep link back into the native Tauri app. Three states:
 //  1. idle      → show branded card + auto-redirect countdown
-//  2. dispatched → asked the browser to open terminalsync:// (may prompt user)
+//  2. dispatched → asked the browser to open terminalsync:// or terminalsync-lab:// (may prompt user)
 //  3. error     → Google returned ?error=... or params are malformed
 export function CallbackClient({ params }: { params: Params }) {
   const [dispatched, setDispatched] = useState(false);
@@ -23,7 +23,9 @@ export function CallbackClient({ params }: { params: Params }) {
   const isMissing = !params.code || !params.state;
 
   // Build the deep link URL exactly once per render — Tauri parses code/state
-  // out of the fragment/query on its side.
+  // out of the query on its side. Lab builds prefix OAuth state with
+  // `tslab:` so this shared production web callback can return to the
+  // isolated `terminalsync-lab://` handler instead of touching production.
   const deepLink = useMemo(() => {
     if (!params.code || !params.state) return null;
     const qs = new URLSearchParams({
@@ -31,7 +33,10 @@ export function CallbackClient({ params }: { params: Params }) {
       state: params.state,
     });
     if (params.scope) qs.set("scope", params.scope);
-    return `terminalsync://oauth/callback?${qs.toString()}`;
+    const scheme = params.state.startsWith("tslab:")
+      ? "terminalsync-lab"
+      : "terminalsync";
+    return `${scheme}://oauth/callback?${qs.toString()}`;
   }, [params.code, params.state, params.scope]);
 
   useEffect(() => {

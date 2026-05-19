@@ -3,8 +3,9 @@ import { CallbackClient } from "./CallbackClient";
 
 // This route is the Google OAuth redirect target for the Tauri app's "Web
 // application" OAuth client. Google sends the user here with ?code=...&state=...;
-// we render a branded page and then deep-link to terminalsync:// so the
-// native app picks up the code and completes the token exchange.
+// we render a branded page and then deep-link to terminalsync:// (or
+// terminalsync-lab:// when the OAuth state is Lab-prefixed) so the native app
+// picks up the code and completes the token exchange.
 
 export const metadata: Metadata = {
   title: "Terminal Sync — conectando",
