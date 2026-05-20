@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import type { Dict } from "@/content";
 
-type PlanKey = "starter" | "pro" | "dev";
+type PlanKey = "starter" | "pro" | "max";
 
 interface Props {
   dict: Dict;
@@ -21,7 +21,7 @@ interface Props {
   /**
    * Called when the user commits to a recommended plan. We scroll the
    * pricing section into view with the card highlighted; the caller can
-   * also open checkout for the chosen tier (starter / pro / dev).
+   * also open checkout for the chosen tier (starter / pro / max).
    */
   onCommit: (plan: PlanKey) => void;
 }
@@ -333,7 +333,7 @@ function ResultCard({
 
 function scoreAnswers(a: Answers): PlanKey {
   if (a.role === "team" || a.role === "developer" || a.pain === "projects") {
-    return "dev";
+    return "max";
   }
   if (a.role === "creator" && a.pain === "chats" && a.volume === "one") {
     return "starter";

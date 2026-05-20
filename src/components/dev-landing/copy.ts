@@ -163,7 +163,7 @@ const en: DevCopy = {
       },
       {
         kicker: "$39 / mo",
-        body: "Dev plan — $11.70/mo per active referral, every month they stay.",
+        body: "Max plan — $11.70/mo per active referral, every month they stay.",
       },
       {
         kicker: "Stripe direct",
@@ -193,8 +193,8 @@ const en: DevCopy = {
         a: "Your encrypted memory stays in your Drive — you own the bucket. Cancel and the app drops to Free tier (2 devices, 1 active terminal); your historical memory is still local + encrypted. Export everything as JSON anytime.",
       },
       {
-        q: "Why pay for Dev tier specifically?",
-        a: "Dev unlocks Git-native sync (commits memory alongside your repo), the .env vault, 20 active terminals, and pre-built MCP connectors for GitHub, Postgres, Supabase, and Slack. If you're shipping prod code with AI assistance, Dev pays for itself the first time it saves you from re-explaining your stack.",
+        q: "Why pay for Max tier specifically?",
+        a: "Max unlocks Git-native sync (commits memory alongside your repo), the .env vault, 20 active terminals, and pre-built MCP connectors for GitHub, Postgres, Supabase, and Slack. If you're shipping prod code with AI assistance, Max pays for itself the first time it saves you from re-explaining your stack.",
       },
     ],
   },
@@ -290,7 +290,7 @@ const es: DevCopy = {
       },
       {
         kicker: "$39 / mes",
-        body: "Plan Dev — $11.70/mes por referido activo, cada mes que sigan pagando.",
+        body: "Plan Max — $11.70/mes por referido activo, cada mes que sigan pagando.",
       },
       {
         kicker: "Stripe directo",
@@ -320,8 +320,8 @@ const es: DevCopy = {
         a: "Tu memoria cifrada sigue en tu Drive — vos sos el dueño del bucket. Si cancelás, la app cae a Free (2 dispositivos, 1 terminal activa); tu memoria histórica sigue local + cifrada. Exportás todo en JSON cuando quieras.",
       },
       {
-        q: "¿Por qué pagar específicamente por el plan Dev?",
-        a: "Dev habilita Git-native sync (commit de memoria al lado del repo), el .env vault, 20 terminales activas y connectors MCP pre-armados para GitHub, Postgres, Supabase y Slack. Si shippeás código a producción con IA, Dev se paga solo la primera vez que te evita re-explicar tu stack.",
+        q: "¿Por qué pagar específicamente por el plan Max?",
+        a: "Max habilita Git-native sync (commit de memoria al lado del repo), el .env vault, 20 terminales activas y connectors MCP pre-armados para GitHub, Postgres, Supabase y Slack. Si shippeás código a producción con IA, Max se paga solo la primera vez que te evita re-explicar tu stack.",
       },
     ],
   },

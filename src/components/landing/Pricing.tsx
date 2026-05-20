@@ -8,7 +8,7 @@ import { CheckoutButton } from "./CheckoutButton";
 import { PlanQuiz } from "./PlanQuiz";
 
 type Cycle = "monthly" | "yearly";
-type PlanKey = "starter" | "pro" | "dev";
+type PlanKey = "starter" | "pro" | "max";
 
 export function Pricing({
   dict,
@@ -153,13 +153,13 @@ export function Pricing({
         />
 
         <CycleCard
-          id="plan-dev"
-          plan="dev"
-          copy={dict.pricing.plans.dev}
+          id="plan-max"
+          plan="max"
+          copy={dict.pricing.plans.max}
           cycle={cycle}
           dict={dict}
           currencyHint={currencyHint ?? null}
-          highlighted={highlighted === "dev"}
+          highlighted={highlighted === "max"}
         />
       </div>
 
@@ -230,7 +230,7 @@ function CycleCard({
   highlighted,
 }: {
   id: string;
-  plan: "pro" | "dev";
+  plan: "pro" | "max";
   copy: Dict["pricing"]["plans"]["pro"];
   cycle: Cycle;
   dict: Dict;

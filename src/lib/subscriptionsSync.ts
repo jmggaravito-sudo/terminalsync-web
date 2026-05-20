@@ -4,20 +4,23 @@ import { getSupabaseAdmin } from "./supabaseAdmin";
 // Maps Stripe priceIds back to our internal plan enum. Driven by env vars
 // so the same code works in test mode (via the *_TEST overrides the
 // webhook will pick up when the event comes from a test-mode endpoint).
-function planFromPriceId(priceId: string): "pro" | "dev" | null {
+//
+// Legacy STRIPE_PRICE_DEV_* env vars are still read as a fallback during
+// the Dev→Max rename rollout — same prices, different env names.
+function planFromPriceId(priceId: string): "pro" | "max" | null {
   const pmM = process.env.STRIPE_PRICE_PRO_MONTHLY;
   const pmY = process.env.STRIPE_PRICE_PRO_YEARLY;
-  const dvM = process.env.STRIPE_PRICE_DEV_MONTHLY;
-  const dvY = process.env.STRIPE_PRICE_DEV_YEARLY;
+  const mxM = process.env.STRIPE_PRICE_MAX_MONTHLY ?? process.env.STRIPE_PRICE_DEV_MONTHLY;
+  const mxY = process.env.STRIPE_PRICE_MAX_YEARLY ?? process.env.STRIPE_PRICE_DEV_YEARLY;
   const pmMt = process.env.STRIPE_PRICE_PRO_MONTHLY_TEST;
   const pmYt = process.env.STRIPE_PRICE_PRO_YEARLY_TEST;
-  const dvMt = process.env.STRIPE_PRICE_DEV_MONTHLY_TEST;
-  const dvYt = process.env.STRIPE_PRICE_DEV_YEARLY_TEST;
+  const mxMt = process.env.STRIPE_PRICE_MAX_MONTHLY_TEST ?? process.env.STRIPE_PRICE_DEV_MONTHLY_TEST;
+  const mxYt = process.env.STRIPE_PRICE_MAX_YEARLY_TEST ?? process.env.STRIPE_PRICE_DEV_YEARLY_TEST;
   if (priceId === pmM || priceId === pmY || priceId === pmMt || priceId === pmYt) {
     return "pro";
   }
-  if (priceId === dvM || priceId === dvY || priceId === dvMt || priceId === dvYt) {
-    return "dev";
+  if (priceId === mxM || priceId === mxY || priceId === mxMt || priceId === mxYt) {
+    return "max";
   }
   return null;
 }
@@ -104,7 +107,7 @@ export async function syncSubscriptionToSupabase(
     user_id: userId,
     stripe_customer_id: customerId,
     stripe_subscription_id: sub.id,
-    plan: (plan ?? "free") as "pro" | "dev" | "free",
+    plan: (plan ?? "free") as "pro" | "max" | "free",
     status: mapStatus(sub.status),
     current_period_start: periodStart
       ? new Date(periodStart * 1000).toISOString()

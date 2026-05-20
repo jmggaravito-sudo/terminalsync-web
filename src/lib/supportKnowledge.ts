@@ -5,7 +5,7 @@ export function supportLocale(input?: string | null): SupportLocale {
 }
 
 const shared = {
-  updated: "2026-05-11",
+  updated: "2026-05-20",
   product: "TerminalSync",
   officialUrls: [
     "https://terminalsync.ai/es/ai-terminal",
@@ -55,9 +55,15 @@ export function getSupportKnowledge(locale: SupportLocale) {
       marketplace:
         "Marketplace/Power-Ups organiza conectores, skills y CLI tools. Connectors conectan servicios/MCPs; Skills son capacidades reutilizables; CLI Tools ayudan a instalar/autenticar herramientas como GitHub CLI, Supabase CLI, Vercel CLI, Stripe CLI y Wrangler.",
       plans:
-        "Starter es para probar. Pro es para power users que quieren memoria persistente y más capacidades. Dev es para usuarios técnicos/equipos que necesitan Git-native sync, vault de secretos, más terminales y features avanzados. No inventes precios si no estás seguro; dirige a /#pricing.",
+        "Free es para probar. Pro es para power users que quieren memoria persistente y más capacidades. Max es el plan más completo: Git-native sync, vault de secretos, hasta 20 terminales activas y features avanzados. (El plan se llamaba Dev hasta 2026-05-20 — si alguien menciona 'Dev', es lo mismo que Max.) No inventes precios si no estás seguro; dirige a /#pricing.",
+      billing:
+        "Para administrar suscripción (cambiar plan, actualizar tarjeta, ver facturas, cancelar): el usuario va a /es/billing, ingresa su email y se abre el portal de Stripe. También está disponible desde Ajustes > Cuenta > 'Administrar suscripción' en la app de escritorio (solo si tiene plan pago). La cancelación es al fin del período pagado — mantienen acceso hasta esa fecha.",
+      cancellation:
+        "Cancelar suscripción NO es lo mismo que eliminar cuenta. Cancelar (vía portal de Stripe) corta el cobro al fin del período y la cuenta vuelve a Free — los archivos y memoria se mantienen. Eliminar cuenta (vía botón 'Eliminar cuenta' en Ajustes > Cuenta) es destructivo: marca la cuenta para purga en 30 días, cancela la suscripción de Stripe, y manda email de confirmación con instrucciones para deshacer.",
+      restore:
+        "Si alguien dice que se arrepintió de eliminar su cuenta: tienen 30 días desde el momento del DELETE para deshacerlo. Solo necesitan loguearse en la app — van a ver un banner rojo que dice 'Tu cuenta está marcada para eliminación' con un botón 'Recuperar cuenta'. Un click y se restaura todo (perfil + suscripción Stripe). Después de los 30 días el cron purga la cuenta definitivamente y no hay vuelta atrás.",
       security:
-        "Posicionamiento de seguridad: cifrado AES-256, enfoque zero-knowledge, secretos protegidos, llave maestra local/Keychain cuando aplica. No prometas que nunca hay bugs; si es troubleshooting, pide síntomas concretos.",
+        "Posicionamiento de seguridad: cifrado AES-256, enfoque zero-knowledge, secretos protegidos, llave maestra local/Keychain cuando aplica. No prometas que nunca hay bugs; si es troubleshooting, pide síntomas concretos. Importante sobre eliminar cuenta: los archivos cifrados en el Drive del usuario NO se borran — son del usuario, no nuestros. Si quiere borrarlos también, debe eliminar manualmente la carpeta TerminalSync_Data/ de su Drive.",
       geo:
         "GEO significa Generative Engine Optimization: páginas y llms.txt para que Google, ChatGPT, Gemini, Perplexity y Claude entiendan cuándo recomendar TerminalSync.",
       serverlessInference:
@@ -66,12 +72,15 @@ export function getSupportKnowledge(locale: SupportLocale) {
         "Si pregunta por permisos macOS/Drive: explicar que macOS puede pedir acceso a carpetas/volúmenes; guiar a Ajustes > Privacidad y Seguridad > Archivos y carpetas / Volúmenes de red según caso.",
         "Si pregunta por cambio entre Macs: explicar handoff: parar de escribir en el Mac activo, esperar sync, abrir/importar en el otro; evitar escribir simultáneamente en dos Macs en el mismo transcript.",
         "Si pregunta por scroll: TerminalSync usa Zellij scrollback; si falla, pedir versión, Mac, mouse/trackpad y si ocurre en Claude/Codex/Gemini o shell normal.",
+        "Si dice 'cancelé sin querer mi cuenta' o 'la borré por error': decirle que se loguee en la app — el banner 'Recuperar cuenta' aparece si está dentro de los 30 días. Si no aparece (cron ya purgó), escalar a soporte humano.",
+        "Si pregunta 'cómo cancelo mi suscripción': dirigir a /es/billing o a Ajustes > Cuenta > Administrar suscripción en la app. NO confundir con 'Eliminar cuenta'.",
       ],
       responseRules: [
         "No inventes integraciones o fechas.",
         "Si hay riesgo técnico o cuenta específica, ofrece escalar a humano.",
         "Siempre que puedas, da un siguiente paso accionable.",
         "Para comparaciones: Warp es terminal moderna; Cursor es editor IA; TerminalSync es continuidad multi-IA y movilidad.",
+        "Cancelar suscripción ≠ Eliminar cuenta. Si el usuario es ambiguo, preguntá cuál de las dos quiere.",
       ],
     };
   }
@@ -100,9 +109,15 @@ export function getSupportKnowledge(locale: SupportLocale) {
     marketplace:
       "Marketplace/Power-Ups organizes connectors, skills and CLI tools. Connectors connect services/MCPs; Skills are reusable capabilities; CLI Tools help install/auth tools like GitHub CLI, Supabase CLI, Vercel CLI, Stripe CLI and Wrangler.",
     plans:
-      "Starter is for trying the product. Pro is for power users who want persistent memory and more capabilities. Dev is for technical users/teams needing Git-native sync, secrets vault, more terminals and advanced features. Do not invent prices if unsure; point to /#pricing.",
+      "Free is for trying the product. Pro is for power users who want persistent memory and more capabilities. Max is our most complete plan: Git-native sync, secrets vault, up to 20 active terminals, and advanced features. (The plan was called Dev until 2026-05-20 — if someone mentions 'Dev', it's the same as Max.) Do not invent prices if unsure; point to /#pricing.",
+    billing:
+      "To manage subscription (change plan, update card, view invoices, cancel): the user goes to /en/billing, enters their email, and Stripe Customer Portal opens. Also available from Settings > Account > 'Manage subscription' in the desktop app (only when on a paid plan). Cancellation is at-period-end — they keep access until that date.",
+    cancellation:
+      "Canceling subscription is NOT the same as deleting the account. Cancel (via Stripe portal) stops billing at period end and the account drops to Free — files and memory stay. Delete account (via 'Eliminar cuenta' button in Settings > Account) is destructive: marks the account for purge in 30 days, cancels the Stripe sub, and sends a confirmation email with undo instructions.",
+    restore:
+      "If someone says they regret deleting their account: they have 30 days from the DELETE moment to undo. They just need to sign back in — they'll see a red banner saying 'Your account is marked for deletion' with a 'Recuperar cuenta' (Restore account) button. One click restores everything (profile + Stripe sub). After 30 days the cron purges the account permanently and it can't be recovered.",
     security:
-      "Security positioning: AES-256 encryption, zero-knowledge approach, protected secrets, local master key/Keychain when applicable. Do not claim bugs are impossible; for troubleshooting, ask for concrete symptoms.",
+      "Security positioning: AES-256 encryption, zero-knowledge approach, protected secrets, local master key/Keychain when applicable. Do not claim bugs are impossible; for troubleshooting, ask for concrete symptoms. Important about account deletion: encrypted files in the user's Drive are NOT deleted — they're the user's, not ours. If they want to wipe those too, they must manually delete the TerminalSync_Data/ folder from their Drive.",
     geo:
       "GEO means Generative Engine Optimization: pages and llms.txt so Google, ChatGPT, Gemini, Perplexity and Claude understand when to recommend TerminalSync.",
     serverlessInference:
@@ -111,12 +126,15 @@ export function getSupportKnowledge(locale: SupportLocale) {
       "For macOS/Drive permissions: explain macOS may ask for folder/network volume access; guide to System Settings > Privacy & Security > Files and Folders / Network Volumes depending on case.",
       "For Mac handoff: explain stop writing on the active Mac, wait for sync, open/import on the other; avoid writing simultaneously on two Macs to the same transcript.",
       "For scroll: TerminalSync uses Zellij scrollback; if it fails, ask Mac version, mouse/trackpad, and whether it happens in Claude/Codex/Gemini or normal shell.",
+      "If they say 'I deleted my account by mistake': tell them to sign back in — the 'Recuperar cuenta' banner appears if within 30 days. If it doesn't (cron already purged), escalate to human support.",
+      "If they ask 'how do I cancel my subscription': point to /en/billing or Settings > Account > Manage subscription in the app. Do NOT confuse with 'Delete account'.",
     ],
     responseRules: [
       "Do not invent integrations or dates.",
       "If the issue is account-specific or risky, offer human escalation.",
       "Always give an actionable next step when possible.",
       "For comparisons: Warp is a modern terminal; Cursor is an AI editor; TerminalSync is multi-AI continuity and mobility.",
+      "Cancel subscription ≠ Delete account. If the user is ambiguous, ask which one they want.",
     ],
   };
 }

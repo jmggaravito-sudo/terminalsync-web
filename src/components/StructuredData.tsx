@@ -51,7 +51,7 @@ export function StructuredData({ dict, lang }: Props) {
   const plans = [
     { id: "starter", price: "0" },
     { id: "pro", price: "19" },
-    { id: "dev", price: "39" },
+    { id: "max", price: "39" },
   ] as const;
 
   const software = {

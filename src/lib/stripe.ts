@@ -12,7 +12,7 @@ export const stripe: Stripe | null = secret
     })
   : null;
 
-export type PlanId = "pro" | "dev" | "agency";
+export type PlanId = "pro" | "max" | "agency";
 export type BillingCycle = "monthly" | "yearly";
 
 export function priceIdFor(
@@ -24,10 +24,17 @@ export function priceIdFor(
       ? process.env.STRIPE_PRICE_PRO_YEARLY ?? null
       : process.env.STRIPE_PRICE_PRO_MONTHLY ?? null;
   }
-  if (plan === "dev") {
+  if (plan === "max") {
+    // STRIPE_PRICE_MAX_* is the new canonical name. The legacy DEV_* env
+    // vars are kept in Vercel as a fallback during rollout so the old
+    // checkout calls don't 503 mid-deploy.
     return cycle === "yearly"
-      ? process.env.STRIPE_PRICE_DEV_YEARLY ?? null
-      : process.env.STRIPE_PRICE_DEV_MONTHLY ?? null;
+      ? process.env.STRIPE_PRICE_MAX_YEARLY ??
+          process.env.STRIPE_PRICE_DEV_YEARLY ??
+          null
+      : process.env.STRIPE_PRICE_MAX_MONTHLY ??
+          process.env.STRIPE_PRICE_DEV_MONTHLY ??
+          null;
   }
   if (plan === "agency") return process.env.STRIPE_PRICE_AGENCY ?? null;
   return null;
@@ -35,14 +42,23 @@ export function priceIdFor(
 
 /** Maps a PlanId to the Supabase `subscriptions.plan` enum value. Used
  * by the Stripe webhook to upsert the plan after checkout completes. */
-export function planToSupabase(plan: PlanId): "pro" | "dev" | "team" {
+export function planToSupabase(plan: PlanId): "pro" | "max" | "team" {
   if (plan === "agency") return "team";
   return plan;
 }
 
+/** Accept inbound webhooks/legacy clients that still say "dev" and route
+ *  them through as "max". Old Tauri builds in the wild send "dev" in the
+ *  checkout body — without this they would 400 on the rename rollout day. */
+export function normalizePlanId(input: string): PlanId | null {
+  if (input === "dev") return "max";
+  if (input === "pro" || input === "max" || input === "agency") return input;
+  return null;
+}
+
 // 7-day free trial on paid plans so users can activate features
 // immediately after entering a card, and fall off without charge if they
-// cancel before day 7. Applies to both Pro and Dev.
+// cancel before day 7. Applies to both Pro and Max.
 export const TRIAL_DAYS = 7;
 /** @deprecated — kept for back-compat with older imports. Use TRIAL_DAYS. */
 export const PRO_TRIAL_DAYS = TRIAL_DAYS;

@@ -7,6 +7,7 @@ import { WelcomeEmail } from "../../emails/welcome";
 import { TrialEndingEmail } from "../../emails/trial-ending";
 import { PaymentFailedEmail } from "../../emails/payment-failed";
 import { CancellationConfirmedEmail } from "../../emails/cancellation-confirmed";
+import { AccountDeletionRequestedEmail } from "../../emails/account-deletion-requested";
 import { MarketplaceListingApprovedEmail } from "../../emails/marketplace-listing-approved";
 import { MarketplaceListingRejectedEmail } from "../../emails/marketplace-listing-rejected";
 import { MarketplaceNewSubmissionEmail } from "../../emails/marketplace-new-submission";
@@ -177,6 +178,48 @@ export async function sendCancellationEmail(opts: {
       unsubscribeUrl: unsubUrl(opts.to),
     }),
     headers: { "X-Entity-Ref-ID": `cancellation:${opts.subscriptionId}` },
+  });
+
+  if (result.error) throw result.error;
+  return { id: result.data?.id };
+}
+
+/**
+ * Sent when the user soft-deletes their account. Confirms the request,
+ * explains the 30-day grace window, and includes a sign-in URL so the
+ * user can come back and click "Recuperar cuenta" if they changed their
+ * mind. The header X-Entity-Ref-ID is keyed by the user id so Resend
+ * dedupes accidental double-fires from the API.
+ */
+export async function sendAccountDeletionRequestedEmail(opts: {
+  to: string;
+  firstName: string;
+  /** ISO-8601 purge date. */
+  purgeAtIso: string;
+  /** Pre-formatted human-readable date (locale-aware) for body copy. */
+  purgeAtHuman: string;
+  reason?: string;
+  /** Supabase user id — used for idempotency. */
+  userId: string;
+}) {
+  if (!resend) {
+    console.warn("[email] RESEND_API_KEY missing — skipping deletion email");
+    return { skipped: true as const };
+  }
+
+  const result = await resend.emails.send({
+    from: BILLING_FROM,
+    to: [opts.to],
+    subject: `Tu cuenta de Terminal Sync se elimina el ${opts.purgeAtHuman}`,
+    react: AccountDeletionRequestedEmail({
+      firstName: opts.firstName,
+      purgeAtIso: opts.purgeAtIso,
+      purgeAtHuman: opts.purgeAtHuman,
+      signInUrl: "https://terminalsync.ai/es/login",
+      reason: opts.reason,
+      unsubscribeUrl: unsubUrl(opts.to),
+    }),
+    headers: { "X-Entity-Ref-ID": `account-deletion:${opts.userId}` },
   });
 
   if (result.error) throw result.error;

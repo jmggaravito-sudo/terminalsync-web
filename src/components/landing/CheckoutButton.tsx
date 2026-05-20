@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import type { Locale } from "@/content";
 
 interface Props {
-  plan: "starter" | "pro" | "dev" | "agency";
+  plan: "starter" | "pro" | "max" | "agency";
   cycle?: "monthly" | "yearly";
   lang: Locale;
   label: string;
@@ -16,8 +16,8 @@ interface Props {
 
 // Starter → direct download link (no checkout needed).
 // Pro     → POST /api/checkout, redirect to Stripe (carries billing cycle).
-// Dev     → POST /api/checkout. Backend returns 503 "Missing Stripe price"
-//           until STRIPE_PRICE_DEV_{MONTHLY,YEARLY} are set in Vercel — we
+// Max     → POST /api/checkout. Backend returns 503 "Missing Stripe price"
+//           until STRIPE_PRICE_MAX_{MONTHLY,YEARLY} are set in Vercel — we
 //           show that error inline (fail-loud) instead of silently charging
 //           the Pro priceId.
 // Agency  → mailto sales team (lead-gen, not self-serve for now).

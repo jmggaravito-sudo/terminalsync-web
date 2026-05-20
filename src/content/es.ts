@@ -552,9 +552,9 @@ const es: Dict = {
         ],
         cta: "Probar 7 días gratis",
       },
-      dev: {
-        name: "Dev",
-        badge: "Para devs",
+      max: {
+        name: "Max",
+        badge: "El más completo",
         priceMonthly: "$39",
         priceYearly: "$390",
         priceNoteMonthly: "/mes",
@@ -657,7 +657,7 @@ const es: Dict = {
       install:
         "Descarga TerminalSync, crea una terminal y elige la IA que quieres usar: Claude Code, Codex, Gemini CLI o Sin IA. Desde Power-Ups puedes configurar conectores, skills y CLI tools. Si me dices tu caso de uso, te recomiendo por dónde empezar.",
       pricing:
-        "Tenemos planes para probar, power users y usuarios técnicos/equipos. Starter sirve para empezar; Pro agrega capacidades avanzadas como memoria/power-ups; Dev está pensado para Git-native sync, vault de secretos y workflows más técnicos. Mira la sección de Precios para el detalle actualizado. ¿Quieres que te recomiende un plan según tu uso?",
+        "Tenemos planes para probar, power users y usuarios técnicos/equipos. Starter sirve para empezar; Pro agrega capacidades avanzadas como memoria/power-ups; Max está pensado para Git-native sync, vault de secretos y workflows más completos. Mira la sección de Precios para el detalle actualizado. ¿Quieres que te recomiende un plan según tu uso?",
       security:
         "Tu código y tu API key se cifran con AES-256 en tu computadora ANTES de subir a Drive. Usamos Zero-Knowledge: ni nosotros ni Google podemos leer tu contenido. La llave maestra la tienes tú en tu keychain local.",
       fallback:
