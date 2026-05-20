@@ -222,7 +222,7 @@ async function handle(event: Stripe.Event) {
         canceledDuringTrial,
       });
       // Keep Supabase in sync on ANY mutation — status changes (trialing
-      // → active), plan upgrades (Pro → Dev via customer portal), cancel-
+      // → active), plan upgrades (Pro → Max via customer portal), cancel-
       // at-period-end toggles. The row is authoritative for useMe().plan.
       await syncSubscriptionToSupabase(sub);
       break;

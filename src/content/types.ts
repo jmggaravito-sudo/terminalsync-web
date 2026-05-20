@@ -274,7 +274,7 @@ export interface Dict {
     plans: {
       starter: Plan;
       pro: ProPlan;
-      dev: ProPlan;
+      max: ProPlan;
     };
   };
   trust: {

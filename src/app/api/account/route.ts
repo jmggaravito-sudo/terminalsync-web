@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { stripe } from "@/lib/stripe";
+import { sendAccountDeletionRequestedEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -175,6 +176,38 @@ export async function DELETE(req: Request) {
     user_agent: ua,
   });
 
-  const purgeAt = new Date(Date.now() + GRACE_PERIOD_MS).toISOString();
+  const purgeAtDate = new Date(Date.now() + GRACE_PERIOD_MS);
+  const purgeAt = purgeAtDate.toISOString();
+
+  // Best-effort confirmation email with restore instructions. Never fails
+  // the request — the deletion already succeeded server-side; an email
+  // hiccup shouldn't surface to the user as "deletion failed".
+  if (email) {
+    try {
+      const firstName =
+        (userRes.user.user_metadata?.first_name as string | undefined) ??
+        (userRes.user.user_metadata?.full_name as string | undefined)?.split(" ")[0] ??
+        "hola";
+      const purgeAtHuman = purgeAtDate.toLocaleDateString("es", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+      await sendAccountDeletionRequestedEmail({
+        to: email,
+        firstName,
+        purgeAtIso: purgeAt,
+        purgeAtHuman,
+        reason: reason ?? undefined,
+        userId,
+      });
+    } catch (err) {
+      console.error("[account-delete] email send failed", {
+        userId,
+        err: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
+
   return NextResponse.json({ purgeAt, alreadyDeleted: false });
 }

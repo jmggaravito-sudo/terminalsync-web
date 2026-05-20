@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   TRIAL_DAYS,
+  normalizePlanId,
   priceIdFor,
   siteUrl,
   stripe,
@@ -11,8 +12,9 @@ import {
 export const runtime = "nodejs";
 
 interface Body {
-  plan: PlanId;
-  cycle?: BillingCycle; // Pro + Dev only
+  /** Inbound plan id. Legacy clients may send "dev" — we normalize to "max". */
+  plan: PlanId | "dev";
+  cycle?: BillingCycle; // Pro + Max only
   lang?: "es" | "en";
   email?: string;
   /** Supabase auth user id. Attached to subscription metadata so the
@@ -77,17 +79,24 @@ export async function POST(req: Request) {
   }
 
   const cycle: BillingCycle = body.cycle === "yearly" ? "yearly" : "monthly";
-  const price = priceIdFor(body.plan, cycle);
+  const plan = normalizePlanId(body.plan);
+  if (!plan) {
+    return NextResponse.json(
+      { error: `Unknown plan "${body.plan}"` },
+      { status: 400, headers: cors },
+    );
+  }
+  const price = priceIdFor(plan, cycle);
   if (!price) {
     const envVar =
-      body.plan === "dev"
-        ? `STRIPE_PRICE_DEV_${cycle.toUpperCase()}`
-        : body.plan === "pro"
+      plan === "max"
+        ? `STRIPE_PRICE_MAX_${cycle.toUpperCase()}`
+        : plan === "pro"
           ? `STRIPE_PRICE_PRO_${cycle.toUpperCase()}`
           : "STRIPE_PRICE_AGENCY";
     return NextResponse.json(
       {
-        error: `Missing Stripe price for plan "${body.plan}" (${cycle}). Set ${envVar} in the environment.`,
+        error: `Missing Stripe price for plan "${plan}" (${cycle}). Set ${envVar} in the environment.`,
       },
       { status: 503, headers: cors },
     );
@@ -96,13 +105,13 @@ export async function POST(req: Request) {
   const lang: "es" | "en" = body.lang === "en" ? "en" : "es";
   const base = siteUrl();
 
-  // Trial-eligible tiers (Pro + Dev). Agency is lead-gen, no trial.
-  const trialEligible = body.plan === "pro" || body.plan === "dev";
+  // Trial-eligible tiers (Pro + Max). Agency is lead-gen, no trial.
+  const trialEligible = plan === "pro" || plan === "max";
 
   // Shared metadata so the webhook can identify the user + plan without
   // hitting Stripe's API again.
   const sharedMetadata: Record<string, string> = {
-    plan: body.plan,
+    plan,
     cycle,
     source: body.supabaseUserId ? "app.terminalsync/upsell" : "terminalsync.ai/pricing",
   };
