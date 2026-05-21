@@ -256,6 +256,7 @@ export function OpsDashboard({ lang }: { lang: string }) {
                   n8nUrl={data.n8nUrl}
                   isEs={isEs}
                   lang={lang}
+                  compact={selectedProject !== "TerminalSync"}
                 />
               ))}
             </ul>
@@ -297,11 +298,17 @@ function WorkflowCard({
   n8nUrl,
   isEs,
   lang,
+  compact = false,
 }: {
   wf: OpsWorkflow;
   n8nUrl: string;
   isEs: boolean;
   lang: string;
+  /** Compact mode = "is this working today?" view for non-TerminalSync
+   *  projects. Hides sparkline, run chips, results panel, and email
+   *  templates panel so the operator can scan health at a glance
+   *  without scrolling. */
+  compact?: boolean;
 }) {
   const editorUrl = `${n8nUrl}/workflow/${wf.id}`;
   // Internal admin routes need the [lang] prefix; absolute URLs (Sheets,
@@ -339,7 +346,7 @@ function WorkflowCard({
 
   return (
     <li
-      className={`rounded-xl border border-[var(--color-border)] border-l-[3px] ${moodMap[mood].ring} bg-[var(--color-panel)] p-4`}
+      className={`rounded-xl border border-[var(--color-border)] border-l-[3px] ${moodMap[mood].ring} bg-[var(--color-panel)] ${compact ? "p-3" : "p-4"}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
@@ -396,16 +403,15 @@ function WorkflowCard({
               </span>
             )}
           </div>
-          {/* Live business results — pulled straight from Supabase so JM
-              sees WHAT the flow produced (titles, dates, sources) without
-              clicking through to a separate admin page or logging in. */}
-          {wf.results && <ResultsPanel results={wf.results} isEs={isEs} />}
-          {/* Recent runs — sparkline + clickable detail per run. JM
-              opens any of them to see what each one did/what failed. */}
-          {wf.recent.length > 0 && (
+          {/* Live business results — only on the detailed (TerminalSync)
+              view. Non-TS projects collapse to a health-only card. */}
+          {!compact && wf.results && (
+            <ResultsPanel results={wf.results} isEs={isEs} />
+          )}
+          {!compact && wf.recent.length > 0 && (
             <RecentRunsPanel runs={wf.recent} n8nUrl={n8nUrl} isEs={isEs} />
           )}
-          <EmailTemplatesPanel workflowId={wf.id} isEs={isEs} />
+          {!compact && <EmailTemplatesPanel workflowId={wf.id} isEs={isEs} />}
         </div>
         <div className="shrink-0 flex flex-col gap-1.5">
           {resultHref && (
