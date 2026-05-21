@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const runtime = "nodejs";
 export const revalidate = 0;
@@ -509,6 +510,14 @@ const WORKFLOW_META: Record<
       "Test · Email manual — workflow de prueba para mandar email a un destinatario manual. No prod.",
     cadence: "test",
   },
+  KpqQvgr6H1C2O4Oa: {
+    project: "TerminalSync",
+    description:
+      "Bundle Curator — Claude analiza el catálogo y propone nuevos Stack Packs (bundles) por persona/pain point. Resultado en bundle_proposals para aprobar.",
+    cadence: "diario",
+    resultUrl: "/admin/marketplace",
+    resultLabel: "Ver propuestas",
+  },
 
   // ─────────────── Printify ───────────────
   "926n1RRI2pvifWHP": {
@@ -611,6 +620,253 @@ interface OpsWorkflow {
     durationMs: number | null;
   } | null;
   recent: { id: string; status: string; startedAt: string }[];
+  /**
+   * Live business-result snapshot for workflows that write into a known
+   * Supabase table (trend signals, discovery items, prospects, bundle
+   * proposals). Rendered inline on the dashboard so JM can see WHAT the
+   * flow produced (titles, dates, sources) without clicking through to
+   * the dedicated admin page.
+   *
+   * Null for flows we don't have a table mapping for (event-driven bots,
+   * webhooks, utilities).
+   */
+  results: WorkflowResults | null;
+}
+
+interface ResultItem {
+  title: string;
+  subtitle?: string;
+  url?: string;
+  timestamp: string;
+  badge?: string;
+}
+
+interface WorkflowResults {
+  label: string;
+  unit: string;
+  total: number;
+  last24h: number;
+  last7d: number;
+  items: ResultItem[];
+}
+
+/**
+ * Maps workflow ID → Supabase table to read its accumulated output from.
+ *
+ * Each entry declares:
+ * - `table`: the underlying table (or view) name
+ * - `timeField`: timestamp to use for "last 24h / 7d" counts + ordering
+ * - `select`: comma-separated columns to fetch for the recent-items list
+ * - `mapItem`: shapes a raw row into the dashboard's `ResultItem`
+ * - `label`/`unit`: how the count is described to the user ("47 trends")
+ *
+ * Keep this in sync with WORKFLOW_META — if a TerminalSync workflow
+ * starts writing to a new table, both maps want an entry.
+ */
+const WORKFLOW_RESULTS_SOURCE: Record<
+  string,
+  {
+    table: string;
+    timeField: string;
+    select: string;
+    label: string;
+    unit: string;
+    mapItem: (row: Record<string, unknown>) => ResultItem;
+  }
+> = {
+  // Trend Signals Daily → trend_signals
+  "2gbpZFPPlYMo6k3f": {
+    table: "trend_signals",
+    timeField: "captured_at",
+    select:
+      "title,source,source_url,source_subtype,signal_type,review_status,captured_at",
+    label: "Señales capturadas",
+    unit: "señales",
+    mapItem: (r) => ({
+      title: String(r.title ?? "(sin título)"),
+      subtitle: [r.source, r.source_subtype].filter(Boolean).join(" · ") || undefined,
+      url: r.source_url ? String(r.source_url) : undefined,
+      timestamp: String(r.captured_at ?? ""),
+      badge: r.review_status ? String(r.review_status) : undefined,
+    }),
+  },
+  // Connectors & Skills Discovery → discovery_connectors
+  "6LuNDI8Hs90WyiUO": {
+    table: "discovery_connectors",
+    timeField: "discovered_at",
+    select:
+      "product_name,product_slug,source_platform,source_url,pricing,review_status,discovered_at",
+    label: "Productos descubiertos",
+    unit: "productos",
+    mapItem: (r) => ({
+      title: String(r.product_name ?? r.product_slug ?? "(sin nombre)"),
+      subtitle: [r.source_platform, r.pricing].filter(Boolean).join(" · ") || undefined,
+      url: r.source_url ? String(r.source_url) : undefined,
+      timestamp: String(r.discovered_at ?? ""),
+      badge: r.review_status ? String(r.review_status) : undefined,
+    }),
+  },
+  // Thunderbit Discovery → same table
+  kOrTycM21z6YxsmG: {
+    table: "discovery_connectors",
+    timeField: "discovered_at",
+    select:
+      "product_name,product_slug,source_platform,source_url,pricing,review_status,discovered_at",
+    label: "Productos descubiertos",
+    unit: "productos",
+    mapItem: (r) => ({
+      title: String(r.product_name ?? r.product_slug ?? "(sin nombre)"),
+      subtitle: [r.source_platform, r.pricing].filter(Boolean).join(" · ") || undefined,
+      url: r.source_url ? String(r.source_url) : undefined,
+      timestamp: String(r.discovered_at ?? ""),
+      badge: r.review_status ? String(r.review_status) : undefined,
+    }),
+  },
+  // Captura Influencers YT+X → discovery_connectors (creators)
+  "7ooGFm2XvT8SLdde": {
+    table: "discovery_connectors",
+    timeField: "discovered_at",
+    select:
+      "product_name,creator_name,creator_handle,creator_email,source_platform,source_url,review_status,discovered_at",
+    label: "Influencers capturados",
+    unit: "influencers",
+    mapItem: (r) => ({
+      title: String(r.creator_name ?? r.creator_handle ?? r.product_name ?? "(sin nombre)"),
+      subtitle: [r.source_platform, r.creator_email].filter(Boolean).join(" · ") || undefined,
+      url: r.source_url ? String(r.source_url) : undefined,
+      timestamp: String(r.discovered_at ?? ""),
+      badge: r.review_status ? String(r.review_status) : undefined,
+    }),
+  },
+  // Captura Marketplace Publishers → discovery_connectors
+  "3ad53aIJo6QA1vI0": {
+    table: "discovery_connectors",
+    timeField: "discovered_at",
+    select:
+      "product_name,product_slug,source_platform,source_url,pricing,review_status,discovered_at",
+    label: "Marketplaces capturados",
+    unit: "marketplaces",
+    mapItem: (r) => ({
+      title: String(r.product_name ?? r.product_slug ?? "(sin nombre)"),
+      subtitle: [r.source_platform, r.pricing].filter(Boolean).join(" · ") || undefined,
+      url: r.source_url ? String(r.source_url) : undefined,
+      timestamp: String(r.discovered_at ?? ""),
+      badge: r.review_status ? String(r.review_status) : undefined,
+    }),
+  },
+  // Re-enrich Influencers DB → uses updated_at to surface fresh enrichments
+  "5JJPordwuTwaPPPK": {
+    table: "discovery_connectors",
+    timeField: "updated_at",
+    select:
+      "product_name,creator_name,creator_handle,creator_email,source_platform,source_url,review_status,updated_at",
+    label: "Filas re-enriquecidas",
+    unit: "filas",
+    mapItem: (r) => ({
+      title: String(r.creator_name ?? r.creator_handle ?? r.product_name ?? "(sin nombre)"),
+      subtitle: [r.creator_email, r.source_platform].filter(Boolean).join(" · ") || undefined,
+      url: r.source_url ? String(r.source_url) : undefined,
+      timestamp: String(r.updated_at ?? ""),
+      badge: r.review_status ? String(r.review_status) : undefined,
+    }),
+  },
+  // No-Dev Prospects → prospects_no_dev
+  lmbQv6R17dqY8pvO: {
+    table: "prospects_no_dev",
+    timeField: "discovered_at",
+    select:
+      "name,handle,company,title,source_platform,source_url,pain_point,status,discovered_at",
+    label: "Prospects capturados",
+    unit: "prospects",
+    mapItem: (r) => ({
+      title: String(r.name ?? r.handle ?? "(sin nombre)"),
+      subtitle:
+        [r.title, r.company, r.source_platform].filter(Boolean).join(" · ") ||
+        (r.pain_point ? String(r.pain_point).slice(0, 100) : undefined),
+      url: r.source_url ? String(r.source_url) : undefined,
+      timestamp: String(r.discovered_at ?? ""),
+      badge: r.status ? String(r.status) : undefined,
+    }),
+  },
+  // Bundle Curator → bundle_proposals
+  KpqQvgr6H1C2O4Oa: {
+    table: "bundle_proposals",
+    timeField: "created_at",
+    select: "name,slug,persona_label,pain_point,status,created_at",
+    label: "Stack Packs propuestos",
+    unit: "propuestas",
+    mapItem: (r) => ({
+      title: String(r.name ?? r.slug ?? "(sin nombre)"),
+      subtitle:
+        [r.persona_label, r.pain_point].filter(Boolean).join(" · ") || undefined,
+      timestamp: String(r.created_at ?? ""),
+      badge: r.status ? String(r.status) : undefined,
+    }),
+  },
+};
+
+interface SupabaseLikeClient {
+  from(t: string): {
+    select(s: string, opts?: { count?: "exact"; head?: boolean }): {
+      gte(c: string, v: string): {
+        order(c: string, opts?: { ascending?: boolean }): { limit(n: number): unknown };
+      };
+      order(c: string, opts?: { ascending?: boolean }): { limit(n: number): unknown };
+    };
+  };
+}
+
+/**
+ * Pulls counts + recent items for a single workflow's underlying table.
+ * Each call hits Supabase 4 times (total + 24h + 7d + items) in parallel.
+ * Returns null on any failure so the dashboard renders gracefully even
+ * when Supabase is misconfigured locally.
+ */
+async function fetchWorkflowResults(
+  workflowId: string,
+  supabase: SupabaseLikeClient,
+): Promise<WorkflowResults | null> {
+  const cfg = WORKFLOW_RESULTS_SOURCE[workflowId];
+  if (!cfg) return null;
+
+  const now = Date.now();
+  const since24h = new Date(now - 24 * 3600 * 1000).toISOString();
+  const since7d = new Date(now - 7 * 24 * 3600 * 1000).toISOString();
+
+  type CountResult = { count: number | null; error: unknown };
+  type ItemsResult = { data: Record<string, unknown>[] | null; error: unknown };
+
+  try {
+    const [totalRes, day24Res, day7Res, itemsRes] = (await Promise.all([
+      supabase.from(cfg.table).select("id", { count: "exact", head: true }),
+      supabase
+        .from(cfg.table)
+        .select("id", { count: "exact", head: true })
+        .gte(cfg.timeField, since24h),
+      supabase
+        .from(cfg.table)
+        .select("id", { count: "exact", head: true })
+        .gte(cfg.timeField, since7d),
+      supabase
+        .from(cfg.table)
+        .select(cfg.select)
+        .order(cfg.timeField, { ascending: false })
+        .limit(5),
+    ])) as unknown as [CountResult, CountResult, CountResult, ItemsResult];
+
+    const items = (itemsRes.data ?? []).map(cfg.mapItem);
+
+    return {
+      label: cfg.label,
+      unit: cfg.unit,
+      total: totalRes.count ?? 0,
+      last24h: day24Res.count ?? 0,
+      last7d: day7Res.count ?? 0,
+      items,
+    };
+  } catch {
+    return null;
+  }
 }
 
 function projectFromName(name: string): string {
@@ -702,6 +958,25 @@ export async function GET() {
     }
   }
 
+  // Fan-out per-workflow Supabase reads for every flow that has a known
+  // results table. Done in parallel up front so the items.map() below
+  // can attach the snapshot synchronously.
+  const supabase = getSupabaseAdmin() as SupabaseLikeClient | null;
+  const resultsById = new Map<string, WorkflowResults>();
+  if (supabase) {
+    const wfIds = workflows
+      .filter((w) => !w.isArchived && WORKFLOW_RESULTS_SOURCE[w.id])
+      .map((w) => w.id);
+    const settled = await Promise.all(
+      wfIds.map((id) =>
+        fetchWorkflowResults(id, supabase).then((r) => ({ id, r })),
+      ),
+    );
+    for (const { id, r } of settled) {
+      if (r) resultsById.set(id, r);
+    }
+  }
+
   const items: OpsWorkflow[] = workflows.map((w) => {
     const meta = WORKFLOW_META[w.id];
     const project = meta?.project ?? projectFromName(w.name);
@@ -742,6 +1017,7 @@ export async function GET() {
         status: e.status,
         startedAt: e.startedAt,
       })),
+      results: resultsById.get(w.id) ?? null,
     };
   });
 

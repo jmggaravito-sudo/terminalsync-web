@@ -20,12 +20,12 @@ export default async function AdminOps({ params }: Props) {
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
       <section className="mx-auto max-w-5xl px-4 sm:px-6 pt-12 sm:pt-16 pb-16">
         <h1 className="text-[26px] sm:text-[32px] font-semibold tracking-tight">
-          {isEs ? "Tus flujos en n8n" : "Your n8n flows"}
+          {isEs ? "Dashboard de flujos" : "Flows dashboard"}
         </h1>
         <p className="mt-2 text-[14px] text-[var(--color-fg-muted)]">
           {isEs
-            ? "Qué hace cada uno y cómo le fue hoy. Verde = trabajando bien. Rojo = revisar."
-            : "What each one does and how it did today. Green = working fine. Red = needs a look."}
+            ? "Resultados reales de cada flujo: qué produjo, cuándo, qué cambió. Todo visible sin login ni clicks."
+            : "Real results from each flow: what it produced, when, what changed. All visible without login or clicks."}
         </p>
         <div className="mt-6">
           <OpsDashboard lang={lang} />
