@@ -390,61 +390,53 @@ const WORKFLOW_META: Record<
   },
 
   // ─────────────── TerminalSync ───────────────
+  // resultUrl intentionally OMITTED for flows with inline ResultsPanel:
+  // the dashboard already renders the 5 most recent items right on the
+  // card with title + source + date, so a "Ver resultados" link would
+  // just lead to a login-gated admin page (those pages exist because
+  // they have approve/reject buttons that need auth, but the read-only
+  // view is now inline on /admin/ops).
   "2gbpZFPPlYMo6k3f": {
     project: "TerminalSync",
     description:
-      "Trends Radar — todas las mañanas a las 6am COL captura GitHub trending + HackerNews top + Reddit top de 7 subreddits + universidades enseñando IA en YouTube. Resultado en /admin/trends.",
+      "Trends Radar — todas las mañanas a las 6am COL captura GitHub trending + HackerNews top + Reddit top de 7 subreddits + universidades enseñando IA en YouTube.",
     cadence: "diario 6am COL",
-    resultUrl: "/admin/trends",
-    resultLabel: "Ver trends",
   },
   "7ooGFm2XvT8SLdde": {
     project: "TerminalSync",
     description:
       "Captura diaria Influencers (YT + X) — busca creators que mencionan AI tools, los acumula en la DB. NO manda emails — está pausado hasta que digás 'launch'.",
     cadence: "diario",
-    resultUrl: "/admin/discovery",
-    resultLabel: "Ver influencers",
   },
   "3ad53aIJo6QA1vI0": {
     project: "TerminalSync",
     description:
       "Captura diaria Marketplace Publishers — busca herramientas/marketplaces que podrían ser publishers de TerminalSync. Cross-dedup con la DB de creators.",
     cadence: "diario",
-    resultUrl: "/admin/marketplace",
-    resultLabel: "Ver marketplace",
   },
   "5JJPordwuTwaPPPK": {
     project: "TerminalSync",
     description:
       "Re-enrich Influencers DB — refresca emails y datos de contacto de los creators ya capturados. Mantiene la DB actualizada para cuando lances outreach.",
     cadence: "cada 6 horas",
-    resultUrl: "/admin/discovery",
-    resultLabel: "Ver DB",
   },
   "6LuNDI8Hs90WyiUO": {
     project: "TerminalSync",
     description:
-      "Connectors & Skills Discovery — scrapea YouTube + X buscando productos nuevos para listar en el marketplace. Aprobás los buenos en /admin/discovery.",
+      "Connectors & Skills Discovery — scrapea YouTube + X buscando productos nuevos para listar en el marketplace.",
     cadence: "diario",
-    resultUrl: "/admin/discovery",
-    resultLabel: "Aprobar discovery",
   },
   kOrTycM21z6YxsmG: {
     project: "TerminalSync",
     description:
       "Thunderbit Discovery (multi-source) — scraper alterno con Thunderbit + fallback gracioso si falla la API.",
     cadence: "diario",
-    resultUrl: "/admin/discovery",
-    resultLabel: "Ver discovery",
   },
   lmbQv6R17dqY8pvO: {
     project: "TerminalSync",
     description:
       "No-Dev Prospects — busca usuarios potenciales que NO son devs en Reddit, Indie Hackers y forums. Te ayuda a entender el mercado del lado consumidor.",
     cadence: "diario",
-    resultUrl: "/admin-bypass/prospects",
-    resultLabel: "Ver prospects",
   },
   Gifqx1Fjbtp6z1Ud: {
     project: "TerminalSync",
@@ -469,8 +461,6 @@ const WORKFLOW_META: Record<
     description:
       "Welcome Flow (consumer + dev) — email de bienvenida después del signup. Distinto copy según sea consumer o dev plan.",
     cadence: "cuando hay signup",
-    resultUrl: "/admin/launch-metrics",
-    resultLabel: "Métricas signup",
   },
   i5Miq18SAdvaTnbK: {
     project: "TerminalSync",
@@ -495,8 +485,6 @@ const WORKFLOW_META: Record<
     description:
       "Sender · Influencer Emails (PAUSED) — el envío real de emails a creators. PAUSADO hasta el launch.",
     cadence: "deprecated (pausado)",
-    resultUrl: "/admin/launch-metrics",
-    resultLabel: "Métricas outreach",
   },
   vN2iycD5AI2xRXqF: {
     project: "TerminalSync",
@@ -515,8 +503,6 @@ const WORKFLOW_META: Record<
     description:
       "Bundle Curator — Claude analiza el catálogo y propone nuevos Stack Packs (bundles) por persona/pain point. Resultado en bundle_proposals para aprobar.",
     cadence: "diario",
-    resultUrl: "/admin/marketplace",
-    resultLabel: "Ver propuestas",
   },
 
   // ─────────────── Printify ───────────────
@@ -631,6 +617,14 @@ interface OpsWorkflow {
    * webhooks, utilities).
    */
   results: WorkflowResults | null;
+  /**
+   * The human-readable reason the last execution failed, surfaced
+   * inline on the card. Pulled from n8n's resultData.error so JM sees
+   * "Invalid Notion token" or "Module 'https' is disallowed" at a
+   * glance, no n8n login needed. Null when the last execution
+   * succeeded.
+   */
+  lastError: { node: string | null; message: string; description: string | null } | null;
 }
 
 interface ResultItem {
@@ -977,6 +971,56 @@ export async function GET() {
     }
   }
 
+  // For every workflow whose most-recent execution failed, fetch the
+  // detailed run so we can surface the actual error reason on the card.
+  // n8n's executions list doesn't include error text; we need
+  // ?includeData=true per failing exec. Capped to the latest-per-flow
+  // so this stays under ~50 parallel requests in the worst case.
+  const lastErrorByWf = new Map<
+    string,
+    { node: string | null; message: string; description: string | null }
+  >();
+  const failedExecs: { wfId: string; execId: string }[] = [];
+  for (const w of workflows) {
+    if (w.isArchived) continue;
+    const allFor = byWorkflow.get(w.id) ?? [];
+    allFor.sort((a, b) => b.startedAt.localeCompare(a.startedAt));
+    const last = allFor[0];
+    if (last && last.status === "error") {
+      failedExecs.push({ wfId: w.id, execId: last.id });
+    }
+  }
+  if (failedExecs.length > 0) {
+    interface N8nErr {
+      message?: string;
+      node?: { name?: string };
+      description?: string;
+    }
+    interface N8nDetail {
+      data?: { resultData?: { error?: N8nErr } };
+    }
+    const errResults = await Promise.all(
+      failedExecs.map(({ wfId, execId }) =>
+        fetch(
+          `${N8N_URL}/api/v1/executions/${execId}?includeData=true`,
+          { headers, cache: "no-store" },
+        )
+          .then((r) => (r.ok ? (r.json() as Promise<N8nDetail>) : null))
+          .then((j) => ({ wfId, err: j?.data?.resultData?.error ?? null }))
+          .catch(() => ({ wfId, err: null as N8nErr | null })),
+      ),
+    );
+    for (const { wfId, err } of errResults) {
+      if (err?.message) {
+        lastErrorByWf.set(wfId, {
+          node: err.node?.name ?? null,
+          message: err.message,
+          description: err.description ?? null,
+        });
+      }
+    }
+  }
+
   const items: OpsWorkflow[] = workflows.map((w) => {
     const meta = WORKFLOW_META[w.id];
     const project = meta?.project ?? projectFromName(w.name);
@@ -1018,6 +1062,7 @@ export async function GET() {
         startedAt: e.startedAt,
       })),
       results: resultsById.get(w.id) ?? null,
+      lastError: lastErrorByWf.get(w.id) ?? null,
     };
   });
 
