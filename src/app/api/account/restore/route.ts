@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { stripe } from "@/lib/stripe";
+import { corsHeaders, preflight } from "@/lib/cors";
 
 export const runtime = "nodejs";
+
+export async function OPTIONS(req: Request) {
+  return preflight(req);
+}
 
 /** Must match GRACE_PERIOD_MS in /api/account/route.ts. Kept in lockstep
  *  so a user who is right at the boundary gets a consistent answer. */
@@ -27,25 +32,23 @@ const GRACE_PERIOD_MS = 30 * 24 * 60 * 60 * 1000;
  * as if no deletion was ever requested) — caller can ignore the error.
  */
 export async function POST(req: Request) {
+  const cors = corsHeaders(req.headers.get("origin"));
+  const json = (data: unknown, status: number) =>
+    NextResponse.json(data, { status, headers: cors });
+
   const sb = getSupabaseAdmin();
   if (!sb) {
-    return NextResponse.json(
-      { error: "Supabase admin not configured" },
-      { status: 503 },
-    );
+    return json({ error: "Supabase admin not configured" }, 503);
   }
 
   const auth = req.headers.get("authorization") ?? "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
   if (!token) {
-    return NextResponse.json(
-      { error: "Missing Bearer token" },
-      { status: 401 },
-    );
+    return json({ error: "Missing Bearer token" }, 401);
   }
   const { data: userRes, error: userErr } = await sb.auth.getUser(token);
   if (userErr || !userRes?.user) {
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    return json({ error: "Invalid token" }, 401);
   }
   const userId = userRes.user.id;
 
@@ -55,23 +58,17 @@ export async function POST(req: Request) {
     .eq("id", userId)
     .maybeSingle();
   if (profErr || !profile) {
-    return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+    return json({ error: "Profile not found" }, 404);
   }
   if (!profile.deleted_at) {
-    return NextResponse.json(
-      { error: "Account is not marked for deletion" },
-      { status: 400 },
-    );
+    return json({ error: "Account is not marked for deletion" }, 400);
   }
 
   const deletedAtMs = new Date(profile.deleted_at).getTime();
   if (Date.now() - deletedAtMs > GRACE_PERIOD_MS) {
     // The purge cron should have run by now. Defensive: refuse the
     // restore so we don't end up with a half-purged account.
-    return NextResponse.json(
-      { error: "Grace period expired — account is being purged" },
-      { status: 410 },
-    );
+    return json({ error: "Grace period expired — account is being purged" }, 410);
   }
 
   // Clear soft-delete state.
@@ -86,10 +83,7 @@ export async function POST(req: Request) {
     .eq("id", userId);
   if (updErr) {
     console.error("[account-restore] profile update failed", { userId, updErr });
-    return NextResponse.json(
-      { error: "Could not clear deletion state" },
-      { status: 500 },
-    );
+    return json({ error: "Could not clear deletion state" }, 500);
   }
 
   // Best-effort un-cancel of the Stripe subscription. If the period has
@@ -139,5 +133,5 @@ export async function POST(req: Request) {
     user_agent: ua,
   });
 
-  return NextResponse.json({ restored: true, stripeRestored });
+  return json({ restored: true, stripeRestored }, 200);
 }

@@ -2,8 +2,13 @@ import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { stripe } from "@/lib/stripe";
 import { sendAccountDeletionRequestedEmail } from "@/lib/email";
+import { corsHeaders, preflight } from "@/lib/cors";
 
 export const runtime = "nodejs";
+
+export async function OPTIONS(req: Request) {
+  return preflight(req, "DELETE, OPTIONS");
+}
 
 /**
  * Grace window before a soft-deleted account is purged permanently.
@@ -48,26 +53,24 @@ interface DeleteBody {
  * existing `purgeAt` without re-canceling Stripe.
  */
 export async function DELETE(req: Request) {
+  const cors = corsHeaders(req.headers.get("origin"), "DELETE, OPTIONS");
+  const json = (data: unknown, status: number) =>
+    NextResponse.json(data, { status, headers: cors });
+
   const sb = getSupabaseAdmin();
   if (!sb) {
-    return NextResponse.json(
-      { error: "Supabase admin not configured" },
-      { status: 503 },
-    );
+    return json({ error: "Supabase admin not configured" }, 503);
   }
 
   const auth = req.headers.get("authorization") ?? "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
   if (!token) {
-    return NextResponse.json(
-      { error: "Missing Bearer token" },
-      { status: 401 },
-    );
+    return json({ error: "Missing Bearer token" }, 401);
   }
 
   const { data: userRes, error: userErr } = await sb.auth.getUser(token);
   if (userErr || !userRes?.user) {
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    return json({ error: "Invalid token" }, 401);
   }
   const userId = userRes.user.id;
   const email = userRes.user.email ?? null;
@@ -79,7 +82,7 @@ export async function DELETE(req: Request) {
     const text = await req.text();
     if (text.trim()) body = JSON.parse(text) as DeleteBody;
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return json({ error: "Invalid JSON" }, 400);
   }
   const reason = body.reason?.slice(0, 500).trim() || null;
 
@@ -91,13 +94,13 @@ export async function DELETE(req: Request) {
     .maybeSingle();
   if (existingErr) {
     console.error("[account-delete] profile lookup failed", { userId, existingErr });
-    return NextResponse.json({ error: "Profile lookup failed" }, { status: 500 });
+    return json({ error: "Profile lookup failed" }, 500);
   }
   if (existing?.deleted_at) {
     const purgeAt = new Date(
       new Date(existing.deleted_at).getTime() + GRACE_PERIOD_MS,
     ).toISOString();
-    return NextResponse.json({ purgeAt, alreadyDeleted: true });
+    return json({ purgeAt, alreadyDeleted: true }, 200);
   }
 
   // Mark profile deleted. We do this first — if Stripe call fails after,
@@ -114,10 +117,7 @@ export async function DELETE(req: Request) {
     .eq("id", userId);
   if (updErr) {
     console.error("[account-delete] profile update failed", { userId, updErr });
-    return NextResponse.json(
-      { error: "Could not mark account for deletion" },
-      { status: 500 },
-    );
+    return json({ error: "Could not mark account for deletion" }, 500);
   }
 
   // Best-effort Stripe cancel-at-period-end. We don't fail the request if
@@ -209,5 +209,5 @@ export async function DELETE(req: Request) {
     }
   }
 
-  return NextResponse.json({ purgeAt, alreadyDeleted: false });
+  return json({ purgeAt, alreadyDeleted: false }, 200);
 }

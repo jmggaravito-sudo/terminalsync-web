@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { corsHeaders, preflight } from "@/lib/cors";
 
 export const runtime = "nodejs";
+
+export async function OPTIONS(req: Request) {
+  return preflight(req);
+}
 
 interface Body {
   /** The user's email — verified earlier by either their signed-in Supabase
@@ -29,29 +34,27 @@ interface Body {
  * and avoids the "what if the secret rotates" headache.
  */
 export async function POST(req: Request) {
+  const cors = corsHeaders(req.headers.get("origin"));
+  const json = (data: unknown, status: number) =>
+    NextResponse.json(data, { status, headers: cors });
+
   if (!stripe) {
-    return NextResponse.json(
-      { error: "Stripe not configured" },
-      { status: 503 },
-    );
+    return json({ error: "Stripe not configured" }, 503);
   }
   const sb = getSupabaseAdmin();
   if (!sb) {
-    return NextResponse.json(
-      { error: "Supabase admin not configured" },
-      { status: 503 },
-    );
+    return json({ error: "Supabase admin not configured" }, 503);
   }
 
   let body: Body;
   try {
     body = (await req.json()) as Body;
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return json({ error: "Invalid JSON" }, 400);
   }
   const email = body.email?.trim().toLowerCase();
   if (!email) {
-    return NextResponse.json({ error: "Email required" }, { status: 400 });
+    return json({ error: "Email required" }, 400);
   }
   const lang = body.lang === "en" ? "en" : "es";
 
@@ -64,12 +67,12 @@ export async function POST(req: Request) {
   if (profErr || !profile) {
     // Don't leak whether the email exists in our system — just say the
     // portal isn't available. Same response shape regardless.
-    return NextResponse.json(
+    return json(
       {
         error:
           "No encontramos una suscripción para ese email. Si pensás que es un error, escribinos a soporte.",
       },
-      { status: 404 },
+      404,
     );
   }
 
@@ -79,12 +82,12 @@ export async function POST(req: Request) {
     .eq("user_id", profile.id)
     .maybeSingle();
   if (subErr || !sub?.stripe_customer_id) {
-    return NextResponse.json(
+    return json(
       {
         error:
           "Tu cuenta está en plan Free, no hay nada que administrar todavía. Cuando upgrades, vas a poder volver acá.",
       },
-      { status: 404 },
+      404,
     );
   }
 
@@ -93,10 +96,10 @@ export async function POST(req: Request) {
       customer: sub.stripe_customer_id,
       return_url: `https://terminalsync.ai/${lang}`,
     });
-    return NextResponse.json({ url: session.url });
+    return json({ url: session.url }, 200);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("[billing-portal] create session failed", { email, message });
-    return NextResponse.json({ error: message }, { status: 500 });
+    return json({ error: message }, 500);
   }
 }
