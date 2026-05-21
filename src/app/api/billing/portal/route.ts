@@ -15,6 +15,10 @@ interface Body {
   email: string;
   /** Optional locale for the localized return URL. */
   lang?: "es" | "en";
+  /** Deep-link the portal session into a specific flow. "cancel" jumps
+   *  straight into the cancellation form for the active subscription;
+   *  omit for the default landing screen (where the user picks an action). */
+  flow?: "cancel";
 }
 
 /**
@@ -78,7 +82,7 @@ export async function POST(req: Request) {
 
   const { data: sub, error: subErr } = await sb
     .from("subscriptions")
-    .select("stripe_customer_id")
+    .select("stripe_customer_id, stripe_subscription_id, status")
     .eq("user_id", profile.id)
     .maybeSingle();
   if (subErr || !sub?.stripe_customer_id) {
@@ -91,15 +95,44 @@ export async function POST(req: Request) {
     );
   }
 
+  const wantsCancel = body.flow === "cancel";
+  if (wantsCancel && !sub.stripe_subscription_id) {
+    // Edge case: user has a Stripe customer but no active subscription
+    // (e.g. previously canceled and never re-subscribed). The default
+    // portal flow still lets them re-subscribe / see invoices.
+    return json(
+      {
+        error:
+          "No tenés una suscripción activa para cancelar. Si pensás que es un error, escribinos a soporte.",
+      },
+      404,
+    );
+  }
+
   try {
-    const session = await stripe.billingPortal.sessions.create({
+    const params: Parameters<typeof stripe.billingPortal.sessions.create>[0] = {
       customer: sub.stripe_customer_id,
       return_url: `https://terminalsync.ai/${lang}`,
-    });
+    };
+    if (wantsCancel && sub.stripe_subscription_id) {
+      // Deep-link straight into the cancellation form. The Portal config
+      // (set via Stripe API on 2026-05-20) has cancel + reason picker
+      // enabled, so the user lands on the confirm screen with the
+      // reason multiple-choice already visible.
+      params.flow_data = {
+        type: "subscription_cancel",
+        subscription_cancel: { subscription: sub.stripe_subscription_id },
+      };
+    }
+    const session = await stripe.billingPortal.sessions.create(params);
     return json({ url: session.url }, 200);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("[billing-portal] create session failed", { email, message });
+    console.error("[billing-portal] create session failed", {
+      email,
+      flow: body.flow,
+      message,
+    });
     return json({ error: message }, 500);
   }
 }
