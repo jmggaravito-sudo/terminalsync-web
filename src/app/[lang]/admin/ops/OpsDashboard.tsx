@@ -11,6 +11,9 @@ import {
   ChevronDown,
   Loader2,
   AlertTriangle,
+  Pencil,
+  Check,
+  X,
 } from "lucide-react";
 import { EmailTemplatesPanel } from "./EmailTemplatesPanel";
 
@@ -95,6 +98,10 @@ export function OpsDashboard({ lang }: { lang: string }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState<string>("TerminalSync");
+  /** Optimistic name overrides keyed by workflow id. Survives until the
+   *  next page reload — the server is the source of truth, the rename
+   *  endpoint just confirms the write. */
+  const [renames, setRenames] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetch("/api/admin/ops")
@@ -122,6 +129,15 @@ export function OpsDashboard({ lang }: { lang: string }) {
     );
 
   if (!data) return null;
+
+  // Apply local-only optimistic name overrides for workflows the user
+  // just renamed inline. Lives in state (not localStorage) because the
+  // server is the source of truth on the next refetch.
+  if (renames) {
+    data.items = data.items.map((it) =>
+      renames[it.id] ? { ...it, name: renames[it.id]! } : it,
+    );
+  }
 
   // Group items by project, in fixed order
   const grouped = new Map<string, OpsWorkflow[]>();
@@ -259,6 +275,9 @@ export function OpsDashboard({ lang }: { lang: string }) {
                   isEs={isEs}
                   lang={lang}
                   compact={selectedProject !== "TerminalSync"}
+                  onRenamed={(newName) =>
+                    setRenames((cur) => ({ ...cur, [wf.id]: newName }))
+                  }
                 />
               ))}
             </ul>
@@ -301,6 +320,7 @@ function WorkflowCard({
   isEs,
   lang,
   compact = false,
+  onRenamed,
 }: {
   wf: OpsWorkflow;
   n8nUrl: string;
@@ -311,7 +331,41 @@ function WorkflowCard({
    *  templates panel so the operator can scan health at a glance
    *  without scrolling. */
   compact?: boolean;
+  /** Called after the rename API confirms; lets the parent apply the
+   *  new name optimistically until the next dashboard refresh. */
+  onRenamed: (newName: string) => void;
 }) {
+  const [editingName, setEditingName] = useState(false);
+  const [draftName, setDraftName] = useState(wf.name);
+  const [renaming, setRenaming] = useState(false);
+  const [renameErr, setRenameErr] = useState<string | null>(null);
+
+  async function commitRename() {
+    const next = draftName.trim();
+    if (!next || next === wf.name) {
+      setEditingName(false);
+      setDraftName(wf.name);
+      return;
+    }
+    setRenaming(true);
+    setRenameErr(null);
+    try {
+      const r = await fetch(`/api/admin/ops/workflows/${wf.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: next }),
+      });
+      const j = (await r.json()) as { name?: string; error?: string };
+      if (!r.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
+      onRenamed(j.name ?? next);
+      setEditingName(false);
+    } catch (e) {
+      setRenameErr(e instanceof Error ? e.message : "Error");
+    } finally {
+      setRenaming(false);
+    }
+  }
+
   const editorUrl = `${n8nUrl}/workflow/${wf.id}`;
   // Internal admin routes need the [lang] prefix; absolute URLs (Sheets,
   // GHL, etc.) pass through untouched.
@@ -353,9 +407,66 @@ function WorkflowCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-[14px] font-semibold tracking-tight text-[var(--color-fg-strong)] truncate">
-              {wf.name}
-            </h3>
+            {editingName ? (
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <input
+                  autoFocus
+                  value={draftName}
+                  disabled={renaming}
+                  onChange={(e) => setDraftName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") commitRename();
+                    if (e.key === "Escape") {
+                      setEditingName(false);
+                      setDraftName(wf.name);
+                    }
+                  }}
+                  className="rounded-md border border-[var(--color-accent)]/40 bg-[var(--color-bg)] px-2 py-1 text-[14px] font-semibold text-[var(--color-fg-strong)] min-w-[260px]"
+                />
+                <button
+                  type="button"
+                  onClick={commitRename}
+                  disabled={renaming}
+                  className="rounded-md border border-emerald-500/40 bg-emerald-500/15 hover:bg-emerald-500/25 px-1.5 py-1 text-emerald-300 disabled:opacity-50"
+                  title={isEs ? "Guardar" : "Save"}
+                >
+                  {renaming ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingName(false);
+                    setDraftName(wf.name);
+                    setRenameErr(null);
+                  }}
+                  disabled={renaming}
+                  className="rounded-md border border-[var(--color-border)] bg-[var(--color-panel-2)]/60 hover:bg-[var(--color-panel-2)] px-1.5 py-1 text-[var(--color-fg-muted)] disabled:opacity-50"
+                  title={isEs ? "Cancelar" : "Cancel"}
+                >
+                  <X size={12} />
+                </button>
+                {renameErr && (
+                  <span className="text-[10.5px] font-mono text-red-400">{renameErr}</span>
+                )}
+              </div>
+            ) : (
+              <>
+                <h3 className="text-[14px] font-semibold tracking-tight text-[var(--color-fg-strong)] truncate">
+                  {wf.name}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDraftName(wf.name);
+                    setEditingName(true);
+                  }}
+                  className="rounded p-0.5 text-[var(--color-fg-dim)] hover:text-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 transition-colors"
+                  title={isEs ? "Renombrar en n8n" : "Rename in n8n"}
+                >
+                  <Pencil size={11} />
+                </button>
+              </>
+            )}
             <span
               className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.08em] ${moodMap[mood].chip}`}
             >
