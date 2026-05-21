@@ -14,6 +14,23 @@ import {
 } from "lucide-react";
 import { EmailTemplatesPanel } from "./EmailTemplatesPanel";
 
+interface OpsResultItem {
+  title: string;
+  subtitle?: string;
+  url?: string;
+  timestamp: string;
+  badge?: string;
+}
+
+interface OpsResults {
+  label: string;
+  unit: string;
+  total: number;
+  last24h: number;
+  last7d: number;
+  items: OpsResultItem[];
+}
+
 interface OpsWorkflow {
   id: string;
   name: string;
@@ -38,6 +55,9 @@ interface OpsWorkflow {
     durationMs: number | null;
   } | null;
   recent: { id: string; status: string; startedAt: string }[];
+  /** Live Supabase-backed snapshot of what the workflow produced. Null
+   *  for flows without a known results table (event bots, webhooks). */
+  results: OpsResults | null;
 }
 
 interface OpsResponse {
@@ -376,6 +396,10 @@ function WorkflowCard({
               </span>
             )}
           </div>
+          {/* Live business results — pulled straight from Supabase so JM
+              sees WHAT the flow produced (titles, dates, sources) without
+              clicking through to a separate admin page or logging in. */}
+          {wf.results && <ResultsPanel results={wf.results} isEs={isEs} />}
           {/* Recent runs — sparkline + clickable detail per run. JM
               opens any of them to see what each one did/what failed. */}
           {wf.recent.length > 0 && (
@@ -410,6 +434,114 @@ function WorkflowCard({
       </div>
     </li>
   );
+}
+
+/**
+ * Inline business-result snapshot for workflows that write to a known
+ * Supabase table. Shows totals (24h/7d/all-time) + the 5 most recent
+ * rows with title, source, date, status badge. The whole point of this
+ * panel is "JM doesn't need to log in or click through to see what the
+ * flow did" — it's the dashboard view rendered inline.
+ */
+function ResultsPanel({
+  results,
+  isEs,
+}: {
+  results: OpsResults;
+  isEs: boolean;
+}) {
+  const hasItems = results.items.length > 0;
+  return (
+    <div className="mt-3 rounded-lg border border-[var(--color-accent)]/25 bg-[var(--color-accent)]/5 p-3">
+      <header className="flex items-baseline justify-between gap-3 flex-wrap">
+        <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-[var(--color-accent)]">
+          {results.label}
+        </p>
+        <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--color-fg-dim)]">
+          <span className="text-[var(--color-fg-strong)] text-[14px] font-semibold leading-none">
+            {results.total.toLocaleString(isEs ? "es-CO" : "en-US")}
+          </span>
+          <span>{isEs ? "total" : "total"}</span>
+          <span className="text-[var(--color-border)]">·</span>
+          <span>
+            <span className="text-emerald-400">+{results.last24h}</span>{" "}
+            {isEs ? "hoy" : "today"}
+          </span>
+          <span className="text-[var(--color-border)]">·</span>
+          <span>
+            <span className="text-[var(--color-fg)]">+{results.last7d}</span>{" "}
+            {isEs ? "7d" : "7d"}
+          </span>
+        </div>
+      </header>
+
+      {hasItems ? (
+        <ul className="mt-2.5 space-y-1.5">
+          {results.items.map((item, idx) => (
+            <li
+              key={`${item.timestamp}-${idx}`}
+              className="rounded-md border border-[var(--color-border)]/70 bg-[var(--color-panel-2)]/40 px-2.5 py-1.5"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[12.5px] font-medium text-[var(--color-fg-strong)] truncate">
+                    {item.url ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-[var(--color-accent)] underline-offset-2 hover:underline"
+                      >
+                        {item.title}
+                      </a>
+                    ) : (
+                      item.title
+                    )}
+                  </p>
+                  {item.subtitle && (
+                    <p className="mt-0.5 text-[11.5px] text-[var(--color-fg-muted)] truncate">
+                      {item.subtitle}
+                    </p>
+                  )}
+                </div>
+                <div className="shrink-0 flex items-center gap-1.5">
+                  {item.badge && (
+                    <span className={badgeClasses(item.badge)}>{item.badge}</span>
+                  )}
+                  <span
+                    className="text-[10.5px] font-mono text-[var(--color-fg-dim)] whitespace-nowrap"
+                    title={new Date(item.timestamp).toLocaleString(
+                      isEs ? "es-CO" : "en-US",
+                    )}
+                  >
+                    {timeAgo(item.timestamp, isEs)}
+                  </span>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-2.5 text-[11.5px] text-[var(--color-fg-dim)] italic">
+          {isEs
+            ? "Sin items todavía. Cuando el flujo corra y guarde, aparecerán acá."
+            : "No items yet. When the flow runs and writes, they'll show up here."}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function badgeClasses(badge: string): string {
+  const b = badge.toLowerCase();
+  const base = "rounded-full px-1.5 py-0.5 text-[9.5px] font-mono uppercase tracking-[0.08em]";
+  if (b === "approved" || b === "kept" || b === "promoted" || b === "qualified" || b === "converted")
+    return `${base} bg-emerald-500/15 text-emerald-300`;
+  if (b === "rejected" || b === "archived" || b === "ignored")
+    return `${base} bg-red-500/15 text-red-300`;
+  if (b === "contacted" || b === "replied")
+    return `${base} bg-sky-500/15 text-sky-300`;
+  return `${base} bg-amber-500/15 text-amber-300`;
 }
 
 interface ExecutionDetail {
