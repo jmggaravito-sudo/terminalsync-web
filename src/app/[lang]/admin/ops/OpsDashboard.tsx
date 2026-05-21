@@ -58,6 +58,8 @@ interface OpsWorkflow {
   /** Live Supabase-backed snapshot of what the workflow produced. Null
    *  for flows without a known results table (event bots, webhooks). */
   results: OpsResults | null;
+  /** Reason the last execution failed, surfaced inline on the card. */
+  lastError: { node: string | null; message: string; description: string | null } | null;
 }
 
 interface OpsResponse {
@@ -403,6 +405,10 @@ function WorkflowCard({
               </span>
             )}
           </div>
+          {/* Last error — shown for every flow whose most recent exec
+              failed, regardless of compact mode, so JM knows WHY a card
+              is red without clicking into n8n. */}
+          {wf.lastError && <ErrorBanner err={wf.lastError} isEs={isEs} />}
           {/* Live business results — only on the detailed (TerminalSync)
               view. Non-TS projects collapse to a health-only card. */}
           {!compact && wf.results && (
@@ -439,6 +445,49 @@ function WorkflowCard({
         </div>
       </div>
     </li>
+  );
+}
+
+/**
+ * Inline error banner: shows the actual reason a flow is red (n8n error
+ * message + node) so the operator doesn't need to log into n8n. Picks
+ * up workflow.lastError, which is enriched server-side from n8n's
+ * resultData.error.
+ */
+function ErrorBanner({
+  err,
+  isEs,
+}: {
+  err: { node: string | null; message: string; description: string | null };
+  isEs: boolean;
+}) {
+  return (
+    <div className="mt-3 rounded-lg border border-red-500/40 bg-red-500/8 p-2.5">
+      <div className="flex items-start gap-2 text-[12px] text-red-200">
+        <AlertTriangle size={13} className="shrink-0 mt-0.5 text-red-400" />
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold leading-snug">
+            {err.node ? (
+              <>
+                <span className="font-mono text-[11px] text-red-300">
+                  {err.node}
+                </span>
+                {" — "}
+              </>
+            ) : null}
+            {err.message}
+          </p>
+          {err.description && (
+            <p className="mt-1 text-[11px] text-red-300/80 leading-snug">
+              {err.description}
+            </p>
+          )}
+          <p className="mt-1.5 text-[10.5px] font-mono uppercase tracking-[0.08em] text-red-300/60">
+            {isEs ? "última corrida falló" : "last run failed"}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 
