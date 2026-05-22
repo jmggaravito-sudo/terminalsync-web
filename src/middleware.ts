@@ -31,6 +31,7 @@ export function middleware(req: NextRequest) {
     pathname.startsWith("/api") ||
     pathname.startsWith("/oauth") || // OAuth callback is language-agnostic
     pathname.startsWith("/auth/callback") || // Supabase magic-link landing
+    pathname === "/privacy" || // Google OAuth verification requires this exact URL
     pathname === "/download" || // top-level redirect to /api/download
     pathname.includes(".") ||
     locales.some((l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`))
