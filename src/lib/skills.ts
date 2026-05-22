@@ -44,6 +44,30 @@ export interface SkillDoc extends SkillMeta {
   bodyHtml: string;
 }
 
+export interface SkillInstallPayload {
+  vendor: "claude";
+  name: string;
+  files: Record<string, string>;
+}
+
+export async function getSkillInstallPayload(
+  slug: string,
+): Promise<SkillInstallPayload | null> {
+  const dir = resolveLangDir("en");
+  const file = path.join(dir, `${slug}.md`);
+  if (!fs.existsSync(file)) return null;
+  const raw = fs.readFileSync(file, "utf8");
+  const { content } = matter(raw);
+  const skillMd = content.trimStart();
+  return {
+    vendor: "claude",
+    name: slug,
+    files: {
+      "SKILL.md": Buffer.from(skillMd, "utf8").toString("base64"),
+    },
+  };
+}
+
 const CONTENT_DIR = path.join(process.cwd(), "content", "skills");
 
 function resolveLangDir(lang: string): string {
