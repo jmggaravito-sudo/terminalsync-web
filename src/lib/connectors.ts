@@ -47,6 +47,21 @@ export interface ConnectorMeta {
   hasManifest: boolean;
   /** Where this connector comes from. Drives the "By @publisher" badge. */
   source?: "first-party" | "marketplace";
+  /** Original upstream author. For OSS MCPs this is the GitHub user/org
+   *  that owns the repo we redistribute via `npx`. For SaaS-affiliate
+   *  listings it's the vendor company. Every license we ship requires
+   *  this — never publish without it. */
+  originalAuthor?: string;
+  originalAuthorUrl?: string;
+  /** SPDX identifier ("MIT", "Apache-2.0", "GPL-3.0", "proprietary").
+   *  Use "proprietary" for SaaS-affiliate listings — there's no code we
+   *  redistribute, the user signs up with the vendor directly. */
+  license?: string;
+  /** Direct link to the LICENSE file when the upstream repo exposes one. */
+  licenseUrl?: string;
+  /** When true, the connector is suppressed from the public catalog.
+   *  Used to retire connectors without losing their content. */
+  hidden?: boolean;
   /** Marketplace-only fields. */
   pricingType?: "free" | "one_time";
   priceCents?: number | null;
@@ -79,7 +94,9 @@ export async function listConnectors(lang: string): Promise<ConnectorMeta[]> {
   for (const file of files) {
     const raw = fs.readFileSync(path.join(dir, file), "utf8");
     const { data } = matter(raw);
-    metas.push(normalizeMeta(file.replace(/\.md$/, ""), data));
+    const meta = normalizeMeta(file.replace(/\.md$/, ""), data);
+    if (meta.hidden) continue; // Suppressed from the public catalog.
+    metas.push(meta);
   }
   // Stable ordering: available first, then by frontmatter `order` if present, else name
   return metas.sort((a, b) => {
@@ -98,10 +115,12 @@ export async function getConnector(
   if (fs.existsSync(file)) {
     const raw = fs.readFileSync(file, "utf8");
     const { data, content } = matter(raw);
+    const meta = normalizeMeta(slug, data);
+    if (meta.hidden) return null; // Hidden connector → 404 on the detail page.
     const [simpleSrc, devSrc] = splitSimpleDev(content);
     const simpleHtml = await renderMarkdown(simpleSrc);
     const devHtml = await renderMarkdown(devSrc || simpleSrc);
-    return { ...normalizeMeta(slug, data), simpleHtml, devHtml };
+    return { ...meta, simpleHtml, devHtml };
   }
 
   // Fallback to Supabase marketplace listing.
@@ -123,6 +142,7 @@ async function getMarketplaceConnector(
     `)
     .eq("slug", slug)
     .eq("status", "approved")
+    .is("hidden_at", null)
     .maybeSingle();
   if (error || !data) return null;
 
@@ -220,6 +240,11 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMe
     affiliate: data.affiliate === true,
     tagline: get("tagline"),
     hasManifest,
+    originalAuthor: get("originalAuthor") || undefined,
+    originalAuthorUrl: get("originalAuthorUrl") || undefined,
+    license: get("license") || undefined,
+    licenseUrl: get("licenseUrl") || undefined,
+    hidden: data.hidden === true,
   };
 }
 
@@ -247,6 +272,10 @@ export async function listMarketplaceConnectors(): Promise<ConnectorMeta[]> {
       publisher:publishers ( display_name )
     `)
     .eq("status", "approved")
+    // Suppress every row hidden by migration 0017 (the auto-promoted
+    // 525 with no author/license attribution). Re-enable per row by
+    // clearing `hidden_at`.
+    .is("hidden_at", null)
     // Hide marketplace items that never got a CTA URL — those are
     // garbage rows the auto-publish pass let through, no point
     // showing a card that links nowhere.

@@ -7,8 +7,8 @@ author: "TerminalSync"
 status: available
 tagline: "Auditoría SEO accionable, no checklist"
 description: "Audita tu URL y devuelve solo lo que mueve la aguja, ordenado por impacto."
+license: "proprietary"
 ---
-
 ## Cuándo usar
 
 - Pediste "auditá mi sitio", "qué le mejoro al SEO", "por qué no rankea esta página".

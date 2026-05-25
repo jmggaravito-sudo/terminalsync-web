@@ -17,8 +17,11 @@ manifest:
         NOTION_API_KEY: "${SECRET:NOTION_API_KEY}"
 affiliate: true
 tagline: "Make your AI understand your workspace"
+originalAuthor: "Notion Labs (@makenotion)"
+originalAuthorUrl: "https://github.com/makenotion"
+license: "MIT"
+licenseUrl: "https://github.com/makenotion/notion-mcp-server/blob/main/LICENSE"
 ---
-
 Your Notion has years of work: recipes, decisions, links, client notes. Today, when you ask Claude for something, you have to copy-paste the context every time.
 
 With the Notion connector, Claude Code reads your workspace directly (with your permission) and answers based on **your** knowledge. Ask *"what did we decide with client X last month?"* and it pulls the answer from the right doc.

@@ -7,8 +7,8 @@ author: "TerminalSync"
 status: available
 tagline: "Honest review before you merge"
 description: "Reviews diffs like a tired-but-fair senior: real bugs, not lint."
+license: "proprietary"
 ---
-
 ## When to use
 
 - You said "review this PR", "what's missing in this diff", "I want a critical second pair of eyes before merging".

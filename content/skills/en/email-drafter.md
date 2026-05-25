@@ -7,8 +7,8 @@ author: "TerminalSync"
 status: available
 tagline: "Emails people actually reply to"
 description: "Short, clear, specific drafts — paste and send."
+license: "proprietary"
 ---
-
 ## When to use
 
 - You asked "draft an email to my client", "help me reply to this", "I need to send this follow-up".

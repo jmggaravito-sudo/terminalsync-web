@@ -10,8 +10,10 @@ devSubtitle: "Subscribers, sequences and broadcasts as tools — query, segment,
 ctaUrl: "https://kit.com/"
 affiliate: false
 tagline: "Newsletter without opening the dashboard"
+originalAuthor: "Kit (ex-ConvertKit)"
+originalAuthorUrl: "https://kit.com"
+license: "proprietary"
 ---
-
 Kit (formerly ConvertKit) is where your list lives. But writing a broadcast, segmenting subscribers and scheduling it takes you 30 minutes every time — and you always forget a field.
 
 With this connector, you ask Claude *"draft a broadcast summarizing the latest post, send it only to subscribers who opened the last 3 emails, and schedule it for Tuesday 9am"* — and it sets up the draft in Kit, ready for you to approve.

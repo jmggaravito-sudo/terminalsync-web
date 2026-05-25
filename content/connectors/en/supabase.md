@@ -17,8 +17,11 @@ manifest:
         SUPABASE_ACCESS_TOKEN: "${SECRET:SUPABASE_ACCESS_TOKEN}"
 affiliate: true
 tagline: "Your Postgres, within reach of the agent"
+originalAuthor: "Supabase community"
+originalAuthorUrl: "https://github.com/supabase-community"
+license: "Apache-2.0"
+licenseUrl: "https://github.com/supabase-community/supabase-mcp/blob/main/LICENSE"
 ---
-
 If your app stores data in Supabase, you can now ask Claude things like *"how many users signed up last week?"* or *"export March orders to CSV"* — and it generates the query, runs it, and gives you the answer.
 
 With granular permissions: you pick which tables the agent sees, what operations it can perform (read-only vs write). You never hand over the full `service_role` unless you want to.

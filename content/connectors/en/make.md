@@ -10,8 +10,10 @@ devSubtitle: "Trigger Make scenarios + build new ones from natural language."
 ctaUrl: "https://www.make.com/en/register?pc=REPLACE_WITH_JUANS_MAKE_AFFILIATE"
 affiliate: true
 tagline: "Automate by talking, not clicking"
+originalAuthor: "Make.com"
+originalAuthorUrl: "https://make.com"
+license: "proprietary"
 ---
-
 Make (formerly Integromat) connects your apps without code: Slack, Gmail, Notion, Stripe, WhatsApp, you name it. But building a scenario from scratch takes 20 minutes of drag-and-drop.
 
 With this connector, you tell Claude *"whenever a Stripe payment comes in, WhatsApp me and add a row to my Google Sheet"* and it builds the scenario in Make automatically. You review, hit run, done.

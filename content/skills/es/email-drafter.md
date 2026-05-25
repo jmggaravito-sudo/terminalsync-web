@@ -7,8 +7,8 @@ author: "TerminalSync"
 status: available
 tagline: "Emails que la gente realmente responde"
 description: "Drafts cortos, claros y específicos — pegás y enviás."
+license: "proprietary"
 ---
-
 ## Cuándo usar
 
 - Pediste "redactame un email para mi cliente", "ayudame a contestar a este mail", "necesito sacar este follow-up".

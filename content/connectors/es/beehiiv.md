@@ -10,8 +10,10 @@ devSubtitle: "Posts, subscriptions and segments as tools — draft, schedule and
 ctaUrl: "https://www.beehiiv.com/"
 affiliate: false
 tagline: "Newsletter sin abrir el editor"
+originalAuthor: "Beehiiv Inc."
+originalAuthorUrl: "https://beehiiv.com"
+license: "proprietary"
 ---
-
 Beehiiv es donde está creciendo tu lista. Pero cada post es una hora entre redacción, segmentación, scheduling y métricas post-envío.
 
 Con este conector, le pedís a Claude *"escribí un post con los 3 highlights de esta semana, mandalo solo a los suscriptores que abrieron los últimos 4, y dejame el draft para revisar"* — él arma todo en Beehiiv listo para que aprobás.

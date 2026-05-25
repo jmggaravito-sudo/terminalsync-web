@@ -7,8 +7,8 @@ author: "TerminalSync"
 status: available
 tagline: "Tu landing, hero y emails con tu voz"
 description: "Escribe copy directo y específico — sin clichés de IA."
+license: "proprietary"
 ---
-
 ## Cuándo usar
 
 - Pediste "ayudame a escribir el hero", "necesito copy para landing", "armame un email de bienvenida".

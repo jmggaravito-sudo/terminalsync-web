@@ -17,8 +17,11 @@ manifest:
         NOTION_API_KEY: "${SECRET:NOTION_API_KEY}"
 affiliate: true
 tagline: "Que tu IA entienda tu workspace"
+originalAuthor: "Notion Labs (@makenotion)"
+originalAuthorUrl: "https://github.com/makenotion"
+license: "MIT"
+licenseUrl: "https://github.com/makenotion/notion-mcp-server/blob/main/LICENSE"
 ---
-
 Tu Notion tiene años de trabajo: recetas, decisiones, links, notas de clientes. Hoy, cuando le pedís algo a Claude, tenés que copiar y pegar el contexto cada vez.
 
 Con el conector de Notion, Claude Code lee tu workspace directamente (con tu permiso) y te responde con base en **tu** conocimiento. Preguntale *"¿qué decidimos con el cliente X el mes pasado?"* y saca la respuesta del doc correcto.

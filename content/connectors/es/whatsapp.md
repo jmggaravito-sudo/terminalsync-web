@@ -10,8 +10,10 @@ devSubtitle: "Programmatic access to conversations, templates, and outbound send
 ctaUrl: "https://business.whatsapp.com"
 affiliate: false
 tagline: "Atención 24/7, con vos al mando"
+originalAuthor: "Meta Platforms"
+originalAuthorUrl: "https://whatsapp.com"
+license: "proprietary"
 ---
-
 Pensado para negocios en LatAm donde WhatsApp es el canal principal. Claude te ayuda a:
 
 - Responder preguntas frecuentes con tu tono

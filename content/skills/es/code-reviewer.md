@@ -7,8 +7,8 @@ author: "TerminalSync"
 status: available
 tagline: "Review honesto antes de mergear"
 description: "Revisa diffs como un senior cansado pero justo: bugs reales, no lint."
+license: "proprietary"
 ---
-
 ## Cuándo usar
 
 - Pediste "reviseme este PR", "qué le falta a este diff", "ojos críticos antes de mergear".

@@ -17,8 +17,8 @@ manifest:
         PIPEDREAM_API_KEY: "${SECRET:PIPEDREAM_API_KEY}"
 affiliate: false
 tagline: "Workflows you build by talking"
+hidden: true
 ---
-
 Pipedream connects 2,500+ apps with the flexibility of a real code editor (Node, Python, Go) — but that same flexibility means more friction when you just want to fire off a quick workflow.
 
 With this connector, you tell Claude *"when an email lands in my Gmail with a subject starting with 'Invoice', OCR the amount and vendor, push to Sheets and ping me in Slack"* — it writes the steps in Pipedream ready to deploy.

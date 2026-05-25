@@ -17,6 +17,10 @@ manifest:
         AIRTABLE_API_KEY: "${SECRET:AIRTABLE_API_KEY}"
 affiliate: false
 tagline: "CRM + inventory within AI reach"
+originalAuthor: "Adam Jones (@domdomegg)"
+originalAuthorUrl: "https://github.com/domdomegg"
+license: "MIT"
+licenseUrl: "https://github.com/domdomegg/airtable-mcp-server/blob/master/LICENSE"
 ---
 
 If you use Airtable as your CRM, inventory, or order tracker, you can now ask Claude *"which clients haven't replied in 2 weeks?"* or *"mark order 487 as shipped"* without opening the app.

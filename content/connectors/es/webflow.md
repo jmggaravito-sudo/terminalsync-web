@@ -10,8 +10,10 @@ devSubtitle: "Designer + CMS APIs as tools — query collections, push items, pu
 ctaUrl: "https://webflow.com/"
 affiliate: false
 tagline: "Editá tu sitio hablando"
+originalAuthor: "Webflow Inc."
+originalAuthorUrl: "https://webflow.com"
+license: "proprietary"
 ---
-
 Tu sitio en Webflow tiene 80 posts, 40 productos y un CMS con 12 colecciones. Cada cambio chico te obliga a abrir el editor, esperar que cargue y buscar el ítem correcto.
 
 Con este conector, le decís a Claude *"actualizá el precio del plan Pro a $19, publicá los 3 borradores del blog que están listos y avisame qué se rompió"* y él lo hace contra tus colecciones en segundos.

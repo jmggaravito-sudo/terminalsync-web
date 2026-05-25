@@ -10,8 +10,10 @@ devSubtitle: "Native Drive API access for docs, sheets, slides + fulltext search
 ctaUrl: "https://drive.google.com"
 affiliate: false
 tagline: "Your Drive's brain, in the agent"
+originalAuthor: "Google LLC"
+originalAuthorUrl: "https://drive.google.com"
+license: "proprietary"
 ---
-
 You have contracts in Docs, finances in Sheets, pitch decks in Slides. When you ask Claude something, you have to open the file, copy the text, paste it in chat.
 
 With this connector, you say *"review the contract with vendor X"* and the agent finds the doc, reads it, and answers. Fulltext search across your whole Drive.

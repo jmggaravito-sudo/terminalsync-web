@@ -7,8 +7,8 @@ author: "TerminalSync"
 status: available
 tagline: "5 conceptos de ads listos para pautar"
 description: "Genera 5 conceptos distintos de ads para Meta a partir del contexto de tu negocio."
+license: "proprietary"
 ---
-
 ## Cuándo usar
 
 - Pediste "armame ads para mi spa", "necesito creatives para Meta", "ideas de pauta para Facebook/Instagram".
