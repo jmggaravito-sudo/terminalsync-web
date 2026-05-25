@@ -10,8 +10,10 @@ devSubtitle: "Programmatic access to conversations, templates, and outbound send
 ctaUrl: "https://business.whatsapp.com"
 affiliate: false
 tagline: "24/7 support, with you in charge"
+originalAuthor: "Meta Platforms"
+originalAuthorUrl: "https://whatsapp.com"
+license: "proprietary"
 ---
-
 Built for LatAm businesses where WhatsApp is the primary channel. Claude helps you:
 
 - Reply to FAQs in your tone

@@ -7,8 +7,8 @@ author: "TerminalSync"
 status: available
 tagline: "Actionable SEO audit, not a checklist"
 description: "Audits your URL and returns only what moves the needle, ordered by impact."
+license: "proprietary"
 ---
-
 ## When to use
 
 - You asked "audit my site", "improve my SEO", "why isn't this page ranking".

@@ -10,8 +10,10 @@ devSubtitle: "OAuth-scoped Gmail API access for search, read, and draft composit
 ctaUrl: "https://gmail.com"
 affiliate: false
 tagline: "Triage inteligente en el inbox"
+originalAuthor: "Google LLC"
+originalAuthorUrl: "https://gmail.com"
+license: "proprietary"
 ---
-
 Llegás a la mañana con 80 correos sin leer. Le decís a Claude *"qué es urgente hoy"* y te resume lo importante. Le pedís *"redactame respuesta para el cliente X con tono formal"* y arma el draft.
 
 No manda nada automático — vos revisás y enviás.

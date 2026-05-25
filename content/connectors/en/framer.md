@@ -10,8 +10,10 @@ devSubtitle: "Plugin API + CMS bridge — read components, push CMS rows, trigge
 ctaUrl: "https://www.framer.com/"
 affiliate: false
 tagline: "Design by talking, not clicking"
+originalAuthor: "Framer B.V."
+originalAuthorUrl: "https://framer.com"
+license: "proprietary"
 ---
-
 Framer is fast for designing, but the small stuff (fixing copy across 12 breakpoints, syncing the CMS, exporting components) pulls you out of flow.
 
 With this connector, you ask Claude *"make the hero say 'Your Claude Code, synced' on mobile and tablet, and push the 3 blog drafts from Notion"* — and it applies the changes in your Framer project.

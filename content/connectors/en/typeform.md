@@ -10,8 +10,10 @@ devSubtitle: "Forms, responses and webhooks as tools — build, query and route 
 ctaUrl: "https://www.typeform.com/"
 affiliate: false
 tagline: "Forms and responses without clicking"
+originalAuthor: "Typeform S.L."
+originalAuthorUrl: "https://typeform.com"
+license: "proprietary"
 ---
-
 Typeform looks great, but building a 12-question form with conditional logic still takes 15 minutes of drag-and-drop. And when responses come in, opening the dashboard every time to spot patterns is tedious.
 
 With this connector, you ask Claude *"build a feedback form with 5 questions, hide the last one if NPS is low, and pipe each response to my Notion"* — it creates the form and sets up the webhook.

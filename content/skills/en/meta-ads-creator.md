@@ -7,8 +7,8 @@ author: "TerminalSync"
 status: available
 tagline: "5 ad concepts ready to ship"
 description: "Generates 5 distinct ad concepts for Meta based on your business context."
+license: "proprietary"
 ---
-
 ## When to use
 
 - You asked for "ads for my spa", "creatives for Meta", "Facebook/Instagram ad ideas".

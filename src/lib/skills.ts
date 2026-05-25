@@ -34,6 +34,15 @@ export interface SkillMeta {
   category: SkillCategory;
   vendors: SkillVendor[];
   author: string;
+  /** SPDX identifier ("MIT", "Apache-2.0", "proprietary"). First-party
+   *  skills authored by TerminalSync ship as "proprietary"; third-party
+   *  marketplace skills carry whatever license their author declared. */
+  license?: string;
+  /** Direct link to the LICENSE file when the author exposes one. */
+  licenseUrl?: string;
+  /** When true, the skill is suppressed from the public catalog without
+   *  losing its content. */
+  hidden?: boolean;
   status: "available" | "soon";
   tagline: string;
   description: string;
@@ -87,7 +96,9 @@ export async function listSkills(lang: string): Promise<SkillMeta[]> {
   for (const file of files) {
     const raw = fs.readFileSync(path.join(dir, file), "utf8");
     const { data } = matter(raw);
-    metas.push(normalizeMeta(file.replace(/\.md$/, ""), data));
+    const meta = normalizeMeta(file.replace(/\.md$/, ""), data);
+    if (meta.hidden) continue; // Suppressed from the public catalog.
+    metas.push(meta);
   }
   return metas.sort((a, b) => {
     if (a.status !== b.status) return a.status === "available" ? -1 : 1;
@@ -104,8 +115,10 @@ export async function getSkill(
   if (!fs.existsSync(file)) return null;
   const raw = fs.readFileSync(file, "utf8");
   const { data, content } = matter(raw);
+  const meta = normalizeMeta(slug, data);
+  if (meta.hidden) return null;
   const bodyHtml = String(await remark().use(html).process(content));
-  return { ...normalizeMeta(slug, data), bodyHtml };
+  return { ...meta, bodyHtml };
 }
 
 export async function listSkillSlugs(): Promise<string[]> {
@@ -131,6 +144,9 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): SkillMeta {
     category: (get("category", "productivity") as SkillCategory),
     vendors: vendors.length > 0 ? vendors : ["claude"],
     author: get("author", "TerminalSync"),
+    license: get("license") || undefined,
+    licenseUrl: get("licenseUrl") || undefined,
+    hidden: data.hidden === true,
     status: (get("status", "available") as SkillMeta["status"]),
     tagline: get("tagline"),
     description: get("description"),

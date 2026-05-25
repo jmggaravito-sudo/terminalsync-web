@@ -10,8 +10,10 @@ devSubtitle: "Designer + CMS APIs as tools — query collections, push items, pu
 ctaUrl: "https://webflow.com/"
 affiliate: false
 tagline: "Edit your site by talking to it"
+originalAuthor: "Webflow Inc."
+originalAuthorUrl: "https://webflow.com"
+license: "proprietary"
 ---
-
 Your Webflow site has 80 posts, 40 products and a CMS with 12 collections. Every small change forces you to open the editor, wait for it to load and hunt down the right item.
 
 With this connector, you tell Claude *"bump the Pro price to $19, publish the 3 blog drafts that are ready, and tell me what broke"* and it runs against your collections in seconds.

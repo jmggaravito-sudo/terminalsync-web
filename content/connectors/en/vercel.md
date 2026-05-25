@@ -10,8 +10,10 @@ devSubtitle: "Project, deployment, env var, and log access via Vercel REST API."
 ctaUrl: "https://vercel.com"
 affiliate: false
 tagline: "Conversational CI/CD"
+originalAuthor: "Vercel Inc."
+originalAuthorUrl: "https://vercel.com"
+license: "proprietary"
 ---
-
 If you deploy on Vercel, you can ask Claude for build status, pull error logs, promote preview deploys to prod, or add env vars — all without opening the dashboard.
 
 --- dev ---

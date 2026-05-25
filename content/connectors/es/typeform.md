@@ -10,8 +10,10 @@ devSubtitle: "Forms, responses and webhooks as tools — build, query and route 
 ctaUrl: "https://www.typeform.com/"
 affiliate: false
 tagline: "Forms y respuestas sin clickear"
+originalAuthor: "Typeform S.L."
+originalAuthorUrl: "https://typeform.com"
+license: "proprietary"
 ---
-
 Typeform es lindo, pero armar un form de 12 preguntas con lógica condicional sigue siendo 15 minutos de drag-and-drop. Y cuando llegan las respuestas, abrir el dashboard cada vez para ver patrones es tedioso.
 
 Con este conector, le decís a Claude *"hacé un form de feedback con 5 preguntas, lógica que oculte la última si dicen NPS bajo, y al final mandá el response a mi Notion"* — y él lo crea + setea el webhook.
