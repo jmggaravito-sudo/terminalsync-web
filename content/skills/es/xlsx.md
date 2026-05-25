@@ -12,8 +12,8 @@ ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
 affiliate: false
 tagline: "Excel sin cazar fórmulas"
 tsInstallable: true
+hidden: true
 ---
-
 *"Tomá este CSV de ventas del mes pasado, armá un P&L por región con gráfico, y resaltá en rojo las regiones bajo target."* Claude arma el workbook — vos lo abrís en Numbers o Excel y lo presentás.
 
 Funciona genial con el conector de Supabase para análisis directo desde tu DB.

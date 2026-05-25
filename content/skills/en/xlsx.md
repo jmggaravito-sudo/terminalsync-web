@@ -12,8 +12,8 @@ ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
 affiliate: false
 tagline: "Excel without the formula hunt"
 tsInstallable: true
+hidden: true
 ---
-
 *"Take this CSV of last month's sales, build a P&L by region with a chart, and highlight regions below target in red."* Claude builds the workbook — you open it in Numbers or Excel and present.
 
 Works great with the Supabase connector for analytics pulled straight from your DB.

@@ -12,8 +12,8 @@ ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
 affiliate: false
 tagline: "PowerPoint a velocidad de prompt"
 tsInstallable: true
+hidden: true
 ---
-
 *"Armá un deck de 10 slides para la review de mañana con el cliente. Bajá las métricas del mes pasado de Supabase, usá nuestro template, cerrá con un ask claro."* Claude arma, aplica tema y exporta — vos ajustás copy y presentás.
 
 --- dev ---

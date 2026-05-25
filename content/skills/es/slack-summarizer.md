@@ -12,8 +12,9 @@ ctaUrl: "https://terminalsync.ai/skills/slack-summarizer"
 affiliate: false
 tagline: "TL;DR de los canales que importan"
 tsInstallable: true
+author: "TerminalSync"
+license: "proprietary"
 ---
-
 No necesitás leer 200 mensajes para saber qué pasó. Decile a Claude *"resumí #engineering y #product desde las 9am"* y obtenés: decisiones tomadas, blockers planteados, en qué necesitan que opines.
 
 Próximamente. Va con el conector de Slack.

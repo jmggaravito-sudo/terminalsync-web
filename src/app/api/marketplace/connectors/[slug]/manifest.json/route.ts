@@ -79,6 +79,19 @@ export async function GET(_req: Request, { params }: Props) {
 
   const raw = fs.readFileSync(file, "utf8");
   const { data } = matter(raw);
+
+  // Hidden connectors should not serve their manifest either. listSlugs()
+  // only validates the file exists; it doesn't honor frontmatter flags,
+  // so the hide-from-catalog filter applied in listConnectors() would be
+  // bypassed without this guard. Return 404 to match the catalog page
+  // behavior — the connector is gone from the user's perspective.
+  if (data.hidden === true) {
+    return NextResponse.json(
+      { error: "connector not found" },
+      { status: 404, headers: CORS_HEADERS },
+    );
+  }
+
   const manifest = data.manifest as
     | { mcpServers?: Record<string, unknown> }
     | undefined;

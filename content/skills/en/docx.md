@@ -12,8 +12,8 @@ ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
 affiliate: false
 tagline: "Word docs without the fight"
 tsInstallable: true
+hidden: true
 ---
-
 Tell Claude what you need: *"Draft a proposal for the Acme account based on last quarter's wins, format it as our standard 4-pager"*. Claude writes, formats, and exports the .docx — you open it in Pages or Word and ship.
 
 Pair it with your Notion or Drive connector to pull in the source content automatically.
