@@ -12,8 +12,9 @@ ctaUrl: "https://terminalsync.ai/skills/deep-research"
 affiliate: false
 tagline: "Background-tab research with citations"
 tsInstallable: true
+author: "TerminalSync"
+license: "proprietary"
 ---
-
 Ask *"what are the 3 best practices for retention in Latin America fintechs in 2025, with sources"* — Claude searches, fetches, cross-references, and gives you a brief with footnotes. No more 40 open tabs.
 
 Coming soon. Join the waitlist from your Terminal Sync dashboard.

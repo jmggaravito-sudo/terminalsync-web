@@ -12,8 +12,9 @@ ctaUrl: "https://terminalsync.ai/skills/slack-summarizer"
 affiliate: false
 tagline: "TL;DR for the channels that matter"
 tsInstallable: true
+author: "TerminalSync"
+license: "proprietary"
 ---
-
 You don't need to read 200 messages to know what happened. Tell Claude *"summarize #engineering and #product since 9am"* and you get: decisions made, blockers raised, who needs you to weigh in.
 
 Coming soon. Pairs with the Slack connector.

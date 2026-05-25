@@ -12,8 +12,9 @@ ctaUrl: "https://terminalsync.ai/skills/deep-research"
 affiliate: false
 tagline: "Investigación con citas en background"
 tsInstallable: true
+author: "TerminalSync"
+license: "proprietary"
 ---
-
 Preguntá *"¿cuáles son las 3 mejores prácticas de retención para fintechs latam en 2025, con fuentes?"* — Claude busca, lee, cruza y te entrega un brief con footnotes. Se acabaron las 40 pestañas abiertas.
 
 Próximamente. Anotate en la lista de espera desde tu dashboard de Terminal Sync.

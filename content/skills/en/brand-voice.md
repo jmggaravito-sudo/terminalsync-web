@@ -12,8 +12,9 @@ ctaUrl: "https://github.com/terminalsync/skills"
 affiliate: false
 tagline: "Your voice, not generic AI English"
 tsInstallable: true
+author: "TerminalSync"
+license: "proprietary"
 ---
-
 The fastest way to break the "GPT smell" off your content. Drop in 3-5 emails, posts, or articles you've written. Claude pattern-matches your sentence rhythm, vocabulary quirks, and tone — every output from then on sounds like you wrote it.
 
 Tested with newsletter writers, founders posting on LinkedIn, and copywriters drafting client work. Works for English, Spanish, and Portuguese.

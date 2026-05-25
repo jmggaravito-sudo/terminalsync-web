@@ -12,8 +12,8 @@ ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
 affiliate: false
 tagline: "PDFs editables directo desde un prompt"
 tsInstallable: true
+hidden: true
 ---
-
 Dejá de pelear con los PDFs. Decile a Claude *"llename este contrato con los datos del cliente del CRM y mandalo por mail"* — listo. Generá cotizaciones, facturas, acuerdos en tu tono, firmados y listos.
 
 La skill viene con llenado de formularios, extracción de páginas y merge. Combinala con tu conector de Notion o Drive y Claude tiene flujos de documentos end-to-end.
