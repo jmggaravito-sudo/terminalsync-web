@@ -405,8 +405,8 @@ const WORKFLOW_META: Record<
   "7ooGFm2XvT8SLdde": {
     project: "TerminalSync",
     description:
-      "Captura diaria Influencers (YT + X) — busca creators que mencionan AI tools, los acumula en la DB. NO manda emails — está pausado hasta que digás 'launch'.",
-    cadence: "diario",
+      "Captura diaria Influencers (YT + X) — busca creators que hablan a dueños de agencias (marketing, SaaS, growth). Un Gemini classifier dentro del flow filtra y solo guarda los agency-targeted en la tabla agency_influencers. NO manda emails — pausado hasta 'launch'.",
+    cadence: "diario 9am COL",
   },
   "3ad53aIJo6QA1vI0": {
     project: "TerminalSync",
@@ -716,21 +716,39 @@ const WORKFLOW_RESULTS_SOURCE: Record<
       badge: r.review_status ? String(r.review_status) : undefined,
     }),
   },
-  // Captura Influencers YT+X → discovery_connectors (creators)
+  // Captura Influencers YT+X → agency_influencers
+  // (re-focused 2026-05-25: Gemini classifier inside the workflow now
+  //  filters to creators whose audience are agency owners, and writes
+  //  only those into agency_influencers. discovery_connectors no longer
+  //  gets new rows from this flow.)
   "7ooGFm2XvT8SLdde": {
-    table: "discovery_connectors",
+    table: "agency_influencers",
     timeField: "discovered_at",
     select:
-      "product_name,creator_name,creator_handle,creator_email,source_platform,source_url,review_status,discovered_at",
-    label: "Influencers capturados",
+      "name,handle,platform,source_url,email,subscribers,target_audience,classification_score,classification_reason,status,discovered_at",
+    label: "Influencers agency-targeted",
     unit: "influencers",
-    mapItem: (r) => ({
-      title: String(r.creator_name ?? r.creator_handle ?? r.product_name ?? "(sin nombre)"),
-      subtitle: [r.source_platform, r.creator_email].filter(Boolean).join(" · ") || undefined,
-      url: r.source_url ? String(r.source_url) : undefined,
-      timestamp: String(r.discovered_at ?? ""),
-      badge: r.review_status ? String(r.review_status) : undefined,
-    }),
+    mapItem: (r) => {
+      const score =
+        typeof r.classification_score === "number"
+          ? `${Math.round((r.classification_score as number) * 100)}%`
+          : null;
+      const sub = [
+        r.target_audience,
+        score ? `score ${score}` : null,
+        r.subscribers ? `${(r.subscribers as number).toLocaleString()} subs` : null,
+        r.platform,
+      ]
+        .filter(Boolean)
+        .join(" · ");
+      return {
+        title: String(r.name ?? r.handle ?? "(sin nombre)"),
+        subtitle: sub || (r.classification_reason ? String(r.classification_reason).slice(0, 140) : undefined),
+        url: r.source_url ? String(r.source_url) : undefined,
+        timestamp: String(r.discovered_at ?? ""),
+        badge: r.status ? String(r.status) : undefined,
+      };
+    },
   },
   // Captura Marketplace Publishers → discovery_connectors
   "3ad53aIJo6QA1vI0": {
