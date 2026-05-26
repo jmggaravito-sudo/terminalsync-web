@@ -705,6 +705,10 @@ const WORKFLOW_RESULTS_SOURCE: Record<
     label: string;
     unit: string;
     mapItem: (row: Record<string, unknown>) => ResultItem;
+    /** How many recent items to surface inline. Default 5 — the agency
+     *  flow bumps this so the DM chips have enough surface area to be
+     *  useful at a glance. */
+    itemsLimit?: number;
   }
 > = {
   // Trend Signals Daily → trend_signals
@@ -770,6 +774,7 @@ const WORKFLOW_RESULTS_SOURCE: Record<
       "name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,subscribers,target_audience,classification_score,classification_reason,status,discovered_at",
     label: "Influencers agency-targeted",
     unit: "influencers",
+    itemsLimit: 10,
     mapItem: (r) => {
       const score =
         typeof r.classification_score === "number"
@@ -906,10 +911,18 @@ async function fetchWorkflowResults(
         .from(cfg.table)
         .select(cfg.select)
         .order(cfg.timeField, { ascending: false })
-        .limit(5),
+        .limit(cfg.itemsLimit ?? 5),
     ])) as unknown as [CountResult, CountResult, CountResult, ItemsResult];
 
-    const items = (itemsRes.data ?? []).map(cfg.mapItem);
+    const rows = (itemsRes.data ?? []).map(cfg.mapItem);
+    // Surface rows with at least one contact channel first — the
+    // DM-first outreach pivot is useless if the most recent 5 happen
+    // to be no-contact rows.
+    const items = [...rows].sort((a, b) => {
+      const aHas = (a.contacts?.length ?? 0) > 0 ? 1 : 0;
+      const bHas = (b.contacts?.length ?? 0) > 0 ? 1 : 0;
+      return bHas - aHas; // contactable first, otherwise original order
+    });
 
     return {
       label: cfg.label,
