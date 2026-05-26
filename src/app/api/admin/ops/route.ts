@@ -633,6 +633,45 @@ interface ResultItem {
   url?: string;
   timestamp: string;
   badge?: string;
+  /** Outbound contact channels (DM-first for the agency outreach flow).
+   *  Each entry renders as a clickable chip on the dashboard. */
+  contacts?: Array<{ kind: ContactKind; value: string; href: string }>;
+}
+
+type ContactKind = "email" | "instagram" | "twitter" | "linkedin" | "tiktok";
+
+function buildContacts(row: {
+  email?: unknown;
+  instagram_handle?: unknown;
+  twitter_handle?: unknown;
+  linkedin_url?: unknown;
+  tiktok_handle?: unknown;
+}): ResultItem["contacts"] {
+  const out: NonNullable<ResultItem["contacts"]> = [];
+  const push = (kind: ContactKind, value: string, href: string) =>
+    out.push({ kind, value, href });
+
+  const ig = row.instagram_handle ? String(row.instagram_handle) : "";
+  if (ig) {
+    const handle = ig.replace(/^@/, "");
+    push("instagram", `@${handle}`, `https://instagram.com/${handle}`);
+  }
+  const tw = row.twitter_handle ? String(row.twitter_handle) : "";
+  if (tw) {
+    const handle = tw.replace(/^@/, "");
+    push("twitter", `@${handle}`, `https://twitter.com/${handle}`);
+  }
+  const li = row.linkedin_url ? String(row.linkedin_url) : "";
+  if (li) push("linkedin", li.replace(/^https?:\/\//, ""), li.startsWith("http") ? li : `https://${li}`);
+  const tt = row.tiktok_handle ? String(row.tiktok_handle) : "";
+  if (tt) {
+    const handle = tt.replace(/^@/, "");
+    push("tiktok", `@${handle}`, `https://tiktok.com/@${handle}`);
+  }
+  const em = row.email ? String(row.email) : "";
+  if (em) push("email", em, `mailto:${em}`);
+
+  return out.length > 0 ? out : undefined;
 }
 
 interface WorkflowResults {
@@ -721,11 +760,14 @@ const WORKFLOW_RESULTS_SOURCE: Record<
   //  filters to creators whose audience are agency owners, and writes
   //  only those into agency_influencers. discovery_connectors no longer
   //  gets new rows from this flow.)
+  // Outreach pivot 2026-05-26: DM-first via captured social handles
+  //  (email coverage is too low without paid enrichment). Card surfaces
+  //  contacts inline so JM can DM directly from the dashboard.
   "7ooGFm2XvT8SLdde": {
     table: "agency_influencers",
     timeField: "discovered_at",
     select:
-      "name,handle,platform,source_url,email,subscribers,target_audience,classification_score,classification_reason,status,discovered_at",
+      "name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,subscribers,target_audience,classification_score,classification_reason,status,discovered_at",
     label: "Influencers agency-targeted",
     unit: "influencers",
     mapItem: (r) => {
@@ -747,6 +789,7 @@ const WORKFLOW_RESULTS_SOURCE: Record<
         url: r.source_url ? String(r.source_url) : undefined,
         timestamp: String(r.discovered_at ?? ""),
         badge: r.status ? String(r.status) : undefined,
+        contacts: buildContacts(r),
       };
     },
   },
