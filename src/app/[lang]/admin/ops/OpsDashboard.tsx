@@ -18,12 +18,22 @@ import {
 import { EmailTemplatesPanel } from "./EmailTemplatesPanel";
 import { AutoRepairPanel } from "./AutoRepairPanel";
 
+type OpsContactKind = "email" | "instagram" | "twitter" | "linkedin" | "tiktok";
+
+interface OpsContact {
+  kind: OpsContactKind;
+  value: string;
+  href: string;
+}
+
 interface OpsResultItem {
   title: string;
   subtitle?: string;
   url?: string;
   timestamp: string;
   badge?: string;
+  /** DM-first contact chips for the agency outreach pivot. */
+  contacts?: OpsContact[];
 }
 
 interface OpsResults {
@@ -690,6 +700,9 @@ function ResultsPanel({
                       {item.subtitle}
                     </p>
                   )}
+                  {item.contacts && item.contacts.length > 0 && (
+                    <ContactChips contacts={item.contacts} />
+                  )}
                 </div>
                 <div className="shrink-0 flex items-center gap-1.5">
                   {item.badge && (
@@ -715,6 +728,45 @@ function ResultsPanel({
             : "No items yet. When the flow runs and writes, they'll show up here."}
         </p>
       )}
+    </div>
+  );
+}
+
+/**
+ * Inline DM contact chips. Renders the captured social handles +
+ * email as small clickable links so JM can DM directly from the
+ * dashboard without copy-pasting. Order: instagram → twitter →
+ * linkedin → tiktok → email (DM-first per outreach pivot).
+ */
+function ContactChips({ contacts }: { contacts: OpsContact[] }) {
+  const KIND_META: Record<
+    OpsContactKind,
+    { label: string; emoji: string; tone: string }
+  > = {
+    instagram: { label: "IG", emoji: "📷", tone: "bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30" },
+    twitter:   { label: "X",  emoji: "𝕏", tone: "bg-sky-500/15 text-sky-300 border-sky-500/30" },
+    linkedin:  { label: "LI", emoji: "in", tone: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+    tiktok:    { label: "TT", emoji: "♪",  tone: "bg-pink-500/15 text-pink-300 border-pink-500/30" },
+    email:     { label: "✉",  emoji: "✉", tone: "bg-amber-500/15 text-amber-300 border-amber-500/30" },
+  };
+  return (
+    <div className="mt-1.5 flex flex-wrap gap-1">
+      {contacts.map((c, i) => {
+        const meta = KIND_META[c.kind];
+        return (
+          <a
+            key={`${c.kind}-${i}`}
+            href={c.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10.5px] font-mono transition-opacity hover:opacity-80 ${meta.tone}`}
+            title={`${meta.label} · ${c.value}`}
+          >
+            <span className="opacity-70">{meta.label}</span>
+            <span className="truncate max-w-[160px]">{c.value}</span>
+          </a>
+        );
+      })}
     </div>
   );
 }
