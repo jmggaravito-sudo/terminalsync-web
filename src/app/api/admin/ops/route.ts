@@ -910,11 +910,13 @@ async function fetchWorkflowResults(
       supabase
         .from(cfg.table)
         .select(cfg.select)
-        // Pull a wider window than we'll display so the contactable-first
-        // sort has fresh candidates to draw from. Without this, the top
-        // N may all be no-contact rows and the DM chips never appear.
+        // Pull a wide window so the contactable-first sort has enough
+        // candidates. agency_influencers has ~150 total rows and only
+        // ~10 currently have contacts; pulling 250 covers the lot.
+        // Tables that don't need re-sorting (sort = identity) only ever
+        // read the first `itemsLimit` so this is also wasted-effort-safe.
         .order(cfg.timeField, { ascending: false })
-        .limit((cfg.itemsLimit ?? 5) * 5),
+        .limit(250),
     ])) as unknown as [CountResult, CountResult, CountResult, ItemsResult];
 
     const rows = (itemsRes.data ?? []).map(cfg.mapItem);
