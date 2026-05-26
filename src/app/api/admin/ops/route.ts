@@ -910,19 +910,25 @@ async function fetchWorkflowResults(
       supabase
         .from(cfg.table)
         .select(cfg.select)
+        // Pull a wider window than we'll display so the contactable-first
+        // sort has fresh candidates to draw from. Without this, the top
+        // N may all be no-contact rows and the DM chips never appear.
         .order(cfg.timeField, { ascending: false })
-        .limit(cfg.itemsLimit ?? 5),
+        .limit((cfg.itemsLimit ?? 5) * 5),
     ])) as unknown as [CountResult, CountResult, CountResult, ItemsResult];
 
     const rows = (itemsRes.data ?? []).map(cfg.mapItem);
-    // Surface rows with at least one contact channel first — the
-    // DM-first outreach pivot is useless if the most recent 5 happen
-    // to be no-contact rows.
-    const items = [...rows].sort((a, b) => {
-      const aHas = (a.contacts?.length ?? 0) > 0 ? 1 : 0;
-      const bHas = (b.contacts?.length ?? 0) > 0 ? 1 : 0;
-      return bHas - aHas; // contactable first, otherwise original order
-    });
+    // Surface rows with at least one contact channel first, then take
+    // the requested page size. Time order is preserved within each
+    // group (stable sort).
+    const limit = cfg.itemsLimit ?? 5;
+    const items = [...rows]
+      .sort((a, b) => {
+        const aHas = (a.contacts?.length ?? 0) > 0 ? 1 : 0;
+        const bHas = (b.contacts?.length ?? 0) > 0 ? 1 : 0;
+        return bHas - aHas;
+      })
+      .slice(0, limit);
 
     return {
       label: cfg.label,
