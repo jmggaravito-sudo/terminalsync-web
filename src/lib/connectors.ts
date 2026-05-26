@@ -17,6 +17,7 @@ import matter from "gray-matter";
 import { remark } from "remark";
 import html from "remark-html";
 import { getSupabaseAdmin } from "./supabaseAdmin";
+import { manifestRequiresEnvSecrets } from "./marketplace/secrets";
 
 export interface ConnectorMeta {
   slug: string;
@@ -45,6 +46,29 @@ export interface ConnectorMeta {
    *  is opening the upstream SaaS. Drives whether we show the "Add to
    *  Terminal Sync" deep-link CTA. */
   hasManifest: boolean;
+  /** True when the manifest declares any `${SECRET:NAME}` placeholder.
+   *  Catalog endpoint reads this so the panel can show a "necesita clave"
+   *  badge — and so drag&drop can route to the install modal (which
+   *  prompts for secrets) instead of dropping a half-installed entry.
+   *
+   *  False when:
+   *    - The connector is affiliate-only (no manifest → no secrets).
+   *    - The manifest exists but every env value is a literal.
+   *    - The connector came from the Supabase marketplace (manifest lives
+   *      in `connector_versions.manifest_json`, not in the row we list).
+   *      Treat these as `false` until we widen the catalog scan to join
+   *      versions — all hidden by migration 0017 today anyway.
+   *
+   *  IMPORTANT — what this flag does NOT mean:
+   *  This flag is `requires-env-secrets`, NOT `requires-any-setup`. A
+   *  connector whose auth runs through an OAuth browser flow (no env
+   *  vars in the manifest) would read `false` here. That's correct for
+   *  this flag's strict definition, but the panel must NOT treat
+   *  `requiresEnvSecrets === false` as "installable one-click without
+   *  friction". For that decision use `hasManifest && !requiresEnvSecrets`,
+   *  and even then handle the case where the install flow needs OAuth
+   *  out-of-band — see docs/browse-zone.md ("Necesita clave" indicator). */
+  requiresEnvSecrets: boolean;
   /** Where this connector comes from. Drives the "By @publisher" badge. */
   source?: "first-party" | "marketplace";
   /** Original upstream author. For OSS MCPs this is the GitHub user/org
@@ -192,6 +216,11 @@ async function getMarketplaceConnector(
     affiliate: false,
     tagline: row.tagline,
     hasManifest: false,
+    // Marketplace rows don't carry their manifest inline; the catalog
+    // scan can't see secret placeholders without joining
+    // connector_versions. Treat as `false` for now — all marketplace
+    // rows are hidden by migration 0017 anyway.
+    requiresEnvSecrets: false,
     source: "marketplace",
     pricingType: row.pricing_type as "free" | "one_time",
     priceCents: row.price_cents,
@@ -226,6 +255,10 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMe
     typeof manifest === "object" &&
     !!manifest.mcpServers &&
     Object.keys(manifest.mcpServers).length > 0;
+  // Scan the manifest for `${SECRET:NAME}` placeholders. A connector
+  // without a manifest can't require secrets — there's nothing to
+  // install. `manifestRequiresEnvSecrets` short-circuits on first match.
+  const requiresEnvSecrets = hasManifest && manifestRequiresEnvSecrets(manifest);
   return {
     slug,
     name: get("name", slug),
@@ -240,6 +273,7 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMe
     affiliate: data.affiliate === true,
     tagline: get("tagline"),
     hasManifest,
+    requiresEnvSecrets,
     originalAuthor: get("originalAuthor") || undefined,
     originalAuthorUrl: get("originalAuthorUrl") || undefined,
     license: get("license") || undefined,
@@ -318,6 +352,10 @@ export async function listMarketplaceConnectors(): Promise<ConnectorMeta[]> {
       // shape today — they're treated as external CTAs. When the marketplace
       // gains MCP manifests we'll flip this per-row.
       hasManifest: false,
+      // Same constraint as `hasManifest`: the row doesn't expose the
+      // manifest, so we can't scan for secrets here. Treat as false until
+      // the listings query joins connector_versions.
+      requiresEnvSecrets: false,
       source: "marketplace",
       pricingType: row.pricing_type as "free" | "one_time",
       priceCents: row.price_cents,

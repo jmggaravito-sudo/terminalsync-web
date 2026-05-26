@@ -42,6 +42,19 @@ export interface CliToolMeta {
   installCommand: string;
   /** Optional shell command for authenticating after install. */
   authCommand?: string;
+  /** True when the tool requires an auth step after install — derived
+   *  from `authCommand` being present. The desktop panel uses the same
+   *  flag as the connectors' `requiresEnvSecrets`: drag&drop on a tool that
+   *  needs auth can't be one-click, so the UI shows a "necesita clave"
+   *  badge and routes the user to the install/auth flow instead of
+   *  pretending the drop completed.
+   *
+   *  Naming note: this is `requires-env-secrets` in spirit, not just
+   *  literal env vars — for CLIs the auth step is usually a `stripe login`
+   *  / `gh auth login` flow, not a templated env var, but the UX
+   *  category is identical (not one-click) so we share the flag name
+   *  across pillars. See docs/browse-zone.md. */
+  requiresEnvSecrets: boolean;
   /** Vendor / author (e.g. "GitHub", "Vercel"). */
   vendor: string;
   /** Official homepage. */
@@ -131,6 +144,10 @@ export async function listCliToolsFromDb(
           : "dev"
       ) as CliToolCategory;
       const slug = String(row.slug ?? "");
+      const authCommand =
+        typeof row.auth_command === "string" && row.auth_command
+          ? row.auth_command
+          : undefined;
       return {
         slug,
         name: String(row.name ?? slug),
@@ -141,10 +158,8 @@ export async function listCliToolsFromDb(
         category,
         binary: String(row.cli_binary ?? slug),
         installCommand: String(row.install_command ?? ""),
-        authCommand:
-          typeof row.auth_command === "string" && row.auth_command
-            ? row.auth_command
-            : undefined,
+        authCommand,
+        requiresEnvSecrets: Boolean(authCommand),
         vendor: String(row.vendor ?? "Unknown"),
         homepage: String(row.homepage ?? ""),
         repo:
@@ -188,6 +203,7 @@ export async function listCliToolSlugs(): Promise<string[]> {
 function normalizeMeta(slug: string, data: Record<string, unknown>): CliToolMeta {
   const get = (k: string, fallback = ""): string =>
     (typeof data[k] === "string" ? (data[k] as string) : fallback).trim();
+  const authCommand = get("authCommand") || undefined;
   return {
     slug,
     name: get("name", slug),
@@ -195,7 +211,12 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): CliToolMeta
     category: (get("category", "dev") as CliToolCategory),
     binary: get("binary", slug),
     installCommand: get("installCommand"),
-    authCommand: get("authCommand") || undefined,
+    authCommand,
+    // CLI tools that ship with an auth command can't be one-click
+    // installed by drag&drop — same UX category as a connector with
+    // ${SECRET:...} placeholders. Catalog exposes both as the same flag
+    // so the panel handles them uniformly.
+    requiresEnvSecrets: Boolean(authCommand),
     vendor: get("vendor", "Unknown"),
     homepage: get("homepage"),
     repo: get("repo") || undefined,

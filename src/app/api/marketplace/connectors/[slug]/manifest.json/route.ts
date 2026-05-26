@@ -4,6 +4,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import matter from "gray-matter";
 import { listSlugs } from "@/lib/connectors";
+import { extractSecretNames } from "@/lib/marketplace/secrets";
 
 export const runtime = "nodejs";
 
@@ -131,24 +132,6 @@ export async function GET(_req: Request, { params }: Props) {
   );
 }
 
-// Walks the manifest looking for "${SECRET:NAME}" templates, returns unique
-// secret names so the client knows what to prompt for.
-function extractSecretNames(obj: unknown): string[] {
-  const out = new Set<string>();
-  const visit = (v: unknown): void => {
-    if (typeof v === "string") {
-      const matches = v.matchAll(/\$\{SECRET:([A-Z0-9_]+)\}/g);
-      for (const m of matches) out.add(m[1]);
-      return;
-    }
-    if (Array.isArray(v)) {
-      for (const x of v) visit(x);
-      return;
-    }
-    if (v && typeof v === "object") {
-      for (const x of Object.values(v as Record<string, unknown>)) visit(x);
-    }
-  };
-  visit(obj);
-  return Array.from(out).sort();
-}
+// Note: `extractSecretNames` moved to src/lib/marketplace/secrets.ts so the
+// catalog endpoint and this one share a single implementation. Sort order
+// preserved — Array.from(set).sort() — so the wire shape doesn't change.
