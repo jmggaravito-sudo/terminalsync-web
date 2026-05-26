@@ -15,16 +15,11 @@ import { GET, type CatalogResponse } from "./route";
 async function callCatalog(lang: string): Promise<{
   status: number;
   body: CatalogResponse;
-  cacheControl: string | null;
 }> {
   const req = new Request(`http://localhost/api/marketplace/catalog?lang=${lang}`);
   const res = await GET(req);
   const body = (await res.json()) as CatalogResponse;
-  return {
-    status: res.status,
-    body,
-    cacheControl: res.headers.get("Cache-Control"),
-  };
+  return { status: res.status, body };
 }
 
 describe("GET /api/marketplace/catalog", () => {
@@ -98,10 +93,22 @@ describe("GET /api/marketplace/catalog", () => {
     }
   });
 
-  it("sets the 10-min s-maxage cache header", async () => {
-    const { cacheControl } = await callCatalog("es");
-    expect(cacheControl).toBe(
-      "public, s-maxage=600, stale-while-revalidate=3600",
-    );
+  it("declares a 10-minute revalidate window for Vercel's edge cache", async () => {
+    // Asserts the route segment config — NOT the local response header.
+    //
+    // History: an earlier version of this test checked
+    // `res.headers.get("Cache-Control")` against the literal string
+    // we set on `NextResponse.json({ headers: { ... } })`. That test
+    // passed locally and gave us false confidence — in production the
+    // edge stripped everything except `public`, so the catalog was
+    // effectively uncached, but the test never noticed because the
+    // edge layer doesn't run in the unit suite.
+    //
+    // What governs production caching is the `revalidate` route
+    // segment export, which Vercel reads to emit s-maxage at the
+    // edge. That's what this test pins. If anyone bumps it or
+    // removes it, the assertion fires.
+    const mod = await import("./route");
+    expect((mod as { revalidate?: number }).revalidate).toBe(600);
   });
 });

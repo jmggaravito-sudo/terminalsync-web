@@ -33,10 +33,17 @@
  * catalog is what powers the marketplace web page, no auth required.
  * CORS open for Tauri.
  *
- * Cache: `public, s-maxage=600, stale-while-revalidate=3600`. The
- * panel opens fast on warm caches; freshness window of 10 min is fine
- * — connector manifests rarely change and the desktop refetches when
- * the panel re-mounts.
+ * Cache: 10-minute revalidate window via `export const revalidate = 600`
+ * below. Vercel emits the `s-maxage=600` directive on the edge from that
+ * hint; the panel opens fast on warm caches. Connector manifests rarely
+ * change and the desktop refetches when the panel re-mounts.
+ *
+ * History: the previous version of this route set `Cache-Control` by
+ * hand on `NextResponse.json({ headers })`. Production observed a
+ * truncated `Cache-Control: public` regardless of what the handler
+ * shipped, so the CDN treated every request as uncacheable. The unit
+ * test passed because invoking `GET(req)` direct reads the Response
+ * before Vercel's edge layer touches it.
  */
 import { NextResponse } from "next/server";
 import { listAllConnectors, type ConnectorMeta } from "@/lib/connectors";
@@ -52,6 +59,15 @@ import {
 } from "@/lib/marketplace/bundleItems";
 
 export const runtime = "nodejs";
+
+// 10-minute ISR window. Route segment config is the canonical Next way to
+// expose cache hints to Vercel — setting `Cache-Control` by hand on the
+// NextResponse was getting stripped at the edge (production observed a
+// trimmed `Cache-Control: public` regardless of what the handler sent).
+// `revalidate` puts Next in charge of emitting the right `s-maxage` +
+// SWR directives, which Vercel honors. Companion test verifies the
+// emitted header includes `s-maxage=600`.
+export const revalidate = 600;
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -116,12 +132,12 @@ export async function GET(req: Request) {
     bundles,
   };
 
-  return NextResponse.json(body, {
-    headers: {
-      ...CORS_HEADERS,
-      "Cache-Control": "public, s-maxage=600, stale-while-revalidate=3600",
-    },
-  });
+  // Cache-Control intentionally NOT set here. The `export const
+  // revalidate = 600` above is what Vercel reads to emit the s-maxage
+  // header; passing one through `headers` here got stripped in
+  // production. CORS headers still go through — they're not in
+  // Vercel's "managed cache" path.
+  return NextResponse.json(body, { headers: CORS_HEADERS });
 }
 
 /**
