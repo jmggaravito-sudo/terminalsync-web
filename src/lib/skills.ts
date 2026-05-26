@@ -43,6 +43,16 @@ export interface SkillMeta {
   /** When true, the skill is suppressed from the public catalog without
    *  losing its content. */
   hidden?: boolean;
+  /** Always `false` for skills. They're prompt recipes (SKILL.md), not
+   *  tools that need API keys or env vars — the install path is a file
+   *  copy. Catalog includes this so the desktop panel can treat the four
+   *  categories uniformly when reading the `requiresEnvSecrets` flag.
+   *
+   *  The flag is strict about env vars: if a skill ever needs setup of a
+   *  different shape (an MCP it pairs with, a tool to be installed
+   *  alongside), THAT setup is the connector/tool's `requiresEnvSecrets`,
+   *  not the skill's. See docs/browse-zone.md. */
+  requiresEnvSecrets: false;
   status: "available" | "soon";
   tagline: string;
   description: string;
@@ -147,6 +157,8 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): SkillMeta {
     license: get("license") || undefined,
     licenseUrl: get("licenseUrl") || undefined,
     hidden: data.hidden === true,
+    // Always false — see SkillMeta.requiresEnvSecrets doc.
+    requiresEnvSecrets: false,
     status: (get("status", "available") as SkillMeta["status"]),
     tagline: get("tagline"),
     description: get("description"),
