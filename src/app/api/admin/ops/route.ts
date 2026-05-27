@@ -924,9 +924,11 @@ async function fetchWorkflowResults(
     const rows = (itemsRes.data ?? []).map(cfg.mapItem);
     // Surface rows with at least one contact channel first, then take
     // the requested page size. Time order is preserved within each
-    // group (stable sort).
+    // group (stable sort). Rejected rows are hidden entirely —
+    // they're audit-only artifacts, not actionable leads.
     const limit = cfg.itemsLimit ?? 5;
-    const items = [...rows]
+    const items = rows
+      .filter((r) => (r.badge ?? "").toLowerCase() !== "rejected")
       .sort((a, b) => {
         const aHas = (a.contacts?.length ?? 0) > 0 ? 1 : 0;
         const bHas = (b.contacts?.length ?? 0) > 0 ? 1 : 0;
