@@ -18,7 +18,7 @@ import {
 import { EmailTemplatesPanel } from "./EmailTemplatesPanel";
 import { AutoRepairPanel } from "./AutoRepairPanel";
 
-type OpsContactKind = "email" | "instagram" | "twitter" | "linkedin" | "tiktok";
+type OpsContactKind = "email" | "instagram" | "twitter" | "linkedin" | "tiktok" | "biolink";
 
 interface OpsContact {
   kind: OpsContactKind;
@@ -743,6 +743,7 @@ function ContactChips({ contacts }: { contacts: OpsContact[] }) {
     OpsContactKind,
     { label: string; emoji: string; tone: string }
   > = {
+    biolink:   { label: "🔗", emoji: "🔗", tone: "bg-emerald-500/15 text-emerald-300 border-emerald-500/40" },
     instagram: { label: "IG", emoji: "📷", tone: "bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30" },
     twitter:   { label: "X",  emoji: "𝕏", tone: "bg-sky-500/15 text-sky-300 border-sky-500/30" },
     linkedin:  { label: "LI", emoji: "in", tone: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
