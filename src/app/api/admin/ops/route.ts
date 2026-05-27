@@ -638,7 +638,7 @@ interface ResultItem {
   contacts?: Array<{ kind: ContactKind; value: string; href: string }>;
 }
 
-type ContactKind = "email" | "instagram" | "twitter" | "linkedin" | "tiktok";
+type ContactKind = "email" | "instagram" | "twitter" | "linkedin" | "tiktok" | "biolink";
 
 function buildContacts(row: {
   email?: unknown;
@@ -646,11 +646,20 @@ function buildContacts(row: {
   twitter_handle?: unknown;
   linkedin_url?: unknown;
   tiktok_handle?: unknown;
+  bio_link_url?: unknown;
 }): ResultItem["contacts"] {
   const out: NonNullable<ResultItem["contacts"]> = [];
   const push = (kind: ContactKind, value: string, href: string) =>
     out.push({ kind, value, href });
 
+  // Bio-link first — a Linktree/bio.link is the highest-leverage DM
+  // channel: it already pre-aggregates ALL the creator's contact
+  // points, so JM can pick whichever route fits.
+  const bl = row.bio_link_url ? String(row.bio_link_url) : "";
+  if (bl) {
+    const visible = bl.replace(/^https?:\/\/(?:www\.)?/, "");
+    push("biolink", visible, bl.startsWith("http") ? bl : `https://${bl}`);
+  }
   const ig = row.instagram_handle ? String(row.instagram_handle) : "";
   if (ig) {
     const handle = ig.replace(/^@/, "");
@@ -771,7 +780,7 @@ const WORKFLOW_RESULTS_SOURCE: Record<
     table: "agency_influencers",
     timeField: "discovered_at",
     select:
-      "name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,subscribers,target_audience,language,classification_score,classification_reason,status,discovered_at",
+      "name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,bio_link_url,subscribers,target_audience,language,classification_score,classification_reason,status,discovered_at",
     label: "Influencers agency-targeted",
     unit: "influencers",
     itemsLimit: 10,
