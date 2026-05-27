@@ -9,33 +9,96 @@ const pickerDeveloperKey =
   process.env.NEXT_PUBLIC_GOOGLE_PICKER_API_KEY ||
   "AIzaSyBEyQFjXkp85ADkMWLzAksHgDZWig0wBYc";
 
+const copy = {
+  en: {
+    eyebrow: "Secure Google Drive access",
+    title: "Choose a Google Drive folder",
+    subtitle:
+      "Terminal Sync receives access only to the folder you choose. Keep this tab open until Google Drive appears.",
+    preparing: "Preparing Google Picker…",
+    opening: "Opening Google Drive…",
+    open: "Google Drive is open. Choose a folder to continue.",
+    retry: "Open picker again",
+    cancel: "Cancel",
+    selectedTitle: "Folder selected",
+    selected: "You can return to Terminal Sync.",
+    selectedDetail: "Sending your selection securely…",
+    missingCallback: "Missing callback data from Terminal Sync. Close this tab and try again.",
+    missingToken: "Missing Google access token. Return to Terminal Sync and try again.",
+    missingConfig: "Google Picker is missing its API key or client id.",
+    noFolder: "Google did not return a folder. Try again.",
+    loadError: "Google Picker failed to load.",
+    timeout: "Google Picker timed out.",
+  },
+  es: {
+    eyebrow: "Acceso seguro a Google Drive",
+    title: "Elige una carpeta de Google Drive",
+    subtitle:
+      "Terminal Sync recibe acceso solo a la carpeta que elijas. Mantén esta pestaña abierta hasta que aparezca Google Drive.",
+    preparing: "Preparando Google Picker…",
+    opening: "Abriendo Google Drive…",
+    open: "Google Drive está abierto. Elige una carpeta para continuar.",
+    retry: "Abrir selector otra vez",
+    cancel: "Cancelar",
+    selectedTitle: "Carpeta seleccionada",
+    selected: "Ya puedes volver a Terminal Sync.",
+    selectedDetail: "Enviando tu selección de forma segura…",
+    missingCallback: "Faltan datos de retorno de Terminal Sync. Cierra esta pestaña e intenta de nuevo.",
+    missingToken: "Falta el acceso a Google. Vuelve a Terminal Sync e intenta de nuevo.",
+    missingConfig: "Google Picker no tiene API key o client id configurado.",
+    noFolder: "Google no devolvió una carpeta. Intenta de nuevo.",
+    loadError: "Google Picker no pudo cargar.",
+    timeout: "Google Picker tardó demasiado en cargar.",
+  },
+} as const;
+
 export const metadata = {
   title: "Google Drive Picker · Terminal Sync",
   robots: { index: false, follow: false },
 };
 
-export default function GoogleDrivePickerPage() {
+export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) {
+  const c = copy[lang] || copy.en;
+
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
-      <div className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center px-6 py-12">
-        <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-8 shadow-2xl shadow-black/40">
-          <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/15 text-2xl">
-            ✨
+    <main className="min-h-screen overflow-hidden bg-[#08090b] font-sans text-[#e6e8ee]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(37,99,235,0.22),transparent_35%),radial-gradient(circle_at_20%_80%,rgba(34,211,238,0.10),transparent_30%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:28px_28px]" />
+
+      <div className="relative mx-auto flex min-h-screen max-w-2xl flex-col justify-center px-6 py-12">
+        <div className="rounded-[28px] border border-[#1f2330] bg-[#0f1115]/95 p-8 shadow-[0_28px_80px_-24px_rgba(0,0,0,0.85)] backdrop-blur-xl">
+          <div className="mb-8 flex items-center gap-3">
+            <img
+              src="/brand/logo-square.svg"
+              alt="Terminal Sync"
+              className="h-11 w-11 rounded-2xl shadow-[0_0_24px_-8px_rgba(37,99,235,0.95)]"
+            />
+            <div>
+              <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#67e8f9]">
+                {c.eyebrow}
+              </div>
+              <div className="mt-0.5 text-sm font-semibold text-white">Terminal Sync</div>
+            </div>
           </div>
-          <h1 className="text-3xl font-semibold tracking-tight">Choose a Google Drive folder</h1>
-          <p className="mt-3 text-sm leading-6 text-slate-300">
-            Terminal Sync will receive access only to the folder you choose. Keep this tab open until
-            Google Drive appears.
+
+          <div id="successIcon" className="mb-5 hidden h-12 w-12 items-center justify-center rounded-2xl border border-emerald-400/30 bg-emerald-400/10 text-2xl text-emerald-200">
+            ✓
+          </div>
+          <h1 id="title" className="text-3xl font-semibold tracking-tight text-white">
+            {c.title}
+          </h1>
+          <p id="subtitle" className="mt-3 text-sm leading-6 text-[#aab2c5]">
+            {c.subtitle}
           </p>
-          <div id="status" className="mt-6 rounded-2xl border border-blue-400/30 bg-blue-400/10 px-4 py-3 text-sm text-blue-100">
-            Preparing Google Picker…
+          <div id="status" className="mt-6 rounded-2xl border border-[#2563eb]/35 bg-[#2563eb]/15 px-4 py-3 text-sm text-blue-100">
+            {c.preparing}
           </div>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button id="retry" className="rounded-xl bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-400">
-              Open picker again
+          <div id="actions" className="mt-6 flex flex-wrap gap-3">
+            <button id="retry" className="rounded-xl bg-[#2563eb] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#3b82f6]">
+              {c.retry}
             </button>
-            <button id="cancel" className="rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10">
-              Cancel
+            <button id="cancel" className="rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-[#d6dbea] transition hover:bg-white/10">
+              {c.cancel}
             </button>
           </div>
         </div>
@@ -45,7 +108,12 @@ export default function GoogleDrivePickerPage() {
         (function () {
           const CLIENT_ID = ${JSON.stringify(pickerClientId)};
           const DEVELOPER_KEY = ${JSON.stringify(pickerDeveloperKey)};
+          const COPY = ${JSON.stringify(c)};
           const statusEl = document.getElementById('status');
+          const titleEl = document.getElementById('title');
+          const subtitleEl = document.getElementById('subtitle');
+          const successIconEl = document.getElementById('successIcon');
+          const actionsEl = document.getElementById('actions');
           const retryEl = document.getElementById('retry');
           const cancelEl = document.getElementById('cancel');
           const setStatus = (message, tone) => {
@@ -54,7 +122,9 @@ export default function GoogleDrivePickerPage() {
             statusEl.className = 'mt-6 rounded-2xl border px-4 py-3 text-sm ' + (
               tone === 'error'
                 ? 'border-red-400/30 bg-red-400/10 text-red-100'
-                : 'border-blue-400/30 bg-blue-400/10 text-blue-100'
+                : tone === 'success'
+                  ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-100'
+                  : 'border-[#2563eb]/35 bg-[#2563eb]/15 text-blue-100'
             );
           };
 
@@ -91,21 +161,37 @@ export default function GoogleDrivePickerPage() {
             else if (p.redirect) safeRedirect(p.redirect, { state: p.state, error: 'cancelled' });
           }
 
+          function showSelectedAndReturn(p, doc) {
+            if (titleEl) titleEl.textContent = COPY.selectedTitle;
+            if (subtitleEl) subtitleEl.textContent = COPY.selected;
+            if (successIconEl) successIconEl.classList.remove('hidden');
+            if (successIconEl) successIconEl.classList.add('inline-flex');
+            if (actionsEl) actionsEl.classList.add('hidden');
+            setStatus(COPY.selectedDetail, 'success');
+            window.setTimeout(function () {
+              safeRedirect(p.redirect, {
+                state: p.state,
+                folderId: doc.id,
+                folderName: doc.name || 'Google Drive',
+              });
+            }, 1200);
+          }
+
           function openPicker() {
             const p = params();
             if (!p.redirect || !p.state) {
-              setStatus('Missing callback data from Terminal Sync. Close this tab and try again.', 'error');
+              setStatus(COPY.missingCallback, 'error');
               return;
             }
             if (!p.accessToken) {
-              setStatus('Missing Google access token. Return to Terminal Sync and try again.', 'error');
+              setStatus(COPY.missingToken, 'error');
               return;
             }
             if (!p.developerKey || !p.clientId) {
-              setStatus('Google Picker is missing its API key or client id.', 'error');
+              setStatus(COPY.missingConfig, 'error');
               return;
             }
-            setStatus('Opening Google Drive…');
+            setStatus(COPY.opening);
             if (!window.gapi) {
               window.setTimeout(openPicker, 250);
               return;
@@ -115,6 +201,9 @@ export default function GoogleDrivePickerPage() {
                 try {
                   const picker = google.picker;
                   const view = new picker.DocsView(picker.ViewId.FOLDERS)
+                    // Start at My Drive root so the user navigates folder hierarchy instead
+                    // of seeing every folder flattened into one long list.
+                    .setParent('root')
                     .setIncludeFolders(true)
                     .setSelectFolderEnabled(true)
                     .setMimeTypes('application/vnd.google-apps.folder');
@@ -132,26 +221,22 @@ export default function GoogleDrivePickerPage() {
                       if (data.action !== picker.Action.PICKED) return;
                       const doc = data.docs && data.docs[0];
                       if (!doc || !doc.id) {
-                        setStatus('Google did not return a folder. Try again.', 'error');
+                        setStatus(COPY.noFolder, 'error');
                         return;
                       }
-                      safeRedirect(p.redirect, {
-                        state: p.state,
-                        folderId: doc.id,
-                        folderName: doc.name || 'Google Drive',
-                      });
+                      showSelectedAndReturn(p, doc);
                     });
                   if (builder.setSize) builder.setSize(1051, 650);
                   if (builder.setTitle) builder.setTitle('Terminal Sync');
                   builder.build().setVisible(true);
-                  setStatus('Google Drive is open. Choose a folder to continue.');
+                  setStatus(COPY.open);
                 } catch (err) {
                   setStatus(err && err.message ? err.message : String(err), 'error');
                 }
               },
-              onerror: function () { setStatus('Google Picker failed to load.', 'error'); },
+              onerror: function () { setStatus(COPY.loadError, 'error'); },
               timeout: 10000,
-              ontimeout: function () { setStatus('Google Picker timed out.', 'error'); },
+              ontimeout: function () { setStatus(COPY.timeout, 'error'); },
             });
           }
 
@@ -166,4 +251,8 @@ export default function GoogleDrivePickerPage() {
       `}</Script>
     </main>
   );
+}
+
+export default function GoogleDrivePickerPage() {
+  return <GoogleDrivePickerShell lang="en" />;
 }
