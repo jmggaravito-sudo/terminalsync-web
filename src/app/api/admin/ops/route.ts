@@ -771,7 +771,7 @@ const WORKFLOW_RESULTS_SOURCE: Record<
     table: "agency_influencers",
     timeField: "discovered_at",
     select:
-      "name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,subscribers,target_audience,classification_score,classification_reason,status,discovered_at",
+      "name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,subscribers,target_audience,language,classification_score,classification_reason,status,discovered_at",
     label: "Influencers agency-targeted",
     unit: "influencers",
     itemsLimit: 10,
@@ -780,8 +780,10 @@ const WORKFLOW_RESULTS_SOURCE: Record<
         typeof r.classification_score === "number"
           ? `${Math.round((r.classification_score as number) * 100)}%`
           : null;
+      const langTag = r.language ? `🌐 ${String(r.language).toUpperCase()}` : null;
       const sub = [
         r.target_audience,
+        langTag,
         score ? `score ${score}` : null,
         r.subscribers ? `${(r.subscribers as number).toLocaleString()} subs` : null,
         r.platform,
