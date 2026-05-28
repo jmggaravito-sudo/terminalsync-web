@@ -93,6 +93,26 @@ describe("GET /api/marketplace/catalog", () => {
     }
   });
 
+  it("bundles expose an href pointing at /<lang>/stacks/<slug>", async () => {
+    // Bundles need an `href` so the desktop's Explorar UI can render the
+    // "Ver detalles" CTA without inventing the URL structure. The route
+    // is `/[lang]/stacks/[slug]` — `/stacks/` not `/bundles/` because
+    // "Stack Pack" is the consumer-facing brand. See terminalsync-web#73.
+    //
+    // In test env Supabase isn't configured so `bundles` is typically
+    // []. When there ARE bundles (only with a Supabase env wired in),
+    // they must include `href`. The for-loop is a no-op in CI; the
+    // type assertion below pins the contract so the field can't be
+    // removed without breaking compilation.
+    const { body } = await callCatalog("es");
+    for (const b of body.bundles) {
+      expect(typeof b.href, `${b.slug} href`).toBe("string");
+      expect(b.href).toBe(`/es/stacks/${b.slug}`);
+    }
+    const sample: Partial<CatalogResponse["bundles"][number]> = { href: "/x" };
+    expect(sample.href).toBe("/x");
+  });
+
   it("declares a 10-minute revalidate window for Vercel's edge cache", async () => {
     // Asserts the route segment config — NOT the local response header.
     //

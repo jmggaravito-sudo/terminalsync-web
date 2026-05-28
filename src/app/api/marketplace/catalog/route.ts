@@ -93,6 +93,22 @@ export interface BundleSummary {
   currency: string;
   purchaseCount: number;
   sortOrder: number;
+  /**
+   * Relative path to the bundle's public detail page. Pinned by the
+   * server (not derived in the client) so the URL structure can change
+   * here and consumers don't have to redeploy. Matches the convention
+   * of `ResolvedBundleItem.href`.
+   *
+   * Bundles are exposed under `/stacks/` in the public URL (not
+   * `/bundles/`) because "Stack Pack" is the consumer-facing brand —
+   * see `src/app/[lang]/stacks/[slug]/page.tsx`. The endpoint absorbs
+   * that vocabulary mismatch so the desktop can stay vocabulary-free.
+   *
+   * Consumers that need an absolute URL prepend their own origin
+   * (`https://terminalsync.ai${href}`) — the endpoint stays relative so
+   * the same response works for preview deploys, local dev, and prod.
+   */
+  href: string;
   items: ResolvedBundleItem[];
 }
 
@@ -204,6 +220,7 @@ async function loadBundles(lang: string): Promise<BundleSummary[]> {
         currency: b.currency,
         purchaseCount: b.purchase_count,
         sortOrder: b.sort_order,
+        href: `/${lang}/stacks/${b.slug}`,
         items,
       };
       return summary;
