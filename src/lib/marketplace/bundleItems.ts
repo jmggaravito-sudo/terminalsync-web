@@ -23,6 +23,7 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { manifestRequiresEnvSecrets } from "@/lib/marketplace/secrets";
 
 export type BundleItemKind = "connector" | "skill" | "cli";
 
@@ -59,6 +60,24 @@ export interface ResolvedBundleItem {
    *  whether `ctaUrl` is a `terminalsync://install` deep-link or the
    *  external SaaS homepage. */
   hasManifest?: boolean;
+  /** Whether this item declares any `${SECRET:NAME}` placeholder (connector
+   *  with such manifest) or has an `authCommand` (CLI). False for skills
+   *  (they never need env secrets). Mirrors the same flag the top-level
+   *  pillars expose (`ConnectorMeta.requiresEnvSecrets`, etc.) so the
+   *  desktop's Explorar UI can compute its "necesita clave" chip uniformly
+   *  across pillars. See `docs/browse-zone.md` (contrato 3 — aggregation
+   *  rule for bundles uses `.some(i => i.requiresEnvSecrets)`).
+   *
+   *  IMPORTANT — by-design absence for marketplace-sourced connectors:
+   *  When a bundle item references a slug that lives only in the Supabase
+   *  `connector_listings` table (not in `content/connectors/`), the row
+   *  doesn't carry the manifest inline — it lives in
+   *  `connector_versions.manifest_json`. The catalog query doesn't join
+   *  versions today, so we can't scan for secrets. Reported as `false`
+   *  with the same caveat as `listMarketplaceConnectors` /
+   *  `getMarketplaceConnector` in `lib/connectors.ts`. NOT a bug — see
+   *  terminalsync-web#72/#74 and the comment in `connectors.ts:354`. */
+  requiresEnvSecrets: boolean;
   sortOrder: number;
 }
 
@@ -113,6 +132,11 @@ async function resolveConnector(
       typeof manifest === "object" &&
       !!manifest.mcpServers &&
       Object.keys(manifest.mcpServers).length > 0;
+    // Same scan as `normalizeMeta` in `lib/connectors.ts` — short-circuits
+    // on the first `${SECRET:NAME}` it finds. A connector without a
+    // manifest can't require secrets.
+    const requiresEnvSecrets =
+      hasManifest && manifestRequiresEnvSecrets(manifest);
     const name = stringField(fm, "name") || slug;
     const tagline =
       stringField(fm, "tagline") || stringField(fm, "simpleSubtitle");
@@ -128,6 +152,7 @@ async function resolveConnector(
       logo,
       ctaUrl: cta,
       hasManifest,
+      requiresEnvSecrets,
       href: `/${lang}/connectors/${slug}`,
       sortOrder: 0,
     };
@@ -160,7 +185,19 @@ async function resolveConnector(
       tagline: row.tagline,
       logo: row.logo_url ?? `/connectors/${row.slug}.svg`,
       ctaUrl: cta,
+      // Hardcoded `false` (both flags). Mirrors `listMarketplaceConnectors`
+      // and `getMarketplaceConnector` in `lib/connectors.ts:354,218` —
+      // `connector_listings` rows don't carry the manifest inline; it
+      // lives in `connector_versions.manifest_json`, which the catalog
+      // query doesn't join today. Re-curating bundles to reference
+      // first-party slugs (`airtable` instead of `domdomegg-airtable-mcp-
+      // server`) is the operations-side path forward; widening the
+      // marketplace query to join versions is the code-side path. Both
+      // are tracked in terminalsync-web#74. See also migration 0017
+      // (auto-promoted marketplace rows are hidden until they get
+      // attribution + license backfill).
       hasManifest: false,
+      requiresEnvSecrets: false,
       href: `/${lang}/connectors/${row.slug}`,
       sortOrder: 0,
     };
@@ -186,6 +223,10 @@ function resolveSkill(slug: string, lang: string): ResolvedBundleItem | null {
     // CTA is just a deep link to the skill's detail page.
     ctaUrl: `/${lang}/skills/${slug}`,
     href: `/${lang}/skills/${slug}`,
+    // Skills never declare env secrets — see `SkillMeta.requiresEnvSecrets`
+    // doc in `lib/skills.ts`. Any auth a skill needs comes from a sibling
+    // connector/CLI, not from the skill itself.
+    requiresEnvSecrets: false,
     sortOrder: 0,
   };
 }
@@ -204,6 +245,7 @@ async function resolveCliTool(
       stringField(fm, "tagline") || stringField(fm, "description");
     const logo = stringField(fm, "logo") || `/cli-tools/${slug}.svg`;
     const install = stringField(fm, "installCommand");
+    const authCommand = stringField(fm, "authCommand");
     return {
       kind: "cli",
       slug,
@@ -212,6 +254,10 @@ async function resolveCliTool(
       logo,
       ctaUrl: install,
       installCommand: install,
+      // Same heuristic as `listCliTools` in `lib/cliTools.ts:219`: a CLI
+      // tool needs setup iff it declares an `authCommand` (the explicit
+      // login step the user must run after install).
+      requiresEnvSecrets: Boolean(authCommand),
       href: `/${lang}/cli-tools/${slug}`,
       sortOrder: 0,
     };
@@ -222,7 +268,7 @@ async function resolveCliTool(
   try {
     const { data, error } = await sb
       .from("cli_tool_listings")
-      .select("slug, name, tagline, logo_url, install_command")
+      .select("slug, name, tagline, logo_url, install_command, auth_command")
       .eq("slug", slug)
       .eq("status", "approved")
       .maybeSingle();
@@ -233,6 +279,7 @@ async function resolveCliTool(
       tagline: string;
       logo_url: string | null;
       install_command: string | null;
+      auth_command: string | null;
     };
     return {
       kind: "cli",
@@ -242,6 +289,9 @@ async function resolveCliTool(
       logo: row.logo_url ?? `/cli-tools/${row.slug}.svg`,
       ctaUrl: row.install_command ?? "",
       installCommand: row.install_command ?? undefined,
+      // Same heuristic as `listCliTools` (DB branch) in `lib/cliTools.ts:162`:
+      // `requiresEnvSecrets` iff an `auth_command` is present in the row.
+      requiresEnvSecrets: Boolean(row.auth_command),
       href: `/${lang}/cli-tools/${row.slug}`,
       sortOrder: 0,
     };
