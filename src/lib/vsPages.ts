@@ -57,13 +57,13 @@ export const TOOLS: Record<string, VsTool> = {
     whyTS: {
       es: [
         "Tu agente sigue corriendo aunque cierres Cursor o se caiga internet — Cursor depende de su nube para la inferencia.",
-        "Cifrado AES-256 zero-knowledge antes de salir de tu Mac. Cursor sube tu código a sus servidores para que el modelo lo procese.",
+        "Cifrado AES-256 fully encrypted (no one else can read it) antes de salir de tu computadora. Cursor sube tu código a sus servidores para que el modelo lo procese.",
         "Tu sesión en cualquier dispositivo — abrila desde el celular sin instalar nada. Cursor solo en desktop.",
         "Notificaciones cuando el agente se queda esperando. Con Cursor te toca mirar la pantalla.",
       ],
       en: [
         "Your agent keeps running even if you close Cursor or the internet drops — Cursor depends on its cloud for inference.",
-        "AES-256 zero-knowledge encryption before it leaves your Mac. Cursor uploads your code to its servers for the model to process.",
+        "AES-256 fully encrypted (no one else can read it) encryption before it leaves your computer. Cursor uploads your code to its servers for the model to process.",
         "Anywhere Access — open your session from your phone with zero install. Cursor is desktop only.",
         "Notifications when the agent gets stuck waiting. With Cursor you stare at the screen.",
       ],
@@ -89,27 +89,27 @@ export const TOOLS: Record<string, VsTool> = {
     strengths: {
       es: [
         "Open source — auditable y self-hosted si querés.",
-        "Bring your own API key (Anthropic, OpenAI, Ollama, etc) — sin lock-in al modelo.",
+        "Bring your own access key (Anthropic, OpenAI, Ollama, etc) — sin lock-in al modelo.",
         "Buen soporte para reasoning models y plan/act mode.",
       ],
       en: [
         "Open source — auditable and self-hostable if you want.",
-        "Bring your own API key (Anthropic, OpenAI, Ollama, etc) — no model lock-in.",
+        "Bring your own access key (Anthropic, OpenAI, Ollama, etc) — no model lock-in.",
         "Good support for reasoning models and plan/act mode.",
       ],
     },
     whyTS: {
       es: [
         "Persistencia real: tu sesión sigue corriendo aunque cierres VS Code o reinicies macOS. Cline se reinicia con cada apertura.",
-        "Vault de secretos integrado — tus API keys cifradas con AES-256, no en archivos planos en el repo.",
+        "Vault de secretos integrado — tus access keys cifradas con AES-256, no en archivos planos en la carpeta de proyecto.",
         "Sync entre dispositivos: Cline no roamea su estado. TerminalSync mueve tu Cline (y tu Claude, y tu Codex) a cualquier Mac.",
-        "Tu sesión en cualquier dispositivo desde el celular — Cline solo vive en el VS Code de tu Mac.",
+        "Tu sesión en cualquier dispositivo desde el celular — Cline solo vive en el VS Code de tu computadora.",
       ],
       en: [
         "Real persistence: your session keeps running even if you close VS Code or restart macOS. Cline restarts on every open.",
-        "Built-in secrets vault — your API keys encrypted with AES-256, not in plain files in the repo.",
+        "Built-in secrets vault — your access keys encrypted with AES-256, not in plain files in the project folder.",
         "Cross-device sync: Cline doesn't roam its state. TerminalSync moves your Cline (and Claude, and Codex) to any Mac.",
-        "Anywhere Access from your phone — Cline only lives in your Mac's VS Code.",
+        "Anywhere Access from your phone — Cline only lives in your computer's VS Code.",
       ],
     },
     cells: {
@@ -145,13 +145,13 @@ export const TOOLS: Record<string, VsTool> = {
     whyTS: {
       es: [
         "Persistencia: cerrás la terminal y aider se muere. TerminalSync mantiene tu sesión + el contexto + el historial vivos.",
-        "Tu API key de OpenAI/Anthropic en el llavero del sistema, no en variables de entorno expuestas.",
+        "Tu access key de OpenAI/Anthropic en el llavero del sistema, no en variables de entorno expuestas.",
         "Tu archivo `.aider.conf.yml`, tu prompt history y tus modelos preferidos roamean cifrados entre Macs.",
         "Notificaciones cuando aider se queda esperando confirmación — no más vigilar la pantalla.",
       ],
       en: [
         "Persistence: close the terminal and aider dies. TerminalSync keeps your session + context + history alive.",
-        "Your OpenAI/Anthropic API key in the OS keychain, not in exposed env vars.",
+        "Your OpenAI/Anthropic access key in the OS keychain, not in exposed env vars.",
         "Your `.aider.conf.yml`, prompt history, and preferred models roam encrypted between Macs.",
         "Notifications when aider waits on confirmation — no more screen-watching.",
       ],
