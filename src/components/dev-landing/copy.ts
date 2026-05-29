@@ -190,11 +190,11 @@ const en: DevCopy = {
       },
       {
         q: "What happens to my data if I cancel?",
-        a: "Your encrypted memory stays in your Drive — you own the bucket. Cancel and the app drops to Free tier (2 devices, 1 active terminal); your historical memory is still local + encrypted. Export everything as JSON anytime.",
+        a: "Your encrypted memory stays in your Drive — you own the bucket. Cancel and the app drops to Free tier (2 devices, 3 active terminals); your historical memory is still local + encrypted. Export everything as JSON anytime.",
       },
       {
-        q: "Why pay for Max tier specifically?",
-        a: "Max unlocks Git-native sync (commits memory alongside your repo), the .env vault, 20 active terminals, and pre-built MCP connectors for GitHub, Postgres, Supabase, and Slack. If you're shipping prod code with AI assistance, Max pays for itself the first time it saves you from re-explaining your stack.",
+        q: "Why pay for Pro tier specifically?",
+        a: "Pro unlocks Git-native sync (commits memory alongside your repo), the .env vault, 10 active terminals, persistent memory across AIs, the Chrome Extension with the 3-AIs-side-by-side mode, and pre-built MCP connectors for GitHub, Postgres, Supabase, and Slack. If you're shipping prod code with AI assistance, Pro pays for itself the first time it saves you from re-explaining your stack. Max ($39) is for power users who need unlimited terminals and 10 devices.",
       },
     ],
   },
@@ -317,11 +317,11 @@ const es: DevCopy = {
       },
       {
         q: "¿Qué pasa con mi data si cancelo?",
-        a: "Tu memoria cifrada sigue en tu Drive — vos sos el dueño del bucket. Si cancelás, la app cae a Free (2 dispositivos, 1 terminal activa); tu memoria histórica sigue local + cifrada. Exportás todo en JSON cuando quieras.",
+        a: "Tu memoria cifrada sigue en tu Drive — vos sos el dueño del bucket. Si cancelás, la app cae a Free (2 dispositivos, 3 terminales activas); tu memoria histórica sigue local + cifrada. Exportás todo en JSON cuando quieras.",
       },
       {
-        q: "¿Por qué pagar específicamente por el plan Max?",
-        a: "Max habilita Git-native sync (commit de memoria al lado del repo), el .env vault, 20 terminales activas y connectors MCP pre-armados para GitHub, Postgres, Supabase y Slack. Si shippeás código a producción con IA, Max se paga solo la primera vez que te evita re-explicar tu stack.",
+        q: "¿Por qué pagar específicamente por el plan Pro?",
+        a: "Pro habilita Git-native sync (commit de memoria al lado del repo), el .env vault, 10 terminales activas, memoria persistente entre IAs, la Extensión Chrome con el modo 3-IAs en paralelo, y connectors MCP pre-armados para GitHub, Postgres, Supabase y Slack. Si shippeás código a producción con IA, Pro se paga solo la primera vez que te evita re-explicar tu stack. Max ($39) es para power users que necesitan terminales ilimitadas y 10 dispositivos.",
       },
     ],
   },

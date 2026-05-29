@@ -48,6 +48,11 @@ export function Footer({ dict }: { dict: Dict }) {
         { key: "pricing", label: dict.footer.links.pricing, href: `/${lang}#pricing` },
         { key: "download", label: dict.footer.links.download, href: "/api/download" },
         {
+          key: "chrome-extension",
+          label: lang === "es" ? "Extensión Chrome" : "Chrome extension",
+          href: `/${lang}#chrome-extension`,
+        },
+        {
           key: "ai-terminal",
           label: lang === "es" ? "Terminal IA" : "AI terminal",
           href: `/${lang}/ai-terminal`,

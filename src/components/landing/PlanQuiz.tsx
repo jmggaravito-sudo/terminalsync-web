@@ -322,17 +322,22 @@ function ResultCard({
 
 // ── Scoring logic ──────────────────────────────────────────────────────
 //
-// Rules (kept readable on purpose — this is marketing, not a tax engine):
-//   1. "team" role OR "developer" role OR "projects" pain → Dev (more
-//      terminals + .env vault + setup.sh fit team-lead workflows).
-//   2. "creator" role + "chats" pain + "one" device → Free is enough.
-//   3. Anything else (including "idk") → Pro (safe middle).
+// Rules — rebalanceadas 2026-05-29 después de mover vault + git-native + setup.sh
+// de Max → Pro. Hoy Pro tiene TODOS los features productivos; Max solo agrega
+// escala (terminales ilimitadas + 10 dispositivos). Por eso solo recomendamos
+// Max cuando el user dice explícitamente que trabaja en muchas máquinas:
 //
-// Bias toward Pro on ambiguity — conversion-friendliest tier for unsure
-// users. Only recommend Free when signals are strongly "light usage".
+//   1. "many" devices (>3 máquinas o cambia seguido) → Max (es el único plan
+//      que da 10 dispositivos + terminales ilimitadas).
+//   2. "creator" role + "chats" pain + "one" device → Free es suficiente.
+//   3. Cualquier otra cosa (team, developer, projects pain, idk) → Pro.
+//
+// Bias hacia Pro on ambiguity — es el tier con vault + git + setup.sh y la
+// extensión Chrome incluida; cubre 90% de uso real. Solo el power user que
+// realmente tiene fleet de máquinas necesita Max.
 
 function scoreAnswers(a: Answers): PlanKey {
-  if (a.role === "team" || a.role === "developer" || a.pain === "projects") {
+  if (a.volume === "many") {
     return "max";
   }
   if (a.role === "creator" && a.pain === "chats" && a.volume === "one") {

@@ -6,7 +6,6 @@ import type { Locale } from "@/content";
 
 interface Props {
   plan: "starter" | "pro" | "max" | "agency";
-  cycle?: "monthly" | "yearly";
   lang: Locale;
   label: string;
   featured?: boolean;
@@ -15,15 +14,14 @@ interface Props {
 }
 
 // Starter → direct download link (no checkout needed).
-// Pro     → POST /api/checkout, redirect to Stripe (carries billing cycle).
+// Pro     → POST /api/checkout, redirect to Stripe (monthly only desde 2026-05-29).
 // Max     → POST /api/checkout. Backend returns 503 "Missing Stripe price"
-//           until STRIPE_PRICE_MAX_{MONTHLY,YEARLY} are set in Vercel — we
+//           until STRIPE_PRICE_MAX_MONTHLY is set in Vercel — we
 //           show that error inline (fail-loud) instead of silently charging
 //           the Pro priceId.
 // Agency  → mailto sales team (lead-gen, not self-serve for now).
 export function CheckoutButton({
   plan,
-  cycle,
   lang,
   label,
   featured,
@@ -59,7 +57,7 @@ export function CheckoutButton({
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, cycle: cycle ?? "monthly", lang, referral }),
+        body: JSON.stringify({ plan, lang, referral }),
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !data.url) {

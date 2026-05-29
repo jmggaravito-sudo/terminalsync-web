@@ -244,12 +244,6 @@ export interface Dict {
     subtitle: string;
     perMonth: string;
     free: string;
-    cycleLabel: {
-      monthly: string;
-      yearly: string;
-      savingsBadge: string; // e.g. "Ahorra 17%" / "Save 17%"
-      savingsDetail: string; // e.g. "2 meses gratis"
-    };
     trial: {
       eyebrow: string; // "7 días gratis"
       explainer: string; // "Ingresas tu tarjeta pero no se cobra nada los primeros 7 días. Cancela cuando quieras."
@@ -272,9 +266,11 @@ export interface Dict {
       }>;
     };
     plans: {
+      // Después del kill-yearly (2026-05-29) los 3 planes tienen el mismo
+      // shape: precio único + features. Pro/Max llevan `badge` que Free no.
       starter: Plan;
-      pro: ProPlan;
-      max: ProPlan;
+      pro: PaidPlan;
+      max: PaidPlan;
     };
   };
   trust: {
@@ -287,6 +283,21 @@ export interface Dict {
       opensource: string;
       noVendor: string;
     };
+  };
+  // "También en Chrome" — compact teaser para el extension BYOK que vive
+  // como repo aparte (terminalsync-chrome). Se rinderea entre MultiAI y
+  // MemoryPersistent, donde el visitante recién entendió el value prop
+  // de las 3 IAs en paralelo.
+  chromeExtension: {
+    eyebrow: string; // "También en Chrome"
+    title: string;
+    subtitle: string;
+    bullets: string[]; // 3-4 bullets cortos
+    status: string; // "Próximamente en Chrome Web Store" | "Disponible"
+    primaryCta: string;
+    primaryHref: string;
+    secondaryCta: string;
+    secondaryHref: string;
   };
   affiliates: {
     kicker: string;
@@ -443,15 +454,13 @@ interface Plan {
   cta: string;
 }
 
-// Pro has two recurring prices (monthly/yearly) sharing the same features.
-interface ProPlan {
+// Pro + Max después del kill-yearly: mismo shape que Plan + un badge
+// destacado ("Más popular", "El más completo"). Sin monthly/yearly toggle.
+interface PaidPlan {
   name: string;
   badge: string;
-  priceMonthly: string;
-  priceYearly: string;
-  priceNoteMonthly: string;
-  priceNoteYearly: string;
-  yearlyEquivalent: string; // "$15.83/mo billed annually" to anchor comparison
+  price: string;
+  priceNote: string;
   features: string[];
   cta: string;
 }

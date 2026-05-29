@@ -13,28 +13,31 @@ export const stripe: Stripe | null = secret
   : null;
 
 export type PlanId = "pro" | "max" | "agency";
+
+/**
+ * Billing cycle type, kept para que el webhook handler pueda seguir
+ * leyendo `cycle === "yearly"` en metadata de subscriptions YA EXISTENTES.
+ * Para nuevos checkouts solo vendemos mensual — JM decidió 2026-05-29
+ * que anuales no son nuestra fortaleza (cancelaciones tardías, churn
+ * agrupado, peor cashflow). Los yearly subs que ya están en la wild
+ * siguen funcionando hasta que cancelen.
+ */
 export type BillingCycle = "monthly" | "yearly";
 
-export function priceIdFor(
-  plan: PlanId,
-  cycle: BillingCycle = "monthly",
-): string | null {
+export function priceIdFor(plan: PlanId): string | null {
   if (plan === "pro") {
-    return cycle === "yearly"
-      ? process.env.STRIPE_PRICE_PRO_YEARLY ?? null
-      : process.env.STRIPE_PRICE_PRO_MONTHLY ?? null;
+    return process.env.STRIPE_PRICE_PRO_MONTHLY ?? null;
   }
   if (plan === "max") {
-    // STRIPE_PRICE_MAX_* is the new canonical name. The legacy DEV_* env
-    // vars are kept in Vercel as a fallback during rollout so the old
-    // checkout calls don't 503 mid-deploy.
-    return cycle === "yearly"
-      ? process.env.STRIPE_PRICE_MAX_YEARLY ??
-          process.env.STRIPE_PRICE_DEV_YEARLY ??
-          null
-      : process.env.STRIPE_PRICE_MAX_MONTHLY ??
-          process.env.STRIPE_PRICE_DEV_MONTHLY ??
-          null;
+    // STRIPE_PRICE_MAX_MONTHLY es el nombre canónico. STRIPE_PRICE_DEV_MONTHLY
+    // queda como fallback en Vercel del rename Dev→Max (2026-05-20) para que
+    // un deploy mid-rollout no 503ee. Pueden borrarse cuando ningún ambiente
+    // dependa más del nombre viejo.
+    return (
+      process.env.STRIPE_PRICE_MAX_MONTHLY ??
+      process.env.STRIPE_PRICE_DEV_MONTHLY ??
+      null
+    );
   }
   if (plan === "agency") return process.env.STRIPE_PRICE_AGENCY ?? null;
   return null;
