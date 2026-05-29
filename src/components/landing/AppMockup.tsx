@@ -121,7 +121,7 @@ export function AppMockup({ dict }: { dict: Dict }) {
               dot
             />
             <SideItem
-              label="Auth-API"
+              label="Sign-in-API"
               icon={<ShieldCheck size={11} className="text-sky-400" strokeWidth={2} />}
             />
             <SideItem
@@ -227,7 +227,7 @@ export function AppMockup({ dict }: { dict: Dict }) {
               />
               <TerminalCard
                 title={m.session2}
-                filename="auth-api ~/services"
+                filename="sign-in-api ~/services"
                 Icon={ShieldCheck}
                 iconColor="text-sky-600"
                 accentRing="ring-sky-400/40"
@@ -237,7 +237,7 @@ export function AppMockup({ dict }: { dict: Dict }) {
                 aiBadge="codex"
                 chrome={THEMES.light}
                 lines={[
-                  { text: "→ auth-gateway v3.1", c: "text-sky-700" },
+                  { text: "→ sign-in-gateway v3.1", c: "text-sky-700" },
                   { text: "✓ AES-256-GCM ready", c: "text-emerald-600" },
                   { text: "→ 1,247 req/s", c: "text-amber-700" },
                 ]}

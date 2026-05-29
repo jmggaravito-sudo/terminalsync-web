@@ -202,7 +202,7 @@ export async function GET(req: Request) {
       continue;
     }
     if (!binary || !installCmd || !homepage) {
-      await rejectRow("missing binary/install_command/homepage");
+      await rejectRow("missing program/install_command/homepage");
       continue;
     }
     if (!isKnownInstaller(installCmd)) {

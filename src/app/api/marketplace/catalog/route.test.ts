@@ -83,7 +83,7 @@ describe("GET /api/marketplace/catalog", () => {
     }
   });
 
-  it("requiresEnvSecrets matches !!authCommand on CLI tools", async () => {
+  it("requiresEnvSecrets matches !!authCommand on terminal tools", async () => {
     const { body } = await callCatalog("es");
     for (const item of body.cliTools) {
       expect(

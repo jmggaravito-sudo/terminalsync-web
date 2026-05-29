@@ -105,12 +105,12 @@ function CallbackInner() {
   useEffect(() => {
     const sb = getSupabaseBrowser();
     if (!sb) {
-      setError("Auth client not available.");
+      setError("Sign-in client not available.");
       setStage("error");
       return;
     }
     // Always go straight to the web session on this page. Earlier
-    // versions auto-dispatched `terminalsync://auth/callback#hash`
+    // versions auto-dispatched `terminalsync://sign-in/callback#hash`
     // when the UA looked like macOS, but that ate the token before
     // the web session could parse it AND opened the desktop app
     // unexpectedly when the user was just trying to do magic-link

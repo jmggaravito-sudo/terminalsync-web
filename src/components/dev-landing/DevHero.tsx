@@ -9,7 +9,7 @@ import type { DevCopy } from "./copy";
  * Code-forward aesthetic: terminal-style faux prompt under the
  * subtitle, mono accents, tighter copy. Skips the consumer-y video
  * lightbox and trust badges since this audience cares more about
- * "is the CLI real" than "is this trustworthy."
+ * "is the terminal tool real" than "is this trustworthy."
  */
 export function DevHero({ copy, lang }: { copy: DevCopy; lang: Locale }) {
   return (
@@ -43,7 +43,7 @@ export function DevHero({ copy, lang }: { copy: DevCopy; lang: Locale }) {
           {copy.hero.subtitle}
         </p>
 
-        {/* Faux terminal prompt — communicates "this is a CLI tool"
+        {/* Faux terminal prompt — communicates "this is a terminal tool tool"
             without forcing the reader to scroll to the code section. */}
         <div className="mt-8 mx-auto max-w-xl rounded-xl border border-[var(--color-border)] bg-[var(--color-panel)]/80 backdrop-blur p-4 text-left shadow-lg">
           <div className="flex items-center gap-1.5 mb-3">

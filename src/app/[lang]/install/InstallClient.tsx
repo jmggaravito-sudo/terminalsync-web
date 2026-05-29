@@ -60,7 +60,7 @@ export function InstallClient(props: Props) {
     introBodyConn:
       lang === "es"
         ? "Necesitamos que ingreses el token de autenticación. Una vez instalado, el conector queda disponible en todas tus máquinas. Cifrado end-to-end."
-        : "We need you to enter the auth token. Once installed, the connector is available on every machine. End-to-end encrypted.",
+        : "We need you to enter the sign-in token. Once installed, the connector is available on every machine. End-to-end encrypted.",
     install: lang === "es" ? "Instalar ahora" : "Install now",
     next: lang === "es" ? "Siguiente" : "Next",
     download: lang === "es" ? "Bajar standalone" : "Download standalone",
@@ -349,7 +349,7 @@ function envSchemaFor(slug: string): EnvField[] {
       return [
         {
           key: "API_KEY",
-          label: "API Key",
+          label: "access key",
           placeholder: "...",
           secret: true,
           required: true,

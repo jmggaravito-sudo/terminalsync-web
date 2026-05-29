@@ -68,7 +68,7 @@ export function DiscoveryReview({ lang }: { lang: string }) {
       approve: isEs ? "Aprobar" : "Approve",
       reject: isEs ? "Rechazar" : "Reject",
       ignore: isEs ? "Ignorar" : "Ignore",
-      noRepo: isEs ? "(sin repo)" : "(no repo)",
+      noRepo: isEs ? "(sin project folder)" : "(no project folder)",
       category: isEs ? "Categoría" : "Category",
       summary: isEs ? "Resumen Gemini" : "Gemini summary",
       original: isEs ? "Contenido original" : "Original content",

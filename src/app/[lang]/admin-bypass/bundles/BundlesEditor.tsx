@@ -34,7 +34,7 @@ interface PickerItem {
 const KINDS: { kind: Kind; label: string }[] = [
   { kind: "connector", label: "Connectors" },
   { kind: "skill", label: "Skills" },
-  { kind: "cli", label: "CLI Tools" },
+  { kind: "cli", label: "Terminal tools" },
 ];
 
 export function BundlesEditor({ lang }: { lang: string }) {

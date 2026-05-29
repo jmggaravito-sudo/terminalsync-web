@@ -16,8 +16,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : "Privacy Policy — TerminalSync";
   const description =
     lang === "es"
-      ? "Cómo TerminalSync trata tus datos: cifrado AES-256 zero-knowledge, almacenamiento en tu propia nube, sin acceso del proveedor."
-      : "How TerminalSync handles your data: AES-256 zero-knowledge encryption, your-own-cloud storage, zero vendor access.";
+      ? "Cómo TerminalSync trata tus datos: cifrado AES-256 fully encrypted (no one else can read it), almacenamiento en tu propia nube, sin acceso del proveedor."
+      : "How TerminalSync handles your data: AES-256 fully encrypted (no one else can read it) encryption, your-own-cloud storage, zero vendor access.";
   return {
     title,
     description,
