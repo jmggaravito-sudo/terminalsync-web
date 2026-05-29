@@ -158,7 +158,7 @@ const COPY = {
     },
     consumer: {
       eyebrow: "Descarga iniciada",
-      title: "Tu Mac está descargando TerminalSync.",
+      title: "Tu computadora está descargando TerminalSync.",
       subtitle:
         "En unos segundos vas a ver el .dmg en Finder. Mientras tanto, mirá el video y los próximos pasos.",
       videoTitle: "Próximos pasos en TerminalSync",
@@ -192,12 +192,12 @@ const COPY = {
           body: "Apple Silicon. La primera vez Gatekeeper pide aprobar — Settings → Privacy → Open Anyway.",
         },
         {
-          title: "Auth con Google Drive (zero-knowledge)",
-          body: "Tu sesión Claude/Codex/Gemini se cifra AES-256 antes de salir de tu Mac. La llave queda en tu Keychain del SO. Cancelás OAuth y cae todo.",
+          title: "Sign-in con Google Drive (fully encrypted (no one else can read it))",
+          body: "Tu sesión Claude/Codex/Gemini se cifra AES-256 antes de salir de tu computadora. La llave queda en tu Keychain del SO. Cancelás Secure connection y cae todo.",
         },
         {
           title: "Drop-in en tu terminal favorita",
-          body: "Wrap tu CLI actual con tsync run -- claude o tsync run -- codex. Tus snapshots se commitean al lado del repo (Git-aware). Cambias de branch, tu IA te sigue.",
+          body: "Wrap tu terminal tool actual con tsync run -- claude o tsync run -- codex. Tus snapshots se commitean al lado de la carpeta de proyecto (Git-aware). Cambias de branch, tu IA te sigue.",
         },
       ],
       footer: "¿La descarga no arrancó?",
@@ -213,7 +213,7 @@ const COPY = {
     },
     consumer: {
       eyebrow: "Download started",
-      title: "Your Mac is grabbing TerminalSync.",
+      title: "Your computer is grabbing TerminalSync.",
       subtitle:
         "The .dmg should land in your Downloads folder in a few seconds. Meanwhile, here's what comes next.",
       videoTitle: "TerminalSync — next steps",
@@ -247,12 +247,12 @@ const COPY = {
           body: "Apple Silicon. Gatekeeper will ask once — Settings → Privacy → Open Anyway.",
         },
         {
-          title: "Auth with Google Drive (zero-knowledge)",
-          body: "Your Claude/Codex/Gemini sessions are AES-256 encrypted before they leave your Mac. Key stays in your OS Keychain. Revoke OAuth and the whole sync stops.",
+          title: "Sign-in with Google Drive (fully encrypted (no one else can read it))",
+          body: "Your Claude/Codex/Gemini sessions are AES-256 encrypted before they leave your computer. Key stays in your OS Keychain. Revoke Secure connection and the whole sync stops.",
         },
         {
           title: "Drop-in to your terminal of choice",
-          body: "Wrap your current CLI with tsync run -- claude or tsync run -- codex. Snapshots commit alongside your repo (Git-aware). Switch branches, your AI follows.",
+          body: "Wrap your current terminal tool with tsync run -- claude or tsync run -- codex. Snapshots commit alongside your project folder (Git-aware). Switch branches, your AI follows.",
         },
       ],
       footer: "Download didn't start?",

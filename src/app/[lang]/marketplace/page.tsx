@@ -57,8 +57,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? "Marketplace · Terminal Sync"
     : "Marketplace · Terminal Sync";
   const description = isEs
-    ? "Connectors, CLI Tools y Skills para Claude, Codex y Gemini. Una sola instalación, sincronizada en todas tus máquinas."
-    : "Connectors, CLI Tools and Skills for Claude, Codex and Gemini. One install, synced across every machine.";
+    ? "Connectors, Terminal tools y Skills para Claude, Codex y Gemini. Una sola instalación, sincronizada en todas tus máquinas."
+    : "Connectors, Terminal tools and Skills for Claude, Codex and Gemini. One install, synced across every machine.";
   return {
     title,
     description,
@@ -95,8 +95,8 @@ export default async function MarketplaceHub({ params }: Props) {
         </h1>
         <p className="mt-4 text-[16px] text-[var(--color-fg-muted)] max-w-2xl leading-relaxed">
           {isEs
-            ? "Connectors te dan acceso a tus apps (Notion, Stripe). Skills le enseñan a tu IA tareas concretas (escribir ads, revisar código). CLI Tools reúnen los comandos oficiales para instalar, autenticar y trabajar desde la terminal correcta."
-            : "Connectors give your AI access to your apps (Notion, Stripe). Skills teach it concrete tasks (write ads, review code). CLI Tools collect the official commands to install, authenticate and work from the right terminal."}
+            ? "Connectors te dan acceso a tus apps (Notion, Stripe). Skills le enseñan a tu IA tareas concretas (escribir ads, revisar código). Terminal tools reúnen los comandos oficiales para instalar, autenticar y trabajar desde la terminal correcta."
+            : "Connectors give your AI access to your apps (Notion, Stripe). Skills teach it concrete tasks (write ads, review code). Terminal tools collect the official commands to install, authenticate and work from the right terminal."}
         </p>
         <div className="mt-7 flex flex-wrap gap-2 text-[12px] font-mono">
           <span className="rounded-md bg-[var(--color-panel)] border border-[var(--color-border)] px-2.5 py-1 text-[var(--color-fg-muted)]">
@@ -166,7 +166,7 @@ export default async function MarketplaceHub({ params }: Props) {
       {/* Power-Ups — the three pillars */}
       <section className="mx-auto max-w-5xl px-6 pb-12">
         <div className="mb-4 flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--color-fg-dim)]">
-          <span>{isEs ? "Power-Ups" : "Power-Ups"}</span>
+          <span>{isEs ? "Integraciones" : "Integraciones"}</span>
           <span className="h-px flex-1 bg-[var(--color-border)]" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -185,12 +185,12 @@ export default async function MarketplaceHub({ params }: Props) {
           <CategoryCard
             href={`/${lang}/cli-tools`}
             Icon={Terminal}
-            label="CLI Tools"
+            label="Terminal tools"
             count={cliTools.length}
             description={
               isEs
-                ? "Los CLIs que un dev usa todo el día — gh, vercel, supabase, stripe, wrangler. Guías, comandos útiles, GitHub Auth Sync y env vault para secretos de proyecto."
-                : "The CLIs a dev uses every day — gh, vercel, supabase, stripe, wrangler. Guides, useful commands, GitHub Auth Sync and env vault for project secrets."
+                ? "Los CLIs que un dev usa todo el día — gh, vercel, supabase, stripe, wrangler. Guías, comandos útiles, GitHub Sign-in Sync y env vault para secretos de proyecto."
+                : "The CLIs a dev uses every day — gh, vercel, supabase, stripe, wrangler. Guides, useful commands, GitHub Sign-in Sync and env vault for project secrets."
             }
             cta={isEs ? "Ver todos" : "View all"}
           />
@@ -234,7 +234,7 @@ export default async function MarketplaceHub({ params }: Props) {
         <section className="mx-auto max-w-5xl px-6 pb-12">
           <div className="flex items-end justify-between gap-4 mb-5">
             <h2 className="text-[22px] md:text-[26px] font-semibold tracking-tight">
-              {isEs ? "Featured · CLI Tools" : "Featured · CLI Tools"}
+              {isEs ? "Featured · Terminal tools" : "Featured · Terminal tools"}
             </h2>
             <Link
               href={`/${lang}/cli-tools`}
