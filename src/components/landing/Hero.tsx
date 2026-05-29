@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, PlayCircle } from "lucide-react";
+import { ArrowRight, Chrome, Download, PlayCircle } from "lucide-react";
 import type { Dict } from "@/content";
 import { AppMockup } from "./AppMockup";
 import { VideoLightbox } from "@/components/VideoLightbox";
@@ -113,6 +113,28 @@ export function Hero({ dict }: { dict: Dict }) {
             </svg>
             Linux
           </span>
+        </div>
+
+        {/* "También en Chrome" chip — bridge a la sección
+            ChromeExtensionTeaser. Está separado de las pills de OS porque NO
+            es un OS soportado del desktop; es un producto adjacente (la
+            extensión BYOK). Visual: pill tintada con accent + Chrome glyph
+            para diferenciarlo, link al anchor de la sección. */}
+        <div className="mt-3 inline-flex items-center justify-center">
+          <a
+            href={`/${dict.locale}#chrome-extension`}
+            className="group inline-flex items-center gap-1.5 rounded-full border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/8 px-3 py-1 text-[11px] font-semibold text-[var(--color-accent)] hover:bg-[var(--color-accent)]/14 transition-colors"
+          >
+            <Chrome size={11} strokeWidth={2.4} />
+            {dict.locale === "es"
+              ? "También en Chrome — 3 IAs en paralelo, BYOK"
+              : "Also on Chrome — 3 AIs side-by-side, BYOK"}
+            <ArrowRight
+              size={11}
+              strokeWidth={2.4}
+              className="group-hover:translate-x-0.5 transition-transform"
+            />
+          </a>
         </div>
 
         {/* Windows visitors get the waitlist banner instead of being
