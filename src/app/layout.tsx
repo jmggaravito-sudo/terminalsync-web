@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     template: "%s",
   },
   description:
-    "Tu agente IA (Claude/Codex) sigue corriendo aunque se caiga internet o cambies de Mac. Cifrado AES-256 fully encrypted (no one else can read it). Acceso desde cualquier dispositivo.",
+    "Tu agente IA (Claude/Codex) sigue corriendo aunque se caiga internet o cambies de Mac. AES-256 · ni nosotros podemos leer tu contenido. Acceso desde cualquier dispositivo.",
   authors: [{ name: "TerminalSync" }],
   // Explicit image + social tags — Next auto-detects opengraph-image.tsx but
   // spelling them out avoids any ambiguity for scrapers that don't follow the

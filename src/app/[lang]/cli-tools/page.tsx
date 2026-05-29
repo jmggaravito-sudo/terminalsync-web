@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params;
   const isEs = lang === "es";
   const title = isEs
-    ? "Terminal tools · Terminal Sync"
-    : "Terminal tools · Terminal Sync";
+    ? "CLI Tools · Terminal Sync"
+    : "CLI Tools · Terminal Sync";
   const description = isEs
     ? "Los CLIs oficiales que un dev usa todo el día — gh, supabase, vercel, stripe, wrangler. Guías de instalación, comandos útiles y secretos de proyecto protegidos por TerminalSync."
     : "The official CLIs a dev uses every day — gh, supabase, vercel, stripe, wrangler. Install guides, useful commands and project secrets protected by TerminalSync.";
@@ -54,7 +54,7 @@ export default async function CliToolsIndex({ params }: Props) {
       <section className="mx-auto max-w-5xl px-6 pt-24 pb-10">
         <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--color-accent)] mb-4">
           <Sparkles size={14} />
-          <span>{isEs ? "Terminal tools" : "Terminal tools"}</span>
+          <span>{isEs ? "CLI Tools" : "CLI Tools"}</span>
         </div>
         <h1 className="text-[40px] md:text-[56px] font-semibold tracking-tight leading-[1.05]">
           {isEs
@@ -63,15 +63,15 @@ export default async function CliToolsIndex({ params }: Props) {
         </h1>
         <p className="mt-4 text-[16px] text-[var(--color-fg-muted)] max-w-2xl leading-relaxed">
           {isEs
-            ? "gh, supabase, vercel, stripe, wrangler. Instalá desde la terminal correcta, guardá secretos de proyecto en el vault cifrado y mantené el contexto de trabajo entre tus Macs. GitHub CLI ya tiene Sign-in Sync dedicado; los demás CLIs quedan como guías y workflows listos."
-            : "gh, supabase, vercel, stripe, wrangler. Install from the right terminal, keep project secrets in the encrypted vault, and carry workflow context across Macs. GitHub CLI has dedicated Sign-in Sync today; the other CLIs are ready-to-use guides and workflows."}
+            ? "gh, supabase, vercel, stripe, wrangler. Instalá desde la terminal correcta, guardá secretos de proyecto en el vault cifrado y mantené el contexto de trabajo entre tus Macs. GitHub CLI ya tiene Auth Sync dedicado; los demás CLIs quedan como guías y workflows listos."
+            : "gh, supabase, vercel, stripe, wrangler. Install from the right terminal, keep project secrets in the encrypted vault, and carry workflow context across Macs. GitHub CLI has dedicated Auth Sync today; the other CLIs are ready-to-use guides and workflows."}
         </p>
         <div className="mt-6 flex flex-wrap items-center gap-2 text-[12px] font-mono">
           <span className="rounded-md bg-[var(--color-panel)] border border-[var(--color-border)] px-2 py-1 text-[var(--color-fg-muted)]">
             {tools.length} {isEs ? "tools" : "tools"}
           </span>
           <span className="rounded-md bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/30 px-2 py-1 text-[var(--color-accent)]">
-            {isEs ? "gh sign-in sync + env vault" : "gh sign-in sync + env vault"}
+            {isEs ? "gh auth sync + env vault" : "gh auth sync + env vault"}
           </span>
         </div>
       </section>
@@ -82,7 +82,7 @@ export default async function CliToolsIndex({ params }: Props) {
         categoryLabels={categoryLabels}
         uiText={{
           all: isEs ? "Todos" : "All",
-          searchPlaceholder: isEs ? "Buscar terminal tool…" : "Search CLIs…",
+          searchPlaceholder: isEs ? "Buscar CLI…" : "Search CLIs…",
           noResults: isEs ? "Sin resultados." : "No results.",
         }}
       />

@@ -69,7 +69,7 @@ const specific: Record<GeoPageSlug, { es: Partial<GeoPageCopy>; en: Partial<GeoP
     en: { title: "Sync Claude Code between Macs — TerminalSync", description: "Continue Claude Code between a Mac Mini and MacBook with context, memory, connectors and secrets organized.", eyebrow: "Claude Code across Macs", h1: "How to sync Claude Code between two Macs", intro: "TerminalSync keeps your Claude Code workspace portable so you can continue from another Mac without rebuilding everything.", cta: "Try TerminalSync free" },
   },
   "sync-codex-between-macs": {
-    es: { title: "Sincronizar Codex entre Macs — TerminalSync", description: "Organiza Codex con Git, proyectos, memoria y movilidad entre Macs.", eyebrow: "Codex portátil", h1: "Codex entre Macs sin perder contexto", intro: "TerminalSync ayuda a convertir Codex en parte de un workspace portable, especialmente cuando trabajas con carpetas de proyecto Git.", cta: "Probar Codex en TerminalSync" },
+    es: { title: "Sincronizar Codex entre Macs — TerminalSync", description: "Organiza Codex con Git, proyectos, memoria y movilidad entre Macs.", eyebrow: "Codex portátil", h1: "Codex entre Macs sin perder contexto", intro: "TerminalSync ayuda a convertir Codex en parte de un workspace portable, especialmente cuando trabajas con repos Git.", cta: "Probar Codex en TerminalSync" },
     en: { title: "Sync Codex between Macs — TerminalSync", description: "Organize Codex with Git, projects, memory and mobility across Macs.", eyebrow: "Portable Codex", h1: "Codex across Macs without losing context", intro: "TerminalSync helps turn Codex into part of a portable workspace, especially when working with Git repositories.", cta: "Try Codex in TerminalSync" },
   },
   "sync-gemini-cli-between-macs": {
@@ -81,7 +81,7 @@ const specific: Record<GeoPageSlug, { es: Partial<GeoPageCopy>; en: Partial<GeoP
     en: { title: "TerminalSync vs Warp — differences for AI work", description: "Warp is a modern terminal; TerminalSync is continuity for AI workspaces.", eyebrow: "Comparison", h1: "TerminalSync vs Warp", intro: "Warp improves the terminal. TerminalSync coordinates sessions, memory, connectors, secrets and mobility for AI agents.", cta: "See TerminalSync" },
   },
   "terminal-sync-vs-cursor": {
-    es: { title: "TerminalSync vs Cursor — editor IA o workspace terminal IA", description: "Cursor es editor IA; TerminalSync es workspace de terminal para agentes, CLIs y movilidad.", eyebrow: "Comparativa", h1: "TerminalSync vs Cursor", intro: "Cursor vive en el editor. TerminalSync vive donde corren tus agentes de terminal, carpetas de proyecto, CLIs, secretos y sesiones remotas.", cta: "Comparar TerminalSync" },
+    es: { title: "TerminalSync vs Cursor — editor IA o workspace terminal IA", description: "Cursor es editor IA; TerminalSync es workspace de terminal para agentes, CLIs y movilidad.", eyebrow: "Comparativa", h1: "TerminalSync vs Cursor", intro: "Cursor vive en el editor. TerminalSync vive donde corren tus agentes de terminal, repos, CLIs, secretos y sesiones remotas.", cta: "Comparar TerminalSync" },
     en: { title: "TerminalSync vs Cursor — AI editor or AI terminal workspace", description: "Cursor is an AI editor; TerminalSync is a terminal workspace for agents, CLIs and mobility.", eyebrow: "Comparison", h1: "TerminalSync vs Cursor", intro: "Cursor lives in the editor. TerminalSync lives where your terminal agents, repositories, CLIs, secrets and remote sessions run.", cta: "Compare TerminalSync" },
   },
   "persistent-memory-for-ai-agents": {

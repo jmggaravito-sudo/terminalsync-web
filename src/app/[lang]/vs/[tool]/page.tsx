@@ -69,8 +69,8 @@ const ROW_LABELS: Record<string, { es: string; en: string }> = {
     en: "Military-grade AES-256 — not even we see your data",
   },
   secretsVault: {
-    es: "Caja fuerte para tus llaves de acceso y credenciales",
-    en: "Vault for your access keys and credentials",
+    es: "Caja fuerte para tus claves API y credenciales",
+    en: "Vault for your API keys and credentials",
   },
   multiCloudSync: {
     es: "Tus archivos cifrados en tu nube favorita",

@@ -22,7 +22,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, slug } = await params;
   const tool = await getCliTool(lang, slug);
-  if (!tool) return { title: "terminal tool tool not found" };
+  if (!tool) return { title: "CLI tool not found" };
   const title = `${tool.name} · TerminalSync CLI Tool`;
   return {
     title,

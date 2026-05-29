@@ -57,7 +57,7 @@ export function DiscoveryReviewBypass({ lang }: { lang: string }) {
       approve: isEs ? "Aprobar" : "Approve",
       reject: isEs ? "Rechazar" : "Reject",
       ignore: isEs ? "Ignorar" : "Ignore",
-      noRepo: isEs ? "(sin project folder)" : "(no project folder)",
+      noRepo: isEs ? "(sin repo)" : "(no repo)",
       category: isEs ? "Categoría" : "Category",
       summary: isEs ? "Resumen" : "Summary",
       original: isEs ? "Contenido original" : "Original content",
