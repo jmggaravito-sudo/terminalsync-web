@@ -288,6 +288,21 @@ export interface Dict {
       noVendor: string;
     };
   };
+  // "También en Chrome" — compact teaser para el extension BYOK que vive
+  // como repo aparte (terminalsync-chrome). Se rinderea entre MultiAI y
+  // MemoryPersistent, donde el visitante recién entendió el value prop
+  // de las 3 IAs en paralelo.
+  chromeExtension: {
+    eyebrow: string; // "También en Chrome"
+    title: string;
+    subtitle: string;
+    bullets: string[]; // 3-4 bullets cortos
+    status: string; // "Próximamente en Chrome Web Store" | "Disponible"
+    primaryCta: string;
+    primaryHref: string;
+    secondaryCta: string;
+    secondaryHref: string;
+  };
   affiliates: {
     kicker: string;
     title: string;

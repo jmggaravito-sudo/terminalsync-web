@@ -578,6 +578,23 @@ const en: Dict = {
       },
     },
   },
+  chromeExtension: {
+    eyebrow: "Also on Chrome",
+    title: "All 3 AIs side by side, straight from your browser",
+    subtitle:
+      "Nothing to install on your Mac. Paste your 3 API keys (BYOK), open the popup, and ask Claude, Codex, and Gemini the same prompt in parallel from any tab.",
+    bullets: [
+      "BYOK: use your own keys, pay each provider directly",
+      "Multi-turn chat with per-provider memory",
+      "Per-AI model picker + live cost meter",
+      "Full markdown + one-click copy",
+    ],
+    status: "Coming soon to the Chrome Web Store · Functional MVP in early access",
+    primaryCta: "Try the early access",
+    primaryHref: "https://github.com/jmggaravito-sudo/terminalsync-chrome",
+    secondaryCta: "Compare with the desktop app",
+    secondaryHref: "#pricing",
+  },
   trust: {
     title: "Your files are yours. Full stop.",
     body: "Your secrets, configs, sessions — all encrypted on your Mac before leaving. Goes to YOUR Drive, not ours. The encryption engine will be publicly auditable.",
