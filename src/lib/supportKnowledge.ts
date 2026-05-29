@@ -55,7 +55,7 @@ export function getSupportKnowledge(locale: SupportLocale) {
       marketplace:
         "Marketplace/Power-Ups organiza conectores, skills y CLI tools. Connectors conectan servicios/MCPs; Skills son capacidades reutilizables; CLI Tools ayudan a instalar/autenticar herramientas como GitHub CLI, Supabase CLI, Vercel CLI, Stripe CLI y Wrangler.",
       plans:
-        "Free es para probar. Pro es para power users que quieren memoria persistente y más capacidades. Max es el plan más completo: Git-native sync, vault de secretos, hasta 20 terminales activas y features avanzados. (El plan se llamaba Dev hasta 2026-05-20 — si alguien menciona 'Dev', es lo mismo que Max.) No inventes precios si no estás seguro; dirige a /#pricing.",
+        "Free es para probar (3 terminales, 2 dispositivos). Pro ($19/mes) es para power users: 10 terminales, vault de secretos, Git-native sync, setup-on-arrival, memoria persistente entre IAs, hasta 5 dispositivos, e incluye la Extensión Chrome con 3 IAs en paralelo. Max ($39/mes) es para quienes necesitan terminales ilimitadas y hasta 10 dispositivos. (El plan se llamaba Dev hasta 2026-05-20 — si alguien menciona 'Dev', es lo mismo que Max.) No inventes precios si no estás seguro; dirige a /#pricing.",
       billing:
         "Para administrar suscripción (cambiar plan, actualizar tarjeta, ver facturas, cancelar): el usuario va a /es/billing, ingresa su email y se abre el portal de Stripe. También está disponible desde Ajustes > Cuenta > 'Administrar suscripción' en la app de escritorio (solo si tiene plan pago). La cancelación es al fin del período pagado — mantienen acceso hasta esa fecha.",
       cancellation:
@@ -109,7 +109,7 @@ export function getSupportKnowledge(locale: SupportLocale) {
     marketplace:
       "Marketplace/Power-Ups organizes connectors, skills and CLI tools. Connectors connect services/MCPs; Skills are reusable capabilities; CLI Tools help install/auth tools like GitHub CLI, Supabase CLI, Vercel CLI, Stripe CLI and Wrangler.",
     plans:
-      "Free is for trying the product. Pro is for power users who want persistent memory and more capabilities. Max is our most complete plan: Git-native sync, secrets vault, up to 20 active terminals, and advanced features. (The plan was called Dev until 2026-05-20 — if someone mentions 'Dev', it's the same as Max.) Do not invent prices if unsure; point to /#pricing.",
+      "Free is for trying the product (3 terminals, 2 devices). Pro ($19/mo) is for power users: 10 terminals, secrets vault, Git-native sync, setup-on-arrival, persistent memory across AIs, up to 5 devices, and includes the Chrome Extension with 3 AIs side-by-side. Max ($39/mo) is for users who need unlimited terminals and up to 10 devices. (The plan was called Dev until 2026-05-20 — if someone mentions 'Dev', it's the same as Max.) Do not invent prices if unsure; point to /#pricing.",
     billing:
       "To manage subscription (change plan, update card, view invoices, cancel): the user goes to /en/billing, enters their email, and Stripe Customer Portal opens. Also available from Settings > Account > 'Manage subscription' in the desktop app (only when on a paid plan). Cancellation is at-period-end — they keep access until that date.",
     cancellation:
