@@ -390,7 +390,7 @@ const es: Dict = {
         apiCostMix: "Costo API mix (≈ $1.50/h)",
         devTimeSolo: "Tu tiempo a tarifa plena",
         devTimeWithTs: "Tu tiempo, 25 % menos horas",
-        subscription: "TerminalSync Pro anual ($228)",
+        subscription: "TerminalSync Pro (12 × $19 = $228)",
         timeSaving:
           "El 25 % de ahorro de tiempo viene de no esperar rate limits, no swappear contexto entre tools, y mandar cada tarea al modelo más barato y rápido.",
       },
@@ -460,12 +460,6 @@ const es: Dict = {
     subtitle: "Empieza gratis. Paga solo cuando tu flujo lo pida.",
     perMonth: "/mes",
     free: "Gratis",
-    cycleLabel: {
-      monthly: "Mensual",
-      yearly: "Anual",
-      savingsBadge: "Ahorra 17%",
-      savingsDetail: "2 meses gratis",
-    },
     trial: {
       eyebrow: "7 días gratis",
       explainer:
@@ -535,11 +529,8 @@ const es: Dict = {
       pro: {
         name: "Pro",
         badge: "Más popular",
-        priceMonthly: "$19",
-        priceYearly: "$190",
-        priceNoteMonthly: "/mes",
-        priceNoteYearly: "/año",
-        yearlyEquivalent: "$15.83/mes · facturado anual",
+        price: "$19",
+        priceNote: "/mes",
         features: [
           "10 terminales con persistencia + resurrección",
           "Claude + Codex + Gemini en un workspace",
@@ -560,11 +551,8 @@ const es: Dict = {
       max: {
         name: "Max",
         badge: "El más completo",
-        priceMonthly: "$39",
-        priceYearly: "$390",
-        priceNoteMonthly: "/mes",
-        priceNoteYearly: "/año",
-        yearlyEquivalent: "$32.50/mes · facturado anual",
+        price: "$39",
+        priceNote: "/mes",
         features: [
           "Todo lo de Pro, más:",
           "Terminales ilimitadas",

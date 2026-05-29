@@ -244,12 +244,6 @@ export interface Dict {
     subtitle: string;
     perMonth: string;
     free: string;
-    cycleLabel: {
-      monthly: string;
-      yearly: string;
-      savingsBadge: string; // e.g. "Ahorra 17%" / "Save 17%"
-      savingsDetail: string; // e.g. "2 meses gratis"
-    };
     trial: {
       eyebrow: string; // "7 días gratis"
       explainer: string; // "Ingresas tu tarjeta pero no se cobra nada los primeros 7 días. Cancela cuando quieras."
@@ -272,9 +266,11 @@ export interface Dict {
       }>;
     };
     plans: {
+      // Después del kill-yearly (2026-05-29) los 3 planes tienen el mismo
+      // shape: precio único + features. Pro/Max llevan `badge` que Free no.
       starter: Plan;
-      pro: ProPlan;
-      max: ProPlan;
+      pro: PaidPlan;
+      max: PaidPlan;
     };
   };
   trust: {
@@ -458,15 +454,13 @@ interface Plan {
   cta: string;
 }
 
-// Pro has two recurring prices (monthly/yearly) sharing the same features.
-interface ProPlan {
+// Pro + Max después del kill-yearly: mismo shape que Plan + un badge
+// destacado ("Más popular", "El más completo"). Sin monthly/yearly toggle.
+interface PaidPlan {
   name: string;
   badge: string;
-  priceMonthly: string;
-  priceYearly: string;
-  priceNoteMonthly: string;
-  priceNoteYearly: string;
-  yearlyEquivalent: string; // "$15.83/mo billed annually" to anchor comparison
+  price: string;
+  priceNote: string;
   features: string[];
   cta: string;
 }

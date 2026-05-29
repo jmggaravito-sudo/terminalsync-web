@@ -5,7 +5,6 @@ import {
   priceIdFor,
   siteUrl,
   stripe,
-  type BillingCycle,
   type PlanId,
 } from "@/lib/stripe";
 
@@ -14,7 +13,12 @@ export const runtime = "nodejs";
 interface Body {
   /** Inbound plan id. Legacy clients may send "dev" — we normalize to "max". */
   plan: PlanId | "dev";
-  cycle?: BillingCycle; // Pro + Max only
+  /**
+   * @deprecated Hasta el 2026-05-29 vendíamos mensual y anual. Ahora solo
+   * vendemos mensual; este campo se ignora si llega. Lo mantenemos en la
+   * interface para no romper clientes desktop viejos que aún lo mandan.
+   */
+  cycle?: "monthly" | "yearly";
   lang?: "es" | "en";
   email?: string;
   /** Supabase auth user id. Attached to subscription metadata so the
@@ -78,7 +82,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const cycle: BillingCycle = body.cycle === "yearly" ? "yearly" : "monthly";
+  // Only monthly is sold now (2026-05-29). body.cycle is ignored.
   const plan = normalizePlanId(body.plan);
   if (!plan) {
     return NextResponse.json(
@@ -86,17 +90,17 @@ export async function POST(req: Request) {
       { status: 400, headers: cors },
     );
   }
-  const price = priceIdFor(plan, cycle);
+  const price = priceIdFor(plan);
   if (!price) {
     const envVar =
       plan === "max"
-        ? `STRIPE_PRICE_MAX_${cycle.toUpperCase()}`
+        ? "STRIPE_PRICE_MAX_MONTHLY"
         : plan === "pro"
-          ? `STRIPE_PRICE_PRO_${cycle.toUpperCase()}`
+          ? "STRIPE_PRICE_PRO_MONTHLY"
           : "STRIPE_PRICE_AGENCY";
     return NextResponse.json(
       {
-        error: `Missing Stripe price for plan "${plan}" (${cycle}). Set ${envVar} in the environment.`,
+        error: `Missing Stripe price for plan "${plan}". Set ${envVar} in the environment.`,
       },
       { status: 503, headers: cors },
     );
@@ -112,7 +116,7 @@ export async function POST(req: Request) {
   // hitting Stripe's API again.
   const sharedMetadata: Record<string, string> = {
     plan,
-    cycle,
+    cycle: "monthly",
     source: body.supabaseUserId ? "app.terminalsync/upsell" : "terminalsync.ai/pricing",
   };
   if (body.supabaseUserId) {

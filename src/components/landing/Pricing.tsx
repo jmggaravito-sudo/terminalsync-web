@@ -7,7 +7,6 @@ import { type CurrencyHint, formatLocal } from "@/lib/geoCurrency";
 import { CheckoutButton } from "./CheckoutButton";
 import { PlanQuiz } from "./PlanQuiz";
 
-type Cycle = "monthly" | "yearly";
 type PlanKey = "starter" | "pro" | "max";
 
 export function Pricing({
@@ -23,11 +22,10 @@ export function Pricing({
    */
   currencyHint?: CurrencyHint | null;
 }) {
-  // Default to monthly: most visitors expect month-to-month pricing as
-  // the baseline they compare against. Showing yearly first feels like
-  // an upsell. The yearly toggle keeps the savings badge as a discovery
-  // for users who want to commit.
-  const [cycle, setCycle] = useState<Cycle>("monthly");
+  // Solo facturación mensual desde 2026-05-29 — JM removió la opción anual
+  // (mejor cashflow predecible, cancelaciones suaves, no concentramos churn
+  // a fin de año). El toggle Monthly/Yearly y el CycleCard salieron con el
+  // mismo PR.
   const [quizOpen, setQuizOpen] = useState(false);
   const [highlighted, setHighlighted] = useState<PlanKey | null>(null);
 
@@ -105,27 +103,6 @@ export function Pricing({
         </div>
       </button>
 
-      <div className="text-center max-w-2xl mx-auto">
-        {/* Monthly / Yearly toggle — only applies to Pro + Dev */}
-        <div
-          className="mt-7 inline-flex items-center rounded-full border border-[var(--color-border)] bg-[var(--color-panel)] p-0.5 relative"
-          role="radiogroup"
-          aria-label="Billing cycle"
-        >
-          <ToggleButton
-            active={cycle === "monthly"}
-            onClick={() => setCycle("monthly")}
-            label={dict.pricing.cycleLabel.monthly}
-          />
-          <ToggleButton
-            active={cycle === "yearly"}
-            onClick={() => setCycle("yearly")}
-            label={dict.pricing.cycleLabel.yearly}
-            savingsBadge={dict.pricing.cycleLabel.savingsBadge}
-          />
-        </div>
-      </div>
-
       <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
         <PlanCard
           id="plan-starter"
@@ -141,22 +118,20 @@ export function Pricing({
           highlighted={highlighted === "starter"}
         />
 
-        <CycleCard
+        <PaidCard
           id="plan-pro"
           plan="pro"
           copy={dict.pricing.plans.pro}
-          cycle={cycle}
           dict={dict}
           currencyHint={currencyHint ?? null}
           featured
           highlighted={highlighted === "pro"}
         />
 
-        <CycleCard
+        <PaidCard
           id="plan-max"
           plan="max"
           copy={dict.pricing.plans.max}
-          cycle={cycle}
           dict={dict}
           currencyHint={currencyHint ?? null}
           highlighted={highlighted === "max"}
@@ -181,49 +156,10 @@ export function Pricing({
   );
 }
 
-function ToggleButton({
-  active,
-  onClick,
-  label,
-  savingsBadge,
-}: {
-  active: boolean;
-  onClick: () => void;
-  label: string;
-  savingsBadge?: string;
-}) {
-  return (
-    <button
-      role="radio"
-      aria-checked={active}
-      onClick={onClick}
-      className={`relative inline-flex items-center gap-2 h-9 px-4 rounded-full text-[13px] font-semibold transition-colors ${
-        active
-          ? "bg-[var(--color-accent)] text-white shadow-[0_6px_18px_-6px_var(--color-accent-glow)]"
-          : "text-[var(--color-fg-muted)] hover:text-[var(--color-fg-strong)]"
-      }`}
-    >
-      {label}
-      {savingsBadge && (
-        <span
-          className={`text-[9.5px] font-bold uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full ${
-            active
-              ? "bg-white/20 text-white"
-              : "bg-[var(--color-ok)]/15 text-[var(--color-ok)]"
-          }`}
-        >
-          {savingsBadge}
-        </span>
-      )}
-    </button>
-  );
-}
-
-function CycleCard({
+function PaidCard({
   id,
   plan,
   copy,
-  cycle,
   dict,
   currencyHint,
   featured,
@@ -232,18 +168,18 @@ function CycleCard({
   id: string;
   plan: "pro" | "max";
   copy: Dict["pricing"]["plans"]["pro"];
-  cycle: Cycle;
   dict: Dict;
   currencyHint: CurrencyHint | null;
   featured?: boolean;
   highlighted?: boolean;
 }) {
-  const price = cycle === "yearly" ? copy.priceYearly : copy.priceMonthly;
-  const note =
-    cycle === "yearly" ? copy.priceNoteYearly : copy.priceNoteMonthly;
-  // Parse the USD price ($19, $39, $190, $390) into a number for the
-  // local currency approximation. Strips $ and any decimals — all our
-  // prices are integer dollars.
+  // Solo facturación mensual (JM, 2026-05-29). El componente antes era
+  // CycleCard con prop `cycle` y campos priceYearly/priceNoteYearly;
+  // se simplificó a precio único.
+  const price = copy.price;
+  const note = copy.priceNote;
+  // Parse the USD price ($19, $39) into a number for the local currency
+  // approximation. Strips $ and any decimals.
   const usdValue = Number(price.replace(/[^0-9.]/g, ""));
   const localApprox =
     currencyHint && Number.isFinite(usdValue)
@@ -271,11 +207,7 @@ function CycleCard({
       </h3>
 
       <div className="mt-3 flex items-baseline gap-1.5 min-h-[3rem]">
-        <span
-          key={price}
-          className="text-[34px] font-semibold tracking-tight text-[var(--color-fg-strong)]"
-          style={{ animation: "fade-swap 0.2s ease-out" }}
-        >
+        <span className="text-[34px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
           {price}
         </span>
         <span className="text-[12px] text-[var(--color-fg-muted)]">{note}</span>
@@ -287,15 +219,9 @@ function CycleCard({
         </div>
       )}
 
-      {cycle === "yearly" ? (
-        <div className={`text-[11.5px] text-[var(--color-ok)] font-medium ${localApprox ? "" : "-mt-1"}`}>
-          {copy.yearlyEquivalent}
-        </div>
-      ) : (
-        <div className="text-[11.5px] text-[var(--color-fg-dim)] -mt-1">
-          &nbsp;
-        </div>
-      )}
+      <div className="text-[11.5px] text-[var(--color-fg-dim)] -mt-1">
+        &nbsp;
+      </div>
 
       <ul className="mt-5 space-y-2 flex-1">
         {copy.features.map((feat) => (
@@ -315,7 +241,6 @@ function CycleCard({
 
       <CheckoutButton
         plan={plan}
-        cycle={cycle}
         lang={dict.locale}
         label={copy.cta}
         featured={featured}
