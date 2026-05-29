@@ -3,6 +3,26 @@ import { listSlugs as listConnectorSlugs } from "@/lib/connectors";
 import { listSkillSlugs } from "@/lib/skills";
 import { TOOL_SLUGS } from "@/lib/vsPages";
 import { GEO_PAGE_SLUGS } from "@/lib/geoPages";
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+
+// Active Stack Pack slugs (curated bundles sold in /stacks). Mirrors the
+// existing `listSkillSlugs` / `listConnectorSlugs` pattern but reads from
+// Supabase since bundles live in the DB, not on disk. Returns [] on any
+// error so sitemap generation never blocks on a Supabase outage.
+async function listBundleSlugs(): Promise<string[]> {
+  try {
+    const sb = getSupabaseAdmin();
+    if (!sb) return [];
+    const { data, error } = await sb
+      .from("bundles")
+      .select("slug")
+      .eq("status", "active");
+    if (error || !data) return [];
+    return data.map((b: { slug: string }) => b.slug);
+  } catch {
+    return [];
+  }
+}
 
 const BASE = "https://terminalsync.ai";
 const LANGS = ["es", "en"] as const;
@@ -30,6 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "skills",
     "cli-tools",
     "connectors",
+    "stacks",
     "for-developers",
     "publishers",
     "legal/affiliates",
@@ -51,9 +72,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  const [skillSlugs, connectorSlugs] = await Promise.all([
+  const [skillSlugs, connectorSlugs, bundleSlugs] = await Promise.all([
     listSkillSlugs(),
     listConnectorSlugs(),
+    listBundleSlugs(),
   ]);
 
   for (const lang of LANGS) {
@@ -88,6 +110,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: `${BASE}/${lang}/guides/${slug}`,
         lastModified: now,
         changeFrequency: "monthly",
+        priority: 0.75,
+      });
+    }
+    // /stacks/<slug> — curated bundles (Stack Packs) sold via marketplace.
+    // High commercial intent so priority matches skills/connectors.
+    for (const slug of bundleSlugs) {
+      entries.push({
+        url: `${BASE}/${lang}/stacks/${slug}`,
+        lastModified: now,
+        changeFrequency: "weekly",
         priority: 0.75,
       });
     }
