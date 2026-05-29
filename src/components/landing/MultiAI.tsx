@@ -103,8 +103,8 @@ export function MultiAI({ dict }: { dict: Dict }) {
       <div className="mt-6 rounded-2xl border border-[var(--color-accent)]/25 bg-[var(--color-accent)]/6 px-5 py-4 md:px-6 md:py-5 text-center">
         <p className="text-[16px] md:text-[18px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
           {dict.locale === "es"
-            ? "Tu código sigue en Git. Tus terminales IA viajan con el repo."
-            : "Your code stays in Git. Your AI terminals travel with the repo."}
+            ? "Tu código sigue en Git. Tus terminales IA viajan con la carpeta de proyecto."
+            : "Your code stays in Git. Your AI terminals travel with the project folder."}
         </p>
         <p className="mt-1.5 text-[13px] md:text-[13.5px] text-[var(--color-fg-muted)] leading-relaxed">
           {dict.locale === "es"
