@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { headers } from "next/headers";
 import Link from "next/link";
 import { ArrowRight, Download, Layers } from "lucide-react";
 import { getDict, isLocale } from "@/content";
-import { currencyForCountry } from "@/lib/geoCurrency";
 import { Pricing } from "@/components/landing/Pricing";
 import { Footer } from "@/components/landing/Footer";
 import { SavingsCalculator } from "@/components/landing/SavingsCalculator";
@@ -56,9 +54,8 @@ export default async function DevLanding({ params }: Props) {
   const dict = getDict(lang);
   const copy = getDevCopy(lang);
 
-  const h = await headers();
-  const country = h.get("x-vercel-ip-country");
-  const currencyHint = currencyForCountry(country);
+  // currency hint geo-IP feature removida 2026-05-29 — ver page.tsx para
+  // contexto. SavingsCalculator + Pricing siguen mostrando USD puro.
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
@@ -68,17 +65,14 @@ export default async function DevLanding({ params }: Props) {
       {/* Calculator right under the comparison — same pattern as
           the consumer landing. JM 2026-05-07: every page that
           shows the table follows it with the savings calculator. */}
-      <SavingsCalculator
-        dict={dict}
-        currencyHint={currencyHint ?? undefined}
-      />
+      <SavingsCalculator dict={dict} />
       <DevAffiliates copy={copy} lang={lang} />
 
       {/* Pricing reused — Dev plan is the natural conversion target on
           this page. Anchored at #pricing so #pricing links from the
           consumer landing still resolve when crossed over. */}
       <div id="pricing">
-        <Pricing dict={dict} currencyHint={currencyHint} />
+        <Pricing dict={dict} />
       </div>
 
       <DevFAQ copy={copy} />

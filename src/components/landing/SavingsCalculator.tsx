@@ -3,8 +3,6 @@
 import { useState, useMemo } from "react";
 import { Download, Sparkles } from "lucide-react";
 import type { Dict } from "@/content";
-import type { CurrencyHint } from "@/lib/geoCurrency";
-import { formatLocal } from "@/lib/geoCurrency";
 
 /**
  * Sliders + live numbers showing how much a dev saves per year by mixing
@@ -44,13 +42,7 @@ const TIME_SAVING_HEAVY = 0.20; // 20% saved at all-heavy
 
 const TS_PRO_ANNUAL = 228; // USD — Pro plan @ $19/mo × 12
 
-export function SavingsCalculator({
-  dict,
-  currencyHint,
-}: {
-  dict: Dict;
-  currencyHint?: CurrencyHint;
-}) {
+export function SavingsCalculator({ dict }: { dict: Dict }) {
   // The schema marks this block optional so older translations don't
   // break the type. Render nothing when copy is missing.
   const c = dict.comparison.calculator;
@@ -220,11 +212,6 @@ export function SavingsCalculator({
               {c.results.perYear}
             </span>
           </div>
-          {currencyHint ? (
-            <div className="mt-1 text-[12px] text-[var(--color-fg-dim)]">
-              ≈ {formatLocal(savings, currencyHint)}
-            </div>
-          ) : null}
 
           <div className="mt-5 inline-flex items-center self-start gap-2 px-3 py-1.5 rounded-full border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/10 text-[12.5px] text-[var(--color-accent)] font-semibold">
             <span className="font-mono uppercase tracking-[0.12em] text-[10px] opacity-70">
