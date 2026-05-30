@@ -75,8 +75,8 @@ export default async function BlogIndex({ params }: Props) {
             {isEs ? "página de seguridad" : "security page"}
           </a>
           {isEs
-            ? " para entender la arquitectura zero-knowledge."
-            : " to understand the zero-knowledge architecture."}
+            ? " para entender la arquitectura fully encrypted (no one else can read it)."
+            : " to understand the fully encrypted (no one else can read it) architecture."}
         </li>
       </ul>
     </LegalShell>

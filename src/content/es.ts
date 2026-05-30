@@ -5,7 +5,7 @@ const es: Dict = {
   meta: {
     title: "TerminalSync — Memoria, privacidad y movilidad para tu IA",
     description:
-      "Tu agente IA (Claude/Codex) sigue corriendo aunque se caiga internet o cambies de Mac. Cifrado AES-256 zero-knowledge. Acceso desde cualquier dispositivo.",
+      "Tu agente IA (Claude/Codex) sigue corriendo aunque se caiga internet o cambies de Mac. AES-256 · ni nosotros podemos leer tu contenido. Acceso desde cualquier dispositivo.",
   },
   nav: {
     features: "Funciones",
@@ -17,14 +17,14 @@ const es: Dict = {
   },
   hero: {
     eyebrow: "Empezá donde dejaste. Todos los días.",
-    titlePre: "Tus IAs y tu entorno, ",
+    titlePre: "Tus IAs y tu entorno,",
     titleHighlight: "sincronizados y seguros",
-    titlePost: " en un solo lugar.",
+    titlePost: "en un solo lugar.",
     subtitle:
       "Tu Claude, Codex y Gemini siguen trabajando — aunque cierres la Mac, cambies de país, o se caiga el internet. Tu memoria, tus archivos y tus IAs te siguen.",
     ctaPrimary: "Probalo gratis",
     ctaSecondary: "Ver cómo funciona",
-    trustLine: "Sin setup · Sin perder contexto · Funciona en cualquier equipo · Cifrado AES-256 zero-knowledge",
+    trustLine: "Sin setup · Sin perder contexto · Funciona en cualquier equipo · AES-256 · ni nosotros podemos leer tu contenido",
     nextUp: {
       eyebrow: "Lo último",
       body: "Tu sesión en cualquier dispositivo — abrí desde el celular sin instalar nada. Flujo unificado entre Claude y Codex con el mismo contexto. Bóveda de secretos por terminal.",
@@ -49,7 +49,7 @@ const es: Dict = {
       context: {
         kicker: "Demo · Persistencia",
         title: "Cerrás todo. Tu agente sigue trabajando solo.",
-        body: "El internet se cae, se reinicia tu Mac, cerrás la app sin querer — tu Claude o Codex no se detienen. Cuando volvés, la conversación está exactamente donde la dejaste.",
+        body: "El internet se cae, se reinicia tu computadora, cerrás la app sin querer — tu Claude o Codex no se detienen. Cuando volvés, la conversación está exactamente donde la dejaste.",
       },
       install: {
         kicker: "Demo · Cualquier dispositivo",
@@ -58,7 +58,7 @@ const es: Dict = {
       },
       shield: {
         kicker: "Demo · Privacidad",
-        title: "Cifrado AES-256 antes de salir de tu Mac.",
+        title: "Cifrado AES-256 antes de salir de tu computadora.",
         body: "Tus archivos viajan ya cifrados a tu propio Drive (o iCloud o Dropbox). Ni Google, ni Anthropic, ni OpenAI, ni nosotros vemos lo que hay adentro. La llave maestra vive en tu Keychain.",
       },
     },
@@ -83,7 +83,7 @@ const es: Dict = {
     pillars: [
       {
         title: "100% local, 100% privado",
-        body: "La base de conocimiento vive en SQLite en tu Mac. Sin servidores nuestros, sin claves API, sin vendor lock-in. Si querés sincronizarla entre tus equipos, lo hacemos cifrada con AES-256 a tu propia nube.",
+        body: "La base de conocimiento vive en una base de datos local en tu computadora. Sin servidores nuestros, sin llaves de acceso, sin vendor lock-in. Si querés sincronizarla entre tus equipos, lo hacemos cifrada con AES-256 a tu propia nube.",
       },
       {
         title: "Funciona con cualquier IA",
@@ -91,7 +91,7 @@ const es: Dict = {
       },
       {
         title: "Búsqueda semántica",
-        body: "Tu agente encuentra el contexto relevante automáticamente. Preguntás 'cómo manejábamos auth' y trae las decisiones, los patrones y las razones — no solo palabras clave.",
+        body: "Tu agente encuentra el contexto relevante automáticamente. Preguntás 'cómo manejábamos conexión' y trae las decisiones, los patrones y las razones — no solo palabras clave.",
       },
     ],
     timeline: {
@@ -160,7 +160,7 @@ const es: Dict = {
         {
           tool: "Gemini CLI",
           verb: "para contexto largo",
-          body: "1M tokens de ventana, multimodal nativo (PDFs, imágenes, video). Free tier sin API key.",
+          body: "1M tokens de ventana, multimodal nativo (PDFs, imágenes, video). Free tier sin llave de acceso.",
         },
       ],
     },
@@ -210,10 +210,10 @@ const es: Dict = {
         live: [
           "Ventana de contexto de 1M tokens — la más grande del mercado",
           "Multimodal nativo: texto, imágenes, PDFs y video",
-          "Free tier generoso (60 req/min, 1000/día) sin API key",
-          "Auth con tu cuenta de Google directo desde la app",
+          "Free tier generoso (60 req/min, 1000/día) sin llave de acceso",
+          "Conexión con tu cuenta de Google directo desde la app",
           "Apache 2.0 — open source, sin lock-in",
-          "Sub-agents y settings roaman cifrados entre tus Macs",
+          "Sub-agents y settings roaman cifrados entre tus computadoras",
         ],
         upcoming: [],
       },
@@ -243,7 +243,7 @@ const es: Dict = {
         "Cerrás la app y perdés la conversación con tu IA",
         "Se cae el internet y tu agente se detiene",
         "Querés seguir desde el celular y no podés",
-        "Tus claves API viven en archivos sueltos en tu Mac",
+        "Tus llaves de acceso viven en archivos sueltos en tu computadora",
         "Cambiás de equipo y empezás todo de cero",
         "Te quedás mirando la pantalla esperando que la IA responda",
       ],
@@ -274,7 +274,7 @@ const es: Dict = {
     items: [
       {
         q: "¿Cuál es la diferencia con sincronizar mi carpeta en Drive o iCloud?",
-        a: "Drive e iCloud sincronizan archivos sin cifrar — el proveedor puede ver el contenido cuando quiera. Terminal Sync cifra TODO con AES-256 antes de salir de tu Mac. Tus archivos viajan a Drive/iCloud/Dropbox como blobs opacos: ni Google, ni Apple, ni Anthropic, ni nosotros podemos abrirlos. La llave maestra vive en el llavero de tu sistema operativo.",
+        a: "Drive e iCloud sincronizan archivos sin cifrar — el proveedor puede ver el contenido cuando quiera. Terminal Sync cifra TODO con AES-256 antes de salir de tu computadora. Tus archivos viajan a Drive/iCloud/Dropbox como blobs opacos: ni Google, ni Apple, ni Anthropic, ni nosotros podemos abrirlos. La llave maestra vive en el llavero de tu sistema operativo.",
       },
       {
         q: "¿Pero Claude Desktop ya no sincroniza entre Macs?",
@@ -282,7 +282,7 @@ const es: Dict = {
       },
       {
         q: "¿Mis archivos quedan en su servidor?",
-        a: "No. Cifrado AES-256-GCM en tu Mac antes de salir. Sube a TU Google Drive, no al nuestro. Ni Anthropic, ni OpenAI, ni nosotros podemos ver tus archivos. Sos vos quien tiene la única llave.",
+        a: "No. Cifrado AES-256-GCM en tu computadora antes de salir. Sube a TU Google Drive, no al nuestro. Ni Anthropic, ni OpenAI, ni nosotros podemos ver tus archivos. Sos vos quien tiene la única llave.",
       },
       {
         q: "¿Funciona si solo tengo una Mac?",
@@ -302,7 +302,7 @@ const es: Dict = {
       },
       {
         q: "¿En qué se diferencia de un IDE en la nube tipo Codespaces o Gitpod?",
-        a: "No te mudás a un entorno nuevo — TU entorno te sigue a vos. Tu Mac, tus archivos, tus IAs configuradas como ya las tenías. Sin alquiler de cómputo, sin facturación por minuto, sin lock-in. Y todo cifrado AES-256 en tu propia nube.",
+        a: "No te mudás a un entorno nuevo — TU entorno te sigue a vos. Tu computadora, tus archivos, tus IAs configuradas como ya las tenías. Sin alquiler de cómputo, sin facturación por minuto, sin lock-in. Y todo cifrado AES-256 en tu propia nube.",
       },
       {
         q: "¿En qué se diferencia de usar Claude o Codex por separado?",
@@ -338,22 +338,22 @@ const es: Dict = {
       resurrection: "Resurrección de sesión (cerrás todo, vuelve donde quedaste)",
       multiModel: "Multi-modelo (Claude + Codex + Gemini + otros)",
       responsiveNotifications: "Notificaciones interactivas por correo, Telegram y WhatsApp",
-      webMobileMirror: "Misma sesión en el navegador o el celular, idéntica a tu Mac",
+      webMobileMirror: "Misma sesión en el navegador o el celular, idéntica a tu computadora",
       offlineLocal: "Funciona offline / local-first",
-      aes256: "Cifrado AES-256 zero-knowledge",
+      aes256: "AES-256 · ni nosotros podemos leer tu contenido",
       secretsVault: "Vault de secretos integrado",
       internetImmunity: "Persistencia ante caída de internet",
       aiConversationSync: "Sync de conversaciones IA entre Macs",
       replyInjection: "Reply-injection desde celular",
       noVendorLockIn: "Sin vendor lock-in (tus archivos en tu cloud)",
-      zeroRuntime: "Costo de runtime $0 (corre en tu Mac)",
+      zeroRuntime: "Costo de runtime $0 (corre en tu computadora)",
       zeroStorage: "Costo de almacenamiento $0 (usás tu Drive)",
       deviceRoaming: "Roaming entre dispositivos",
       multipleSessions: "Múltiples sesiones simultáneas",
     },
     legend: { yes: "Sí", no: "No", partial: "Parcial", soon: "Próximamente" },
     footnote:
-      "Comparativo basado en docs públicas de cada herramienta al 2026-05-04. Cifrado AES-256-GCM antes de salir de tu Mac — ni Anthropic, ni OpenAI, ni Vercel, ni nosotros vemos tus archivos.",
+      "Comparativo basado en docs públicas de cada herramienta al 2026-05-04. Cifrado AES-256-GCM antes de salir de tu computadora — ni Anthropic, ni OpenAI, ni Vercel, ni nosotros vemos tus archivos.",
     calculator: {
       eyebrow: "Calculá tu ahorro",
       title: "¿Cuánto te ahorra orquestar las 3 IAs?",
@@ -402,33 +402,33 @@ const es: Dict = {
       persistentMemory:
         "Tu agente IA recuerda contexto, decisiones y archivos vistos entre sesiones. No tenés que re-explicar todo cada vez que abrís una conversación nueva.",
       resurrection:
-        "Si cerrás la app, se va la luz, o reiniciás tu Mac, al volver seguís exactamente donde estabas — comando a medio escribir, output del agente, todo intacto.",
+        "Si cerrás la app, se va la luz, o reiniciás tu computadora, al volver seguís exactamente donde estabas — comando a medio escribir, output del agente, todo intacto.",
       multiModel:
         "Una sola interfaz para Claude Code, Codex y Gemini CLI. Cambiás de modelo sin perder contexto y usás el mejor para cada tarea.",
       responsiveNotifications:
         "Cuando tu agente termina algo, falla, o te pide una decisión, te avisa por correo, Telegram y (próximamente) WhatsApp. Respondés desde donde estés.",
       webMobileMirror:
-        "Tu sesión activa se ve y se controla igual desde tu Mac, desde un navegador o desde tu celular. Misma terminal, mismo contexto, mismo agente.",
+        "Tu sesión activa se ve y se controla igual desde tu computadora, desde un navegador o desde tu celular. Misma terminal, mismo contexto, mismo agente.",
       offlineLocal:
-        "Funciona sin internet. Tu Mac es la fuente de verdad — la sincronización con la nube es asíncrona y nunca bloquea tu trabajo.",
+        "Funciona sin internet. Tu computadora es la fuente de verdad — la sincronización con la nube es asíncrona y nunca bloquea tu trabajo.",
       aes256:
-        "Todo se cifra en tu Mac antes de salir, con la clave maestra guardada en tu Keychain. Ni Anthropic, ni OpenAI, ni Google, ni nosotros podemos abrir tus archivos.",
+        "Todo se cifra en tu computadora antes de salir, con la clave maestra guardada en tu Keychain. Ni Anthropic, ni OpenAI, ni Google, ni nosotros podemos abrir tus archivos.",
       secretsVault:
-        "Vault integrado para API keys, tokens y credenciales. Disponibles en tus terminales como variables de entorno — nunca escritos en archivos planos.",
+        "Vault integrado para llaves de acceso, tokens y credenciales. Disponibles en tus terminales como variables de entorno — nunca escritos en archivos planos.",
       internetImmunity:
         "Si tu internet se cae mientras un agente está corriendo, sigue trabajando localmente. Cuando volvés a tener señal, sincroniza solo.",
       aiConversationSync:
-        "Las conversaciones con tu agente se sincronizan entre tus Macs y dispositivos. Empezás en el MacBook, seguís en el Mac mini sin pegar contexto.",
+        "Las conversaciones con tu agente se sincronizan entre tus computadoras y dispositivos. Empezás en el MacBook, seguís en el Mac mini sin pegar contexto.",
       replyInjection:
-        "Desde tu celular podés inyectar respuestas a un agente que está esperando input en tu Mac. Ideal para desbloquear un comando cuando estás afuera.",
+        "Desde tu celular podés inyectar respuestas a un agente que está esperando input en tu computadora. Ideal para desbloquear un comando cuando estás afuera.",
       noVendorLockIn:
         "Tus archivos viven en tu propio Google Drive (iCloud, S3, Dropbox próximamente). Si te vas de Terminal Sync, te llevás todo. Sin export-fee.",
       zeroRuntime:
-        "No corremos tus agentes en nuestros servidores. Todo se ejecuta en tu Mac, así que el costo de runtime es cero — solo pagás el modelo IA al provider que elijas.",
+        "No corremos tus agentes en nuestros servidores. Todo se ejecuta en tu computadora, así que el costo de runtime es cero — solo pagás el modelo IA al provider que elijas.",
       zeroStorage:
         "Tu propio Drive es el almacenamiento. No te cobramos por GB. Si ya tenés Google One o iCloud+, lo usás y listo.",
       deviceRoaming:
-        "Cambiás de Mac (oficina, casa, viaje) y tu sesión, archivos y contexto te siguen. Sin re-instalar agentes ni re-pegar API keys.",
+        "Cambiás de computadora (oficina, casa, viaje) y tu sesión, archivos y contexto te siguen. Sin re-instalar agentes ni re-pegar llaves de acceso.",
       multipleSessions:
         "Múltiples terminales corriendo en paralelo, cada una con su agente, su contexto y su carpeta. Saltás entre ellas con un click.",
     },
@@ -450,7 +450,7 @@ const es: Dict = {
       },
       agency: {
         title: "El que maneja datos sensibles",
-        body: "Trabajás con claves API, credenciales de clientes, contratos, datos privados. No querés que vivan en la nube de un vendor que un día puede leerlos. Cifrado AES-256 antes de salir de tu Mac — ni nosotros podemos abrirlos.",
+        body: "Trabajás con llaves de acceso, credenciales de clientes, contratos, datos privados. No querés que vivan en la nube de un vendor que un día puede leerlos. Cifrado AES-256 antes de salir de tu computadora — ni nosotros podemos abrirlos.",
         tag: "Privacidad-first",
       },
     },
@@ -519,7 +519,7 @@ const es: Dict = {
           "3 terminales activas con persistencia real",
           "Claude Code, Codex, Gemini CLI o Sin IA",
           "Tu código sigue en Git; metadata en .terminalsync/",
-          "Cifrado AES-256 zero-knowledge",
+          "AES-256 · ni nosotros podemos leer tu contenido",
           "Sync con Google Drive (tu cuenta)",
           "Notificaciones de silencio en el agente",
           "2 dispositivos vinculados (laptop + escritorio)",
@@ -536,12 +536,12 @@ const es: Dict = {
           "10 terminales con persistencia + resurrección",
           "Claude + Codex + Gemini en un workspace",
           "Memoria persistente entre IAs",
-          "Vault de secretos por carpeta/proyecto",
-          "Git-native sync para repos y snapshots",
+          "Vault de secretos por carpeta de proyecto",
+          "Sync nativo de Git para carpetas de proyecto y snapshots",
           "Setup-on-arrival automático por proyecto",
-          "Tus terminales IA viajan con el repo",
+          "Tus terminales IA viajan con la carpeta de proyecto",
           "Tu sesión en cualquier dispositivo (móvil + navegador)",
-          "Conectores, skills y CLI tools sincronizados",
+          "Conectores, skills y herramientas de terminal sincronizados",
           "Notificaciones por Email / WhatsApp / Telegram",
           "Historial 90 días",
           "Hasta 5 dispositivos",
@@ -558,8 +558,8 @@ const es: Dict = {
           "Todo lo de Pro, más:",
           "Terminales ilimitadas",
           "Hasta 10 dispositivos",
-          ".terminalsync/ portable para terminales del repo",
-          "Comandos útiles, CLI auth y MCPs por equipo",
+          ".terminalsync/ portable para terminales de la carpeta de proyecto",
+          "Comandos útiles, conexión de herramientas de terminal y MCPs por equipo",
           "Pair programming read-only",
           "Soporte prioritario por email",
         ],
@@ -586,7 +586,7 @@ const es: Dict = {
   },
   trust: {
     title: "Tus archivos son tuyos. Punto.",
-    body: "Tus secretos, tus configs, tus sesiones — todo se cifra en tu Mac antes de salir. Va a TU Drive, no al nuestro. El motor de cifrado va a ser auditable públicamente.",
+    body: "Tus secretos, tus configs, tus sesiones — todo se cifra en tu computadora antes de salir. Va a TU Drive, no al nuestro. El motor de cifrado va a ser auditable públicamente.",
     guarantee: "Probalo 7 días gratis. Cancelás antes del día 7 y no te cobramos.",
     features: {
       e2ee: "Cifrado AES-256-GCM",
@@ -665,11 +665,11 @@ const es: Dict = {
     ],
     replies: {
       install:
-        "Descarga TerminalSync, crea una terminal y elige la IA que quieres usar: Claude Code, Codex, Gemini CLI o Sin IA. Desde Power-Ups puedes configurar conectores, skills y CLI tools. Si me dices tu caso de uso, te recomiendo por dónde empezar.",
+        "Descarga TerminalSync, crea una terminal y elige la IA que quieres usar: Claude Code, Codex, Gemini CLI o Sin IA. Desde Integraciones puedes configurar conectores, skills y herramientas de terminal. Si me dices tu caso de uso, te recomiendo por dónde empezar.",
       pricing:
         "Tenemos planes para probar, power users y usuarios técnicos/equipos. Starter sirve para empezar; Pro agrega capacidades avanzadas como memoria/power-ups; Max está pensado para Git-native sync, vault de secretos y workflows más completos. Mira la sección de Precios para el detalle actualizado. ¿Quieres que te recomiende un plan según tu uso?",
       security:
-        "Tu código y tu API key se cifran con AES-256 en tu computadora ANTES de subir a Drive. Usamos Zero-Knowledge: ni nosotros ni Google podemos leer tu contenido. La llave maestra la tienes tú en tu keychain local.",
+        "Tu código y tu llave de acceso se cifran con AES-256 en tu computadora ANTES de subir a Drive. Usamos cifrado total (ni nosotros podemos leer): ni nosotros ni Google podemos leer tu contenido. La llave maestra la tienes tú en tu keychain local.",
       fallback:
         "Gracias por tu mensaje. Un humano del equipo te contactará pronto. Mientras tanto, ¿quieres ver nuestras preguntas frecuentes o descargar la app?",
     },

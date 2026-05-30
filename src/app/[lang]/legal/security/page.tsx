@@ -16,8 +16,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : "Security — TerminalSync";
   const description =
     lang === "es"
-      ? "Cómo TerminalSync protege tus datos: AES-256-GCM zero-knowledge, llaves en Keychain, almacenamiento en tu propia nube, y disclosure responsable."
-      : "How TerminalSync protects your data: AES-256-GCM zero-knowledge, keys in Keychain, your-own-cloud storage, and responsible disclosure.";
+      ? "Cómo TerminalSync protege tus datos: AES-256-GCM fully encrypted (no one else can read it), llaves en Keychain, almacenamiento en tu propia nube, y disclosure responsable."
+      : "How TerminalSync protects your data: AES-256-GCM fully encrypted (no one else can read it), keys in Keychain, your-own-cloud storage, and responsible disclosure.";
   return {
     title,
     description,

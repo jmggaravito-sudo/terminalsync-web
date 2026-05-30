@@ -34,7 +34,7 @@ export function LoginForm({ lang }: { lang: string }) {
     setError(null);
     const sb = getSupabaseBrowser();
     if (!sb) {
-      setError(isEs ? "Auth no configurado" : "Auth not configured");
+      setError(isEs ? "Sign-in no configurado" : "Sign-in not configured");
       setSubmitting(false);
       return;
     }

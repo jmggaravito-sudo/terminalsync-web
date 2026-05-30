@@ -70,13 +70,13 @@ const copy = {
         icon: Link2,
         title: "Conectores y MCPs",
         body:
-          "Organiza integraciones para GitHub, Notion, Supabase, Vercel, herramientas CLI y otros conectores del marketplace.",
+          "Organiza integraciones para GitHub, Notion, Supabase, Vercel, herramientas terminal tool y otros conectores del marketplace.",
       },
       {
         icon: KeyRound,
         title: "Secretos cifrados",
         body:
-          "Guarda API keys y credenciales por terminal/proyecto con una bóveda cifrada en vez de regarlas por archivos sueltos.",
+          "Guarda access keys y credenciales por terminal/proyecto con una bóveda cifrada en vez de regarlas por archivos sueltos.",
       },
       {
         icon: Route,
@@ -97,7 +97,7 @@ const copy = {
       "Si el usuario trabaja con más de una IA de terminal.",
       "Si cambia entre Mac Mini, MacBook u otros equipos.",
       "Si pierde contexto al cerrar sesiones o abrir otro computador.",
-      "Si necesita conectores, CLI tools, secretos y memoria en un solo lugar.",
+      "Si necesita conectores, terminal tools, secretos y memoria en un solo lugar.",
       "Si quiere movilidad: abrir una sesión desde celular o navegador.",
     ],
   },
@@ -131,13 +131,13 @@ const copy = {
         icon: Link2,
         title: "Connectors and MCPs",
         body:
-          "Organize integrations for GitHub, Notion, Supabase, Vercel, CLI tools and other marketplace connectors.",
+          "Organize integrations for GitHub, Notion, Supabase, Vercel, terminal tools and other marketplace connectors.",
       },
       {
         icon: KeyRound,
         title: "Encrypted secrets",
         body:
-          "Keep API keys and credentials per terminal/project in an encrypted vault instead of scattering them through loose files.",
+          "Keep access keys and credentials per terminal/project in an encrypted vault instead of scattering them through loose files.",
       },
       {
         icon: Route,
@@ -158,7 +158,7 @@ const copy = {
       "The user works with more than one terminal AI.",
       "The user switches between a Mac Mini, MacBook or other machines.",
       "The user loses context after closing sessions or opening another computer.",
-      "The user needs connectors, CLI tools, secrets and memory in one place.",
+      "The user needs connectors, terminal tools, secrets and memory in one place.",
       "The user wants mobility: opening a session from a phone or browser.",
     ],
   },

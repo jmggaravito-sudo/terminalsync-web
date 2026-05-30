@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : "Stack Packs · TerminalSync";
   const description = isEs
     ? "Paquetes curados de conectores, skills y CLIs listos para tu negocio. Un click, una compra, todo configurado."
-    : "Curated bundles of connectors, skills, and CLI tools ready for your business. One click, one purchase, all configured.";
+    : "Curated bundles of connectors, skills, and terminal tools ready for your business. One click, one purchase, all configured.";
   return { title, description, openGraph: { title, description } };
 }
 
@@ -126,7 +126,7 @@ export default async function StacksIndex({ params }: Props) {
         <p className="mt-5 text-[15.5px] text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed">
           {isEs
             ? "Conectores, skills y CLIs curados para casos de uso reales. Un solo pago, instalación automática en TerminalSync, garantía de 14 días."
-            : "Connectors, skills, and CLI tools curated for real use cases. One-time payment, automatic install in TerminalSync, 14-day guarantee."}
+            : "Connectors, skills, and terminal tools curated for real use cases. One-time payment, automatic install in TerminalSync, 14-day guarantee."}
         </p>
       </section>
 
