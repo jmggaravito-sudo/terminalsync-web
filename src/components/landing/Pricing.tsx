@@ -95,6 +95,7 @@ export function Pricing({ dict }: { dict: Dict }) {
         <PlanCard
           id="plan-starter"
           name={dict.pricing.plans.starter.name}
+          badge={dict.pricing.plans.starter.badge}
           price={dict.pricing.plans.starter.price}
           priceNote={dict.pricing.plans.starter.priceNote}
           features={dict.pricing.plans.starter.features}
@@ -220,6 +221,7 @@ function PaidCard({
 function PlanCard({
   id,
   name,
+  badge,
   price,
   priceNote,
   features,
@@ -232,6 +234,8 @@ function PlanCard({
 }: {
   id: string;
   name: string;
+  /** Optional accent badge above the card (e.g. "7 días gratis"). */
+  badge?: string;
   price: string;
   priceNote: string;
   features: string[];
@@ -245,12 +249,18 @@ function PlanCard({
   return (
     <article
       id={id}
-      className={`rounded-2xl p-6 flex flex-col bg-[var(--color-panel)] transition-all ${
+      className={`relative rounded-2xl p-6 flex flex-col bg-[var(--color-panel)] transition-all ${
         highlighted
           ? "border-2 border-[var(--color-accent)] shadow-[0_0_0_4px_var(--color-accent-glow)]"
           : "lift border border-[var(--color-border)]"
       }`}
     >
+      {badge && (
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full bg-[var(--color-accent)] text-white text-[10px] font-bold uppercase tracking-[0.12em] px-3 py-1">
+          {badge}
+        </span>
+      )}
+
       <h3 className="text-[15px] font-semibold text-[var(--color-fg-strong)]">
         {name}
       </h3>

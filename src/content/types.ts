@@ -448,6 +448,9 @@ export interface Dict {
 
 interface Plan {
   name: string;
+  /** Optional accent badge above the card. Si está, se pinta uppercase
+   *  con tinte accent. */
+  badge?: string;
   price: string;
   priceNote: string;
   features: string[];

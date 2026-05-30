@@ -461,9 +461,9 @@ const en: Dict = {
     perMonth: "/mo",
     free: "Free",
     trial: {
-      eyebrow: "7-day free trial",
+      eyebrow: "7 days free with all features",
       explainer:
-        "You enter your card but nothing is charged for the first 7 days. Cancel before day 7 and you pay nothing.",
+        "You get full Max features for the first 7 days regardless of which plan you pick. Cancel before day 7 and nothing is charged.",
     },
     quiz: {
       cta: "Which plan do I need?",
@@ -512,6 +512,7 @@ const en: Dict = {
     plans: {
       starter: {
         name: "Free",
+        badge: "7 days free",
         price: "$0",
         priceNote: "forever",
         features: [
@@ -528,7 +529,7 @@ const en: Dict = {
       },
       pro: {
         name: "Pro",
-        badge: "Most popular",
+        badge: "7 days free",
         price: "$19",
         priceNote: "/mo",
         features: [
@@ -550,7 +551,7 @@ const en: Dict = {
       },
       max: {
         name: "Max",
-        badge: "Most complete",
+        badge: "7 days free",
         price: "$39",
         priceNote: "/mo",
         features: [

@@ -461,9 +461,9 @@ const es: Dict = {
     perMonth: "/mes",
     free: "Gratis",
     trial: {
-      eyebrow: "7 días gratis",
+      eyebrow: "7 días gratis con todas las funciones",
       explainer:
-        "Ingresas tu tarjeta pero no se cobra nada los primeros 7 días. Cancela antes del día 7 y no te cobramos.",
+        "Probás las funciones de Max los primeros 7 días, sin importar qué plan elijas después. Cancelás antes del día 7 y no se cobra nada.",
     },
     quiz: {
       cta: "¿Cuál plan necesito?",
@@ -512,6 +512,7 @@ const es: Dict = {
     plans: {
       starter: {
         name: "Free",
+        badge: "7 días gratis",
         price: "$0",
         priceNote: "para siempre",
         features: [
@@ -528,7 +529,7 @@ const es: Dict = {
       },
       pro: {
         name: "Pro",
-        badge: "Más popular",
+        badge: "7 días gratis",
         price: "$19",
         priceNote: "/mes",
         features: [
@@ -550,7 +551,7 @@ const es: Dict = {
       },
       max: {
         name: "Max",
-        badge: "El más completo",
+        badge: "7 días gratis",
         price: "$39",
         priceNote: "/mes",
         features: [
