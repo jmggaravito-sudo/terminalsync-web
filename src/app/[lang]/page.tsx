@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
-import { headers } from "next/headers";
 import dynamic from "next/dynamic";
 import { getDict, isLocale } from "@/content";
-import { currencyForCountry } from "@/lib/geoCurrency";
 import { Hero } from "@/components/landing/Hero";
 import { MemoryPersistent } from "@/components/landing/MemoryPersistent";
 import { MultiAI } from "@/components/landing/MultiAI";
@@ -46,13 +44,10 @@ export default async function Landing({ params }: Props) {
   if (!isLocale(lang)) notFound();
   const d = getDict(lang);
 
-  // Vercel injects the visitor's country as `x-vercel-ip-country` on
-  // every request. We read it server-side and pass a currency hint to
-  // <Pricing /> so non-USD visitors see "≈ $80,000 COP" next to "$19".
-  // Stripe still charges in USD; this is display-only.
-  const h = await headers();
-  const country = h.get("x-vercel-ip-country");
-  const currencyHint = currencyForCountry(country);
+  // El header `x-vercel-ip-country` y la conversión USD→moneda local
+  // (≈ $X COP) se removieron 2026-05-29 — las tasas hardcoded se
+  // desfasaban y daban falsa sensación de precisión. Stripe igual cobra
+  // en USD y el banco del cliente hace la conversión real.
 
   return (
     <>
@@ -65,10 +60,7 @@ export default async function Landing({ params }: Props) {
           "this is what you'd save". */}
       <Demos dict={d} />
       <Comparison dict={d} />
-      <SavingsCalculator
-        dict={d}
-        currencyHint={currencyHint ?? undefined}
-      />
+      <SavingsCalculator dict={d} />
       <MultiAI dict={d} />
       <ChromeExtensionTeaser dict={d} />
       <MemoryPersistent dict={d} />
@@ -77,7 +69,7 @@ export default async function Landing({ params }: Props) {
       <BeforeAfter dict={d} />
       <MidCta dict={d} />
       <Personas dict={d} />
-      <Pricing dict={d} currencyHint={currencyHint} />
+      <Pricing dict={d} />
       <Trust dict={d} />
       <FAQ dict={d} />
       <Affiliates dict={d} />
