@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { defaultLocale } from "@/content";
@@ -103,6 +104,21 @@ export default function RootLayout({
         <CtaTracker />
         <Analytics />
         <SpeedInsights />
+        {/*
+          Sync support bot widget — floating chat button bottom-right.
+          Source of truth: jmggaravito-sudo/terminal-sync · web-widget/sync-bot-widget.js
+          Source of truth: jmggaravito-sudo/terminal-sync · web-widget/README.md
+          Vanilla JS, zero deps, no cookies, no tracking. Talks to the
+          same n8n workflow (j1CWMGmncSyICQ6U) the desktop app's help
+          bubble uses, with channel: "web" so analytics can split web
+          visitors from in-app users.
+          afterInteractive: don't block page load; widget appears once
+          hydration is done.
+        */}
+        <Script
+          src="/sync-bot-widget.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
