@@ -10,6 +10,7 @@ import { Benefits } from "@/components/landing/Benefits";
 import { ToolBreakdown } from "@/components/landing/ToolBreakdown";
 import { Comparison } from "@/components/landing/Comparison";
 import { SavingsCalculator } from "@/components/landing/SavingsCalculator";
+import { CapacityCalculator } from "@/components/landing/CapacityCalculator";
 import { BeforeAfter } from "@/components/landing/BeforeAfter";
 import { MidCta } from "@/components/landing/MidCta";
 import { Personas } from "@/components/landing/Personas";
@@ -60,7 +61,10 @@ export default async function Landing({ params }: Props) {
           "this is what you'd save". */}
       <Demos dict={d} />
       <Comparison dict={d} />
-      <SavingsCalculator dict={d} />
+      {/* §10 Capacity Calculator — rediseño 2026-06. ES estrena el bloque
+          nuevo (capacidad/horas/plata); EN sigue con el de costos hasta la
+          paridad i18n. */}
+      {lang === "es" ? <CapacityCalculator /> : <SavingsCalculator dict={d} />}
       <MultiAI dict={d} />
       <ChromeExtensionTeaser dict={d} />
       <MemoryPersistent dict={d} />
