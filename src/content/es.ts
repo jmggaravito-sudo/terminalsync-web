@@ -42,18 +42,18 @@ const es: Dict = {
     },
   },
   demos: {
-    title: "Tres momentos en los que decís ‘wow’",
+    title: "Tres momentos en los que dices ‘wow’",
     subtitle:
       "Por qué la gente que prueba TerminalSync deja sus herramientas viejas a los 30 segundos.",
     items: {
       context: {
         kicker: "Demo · Persistencia",
-        title: "Cerrás todo. Tu agente sigue trabajando solo.",
-        body: "El internet se cae, se reinicia tu computadora, cerrás la app sin querer — tu Claude o Codex no se detienen. Cuando volvés, la conversación está exactamente donde la dejaste.",
+        title: "Cierras todo. Tu agente sigue trabajando solo.",
+        body: "El internet se cae, se reinicia tu computadora, cierras la app sin querer — tu Claude o Codex no se detienen. Cuando vuelves, la conversación está exactamente donde la dejaste.",
       },
       install: {
         kicker: "Demo · Cualquier dispositivo",
-        title: "Generás un link y abrís tu sesión desde el celular.",
+        title: "Generas un link y abres tu sesión desde el celular.",
         body: "Botón 'Móvil' → link HTTPS único → tu mismo escritorio en el navegador del celular, la tablet o cualquier Mac prestada. Mismo contexto, mismas conversaciones.",
       },
       shield: {
@@ -66,13 +66,13 @@ const es: Dict = {
   memory: {
     eyebrow: "Memoria persistente",
     badge: "Incluida",
-    title: "Tu IA aprende de vos. Y no se olvida nunca.",
+    title: "Tu IA aprende de ti. Y no se olvida nunca.",
     subtitle: "Cada sesión la hace más útil.",
     recallsLead: "Recuerda:",
     recalls: [
-      "cómo trabajás",
-      "qué herramientas usás",
-      "cómo organizás tus proyectos",
+      "cómo trabajas",
+      "qué herramientas usas",
+      "cómo organizas tus proyectos",
       "qué decisiones ya tomaste",
     ],
     closing: {
@@ -83,7 +83,7 @@ const es: Dict = {
     pillars: [
       {
         title: "100% local, 100% privado",
-        body: "La base de conocimiento vive en una base de datos local en tu computadora. Sin servidores nuestros, sin llaves de acceso, sin vendor lock-in. Si querés sincronizarla entre tus equipos, lo hacemos cifrada con AES-256 a tu propia nube.",
+        body: "La base de conocimiento vive en una base de datos local en tu computadora. Sin servidores nuestros, sin llaves de acceso, sin vendor lock-in. Si quieres sincronizarla entre tus equipos, lo hacemos cifrada con AES-256 a tu propia nube.",
       },
       {
         title: "Funciona con cualquier IA",
@@ -91,7 +91,7 @@ const es: Dict = {
       },
       {
         title: "Búsqueda semántica",
-        body: "Tu agente encuentra el contexto relevante automáticamente. Preguntás 'cómo manejábamos conexión' y trae las decisiones, los patrones y las razones — no solo palabras clave.",
+        body: "Tu agente encuentra el contexto relevante automáticamente. Preguntas 'cómo manejábamos conexión' y trae las decisiones, los patrones y las razones — no solo palabras clave.",
       },
     ],
     timeline: {
@@ -99,20 +99,20 @@ const es: Dict = {
       withoutLabel: "Sin TerminalSync Memory",
       withLabel: "Con TerminalSync Memory",
       withoutItems: [
-        { when: "Día 1", line: "Le explicás que preferís TypeScript con strict mode." },
-        { when: "Día 3", line: "“¿Qué lenguaje preferís?” — re-explicás todo." },
-        { when: "Día 14", line: "Otra vez. Empezás de cero." },
-        { when: "Día 30", line: "Dejás de explicar y aceptás respuestas genéricas." },
+        { when: "Día 1", line: "Le explicas que prefieres TypeScript con strict mode." },
+        { when: "Día 3", line: "“¿Qué lenguaje prefieres?” — re-explicas todo." },
+        { when: "Día 14", line: "Otra vez. Empiezas de cero." },
+        { when: "Día 30", line: "Dejas de explicar y aceptas respuestas genéricas." },
       ],
       withItems: [
-        { when: "Día 1", line: "Le explicás que preferís TypeScript con strict mode." },
-        { when: "Día 3", line: "“Como preferís TypeScript, voy a inicializar con strict.”" },
+        { when: "Día 1", line: "Le explicas que prefieres TypeScript con strict mode." },
+        { when: "Día 3", line: "“Como prefieres TypeScript, voy a inicializar con strict.”" },
         { when: "Día 14", line: "“Siguiendo tu convención de error types explícitos…”" },
         { when: "Día 30", line: "Conoce tu stack mejor que un dev que recién arranca." },
       ],
     },
     cta: {
-      heading: "Probá la memoria persistente hoy",
+      heading: "Prueba la memoria persistente hoy",
       body: "Viene activa por default desde la primera sesión. Sin instalación extra, sin claves de API, sin servidor nuestro en el medio.",
       button: "Descargar gratis",
     },
@@ -180,13 +180,13 @@ const es: Dict = {
       },
       notifications: {
         title: "Notificaciones Automáticas",
-        body: "Aviso por Email, WhatsApp o Telegram cuando tu tarea finalice o el agente requiera tu intervención. No volvés a quedarte mirando una pantalla esperando un Y/n.",
+        body: "Aviso por Email, WhatsApp o Telegram cuando tu tarea finalice o el agente requiera tu intervención. No vuelves a quedarte mirando una pantalla esperando un Y/n.",
       },
     },
   },
   toolBreakdown: {
     eyebrow: "Cobertura por herramienta",
-    title: "Esto es lo que viaja con vos",
+    title: "Esto es lo que viaja contigo",
     subtitle:
       "Lo que ya está funcionando hoy y lo que sigue en el roadmap público. Sin promesas vagas — todo trackeable en GitHub.",
     upcomingLabel: "Próximamente",
@@ -225,7 +225,7 @@ const es: Dict = {
           "Configuración completa de Codex",
           "Estado global de tus sesiones",
           "Skills y plugins reinstalados automáticamente",
-          "AI picker — elegís Claude o Codex por terminal",
+          "AI picker — eliges Claude o Codex por terminal",
           "Conversación viva al reabrir (vía resurrección de sesión)",
         ],
         upcoming: [],
@@ -240,20 +240,20 @@ const es: Dict = {
     before: {
       heading: "Sin Terminal Sync",
       items: [
-        "Cerrás la app y perdés la conversación con tu IA",
+        "Cierras la app y pierdes la conversación con tu IA",
         "Se cae el internet y tu agente se detiene",
-        "Querés seguir desde el celular y no podés",
+        "Quieres seguir desde el celular y no puedes",
         "Tus llaves de acceso viven en archivos sueltos en tu computadora",
-        "Cambiás de equipo y empezás todo de cero",
-        "Te quedás mirando la pantalla esperando que la IA responda",
+        "Cambias de equipo y empiezas todo de cero",
+        "Te quedas mirando la pantalla esperando que la IA responda",
       ],
     },
     after: {
       heading: "Con Terminal Sync",
       items: [
-        "Cerrás todo, abrís de nuevo y tu IA sigue corriendo",
+        "Cierras todo, abres de nuevo y tu IA sigue corriendo",
         "Internet se cae — tu agente trabaja igual en local",
-        "Generás un link y abrís la sesión en tu celular",
+        "Generas un link y abres la sesión en tu celular",
         "Vault cifrado AES-256 con tus secretos",
         "Tu cuenta y configuración te siguen a cualquier dispositivo",
         "Aviso por WhatsApp/Email/Telegram cuando termina o necesita algo",
@@ -263,14 +263,14 @@ const es: Dict = {
   midCta: {
     eyebrow: "Probalo gratis",
     title: "Dejá de mirar la pantalla esperando a tu IA.",
-    body: "7 días de Pro gratis. Cancelás antes del día 7 y no te cobramos. Si te convence, te quedás. Si no, dejás de usarlo y listo.",
+    body: "7 días de Pro gratis. Cancelas antes del día 7 y no te cobramos. Si te convence, te quedas. Si no, dejas de usarlo y listo.",
     ctaPrimary: "Descargar gratis",
     ctaSecondary: "Ver precios",
   },
   faq: {
     eyebrow: "Preguntas frecuentes",
     title: "Lo que la gente nos pregunta primero",
-    subtitle: "Si te queda alguna duda, escribinos a support@terminalsync.ai",
+    subtitle: "Si te queda alguna duda, escríbenos a support@terminalsync.ai",
     items: [
       {
         q: "¿Cuál es la diferencia con sincronizar mi carpeta en Drive o iCloud?",
@@ -282,7 +282,7 @@ const es: Dict = {
       },
       {
         q: "¿Mis archivos quedan en su servidor?",
-        a: "No. Cifrado AES-256-GCM en tu computadora antes de salir. Sube a TU Google Drive, no al nuestro. Ni Anthropic, ni OpenAI, ni nosotros podemos ver tus archivos. Sos vos quien tiene la única llave.",
+        a: "No. Cifrado AES-256-GCM en tu computadora antes de salir. Sube a TU Google Drive, no al nuestro. Ni Anthropic, ni OpenAI, ni nosotros podemos ver tus archivos. Eres tú quien tiene la única llave.",
       },
       {
         q: "¿Funciona si solo tengo una Mac?",
@@ -290,7 +290,7 @@ const es: Dict = {
       },
       {
         q: "¿Qué pasa si cancelo mi suscripción?",
-        a: "La app sigue funcionando en modo Free (1 terminal). Tus archivos siguen en tu Drive — vos seguís siendo el dueño. Podés exportar todo cuando quieras.",
+        a: "La app sigue funcionando en modo Free (1 terminal). Tus archivos siguen en tu Drive — tú sigues siendo el dueño. Puedes exportar todo cuando quieras.",
       },
       {
         q: "¿Está open source?",
@@ -298,19 +298,19 @@ const es: Dict = {
       },
       {
         q: "¿Funciona con cualquier IA o solo con Claude y Codex?",
-        a: "Hoy lo tenemos pulido para Claude (Code + Desktop) y Codex. El motor es agnóstico — agregamos otras herramientas (Cursor, Cline, Aider, etc.) según la demanda real. Si querés que soportemos algo específico, escribinos y lo subimos al roadmap público.",
+        a: "Hoy lo tenemos pulido para Claude (Code + Desktop) y Codex. El motor es agnóstico — agregamos otras herramientas (Cursor, Cline, Aider, etc.) según la demanda real. Si quieres que soportemos algo específico, escríbenos y lo subimos al roadmap público.",
       },
       {
         q: "¿En qué se diferencia de un IDE en la nube tipo Codespaces o Gitpod?",
-        a: "No te mudás a un entorno nuevo — TU entorno te sigue a vos. Tu computadora, tus archivos, tus IAs configuradas como ya las tenías. Sin alquiler de cómputo, sin facturación por minuto, sin lock-in. Y todo cifrado AES-256 en tu propia nube.",
+        a: "No te mudas a un entorno nuevo — TU entorno te sigue a ti. Tu computadora, tus archivos, tus IAs configuradas como ya las tenías. Sin alquiler de cómputo, sin facturación por minuto, sin lock-in. Y todo cifrado AES-256 en tu propia nube.",
       },
       {
         q: "¿En qué se diferencia de usar Claude o Codex por separado?",
-        a: "Claude y Codex por separado no se hablan: cada uno tiene su contexto, sus archivos, su memoria. TerminalSync los conecta en un único flujo. Le pedís a Claude que analice algo y a Codex que lo ejecute, sin re-explicar nada — comparten el mismo proyecto y la misma memoria.",
+        a: "Claude y Codex por separado no se hablan: cada uno tiene su contexto, sus archivos, su memoria. TerminalSync los conecta en un único flujo. Le pides a Claude que analice algo y a Codex que lo ejecute, sin re-explicar nada — comparten el mismo proyecto y la misma memoria.",
       },
       {
         q: "¿Necesito configurar algo?",
-        a: "No. Ese es exactamente el punto. Instalás, iniciás sesión y ya tenés todo listo. La primera vez tomás 2 minutos para vincular tu Drive (o iCloud o Dropbox); de ahí en adelante, abrís cualquier Mac y todo está en su lugar.",
+        a: "No. Ese es exactamente el punto. Instalas, inicias sesión y ya tienes todo listo. La primera vez tomas 2 minutos para vincular tu Drive (o iCloud o Dropbox); de ahí en adelante, abres cualquier Mac y todo está en su lugar.",
       },
       {
         q: "¿Y si Anthropic eventualmente sincroniza todo lo que ustedes hacen?",
@@ -320,11 +320,11 @@ const es: Dict = {
   },
   comparison: {
     eyebrow: "El comparativo honesto",
-    title: "Lo que ninguna otra IA hace por vos",
+    title: "Lo que ninguna otra IA hace por ti",
     subtitle:
-      "Comparado con las herramientas que ya usás todos los días. Si algo es parcial o todavía está en progreso, lo decimos en la tabla.",
+      "Comparado con las herramientas que ya usas todos los días. Si algo es parcial o todavía está en progreso, lo decimos en la tabla.",
     pitch:
-      "Vercel te ata al cloud y te factura por minuto. Claude Code, Codex y Gemini CLI en su versión cruda son potentes pero amnésicos — cada vez que cerrás la terminal perdés el contexto, no roamean entre Macs, no tienen vault de secretos, no te avisan por Telegram cuando se traban. Terminal Sync es la capa que les pone memoria persistente, privacidad y movilidad a tus tres agentes IA — sin pagar cloud y sin entregar tu código a nadie.",
+      "Vercel te ata al cloud y te factura por minuto. Claude Code, Codex y Gemini CLI en su versión cruda son potentes pero amnésicos — cada vez que cierras la terminal pierdes el contexto, no roamean entre Macs, no tienen vault de secretos, no te avisan por Telegram cuando se traban. Terminal Sync es la capa que les pone memoria persistente, privacidad y movilidad a tus tres agentes IA — sin pagar cloud y sin entregar tu código a nadie.",
     columns: {
       feature: "Funcionalidad",
       terminalSync: "Terminal Sync",
@@ -335,7 +335,7 @@ const es: Dict = {
     },
     rows: {
       persistentMemory: "Memoria persistente entre sesiones (tu agente recuerda)",
-      resurrection: "Resurrección de sesión (cerrás todo, vuelve donde quedaste)",
+      resurrection: "Resurrección de sesión (cierras todo, vuelve donde quedaste)",
       multiModel: "Multi-modelo (Claude + Codex + Gemini + otros)",
       responsiveNotifications: "Notificaciones interactivas por correo, Telegram y WhatsApp",
       webMobileMirror: "Misma sesión en el navegador o el celular, idéntica a tu computadora",
@@ -347,7 +347,7 @@ const es: Dict = {
       replyInjection: "Reply-injection desde celular",
       noVendorLockIn: "Sin vendor lock-in (tus archivos en tu cloud)",
       zeroRuntime: "Costo de runtime $0 (corre en tu computadora)",
-      zeroStorage: "Costo de almacenamiento $0 (usás tu Drive)",
+      zeroStorage: "Costo de almacenamiento $0 (usas tu Drive)",
       deviceRoaming: "Roaming entre dispositivos",
       multipleSessions: "Múltiples sesiones simultáneas",
     },
@@ -358,27 +358,27 @@ const es: Dict = {
       eyebrow: "Calculá tu ahorro",
       title: "¿Cuánto te ahorra orquestar las 3 IAs?",
       subtitle:
-        "Mové los sliders con tu realidad. Calculamos cuánto pagás de más si usás solo una IA en vez de la combinación correcta para cada tarea.",
+        "Mueve los sliders con tu realidad. Calculamos cuánto pagas de más si usas solo una IA en vez de la combinación correcta para cada tarea.",
       inputs: {
         rate: {
           label: "Tu hora vale",
-          help: "Lo que cobrás por hora a un cliente, o lo que te paga tu empresa por hora trabajada.",
+          help: "Lo que cobras por hora a un cliente, o lo que te paga tu empresa por hora trabajada.",
         },
         hoursPerDay: { label: "Horas/día con IA", suffix: "h/día" },
         daysPerMonth: { label: "Días/mes trabajando", suffix: "días/mes" },
         taskMix: {
           label: "Mezcla de tareas",
-          help: "Más tareas pesadas (arquitectura, debugging complejo, decisiones de diseño) tiran arriba el costo si usás solo Claude. El mix te cubre porque ruteás cada tarea al modelo correcto.",
+          help: "Más tareas pesadas (arquitectura, debugging complejo, decisiones de diseño) tiran arriba el costo si usas solo Claude. El mix te cubre porque ruteas cada tarea al modelo correcto.",
           lightLabel: "Código sencillo",
           heavyLabel: "Reasoning pesado",
         },
       },
       results: {
         soloLabel: "Solo con una IA",
-        soloHint: "Pagás contexto largo y tools que no necesitás todo el tiempo.",
+        soloHint: "Pagas contexto largo y tools que no necesitas todo el tiempo.",
         withTsLabel: "Con TerminalSync",
         withTsHint: "Cada tarea va al modelo más barato que la resuelve bien.",
-        savingsLabel: "Ahorrás",
+        savingsLabel: "Ahorras",
         perYear: "/año",
         roiLabel: "ROI",
         roiSuffix: "× tu suscripción Pro",
@@ -400,13 +400,13 @@ const es: Dict = {
     },
     tooltips: {
       persistentMemory:
-        "Tu agente IA recuerda contexto, decisiones y archivos vistos entre sesiones. No tenés que re-explicar todo cada vez que abrís una conversación nueva.",
+        "Tu agente IA recuerda contexto, decisiones y archivos vistos entre sesiones. No tienes que re-explicar todo cada vez que abres una conversación nueva.",
       resurrection:
-        "Si cerrás la app, se va la luz, o reiniciás tu computadora, al volver seguís exactamente donde estabas — comando a medio escribir, output del agente, todo intacto.",
+        "Si cierras la app, se va la luz, o reinicias tu computadora, al volver sigues exactamente donde estabas — comando a medio escribir, output del agente, todo intacto.",
       multiModel:
-        "Una sola interfaz para Claude Code, Codex y Gemini CLI. Cambiás de modelo sin perder contexto y usás el mejor para cada tarea.",
+        "Una sola interfaz para Claude Code, Codex y Gemini CLI. Cambias de modelo sin perder contexto y usas el mejor para cada tarea.",
       responsiveNotifications:
-        "Cuando tu agente termina algo, falla, o te pide una decisión, te avisa por correo, Telegram y (próximamente) WhatsApp. Respondés desde donde estés.",
+        "Cuando tu agente termina algo, falla, o te pide una decisión, te avisa por correo, Telegram y (próximamente) WhatsApp. Respondes desde donde estés.",
       webMobileMirror:
         "Tu sesión activa se ve y se controla igual desde tu computadora, desde un navegador o desde tu celular. Misma terminal, mismo contexto, mismo agente.",
       offlineLocal:
@@ -416,41 +416,41 @@ const es: Dict = {
       secretsVault:
         "Vault integrado para llaves de acceso, tokens y credenciales. Disponibles en tus terminales como variables de entorno — nunca escritos en archivos planos.",
       internetImmunity:
-        "Si tu internet se cae mientras un agente está corriendo, sigue trabajando localmente. Cuando volvés a tener señal, sincroniza solo.",
+        "Si tu internet se cae mientras un agente está corriendo, sigue trabajando localmente. Cuando vuelves a tener señal, sincroniza solo.",
       aiConversationSync:
-        "Las conversaciones con tu agente se sincronizan entre tus computadoras y dispositivos. Empezás en el MacBook, seguís en el Mac mini sin pegar contexto.",
+        "Las conversaciones con tu agente se sincronizan entre tus computadoras y dispositivos. Empiezas en el MacBook, sigues en el Mac mini sin pegar contexto.",
       replyInjection:
-        "Desde tu celular podés inyectar respuestas a un agente que está esperando input en tu computadora. Ideal para desbloquear un comando cuando estás afuera.",
+        "Desde tu celular puedes inyectar respuestas a un agente que está esperando input en tu computadora. Ideal para desbloquear un comando cuando estás afuera.",
       noVendorLockIn:
-        "Tus archivos viven en tu propio Google Drive (iCloud, S3, Dropbox próximamente). Si te vas de Terminal Sync, te llevás todo. Sin export-fee.",
+        "Tus archivos viven en tu propio Google Drive (iCloud, S3, Dropbox próximamente). Si te vas de Terminal Sync, te llevas todo. Sin export-fee.",
       zeroRuntime:
-        "No corremos tus agentes en nuestros servidores. Todo se ejecuta en tu computadora, así que el costo de runtime es cero — solo pagás el modelo IA al provider que elijas.",
+        "No corremos tus agentes en nuestros servidores. Todo se ejecuta en tu computadora, así que el costo de runtime es cero — solo pagas el modelo IA al provider que elijas.",
       zeroStorage:
-        "Tu propio Drive es el almacenamiento. No te cobramos por GB. Si ya tenés Google One o iCloud+, lo usás y listo.",
+        "Tu propio Drive es el almacenamiento. No te cobramos por GB. Si ya tienes Google One o iCloud+, lo usas y listo.",
       deviceRoaming:
-        "Cambiás de computadora (oficina, casa, viaje) y tu sesión, archivos y contexto te siguen. Sin re-instalar agentes ni re-pegar llaves de acceso.",
+        "Cambias de computadora (oficina, casa, viaje) y tu sesión, archivos y contexto te siguen. Sin re-instalar agentes ni re-pegar llaves de acceso.",
       multipleSessions:
-        "Múltiples terminales corriendo en paralelo, cada una con su agente, su contexto y su carpeta. Saltás entre ellas con un click.",
+        "Múltiples terminales corriendo en paralelo, cada una con su agente, su contexto y su carpeta. Saltas entre ellas con un click.",
     },
   },
   personas: {
-    title: "¿Esto es para vos?",
+    title: "¿Esto es para ti?",
     subtitle:
       "Tres perfiles que ya no entienden cómo trabajaban sin Terminal Sync.",
     items: {
       nomad: {
         title: "El que vive en su agente IA",
-        body: "Pasás horas con Claude o Codex armando proyectos. Cuando se traba la app, internet se cae, o cerrás sin querer, perdés todo el contexto. Con TerminalSync tu agente sigue corriendo y volvés exactamente donde quedaste.",
+        body: "Pasas horas con Claude o Codex armando proyectos. Cuando se traba la app, internet se cae, o cierras sin querer, pierdes todo el contexto. Con TerminalSync tu agente sigue corriendo y vuelves exactamente donde quedaste.",
         tag: "Power User IA",
       },
       beginner: {
         title: "El que cambia de equipo seguido",
-        body: "MacBook + Mac mini, o oficina + casa, o sales de viaje. Hasta querés seguir desde el celular cuando tu agente está procesando algo. Tu cuenta y tu sesión te siguen a donde estés.",
+        body: "MacBook + Mac mini, o oficina + casa, o sales de viaje. Hasta quieres seguir desde el celular cuando tu agente está procesando algo. Tu cuenta y tu sesión te siguen a donde estés.",
         tag: "Multi-dispositivo",
       },
       agency: {
         title: "El que maneja datos sensibles",
-        body: "Trabajás con llaves de acceso, credenciales de clientes, contratos, datos privados. No querés que vivan en la nube de un vendor que un día puede leerlos. Cifrado AES-256 antes de salir de tu computadora — ni nosotros podemos abrirlos.",
+        body: "Trabajas con llaves de acceso, credenciales de clientes, contratos, datos privados. No quieres que vivan en la nube de un vendor que un día puede leerlos. Cifrado AES-256 antes de salir de tu computadora — ni nosotros podemos abrirlos.",
         tag: "Privacidad-first",
       },
     },
@@ -463,7 +463,7 @@ const es: Dict = {
     trial: {
       eyebrow: "7 días gratis con todas las funciones",
       explainer:
-        "Probás las funciones de Max los primeros 7 días, sin importar qué plan elijas después. Cancelás antes del día 7 y no se cobra nada.",
+        "Pruebas las funciones de Max los primeros 7 días, sin importar qué plan elijas después. Cancelas antes del día 7 y no se cobra nada.",
     },
     quiz: {
       cta: "¿Cuál plan necesito?",
@@ -523,7 +523,7 @@ const es: Dict = {
           "Sync con Google Drive (tu cuenta)",
           "Notificaciones de silencio en el agente",
           "2 dispositivos vinculados (laptop + escritorio)",
-          "Probás Max 7 días gratis al instalar",
+          "Pruebas Max 7 días gratis al instalar",
         ],
         cta: "Descargar gratis",
       },
@@ -571,9 +571,9 @@ const es: Dict = {
     eyebrow: "También en Chrome",
     title: "Las 3 IAs lado a lado, también desde el navegador",
     subtitle:
-      "Sin instalar nada en tu Mac. Pegás tus 3 API keys (BYOK), abrís el popup y preguntás lo mismo a Claude, Codex y Gemini en paralelo desde cualquier pestaña.",
+      "Sin instalar nada en tu Mac. Pegas tus 3 API keys (BYOK), abres el popup y preguntas lo mismo a Claude, Codex y Gemini en paralelo desde cualquier pestaña.",
     bullets: [
-      "BYOK: usás tus propias keys, vos pagás directo a cada provider",
+      "BYOK: usas tus propias keys, tú pagas directo a cada provider",
       "Chat multi-turno con memoria por proveedor",
       "Picker de modelo por IA + cost meter en vivo",
       "Markdown completo + copy con un click",
@@ -587,7 +587,7 @@ const es: Dict = {
   trust: {
     title: "Tus archivos son tuyos. Punto.",
     body: "Tus secretos, tus configs, tus sesiones — todo se cifra en tu computadora antes de salir. Va a TU Drive, no al nuestro. El motor de cifrado va a ser auditable públicamente.",
-    guarantee: "Probalo 7 días gratis. Cancelás antes del día 7 y no te cobramos.",
+    guarantee: "Probalo 7 días gratis. Cancelas antes del día 7 y no te cobramos.",
     features: {
       e2ee: "Cifrado AES-256-GCM",
       keychain: "Llaves en tu Keychain",
@@ -598,7 +598,7 @@ const es: Dict = {
   affiliates: {
     kicker: "Programa de Afiliados",
     title: "Recomendá privacidad y persistencia",
-    body: "Si producís contenido de IA, automatización o productividad, ganá 30% recurrente de por vida cada vez que alguien se suma con tu link. Mientras pague, vos cobrás.",
+    body: "Si produces contenido de IA, automatización o productividad, gana 30% recurrente de por vida cada vez que alguien se suma con tu link. Mientras pague, tú cobras.",
     cta: "Registrarme como Afiliado",
     perks: {
       recurring: "30% recurrente",
