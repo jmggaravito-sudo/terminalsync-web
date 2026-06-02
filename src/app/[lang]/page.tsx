@@ -11,6 +11,7 @@ import { ToolBreakdown } from "@/components/landing/ToolBreakdown";
 import { Comparison } from "@/components/landing/Comparison";
 import { SavingsCalculator } from "@/components/landing/SavingsCalculator";
 import { CapacityCalculator } from "@/components/landing/CapacityCalculator";
+import { WhatYouCanBuild } from "@/components/landing/WhatYouCanBuild";
 import { BeforeAfter } from "@/components/landing/BeforeAfter";
 import { MidCta } from "@/components/landing/MidCta";
 import { Personas } from "@/components/landing/Personas";
@@ -54,6 +55,10 @@ export default async function Landing({ params }: Props) {
     <>
       <StructuredData dict={d} lang={lang} />
       <Hero dict={d} />
+      {/* §04 "Lo que puedes resolver" — bloque ★crítico del rediseño, en la
+          zona UNDERSTAND. ES estrena; reordenamiento completo del wireframe
+          viene después. */}
+      {lang === "es" ? <WhatYouCanBuild /> : null}
       {/* Order JM 2026-05-07:
           Hero → Demos → Comparison → SavingsCalculator → moat
           deep-dives. The calculator follows the comparison so the
