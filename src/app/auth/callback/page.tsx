@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -67,7 +67,9 @@ export default function AuthCallbackPage() {
   );
 }
 
-function CallbackShell({ stage, lang }: { stage: "detecting" | "session" | "error"; lang: "es" | "en" }) {
+type CallbackStage = "detecting" | "session" | "desktop" | "error";
+
+function CallbackShell({ stage, lang }: { stage: CallbackStage; lang: "es" | "en" }) {
   return (
     <main className="min-h-screen grid-bg flex items-center justify-center px-5 md:px-6 py-12">
       <div className="w-full max-w-[440px] rounded-3xl border border-[var(--color-border)] bg-[var(--color-panel)] shadow-floating p-8 text-center">
@@ -95,9 +97,8 @@ function CallbackShell({ stage, lang }: { stage: "detecting" | "session" | "erro
 function CallbackInner() {
   const router = useRouter();
   const search = useSearchParams();
-  const [stage, setStage] = useState<"detecting" | "session" | "error">(
-    "detecting",
-  );
+  const [stage, setStage] = useState<CallbackStage>("detecting");
+  const [desktopDeepLink, setDesktopDeepLink] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const lang = (search.get("lang") === "en" ? "en" : "es") as "es" | "en";
   const next = search.get("next") || `/${lang}/marketplace`;
@@ -109,21 +110,38 @@ function CallbackInner() {
       setStage("error");
       return;
     }
-    // Always go straight to the web session on this page. Earlier
-    // versions auto-dispatched `terminalsync://auth/callback#hash`
-    // when the UA looked like macOS, but that ate the token before
-    // the web session could parse it AND opened the desktop app
-    // unexpectedly when the user was just trying to do magic-link
-    // auth in Safari/Chrome. JM 2026-05-05.
-    //
-    // Users who actually want the desktop app's auth flow open it
-    // FROM the desktop app (which uses the OAuth deep-link flow at
-    // /oauth/callback, not this page).
-    void completeWebSession();
+    void completeCallback();
 
-    async function completeWebSession() {
+    function desktopDeepLinkFor(url: URL): string | null {
+      const scheme = url.searchParams.get("scheme");
+      if (scheme !== "terminalsync" && scheme !== "terminalsync-lab") return null;
+
+      const qs = new URLSearchParams(url.search);
+      qs.delete("scheme");
+      return `${scheme}://auth/callback?${qs.toString()}`;
+    }
+
+    async function completeCallback() {
       try {
         const url = new URL(window.location.href);
+
+        // Desktop app flow: the PKCE code verifier lives inside the Tauri app's
+        // localStorage, not in this browser tab. Do NOT call
+        // exchangeCodeForSession here or the callback will fail / consume the
+        // wrong context. This page is only a branded bridge: dispatch the
+        // flavor-specific deep link, then try to close the browser tab.
+        const desktopDeepLink = desktopDeepLinkFor(url);
+        if (desktopDeepLink) {
+          setDesktopDeepLink(desktopDeepLink);
+          setStage("desktop");
+          window.setTimeout(() => {
+            window.location.href = desktopDeepLink;
+            window.setTimeout(() => {
+              window.close();
+            }, 900);
+          }, 350);
+          return;
+        }
 
         // Supabase redirects errors as `?error=...&error_code=...&error_description=...`.
         // Surface them verbatim so the user knows what to do (the
@@ -233,6 +251,7 @@ function CallbackInner() {
 
         <h1 className="mt-5 text-[22px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
           {stage === "session" && (lang === "en" ? "You're in!" : "¡Listo!")}
+          {stage === "desktop" && (lang === "en" ? "Opening Terminal Sync…" : "Abriendo Terminal Sync…")}
           {stage === "detecting" && (lang === "en" ? "Verifying…" : "Verificando…")}
           {stage === "error" && (lang === "en" ? "Something went wrong" : "Algo salió mal")}
         </h1>
@@ -242,8 +261,22 @@ function CallbackInner() {
             (lang === "en" ? "Session started. Taking you to the marketplace." : "Sesión iniciada. Te llevamos al marketplace.")}
           {stage === "detecting" &&
             (lang === "en" ? "Processing your magic link…" : "Procesando tu enlace mágico…")}
+          {stage === "desktop" &&
+            (lang === "en"
+              ? "If the app opened, you can close this tab."
+              : "Si la app ya abrió, podés cerrar esta pestaña.")}
           {stage === "error" && (error || (lang === "en" ? "Try again from the login page." : "Reintentá desde el login."))}
         </p>
+
+        {stage === "desktop" && desktopDeepLink && (
+          <a
+            href={desktopDeepLink}
+            className="mt-6 inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)]"
+          >
+            {lang === "en" ? "Open Terminal Sync" : "Abrir Terminal Sync"}
+            <ArrowRight size={14} strokeWidth={2.4} />
+          </a>
+        )}
 
         {stage === "error" && (
           <a
