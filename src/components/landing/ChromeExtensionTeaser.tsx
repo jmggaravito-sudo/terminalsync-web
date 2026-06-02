@@ -47,7 +47,7 @@ export function ChromeExtensionTeaser({ dict }: { dict: Dict }) {
               </div>
               {/* User prompt */}
               <div className="mb-2 rounded-lg bg-[var(--color-bg)] px-2.5 py-1.5 text-[10.5px] text-[var(--color-fg)] border border-[var(--color-border)]">
-                <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--color-fg-dim)]">Vos</span>
+                <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--color-fg-dim)]">Tú</span>
                 <div className="text-[10.5px] mt-0.5">¿Qué modelo razona mejor sobre esto?</div>
               </div>
               {/* 3 columns row */}
