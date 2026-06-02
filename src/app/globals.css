@@ -268,3 +268,15 @@ body {
   color: var(--color-fg-strong);
   font-weight: 600;
 }
+
+/* §01 Hero — fade del subhead rotativo */
+@keyframes heroRotateFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-rotate {
+  animation: heroRotateFade 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-rotate { animation: none; }
+}

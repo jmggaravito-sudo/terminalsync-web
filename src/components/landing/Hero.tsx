@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowRight, Chrome, Download, PlayCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowRight, Chrome, Download, PlayCircle, Film } from "lucide-react";
 import type { Dict } from "@/content";
 import { AppMockup } from "./AppMockup";
 import { VideoLightbox } from "@/components/VideoLightbox";
@@ -57,12 +57,19 @@ export function Hero({ dict }: { dict: Dict }) {
           {dict.hero.titlePost}
         </h1>
 
-        <p
-          className="mt-5 text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed"
-          style={{ fontSize: "clamp(0.9375rem, 1.6vw, 1.125rem)" }}
-        >
-          {dict.hero.subtitle}
-        </p>
+        {/* Subhead rotativo (§01). Cicla los 5 mensajes del glosario cada
+            4s con dots. Si la traducción no trae `rotating`, cae al
+            subtítulo estático (EN no se rompe). */}
+        {dict.hero.rotating && dict.hero.rotating.length > 0 ? (
+          <RotatingSubhead messages={dict.hero.rotating} />
+        ) : (
+          <p
+            className="mt-5 text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed"
+            style={{ fontSize: "clamp(0.9375rem, 1.6vw, 1.125rem)" }}
+          >
+            {dict.hero.subtitle}
+          </p>
+        )}
 
         <div className="mt-8 flex items-center justify-center gap-3 flex-wrap">
           <a
@@ -82,6 +89,25 @@ export function Hero({ dict }: { dict: Dict }) {
             {dict.hero.ctaSecondary}
           </button>
         </div>
+
+        {/* §01 — slot reservado del FILM V3 (autoplay muted cuando exista).
+            Hasta que el master esté listo, mostramos una caja reservada
+            (matchea el prototipo). Clic abre el lightbox como los CTAs. */}
+        {DEMO_VIDEO_URL ? null : (
+          <button
+            type="button"
+            onClick={() => setVideoOpen(true)}
+            className="mt-8 w-full max-w-2xl mx-auto flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-[var(--color-border)] bg-[var(--color-panel)]/40 px-6 py-12 text-[var(--color-fg-muted)] transition-colors hover:border-[var(--color-accent)]/40"
+            aria-label={dict.locale === "es" ? "Ver el film" : "Watch the film"}
+          >
+            <Film size={22} strokeWidth={1.8} className="opacity-70" />
+            <span className="text-[13.5px] font-medium">
+              {dict.locale === "es"
+                ? "El film llega pronto — mira la demo mientras tanto"
+                : "The film is coming soon — watch the demo meanwhile"}
+            </span>
+          </button>
+        )}
 
         {/* Platform availability — small pills under the CTAs so visitors
             see at a glance which OS they can install on today. Apple
@@ -170,5 +196,43 @@ export function Hero({ dict }: { dict: Dict }) {
         videoUrl={DEMO_VIDEO_URL ?? undefined}
       />
     </section>
+  );
+}
+
+/** Subhead que rota entre los mensajes del §01 cada 4s, con dots. */
+function RotatingSubhead({ messages }: { messages: string[] }) {
+  const [i, setI] = useState(0);
+
+  useEffect(() => {
+    if (messages.length < 2) return;
+    const id = setInterval(() => {
+      setI((prev) => (prev + 1) % messages.length);
+    }, 4000);
+    return () => clearInterval(id);
+  }, [messages.length]);
+
+  return (
+    <div className="mt-5">
+      <p
+        key={i}
+        className="hero-rotate text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed min-h-[1.6em]"
+        style={{ fontSize: "clamp(0.9375rem, 1.6vw, 1.125rem)" }}
+        aria-live="polite"
+      >
+        {messages[i]}
+      </p>
+      <div className="mt-3 flex items-center justify-center gap-1.5">
+        {messages.map((_, idx) => (
+          <span
+            key={idx}
+            className={`h-1.5 rounded-full transition-all ${
+              idx === i
+                ? "w-4 bg-[var(--color-accent)]"
+                : "w-1.5 bg-[var(--color-border)]"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
   );
 }

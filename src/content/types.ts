@@ -17,6 +17,9 @@ export interface Dict {
     titleHighlight: string;
     titlePost: string;
     subtitle: string;
+    /** Subheads rotativos del §01 (rediseño 2026-06). Opcional: si falta,
+     *  el Hero muestra `subtitle` estático. */
+    rotating?: string[];
     ctaPrimary: string;
     ctaSecondary: string;
     trustLine: string;

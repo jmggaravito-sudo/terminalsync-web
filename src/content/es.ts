@@ -22,6 +22,13 @@ const es: Dict = {
     titlePost: " hablando con IA.",
     subtitle:
       "Describe lo que necesitas. Tu equipo de IAs lo crea, lo mantiene y nunca olvida tu negocio.",
+    rotating: [
+      "Tu IA nunca olvida tu negocio.",
+      "Cuando una IA se detiene, otra continúa.",
+      "Tu oficina cabe en cualquier computadora.",
+      "Pasa de una IA a un equipo de IAs.",
+      "Instala especialistas en marketing, ventas y operaciones.",
+    ],
     ctaPrimary: "Empieza gratis",
     ctaSecondary: "Mira cómo funciona",
     trustLine: "Sin instalación · Sin perder contexto · Funciona en cualquier computadora · AES-256 · ni nosotros podemos leer tu contenido",
