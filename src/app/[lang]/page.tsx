@@ -15,6 +15,9 @@ import { WhatYouCanBuild } from "@/components/landing/WhatYouCanBuild";
 import { Continuity } from "@/components/landing/Continuity";
 import { VisibleResults } from "@/components/landing/VisibleResults";
 import { UseCases } from "@/components/landing/UseCases";
+import { Capabilities } from "@/components/landing/Capabilities";
+import { WhatYouJustWatched } from "@/components/landing/WhatYouJustWatched";
+import { HowItWorks } from "@/components/landing/HowItWorks";
 import { BeforeAfter } from "@/components/landing/BeforeAfter";
 import { MidCta } from "@/components/landing/MidCta";
 import { Personas } from "@/components/landing/Personas";
@@ -58,9 +61,10 @@ export default async function Landing({ params }: Props) {
     <>
       <StructuredData dict={d} lang={lang} />
       <Hero dict={d} />
-      {/* §04 "Lo que puedes resolver" — bloque ★crítico del rediseño, en la
-          zona UNDERSTAND. ES estrena; reordenamiento completo del wireframe
-          viene después. */}
+      {/* Zona UNDERSTAND (ES): §02 puente film→literal · §03 cómo funciona ·
+          §04 lo que puedes resolver. */}
+      {lang === "es" ? <WhatYouJustWatched /> : null}
+      {lang === "es" ? <HowItWorks /> : null}
       {lang === "es" ? <WhatYouCanBuild /> : null}
       {/* Order JM 2026-05-07:
           Hero → Demos → Comparison → SavingsCalculator → moat
@@ -82,6 +86,7 @@ export default async function Landing({ params }: Props) {
       {lang === "es" ? null : <ChromeExtensionTeaser dict={d} />}
       <MemoryPersistent dict={d} />
       {lang === "es" ? <VisibleResults /> : null}
+      {lang === "es" ? <Capabilities /> : null}
       {lang === "es" ? <UseCases /> : null}
       {lang === "es" ? <ChromeExtensionTeaser dict={d} /> : null}
       <Benefits dict={d} />
