@@ -26,7 +26,7 @@ export function Benefits({ dict }: { dict: Dict }) {
   return (
     <section
       id="features"
-      className="mx-auto max-w-6xl px-5 md:px-6 py-20 md:py-24"
+      className="mx-auto max-w-6xl px-5 md:px-6 py-14 md:py-24"
     >
       <div className="max-w-2xl">
         <h2

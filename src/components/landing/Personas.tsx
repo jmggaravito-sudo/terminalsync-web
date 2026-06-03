@@ -24,7 +24,7 @@ export function Personas({ dict }: { dict: Dict }) {
   ];
 
   return (
-    <section className="bg-[var(--color-panel-2)]/40 py-20 md:py-24">
+    <section className="bg-[var(--color-panel-2)]/40 py-14 md:py-24">
       <div className="mx-auto max-w-6xl px-5 md:px-6">
         <div className="text-center max-w-2xl mx-auto">
           <h2

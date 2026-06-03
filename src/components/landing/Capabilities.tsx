@@ -44,7 +44,7 @@ const T = {
 export function Capabilities({ lang }: { lang: Locale }) {
   const t = T[lang];
   return (
-    <section id="capabilities" className="mx-auto max-w-5xl px-5 md:px-6 py-20 md:py-24">
+    <section id="capabilities" className="mx-auto max-w-5xl px-5 md:px-6 py-14 md:py-24">
       <div className="text-center max-w-2xl mx-auto">
         <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--color-accent)]">
           {t.eyebrow}

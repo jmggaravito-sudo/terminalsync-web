@@ -31,7 +31,7 @@ export function ToolBreakdown({ dict }: { dict: Dict }) {
   return (
     <section
       id="tool-breakdown"
-      className="mx-auto max-w-6xl px-5 md:px-6 py-20 md:py-24"
+      className="mx-auto max-w-6xl px-5 md:px-6 py-14 md:py-24"
     >
       <div className="text-center max-w-2xl mx-auto">
         <span className="inline-flex items-center text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent)] border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 px-3 py-1 rounded-full">

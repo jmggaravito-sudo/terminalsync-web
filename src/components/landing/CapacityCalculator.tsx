@@ -101,7 +101,7 @@ export function CapacityCalculator({ lang }: { lang: Locale }) {
   const num = (n: number) => Math.round(n).toLocaleString("en-US");
 
   return (
-    <section id="capacity-calculator" className="mx-auto max-w-2xl px-5 md:px-6 py-20 md:py-24">
+    <section id="capacity-calculator" className="mx-auto max-w-2xl px-5 md:px-6 py-14 md:py-24">
       <div className="text-center mb-10">
         <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--color-accent)]">{t.eyebrow}</span>
         <h2 className="mt-3 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.08]" style={{ fontSize: "clamp(1.75rem, 4.5vw, 2.75rem)" }}>

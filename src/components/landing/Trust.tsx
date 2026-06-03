@@ -9,7 +9,7 @@ export function Trust({ dict }: { dict: Dict }) {
     { Icon: Shield, key: "noVendor" as const },
   ];
   return (
-    <section className="mx-auto max-w-6xl px-5 md:px-6 py-20 md:py-24">
+    <section className="mx-auto max-w-6xl px-5 md:px-6 py-14 md:py-24">
       <div className="grid md:grid-cols-2 gap-10 items-center">
         <div>
           <h2

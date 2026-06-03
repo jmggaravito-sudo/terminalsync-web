@@ -15,7 +15,7 @@ export function FAQ({ dict }: { dict: Dict }) {
   return (
     <section
       id="faq"
-      className="mx-auto max-w-3xl px-5 md:px-6 py-20 md:py-24"
+      className="mx-auto max-w-3xl px-5 md:px-6 py-14 md:py-24"
     >
       <div className="text-center max-w-2xl mx-auto">
         <span className="inline-flex items-center text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-fg-muted)] border border-[var(--color-border)] bg-[var(--color-panel)] px-3 py-1 rounded-full">
