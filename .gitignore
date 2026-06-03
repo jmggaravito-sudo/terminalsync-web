@@ -35,3 +35,4 @@ next-env.d.ts
 supabase/.temp/
 outreach-links.csv
 .env.production
+.claude/

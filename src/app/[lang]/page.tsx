@@ -9,7 +9,6 @@ import { Demos } from "@/components/landing/Demos";
 import { Benefits } from "@/components/landing/Benefits";
 import { ToolBreakdown } from "@/components/landing/ToolBreakdown";
 import { Comparison } from "@/components/landing/Comparison";
-import { SavingsCalculator } from "@/components/landing/SavingsCalculator";
 import { CapacityCalculator } from "@/components/landing/CapacityCalculator";
 import { WhatYouCanBuild } from "@/components/landing/WhatYouCanBuild";
 import { Continuity } from "@/components/landing/Continuity";
@@ -61,39 +60,29 @@ export default async function Landing({ params }: Props) {
     <>
       <StructuredData dict={d} lang={lang} />
       <Hero dict={d} />
-      {/* Zona UNDERSTAND (ES): §02 puente film→literal · §03 cómo funciona ·
-          §04 lo que puedes resolver. */}
-      {lang === "es" ? <WhatYouJustWatched /> : null}
-      {lang === "es" ? <HowItWorks /> : null}
-      {lang === "es" ? <WhatYouCanBuild /> : null}
-      {/* Order JM 2026-05-07:
-          Hero → Demos → Comparison → SavingsCalculator → moat
-          deep-dives. The calculator follows the comparison so the
-          visitor sees "no one else does this" then immediately
-          "this is what you'd save". */}
+      {/* Rediseño 2026-06 (bilingüe). Orden: UNDERSTAND (puente → cómo
+          funciona → lo que puedes resolver) → BELIEVE (Workforce →
+          Continuity → Memory → Visible Results → Capabilities) → JUSTIFY
+          (Use cases → Calculadora → Comparación → ...). Calculadora y
+          Comparación movidas abajo a JUSTIFY (antes estaban arriba). */}
+      <WhatYouJustWatched lang={lang} />
+      <HowItWorks lang={lang} />
+      <WhatYouCanBuild lang={lang} />
       <Demos dict={d} />
-      <Comparison dict={d} />
-      {/* §10 Capacity Calculator — rediseño 2026-06. ES estrena el bloque
-          nuevo (capacidad/horas/plata); EN sigue con el de costos hasta la
-          paridad i18n. */}
-      {lang === "es" ? <CapacityCalculator /> : <SavingsCalculator dict={d} />}
-      {/* Arco "believe" (iteración 2026-06, ES): Workforce → Continuity →
-          Memory → Visible Results → Use Cases. Para ES el teaser de Chrome
-          baja al final del arco para no cortarlo; EN lo conserva en su
-          posición original. */}
       <MultiAI dict={d} />
-      {lang === "es" ? <Continuity /> : null}
-      {lang === "es" ? null : <ChromeExtensionTeaser dict={d} />}
+      <Continuity lang={lang} />
       <MemoryPersistent dict={d} />
-      {lang === "es" ? <VisibleResults /> : null}
-      {lang === "es" ? <Capabilities /> : null}
-      {lang === "es" ? <UseCases /> : null}
-      {lang === "es" ? <ChromeExtensionTeaser dict={d} /> : null}
+      <VisibleResults lang={lang} />
+      <Capabilities lang={lang} />
+      <UseCases lang={lang} />
       <Benefits dict={d} />
       <ToolBreakdown dict={d} />
       <BeforeAfter dict={d} />
+      <CapacityCalculator lang={lang} />
+      <Comparison dict={d} />
       <MidCta dict={d} />
       <Personas dict={d} />
+      <ChromeExtensionTeaser dict={d} />
       <Pricing dict={d} />
       <Trust dict={d} />
       <FAQ dict={d} />

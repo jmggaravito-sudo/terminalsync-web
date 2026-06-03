@@ -39,14 +39,9 @@ export function Nav({ dict, lang }: Props) {
     : [
         { href: "#demos", label: dict.nav.demos },
         { href: "#features", label: dict.nav.features },
-        // Casos de uso + Especialistas: secciones del rediseño, hoy solo en
-        // ES (anclas en la home). Se muestran únicamente en ES hasta i18n.
-        ...(lang === "es"
-          ? [
-              { href: "#use-cases", label: "Casos de uso" },
-              { href: "#capabilities", label: "Especialistas" },
-            ]
-          : []),
+        // Casos de uso + Especialistas: secciones del rediseño (bilingües).
+        { href: "#use-cases", label: lang === "es" ? "Casos de uso" : "Use cases" },
+        { href: "#capabilities", label: lang === "es" ? "Especialistas" : "Specialists" },
         { href: `/${lang}/marketplace`, label: "Marketplace", external: true, strong: true },
         { href: "#pricing", label: dict.nav.pricing },
         { href: "#affiliates", label: dict.nav.affiliates },
