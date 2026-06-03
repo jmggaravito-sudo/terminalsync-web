@@ -110,6 +110,18 @@ export interface BundleSummary {
    */
   href: string;
   items: ResolvedBundleItem[];
+  /** Claude Customize parity (added 2026-06-02 per design doc D1): full
+   *  markdown description rendered on the detail panel. JM's instruction
+   *  was that bundle descriptions must be "muy completas" — multiple
+   *  paragraphs explaining what the kit does, for whom, what's included,
+   *  how to use it, real-world use cases. Optional in the wire shape
+   *  (existing bundles without this field render with `tagline` only)
+   *  but required for new "Kits exclusivos TS". */
+  descriptionMd?: string;
+  /** Claude Customize parity (D1): flag distinguishing TS-owned kits from
+   *  third-party stacks. When true, the desktop renders the kit with the
+   *  "Exclusivo TS" badge + the TS-Kit logo variant. */
+  isExclusiveTS?: boolean;
 }
 
 export interface CatalogResponse {
@@ -174,7 +186,7 @@ async function loadBundles(lang: string): Promise<BundleSummary[]> {
   const { data: bundles, error } = await sb
     .from("bundles")
     .select(
-      "id, slug, name, tagline, hero_image_url, price_cents, currency, purchase_count, sort_order",
+      "id, slug, name, tagline, hero_image_url, price_cents, currency, purchase_count, sort_order, description_md, is_exclusive_ts",
     )
     .eq("status", "active")
     .order("sort_order", { ascending: true });
@@ -222,6 +234,14 @@ async function loadBundles(lang: string): Promise<BundleSummary[]> {
         sortOrder: b.sort_order,
         href: `/${lang}/stacks/${b.slug}`,
         items,
+        // Claude Customize parity fields (added 2026-06-02): expose only when
+        // the DB row has them. Existing bundles without these columns return
+        // the row with `undefined` for both, which is the wire-compatible default.
+        descriptionMd:
+          (b as { description_md?: string | null }).description_md ?? undefined,
+        isExclusiveTS:
+          ((b as { is_exclusive_ts?: boolean | null }).is_exclusive_ts ??
+            false) || undefined,
       };
       return summary;
     }),

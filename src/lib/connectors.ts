@@ -92,6 +92,19 @@ export interface ConnectorMeta {
   publisherDisplayName?: string;
   installCount?: number;
   ratingAvg?: number | null;
+  /** Claude Customize parity (added 2026-06-02 per design doc D0): visible
+   *  category in the desktop sidebar. Mirrors Claude's connector taxonomy:
+   *  - "web" → SaaS APIs (Notion, Gmail, GitHub, Slack, etc.)
+   *  - "desktop" → local/system tools (filesystem, memory, sqlite, postgres, etc.)
+   *  When undefined, the desktop falls back to its own heuristic (probably
+   *  bucketing by domain/transport). Required for items imported from
+   *  Anthropic per PR-W2. */
+  marketplaceCategory?: "web" | "desktop";
+  /** Provenance tracking for the visual badge on the card. Anthropic-imported
+   *  items get "anthropic"; TS-curated items get "ts-curated"; community
+   *  third-party items get "community". The desktop renders a small badge
+   *  with the corresponding label (PERSONALIZADO / INCLUIDO / Comunidad). */
+  marketplaceSource?: "ts-curated" | "anthropic" | "community";
 }
 
 export interface ConnectorDoc extends ConnectorMeta {
