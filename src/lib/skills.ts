@@ -56,6 +56,16 @@ export interface SkillMeta {
   status: "available" | "soon";
   tagline: string;
   description: string;
+  /** Claude Customize parity (added 2026-06-02 per design doc § 5.5
+   *  multi-IA rule): list of AI runtimes the skill works on after passing
+   *  through the TS adaptation script. ALL skills in the marketplace must
+   *  support the 3 AIs that TS targets (Claude + Codex + Gemini) — items
+   *  that can only run on one are filtered out at import time and never
+   *  reach this endpoint. The field is exposed so the desktop can show
+   *  "Compatible with Claude / Codex / Gemini" without re-deriving. */
+  compatibleWith?: ("claude" | "codex" | "gemini")[];
+  /** Provenance tracking for the visual badge. See ConnectorMeta. */
+  marketplaceSource?: "ts-curated" | "anthropic" | "community";
 }
 
 export interface SkillDoc extends SkillMeta {
