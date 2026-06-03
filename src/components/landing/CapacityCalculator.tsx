@@ -68,6 +68,22 @@ export function CapacityCalculator() {
 
   return (
     <section id="capacity-calculator" className="mx-auto max-w-2xl px-5 md:px-6 py-20 md:py-24">
+      {/* Encabezado de la sección */}
+      <div className="text-center mb-10">
+        <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--color-accent)]">
+          Calculadora
+        </span>
+        <h2
+          className="mt-3 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.08]"
+          style={{ fontSize: "clamp(1.75rem, 4.5vw, 2.75rem)" }}
+        >
+          Mira cuánto te devuelve TerminalSync
+        </h2>
+        <p className="mt-3 text-[16px] text-[var(--color-fg-muted)] leading-relaxed">
+          Pon tus números reales y mira la capacidad, las horas y la plata que recuperas al año.
+        </p>
+      </div>
+
       {/* GRUPO 1 — Valor por hora */}
       <Group>
         <RowHead label="Tu valor por hora (o el de tu equipo)" value={`${usd(rate)}/h`} />
