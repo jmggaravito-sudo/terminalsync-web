@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, Download } from "lucide-react";
+import { ArrowRight, Download, Menu, X } from "lucide-react";
 import type { Dict, Locale } from "@/content";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -21,9 +22,71 @@ function isMarketplaceContext(pathname: string | null): boolean {
   return /^\/(es|en)\/(marketplace|admin|publishers|connectors|skills|cli-tools)(\/|$)/.test(pathname);
 }
 
+type NavItem = { href: string; label: string; external?: boolean; strong?: boolean };
+
 export function Nav({ dict, lang }: Props) {
   const pathname = usePathname();
   const marketplace = isMarketplaceContext(pathname);
+  const [open, setOpen] = useState(false);
+
+  // Una sola fuente de items para desktop y móvil.
+  const items: NavItem[] = marketplace
+    ? [
+        { href: `/${lang}/connectors`, label: "Connectors", external: true },
+        { href: `/${lang}/skills`, label: "Skills", external: true },
+        { href: `/${lang}/cli-tools`, label: "CLI", external: true },
+      ]
+    : [
+        { href: "#demos", label: dict.nav.demos },
+        { href: "#features", label: dict.nav.features },
+        // Casos de uso + Especialistas: secciones del rediseño, hoy solo en
+        // ES (anclas en la home). Se muestran únicamente en ES hasta i18n.
+        ...(lang === "es"
+          ? [
+              { href: "#use-cases", label: "Casos de uso" },
+              { href: "#capabilities", label: "Especialistas" },
+            ]
+          : []),
+        { href: `/${lang}/marketplace`, label: "Marketplace", external: true, strong: true },
+        { href: "#pricing", label: dict.nav.pricing },
+        { href: "#affiliates", label: dict.nav.affiliates },
+      ];
+
+  const linkClass = (strong?: boolean) =>
+    `hover:text-[var(--color-fg-strong)] transition-colors${
+      strong ? " font-medium text-[var(--color-fg-strong)]" : ""
+    }`;
+
+  const renderItem = (it: NavItem, onClick?: () => void) =>
+    it.external ? (
+      <Link key={it.href} href={it.href} onClick={onClick} className={linkClass(it.strong)}>
+        {it.label}
+      </Link>
+    ) : (
+      <a key={it.href} href={it.href} onClick={onClick} className={linkClass(it.strong)}>
+        {it.label}
+      </a>
+    );
+
+  const cta = marketplace ? (
+    <Link
+      href={`/${lang}/publishers/onboard`}
+      data-cta="nav-onboarding"
+      className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[12.5px] font-semibold transition-all shadow-[0_6px_20px_-8px_var(--color-accent-glow)] hover:shadow-[0_10px_26px_-8px_var(--color-accent-glow)]"
+    >
+      {lang === "es" ? "Empezar onboarding" : "Start onboarding"}
+      <ArrowRight size={12} strokeWidth={2.4} />
+    </Link>
+  ) : (
+    <a
+      href="/api/download"
+      data-cta="nav-download"
+      className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[12.5px] font-semibold transition-all shadow-[0_6px_20px_-8px_var(--color-accent-glow)] hover:shadow-[0_10px_26px_-8px_var(--color-accent-glow)]"
+    >
+      <Download size={12} strokeWidth={2.4} />
+      {dict.nav.download}
+    </a>
+  );
 
   return (
     <header className="sticky top-0 z-30 backdrop-blur-md bg-[var(--color-bg)]/80 border-b border-[var(--color-border)]">
@@ -31,6 +94,7 @@ export function Nav({ dict, lang }: Props) {
         <Link
           href={marketplace ? `/${lang}/marketplace` : `/${lang}`}
           className="flex items-center gap-2 shrink-0"
+          onClick={() => setOpen(false)}
         >
           <Logo size={28} />
           <span className="text-[15px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
@@ -38,67 +102,47 @@ export function Nav({ dict, lang }: Props) {
           </span>
         </Link>
 
-        {marketplace ? (
-          <nav className="hidden md:flex items-center gap-6 text-[13px] text-[var(--color-fg-muted)]">
-            <Link href={`/${lang}/connectors`} className="hover:text-[var(--color-fg-strong)] transition-colors">
-              Connectors
-            </Link>
-            <Link href={`/${lang}/skills`} className="hover:text-[var(--color-fg-strong)] transition-colors">
-              Skills
-            </Link>
-            <Link href={`/${lang}/cli-tools`} className="hover:text-[var(--color-fg-strong)] transition-colors">
-              CLI
-            </Link>
-          </nav>
-        ) : (
-          <nav className="hidden md:flex items-center gap-6 text-[13px] text-[var(--color-fg-muted)]">
-            <a href="#demos" className="hover:text-[var(--color-fg-strong)] transition-colors">
-              {dict.nav.demos}
-            </a>
-            <a href="#features" className="hover:text-[var(--color-fg-strong)] transition-colors">
-              {dict.nav.features}
-            </a>
-            <Link
-              href={`/${lang}/marketplace`}
-              className="hover:text-[var(--color-fg-strong)] transition-colors font-medium text-[var(--color-fg-strong)]"
-            >
-              {lang === "es" ? "Marketplace" : "Marketplace"}
-            </Link>
-            <a href="#pricing" className="hover:text-[var(--color-fg-strong)] transition-colors">
-              {dict.nav.pricing}
-            </a>
-            <a href="#affiliates" className="hover:text-[var(--color-fg-strong)] transition-colors">
-              {dict.nav.affiliates}
-            </a>
-          </nav>
-        )}
+        {/* Nav desktop */}
+        <nav className="hidden md:flex items-center gap-6 text-[13px] text-[var(--color-fg-muted)]">
+          {items.map((it) => renderItem(it))}
+        </nav>
 
         <div className="flex items-center gap-2">
           <div className="hidden sm:flex">
             <ThemeToggle labels={dict.theme} />
           </div>
           <LanguageSwitcher current={lang} />
-          {marketplace ? (
-            <Link
-              href={`/${lang}/publishers/onboard`}
-              data-cta="nav-onboarding"
-              className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[12.5px] font-semibold transition-all shadow-[0_6px_20px_-8px_var(--color-accent-glow)] hover:shadow-[0_10px_26px_-8px_var(--color-accent-glow)]"
-            >
-              {lang === "es" ? "Empezar onboarding" : "Start onboarding"}
-              <ArrowRight size={12} strokeWidth={2.4} />
-            </Link>
-          ) : (
-            <a
-              href="/api/download"
-              data-cta="nav-download"
-              className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[12.5px] font-semibold transition-all shadow-[0_6px_20px_-8px_var(--color-accent-glow)] hover:shadow-[0_10px_26px_-8px_var(--color-accent-glow)]"
-            >
-              <Download size={12} strokeWidth={2.4} />
-              {dict.nav.download}
-            </a>
-          )}
+          <div className="hidden sm:flex">{cta}</div>
+
+          {/* Botón hamburguesa — solo móvil */}
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={open}
+            className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg text-[var(--color-fg)] hover:bg-[var(--color-panel)] transition-colors"
+          >
+            {open ? <X size={20} strokeWidth={2} /> : <Menu size={20} strokeWidth={2} />}
+          </button>
         </div>
       </div>
+
+      {/* Panel móvil desplegable */}
+      {open ? (
+        <nav className="md:hidden border-t border-[var(--color-border)] bg-[var(--color-bg)]/95 backdrop-blur-md">
+          <div className="mx-auto max-w-6xl px-5 py-3 flex flex-col gap-1 text-[15px] text-[var(--color-fg)]">
+            {items.map((it) => (
+              <span key={it.href} className="py-2">
+                {renderItem(it, () => setOpen(false))}
+              </span>
+            ))}
+            <div className="mt-2 pt-3 border-t border-[var(--color-border)] flex items-center justify-between gap-3">
+              <ThemeToggle labels={dict.theme} />
+              <div onClick={() => setOpen(false)}>{cta}</div>
+            </div>
+          </div>
+        </nav>
+      ) : null}
     </header>
   );
 }
