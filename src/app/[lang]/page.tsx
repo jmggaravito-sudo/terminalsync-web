@@ -12,6 +12,9 @@ import { Comparison } from "@/components/landing/Comparison";
 import { SavingsCalculator } from "@/components/landing/SavingsCalculator";
 import { CapacityCalculator } from "@/components/landing/CapacityCalculator";
 import { WhatYouCanBuild } from "@/components/landing/WhatYouCanBuild";
+import { Continuity } from "@/components/landing/Continuity";
+import { VisibleResults } from "@/components/landing/VisibleResults";
+import { UseCases } from "@/components/landing/UseCases";
 import { BeforeAfter } from "@/components/landing/BeforeAfter";
 import { MidCta } from "@/components/landing/MidCta";
 import { Personas } from "@/components/landing/Personas";
@@ -70,9 +73,17 @@ export default async function Landing({ params }: Props) {
           nuevo (capacidad/horas/plata); EN sigue con el de costos hasta la
           paridad i18n. */}
       {lang === "es" ? <CapacityCalculator /> : <SavingsCalculator dict={d} />}
+      {/* Arco "believe" (iteración 2026-06, ES): Workforce → Continuity →
+          Memory → Visible Results → Use Cases. Para ES el teaser de Chrome
+          baja al final del arco para no cortarlo; EN lo conserva en su
+          posición original. */}
       <MultiAI dict={d} />
-      <ChromeExtensionTeaser dict={d} />
+      {lang === "es" ? <Continuity /> : null}
+      {lang === "es" ? null : <ChromeExtensionTeaser dict={d} />}
       <MemoryPersistent dict={d} />
+      {lang === "es" ? <VisibleResults /> : null}
+      {lang === "es" ? <UseCases /> : null}
+      {lang === "es" ? <ChromeExtensionTeaser dict={d} /> : null}
       <Benefits dict={d} />
       <ToolBreakdown dict={d} />
       <BeforeAfter dict={d} />

@@ -78,10 +78,10 @@ export function WhatYouCanBuild() {
           Empieza gratis
         </a>
         <a
-          href="#use-cases"
+          href="#visible-results"
           className="inline-flex items-center gap-1.5 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] px-5 py-3 text-[14px] font-semibold text-[var(--color-fg)] transition-colors hover:border-[var(--color-accent)]/40"
         >
-          Ver más ejemplos
+          Míralo hecho
           <ArrowRight size={15} strokeWidth={2.2} />
         </a>
       </div>
