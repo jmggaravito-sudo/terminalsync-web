@@ -7,7 +7,7 @@ import { MultiAI } from "@/components/landing/MultiAI";
 import { ChromeExtensionTeaser } from "@/components/landing/ChromeExtensionTeaser";
 import { Demos } from "@/components/landing/Demos";
 import { Comparison } from "@/components/landing/Comparison";
-import { CapacityCalculator } from "@/components/landing/CapacityCalculator";
+import { SavingsCalculator } from "@/components/landing/SavingsCalculator";
 import { WhatYouCanBuild } from "@/components/landing/WhatYouCanBuild";
 import { Continuity } from "@/components/landing/Continuity";
 import { VisibleResults } from "@/components/landing/VisibleResults";
@@ -73,7 +73,7 @@ export default async function Landing({ params }: Props) {
       <Capabilities lang={lang} />
       <UseCases lang={lang} />
       <BeforeAfter dict={d} />
-      <CapacityCalculator lang={lang} />
+      <SavingsCalculator dict={d} />
       <Comparison dict={d} />
       <ChromeExtensionTeaser dict={d} />
       <Pricing dict={d} />
