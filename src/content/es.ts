@@ -5,7 +5,7 @@ const es: Dict = {
   meta: {
     title: "TerminalSync — Memoria, privacidad y movilidad para tu IA",
     description:
-      "Tu agente IA (Claude/Codex) sigue corriendo aunque se caiga internet o cambies de Mac. AES-256 · ni nosotros podemos leer tu contenido. Acceso desde cualquier dispositivo.",
+      "Tus IAs siguen trabajando aunque se caiga el internet o cambies de computadora. Cifrado fuerte: ni nosotros podemos leer tu contenido. Acceso desde cualquier dispositivo.",
   },
   nav: {
     features: "Funciones",
@@ -31,7 +31,7 @@ const es: Dict = {
     ],
     ctaPrimary: "Empieza gratis",
     ctaSecondary: "Mira cómo funciona",
-    trustLine: "Sin instalación · Sin perder contexto · Funciona en cualquier computadora · AES-256 · ni nosotros podemos leer tu contenido",
+    trustLine: "Sin instalación · Sin perder contexto · Funciona en cualquier computadora · Cifrado fuerte · ni nosotros podemos leer tu contenido",
     nextUp: {
       eyebrow: "Lo último",
       body: "Tu sesión en cualquier dispositivo — ábrela desde el celular sin instalar nada. Un solo flujo entre Claude y Codex con el mismo contexto. Bóveda de secretos por terminal.",
@@ -55,18 +55,18 @@ const es: Dict = {
     items: {
       context: {
         kicker: "Demo · Persistencia",
-        title: "Cierras todo. Tu agente sigue trabajando solo.",
-        body: "El internet se cae, se reinicia tu computadora, cierras la app sin querer — tu Claude o Codex no se detienen. Cuando vuelves, la conversación está exactamente donde la dejaste.",
+        title: "Cierras todo. Tu IA sigue trabajando sola.",
+        body: "Se cae el internet, se reinicia la computadora, cierras la app sin querer — tus IAs no se detienen. Cuando vuelves, todo está exactamente donde lo dejaste.",
       },
       install: {
         kicker: "Demo · Cualquier dispositivo",
-        title: "Generas un link y abres tu sesión desde el celular.",
-        body: "Botón 'Móvil' → link HTTPS único → tu mismo escritorio en el navegador del celular, la tablet o cualquier Mac prestada. Mismo contexto, mismas conversaciones.",
+        title: "Generas un enlace y abres tu sesión desde el celular.",
+        body: "Tocas 'Móvil', te da un enlace seguro y abres tu mismo escritorio en el navegador del celular, la tablet o cualquier computadora prestada. Mismo contexto, mismas conversaciones.",
       },
       shield: {
         kicker: "Demo · Privacidad",
-        title: "Cifrado AES-256 antes de salir de tu computadora.",
-        body: "Tus archivos viajan ya cifrados a tu propio Drive (o iCloud o Dropbox). Ni Google, ni Anthropic, ni OpenAI, ni nosotros vemos lo que hay adentro. La llave maestra vive en tu Keychain.",
+        title: "Cifrado de grado bancario antes de salir de tu computadora.",
+        body: "Tus archivos viajan ya cifrados a tu propia nube (Drive, iCloud o Dropbox). Ni Google, ni las IAs, ni nosotros vemos lo que hay adentro. La llave vive solo en tu dispositivo.",
       },
     },
   },
@@ -89,16 +89,16 @@ const es: Dict = {
     },
     pillars: [
       {
-        title: "100% local, 100% privado",
-        body: "La base de conocimiento vive en una base de datos local en tu computadora. Sin servidores nuestros, sin llaves de acceso, sin vendor lock-in. Si quieres sincronizarla entre tus equipos, lo hacemos cifrada con AES-256 a tu propia nube.",
+        title: "100% tuya, 100% privada",
+        body: "Vive en tu propia computadora, no en nuestros servidores. Nadie más la puede leer. Si quieres tenerla en todos tus equipos, la sincronizamos cifrada a tu propia nube.",
       },
       {
         title: "Funciona con cualquier IA",
-        body: "Compatible vía MCP con Claude Code, Codex y cualquier agente que soporte el protocolo. Una sola memoria, todos tus agentes.",
+        body: "Una sola memoria para todo tu equipo de IAs — Claude, Codex y las que vengan. No la repites en cada una.",
       },
       {
-        title: "Búsqueda semántica",
-        body: "Tu agente encuentra el contexto relevante automáticamente. Preguntas 'cómo manejábamos conexión' y trae las decisiones, los patrones y las razones — no solo palabras clave.",
+        title: "Encuentra lo que importa",
+        body: "Preguntas con tus palabras y trae las decisiones, los acuerdos y las razones — no solo coincidencias exactas de texto.",
       },
     ],
     timeline: {
@@ -106,21 +106,21 @@ const es: Dict = {
       withoutLabel: "Sin TerminalSync Memory",
       withLabel: "Con TerminalSync Memory",
       withoutItems: [
-        { when: "Día 1", line: "Le explicas que prefieres TypeScript con strict mode." },
-        { when: "Día 3", line: "“¿Qué lenguaje prefieres?” — re-explicas todo." },
-        { when: "Día 14", line: "Otra vez. Empiezas de cero." },
+        { when: "Día 1", line: "Le explicas cómo es tu negocio y cómo te gusta trabajar." },
+        { when: "Día 3", line: "“¿A qué te dedicas?” — explicas todo otra vez." },
+        { when: "Día 14", line: "Otra vez desde cero. Ya cansa." },
         { when: "Día 30", line: "Dejas de explicar y aceptas respuestas genéricas." },
       ],
       withItems: [
-        { when: "Día 1", line: "Le explicas que prefieres TypeScript con strict mode." },
-        { when: "Día 3", line: "“Como prefieres TypeScript, voy a inicializar con strict.”" },
-        { when: "Día 14", line: "“Siguiendo tu convención de error types explícitos…”" },
-        { when: "Día 30", line: "Conoce tu stack mejor que un dev que recién arranca." },
+        { when: "Día 1", line: "Le explicas cómo es tu negocio y cómo te gusta trabajar." },
+        { when: "Día 3", line: "“Como tu tono es cercano, lo escribo así.”" },
+        { when: "Día 14", line: "“Siguiendo tus reglas para clientes nuevos…”" },
+        { when: "Día 30", line: "Entiende tu negocio mejor que alguien que recién entra a tu equipo." },
       ],
     },
     cta: {
       heading: "Prueba la memoria persistente hoy",
-      body: "Viene activa por default desde la primera sesión. Sin instalación extra, sin claves de API, sin servidor nuestro en el medio.",
+      body: "Viene activa desde la primera sesión. Sin instalación extra, sin configuración técnica, sin servidor nuestro en el medio.",
       button: "Descargar gratis",
     },
   },
@@ -156,18 +156,18 @@ const es: Dict = {
       cards: [
         {
           tool: "Claude",
-          verb: "para razonar",
-          body: "Análisis profundo, planificación, escritura. Claude ya conoce tu proyecto.",
+          verb: "para pensar",
+          body: "Análisis, planificación y redacción. Ya conoce tu negocio.",
         },
         {
           tool: "Codex",
           verb: "para ejecutar",
-          body: "Edición de código, refactors, automatizaciones. Mismo contexto, otra herramienta.",
+          body: "Crea y automatiza el trabajo. Mismo contexto, otra especialista.",
         },
         {
-          tool: "Gemini CLI",
-          verb: "para contexto largo",
-          body: "1M tokens de ventana, multimodal nativo (PDFs, imágenes, video). Gratis, sin llave de acceso.",
+          tool: "Gemini",
+          verb: "para documentos largos",
+          body: "Lee y entiende PDFs, imágenes y videos enteros. Gratis, sin configurar nada.",
         },
       ],
     },
@@ -241,35 +241,35 @@ const es: Dict = {
   },
   beforeAfter: {
     eyebrow: "El cambio real",
-    title: "Cómo se siente trabajar con tu agente IA",
+    title: "Cómo se siente trabajar con tu IA",
     subtitle:
-      "Antes: medias mañanas perdidas y conversaciones que arrancan de cero. Después: tu agente sigue donde lo dejaste, hagas lo que hagas.",
+      "Antes: medias mañanas perdidas y conversaciones que arrancan de cero. Después: tu IA sigue donde la dejaste, hagas lo que hagas.",
     before: {
       heading: "Sin Terminal Sync",
       items: [
         "Cierras la app y pierdes la conversación con tu IA",
-        "Se cae el internet y tu agente se detiene",
+        "Se cae el internet y tu IA se detiene",
         "Quieres seguir desde el celular y no puedes",
-        "Tus llaves de acceso viven en archivos sueltos en tu computadora",
-        "Cambias de equipo y empiezas todo de cero",
+        "Tus claves quedan en archivos sueltos en tu computadora",
+        "Cambias de computadora y empiezas todo de cero",
         "Te quedas mirando la pantalla esperando que la IA responda",
       ],
     },
     after: {
       heading: "Con Terminal Sync",
       items: [
-        "Cierras todo, abres de nuevo y tu IA sigue corriendo",
-        "Internet se cae — tu agente trabaja igual en local",
-        "Generas un link y abres la sesión en tu celular",
-        "Vault cifrado AES-256 con tus secretos",
-        "Tu cuenta y configuración te siguen a cualquier dispositivo",
-        "Aviso por WhatsApp/Email/Telegram cuando termina o necesita algo",
+        "Cierras todo, abres de nuevo y tu IA sigue trabajando",
+        "Se cae el internet — tu IA sigue igual, sin conexión",
+        "Generas un enlace y abres la sesión en tu celular",
+        "Bóveda cifrada con tus claves y secretos",
+        "Tu cuenta y ajustes te siguen a cualquier dispositivo",
+        "Te avisa por WhatsApp, correo o Telegram cuando termina o necesita algo",
       ],
     },
   },
   midCta: {
-    eyebrow: "Probalo gratis",
-    title: "Dejá de mirar la pantalla esperando a tu IA.",
+    eyebrow: "Pruébalo gratis",
+    title: "Deja de mirar la pantalla esperando a tu IA.",
     body: "7 días de Pro gratis. Cancelas antes del día 7 y no te cobramos. Si te convence, te quedas. Si no, dejas de usarlo y listo.",
     ctaPrimary: "Descargar gratis",
     ctaSecondary: "Ver precios",
@@ -280,48 +280,36 @@ const es: Dict = {
     subtitle: "Si te queda alguna duda, escríbenos a support@terminalsync.ai",
     items: [
       {
-        q: "¿Cuál es la diferencia con sincronizar mi carpeta en Drive o iCloud?",
-        a: "Drive e iCloud sincronizan archivos sin cifrar — el proveedor puede ver el contenido cuando quiera. Terminal Sync cifra TODO con AES-256 antes de salir de tu computadora. Tus archivos viajan a Drive/iCloud/Dropbox como blobs opacos: ni Google, ni Apple, ni Anthropic, ni nosotros podemos abrirlos. La llave maestra vive en el llavero de tu sistema operativo.",
-      },
-      {
-        q: "¿Pero Claude Desktop ya no sincroniza entre Macs?",
-        a: "Anthropic sincroniza features cloud (Projects, Memory web, Styles, Workflows, conversaciones). Lo que NO sincroniza es lo local: tus servidores MCP custom (Notion, GitHub), tus skills, tus plugins instalados, tus sesiones de Cowork. Eso es lo que cubrimos nosotros.",
+        q: "¿En qué se diferencia de guardar mi carpeta en Drive o iCloud?",
+        a: "Drive e iCloud guardan tus archivos sin cifrar — el proveedor puede ver el contenido. TerminalSync cifra TODO en tu computadora antes de salir. Llegan a tu Drive, iCloud o Dropbox ilegibles para todos: ni Google, ni Apple, ni las IAs, ni nosotros podemos abrirlos. La llave vive solo en tu dispositivo.",
       },
       {
         q: "¿Mis archivos quedan en su servidor?",
-        a: "No. Cifrado AES-256-GCM en tu computadora antes de salir. Sube a TU Google Drive, no al nuestro. Ni Anthropic, ni OpenAI, ni nosotros podemos ver tus archivos. Eres tú quien tiene la única llave.",
+        a: "No. Todo se cifra en tu computadora antes de salir y sube a TU nube, no a la nuestra. Ni las IAs ni nosotros podemos ver tus archivos. La única llave la tienes tú.",
       },
       {
-        q: "¿Funciona si solo tengo una Mac?",
-        a: "Sí, pero el valor es menor. Te sirve como backup cifrado y para cuando agregues una segunda máquina. La gracia real aparece desde la segunda Mac.",
+        q: "¿Funciona si solo tengo una computadora?",
+        a: "Sí, pero rinde más con dos. Con una te sirve de respaldo seguro y para cuando sumes otra. La magia real aparece desde la segunda.",
       },
       {
         q: "¿Qué pasa si cancelo mi suscripción?",
-        a: "La app sigue funcionando en modo Free (1 terminal). Tus archivos siguen en tu Drive — tú sigues siendo el dueño. Puedes exportar todo cuando quieras.",
+        a: "La app sigue funcionando en el plan gratis. Tus archivos siguen en tu nube — tú sigues siendo el dueño. Puedes exportar todo cuando quieras.",
       },
       {
-        q: "¿Está open source?",
-        a: "El motor de cifrado y sincronización va a ser auditable. La app cliente es propietaria por ahora pero el core de seguridad lo publicamos para que cualquiera pueda revisarlo.",
+        q: "¿Puedo confiar en su seguridad?",
+        a: "Sí. El sistema de cifrado va a ser auditable públicamente para que cualquier experto pueda revisarlo. Y tu contenido nunca sale sin cifrar de tu computadora.",
       },
       {
         q: "¿Funciona con cualquier IA o solo con Claude y Codex?",
-        a: "Hoy lo tenemos pulido para Claude (Code + Desktop) y Codex. El motor es agnóstico — agregamos otras herramientas (Cursor, Cline, Aider, etc.) según la demanda real. Si quieres que soportemos algo específico, escríbenos y lo subimos al roadmap público.",
-      },
-      {
-        q: "¿En qué se diferencia de un IDE en la nube tipo Codespaces o Gitpod?",
-        a: "No te mudas a un entorno nuevo — TU entorno te sigue a ti. Tu computadora, tus archivos, tus IAs configuradas como ya las tenías. Sin alquiler de cómputo, sin facturación por minuto, sin lock-in. Y todo cifrado AES-256 en tu propia nube.",
+        a: "Hoy funciona muy bien con Claude y Codex, y Gemini para documentos largos. Vamos sumando otras según lo que más nos pidan. Si quieres una en particular, escríbenos.",
       },
       {
         q: "¿En qué se diferencia de usar Claude o Codex por separado?",
-        a: "Claude y Codex por separado no se hablan: cada uno tiene su contexto, sus archivos, su memoria. TerminalSync los conecta en un único flujo. Le pides a Claude que analice algo y a Codex que lo ejecute, sin re-explicar nada — comparten el mismo proyecto y la misma memoria.",
+        a: "Por separado no se hablan: cada una tiene su propio contexto y su memoria. TerminalSync las conecta en un solo flujo. Le pides a una que analice y a otra que lo haga, sin re-explicar nada — comparten el mismo proyecto y la misma memoria.",
       },
       {
         q: "¿Necesito configurar algo?",
-        a: "No. Ese es exactamente el punto. Instalas, inicias sesión y ya tienes todo listo. La primera vez tomas 2 minutos para vincular tu Drive (o iCloud o Dropbox); de ahí en adelante, abres cualquier Mac y todo está en su lugar.",
-      },
-      {
-        q: "¿Y si Anthropic eventualmente sincroniza todo lo que ustedes hacen?",
-        a: "Bien por ellos, mal para nosotros en ese subset. Por eso nuestro roadmap (visible en GitHub) se mueve hacia primitives locales que NINGÚN vendor va a hacer porque les rompería su lock-in: memoria unificada cross-vendor, skills que compilan a múltiples AIs, project briefs en filesystem.",
+        a: "No. Ese es justamente el punto. Instalas, inicias sesión y ya está. La primera vez tomas 2 minutos para conectar tu nube (Drive, iCloud o Dropbox); de ahí en adelante, abres cualquier computadora y todo está en su lugar.",
       },
     ],
   },
@@ -331,38 +319,38 @@ const es: Dict = {
     subtitle:
       "Comparado con las herramientas que ya usas todos los días. Si algo es parcial o todavía está en progreso, lo decimos en la tabla.",
     pitch:
-      "Vercel te ata al cloud y te factura por minuto. Claude Code, Codex y Gemini CLI en su versión cruda son potentes pero amnésicos — cada vez que cierras la terminal pierdes el contexto, no roamean entre Macs, no tienen vault de secretos, no te avisan por Telegram cuando se traban. Terminal Sync es la capa que les pone memoria persistente, privacidad y movilidad a tus tres agentes IA — sin pagar cloud y sin entregar tu código a nadie.",
+      "Las IAs solas (Claude, Codex, Gemini) son potentes pero olvidadizas: cada vez que cierras, pierden el contexto, no te siguen entre computadoras, no guardan tus claves a salvo y no te avisan cuando se traban. TerminalSync les agrega memoria, privacidad y movilidad — sin pagar nube y sin entregarle tu trabajo a nadie.",
     columns: {
       feature: "Funcionalidad",
       terminalSync: "Terminal Sync",
       vercel: "Vercel",
-      claudeCode: "Claude Code solo",
+      claudeCode: "Claude solo",
       codex: "Codex solo",
-      gemini: "Gemini CLI solo",
+      gemini: "Gemini solo",
     },
     rows: {
-      persistentMemory: "Memoria persistente entre sesiones (tu agente recuerda)",
-      resurrection: "Resurrección de sesión (cierras todo, vuelve donde quedaste)",
-      multiModel: "Multi-modelo (Claude + Codex + Gemini + otros)",
-      responsiveNotifications: "Notificaciones interactivas por correo, Telegram y WhatsApp",
-      webMobileMirror: "Misma sesión en el navegador o el celular, idéntica a tu computadora",
-      offlineLocal: "Funciona offline / local-first",
-      aes256: "AES-256 · ni nosotros podemos leer tu contenido",
-      secretsVault: "Vault de secretos integrado",
-      internetImmunity: "Persistencia ante caída de internet",
-      aiConversationSync: "Sync de conversaciones IA entre Macs",
-      replyInjection: "Reply-injection desde celular",
-      noVendorLockIn: "Sin vendor lock-in (tus archivos en tu cloud)",
-      zeroRuntime: "Costo de runtime $0 (corre en tu computadora)",
-      zeroStorage: "Costo de almacenamiento $0 (usas tu Drive)",
-      deviceRoaming: "Roaming entre dispositivos",
-      multipleSessions: "Múltiples sesiones simultáneas",
+      persistentMemory: "Memoria entre sesiones (tu IA recuerda)",
+      resurrection: "Retoma donde quedaste (cierras todo y vuelve igual)",
+      multiModel: "Varias IAs juntas (Claude + Codex + Gemini)",
+      responsiveNotifications: "Te avisa por correo, Telegram y WhatsApp",
+      webMobileMirror: "La misma sesión en el navegador o el celular",
+      offlineLocal: "Funciona sin internet",
+      aes256: "Cifrado fuerte · ni nosotros podemos leer tu contenido",
+      secretsVault: "Bóveda de claves integrada",
+      internetImmunity: "Sigue andando si se cae el internet",
+      aiConversationSync: "Conversaciones sincronizadas entre computadoras",
+      replyInjection: "Responder desde el celular",
+      noVendorLockIn: "Sin amarres — tus archivos en tu propia nube",
+      zeroRuntime: "Sin costo de servidores (corre en tu computadora)",
+      zeroStorage: "Sin costo de almacenamiento (usas tu nube)",
+      deviceRoaming: "Te sigue entre dispositivos",
+      multipleSessions: "Varias sesiones a la vez",
     },
     legend: { yes: "Sí", no: "No", partial: "Parcial", soon: "Próximamente" },
     footnote:
-      "Comparativo basado en docs públicas de cada herramienta al 2026-05-04. Cifrado AES-256-GCM antes de salir de tu computadora — ni Anthropic, ni OpenAI, ni Vercel, ni nosotros vemos tus archivos.",
+      "Comparativo basado en información pública de cada herramienta. Cifrado fuerte antes de salir de tu computadora — ni Anthropic, ni OpenAI, ni Vercel, ni nosotros vemos tus archivos.",
     calculator: {
-      eyebrow: "Calculá tu ahorro",
+      eyebrow: "Calcula tu ahorro",
       title: "¿Cuánto te ahorra orquestar las 3 IAs?",
       subtitle:
         "Mueve los sliders con tu realidad. Calculamos cuánto pagas de más si usas solo una IA en vez de la combinación correcta para cada tarea.",
@@ -403,7 +391,7 @@ const es: Dict = {
       },
       caveat:
         "Estimación basada en precios públicos de Anthropic / OpenAI / Google al 2026-05-07 y en estudios de productividad de tool-mixing (rango conservador 15 %, optimista 40 %).",
-      cta: "Probalo gratis",
+      cta: "Pruébalo gratis",
     },
     tooltips: {
       persistentMemory:
@@ -593,13 +581,13 @@ const es: Dict = {
   },
   trust: {
     title: "Tus archivos son tuyos. Punto.",
-    body: "Tus secretos, tus configs, tus sesiones — todo se cifra en tu computadora antes de salir. Va a TU Drive, no al nuestro. El motor de cifrado va a ser auditable públicamente.",
-    guarantee: "Probalo 7 días gratis. Cancelas antes del día 7 y no te cobramos.",
+    body: "Tus secretos, tus ajustes, tus sesiones — todo se cifra en tu computadora antes de salir. Va a TU nube, no a la nuestra. El sistema de cifrado va a ser auditable públicamente.",
+    guarantee: "Pruébalo 7 días gratis. Cancelas antes del día 7 y no te cobramos.",
     features: {
-      e2ee: "Cifrado AES-256-GCM",
-      keychain: "Llaves en tu Keychain",
-      opensource: "Motor de cifrado auditable",
-      noVendor: "Sin lock-in de vendor",
+      e2ee: "Cifrado de grado bancario",
+      keychain: "Llaves solo en tu dispositivo",
+      opensource: "Sistema de cifrado auditable",
+      noVendor: "Sin amarres con proveedores",
     },
   },
   affiliates: {
@@ -640,7 +628,7 @@ const es: Dict = {
   },
   windowsEarlyAccess: {
     title: "TerminalSync para Windows — próximamente",
-    body: "Detectamos que estás en Windows. La app Mac sale ahora; la versión Windows está en desarrollo. Dejá tu correo y te avisamos el día que esté lista.",
+    body: "Detectamos que estás en Windows. La app Mac sale ahora; la versión Windows está en desarrollo. Deja tu correo y te avisamos el día que esté lista.",
     cta: "Avisame cuando esté",
     ctaSubmitting: "Guardando…",
     emailPlaceholder: "tu@correo.com",
