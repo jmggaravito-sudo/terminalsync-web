@@ -435,6 +435,18 @@ export interface Dict {
       ctaDownload: string;
       ctaHome: string;
       receipt: string;
+      /** Extension v0.2 — bound the success page renders a 6-digit
+       *  link code so the Chrome extension popup can flip itself to
+       *  Pro after the user pastes it under Options. */
+      extensionLink?: {
+        heading: string;
+        lead: string;
+        expiresIn: string; // "Vence en 24h"
+        copyHint: string;  // "Pega este código en la extensión → Opciones → 'Ya pagué Pro'"
+        copyButton: string;
+        copied: string;
+        skipHint: string;  // for users who don't have the extension installed
+      };
     };
     cancel: {
       eyebrow: string;
