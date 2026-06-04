@@ -18,6 +18,11 @@ import { remark } from "remark";
 import html from "remark-html";
 import { getSupabaseAdmin } from "./supabaseAdmin";
 import { manifestRequiresEnvSecrets } from "./marketplace/secrets";
+import {
+  deriveInstallFromManifest,
+  mergeInstallFields,
+  readInstallOverrideFromFrontmatter,
+} from "./marketplace/installFields";
 
 export interface ConnectorMeta {
   slug: string;
@@ -92,6 +97,25 @@ export interface ConnectorMeta {
   publisherDisplayName?: string;
   installCount?: number;
   ratingAvg?: number | null;
+  /** Phase 2 install fields — only present when:
+   *  (a) the connector ships an MCP manifest derivable to npm/local
+   *      shape (auto-derive in `installFields::deriveInstallFromManifest`)
+   *  (b) the curator authored explicit `installMethod`/`installSpec` in
+   *      the connector frontmatter (override path)
+   *
+   *  Used by the desktop Lab's Phase 2 install backend (custom_mcps) to
+   *  install community MCPs by slug. When both `installMethod` and
+   *  `installSpec` are present, the Lab can drop-install the connector;
+   *  when either is missing, the Lab falls back to a "necesita configurar"
+   *  toast.
+   *
+   *  Marketplace-sourced (DB-only) connectors: undefined today — the
+   *  catalog query doesn't join `connector_versions.manifest_json`. Path
+   *  forward in terminalsync-web#74. */
+  installMethod?: string;
+  installSpec?: string;
+  installArgs?: string[];
+  installEnv?: Record<string, string>;
 }
 
 export interface ConnectorDoc extends ConnectorMeta {
@@ -259,6 +283,16 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMe
   // without a manifest can't require secrets — there's nothing to
   // install. `manifestRequiresEnvSecrets` short-circuits on first match.
   const requiresEnvSecrets = hasManifest && manifestRequiresEnvSecrets(manifest);
+  // Phase 2 install fields: derive from manifest shape when possible
+  // (single-server npx/-y or node /abs/path), let curator-authored
+  // frontmatter overrides win. Result is undefined per-field when
+  // we can't tell — the catalog endpoint passes them through and the
+  // Lab decides if it can install.
+  const installDerived = hasManifest
+    ? deriveInstallFromManifest(manifest)
+    : {};
+  const installOverride = readInstallOverrideFromFrontmatter(data);
+  const installFields = mergeInstallFields(installDerived, installOverride);
   return {
     slug,
     name: get("name", slug),
@@ -279,6 +313,10 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMe
     license: get("license") || undefined,
     licenseUrl: get("licenseUrl") || undefined,
     hidden: data.hidden === true,
+    installMethod: installFields.installMethod,
+    installSpec: installFields.installSpec,
+    installArgs: installFields.installArgs,
+    installEnv: installFields.installEnv,
   };
 }
 
