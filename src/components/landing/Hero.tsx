@@ -42,33 +42,16 @@ export function Hero({ dict }: { dict: Dict }) {
           {dict.hero.eyebrow}
         </p>
 
-        {/* Fluid hero headline — scales cleanly from ~32px on phones to 64px
-            on wide screens without breakpoint jumps. `break-words` stops long
-            words from overflowing narrow viewports. */}
-        <h1
-          className="mt-5 font-semibold tracking-tight leading-[1.06] text-[var(--color-fg-strong)] max-w-4xl mx-auto break-words"
-          style={{ fontSize: "clamp(2rem, 6.2vw, 4rem)" }}
-        >
-          {dict.hero.titlePre}
-          <span className="bg-gradient-to-br from-[var(--color-claude)] to-[var(--color-claude-soft)] bg-clip-text text-transparent">
-            {dict.hero.titleHighlight}
-          </span>
-          {dict.hero.titlePost}
-        </h1>
+        {/* TITULAR GRANDE ROTATIVO (§01): la frase completa del Hero cambia
+            cada ~4s ciclando los mensajes maestros, con dots e indicador. */}
+        <RotatingHeadline lang={dict.locale} />
 
-        {/* Subhead rotativo (§01). Cicla los 5 mensajes del glosario cada
-            4s con dots. Si la traducción no trae `rotating`, cae al
-            subtítulo estático (EN no se rompe). */}
-        {dict.hero.rotating && dict.hero.rotating.length > 0 ? (
-          <RotatingSubhead messages={dict.hero.rotating} />
-        ) : (
-          <p
-            className="mt-5 text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed"
-            style={{ fontSize: "clamp(0.9375rem, 1.6vw, 1.125rem)" }}
-          >
-            {dict.hero.subtitle}
-          </p>
-        )}
+        <p
+          className="mt-5 text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed"
+          style={{ fontSize: "clamp(0.9375rem, 1.6vw, 1.125rem)" }}
+        >
+          {dict.hero.subtitle}
+        </p>
 
         <div className="mt-8 flex items-center justify-center gap-3 flex-wrap">
           <a
@@ -200,36 +183,62 @@ export function Hero({ dict }: { dict: Dict }) {
   );
 }
 
-/** Subhead que rota entre los mensajes del §01 cada 4s, con dots. */
-function RotatingSubhead({ messages }: { messages: string[] }) {
+/** Frases maestras completas para el titular del Hero (bilingüe). */
+type Headline = { pre: string; hi: string; post: string };
+const HERO_HEADLINES: Record<"es" | "en", Headline[]> = {
+  es: [
+    { pre: "Convierte tus ideas en ", hi: "herramientas reales", post: " hablando con IA." },
+    { pre: "Tu IA ", hi: "aprende de tu empresa", post: " y no se olvida nunca." },
+    { pre: "Pasa de una IA a ", hi: "un equipo de IAs", post: "." },
+    { pre: "Multiplica tu capacidad ", hi: "sin multiplicar tu nómina", post: "." },
+    { pre: "La IA escribe el código. ", hi: "Tú diriges el negocio", post: "." },
+    { pre: "Cuando una IA se detiene, ", hi: "otra continúa", post: "." },
+    { pre: "Tu oficina ", hi: "cabe en cualquier computadora", post: "." },
+  ],
+  en: [
+    { pre: "Turn your ideas into ", hi: "real tools", post: " by talking to AI." },
+    { pre: "Your AI ", hi: "learns your business", post: " and never forgets." },
+    { pre: "Go from one AI to ", hi: "a team of AIs", post: "." },
+    { pre: "Multiply your capacity ", hi: "without growing payroll", post: "." },
+    { pre: "The AI writes the code. ", hi: "You run the business", post: "." },
+    { pre: "When one AI stops, ", hi: "another continues", post: "." },
+    { pre: "Your office ", hi: "fits in any computer", post: "." },
+  ],
+};
+
+/** Titular grande del Hero que cicla las frases maestras completas cada 4s. */
+function RotatingHeadline({ lang }: { lang: "es" | "en" }) {
+  const phrases = HERO_HEADLINES[lang];
   const [i, setI] = useState(0);
 
   useEffect(() => {
-    if (messages.length < 2) return;
     const id = setInterval(() => {
-      setI((prev) => (prev + 1) % messages.length);
+      setI((prev) => (prev + 1) % phrases.length);
     }, 4000);
     return () => clearInterval(id);
-  }, [messages.length]);
+  }, [phrases.length]);
 
+  const p = phrases[i];
   return (
     <div className="mt-5">
-      <p
+      <h1
         key={i}
-        className="hero-rotate text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed min-h-[1.6em]"
-        style={{ fontSize: "clamp(0.9375rem, 1.6vw, 1.125rem)" }}
+        className="hero-rotate font-semibold tracking-tight leading-[1.06] text-[var(--color-fg-strong)] max-w-4xl mx-auto break-words min-h-[2.2em]"
+        style={{ fontSize: "clamp(2rem, 6.2vw, 4rem)" }}
         aria-live="polite"
       >
-        {messages[i]}
-      </p>
-      <div className="mt-3 flex items-center justify-center gap-1.5">
-        {messages.map((_, idx) => (
+        {p.pre}
+        <span className="bg-gradient-to-br from-[var(--color-claude)] to-[var(--color-claude-soft)] bg-clip-text text-transparent">
+          {p.hi}
+        </span>
+        {p.post}
+      </h1>
+      <div className="mt-4 flex items-center justify-center gap-1.5">
+        {phrases.map((_, idx) => (
           <span
             key={idx}
             className={`h-1.5 rounded-full transition-all ${
-              idx === i
-                ? "w-4 bg-[var(--color-accent)]"
-                : "w-1.5 bg-[var(--color-border)]"
+              idx === i ? "w-4 bg-[var(--color-accent)]" : "w-1.5 bg-[var(--color-border)]"
             }`}
           />
         ))}
