@@ -185,9 +185,9 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
           }
 
           // Multi-file equivalent of showSelectedAndReturn. Sends the
-          // picked items as JSON in the `files` query param so the Tauri
+          // picked items as JSON in the "files" query param so the Tauri
           // callback handler can parse them as an array. Each item is
-          // `{id, name, mimeType?, parentId?}` — small enough to fit in
+          // "{id, name, mimeType?, parentId?}" — small enough to fit in
           // a URL even for a few hundred files.
           function showSelectedFilesAndReturn(p, docs) {
             if (titleEl) titleEl.textContent = COPY.selectedTitle;
