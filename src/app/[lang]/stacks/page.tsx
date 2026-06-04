@@ -82,13 +82,10 @@ async function fetchBundles(lang: string): Promise<BundleCard[]> {
   );
 }
 
-function formatPrice(cents: number, currency: string): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-    maximumFractionDigits: 0,
-  }).format(cents / 100);
-}
+// Kits están incluidos en el plan — no se cobran individualmente. El campo
+// price_cents permanece en la DB para no romper el schema, pero el sitio
+// muestra "Gratis"/"Free" en todos los stacks. Si en el futuro algún stack
+// vuelve a tener precio, este helper se reactiva o se condiciona.
 
 function inclusionLine(items: ResolvedBundleItem[], isEs: boolean): string {
   const counts = { connector: 0, skill: 0, cli: 0 };
@@ -200,7 +197,6 @@ export default async function StacksIndex({ params }: Props) {
 
 function BundleCardItem({ bundle, lang }: { bundle: BundleCard; lang: string }) {
   const isEs = lang === "es";
-  const price = formatPrice(bundle.price_cents, bundle.currency);
   const summary = inclusionLine(bundle.items, isEs);
   return (
     <Link
@@ -217,7 +213,7 @@ function BundleCardItem({ bundle, lang }: { bundle: BundleCard; lang: string }) 
           </p>
         </div>
         <span className="inline-flex shrink-0 items-baseline rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)] px-3 py-1.5 text-[14px] font-semibold">
-          {price}
+          {isEs ? "Gratis" : "Free"}
         </span>
       </div>
 
