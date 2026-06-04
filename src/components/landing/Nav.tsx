@@ -84,6 +84,21 @@ export function Nav({ dict, lang }: Props) {
     </a>
   );
 
+  // En el menú móvil aclaramos que la descarga es para la computadora
+  // (la app es de escritorio, no se instala en el teléfono).
+  const mobileCta = marketplace ? (
+    cta
+  ) : (
+    <a
+      href="/api/download"
+      data-cta="nav-download-mobile"
+      className="inline-flex items-center gap-1.5 h-9 px-4 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[13px] font-semibold transition-all"
+    >
+      <Download size={13} strokeWidth={2.4} />
+      {lang === "es" ? "Descargar para tu computadora" : "Download for your computer"}
+    </a>
+  );
+
   return (
     <header className="sticky top-0 z-30 backdrop-blur-md bg-[var(--color-bg)]/80 border-b border-[var(--color-border)]">
       <div className="mx-auto max-w-6xl px-5 md:px-6 h-14 flex items-center justify-between gap-4">
@@ -134,7 +149,7 @@ export function Nav({ dict, lang }: Props) {
             ))}
             <div className="mt-2 pt-3 border-t border-[var(--color-border)] flex items-center justify-between gap-3">
               <ThemeToggle labels={dict.theme} />
-              <div onClick={() => setOpen(false)}>{cta}</div>
+              <div onClick={() => setOpen(false)}>{mobileCta}</div>
             </div>
           </div>
         </nav>

@@ -49,7 +49,10 @@ export function StickyDownloadCTA({ dict }: { dict: Dict }) {
 
   if (!show || cookieBannerOpen) return null;
 
-  const label = dict.locale === "es" ? "Descargar app" : "Download app";
+  // En móvil aclaramos que la app es de escritorio: no se instala en el
+  // teléfono, se descarga en la computadora.
+  const label =
+    dict.locale === "es" ? "Descargar para tu computadora" : "Download for your computer";
 
   return (
     <a
