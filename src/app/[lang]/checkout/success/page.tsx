@@ -2,12 +2,43 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CheckCircle2, Download, ArrowRight } from "lucide-react";
 import { getDict, isLocale } from "@/content";
+import { stripe } from "@/lib/stripe";
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { mintLinkCode } from "@/app/api/extension/_lib/linkCodes";
+import { ExtensionLinkCard } from "./ExtensionLinkCard";
 
 export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{ lang: string }>;
   searchParams: Promise<{ session_id?: string }>;
+}
+
+/**
+ * Issue a one-shot extension link code based on the Stripe checkout
+ * session. Returns null if anything in the chain is missing — page
+ * just won't render the extension card in that case. We never throw
+ * up to the page; this is a strictly best-effort upsell.
+ */
+async function issueExtensionLinkCode(
+  sessionId: string | undefined,
+): Promise<{ code: string; expiresAt: string } | null> {
+  if (!sessionId) return null;
+  // `stripe` is null on local dev sandboxes without STRIPE_SECRET_KEY.
+  // Same for the admin Supabase client. We treat either missing piece
+  // as "skip the extension card" — never fatal.
+  if (!stripe) return null;
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const supabaseUserId = session.metadata?.supabase_user_id;
+    if (!supabaseUserId) return null;
+    const supabase = getSupabaseAdmin();
+    if (!supabase) return null;
+    return await mintLinkCode(supabase, supabaseUserId);
+  } catch (err) {
+    console.warn("[checkout/success] extension link mint skipped", err);
+    return null;
+  }
 }
 
 export default async function CheckoutSuccess({
@@ -18,6 +49,8 @@ export default async function CheckoutSuccess({
   const { session_id } = await searchParams;
   if (!isLocale(lang)) notFound();
   const d = getDict(lang);
+
+  const extensionLink = await issueExtensionLinkCode(session_id);
 
   return (
     <main className="min-h-screen grid-bg flex items-center justify-center px-5 md:px-6 py-16">
@@ -55,6 +88,14 @@ export default async function CheckoutSuccess({
             <ArrowRight size={13} strokeWidth={2.4} />
           </Link>
         </div>
+
+        {extensionLink && d.checkout.success.extensionLink && (
+          <ExtensionLinkCard
+            code={extensionLink.code}
+            expiresAt={extensionLink.expiresAt}
+            copy={d.checkout.success.extensionLink}
+          />
+        )}
 
         {session_id && (
           <p className="mt-7 text-[10.5px] font-mono text-[var(--color-fg-dim)] truncate">
