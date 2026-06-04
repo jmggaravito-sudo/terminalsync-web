@@ -139,12 +139,14 @@ export function Hero({ dict }: { dict: Dict }) {
             </svg>
             Linux
           </span>
-          {/* Windows — disponible. */}
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[var(--color-border)] bg-[var(--color-panel)]/60">
+          {/* Windows — el build existe pero la web aún no sirve el instalador
+              (/api/download es solo Mac). Lo mostramos como "pronto" hasta
+              conectar el link; entonces pasa a disponible. */}
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-dashed border-[var(--color-border)] bg-[var(--color-panel)]/40 opacity-80">
             <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
               <path d="M0 2.3l6.5-.9v6.3H0V2.3zM7.3 1.3L16 0v7.7H7.3V1.3zM0 8.5h6.5v6.3L0 13.7V8.5zM7.3 8.5H16V16l-8.7-1.2V8.5z" />
             </svg>
-            Windows
+            {dict.locale === "es" ? "Windows · pronto" : "Windows · soon"}
           </span>
         </div>
 
