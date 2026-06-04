@@ -139,6 +139,13 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
               appId: search.get('appId') || (CLIENT_ID.split('-')[0] || ''),
               developerKey: search.get('developerKey') || DEVELOPER_KEY,
               accessToken: hash.get('access_token') || '',
+              // ?mode=files → multi-file picker (Plan B for Drive Flow 3);
+              // anything else (default) → single-folder picker (legacy).
+              // The Tauri side passes mode=files when the user clicks
+              // "Importar desde Google Drive". Old Tauri builds don't pass
+              // the param and keep getting the folder picker, so this
+              // change is backward compatible.
+              mode: search.get('mode') === 'files' ? 'files' : 'folder',
             };
           }
 
@@ -177,6 +184,34 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
             }, 1200);
           }
 
+          // Multi-file equivalent of showSelectedAndReturn. Sends the
+          // picked items as JSON in the "files" query param so the Tauri
+          // callback handler can parse them as an array. Each item is
+          // "{id, name, mimeType?, parentId?}" — small enough to fit in
+          // a URL even for a few hundred files.
+          function showSelectedFilesAndReturn(p, docs) {
+            if (titleEl) titleEl.textContent = COPY.selectedTitle;
+            if (subtitleEl) subtitleEl.textContent = COPY.selected;
+            if (successIconEl) successIconEl.classList.remove('hidden');
+            if (successIconEl) successIconEl.classList.add('inline-flex');
+            if (actionsEl) actionsEl.classList.add('hidden');
+            setStatus(COPY.selectedDetail, 'success');
+            const items = docs.map(function (d) {
+              return {
+                id: d.id,
+                name: d.name || 'Untitled',
+                mimeType: d.mimeType || '',
+                parentId: (d.parentId || (d.parents && d.parents[0]) || ''),
+              };
+            });
+            window.setTimeout(function () {
+              safeRedirect(p.redirect, {
+                state: p.state,
+                files: JSON.stringify(items),
+              });
+            }, 1200);
+          }
+
           function openPicker() {
             const p = params();
             if (!p.redirect || !p.state) {
@@ -200,13 +235,24 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
               callback: function () {
                 try {
                   const picker = google.picker;
-                  const view = new picker.DocsView(picker.ViewId.FOLDERS)
-                    // Start at My Drive root so the user navigates folder hierarchy instead
-                    // of seeing every folder flattened into one long list.
-                    .setParent('root')
-                    .setIncludeFolders(true)
-                    .setSelectFolderEnabled(true)
-                    .setMimeTypes('application/vnd.google-apps.folder');
+                  // Branch on mode: 'files' (multi-file) vs default 'folder'.
+                  // Mode is set from the ?mode= query param (see params()).
+                  const isFilesMode = p.mode === 'files';
+                  const view = isFilesMode
+                    ? new picker.DocsView(picker.ViewId.DOCS)
+                        // Navigate into folders, but don't allow folder
+                        // selection itself — the user picks files, possibly
+                        // many at once.
+                        .setParent('root')
+                        .setIncludeFolders(true)
+                        .setSelectFolderEnabled(false)
+                    : new picker.DocsView(picker.ViewId.FOLDERS)
+                        // Start at My Drive root so the user navigates folder hierarchy instead
+                        // of seeing every folder flattened into one long list.
+                        .setParent('root')
+                        .setIncludeFolders(true)
+                        .setSelectFolderEnabled(true)
+                        .setMimeTypes('application/vnd.google-apps.folder');
                   const builder = new picker.PickerBuilder()
                     .addView(view)
                     .setOAuthToken(p.accessToken)
@@ -219,6 +265,15 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
                         return;
                       }
                       if (data.action !== picker.Action.PICKED) return;
+                      if (isFilesMode) {
+                        const docs = data.docs || [];
+                        if (docs.length === 0) {
+                          setStatus(COPY.noFolder, 'error');
+                          return;
+                        }
+                        showSelectedFilesAndReturn(p, docs);
+                        return;
+                      }
                       const doc = data.docs && data.docs[0];
                       if (!doc || !doc.id) {
                         setStatus(COPY.noFolder, 'error');
@@ -226,6 +281,9 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
                       }
                       showSelectedAndReturn(p, doc);
                     });
+                  if (isFilesMode) {
+                    builder.enableFeature(picker.Feature.MULTISELECT_ENABLED);
+                  }
                   if (builder.setSize) builder.setSize(1051, 650);
                   if (builder.setTitle) builder.setTitle('Terminal Sync');
                   builder.build().setVisible(true);
