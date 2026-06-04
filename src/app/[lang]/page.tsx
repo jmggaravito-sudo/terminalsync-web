@@ -6,8 +6,6 @@ import { MemoryPersistent } from "@/components/landing/MemoryPersistent";
 import { MultiAI } from "@/components/landing/MultiAI";
 import { ChromeExtensionTeaser } from "@/components/landing/ChromeExtensionTeaser";
 import { Demos } from "@/components/landing/Demos";
-import { Benefits } from "@/components/landing/Benefits";
-import { ToolBreakdown } from "@/components/landing/ToolBreakdown";
 import { Comparison } from "@/components/landing/Comparison";
 import { CapacityCalculator } from "@/components/landing/CapacityCalculator";
 import { WhatYouCanBuild } from "@/components/landing/WhatYouCanBuild";
@@ -19,7 +17,6 @@ import { WhatYouJustWatched } from "@/components/landing/WhatYouJustWatched";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { BeforeAfter } from "@/components/landing/BeforeAfter";
 import { MidCta } from "@/components/landing/MidCta";
-import { Personas } from "@/components/landing/Personas";
 import { Pricing } from "@/components/landing/Pricing";
 import { Trust } from "@/components/landing/Trust";
 import { Footer } from "@/components/landing/Footer";
@@ -75,18 +72,16 @@ export default async function Landing({ params }: Props) {
       <VisibleResults lang={lang} />
       <Capabilities lang={lang} />
       <UseCases lang={lang} />
-      <Benefits dict={d} />
-      <ToolBreakdown dict={d} />
       <BeforeAfter dict={d} />
       <CapacityCalculator lang={lang} />
       <Comparison dict={d} />
-      <MidCta dict={d} />
-      <Personas dict={d} />
       <ChromeExtensionTeaser dict={d} />
       <Pricing dict={d} />
       <Trust dict={d} />
       <FAQ dict={d} />
       <Affiliates dict={d} />
+      {/* §15 Cierre final del wireframe (MidCta movido acá como closer). */}
+      <MidCta dict={d} />
       <Footer dict={d} />
       <AgentWidget dict={d} />
       <StickyDownloadCTA dict={d} />

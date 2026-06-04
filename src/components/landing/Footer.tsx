@@ -43,7 +43,7 @@ export function Footer({ dict }: { dict: Dict }) {
     {
       heading: dict.footer.product,
       links: [
-        { key: "features", label: dict.footer.links.features, href: `/${lang}#features` },
+        { key: "features", label: dict.footer.links.features, href: `/${lang}#how-it-works` },
         { key: "demos", label: dict.footer.links.demos, href: `/${lang}#demos` },
         { key: "pricing", label: dict.footer.links.pricing, href: `/${lang}#pricing` },
         { key: "download", label: dict.footer.links.download, href: "/api/download" },

@@ -38,7 +38,8 @@ export function Nav({ dict, lang }: Props) {
       ]
     : [
         { href: "#demos", label: dict.nav.demos },
-        { href: "#features", label: dict.nav.features },
+        // "Funciones" (#features) salió: la sección Benefits se removió del
+        // homepage en la limpieza estructural del rediseño.
         // Casos de uso + Especialistas: secciones del rediseño (bilingües).
         { href: "#use-cases", label: lang === "es" ? "Casos de uso" : "Use cases" },
         { href: "#capabilities", label: lang === "es" ? "Especialistas" : "Specialists" },
