@@ -18,6 +18,7 @@ const copy = {
     preparing: "Preparing Google Picker…",
     opening: "Opening Google Drive…",
     open: "Google Drive is open. Choose a folder to continue.",
+    openMultiselect: "Google Drive is open. Click each file you want to import — you can pick more than one. Hold Cmd (or Ctrl) to add files; Shift+click to pick a range.",
     retry: "Open picker again",
     cancel: "Cancel",
     selectedTitle: "Folder selected",
@@ -38,6 +39,7 @@ const copy = {
     preparing: "Preparando Google Picker…",
     opening: "Abriendo Google Drive…",
     open: "Google Drive está abierto. Elige una carpeta para continuar.",
+    openMultiselect: "Google Drive está abierto. Hacé click en cada archivo que querés importar — podés elegir varios. Mantené Cmd (o Ctrl) presionado para sumar archivos; Shift+click para un rango.",
     retry: "Abrir selector otra vez",
     cancel: "Cancelar",
     selectedTitle: "Carpeta seleccionada",
@@ -287,7 +289,12 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
                   if (builder.setSize) builder.setSize(1051, 650);
                   if (builder.setTitle) builder.setTitle('Terminal Sync');
                   builder.build().setVisible(true);
-                  setStatus(COPY.open);
+                  // In multi-file mode show the cmd+click hint — the Picker
+                  // UI itself doesn't tell the user that multi-select is on,
+                  // so without this hint a customer might think they can
+                  // only pick one file. Falls back to the single-folder
+                  // copy for legacy callers without the mode param.
+                  setStatus(isFilesMode ? COPY.openMultiselect : COPY.open);
                 } catch (err) {
                   setStatus(err && err.message ? err.message : String(err), 'error');
                 }
