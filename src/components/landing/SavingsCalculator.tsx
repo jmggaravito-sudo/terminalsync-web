@@ -1,232 +1,440 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Download, Sparkles, ChevronDown } from "lucide-react";
+import { Download, Sparkles } from "lucide-react";
 import type { Dict } from "@/content";
 
 /**
- * Calculadora simple y AUDITABLE: mueves 3 barras → resultado.
+ * Sliders + live numbers showing how much a dev saves per year by mixing
+ * Claude/Codex/Gemini through TerminalSync vs. paying for a single AI's
+ * heavy plan and burning extra hours.
  *
- * Regla científica (JM): nada inventado. El resultado se calcula SOLO con:
- *  - tus propios números (valor/hora, horas/semana) — no son afirmaciones nuestras
- *  - una cifra citada de ahorro de tiempo con IA (30–55%, estudio controlado)
- *  - el precio publicado de TerminalSync
- * Bloque "Cómo lo calculamos" muestra la fórmula exacta + fuentes con links.
+ * Numbers come from list prices Anthropic/OpenAI/Google + tool-mixing
+ * productivity studies. Defaults are tuned to "mid-LATAM dev, full-time".
+ *
+ * Values are display-only — no telemetry, no API call. Pure client math.
  */
 
-const WEEKS = 52;
-const HOURS_PER_WORKDAY = 8;
-const TS_MONTHLY = 19; // USD — plan Pro TerminalSync
+// Tunable constants — keep these here (not in dict) so adjusting model
+// pricing is a code-change, not a translation update.
+// Solo-vendor and mix costs are linearly interpolated by `heavyMix` —
+// the % of the user's tasks that are heavy reasoning vs simple code.
+//
+//   heavyMix = 0  (all simple code edits) → solo $5/h, mix $0.50/h
+//   heavyMix = 1  (all heavy reasoning)   → solo $15/h, mix $2.50/h
+//
+// The intuition: simple tasks are cheap on Codex / free on Gemini, but
+// in single-vendor mode you still pay long-context+vision overhead on
+// Claude Pro/Codex Pro for every prompt. Heavy tasks need Claude no
+// matter what, so the gap shrinks but mix still wins via Codex/Gemini
+// for the in-between.
+const SOLO_BASE = 5; // USD/h baseline (all light)
+const SOLO_HEAVY_PREMIUM = 10; // USD/h extra at 100% heavy
+const MIX_BASE = 0.5; // USD/h baseline (Gemini free + Codex micro)
+const MIX_HEAVY_PREMIUM = 2; // USD/h extra at 100% heavy
 
-const T = {
-  es: {
-    eyebrow: "Calcula tu ahorro",
-    title: "¿Cuánto te devuelve al año?",
-    subtitle: "Mueve las barras con tus números reales. La cuenta es transparente y auditable.",
-    rate: "Tu valor por hora (o el de tu equipo)",
-    hours: "Horas/semana en tareas que la IA puede acelerar",
-    pct: "% de ese tiempo que la IA te ahorra",
-    pctHint: "Estudios miden 30–55% más rápido con IA. Empezamos conservador en 30%.",
-    resultLabel: "Lo que recuperas al año",
-    resultSub: (h: string, d: string) => `${h} horas/año · ≈ ${d} días de trabajo`,
-    roi: (mo: string, x: string) => `TerminalSync cuesta ${mo}/mes · retorno ${x}×`,
-    how: "Cómo lo calculamos",
-    formula: "Horas recuperadas = horas/semana × 52 × % de ahorro.  Valor = horas recuperadas × tu valor por hora.",
-    sourcesTitle: "Fuentes",
-    s1: "Ahorro de tiempo con IA: 30–55% más rápido en tareas — experimento controlado (95 programadores, P=.0017).",
-    s2: "Precios de IA de referencia: Claude Pro, ChatGPT Plus y Google AI Pro ≈ $20/mes c/u (2026).",
-    note: "Tu valor por hora y tus horas son tus propios números. La única cifra externa es el precio de TerminalSync.",
-    cta: "Descargar gratis",
-    pricesLink: "comparativa de precios",
-  },
-  en: {
-    eyebrow: "Calculate your savings",
-    title: "How much does it give you back per year?",
-    subtitle: "Move the sliders with your real numbers. The math is transparent and auditable.",
-    rate: "Your value per hour (or your team's)",
-    hours: "Hours/week on tasks AI can speed up",
-    pct: "% of that time AI saves you",
-    pctHint: "Studies measure 30–55% faster with AI. We start conservative at 30%.",
-    resultLabel: "What you get back per year",
-    resultSub: (h: string, d: string) => `${h} hours/yr · ≈ ${d} workdays`,
-    roi: (mo: string, x: string) => `TerminalSync costs ${mo}/mo · ${x}× return`,
-    how: "How we calculate this",
-    formula: "Recovered hours = hours/week × 52 × % saved.  Value = recovered hours × your value per hour.",
-    sourcesTitle: "Sources",
-    s1: "Time saved with AI: 30–55% faster on tasks — controlled experiment (95 programmers, P=.0017).",
-    s2: "Reference AI prices: Claude Pro, ChatGPT Plus and Google AI Pro ≈ $20/mo each (2026).",
-    note: "Your value per hour and your hours are your own numbers. The only external figure is TerminalSync's price.",
-    cta: "Download free",
-    pricesLink: "price comparison",
-  },
-} as const;
+// Time savings also vary by mix: light-task days have more rate-limit
+// waits and more model-swapping (more savings via TS); heavy-reasoning
+// days are bottlenecked on the human + Claude single-thread, so the
+// system can shave less.
+const TIME_SAVING_BASE = 0.30; // 30% saved at all-light
+const TIME_SAVING_HEAVY = 0.20; // 20% saved at all-heavy
 
-const SOURCE_LINKS = {
-  study: "https://arxiv.org/abs/2302.06590",
-  prices: "https://www.aipricing.guru/subscriptions/",
-};
+const TS_PRO_ANNUAL = 228; // USD — Pro plan @ $19/mo × 12
 
 export function SavingsCalculator({ dict }: { dict: Dict }) {
-  const t = T[dict.locale];
-  const [rate, setRate] = useState(40);
-  const [hours, setHours] = useState(10);
-  const [pct, setPct] = useState(30);
-  const [open, setOpen] = useState(false);
+  // The schema marks this block optional so older translations don't
+  // break the type. Render nothing when copy is missing.
+  const c = dict.comparison.calculator;
+  if (!c) return null;
 
-  const m = useMemo(() => {
-    const hoursYr = hours * WEEKS * (pct / 100);
-    const value = hoursYr * rate;
-    const days = hoursYr / HOURS_PER_WORKDAY;
-    const roi = value / (TS_MONTHLY * 12);
-    return { hoursYr, value, days, roi };
-  }, [rate, hours, pct]);
+  const [rate, setRate] = useState(50);
+  const [hpd, setHpd] = useState(6);
+  const [dpm, setDpm] = useState(22);
+  // 0..100 — % of work that is "heavy reasoning". Default 50 = balanced
+  // dev who alternates simple edits (Codex/Gemini) with deep reasoning
+  // (Claude). Numbers move both up and down from this center.
+  const [heavyPct, setHeavyPct] = useState(50);
+  // Memoria persistente: horas/semana que hoy se pierden re-explicándole el
+  // contexto a la IA. La memoria las recupera completas (× rate).
+  const [memHrs, setMemHrs] = useState(3);
 
-  const usd = (n: number) => `$${Math.round(n).toLocaleString("en-US")}`;
-  const num = (n: number) => Math.round(n).toLocaleString("en-US");
+  const {
+    hoursYear,
+    soloApi,
+    soloDev,
+    soloTotal,
+    tsApi,
+    tsDev,
+    tsTotal,
+    memValue,
+    savings,
+    roi,
+    soloPerHour,
+    mixPerHour,
+    timeSavingPct,
+  } = useMemo(() => {
+    const heavy = heavyPct / 100; // 0..1
+    const soloPerHour = SOLO_BASE + SOLO_HEAVY_PREMIUM * heavy;
+    const mixPerHour = MIX_BASE + MIX_HEAVY_PREMIUM * heavy;
+    const timeSavingPct =
+      TIME_SAVING_BASE - (TIME_SAVING_BASE - TIME_SAVING_HEAVY) * heavy;
+
+    const hoursYear = hpd * dpm * 12;
+    const soloApi = hoursYear * soloPerHour;
+    const soloDev = hoursYear * rate;
+    const soloTotal = soloApi + soloDev;
+    const tsApi = hoursYear * mixPerHour;
+    const tsDev = hoursYear * (1 - timeSavingPct) * rate;
+    const tsTotal = tsApi + tsDev + TS_PRO_ANNUAL;
+    // Ahorro por memoria persistente: horas/semana re-explicando × 52 × rate.
+    const memValue = memHrs * 52 * rate;
+    const savings = Math.max(0, soloTotal - tsTotal) + memValue;
+    const roi = savings / TS_PRO_ANNUAL;
+    return {
+      hoursYear,
+      soloApi,
+      soloDev,
+      soloTotal,
+      tsApi,
+      tsDev,
+      tsTotal,
+      memValue,
+      savings,
+      roi,
+      soloPerHour,
+      mixPerHour,
+      timeSavingPct,
+    };
+  }, [rate, hpd, dpm, heavyPct, memHrs]);
+
+  const fmtUsd = (n: number) =>
+    `$${Math.round(n).toLocaleString("en-US")}`;
+  const fmtHours = (n: number) =>
+    Math.round(n).toLocaleString("en-US");
+  const fmtRoi = (n: number) =>
+    n >= 100 ? `${Math.round(n)}×` : `${n.toFixed(1)}×`;
 
   return (
-    <section id="savings-calculator" className="mx-auto max-w-2xl px-5 md:px-6 py-20 md:py-24">
-      <div className="text-center">
-        <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--color-accent)]">
-          <Sparkles size={12} strokeWidth={2.4} />
-          {t.eyebrow}
+    <section
+      id="savings-calculator"
+      className="mx-auto max-w-6xl px-5 md:px-6 py-20 md:py-24"
+    >
+      <div className="text-center max-w-2xl mx-auto">
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent)] border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 px-3 py-1 rounded-full">
+          <Sparkles size={11} strokeWidth={2.4} />
+          {c.eyebrow}
         </span>
         <h2
-          className="mt-3 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.08]"
-          style={{ fontSize: "clamp(1.75rem, 4.5vw, 2.75rem)" }}
+          className="mt-4 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.08]"
+          style={{ fontSize: "clamp(1.625rem, 4vw, 2.5rem)" }}
         >
-          {t.title}
+          {c.title}
         </h2>
-        <p className="mt-3 text-[15px] text-[var(--color-fg-muted)] leading-relaxed">{t.subtitle}</p>
+        <p className="mt-3 text-[15px] text-[var(--color-fg-muted)] leading-relaxed">
+          {c.subtitle}
+        </p>
       </div>
 
-      <div className="mt-10 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-6 md:p-8">
-        <Slider label={t.rate} value={`${usd(rate)}/h`}>
-          <Range value={rate} onChange={setRate} min={10} max={200} step={5} />
-        </Slider>
-        <Slider label={t.hours} value={num(hours)}>
-          <Range value={hours} onChange={setHours} min={0} max={40} step={1} />
-        </Slider>
-        <Slider label={t.pct} value={`${pct}%`} hint={t.pctHint} last>
-          <Range value={pct} onChange={setPct} min={0} max={55} step={5} />
-        </Slider>
-      </div>
+      <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* INPUTS — three sliders with live values inline */}
+        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-6 md:p-8">
+          <Slider
+            label={c.inputs.rate.label}
+            help={c.inputs.rate.help}
+            value={rate}
+            onChange={setRate}
+            min={10}
+            max={200}
+            step={5}
+            valueLabel={`${fmtUsd(rate)}/h`}
+          />
+          <Slider
+            label={c.inputs.hoursPerDay.label}
+            value={hpd}
+            onChange={setHpd}
+            min={2}
+            max={12}
+            step={1}
+            valueLabel={`${hpd} ${c.inputs.hoursPerDay.suffix}`}
+          />
+          <Slider
+            label={c.inputs.daysPerMonth.label}
+            value={dpm}
+            onChange={setDpm}
+            min={5}
+            max={30}
+            step={1}
+            valueLabel={`${dpm} ${c.inputs.daysPerMonth.suffix}`}
+          />
+          {/* Task-mix slider — JM's ask: a dimension that captures
+              "code sencillo vs reasoning pesado". Drives both API
+              cost ramps AND the productivity savings, so the big
+              number reacts in a way users can feel. */}
+          {c.inputs.taskMix ? (
+            <Slider
+              label={c.inputs.taskMix.label}
+              help={c.inputs.taskMix.help}
+              value={heavyPct}
+              onChange={setHeavyPct}
+              min={0}
+              max={100}
+              step={5}
+              valueLabel={`${heavyPct}%`}
+              endpoints={{
+                left: c.inputs.taskMix.lightLabel,
+                right: c.inputs.taskMix.heavyLabel,
+              }}
+            />
+          ) : null}
 
-      <div className="mt-6 rounded-2xl border border-[var(--color-ok)]/40 bg-[var(--color-ok)]/8 px-6 py-8 text-center">
-        <div className="text-[13px] text-[var(--color-fg-muted)]">{t.resultLabel}</div>
-        <div
-          className="mt-1 font-semibold tracking-tight text-[var(--color-ok)] leading-none tabular-nums"
-          style={{ fontSize: "clamp(3rem, 11vw, 4.5rem)" }}
-        >
-          {usd(m.value)}
-        </div>
-        <div className="mt-3 text-[14px] text-[var(--color-fg)]">{t.resultSub(num(m.hoursYr), num(m.days))}</div>
-        <div className="mt-3 text-[13px] text-[var(--color-fg-muted)]">{t.roi(usd(TS_MONTHLY), num(m.roi))}</div>
-      </div>
+          {/* Memoria persistente — horas/semana re-explicando contexto, que
+              la memoria recupera completas. */}
+          <Slider
+            label={
+              dict.locale === "es"
+                ? "Horas/semana re-explicando tu contexto a la IA"
+                : "Hours/week re-explaining your context to the AI"
+            }
+            help={
+              dict.locale === "es"
+                ? "Con memoria persistente no repites quién eres, tus reglas ni dónde quedaste — eso se recupera completo."
+                : "With persistent memory you never repeat who you are, your rules, or where you left off — fully recovered."
+            }
+            value={memHrs}
+            onChange={setMemHrs}
+            min={0}
+            max={20}
+            step={1}
+            valueLabel={`${memHrs} h`}
+            last
+          />
 
-      {/* Cómo lo calculamos — transparencia + fuentes citadas */}
-      <div className="mt-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)]/50">
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          className="w-full flex items-center justify-between gap-3 px-5 py-3.5 text-left text-[13.5px] font-semibold text-[var(--color-fg)]"
-          aria-expanded={open}
-        >
-          {t.how}
-          <ChevronDown size={16} className={`shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
-        </button>
-        {open ? (
-          <div className="px-5 pb-5 text-[13px] text-[var(--color-fg-muted)] leading-relaxed space-y-3">
-            <p className="font-mono text-[12px] text-[var(--color-fg)]">{t.formula}</p>
-            <p>{t.note}</p>
-            <div>
-              <div className="text-[11px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-dim)] mb-1.5">
-                {t.sourcesTitle}
-              </div>
-              <ul className="space-y-1.5">
-                <li>
-                  • {t.s1}{" "}
-                  <a href={SOURCE_LINKS.study} target="_blank" rel="noopener noreferrer" className="text-[var(--color-accent)] underline">
-                    arXiv 2302.06590
-                  </a>
-                </li>
-                <li>
-                  • {t.s2}{" "}
-                  <a href={SOURCE_LINKS.prices} target="_blank" rel="noopener noreferrer" className="text-[var(--color-accent)] underline">
-                    {t.pricesLink}
-                  </a>
-                </li>
-              </ul>
-            </div>
+          <div className="mt-7 pt-6 border-t border-dashed border-[var(--color-border)] grid grid-cols-2 gap-4">
+            <CostCard
+              label={c.results.soloLabel}
+              hint={c.results.soloHint}
+              value={fmtUsd(soloTotal)}
+              tone="dim"
+            />
+            <CostCard
+              label={c.results.withTsLabel}
+              hint={c.results.withTsHint}
+              value={fmtUsd(tsTotal)}
+              tone="ok"
+            />
           </div>
-        ) : null}
+        </div>
+
+        {/* RESULTS — big savings number + ROI + breakdown */}
+        <div className="rounded-2xl border border-[var(--color-accent)]/30 bg-gradient-to-br from-[var(--color-accent)]/8 to-transparent p-6 md:p-8 flex flex-col">
+          <div className="text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent)]">
+            {c.results.savingsLabel}
+          </div>
+          <div
+            className="mt-2 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-none tabular-nums"
+            style={{ fontSize: "clamp(2.75rem, 8vw, 4.75rem)" }}
+          >
+            {fmtUsd(savings)}
+            <span className="ml-1 text-[var(--color-fg-muted)] text-[0.4em] font-medium">
+              {c.results.perYear}
+            </span>
+          </div>
+
+          <div className="mt-5 inline-flex items-center self-start gap-2 px-3 py-1.5 rounded-full border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/10 text-[12.5px] text-[var(--color-accent)] font-semibold">
+            <span className="font-mono uppercase tracking-[0.12em] text-[10px] opacity-70">
+              {c.results.roiLabel}
+            </span>
+            <span className="tabular-nums">{fmtRoi(roi)}</span>
+            <span className="text-[var(--color-fg-muted)] text-[11px] font-normal normal-case tracking-normal">
+              {c.results.roiSuffix}
+            </span>
+          </div>
+
+          {/* Breakdown — small print, full math so people trust it */}
+          <div className="mt-7 pt-5 border-t border-dashed border-[var(--color-border)] flex-1">
+            <div className="text-[11px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-muted)] mb-3">
+              {c.breakdown.heading}
+            </div>
+            <BreakdownLine label={c.breakdown.hoursYear} value={fmtHours(hoursYear)} />
+            {/* Per-hour values are computed live from the task-mix
+                slider, so the breakdown moves visibly when the user
+                drags it (proves the math isn't a fixed prop). */}
+            <BreakdownLine
+              label={c.breakdown.apiCostSolo.replace(
+                /≈ \$\d+(\.\d+)?\/h/,
+                `≈ $${soloPerHour.toFixed(2)}/h`,
+              )}
+              value={fmtUsd(soloApi)}
+              muted
+            />
+            <BreakdownLine
+              label={c.breakdown.apiCostMix.replace(
+                /≈ \$\d+(\.\d+)?\/h/,
+                `≈ $${mixPerHour.toFixed(2)}/h`,
+              )}
+              value={fmtUsd(tsApi)}
+              muted
+            />
+            <BreakdownLine label={c.breakdown.devTimeSolo} value={fmtUsd(soloDev)} muted />
+            <BreakdownLine
+              label={c.breakdown.devTimeWithTs.replace(
+                /\d+\s*%/,
+                `${Math.round(timeSavingPct * 100)}%`,
+              )}
+              value={fmtUsd(tsDev)}
+              muted
+            />
+            <BreakdownLine label={c.breakdown.subscription} value={fmtUsd(TS_PRO_ANNUAL)} muted />
+            {/* Memoria persistente — destacada (no muted): es el gran extra */}
+            <div className="mt-2 pt-2 border-t border-dashed border-[var(--color-border)]">
+              <BreakdownLine
+                label={
+                  dict.locale === "es"
+                    ? "+ Recuperado por memoria persistente"
+                    : "+ Recovered by persistent memory"
+                }
+                value={`+${fmtUsd(memValue)}`}
+              />
+            </div>
+            <p className="mt-4 text-[11.5px] leading-relaxed text-[var(--color-fg-dim)]">
+              {c.breakdown.timeSaving}
+            </p>
+          </div>
+
+          <a
+            href="/api/download"
+            data-cta="calculator-primary"
+            className="mt-7 inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-[14px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] transition-all glow-accent hover:-translate-y-px"
+          >
+            <Download size={15} strokeWidth={2.4} />
+            {c.cta}
+          </a>
+        </div>
       </div>
 
-      <div className="mt-7 text-center">
-        <a
-          href="/api/download"
-          data-cta="calculator-primary"
-          className="inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-[14px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] transition-all glow-accent hover:-translate-y-px"
-        >
-          <Download size={15} strokeWidth={2.4} />
-          {t.cta}
-        </a>
-      </div>
+      <p className="mt-6 text-center text-[11.5px] text-[var(--color-fg-dim)] max-w-3xl mx-auto leading-relaxed">
+        {c.caveat}
+      </p>
     </section>
   );
 }
 
 function Slider({
   label,
-  value,
-  hint,
-  last,
-  children,
-}: {
-  label: string;
-  value: string;
-  hint?: string;
-  last?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className={last ? "" : "mb-6"}>
-      <div className="flex items-baseline justify-between gap-3 mb-2">
-        <label className="text-[13.5px] font-medium text-[var(--color-fg)] leading-snug">{label}</label>
-        <span className="shrink-0 text-[14px] font-semibold tabular-nums text-[var(--color-accent)]">{value}</span>
-      </div>
-      {children}
-      {hint ? <p className="mt-1.5 text-[11.5px] text-[var(--color-fg-dim)] leading-relaxed">{hint}</p> : null}
-    </div>
-  );
-}
-
-function Range({
+  help,
   value,
   onChange,
   min,
   max,
   step,
+  valueLabel,
+  endpoints,
+  last,
 }: {
+  label: string;
+  help?: string;
   value: number;
   onChange: (v: number) => void;
   min: number;
   max: number;
   step: number;
+  valueLabel: string;
+  /** Optional left/right end labels (e.g. "Simple code" / "Heavy reasoning"). */
+  endpoints?: { left: string; right: string };
+  last?: boolean;
 }) {
-  const p = ((value - min) / (max - min)) * 100;
+  const pct = ((value - min) / (max - min)) * 100;
   return (
-    <input
-      type="range"
-      min={min}
-      max={max}
-      step={step}
-      value={value}
-      onChange={(e) => onChange(Number(e.target.value))}
-      className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-[var(--color-accent)]"
-      style={{
-        background: `linear-gradient(to right, var(--color-accent) 0%, var(--color-accent) ${p}%, var(--color-panel-2) ${p}%, var(--color-panel-2) 100%)`,
-      }}
-    />
+    <div className={last ? "" : "mb-6"}>
+      <div className="flex items-baseline justify-between gap-3 mb-2">
+        <label className="text-[13.5px] font-medium text-[var(--color-fg)]">
+          {label}
+        </label>
+        <span className="text-[14px] font-semibold tabular-nums text-[var(--color-accent)]">
+          {valueLabel}
+        </span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-[var(--color-panel-2)] accent-[var(--color-accent)]"
+        style={{
+          background: `linear-gradient(to right, var(--color-accent) 0%, var(--color-accent) ${pct}%, var(--color-panel-2) ${pct}%, var(--color-panel-2) 100%)`,
+        }}
+      />
+      {endpoints ? (
+        <div className="mt-1 flex justify-between text-[10.5px] font-mono uppercase tracking-[0.1em] text-[var(--color-fg-dim)]">
+          <span>{endpoints.left}</span>
+          <span>{endpoints.right}</span>
+        </div>
+      ) : null}
+      {help ? (
+        <p className="mt-1.5 text-[11.5px] text-[var(--color-fg-dim)] leading-relaxed">
+          {help}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function CostCard({
+  label,
+  hint,
+  value,
+  tone,
+}: {
+  label: string;
+  hint: string;
+  value: string;
+  tone: "dim" | "ok";
+}) {
+  return (
+    <div
+      className={`rounded-xl p-3.5 border ${
+        tone === "ok"
+          ? "border-[var(--color-ok)]/30 bg-[var(--color-ok)]/5"
+          : "border-[var(--color-border)] bg-[var(--color-panel-2)]/40"
+      }`}
+    >
+      <div className="text-[10.5px] font-mono uppercase tracking-[0.12em] text-[var(--color-fg-muted)] mb-1">
+        {label}
+      </div>
+      <div
+        className={`text-[20px] font-semibold tabular-nums ${
+          tone === "ok" ? "text-[var(--color-ok)]" : "text-[var(--color-fg-strong)]"
+        }`}
+      >
+        {value}
+      </div>
+      <div className="mt-1 text-[11px] text-[var(--color-fg-dim)] leading-snug">
+        {hint}
+      </div>
+    </div>
+  );
+}
+
+function BreakdownLine({
+  label,
+  value,
+  muted,
+}: {
+  label: string;
+  value: string;
+  muted?: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center justify-between gap-3 text-[12.5px] py-1 ${
+        muted ? "text-[var(--color-fg-muted)]" : "text-[var(--color-fg)]"
+      }`}
+    >
+      <span>{label}</span>
+      <span className="tabular-nums font-medium text-[var(--color-fg)]">{value}</span>
+    </div>
   );
 }
