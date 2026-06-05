@@ -104,13 +104,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-function formatPrice(cents: number, currency: string): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-    maximumFractionDigits: 2,
-  }).format(cents / 100);
-}
+// Kits incluidos en el plan — `price_cents` permanece en la DB para no
+// romper schema/admin, pero el sitio ya no muestra precio. Si en el
+// futuro algún stack vuelve a ser pago, este helper se reactiva.
 
 // User-facing labels (no dev jargon). The curator pipeline targets
 // non-programmers, so we never show "Connector" / "MCP" / "CLI" on
@@ -150,7 +146,6 @@ export default async function BundleDetailPage({ params }: Props) {
   const bundle = await fetchBundle(slug, lang);
   if (!bundle) notFound();
   const isEs = lang === "es";
-  const price = formatPrice(bundle.price_cents, bundle.currency);
   const summary = inclusionSummary(bundle.items, isEs);
 
   return (
@@ -186,14 +181,14 @@ export default async function BundleDetailPage({ params }: Props) {
             )}
           </div>
 
-          {/* Price card */}
+          {/* Free-with-plan card */}
           <aside className="rounded-3xl border border-[var(--color-accent)]/30 bg-gradient-to-br from-[var(--color-accent)]/8 via-[var(--color-panel)] to-[var(--color-claude)]/5 p-6 lg:p-7">
             <div className="flex items-baseline gap-2">
               <span className="text-[32px] font-semibold text-[var(--color-fg-strong)]">
-                {price}
+                {isEs ? "Gratis" : "Free"}
               </span>
               <span className="text-[12px] text-[var(--color-fg-dim)]">
-                {isEs ? "pago único" : "one-time"}
+                {isEs ? "incluido en tu plan" : "included with your plan"}
               </span>
             </div>
             <p className="mt-2 text-[12.5px] text-[var(--color-fg-muted)]">

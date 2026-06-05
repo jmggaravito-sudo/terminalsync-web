@@ -785,6 +785,17 @@ const es: Dict = {
       ctaDownload: "Descargar la app",
       ctaHome: "Volver al inicio",
       receipt: "ID de sesión: {{id}}",
+      extensionLink: {
+        heading: "¿Usas la extensión de Chrome?",
+        lead: "Pega este código para activar Pro en la extensión (sin caps).",
+        expiresIn: "Vence en 24 horas",
+        copyHint:
+          "Abre la extensión → Opciones → \"Ya pagué Pro\" → pega el código.",
+        copyButton: "Copiar código",
+        copied: "Copiado",
+        skipHint:
+          "¿No usas la extensión? Ignora este paso — la app desktop ya está activa.",
+      },
     },
     cancel: {
       eyebrow: "Pago cancelado",

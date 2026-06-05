@@ -24,6 +24,11 @@ import path from "node:path";
 import matter from "gray-matter";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { manifestRequiresEnvSecrets } from "@/lib/marketplace/secrets";
+import {
+  deriveInstallFromManifest,
+  mergeInstallFields,
+  readInstallOverrideFromFrontmatter,
+} from "@/lib/marketplace/installFields";
 
 export type BundleItemKind = "connector" | "skill" | "cli";
 
@@ -79,6 +84,19 @@ export interface ResolvedBundleItem {
    *  terminalsync-web#72/#74 and the comment in `connectors.ts:354`. */
   requiresEnvSecrets: boolean;
   sortOrder: number;
+  /** Phase 2 install fields — same shape and semantics as
+   *  `ConnectorMeta.installMethod` etc. Present when the bundle item
+   *  is a markdown-sourced first-party connector whose manifest auto-
+   *  derives to an install method (or the curator authored explicit
+   *  override fields). Undefined for skills and CLI tools (no install
+   *  recipe path), and undefined for DB-only marketplace connectors
+   *  (no manifest in the row). The desktop Lab uses these to construct
+   *  an `McpInstallSpec` for the Phase 2 install path when looping
+   *  through bundle items on drag-drop. */
+  installMethod?: string;
+  installSpec?: string;
+  installArgs?: string[];
+  installEnv?: Record<string, string>;
 }
 
 const CONTENT_ROOT = path.join(process.cwd(), "content");
@@ -144,6 +162,9 @@ async function resolveConnector(
     const cta = hasManifest
       ? `terminalsync://install/connector?slug=${encodeURIComponent(slug)}`
       : stringField(fm, "ctaUrl");
+    const installDerived = hasManifest ? deriveInstallFromManifest(manifest) : {};
+    const installOverride = readInstallOverrideFromFrontmatter(fm);
+    const installFields = mergeInstallFields(installDerived, installOverride);
     return {
       kind: "connector",
       slug,
@@ -155,6 +176,10 @@ async function resolveConnector(
       requiresEnvSecrets,
       href: `/${lang}/connectors/${slug}`,
       sortOrder: 0,
+      installMethod: installFields.installMethod,
+      installSpec: installFields.installSpec,
+      installArgs: installFields.installArgs,
+      installEnv: installFields.installEnv,
     };
   }
 

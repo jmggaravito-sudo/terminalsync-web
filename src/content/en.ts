@@ -785,6 +785,17 @@ const en: Dict = {
       ctaDownload: "Download the app",
       ctaHome: "Back to home",
       receipt: "Session ID: {{id}}",
+      extensionLink: {
+        heading: "Using the Chrome extension?",
+        lead: "Paste this code to unlock Pro in the extension (no caps).",
+        expiresIn: "Expires in 24 hours",
+        copyHint:
+          "Open the extension → Options → \"Already paid Pro\" → paste the code.",
+        copyButton: "Copy code",
+        copied: "Copied",
+        skipHint:
+          "Not using the extension? Skip this — the desktop app is already active.",
+      },
     },
     cancel: {
       eyebrow: "Payment canceled",
