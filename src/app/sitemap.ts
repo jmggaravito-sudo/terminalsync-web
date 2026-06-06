@@ -46,7 +46,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const STATIC_PATHS = [
     "ai-terminal",
-    "marketplace",
+    // "marketplace" retirada 2026-06-06 — la página fue eliminada y vive
+    // como 301 redirect a /stacks. Mantenerla en el sitemap haría que
+    // los crawlers redireccionen en cada visita; sacarla los lleva
+    // directo al destino.
     "skills",
     "cli-tools",
     "connectors",
