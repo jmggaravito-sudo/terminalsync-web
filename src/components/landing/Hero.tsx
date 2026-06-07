@@ -228,7 +228,7 @@ function RotatingHeadline({ lang }: { lang: "es" | "en" }) {
         aria-live="polite"
       >
         {p.pre}
-        <span className="bg-gradient-to-br from-[var(--color-claude)] to-[var(--color-claude-soft)] bg-clip-text text-transparent">
+        <span className="bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-soft)] bg-clip-text text-transparent">
           {p.hi}
         </span>
         {p.post}

@@ -2,33 +2,36 @@
 
 /* ── Apple-Clean palette — light is the default, dark is an override ─── */
 @theme {
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* Rediseño 2026 — Geist + tema claro "papel cálido + esmeralda" */
+  --font-sans: "Geist", system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --color-bg: #ffffff;
+  /* Papel cálido (light = default, business-friendly) */
+  --color-bg: #f7f5f1;
   --color-panel: #ffffff;
-  --color-panel-2: #f4f5f8;
-  --color-border: #e8eaef;
-  --color-border-strong: #d0d4dc;
-  /* Oxford Gray for body text / near-black for headings */
-  --color-fg: #1f2937;
-  --color-fg-strong: #0b1733;
-  --color-fg-muted: #4b5563;
-  --color-fg-dim: #9ca3af;
+  --color-panel-2: #faf8f4;
+  --color-border: rgba(24, 26, 31, 0.1);
+  --color-border-strong: rgba(24, 26, 31, 0.16);
+  --color-fg: #16181d;
+  --color-fg-strong: #16181d;
+  --color-fg-muted: #565b64;
+  --color-fg-dim: #8b909a;
 
-  /* Royal Blue primary (buttons + accents) */
-  --color-accent: #2563eb;
-  --color-accent-soft: #3b82f6;
-  --color-accent-glow: color-mix(in oklch, #2563eb 20%, transparent);
-  --color-ok: #059669;
+  /* Esmeralda de marca (CTAs, eyebrows, acentos, highlight del hero) */
+  --color-accent: #0f9d6e;
+  --color-accent-soft: #0b8a5f;
+  --color-accent-glow: rgba(15, 157, 110, 0.14);
+  --color-ok: #0f9d6e;
   --color-warn: #d97706;
   --color-err: #dc2626;
   --color-info: #0284c7;
 
-  /* Claude / warm orange for AI blocks */
-  --color-claude: #c85a3a;
+  /* Colores de marca de las IAs (fijos) — Claude / Codex / Gemini */
+  --color-claude: #d97757;
   --color-claude-soft: #e8946d;
-  --color-claude-glow: color-mix(in oklch, #c85a3a 18%, transparent);
+  --color-claude-glow: color-mix(in oklch, #d97757 18%, transparent);
+  --color-codex: #2dd4a7;
+  --color-gemini: #5b9cff;
 
   /* Soft floating shadow — long, diffuse ink so cards feel like they hover
      above white paper, never stamped onto it. */
@@ -51,10 +54,10 @@
   --color-fg-muted: #8b93a7;
   --color-fg-dim: #5a6170;
 
-  --color-accent: #22d3ee;
-  --color-accent-soft: #67e8f9;
-  --color-accent-glow: color-mix(in oklch, #22d3ee 25%, transparent);
-  --color-ok: #34d399;
+  --color-accent: #4fe9a6;
+  --color-accent-soft: #74f0bb;
+  --color-accent-glow: color-mix(in oklch, #4fe9a6 25%, transparent);
+  --color-ok: #4fe9a6;
   --color-warn: #fbbf24;
   --color-err: #f87171;
   --color-info: #60a5fa;
