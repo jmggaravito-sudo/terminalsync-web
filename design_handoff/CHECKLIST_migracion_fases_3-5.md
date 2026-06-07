@@ -59,8 +59,8 @@ Leyenda: ✅ hecho y en producción · 🟡 parcial · ⬜ pendiente.
 ## Fase 5 — Demos interactivos
 
 - ✅ **Demo 1 — Cambio de IA en un clic** (`DemoCambioIA.tsx`): chat replay autoplay + replay, relay Claude→Codex→Gemini, texto pre-cargado, reduced-motion. En la home bajo Demos.
-- ⬜ **Demo 2 — Continuidad entre dispositivos** (`demo-sync-dispositivos.html`): portátil → sync nube → desktop enciende → misma conversación. CSS/JS, sin deps.
-- ⬜ **Demo 3 — Conectores drag & drop** (`demo-conectores.html`): arrastrar Notion/Gmail → instala con pop + toast. Autoplay + manual.
+- ✅ **Demo 2 — Continuidad entre dispositivos** (`demo-sync-dispositivos.html`): portátil → sync nube → desktop enciende → misma conversación. CSS/JS, sin deps.
+- ✅ **Demo 3 — Conectores drag & drop** (`demo-conectores.html`): arrastrar Notion/Gmail → instala con pop + toast. Autoplay + manual.
 - ⬜ Unificar los 3 demos en la sección "Demos" con su header del diseño.
 
 ---
