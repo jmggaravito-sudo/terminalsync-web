@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import Link from "next/link";
 import { CheckCircle2, ShieldCheck, Download, Package } from "lucide-react";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
@@ -13,7 +12,6 @@ import {
 } from "@/lib/marketplace/bundleItems";
 import { initialsFrom } from "@/components/marketplace/initialsFrom";
 import { GlossaryText } from "@/components/marketplace/GlossaryText";
-import { BuyButton } from "./BuyButton";
 import { CopyCommand } from "./CopyCommand";
 import { SamplePrompts } from "./SamplePrompts";
 
@@ -195,9 +193,16 @@ export default async function BundleDetailPage({ params }: Props) {
               {summary || (isEs ? "Pack curado" : "Curated pack")}
             </p>
             <div className="mt-5">
-              <Suspense fallback={null}>
-                <BuyButton lang={lang} slug={bundle.slug} />
-              </Suspense>
+              {/* Kits gratis (handoff): sin Stripe — CTA de descarga. */}
+              <a
+                href="/api/download"
+                data-cta="kit-download"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--color-accent)] px-5 py-3 text-[14px] font-semibold text-white transition-all hover:bg-[var(--color-accent-soft)] hover:-translate-y-px"
+                style={{ boxShadow: "0 8px 30px -10px var(--color-accent)" }}
+              >
+                <Download size={16} strokeWidth={2.4} />
+                {isEs ? "Descargar TerminalSync" : "Download TerminalSync"}
+              </a>
             </div>
             <ul className="mt-5 space-y-2 text-[12.5px] text-[var(--color-fg-muted)]">
               <li className="flex gap-2 items-start">
