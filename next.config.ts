@@ -67,6 +67,29 @@ const config: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // /[lang]/marketplace fue retirado 2026-06-06 — el cajón Integraciones
+      // del Lab desktop ya muestra todo el catálogo directamente via
+      // /api/marketplace/catalog, así que el detour a la página dejó de
+      // tener sentido. Redirect 301 a /stacks (kits) — el destino más
+      // cercano para discovery humano. SEO y bookmarks existentes siguen
+      // resolviendo a algo útil.
+      {
+        source: "/:lang/marketplace",
+        destination: "/:lang/stacks",
+        permanent: true,
+      },
+      // El root /marketplace (sin lang prefix) puede aparecer en alguna
+      // URL vieja del Lab — redirigimos al ES por default ya que es el
+      // primary del producto.
+      {
+        source: "/marketplace",
+        destination: "/es/stacks",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default config;

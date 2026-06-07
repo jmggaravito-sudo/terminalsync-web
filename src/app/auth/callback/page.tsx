@@ -100,7 +100,9 @@ function CallbackInner() {
   );
   const [error, setError] = useState<string | null>(null);
   const lang = (search.get("lang") === "en" ? "en" : "es") as "es" | "en";
-  const next = search.get("next") || `/${lang}/marketplace`;
+  // /marketplace fue retirada (2026-06-06); post-auth default ahora va a
+  // /stacks que es el destino de discovery activo.
+  const next = search.get("next") || `/${lang}/stacks`;
 
   useEffect(() => {
     const sb = getSupabaseBrowser();
