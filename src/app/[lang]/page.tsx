@@ -6,6 +6,7 @@ import { MemoryPersistent } from "@/components/landing/MemoryPersistent";
 import { MultiAI } from "@/components/landing/MultiAI";
 import { ChromeExtensionTeaser } from "@/components/landing/ChromeExtensionTeaser";
 import { Demos } from "@/components/landing/Demos";
+import { DemoCambioIA } from "@/components/landing/DemoCambioIA";
 import { Comparison } from "@/components/landing/Comparison";
 import { SavingsCalculator } from "@/components/landing/SavingsCalculator";
 import { WhatYouCanBuild } from "@/components/landing/WhatYouCanBuild";
@@ -59,6 +60,10 @@ export default async function Landing({ params }: Props) {
           Seguridad → FAQ → Afiliados → CTA final → Footer. */}
       <Hero dict={d} />
       <Demos dict={d} />
+      {/* Demo interactivo 1 — Cambio de IA en un clic (Fase 5) */}
+      <section id="demo-cambio-ia" className="mx-auto max-w-3xl px-5 md:px-6 pb-12">
+        <DemoCambioIA lang={lang} />
+      </section>
       <HowItWorks lang={lang} />
       <WhatYouCanBuild lang={lang} />
       <UseCases lang={lang} />
