@@ -37,15 +37,11 @@ export function Nav({ dict, lang }: Props) {
         { href: `/${lang}/cli-tools`, label: "CLI", external: true },
       ]
     : [
-        { href: "#demos", label: dict.nav.demos },
-        // "Funciones" (#features) salió: la sección Benefits se removió del
-        // homepage en la limpieza estructural del rediseño.
-        // Casos de uso + Especialistas: secciones del rediseño (bilingües).
-        { href: "#use-cases", label: lang === "es" ? "Casos de uso" : "Use cases" },
-        { href: "#capabilities", label: lang === "es" ? "Especialistas" : "Specialists" },
-        { href: `/${lang}/marketplace`, label: "Marketplace", external: true, strong: true },
+        // Nav del rediseño (handoff): 4 ítems, sin Marketplace (retirado).
+        { href: "#how-it-works", label: lang === "es" ? "Cómo funciona" : "How it works" },
+        { href: "#multi-ai", label: lang === "es" ? "Tu equipo de IAs" : "Your AI team" },
+        { href: `/${lang}/stacks`, label: lang === "es" ? "Catálogo" : "Catalog", external: true },
         { href: "#pricing", label: dict.nav.pricing },
-        { href: "#affiliates", label: dict.nav.affiliates },
       ];
 
   const linkClass = (strong?: boolean) =>
