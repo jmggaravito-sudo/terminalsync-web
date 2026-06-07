@@ -45,10 +45,10 @@ Leyenda: ✅ hecho y en producción · 🟡 parcial · ⬜ pendiente.
 
 - ⬜ **Listados** (`stacks`, `connectors`, `skills`, `cli-tools` → `page.tsx`):
   - ⬜ Cabecera (eyebrow + h1 + lead).
-  - ⬜ **Barra de categorías sticky** (Kits · Conectores · Asistentes · Herramientas CLI, con contador mono).
+  - ✅ **Barra de categorías sticky** (Kits · Conectores · Asistentes · Herramientas CLI).
   - ⬜ Toolbar (buscador client-side + contador) + estado vacío.
   - ⬜ Grid de **`kit-card`** nuevas (icono 44px, badge "Gratis", hover).
-  - ⬜ Franja **"Arrastra a tu sesión"** (borde punteado esmeralda).
+  - ✅ Franja **"Arrastra a tu sesión"** (borde punteado esmeralda).
 - ⬜ **Detalles** (`[slug]/page.tsx`):
   - ⬜ Breadcrumb → hero del item (icono 76px, badges install/affiliate) → CTA **"Descargar TerminalSync"** (sin Stripe — kits gratis).
   - ⬜ Cuerpo 2 columnas: "Qué incluye / Qué hace" + aside sticky "Cómo se instala" (Descarga → Explorar → Arrastra).
@@ -61,7 +61,7 @@ Leyenda: ✅ hecho y en producción · 🟡 parcial · ⬜ pendiente.
 - ✅ **Demo 1 — Cambio de IA en un clic** (`DemoCambioIA.tsx`): chat replay autoplay + replay, relay Claude→Codex→Gemini, texto pre-cargado, reduced-motion. En la home bajo Demos.
 - ✅ **Demo 2 — Continuidad entre dispositivos** (`demo-sync-dispositivos.html`): portátil → sync nube → desktop enciende → misma conversación. CSS/JS, sin deps.
 - ✅ **Demo 3 — Conectores drag & drop** (`demo-conectores.html`): arrastrar Notion/Gmail → instala con pop + toast. Autoplay + manual.
-- ⬜ Unificar los 3 demos en la sección "Demos" con su header del diseño.
+- ⬜ (opcional) Unificar los 3 demos en la sección "Demos" con su header del diseño.
 
 ---
 
