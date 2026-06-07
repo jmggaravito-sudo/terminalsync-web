@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CategoryBar, DragStrip } from "@/components/landing/CatalogChrome";
 import Link from "next/link";
 import { ArrowRight, Package, ShoppingBag } from "lucide-react";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
@@ -107,6 +108,7 @@ export default async function StacksIndex({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
+      <CategoryBar lang={lang} active="stacks" />
       <section className="mx-auto max-w-5xl px-6 pt-20 pb-10 text-center">
         <span className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent)] border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 px-3 py-1 rounded-full">
           <Package size={12} strokeWidth={2.4} />
@@ -191,6 +193,7 @@ export default async function StacksIndex({ params }: Props) {
           </p>
         </div>
       </section>
+      <DragStrip lang={lang} />
     </main>
   );
 }

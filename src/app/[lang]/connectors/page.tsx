@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CategoryBar, DragStrip } from "@/components/landing/CatalogChrome";
 import Link from "next/link";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 import { listAllConnectors } from "@/lib/connectors";
@@ -52,6 +53,7 @@ export default async function ConnectorsIndex({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
+      <CategoryBar lang={lang} active="connectors" />
       <section className="mx-auto max-w-5xl px-6 pt-24 pb-10">
         <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--color-accent)] mb-4">
           <Sparkles size={14} />
@@ -104,6 +106,7 @@ export default async function ConnectorsIndex({ params }: Props) {
           />
         </Link>
       </section>
+      <DragStrip lang={lang} />
     </main>
   );
 }

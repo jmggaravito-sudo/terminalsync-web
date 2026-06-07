@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CategoryBar, DragStrip } from "@/components/landing/CatalogChrome";
 import Link from "next/link";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 import { listCliTools } from "@/lib/cliTools";
@@ -51,6 +52,7 @@ export default async function CliToolsIndex({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
+      <CategoryBar lang={lang} active="cli-tools" />
       <section className="mx-auto max-w-5xl px-6 pt-24 pb-10">
         <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--color-accent)] mb-4">
           <Sparkles size={14} />
@@ -110,6 +112,7 @@ export default async function CliToolsIndex({ params }: Props) {
           />
         </Link>
       </section>
+      <DragStrip lang={lang} />
     </main>
   );
 }
