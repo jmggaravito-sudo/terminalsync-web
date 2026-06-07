@@ -10,10 +10,7 @@ import { Comparison } from "@/components/landing/Comparison";
 import { SavingsCalculator } from "@/components/landing/SavingsCalculator";
 import { WhatYouCanBuild } from "@/components/landing/WhatYouCanBuild";
 import { Continuity } from "@/components/landing/Continuity";
-import { VisibleResults } from "@/components/landing/VisibleResults";
 import { UseCases } from "@/components/landing/UseCases";
-import { Capabilities } from "@/components/landing/Capabilities";
-import { WhatYouJustWatched } from "@/components/landing/WhatYouJustWatched";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { BeforeAfter } from "@/components/landing/BeforeAfter";
 import { MidCta } from "@/components/landing/MidCta";
@@ -56,31 +53,26 @@ export default async function Landing({ params }: Props) {
   return (
     <>
       <StructuredData dict={d} lang={lang} />
+      {/* Orden del handoff (compactado y aprobado): Hero → Demos → Cómo
+          funciona → Lo que puedes resolver → Casos → Tu equipo + relay →
+          Calculadora → El cambio real → Comparativo → Chrome → Precios →
+          Seguridad → FAQ → Afiliados → CTA final → Footer. */}
       <Hero dict={d} />
-      {/* Rediseño 2026-06 (bilingüe). Orden: UNDERSTAND (puente → cómo
-          funciona → lo que puedes resolver) → BELIEVE (Workforce →
-          Continuity → Memory → Visible Results → Capabilities) → JUSTIFY
-          (Use cases → Calculadora → Comparación → ...). Calculadora y
-          Comparación movidas abajo a JUSTIFY (antes estaban arriba). */}
-      <WhatYouJustWatched lang={lang} />
+      <Demos dict={d} />
       <HowItWorks lang={lang} />
       <WhatYouCanBuild lang={lang} />
-      <Demos dict={d} />
+      <UseCases lang={lang} />
       <MultiAI dict={d} />
       <Continuity lang={lang} />
       <MemoryPersistent dict={d} />
-      <VisibleResults lang={lang} />
-      <Capabilities lang={lang} />
-      <UseCases lang={lang} />
-      <BeforeAfter dict={d} />
       <SavingsCalculator dict={d} />
+      <BeforeAfter dict={d} />
       <Comparison dict={d} />
       <ChromeExtensionTeaser dict={d} />
       <Pricing dict={d} />
       <Trust dict={d} />
       <FAQ dict={d} />
       <Affiliates dict={d} />
-      {/* §15 Cierre final del wireframe (MidCta movido acá como closer). */}
       <MidCta dict={d} />
       <Footer dict={d} />
       <AgentWidget dict={d} />
