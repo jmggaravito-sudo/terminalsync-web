@@ -76,3 +76,47 @@ Leyenda: ✅ hecho y en producción · 🟡 parcial · ⬜ pendiente.
 ---
 
 _Actualizar este checklist a medida que cada ítem entra a producción._
+
+---
+
+## Addendum — decisiones y estado final (esta iteración)
+
+### Decisiones de negocio tomadas
+- **Kits = GRATIS, sin Stripe** (decisión de JM). El detalle de Stack Pack
+  reemplaza el `BuyButton` (checkout Stripe) por el CTA **"Descargar
+  TerminalSync"**; el listado ya mostraba "Gratis". `price_cents` permanece
+  en la DB para no romper schema/admin, pero **el sitio no cobra**.
+- **`/marketplace` retirado** (ya venía de otro merge); el Catálogo (Kits ·
+  Conectores · Asistentes · Herramientas CLI) es la superficie de discovery.
+- **Registro de voz:** "tú" neutro (pan-LatAm). Glosario en
+  `~/projects/TerminalSync_Voz_ES_Glosario.md`.
+
+### Resolución de la contradicción del handoff (Stripe)
+El handoff decía a la vez "kits gratis, sin Stripe" (regla 2) y "no romper
+Stripe checkout" (About). Se resolvió a favor de **kits gratis**: se quita el
+checkout *de los kits* (CTA → descarga), sin tocar el resto de la
+infraestructura Stripe/Supabase/Resend.
+
+### Flujo de publicación
+- Toda la implementación va **directo a producción** (`main`), por pedido de
+  JM: la rama `landing/copy-es-neutro` se mergea a `main` y Vercel
+  auto-deploya `terminalsync.ai`. Razón: el rediseño vivía en una rama y los
+  deploys CLI a producción se revertían cuando otro push tocaba `main`.
+- **Fix Vercel:** los deploys quedaban `BLOCKED` por email de autor de commit
+  inválido (`jm@Mac-mini-de-JM.local`) → se corrigió a `jmggaravito@gmail.com`.
+- **Deployment Protection** (login de preview) desactivado para que el sitio
+  abra sin cuenta.
+
+### Estado final por fase (resumen)
+- **F1 Tema · F2 Hero+Nav · F5 Demos (×3):** ✅ en producción.
+- **F3 Secciones:** ✅ orden + calculadora con memoria persistente; pendiente
+  sección **Video** (falta `terminalsync.mp4` del cliente) y pulido de
+  Seguridad/relay.
+- **F4 Catálogo:** ✅ barra de categorías + franja "Arrastra a tu sesión" +
+  kits gratis; pendiente el pulido pixel de tarjetas y el layout 2-col del
+  detalle.
+
+### Pendientes que dependen del cliente / decisión
+- Subir `terminalsync.mp4` (+ poster) para la sección Video.
+- i18n EN de los textos nuevos que quedaron en ES.
+- Reemplazar íconos/imágenes placeholder por los reales del catálogo.
