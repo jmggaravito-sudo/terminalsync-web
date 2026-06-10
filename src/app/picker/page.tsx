@@ -18,7 +18,7 @@ const copy = {
     preparing: "Preparing Google Picker…",
     opening: "Opening Google Drive…",
     open: "Google Drive is open. Choose a folder to continue.",
-    openMultiselect: "Google Drive is open. Click each file you want to import — you can pick more than one. Hold Cmd (or Ctrl) to add files; Shift+click to pick a range.",
+    openMultiselect: "Google Drive is open. Click each file or folder you want to import — you can pick more than one. Hold Cmd (or Ctrl) to add items; Shift+click to pick a range.",
     retry: "Open picker again",
     cancel: "Cancel",
     selectedTitle: "Folder selected",
@@ -39,7 +39,7 @@ const copy = {
     preparing: "Preparando Google Picker…",
     opening: "Abriendo Google Drive…",
     open: "Google Drive está abierto. Elige una carpeta para continuar.",
-    openMultiselect: "Google Drive está abierto. Hacé click en cada archivo que querés importar — podés elegir varios. Mantené Cmd (o Ctrl) presionado para sumar archivos; Shift+click para un rango.",
+    openMultiselect: "Google Drive está abierto. Hacé click en cada archivo o carpeta que querés importar — podés elegir varios. Mantené Cmd (o Ctrl) presionado para sumar elementos; Shift+click para un rango.",
     retry: "Abrir selector otra vez",
     cancel: "Cancelar",
     selectedTitle: "Carpeta seleccionada",
@@ -252,12 +252,19 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
                   const isFilesMode = p.mode === 'files';
                   const view = isFilesMode
                     ? new picker.DocsView(picker.ViewId.DOCS)
-                        // Navigate into folders, but don't allow folder
-                        // selection itself — the user picks files, possibly
-                        // many at once.
+                        // JM 2026-06-10: en este modo el cliente puede
+                        // elegir archivos sueltos Y/O carpetas enteras (la
+                        // carpeta seleccionada se importa completa). Hasta
+                        // hoy las carpetas eran solo navegacionales; el
+                        // único item seleccionable era un archivo. JM
+                        // reportó que necesitaba poder marcar una carpeta
+                        // sin tener que entrar y elegir cada archivo a mano.
+                        // El callback ya devuelve `mimeType` por item, así
+                        // que el caller puede distinguir folder de file via
+                        // `application/vnd.google-apps.folder`.
                         .setParent('root')
                         .setIncludeFolders(true)
-                        .setSelectFolderEnabled(false)
+                        .setSelectFolderEnabled(true)
                     : new picker.DocsView(picker.ViewId.FOLDERS)
                         // Start at My Drive root so the user navigates folder hierarchy instead
                         // of seeing every folder flattened into one long list.
