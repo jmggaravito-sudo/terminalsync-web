@@ -154,7 +154,17 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
           function safeRedirect(base, extra) {
             try {
               const url = new URL(base);
-              if (url.hostname !== '127.0.0.1' && url.hostname !== 'localhost') {
+              // Legacy browser flow returns via the Tauri loopback server
+              // (127.0.0.1 / localhost). The embedded flow (Tauri 2026-06-09)
+              // returns via a custom URI scheme — the Tauri WebviewWindow
+              // intercepts the navigation, parses the params, and closes
+              // the window. Both paths are trusted because they only run
+              // on the user's own machine. Anything else is rejected.
+              const isLoopback =
+                url.protocol === 'http:' &&
+                (url.hostname === '127.0.0.1' || url.hostname === 'localhost');
+              const isTauriScheme = url.protocol === 'terminalsync-picker:';
+              if (!isLoopback && !isTauriScheme) {
                 throw new Error('Invalid callback host');
               }
               for (const [key, value] of Object.entries(extra)) url.searchParams.set(key, value);
