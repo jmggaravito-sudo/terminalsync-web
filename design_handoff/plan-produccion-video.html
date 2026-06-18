@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Brand" name="Plan de producción · Video corporativo" subtitle="Shot list + voz en off + montaje · todo coordinado" viewport="900x1400" -->
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Plan de producción · Video TerminalSync</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f7f5f1; --paper:#fffefb; --ink:#16181d; --ink2:#565b64; --ink3:#8b909a;
+    --line:rgba(24,26,31,.10); --line2:rgba(24,26,31,.16);
+    --accent:#0f9d6e; --accent-soft:rgba(15,157,110,.10); --accent-line:rgba(15,157,110,.30);
+    --claude:#d97757; --codex:#1f9d63; --gemini:#3f74f5; --mob:#2f5fd6;
+    --sans:'Geist',system-ui,sans-serif; --mono:'Geist Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:880px;margin:0 auto;padding:56px 28px 90px;}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:9px;margin-bottom:18px;}
+  .eyebrow::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--accent);box-shadow:0 0 12px var(--accent);}
+  h1{font-size:clamp(30px,5vw,44px);letter-spacing:-.035em;line-height:1.08;margin:0 0 14px;}
+  .lede{font-size:18px;color:var(--ink2);max-width:62ch;margin:0 0 8px;}
+  h2{font-size:13px;font-family:var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin:42px 0 16px;display:flex;align-items:center;gap:12px;}
+  h2::after{content:"";flex:1;height:1px;background:var(--line2);}
+
+  .step{display:flex;gap:16px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:14px;}
+  .step .n{width:30px;height:30px;flex:none;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:14px;}
+  .step .c h3{margin:2px 0 7px;font-size:17px;letter-spacing:-.02em;}
+  .step .c p{margin:0 0 8px;font-size:14.5px;color:var(--ink2);}
+  .step .c .tool{font-family:var(--mono);font-size:12px;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:7px;padding:3px 9px;display:inline-block;margin:2px 5px 2px 0;}
+
+  table{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:10px;font-size:14px;}
+  th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);padding:12px 14px;border-bottom:1px solid var(--line);background:#fff;}
+  td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  td .tm{font-family:var(--mono);font-size:12px;color:#fff;background:var(--ink);border-radius:6px;padding:3px 8px;white-space:nowrap;display:inline-block;}
+  td .scr{font-weight:600;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-line);border-radius:6px;padding:1px 7px;font-size:13px;white-space:nowrap;}
+  td.beat{white-space:nowrap;}
+  td .vo{color:var(--ink);font-style:italic;}
+  td .txt{display:inline-block;margin-top:5px;font-size:12.5px;color:var(--ink2);}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;}
+  .note{font-size:13.5px;color:var(--ink2);background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:11px;padding:14px 16px;margin:14px 0;}
+  .note b{color:var(--accent);}
+  .check{list-style:none;padding:0;margin:0;}
+  .check li{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 15px;margin-bottom:9px;font-size:14.5px;display:flex;gap:11px;align-items:flex-start;}
+  .check li::before{content:"";width:18px;height:18px;flex:none;border-radius:5px;border:2px solid var(--accent-line);margin-top:1px;}
+  .check li b{font-weight:600;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:640px){.two{grid-template-columns:1fr;} table{font-size:13px;} td,th{padding:10px;}}
+  .foot{margin-top:34px;font-size:13px;color:var(--ink3);}
+  .pill{font-family:var(--mono);font-size:12px;color:var(--ink2);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px 13px;display:inline-block;margin:0 6px 8px 0;}
+  .pill b{color:var(--accent);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Producción · Coordinación</div>
+  <h1>Cómo grabamos el video — todo coordinado.</h1>
+  <p class="lede">Todo el material visual ya existe (los 7 demos). Esto es el plan completo: qué grabar, con qué, la voz en off y el montaje. Una persona lo arma en una tarde.</p>
+  <div style="margin-top:18px">
+    <span class="pill"><b>Duración</b> ~72 s</span>
+    <span class="pill"><b>8 beats</b></span>
+    <span class="pill"><b>ES + EN</b></span>
+    <span class="pill"><b>Sin actores</b></span>
+    <span class="pill"><b>~1 tarde de trabajo</b></span>
+  </div>
+
+  <h2>Resumen en 4 pasos</h2>
+  <div class="step"><div class="n">1</div><div class="c"><h3>Graba las tomas</h3><p>Abre cada demo en grande (clic para ampliar en el landing, o el archivo directo), dale "Reproducir de nuevo" y graba la pantalla. Son 7 clips cortos.</p><span class="tool">Screen Studio (Mac)</span><span class="tool">OBS (gratis)</span><span class="tool">QuickTime</span></div></div>
+  <div class="step"><div class="n">2</div><div class="c"><h3>Genera la voz en off</h3><p>El texto exacto (ES y EN) está en el guion. Pégalo en una voz IA o grábate tú.</p><span class="tool">ElevenLabs (voz IA)</span><span class="tool">Tu propia voz</span></div></div>
+  <div class="step"><div class="n">3</div><div class="c"><h3>Monta en el editor</h3><p>Voz en off de base → cada clip en su beat → textos en pantalla → música suave → logo al cierre.</p><span class="tool">CapCut (gratis)</span><span class="tool">Premiere / Final Cut</span></div></div>
+  <div class="step"><div class="n">4</div><div class="c"><h3>Exporta y publica</h3><p>1080p (o 4K), versión ES y versión EN. Sube a la web (hero), YouTube, redes y anuncios.</p><span class="tool">1080p / 4K</span><span class="tool">MP4 H.264</span></div></div>
+
+  <h2>Shot list — grabación por beat</h2>
+  <table>
+    <thead><tr><th>Beat</th><th>Toma (demo)</th><th>Voz en off (ES) + texto</th><th>Seg</th></tr></thead>
+    <tbody>
+      <tr><td class="beat"><span class="tm">0:00–0:08</span><br>1 · Dolor</td>
+        <td><span class="dot" style="background:var(--claude)"></span><span class="scr">Cambio de IA</span><div class="txt">Primeros segundos: Claude trabajando + aviso de límite. Congela 1 s.</div></td>
+        <td><span class="vo">«Le pides algo a tu IA… y de golpe: "Has alcanzado tu límite." Todo se detiene.»</span><div class="txt">TEXTO: "Tu trabajo con IA se rompe todo el tiempo."</div></td>
+        <td>8s</td></tr>
+      <tr><td class="beat"><span class="tm">0:08–0:18</span><br>2 · Cambio</td>
+        <td><span class="dot" style="background:var(--codex)"></span><span class="scr">Cambio de IA</span><div class="txt">El menú ⇄, Claude → Codex, la conversación sigue.</div></td>
+        <td><span class="vo">«Con TerminalSync, no. Cuando una IA se detiene, cambias a otra en un clic — y sigues donde ibas.»</span><div class="txt">TEXTO: "Cuando una IA se detiene, tu trabajo no."</div></td>
+        <td>10s</td></tr>
+      <tr><td class="beat"><span class="tm">0:18–0:32</span><br>3 · Resultado ⭐</td>
+        <td><span class="dot" style="background:var(--accent)"></span><span class="scr">Resultados</span><div class="txt">Claude→Codex→Gemini → ✅ Cotización enviada. (Rota Broker/Agencia/Ecommerce — graba 1–2 verticales.)</div></td>
+        <td><span class="vo">«Pídele un trabajo y míralo hacerse: Claude redacta, Codex construye, Gemini revisa — y aquí está: cotización enviada. No es un chat. Es trabajo terminado.»</span><div class="txt">TEXTO: "No es un chat. Es trabajo terminado."</div></td>
+        <td>14s</td></tr>
+      <tr><td class="beat"><span class="tm">0:32–0:42</span><br>4 · Organizado</td>
+        <td><span class="dot" style="background:var(--accent)"></span><span class="scr">Home</span><div class="txt">Screenshot del home con los espacios de trabajo (ya lo tienes en assets/dashboard.png).</div></td>
+        <td><span class="vo">«Y nunca más buscas una conversación perdida: todo tu trabajo queda donde pertenece.»</span><div class="txt">TEXTO: "Nunca vuelvas a buscar una conversación perdida."</div></td>
+        <td>10s</td></tr>
+      <tr><td class="beat"><span class="tm">0:40–0:48</span><br>5 · Movilidad</td>
+        <td><span class="dot" style="background:var(--mob)"></span><span class="scr">Continuidad entre dispositivos</span><div class="txt">Portátil → desktop, misma sesión.</div></td>
+        <td><span class="vo">«Y como tu trabajo vive contigo, continúa desde tu computador, el navegador o el celular.»</span><div class="txt">TEXTO: "Continúa desde donde estés."</div></td>
+        <td>8s</td></tr>
+      <tr><td class="beat"><span class="tm">0:48–0:58</span><br>6 · Chat ⭐</td>
+        <td><span class="dot" style="background:var(--mob)"></span><span class="scr">Tu trabajo te sigue hasta el chat</span><div class="txt">Terminal → WhatsApp → Telegram, el cliente responde y se refleja en el computador.</div></td>
+        <td><span class="vo">«No tienes que estar frente a TerminalSync. Claude llegó a su límite, te llega un mensaje, respondes "Sí, seguí" desde WhatsApp — y tu trabajo continúa.»</span><div class="txt">TEXTO: "Tu trabajo te sigue hasta el chat."</div></td>
+        <td>10s</td></tr>
+      <tr><td class="beat"><span class="tm">0:58–1:06</span><br>7 · Asistente</td>
+        <td><span class="dot" style="background:var(--accent)"></span><span class="scr">Asistente de prompts</span><div class="txt">"Responde por mí" / "Arregla mi respuesta".</div></td>
+        <td><span class="vo">«¿No sabes cómo pedirlo? Tu asistente conoce tu proyecto y te ayuda. No necesitas aprender IA. Solo trabajar.»</span><div class="txt">TEXTO: "No necesitas aprender IA. Solo trabajar."</div></td>
+        <td>8s</td></tr>
+      <tr><td class="beat"><span class="tm">1:06–1:12</span><br>8 · Cierre</td>
+        <td><span class="dot" style="background:var(--ink)"></span>Logo + 3 IAs<div class="txt">Logo TerminalSync, Claude·Codex·Gemini, botón "Empieza gratis".</div></td>
+        <td><span class="vo">«TerminalSync. Cuando una IA se detiene, tu trabajo no.»</span><div class="txt">TEXTO: "Cuando una IA se detiene, tu trabajo no."</div></td>
+        <td>6s</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>Tip de grabación:</b> graba cada demo a pantalla completa (1920×1080) y un poco más largo de lo que necesitas — recortas en el montaje. La voz en off en EN está en el guion (toggle EN); graba las dos versiones con las mismas tomas.</div>
+
+  <h2>Voz en off</h2>
+  <div class="two">
+    <div class="step" style="margin:0"><div class="n" style="background:var(--mob)">A</div><div class="c"><h3>Opción rápida — IA</h3><p>ElevenLabs: pega el guion, elige una voz en español y otra en inglés, descarga los MP3. Suena natural, ~10 min.</p></div></div>
+    <div class="step" style="margin:0"><div class="n" style="background:var(--claude)">B</div><div class="c"><h3>Opción humana</h3><p>Tu propia voz (celular + app de notas de voz), o un locutor en Fiverr para la versión final de campaña.</p></div></div>
+  </div>
+
+  <h2>Música y ritmo</h2>
+  <p class="lede" style="font-size:15px">Música suave, moderna, sin letra (de Epidemic Sound o Artlist). Sube de energía en el beat 3 (Resultado) y en el cierre. Deja ~0.3 s de silencio tras "Todo se detiene" (beat 1) para que pegue el dolor.</p>
+
+  <h2>Checklist de montaje</h2>
+  <ul class="check">
+    <li><b>Pista 1 — Voz en off:</b> base del video; define el ritmo. Corta los demos a la duración de cada frase.</li>
+    <li><b>Pista 2 — Tomas de demos:</b> cada clip en su beat, sincronizado con lo que dice la voz.</li>
+    <li><b>Pista 3 — Textos en pantalla:</b> la frase de cada beat (columna "TEXTO"), abajo o centrada, Geist bold.</li>
+    <li><b>Pista 4 — Música:</b> -18 dB bajo la voz; sube en beat 3 y cierre.</li>
+    <li><b>Transiciones:</b> cortes secos o fundidos rápidos (0.2 s). Nada llamativo.</li>
+    <li><b>Cierre:</b> logo + 3 IAs + "Empieza gratis" + el claim. 6 s, que respire.</li>
+    <li><b>Exporta:</b> MP4 H.264, 1080p. Una versión ES y una EN.</li>
+    <li><b>Entrega:</b> el MP4 del hero va en <b>assets/terminalsync.mp4</b> (reemplaza el placeholder del landing).</li>
+  </ul>
+
+  <h2>¿Contratar a alguien?</h2>
+  <div class="note"><b>Para la v1, no hace falta.</b> Lo armas tú o un asistente con: Screen Studio (tomas) + ElevenLabs (voz) + CapCut (montaje). Contrata editor pro solo cuando ya validaste el mensaje y quieras la versión pulida para anuncios pagos. Lo que NO necesitas: actores, set, cámara, ni grabar la app real — los demos son tus tomas.</div>
+
+  <p class="foot">Guion completo (ES/EN) en <b>guion-video.html</b> · Demos en la grilla del landing (clic para ampliar) · Claims: "Cuando una IA se detiene, tu trabajo no." + "No necesitas aprender IA. Solo trabajar."</p>
+</div>
+</body>
+</html>

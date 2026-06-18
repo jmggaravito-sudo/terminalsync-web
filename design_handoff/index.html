@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Brand" name="TerminalSync Landing (rediseño)" subtitle="A/B: Phosphor vs Spectrum — landing compacta" viewport="1280x900" -->
+<html lang="es" class="var-light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TerminalSync — Memoria, privacidad y movilidad para tu IA</title>
+<meta name="description" content="Tus IAs siguen trabajando aunque cierres todo o cambies de computadora. Cifrado fuerte: ni nosotros podemos leer tu contenido." />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" rx="24" fill="#0f9d6e"/>
+    <rect x="22" y="30" width="56" height="40" rx="6" fill="none" stroke="#fff" stroke-width="4"/>
+    <path d="M33 44l8 6-8 6M52 56h12" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</template>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo" aria-label="TerminalSync">
+      <img class="logo-mark" src="assets/logo.png" alt="" />
+      <span>TerminalSync</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#como">Cómo funciona</a>
+      <a href="#equipo">Tu equipo de IAs</a>
+      <a href="stacks.html">Catálogo</a>
+      <a href="#precios">Precios</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang"><a href="#" data-lang="es" class="on">ES</a><a href="#" data-lang="en">EN</a></div>
+      <div class="nav-dl">
+        <a href="#precios" class="btn btn-primary btn-sm">Descargar</a>
+        <span class="nav-dl-os">macOS · Linux · Windows</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ VARIATION SWITCHER ============ -->
+<div class="vswitch" role="group" aria-label="Cambiar variación de diseño">
+  <span class="lbl">Tema</span>
+  <button data-var="light" class="on">Claro</button>
+  <button data-var="dark">Oscuro</button>
+</div>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="wrap hero-inner">
+    <div class="hero-eyebrow-row reveal">
+      <div class="ai-pills">
+        <span class="ai-pill claude"><img src="https://cdn.simpleicons.org/claude/D97757" alt="" />Claude</span>
+        <span class="ai-pill codex"><img src="assets/openai.svg" alt="" />Codex</span>
+        <span class="ai-pill gemini"><img src="https://cdn.simpleicons.org/googlegemini/4F8DF7" alt="" />Gemini</span>
+      </div>
+      <span class="eyebrow">Piensan, construyen y ejecutan. Tú diriges el equipo.</span>
+    </div>
+
+    <h1 class="reveal rotator"><span class="rot-line" id="hero-rotator">Convierte tus ideas en <span class="grad">herramientas reales</span> hablando con IA.</span></h1>
+    <p class="lede reveal">Describe lo que necesitas. Tus IAs lo crean, lo mantienen y nunca olvidan tu negocio — aunque cierres todo o cambies de computadora.</p>
+    <p class="hero-outputs reveal">Seguimientos · Propuestas · Portales para clientes · Reportes · Automatizaciones — <b>creados por tus IAs mientras trabajas.</b></p>
+
+    <div class="hero-cta reveal">
+      <a href="#precios" class="btn btn-primary">Empieza gratis</a>
+      <a href="#como" class="link-arrow">Mira cómo funciona <span class="ar">→</span></a>
+    </div>
+    <p class="hero-platforms reveal">macOS · Linux · Windows</p>
+
+    <div class="trust reveal">
+      <span>Claude · Codex · Gemini incluidas</span>
+      <span>Listo en minutos</span>
+      <span>Cifrado E2EE · ni nosotros lo leemos</span>
+    </div>
+
+    <!-- Product screenshot -->
+    <h2 class="shot-title reveal">Desde acá se maneja tu empresa.</h2>
+    <div class="hero-shot reveal">
+      <img src="assets/dashboard.png" alt="TerminalSync — tus espacios de trabajo de IA, sincronizados en todas partes" />
+    </div>
+    <p class="sub-flag">Tus espacios de trabajo de IA, sincronizados en todas partes.</p>
+
+    <div class="trustbar reveal">
+      <p class="trustbar-cap">Más de 2,000 empresas ya confían en TerminalSync</p>
+      <div class="trustbar-logos">
+        <img src="https://cdn.simpleicons.org/google/9aa0aa" alt="Google" data-fb="Google" />
+        <img src="https://cdn.simpleicons.org/notion/9aa0aa" alt="Notion" data-fb="Notion" />
+        <img src="https://cdn.simpleicons.org/slack/9aa0aa" alt="Slack" data-fb="Slack" />
+        <img src="https://cdn.simpleicons.org/openai/9aa0aa" alt="OpenAI" data-fb="OpenAI" />
+        <img src="https://cdn.simpleicons.org/amazonaws/9aa0aa" alt="AWS" data-fb="aws" />
+        <img src="https://cdn.simpleicons.org/miro/9aa0aa" alt="Miro" data-fb="Miro" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIDEO CORPORATIVO ============ -->
+<section class="section section--tight" id="video">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Mira TerminalSync en acción</span>
+      <h2 class="h-section">El video, en un minuto.</h2>
+    </div>
+    <div class="video-frame reveal">
+      <video controls playsinline preload="none" poster="assets/video-poster.jpg">
+        <source src="assets/terminalsync.mp4" type="video/mp4" />
+        <source src="assets/terminalsync.mov" type="video/quicktime" />
+      </video>
+      <div class="video-empty" id="videoEmpty">
+        <div class="play"></div>
+        <p>Tu video corporativo va aquí</p>
+        <span>Sube el archivo como <code>assets/terminalsync.mp4</code></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DEMOS ============ -->
+<section class="section" id="demos">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Por qué la gente cambia en 30 segundos</span>
+      <h2 class="h-section">Momentos en los que dices: "¡Guau!"</h2>
+      <p class="sub-section">No es un video: es TerminalSync funcionando. Míralo en vivo y pruébalo tú mismo.</p>
+    </div>
+
+    <div class="demos-grid">
+      <div class="demo-card reveal">
+        <div class="dc-head">
+          <span class="eyebrow">Cambio de IA en un clic</span>
+          <h3>Cada tarea necesita un especialista.</h3>
+          <p>Claude piensa, Codex construye, Gemini analiza. ¿Sin tokens? Sigue con otra IA, sin perder el contexto.</p>
+        </div>
+        <div class="demo-frame">
+          <div class="demo-clickcatch"><span class="demo-cta"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span data-i="verdemo">Ver demo</span></span></div>
+          <div class="bw-bar"><div class="bw-dots"><i></i><i></i><i></i></div><div class="bw-url">Cambio de IA</div></div>
+          <iframe src="demo-cambio-ia.html" title="Demo: cambio de IA en un clic"></iframe>
+        </div>
+      </div>
+
+      <div class="demo-card reveal">
+        <div class="dc-head">
+          <span class="eyebrow">Trabajo terminado</span>
+          <h3>No es un chat. Es trabajo terminado.</h3>
+          <p>Pides un trabajo y las 3 IAs lo hacen: Claude escribe, Codex arma, Gemini revisa — y queda ✅ entregado.</p>
+        </div>
+        <div class="demo-frame">
+          <div class="demo-clickcatch"><span class="demo-cta"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span data-i="verdemo">Ver demo</span></span></div>
+          <div class="bw-bar"><div class="bw-dots"><i></i><i></i><i></i></div><div class="bw-url">Resultados · trabajo entregado</div></div>
+          <iframe src="demo-resultados.html" title="Demo: resultados, trabajo terminado"></iframe>
+        </div>
+      </div>
+
+      <div class="demo-card reveal">
+        <div class="dc-head">
+          <span class="eyebrow">AI Director</span>
+          <h3>Un director que elige por ti.</h3>
+          <p>TerminalSync recomienda el modo correcto para cada tarea — y te dice cuánto ahorras antes de cambiar.</p>
+        </div>
+        <div class="demo-frame">
+          <div class="demo-clickcatch"><span class="demo-cta"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span data-i="verdemo">Ver demo</span></span></div>
+          <div class="bw-bar"><div class="bw-dots"><i></i><i></i><i></i></div><div class="bw-url">AI Director · recomendación</div></div>
+          <iframe src="demo-ai-director.html" title="Demo: AI Director, recomendación de modo"></iframe>
+        </div>
+      </div>
+
+      <div class="demo-card reveal">
+        <div class="dc-head">
+          <span class="eyebrow">Continuidad entre dispositivos</span>
+          <h3>Empieza en el portátil. Sigue en la oficina.</h3>
+          <p>Cierras todo y cambias de computadora — tu sesión, tu contexto y tu memoria te siguen, intactos.</p>
+        </div>
+        <div class="demo-frame">
+          <div class="demo-clickcatch"><span class="demo-cta"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span data-i="verdemo">Ver demo</span></span></div>
+          <div class="bw-bar"><div class="bw-dots"><i></i><i></i><i></i></div><div class="bw-url">Continuidad de sesión</div></div>
+          <iframe src="demo-sync-dispositivos.html" title="Demo: misma sesión en todos tus dispositivos"></iframe>
+        </div>
+      </div>
+
+      <div class="demo-card reveal">
+        <div class="dc-head">
+          <span class="eyebrow">Integraciones</span>
+          <h3>Dale nuevas habilidades a tu equipo de IAs.</h3>
+          <p>Arrastra Gmail, Drive, Notion y más a tu sesión. Sin claves, sin configurar nada. Listo para trabajar.</p>
+        </div>
+        <div class="demo-frame">
+          <div class="demo-clickcatch"><span class="demo-cta"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span data-i="verdemo">Ver demo</span></span></div>
+          <div class="bw-bar"><div class="bw-dots"><i></i><i></i><i></i></div><div class="bw-url">Integraciones · arrastrar y soltar</div></div>
+          <iframe src="demo-conectores.html" title="Demo: integraciones drag & drop"></iframe>
+        </div>
+      </div>
+
+      <div class="demo-card reveal">
+        <div class="dc-head">
+          <span class="eyebrow">Tu trabajo te sigue hasta el chat</span>
+          <h3>Empieza en la terminal. Sigue en WhatsApp y Telegram.</h3>
+          <p>La misma conversación continúa en tu celular — respondes desde el chat y tus IAs siguen trabajando, sin abrir la laptop.</p>
+        </div>
+        <div class="demo-frame">
+          <div class="demo-clickcatch"><span class="demo-cta"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span data-i="verdemo">Ver demo</span></span></div>
+          <div class="bw-bar"><div class="bw-dots"><i></i><i></i><i></i></div><div class="bw-url">Continuidad por mensajería</div></div>
+          <iframe src="demo-mensajeria.html" title="Demo: tu trabajo te sigue hasta el chat (WhatsApp/Telegram)"></iframe>
+        </div>
+      </div>
+
+      <div class="demo-card reveal">
+        <div class="dc-head">
+          <span class="eyebrow">Asistente de prompts</span>
+          <h3>Un asistente de IA para hablar con las IAs.</h3>
+          <p>¿No sabes qué responder? La IA redacta o pule tu mensaje por ti — para que le saques más a cada IA.</p>
+        </div>
+        <div class="demo-frame">
+          <div class="demo-clickcatch"><span class="demo-cta"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span data-i="verdemo">Ver demo</span></span></div>
+          <div class="bw-bar"><div class="bw-dots"><i></i><i></i><i></i></div><div class="bw-url">Asistente de prompts</div></div>
+          <iframe src="demo-asistente-prompts.html" title="Demo: asistente de prompts"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CÓMO FUNCIONA ============ -->
+<section class="section section--tight" id="como">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Cómo funciona</span>
+      <h2 class="h-section">Tres pasos. Sin tecnicismos.</h2>
+    </div>
+    <div class="grid g-3">
+      <div class="card reveal"><span class="num-badge">1</span><h3>Descríbelo</h3><p>Dices lo que necesitas, en tus palabras. Sin código, sin configurar nada.</p></div>
+      <div class="card reveal"><span class="num-badge">2</span><h3>Tu equipo de IAs lo construye</h3><p>Las IAs trabajan en paralelo, lo crean y te lo muestran ya hecho.</p></div>
+      <div class="card reveal"><span class="num-badge">3</span><h3>Sigue funcionando y mejora</h3><p>Queda andando, se mantiene solo y mejora a medida que lo usas.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CÓMO FUNCIONA ============ -->
+
+<!-- ============ CASOS DE USO ============ -->
+<section class="section section--tight" id="casos">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Casos de uso</span>
+      <h2 class="h-section">Hecho para tu negocio, sea cual sea.</h2>
+      <p class="sub-section">Esto es exactamente lo que alguien como tú construye.</p>
+    </div>
+    <div class="reveal">
+      <div class="uc-tabs" id="uc-tabs">
+        <button class="uc-tab on" data-uc="brokers">Brokers</button>
+        <button class="uc-tab" data-uc="consultores">Consultores</button>
+        <button class="uc-tab" data-uc="agencias">Agencias</button>
+        <button class="uc-tab" data-uc="ecommerce">Ecommerce</button>
+        <button class="uc-tab" data-uc="fundadores">Fundadores</button>
+      </div>
+      <div class="uc-panel" id="uc-panel"></div>
+    </div>
+
+    <div class="spec-head reveal">
+      <h3>Especialistas listos para cada función.</h3>
+      <p>Instálalos una vez y funcionan con cualquier IA — Claude, Codex o Gemini.</p>
+    </div>
+    <div class="spec-grid reveal">
+      <div class="spec"><span class="ic">M</span><h4>Marketing</h4><p>Campañas, contenido y seguimiento que no se detiene.</p></div>
+      <div class="spec"><span class="ic">V</span><h4>Ventas</h4><p>Responde, califica y da seguimiento a cada lead.</p></div>
+      <div class="spec"><span class="ic">O</span><h4>Operaciones</h4><p>Ordena procesos, tareas y reportes repetitivos.</p></div>
+      <div class="spec"><span class="ic">S</span><h4>Soporte</h4><p>Atiende las preguntas de siempre, al instante.</p></div>
+      <div class="spec"><span class="ic">D</span><h4>Datos</h4><p>Convierte números sueltos en decisiones.</p></div>
+      <div class="spec"><span class="ic">Co</span><h4>Contenido</h4><p>Escribe en tu voz y a tu ritmo.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LAS 3 IAs + CAMBIO CON UN CLIC ============ -->
+<section class="section" id="equipo">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Tu primer equipo digital · tres IAs</span>
+      <h2 class="h-section">¿Por qué conformarte con una sola IA?</h2>
+      <p class="sub-section">Ten a Claude, Codex y Gemini en todos tus proyectos. Cada una en lo que es mejor — y cambias de una a otra con un clic, sin perder el contexto.</p>
+    </div>
+
+    <div class="team-grid">
+      <div class="ai-card claude reveal">
+        <div class="head"><span class="av"><img src="https://cdn.simpleicons.org/claude/D97757" alt="Claude" /></span><div><div class="role">Piensa</div><h4>Claude</h4></div></div>
+        <p>Análisis, estrategia y redacción. Conoce tu negocio y piensa contigo.</p>
+      </div>
+      <div class="ai-card codex reveal">
+        <div class="head"><span class="av"><img src="assets/openai.svg" alt="OpenAI Codex" /></span><div><div class="role">Construye</div><h4>Codex</h4></div></div>
+        <p>Crea y automatiza el trabajo. Mismo contexto, otra especialista.</p>
+      </div>
+      <div class="ai-card gemini reveal">
+        <div class="head"><span class="av"><img src="https://cdn.simpleicons.org/googlegemini/4F8DF7" alt="Google Gemini" /></span><div><div class="role">Analiza</div><h4>Gemini</h4></div></div>
+        <p>Lee PDFs, imágenes y videos enteros. Gratis, sin configurar nada.</p>
+      </div>
+    </div>
+
+    <!-- One-click relay highlight -->
+    <div class="relay reveal">
+      <div>
+        <span class="eyebrow">Cambio con un clic</span>
+        <h3>¿Se te acabaron los tokens? Cambia de IA y conserva todo.</h3>
+        <p>Cuando una IA llega a su límite, pasas a otra con un solo clic y sigues exactamente donde ibas — mismo proyecto, mismas decisiones, mismo contexto. Tu trabajo nunca se detiene.</p>
+      </div>
+      <div class="relay-vis">
+        <div class="relay-flow">
+          <div class="relay-ai dim claude">
+            <div class="nm"><img src="https://cdn.simpleicons.org/claude/D97757" alt="" />Claude</div>
+            <span class="st">tokens agotados</span>
+          </div>
+          <div class="relay-switch"><span class="ico">⇄</span>1 clic</div>
+          <div class="relay-ai on codex">
+            <div class="nm"><img src="assets/openai.svg" alt="" />Codex</div>
+            <span class="st">continúa</span>
+          </div>
+        </div>
+        <div class="relay-ctx">
+          <span>Proyecto</span>
+          <span>Memoria</span>
+          <span>Decisiones</span>
+          <span>Dónde ibas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="continuity reveal">
+      <div class="ct"><span class="k">01</span><span class="t">Detecta el bloqueo</span><span class="d">Nota cuando una IA llega a su límite, se cae o deja de responder.</span></div>
+      <div class="ct"><span class="k">02</span><span class="t">Cambia de IA por ti</span><span class="d">Pasa el trabajo a otra IA disponible. Tú no haces nada.</span></div>
+      <div class="ct"><span class="k">03</span><span class="t">Lleva tu contexto</span><span class="d">Retoma con el proyecto, las decisiones y dónde ibas, intactos.</span></div>
+      <div class="ct"><span class="k">04</span><span class="t">Sigue donde quedaste</span><span class="d">No empieza de cero: continúa la tarea en el punto exacto del corte.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MEMORIA: fusionada en "El cambio real" ============ -->
+
+<!-- ============ CALCULADORA ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Lo que cuesta NO tenerlo</span>
+      <h2 class="h-section">Estás dejando <span id="o-headline">$40,836</span> sobre la mesa cada año.</h2>
+      <p class="sub-section" style="margin-inline:auto">No compras IA: ganas horas, ahorras dinero y haces más sin contratar a nadie. Mueve los sliders con tu realidad.</p>
+    </div>
+    <div class="calc">
+      <div class="calc-controls reveal">
+        <div class="calc-row">
+          <div class="top"><label>Tu hora vale</label><span class="val" id="v-rate">$50/h</span></div>
+          <input type="range" id="r-rate" min="15" max="200" step="5" value="50" />
+        </div>
+        <div class="calc-row">
+          <div class="top"><label>Horas/día con IA</label><span class="val" id="v-hours">6 h</span></div>
+          <input type="range" id="r-hours" min="1" max="12" step="1" value="6" />
+        </div>
+        <div class="calc-row">
+          <div class="top"><label>Días/mes trabajando</label><span class="val" id="v-days">22 días</span></div>
+          <input type="range" id="r-days" min="5" max="30" step="1" value="22" />
+        </div>
+        <div class="calc-row">
+          <div class="top"><label>Mezcla de tareas pesadas</label><span class="val" id="v-mix">50%</span></div>
+          <input type="range" id="r-mix" min="0" max="100" step="5" value="50" />
+          <div class="hint">Más reasoning pesado encarece usar solo Claude. El mix rutea cada tarea al modelo correcto.</div>
+        </div>
+        <div class="calc-row">
+          <div class="top"><label>Horas/semana re-explicando contexto</label><span class="val" id="v-reexp">3 h</span></div>
+          <input type="range" id="r-reexp" min="0" max="10" step="1" value="3" />
+          <div class="hint">Con memoria persistente no repites quién eres ni dónde quedaste.</div>
+        </div>
+      </div>
+      <div class="calc-out reveal">
+        <div class="save" style="margin-top:0;margin-bottom:18px">
+          <span class="k">Ahorras al año</span>
+          <div class="big" id="o-save">$40,836</div>
+          <div class="roi" id="o-roi">ROI 179× tu suscripción Pro</div>
+        </div>
+        <div class="o-row"><span class="lbl">Hoy, con 1 sola IA</span><span class="n" id="o-single">$95,040</span></div>
+        <div class="o-row"><span class="lbl">Con TerminalSync</span><span class="n" id="o-ts">$62,004</span></div>
+        <div class="o-row"><span class="lbl">Recuperado por memoria</span><span class="n" id="o-mem">+$7,800</span></div>
+        <a href="#precios" class="btn btn-primary" style="margin-top:18px;justify-content:center">Empieza a ahorrar gratis</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============ COMPARACIÓN UNIFICADA (sin / con) ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">El cambio real</span>
+      <h2 class="h-section">Tu IA te conoce, te recuerda y nunca pierde el hilo.</h2>
+      <p class="sub-section">Antes: cada día explicas todo de cero y pierdes el contexto al cerrar. Después: tu IA aprende tu negocio y sigue donde la dejaste, hagas lo que hagas.</p>
+    </div>
+    <div class="compare">
+      <div class="cmp-col without reveal">
+        <span class="label">Sin TerminalSync</span>
+        <h3>Una IA suelta, sin memoria, que tienes que vigilar.</h3>
+        <ul class="cmp-list">
+          <li><span class="mk">✕</span>Cada día le explicas tu negocio otra vez</li>
+          <li><span class="mk">✕</span>Cierras la app y pierdes la conversación</li>
+          <li><span class="mk">✕</span>Reinicias el equipo y tu IA empieza de cero</li>
+          <li><span class="mk">✕</span>Quieres seguir desde el celular y no puedes</li>
+          <li><span class="mk">✕</span>Tus claves quedan en archivos sueltos</li>
+          <li><span class="mk">✕</span>El contexto no viaja entre IAs: te repites</li>
+        </ul>
+      </div>
+      <div class="cmp-col with reveal">
+        <span class="label">Con TerminalSync</span>
+        <h3>Un equipo de IAs que te conoce y nunca pierde el hilo.</h3>
+        <ul class="cmp-list">
+          <li><span class="mk">✓</span>Aprende tu negocio y te entiende más cada día</li>
+          <li><span class="mk">✓</span>Cierras todo, vuelves y tu IA sigue trabajando</li>
+          <li><span class="mk">✓</span>Reinicias el equipo y retoma justo donde ibas</li>
+          <li><span class="mk">✓</span>Generas un enlace y abres la sesión en tu celular</li>
+          <li><span class="mk">✓</span>Bóveda cifrada con tus claves y secretos</li>
+          <li><span class="mk">✓</span>Contexto compartido entre todas tus IAs</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TABLA COMPARATIVA ============ -->
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">El comparativo honesto</span>
+      <h2 class="h-section">Lo que ninguna otra IA hace por ti</h2>
+    </div>
+    <div class="cmp-table-wrap reveal">
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th class="feat-col">Capacidad</th>
+            <th class="us">TerminalSync</th>
+            <th>Claude solo</th>
+            <th>Codex solo</th>
+            <th>Gemini solo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="feat-col">Retoma donde quedaste</td><td class="us"><span class="mark yes">Sí</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td></tr>
+          <tr><td class="feat-col">Varias IAs juntas (Claude + Codex + Gemini)</td><td class="us"><span class="mark yes">Sí</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td></tr>
+          <tr><td class="feat-col">Sigue trabajando aunque cierres todo</td><td class="us"><span class="mark yes">Sí</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td></tr>
+          <tr><td class="feat-col">La misma sesión en navegador o celular</td><td class="us"><span class="mark yes">Sí</span></td><td><span class="mark partial">Parcial</span></td><td><span class="mark no">No</span></td><td><span class="mark partial">Parcial</span></td></tr>
+          <tr><td class="feat-col">Avisos por correo y Telegram</td><td class="us"><span class="mark yes">Sí</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td></tr>
+          <tr><td class="feat-col">Cifrado fuerte · ni nosotros lo leemos</td><td class="us"><span class="mark yes">Sí</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td></tr>
+          <tr><td class="feat-col">Bóveda de claves integrada</td><td class="us"><span class="mark yes">Sí</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td></tr>
+          <tr><td class="feat-col">Memoria entre sesiones</td><td class="us"><span class="mark yes">Sí</span></td><td><span class="mark partial">Parcial</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td></tr>
+          <tr><td class="feat-col">Tus archivos en tu propia nube (sin amarres)</td><td class="us"><span class="mark yes">Sí</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td><td><span class="mark no">No</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="sub-flag">Comparativo basado en información pública de cada herramienta a 2026.</p>
+  </div>
+</section>
+
+<!-- ============ EXTENSIÓN CHROME ============ -->
+<section class="section section--tight" id="chrome">
+  <div class="wrap">
+    <div class="band reveal">
+      <div class="band-2col">
+        <div>
+          <span class="eyebrow">También en Chrome</span>
+          <h3 style="margin-top:16px">Las 3 IAs lado a lado, también desde el navegador.</h3>
+          <p>Sin instalar nada. Pegas tus 3 API keys (BYOK), abres el popup y preguntas lo mismo a Claude, Codex y Gemini en paralelo desde cualquier pestaña.</p>
+          <div class="band-features">
+            <span class="bf">BYOK · tú pagas directo</span>
+            <span class="bf">Memoria por proveedor</span>
+            <span class="bf">Cost meter en vivo</span>
+            <span class="bf">Markdown + copy</span>
+          </div>
+          <div class="hero-cta" style="margin-top:24px">
+            <a href="#" class="btn btn-primary btn-sm">Probar en early access</a>
+            <a href="#precios" class="link-arrow">Comparar con la app <span class="ar">→</span></a>
+          </div>
+        </div>
+        <div class="chrome-mock" data-surface="dark">
+          <div class="ch-bar"><div class="ws-dots"><i></i><i></i><i></i></div></div>
+          <div class="ch-cols">
+            <div class="ch-col"><div class="nm"><span class="d" style="background:var(--claude)"></span>Claude</div><div class="ln" style="width:90%"></div><div class="ln" style="width:70%"></div><div class="ln" style="width:80%"></div></div>
+            <div class="ch-col"><div class="nm"><span class="d" style="background:var(--codex)"></span>Codex</div><div class="ln" style="width:80%"></div><div class="ln" style="width:85%"></div><div class="ln" style="width:60%"></div></div>
+            <div class="ch-col"><div class="nm"><span class="d" style="background:var(--gemini)"></span>Gemini</div><div class="ln" style="width:75%"></div><div class="ln" style="width:90%"></div><div class="ln" style="width:65%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRECIOS ============ -->
+<section class="section" id="precios">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Precios</span>
+      <h2 class="h-section">Simple, como debe ser.</h2>
+      <p class="sub-section">Empieza gratis. 7 días con todas las funciones de Max — cancelas antes del día 7 y no se cobra nada.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price reveal">
+        <div class="tier">Free</div>
+        <div class="amt">$0<span> / para siempre</span></div>
+        <ul>
+          <li>3 terminales activas con persistencia real</li>
+          <li>Claude Code, Codex, Gemini CLI o sin IA</li>
+          <li>AES-256 · ni nosotros lo leemos</li>
+          <li>Sync con Google Drive (tu cuenta)</li>
+          <li>2 dispositivos vinculados</li>
+        </ul>
+        <a href="#" class="btn btn-ghost">Descargar gratis</a>
+      </div>
+      <div class="price featured reveal">
+        <span class="ribbon">Más popular</span>
+        <div class="free-trial">7 días gratis</div>
+        <div class="tier">Pro</div>
+        <div class="amt">$19<span> / mes</span></div>
+        <ul>
+          <li>10 terminales con persistencia + resurrección</li>
+          <li>Claude + Codex + Gemini en un workspace</li>
+          <li>Memoria persistente entre IAs</li>
+          <li>Vault de secretos por proyecto</li>
+          <li>Sesión en cualquier dispositivo (móvil + navegador)</li>
+          <li>Avisos por Email / Telegram</li>
+          <li>Extensión Chrome Pro incluida</li>
+        </ul>
+        <a href="#" class="btn btn-primary">Probar 7 días gratis</a>
+      </div>
+      <div class="price reveal">
+        <div class="free-trial">7 días gratis</div>
+        <div class="tier">Max</div>
+        <div class="amt">$39<span> / mes</span></div>
+        <ul>
+          <li class="more">Todo lo de Pro, más:</li>
+          <li>Terminales ilimitadas</li>
+          <li>Hasta 10 dispositivos</li>
+          <li>Comandos, herramientas y MCPs por equipo</li>
+          <li>Pair programming read-only</li>
+          <li>Soporte prioritario por email</li>
+        </ul>
+        <a href="#" class="btn btn-ghost">Probar 7 días gratis</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SEGURIDAD ============ -->
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="band reveal">
+      <span class="eyebrow">Seguridad y privacidad</span>
+      <h3 style="margin-top:16px;max-width:24ch">No sincronizamos archivos. Sincronizamos continuidad.</h3>
+      <p>Tus secretos, ajustes y sesiones se cifran en tu computadora antes de salir. Van a TU nube, no a la nuestra. El sistema de cifrado será auditable públicamente.</p>
+      <div class="band-features">
+        <span class="bf">Cifrado de grado bancario</span>
+        <span class="bf">Llaves solo en tu dispositivo</span>
+        <span class="bf">Sistema auditable</span>
+        <span class="bf">Sin amarres con proveedores</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Preguntas frecuentes</span>
+      <h2 class="h-section">Lo que la gente nos pregunta primero</h2>
+    </div>
+    <div class="faq reveal" id="faq">
+      <div class="faq-item">
+        <button class="faq-q">¿En qué se diferencia de guardar mi carpeta en Drive o iCloud?<span class="pm"></span></button>
+        <div class="faq-a"><div class="inner">Drive e iCloud guardan tus archivos sin cifrar — el proveedor ve el contenido. TerminalSync cifra TODO en tu computadora antes de salir. Llegan a tu Drive, iCloud o Dropbox ilegibles para todos: ni Google, ni Apple, ni las IAs, ni nosotros podemos abrirlos. La llave vive solo en tu dispositivo.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">¿Mis archivos quedan en su servidor?<span class="pm"></span></button>
+        <div class="faq-a"><div class="inner">No. Corre en tu computadora y sincroniza con tu propia nube. Nosotros no almacenamos tus archivos ni podríamos leerlos: están cifrados de extremo a extremo.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">¿Funciona si solo tengo una computadora?<span class="pm"></span></button>
+        <div class="faq-a"><div class="inner">Sí. La persistencia, la memoria y la bóveda de secretos funcionan en un solo equipo. La sincronización entre dispositivos es un extra cuando lo necesites.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">¿Qué pasa si cancelo mi suscripción?<span class="pm"></span></button>
+        <div class="faq-a"><div class="inner">Tus archivos siguen siendo tuyos y en tu nube. Bajas al plan Free con 3 terminales; nada se borra ni se queda atrapado.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">¿Funciona con cualquier IA o solo con Claude y Codex?<span class="pm"></span></button>
+        <div class="faq-a"><div class="inner">Claude, Codex y Gemini de fábrica, en paralelo y con contexto compartido. También puedes trabajar sin IA, como una terminal persistente normal.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">¿Necesito configurar algo?<span class="pm"></span></button>
+        <div class="faq-a"><div class="inner">No. Setup-on-arrival: abres el proyecto y tus terminales, herramientas y memoria ya están listas. La memoria persistente viene activa desde la primera sesión.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AFILIADOS ============ -->
+<section class="section section--tight" id="afiliados">
+  <div class="wrap">
+    <div class="band reveal">
+      <div class="band-2col">
+        <div>
+          <span class="eyebrow">Programa de afiliados</span>
+          <h3 style="margin-top:16px">Recomienda privacidad y persistencia.</h3>
+          <p>Si produces contenido de IA, automatización o productividad, gana 30% recurrente de por vida. Mientras pague, tú cobras.</p>
+          <div class="hero-cta" style="margin-top:22px">
+            <a href="#" class="btn btn-primary btn-sm">Registrarme como afiliado</a>
+            <a href="#" class="link-arrow">Leer términos <span class="ar">→</span></a>
+          </div>
+        </div>
+        <div class="band-features" style="align-content:center">
+          <span class="bf">30% recurrente</span>
+          <span class="bf">Pagos de por vida</span>
+          <span class="bf">Assets listos para usar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="section final">
+  <div class="wrap">
+    <span class="eyebrow reveal" style="display:inline-flex">Pruébalo gratis</span>
+    <h2 class="h-section reveal">Deja de mirar la pantalla esperando a tu IA.</h2>
+    <p class="sub-section reveal" style="margin-inline:auto">7 días de Pro gratis. Cancelas antes del día 7 y no te cobramos. Si te convence, te quedas.</p>
+    <div class="hero-cta reveal" style="justify-content:center;margin-top:30px">
+      <a href="#precios" class="btn btn-primary">Descargar gratis</a>
+      <a href="#precios" class="btn btn-ghost">Ver precios</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <a href="#" class="logo"><img class="logo-mark" src="assets/logo.png" alt="" /><span>TerminalSync</span></a>
+        <p class="tag">Separa tu trabajo de tu máquina.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="Facebook">FB</a>
+          <a href="#" aria-label="GitHub">GH</a>
+        </div>
+      </div>
+      <div><h5>Producto</h5><ul><li><a href="#como">Funciones</a></li><li><a href="#precios">Precios</a></li><li><a href="#chrome">Extensión Chrome</a></li><li><a href="stacks.html">Catálogo</a></li><li><a href="skills.html">Asistentes</a></li></ul></div>
+      <div><h5>Compañía</h5><ul><li><a href="#">Nosotros</a></li><li><a href="#">Blog</a></li><li><a href="#">Contacto</a></li><li><a href="#afiliados">Afiliados</a></li></ul></div>
+      <div><h5>Legal</h5><ul><li><a href="#">Privacidad</a></li><li><a href="#">Términos</a></li><li><a href="#">Seguridad</a></li><li><a href="#">Afiliados</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 TerminalSync. Todos los derechos reservados.</span>
+      <span>Cifrado fuerte antes de salir de tu computadora.</span>
+    </div>
+  </div>
+</footer>
+
+</main>
+
+<script src="i18n.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Brand logo fallback (if any external icon fails) ---------- */
+  // trust-bar logos fallback to brand name text
+  document.querySelectorAll('.trustbar-logos img').forEach(img => {
+    const swap = () => {
+      if (img.dataset.fbd) return; img.dataset.fbd = '1';
+      const s = document.createElement('span');
+      s.className = 'lb-fb'; s.textContent = img.dataset.fb || img.alt || '';
+      img.replaceWith(s);
+    };
+    if (img.complete && img.naturalWidth === 0) swap();
+    img.addEventListener('error', swap);
+  });
+
+  document.querySelectorAll('.ai-pill img, .ai-card .av img, .relay-ai .nm img').forEach(img => {
+    const swap = () => {
+      if (img.dataset.fbd) return; img.dataset.fbd = '1';
+      const host = img.closest('.claude, .codex, .gemini');
+      const map = { claude: ['C', 'var(--claude)'], codex: ['Cx', 'var(--codex)'], gemini: ['G', 'var(--gemini)'] };
+      const key = host && (host.classList.contains('claude') ? 'claude' : host.classList.contains('codex') ? 'codex' : 'gemini');
+      const [txt, col] = map[key] || ['AI', 'currentColor'];
+      const s = document.createElement('span');
+      s.className = 'logo-fb'; s.textContent = txt; s.style.color = col;
+      img.replaceWith(s);
+    };
+    if (img.complete && img.naturalWidth === 0) swap();
+    img.addEventListener('error', swap);
+  });
+
+  /* ---------- Rotating hero headline ---------- */
+  const rot = document.getElementById('hero-rotator');
+  if (rot) {
+    const phrasesByLang = {
+      es: [
+        'Convierte tus ideas en <span class="grad">herramientas reales</span> hablando con tus IAs.',
+        'Tu primer <span class="grad">equipo digital.</span> Construye sistemas hablando.',
+        'Describe el problema. <span class="grad">Tus IAs construyen la solución.</span>',
+        '¿Por qué conformarte con <span class="grad">una sola IA</span>?',
+        'Claude, Codex y Gemini. <span class="grad">Una sola memoria.</span>',
+        'La forma más fácil de <span class="grad">crear software para tu negocio.</span>',
+        'Tu oficina cabe en <span class="grad">cualquier computadora.</span>',
+        '<span class="grad">Multiplica tu capacidad</span> sin multiplicar tu nómina.',
+        'No sincronizamos archivos. <span class="grad">Sincronizamos continuidad.</span>'
+      ],
+      en: [
+        'Turn your ideas into <span class="grad">real tools</span> by talking to your AIs.',
+        'Your first <span class="grad">digital team.</span> Build systems just by talking.',
+        'Describe the problem. <span class="grad">Your AIs build the solution.</span>',
+        'Why settle for <span class="grad">a single AI</span>?',
+        'Claude, Codex and Gemini. <span class="grad">One shared memory.</span>',
+        'The easiest way to <span class="grad">build software for your business.</span>',
+        'Your office fits on <span class="grad">any computer.</span>',
+        '<span class="grad">Multiply your capacity</span> without multiplying your payroll.',
+        'We don\u2019t sync files. <span class="grad">We sync continuity.</span>'
+      ]
+    };
+    const lang = () => (window.TS_getLang ? window.TS_getLang() : 'es');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let i = 0;
+    window.addEventListener('ts-lang', () => { rot.innerHTML = phrasesByLang[lang()][i]; });
+    setInterval(() => {
+      const phrases = phrasesByLang[lang()];
+      i = (i + 1) % phrases.length;
+      if (reduce) { rot.innerHTML = phrases[i]; return; }
+      rot.style.opacity = '0';
+      rot.style.transform = 'translateY(12px)';
+      setTimeout(() => {
+        rot.innerHTML = phrases[i];
+        rot.style.opacity = '1';
+        rot.style.transform = 'none';
+      }, 420);
+    }, 6500);
+  }
+
+  /* ---------- Theme switcher (Claro / Oscuro) ---------- */
+  const root = document.documentElement;
+  const vbtns = document.querySelectorAll('.vswitch button');
+  const saved = localStorage.getItem('ts-theme') || 'light';
+  setVar(saved);
+  vbtns.forEach(b => b.addEventListener('click', () => setVar(b.dataset.var)));
+  function setVar(name) {
+    root.classList.remove('var-light', 'var-dark', 'var-phosphor', 'var-spectrum');
+    root.classList.add('var-' + name);
+    vbtns.forEach(b => b.classList.toggle('on', b.dataset.var === name));
+    localStorage.setItem('ts-theme', name);
+  }
+
+  /* ---------- Nav shadow on scroll ---------- */
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ---------- FAQ accordion ---------- */
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const q = item.querySelector('.faq-q');
+    const a = item.querySelector('.faq-a');
+    q.addEventListener('click', () => {
+      const open = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(o => {
+        o.classList.remove('open');
+        o.querySelector('.faq-a').style.maxHeight = null;
+      });
+      if (!open) { item.classList.add('open'); a.style.maxHeight = a.scrollHeight + 'px'; }
+    });
+  });
+
+  /* ---------- Use-case tabs ---------- */
+  const ucData = {
+    es: {
+      brokers: { problem: 'Los leads y los seguimientos se escapan; los negocios se enfrían.', transform: 'Nunca pierdas un negocio por un seguimiento olvidado.', builds: ['"Recuérdame a quién llamar hoy"', '"Redacta seguimientos cálidos en mi voz"', '"Muéstrame el estado de cada negocio"'] },
+      consultores: { problem: 'Cada cliente arranca de cero y repites el mismo contexto sin parar.', transform: 'Tu IA conoce a cada cliente y entrega más rápido.', builds: ['"Resume la última reunión y arma el plan"', '"Prepara la propuesta con mi tono"', '"Dame el estado de cada proyecto"'] },
+      agencias: { problem: 'Mil tareas repetitivas y entregables que se atrasan.', transform: 'El equipo de IAs ejecuta en paralelo mientras tú apruebas.', builds: ['"Genera 10 variantes de copy para el cliente"', '"Arma el reporte mensual de campañas"', '"Convierte el brief en un brief técnico"'] },
+      ecommerce: { problem: 'Pedidos, soporte y datos dispersos en mil herramientas.', transform: 'Todo tu negocio en un solo lugar que se mantiene solo.', builds: ['"Responde las preguntas de siempre"', '"Dashboard de ventas en vivo"', '"Detecta productos que se están agotando"'] },
+      fundadores: { problem: 'Haces de todo y el contexto vive solo en tu cabeza.', transform: 'Tu IA recuerda cada decisión y nunca se detiene.', builds: ['"Convierte esta idea en una landing"', '"Automatiza el onboarding de clientes"', '"Resume métricas clave cada lunes"'] }
+    },
+    en: {
+      brokers: { problem: 'Leads and follow-ups slip away; deals go cold.', transform: 'Never lose a deal to a forgotten follow-up.', builds: ['"Remind me who to call today"', '"Draft warm follow-ups in my voice"', '"Show me the status of every deal"'] },
+      consultores: { problem: 'Every client starts from scratch and you repeat the same context endlessly.', transform: 'Your AI knows each client and delivers faster.', builds: ['"Summarize the last meeting and draft the plan"', '"Prepare the proposal in my tone"', '"Give me the status of every project"'] },
+      agencias: { problem: 'A thousand repetitive tasks and deliverables falling behind.', transform: 'The AI team runs in parallel while you approve.', builds: ['"Generate 10 copy variants for the client"', '"Build the monthly campaign report"', '"Turn the brief into a technical brief"'] },
+      ecommerce: { problem: 'Orders, support and data scattered across a thousand tools.', transform: 'Your whole business in one place that maintains itself.', builds: ['"Answer the usual questions"', '"Live sales dashboard"', '"Flag products running low"'] },
+      fundadores: { problem: 'You do everything and the context lives only in your head.', transform: 'Your AI remembers every decision and never stops.', builds: ['"Turn this idea into a landing page"', '"Automate client onboarding"', '"Summarize key metrics every Monday"'] }
+    }
+  };
+  const ucLabels = {
+    es: { p: 'El problema', t: 'La transformación', b: 'Lo que construye' },
+    en: { p: 'The problem', t: 'The transformation', b: 'What it builds' }
+  };
+  const ucPanel = document.getElementById('uc-panel');
+  let ucCurrent = 'brokers';
+  function ucLang() { return (window.TS_getLang ? window.TS_getLang() : 'es'); }
+  function renderUC(key) {
+    ucCurrent = key;
+    const L = ucLang();
+    const d = ucData[L][key];
+    const lb = ucLabels[L];
+    ucPanel.innerHTML =
+      '<div class="blk"><div class="k">' + lb.p + '</div><div class="v">' + d.problem + '</div></div>' +
+      '<div class="blk transform"><div class="k">' + lb.t + '</div><div class="v">' + d.transform + '</div></div>' +
+      '<div class="blk"><div class="k">' + lb.b + '</div><ul>' + d.builds.map(b => '<li>' + b + '</li>').join('') + '</ul></div>';
+  }
+  document.querySelectorAll('.uc-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.uc-tab').forEach(x => x.classList.remove('on'));
+      t.classList.add('on');
+      renderUC(t.dataset.uc);
+    });
+  });
+  renderUC('brokers');
+  window.addEventListener('ts-lang', () => renderUC(ucCurrent));
+
+  /* ---------- Savings calculator ---------- */
+  const el = id => document.getElementById(id);
+  const inputs = { rate: el('r-rate'), hours: el('r-hours'), days: el('r-days'), mix: el('r-mix'), reexp: el('r-reexp') };
+  const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+  function calc() {
+    const rate = +inputs.rate.value, hours = +inputs.hours.value, days = +inputs.days.value;
+    const mix = +inputs.mix.value / 100, reexp = +inputs.reexp.value;
+    const L = (window.TS_getLang ? window.TS_getLang() : 'es');
+    el('v-rate').textContent = '$' + rate + '/h';
+    el('v-hours').textContent = hours + ' h';
+    el('v-days').textContent = days + (L === 'en' ? ' days' : ' días');
+    el('v-mix').textContent = inputs.mix.value + '%';
+    el('v-reexp').textContent = reexp + ' h';
+    const hoursYear = hours * days * 12;
+    const singleApi = hoursYear * (6 + mix * 8);
+    const mixApi = hoursYear * (0.9 + mix * 1.2);
+    const timeFull = hoursYear * rate;
+    const timeSaved = timeFull * 0.25;
+    const memRecovered = reexp * 52 * rate;
+    const proCost = 19 * 12;
+    const single = singleApi + timeFull;
+    const ts = mixApi + (timeFull - timeSaved) + proCost;
+    const save = single - ts + memRecovered;
+    el('o-single').textContent = fmt(single);
+    el('o-ts').textContent = fmt(ts);
+    el('o-mem').textContent = '+' + fmt(memRecovered);
+    el('o-save').textContent = fmt(save);
+    var hl = el('o-headline'); if (hl) hl.textContent = fmt(save);
+    var L2 = (window.TS_getLang ? window.TS_getLang() : 'es');
+    el('o-roi').textContent = 'ROI ' + Math.round(save / proCost) + (L2 === 'en' ? '× your Pro subscription' : '× tu suscripción Pro');
+  }
+  Object.values(inputs).forEach(i => i && i.addEventListener('input', calc));
+  calc();
+  window.addEventListener('ts-lang', calc);
+
+  /* ---------- Claude API relay for embedded demos (iframes lack window.claude) ---------- */
+  window.addEventListener('message', async (e) => {
+    const d = e.data;
+    if (!d || d.type !== 'ts-claude-complete') return;
+    try {
+      const text = await window.claude.complete(d.payload);
+      e.source.postMessage({ type: 'ts-claude-result', id: d.id, text }, '*');
+    } catch (err) {
+      e.source.postMessage({ type: 'ts-claude-error', id: d.id, error: String((err && err.message) || err) }, '*');
+    }
+  });
+
+  /* ---------- Corporate video: hide placeholder once a source loads ---------- */
+  const vid = document.querySelector('.video-frame video');
+  if (vid) {
+    const empty = document.getElementById('videoEmpty');
+    const hide = () => { if (empty) empty.style.display = 'none'; };
+    vid.addEventListener('loadeddata', hide);
+    vid.addEventListener('play', hide);
+  }
+
+  /* ---------- Reveal on scroll (safe: hide only via JS, with failsafe) ---------- */
+  const reveals = document.querySelectorAll('.reveal');
+  reveals.forEach((r, i) => {
+    r.classList.add('pre');
+    r.style.transitionDelay = Math.min(i % 4, 3) * 60 + 'ms';
+  });
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.remove('pre'); io.unobserve(e.target); } });
+  }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
+  reveals.forEach(r => io.observe(r));
+  // Failsafe: ensure everything shows even if the observer misbehaves.
+  setTimeout(() => reveals.forEach(r => r.classList.remove('pre')), 2000);
+})();
+</script>
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <div class="lb-scrim" data-close></div>
+  <div class="lb-panel" role="dialog" aria-modal="true" aria-label="Demo ampliado">
+    <div class="lb-bar">
+      <div class="dots"><i></i><i></i><i></i></div>
+      <span class="lb-title" id="lbTitle"></span>
+      <button class="lb-close" data-close type="button"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg><span data-i="cerrar">Cerrar</span></button>
+    </div>
+    <div class="lb-body" id="lbBody"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var lb = document.getElementById('lightbox');
+  var lbBody = document.getElementById('lbBody');
+  var lbTitle = document.getElementById('lbTitle');
+  var placeholder = null;   // marks where the iframe came from
+  var activeFrame = null;
+
+  function openDemo(frame) {
+    var iframe = frame.querySelector('iframe');
+    if (!iframe) return;
+    var urlEl = frame.querySelector('.bw-url');
+    lbTitle.textContent = urlEl ? urlEl.textContent : '';
+    placeholder = document.createComment('demo-slot');
+    iframe.parentNode.insertBefore(placeholder, iframe);
+    lbBody.appendChild(iframe);          // moving reloads the iframe → demo replays
+    activeFrame = frame;
+    lb.classList.add('open');
+    lb.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDemo() {
+    if (!activeFrame) return;
+    var iframe = lbBody.querySelector('iframe');
+    if (iframe && placeholder) placeholder.parentNode.replaceChild(iframe, placeholder);
+    placeholder = null; activeFrame = null;
+    lb.classList.remove('open');
+    lb.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.demo-card:not(.coming) .demo-frame').forEach(function (frame) {
+    frame.addEventListener('click', function (e) {
+      // ignore clicks that land inside the live iframe? iframe captures its own; frame-level handles chrome + expand btn
+      openDemo(frame);
+    });
+  });
+  lb.addEventListener('click', function (e) { if (e.target.closest('[data-close]')) closeDemo(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeDemo(); });
+})();
+</script>
+</body>
+</html>

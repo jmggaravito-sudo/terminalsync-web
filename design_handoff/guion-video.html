@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Brand" name="Guion video corporativo (ES)" subtitle="~62s · gancho tokens → cambio de IA → director → movilidad → cierre" viewport="900x1400" -->
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Guion · Video corporativo TerminalSync</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f7f5f1; --paper:#fffefb; --ink:#16181d; --ink2:#565b64; --ink3:#8b909a;
+    --line:rgba(24,26,31,.10); --line2:rgba(24,26,31,.16);
+    --accent:#0f9d6e; --accent-soft:rgba(15,157,110,.10); --accent-line:rgba(15,157,110,.30);
+    --claude:#d97757; --codex:#1f9d63; --gemini:#3f74f5; --mob:#2f5fd6;
+    --sans:'Geist',system-ui,sans-serif; --mono:'Geist Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:860px;margin:0 auto;padding:56px 28px 90px;}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:9px;margin-bottom:18px;}
+  .eyebrow::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--accent);box-shadow:0 0 12px var(--accent);}
+  h1{font-size:clamp(30px,5vw,46px);letter-spacing:-.035em;line-height:1.08;margin:0 0 14px;}
+  .lede{font-size:18px;color:var(--ink2);max-width:60ch;margin:0 0 10px;}
+  .meta{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 8px;}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--ink2);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px 13px;}
+  .chip.accent{color:var(--accent);background:var(--accent-soft);border-color:var(--accent-line);}
+
+  .beat{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-top:18px;box-shadow:0 1px 0 rgba(20,22,28,.02);}
+  .beat.mob{border-left:4px solid var(--mob);}
+  .beat.hook{border-left:4px solid var(--claude);}
+  .beat.diff{border-left:4px solid var(--accent);}
+  .beat-top{display:flex;align-items:baseline;gap:14px;margin-bottom:14px;flex-wrap:wrap;}
+  .t{font-family:var(--mono);font-size:13px;font-weight:500;color:#fff;background:var(--ink);border-radius:7px;padding:4px 10px;white-space:nowrap;}
+  .beat.mob .t{background:var(--mob);} .beat.hook .t{background:var(--claude);} .beat.diff .t{background:var(--accent);}
+  .beat h3{font-size:18px;margin:0;letter-spacing:-.02em;}
+  .beat .tag{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-left:auto;}
+  .vo{font-size:17px;line-height:1.6;margin:0 0 16px;}
+  .vo b{font-weight:600;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:620px){.grid2{grid-template-columns:1fr;}}
+  .cell{border:1px solid var(--line);border-radius:11px;padding:12px 14px;background:#fff;}
+  .cell .k{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);margin-bottom:6px;display:flex;align-items:center;gap:7px;}
+  .cell .v{font-size:14px;color:var(--ink);line-height:1.5;}
+  .cell .v .scr{display:inline-block;font-weight:600;font-size:15px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-line);border-radius:6px;padding:1px 8px;}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .sec-divide{display:flex;align-items:center;gap:14px;margin:34px 0 4px;}
+  .sec-divide .ln{flex:1;height:1px;background:var(--line2);}
+  .sec-divide .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);}
+  .note{font-size:13.5px;color:var(--ink2);background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:11px;padding:13px 16px;margin-top:14px;}
+  .note b{color:var(--accent);}
+  .foot{margin-top:30px;font-size:13px;color:var(--ink3);}
+  .reserved{opacity:.72;border-style:dashed;}
+  .langpill{position:fixed;right:18px;top:16px;z-index:60;display:inline-flex;gap:3px;padding:4px;background:var(--paper);border:1px solid var(--line2);border-radius:999px;box-shadow:0 10px 28px -14px rgba(20,22,28,.4);}
+  .langpill button{font-family:var(--mono);font-size:12px;padding:5px 12px;border-radius:999px;color:var(--ink2);border:none;background:none;cursor:pointer;}
+  .langpill button.on{background:var(--ink);color:#fff;font-weight:600;}
+  #doc-en{display:none;}
+  .herocut{background:linear-gradient(180deg,#fff,var(--accent-soft,rgba(15,157,110,.07)));border:1px solid var(--accent-line,rgba(15,157,110,.3));border-radius:16px;padding:22px 24px;margin:26px 0 8px;}
+  .herocut .hc-top{display:flex;align-items:center;gap:12px;margin-bottom:6px;flex-wrap:wrap;}
+  .herocut .hc-tag{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--accent);border-radius:999px;padding:4px 11px;}
+  .herocut h3{margin:0;font-size:19px;letter-spacing:-.02em;}
+  .herocut .hc-sub{font-size:14px;color:var(--ink2);margin:4px 0 14px;}
+  .herocut ol{margin:0;padding-left:0;list-style:none;counter-reset:hc;}
+  .herocut li{counter-increment:hc;display:flex;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:14.5px;}
+  .herocut li::before{content:counter(hc);width:22px;height:22px;flex:none;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--mono);font-size:11px;font-weight:600;display:grid;place-items:center;}
+  .herocut li b{font-weight:600;}
+  .herocut li .tm{font-family:var(--mono);font-size:11px;color:var(--ink3);margin-left:auto;white-space:nowrap;}
+</style>
+</head>
+<body>
+<div class="langpill"><button id="g-es" class="on">ES</button><button id="g-en">EN</button></div>
+<div class="wrap" id="doc-es">
+  <div class="eyebrow">Guion · Video corporativo</div>
+  <h1>TerminalSync — el video, en ~68 segundos.</h1>
+  <p class="lede">Dolor universal → <b>Home arriba</b> → resultado terminado → cambio de IA (corto) → contigo a cualquier lado → <b>WhatsApp</b> → <b>tan fácil como arrastrar</b> → cierre. <b>Narrado desde el dueño de negocio.</b></p>
+  <div class="meta">
+    <span class="chip accent">~68 s</span>
+    <span class="chip">8 beats · mismos demos</span>
+    <span class="chip">Voz en off + texto en pantalla</span>
+    <span class="chip">Tomas = los demos en vivo</span>
+  </div>
+
+  <div class="herocut">
+    <div class="hc-top"><span class="hc-tag">Corte Hero · ~30 s</span><h3>Versión corta para el hero — la escena héroe primero</h3></div>
+    <p class="hc-sub">Gira todo alrededor de UNA escena: "eso me pasó ayer". Primero el dolor + la salvada por WhatsApp; después explicas cómo. Categoría nueva en una frase.</p>
+    <ol>
+      <li><b>LA ESCENA HÉROE (el "eso me pasó ayer"):</b> estás en la calle. Pantalla congelada, silencio → llega un <b>WhatsApp</b>: <i>"Claude alcanzó su límite. ¿Continuar con otra IA?"</i> → respondes <b>"Sí."</b> → el trabajo sigue. <span class="tm">0:00–0:10</span></li>
+      <li><b>La frase de categoría:</b> "Las IAs se detienen. <b>Tu negocio no.</b>" <span class="tm">0:10–0:13</span></li>
+      <li><b>El resultado terminado:</b> Claude · Codex · Gemini → <b>✅ Cotización enviada.</b> "No es un chat. Es trabajo terminado." <span class="tm">0:13–0:23</span></li>
+      <li><b>El cómo, en 1 línea:</b> cambias de IA en un clic, mismo contexto. (flash dashboard 1 s.) <span class="tm">0:23–0:27</span></li>
+      <li><b>Cierre:</b> "Las IAs trabajan. Tú diriges." + Empieza gratis. <span class="tm">0:27–0:30</span></li>
+    </ol>
+    <div style="margin-top:12px;font-size:13px;color:var(--ink2)">La prueba real (founder): que un desconocido al segundo 10 piense <b>"mierda, eso me pasó ayer… necesito esto."</b> Por eso la escena de WhatsApp es la heroína, no el dashboard.</div>
+  </div>
+
+  <div class="sec-divide"><span class="lbl">Bloque 1 · Nunca te quedas bloqueado</span><span class="ln"></span></div>
+
+  <div class="beat hook">
+    <div class="beat-top"><span class="t">0:00 – 0:06</span><h3>El dolor</h3><span class="tag">Gancho universal · sin nombrar la IA</span></div>
+    <p class="vo">«La IA prometía ayudarte a trabajar más rápido. Pero entre chats, herramientas y límites, muchas veces <b>terminas perdiendo tiempo</b>.»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k"><span class="dot" style="background:var(--claude)"></span>En pantalla</div><div class="v">Demo <span class="scr">Cambio de IA</span> — el aviso de límite. Un segundo de silencio.</div></div>
+      <div class="cell"><div class="k">Texto en pantalla</div><div class="v">“Tu trabajo con IA se rompe todo el tiempo.”</div></div>
+    </div>
+  </div>
+
+  <div class="sec-divide"><span class="lbl">Bloque 2 · ¿Dónde vive todo?</span><span class="ln"></span></div>
+
+  <div class="beat">
+    <div class="beat-top"><span class="t">0:06 – 0:14</span><h3>Todo tu trabajo con IA, en un lugar</h3><span class="tag">Home arriba</span></div>
+    <p class="vo">«TerminalSync reúne <b>todo tu trabajo con IA en un solo lugar</b> — tus proyectos, tus archivos y tu contexto, siempre listos.»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k"><span class="dot" style="background:var(--accent)"></span>En pantalla</div><div class="v">Toma del <span class="scr">Home</span> — los espacios de trabajo (Agencia, Marketing, Ventas…) cada uno con su sync.</div></div>
+      <div class="cell"><div class="k">Texto en pantalla</div><div class="v">“Toda tu IA, en un solo lugar.”</div></div>
+    </div>
+  </div>
+
+  <div class="sec-divide"><span class="lbl">Bloque 3 · El resultado (el mejor demo)</span><span class="ln"></span></div>
+
+  <div class="beat diff">
+    <div class="beat-top"><span class="t">0:14 – 0:24</span><h3>Resultados terminados</h3><span class="tag">El verdadero wow ⭐</span></div>
+    <p class="vo">«Escribe. Construye. Analiza. Y obtén <b>resultados terminados</b> — no una conversación. Aquí está: cotización enviada.»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k"><span class="dot" style="background:var(--accent)"></span>En pantalla</div><div class="v">Demo <span class="scr">Resultados</span> — Proyecto “Cotizaciones” → <b>✅ Cotización enviada</b>. Rota: Broker · Agencia (✅ Campaña lista) · Ecommerce (✅ Publicado).</div></div>
+      <div class="cell"><div class="k">Texto en pantalla</div><div class="v">“No es un chat. Es trabajo terminado.”</div></div>
+    </div>
+    <div class="note"><b>Narración (founder):</b> sin nombres de IA en la voz (Claude/Codex/Gemini). Se narra desde el dueño de negocio: “solo quiero que esto funcione y me ayude a sacar trabajo.”</div>
+  </div>
+
+  <div class="sec-divide"><span class="lbl">Bloque 4 · Nunca se detiene · te sigue</span><span class="ln"></span></div>
+
+  <div class="beat">
+    <div class="beat-top"><span class="t">0:24 – 0:32</span><h3>Si una IA se detiene, continúas con otra</h3><span class="tag">Soporte, no protagonista</span></div>
+    <p class="vo">«Y si una IA se detiene, <b>simplemente continúas con otra</b> — sin perder nada.»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k"><span class="dot" style="background:var(--codex)"></span>En pantalla</div><div class="v">Demo <span class="scr">Cambio de IA</span> — el aviso de límite, el menú ⇄, la conversación continúa. (Corto.)</div></div>
+      <div class="cell"><div class="k">Texto en pantalla</div><div class="v">“Cuando una IA se detiene, tu trabajo no.”</div></div>
+    </div>
+  </div>
+
+  <div class="beat mob">
+    <div class="beat-top"><span class="t">0:32 – 0:42</span><h3>Empieza en la oficina. Sigue donde estés.</h3></div>
+    <p class="vo">«Empieza en la oficina. Sigue en el portátil. Sigue en el celular. <b>Tu trabajo va contigo.</b>»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k"><span class="dot" style="background:var(--mob)"></span>En pantalla</div><div class="v">Demo <span class="scr">Continuidad entre dispositivos</span> — portátil → desktop → celular, misma sesión.</div></div>
+      <div class="cell"><div class="k">Texto en pantalla</div><div class="v">“Continúa desde donde estés.”</div></div>
+    </div>
+  </div>
+
+  <div class="beat mob">
+    <div class="beat-top"><span class="t">0:42 – 0:54</span><h3>Tu trabajo te sigue hasta WhatsApp</h3><span class="tag">⭐ Toda la carne aquí</span></div>
+    <p class="vo">«Incluso cuando no estás frente al computador. Una IA llega a su límite, te llega un <b>WhatsApp</b>, respondes “Sí, continúa” — y el trabajo sigue. <b>Tu trabajo te sigue hasta el chat.</b>»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k"><span class="dot" style="background:var(--mob)"></span>En pantalla</div><div class="v">Demo <span class="scr">Tu trabajo te sigue hasta el chat</span> — WhatsApp/Telegram: aviso de límite → “Sí, continúa” → “✅ Listo. Cotización lista.”</div></div>
+      <div class="cell"><div class="k">Texto en pantalla</div><div class="v">“Tu trabajo te sigue hasta WhatsApp.”</div></div>
+    </div>
+    <div class="note"><b>El momento diferenciador (founder):</b> esto no existe en la mayoría de herramientas. Es el beat con más peso del video.</div>
+  </div>
+
+  <div class="sec-divide"><span class="lbl">Bloque 5 · Lo fácil que es → cierre</span><span class="ln"></span></div>
+
+  <div class="beat">
+    <div class="beat-top"><span class="t">0:54 – 0:62</span><h3>Tan fácil como arrastrar</h3><span class="tag">Facilidad · apps conocidas</span></div>
+    <p class="vo">«¿Necesitas conectar tus herramientas? <b>Arrastra Gmail, Notion o Drive</b> a tu sesión — sin claves, sin configurar nada. Y si no sabes cómo pedir algo, <b>tu asistente lo redacta por ti</b>.»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k"><span class="dot" style="background:var(--accent)"></span>En pantalla</div><div class="v">Demo <span class="scr">Integraciones</span> — arrastrar Gmail/Notion/Drive (apps conocidas = facilidad) + flash del <span class="scr">Asistente</span> “Responde por mí”.</div></div>
+      <div class="cell"><div class="k">Texto en pantalla</div><div class="v">“Si sabes escribir un mensaje, ya sabes usarlo.”</div></div>
+    </div>
+    <div class="note"><b>Microbeat de facilidad (founder):</b> ver <b>apps conocidas</b> (Gmail, Notion, Drive) arrastrándose = “esto es para mí, no para programadores”. Refuerza “no necesitas aprender IA”.</div>
+  </div>
+
+  <div class="beat diff">
+    <div class="beat-top"><span class="t">0:62 – 0:68</span><h3>Cierre</h3></div>
+    <p class="vo">«TerminalSync. <b>No necesitas aprender IA. Solo trabajar.</b>»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k">En pantalla</div><div class="v">Logo TerminalSync + botón “Empieza gratis”.</div></div>
+      <div class="cell"><div class="k">Texto en pantalla</div><div class="v">“No necesitas aprender IA. Solo trabajar.”<br><span style="opacity:.7">Subtítulo: “Toda tu IA, en un solo lugar.”</span></div></div>
+    </div>
+  </div>
+
+  <div class="note"><b>Orden (founder, sin tocar demos):</b> 1) dolor universal · 2) <b>Home arriba</b> (dónde vive todo) · 3) resultado terminado (el mejor demo) · 4) cambio de IA (corto, soporte) · 5) continuidad entre dispositivos · 6) <b>WhatsApp — toda la carne</b> · 7) asistente (corto) · 8) cierre. <b>Narrado desde el dueño de negocio, sin nombrar las IAs en la voz.</b></div>
+
+  <p class="foot">Duración ~68 s (completa) · <b>Corte Hero ~30 s</b> arriba. Mismos demos, solo cambia el orden y la voz en off. Claim de cierre: <b>“Toda tu IA. En un solo lugar.”</b> · Subtítulo: <b>“Cuando una IA se detiene, tu trabajo no.”</b> · Frase de categoría: <b>“Las IAs se detienen. Tu negocio no.”</b></p>
+<div class="wrap" id="doc-en">
+  <div class="eyebrow">Script · Corporate video</div>
+  <h1>TerminalSync — the video, in ~68 seconds.</h1>
+  <p class="lede">Universal pain → <b>Home up front</b> → finished result → switch AI (short) → with you anywhere → <b>WhatsApp</b> → <b>as easy as drag and drop</b> → close. <b>Narrated from the business owner.</b></p>
+  <div class="meta">
+    <span class="chip accent">~68 s</span>
+    <span class="chip">8 beats · same demos</span>
+    <span class="chip">Voiceover + on-screen text</span>
+    <span class="chip">Shots = the live demos</span>
+  </div>
+
+  <div class="herocut">
+    <div class="hc-top"><span class="hc-tag">Hero cut · ~30 s</span><h3>Short version — the hero scene first</h3></div>
+    <p class="hc-sub">Everything revolves around ONE scene: "that happened to me yesterday." Pain + the WhatsApp save first; then you explain how. New category in one line.</p>
+    <ol>
+      <li><b>THE HERO SCENE (the "that happened to me yesterday"):</b> you're out of the office. Frozen screen, silence → a <b>WhatsApp</b> arrives: <i>"Claude hit its limit. Continue with another AI?"</i> → you reply <b>"Yes."</b> → the work keeps going. <span class="tm">0:00–0:10</span></li>
+      <li><b>The category line:</b> "AIs stop. <b>Your business doesn't.</b>" <span class="tm">0:10–0:13</span></li>
+      <li><b>The finished result:</b> Claude · Codex · Gemini → <b>✅ Quote sent.</b> "It's not a chat. It's finished work." <span class="tm">0:13–0:23</span></li>
+      <li><b>The how, in 1 line:</b> switch AI in one click, same context. (1 s dashboard flash.) <span class="tm">0:23–0:27</span></li>
+      <li><b>Close:</b> "The AIs work. You direct." + Start free. <span class="tm">0:27–0:30</span></li>
+    </ol>
+    <div style="margin-top:12px;font-size:13px;color:var(--ink2)">The real test (founder): a stranger at second 10 thinks <b>"damn, that happened to me yesterday… I need this."</b> That's why the WhatsApp scene is the hero, not the dashboard.</div>
+  </div>
+
+  <div class="sec-divide"><span class="lbl">Block 1 · You never get stuck</span><span class="ln"></span></div>
+
+  <div class="beat hook">
+    <div class="beat-top"><span class="t">0:00 – 0:06</span><h3>The pain</h3><span class="tag">Universal hook · no AI names</span></div>
+    <p class="vo">«AI promised to help you work faster. But between chats, tools and limits, you often <b>end up losing time</b>.»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k"><span class="dot" style="background:var(--claude)"></span>On screen</div><div class="v">Demo <span class="scr">Switch AI</span> — the limit notice. One second of silence.</div></div>
+      <div class="cell"><div class="k">On-screen text</div><div class="v">“Your AI work breaks all the time.”</div></div>
+    </div>
+  </div>
+
+  <div class="sec-divide"><span class="lbl">Block 2 · Where everything lives</span><span class="ln"></span></div>
+
+  <div class="beat">
+    <div class="beat-top"><span class="t">0:06 – 0:14</span><h3>All your AI work, in one place</h3><span class="tag">Home up front</span></div>
+    <p class="vo">«TerminalSync brings <b>all your AI work into one place</b> — your projects, your files and your context, always ready.»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k"><span class="dot" style="background:var(--accent)"></span>On screen</div><div class="v">Shot of the <span class="scr">Home</span> — the workspaces (Agency, Marketing, Sales…) each with its sync.</div></div>
+      <div class="cell"><div class="k">On-screen text</div><div class="v">“All your AI, in one place.”</div></div>
+    </div>
+  </div>
+
+  <div class="sec-divide"><span class="lbl">Block 3 · The result (the best demo)</span><span class="ln"></span></div>
+
+  <div class="beat diff">
+    <div class="beat-top"><span class="t">0:14 – 0:24</span><h3>Finished results</h3><span class="tag">The real wow ⭐</span></div>
+    <p class="vo">«Write. Build. Analyze. And get <b>finished results</b> — not a conversation. Here it is: quote sent.»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k"><span class="dot" style="background:var(--accent)"></span>On screen</div><div class="v">Demo <span class="scr">Results</span> — Project “Quotes” → <b>✅ Quote sent</b>. Rotates: Broker · Agency (✅ Campaign ready) · Ecommerce (✅ Published).</div></div>
+      <div class="cell"><div class="k">On-screen text</div><div class="v">“It’s not a chat. It’s finished work.”</div></div>
+    </div>
+    <div class="note"><b>Narration (founder):</b> no AI names in the voiceover. Narrate from the business owner: “I just want this to work and help me get work done.”</div>
+  </div>
+
+  <div class="sec-divide"><span class="lbl">Block 4 · It never stops · it follows you</span><span class="ln"></span></div>
+
+  <div class="beat">
+    <div class="beat-top"><span class="t">0:24 – 0:32</span><h3>If one AI stops, you continue with another</h3><span class="tag">Support, not lead</span></div>
+    <p class="vo">«And if one AI stops, <b>you simply continue with another</b> — losing nothing.»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k"><span class="dot" style="background:var(--codex)"></span>On screen</div><div class="v">Demo <span class="scr">Switch AI</span> — the limit notice, the ⇄ menu, the conversation continues. (Short.)</div></div>
+      <div class="cell"><div class="k">On-screen text</div><div class="v">“When one AI stops, your work doesn’t.”</div></div>
+    </div>
+  </div>
+
+  <div class="beat mob">
+    <div class="beat-top"><span class="t">0:32 – 0:42</span><h3>Start at the office. Continue anywhere.</h3></div>
+    <p class="vo">«Start at the office. Continue on your laptop. Continue on your phone. <b>Your work goes with you.</b>»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k"><span class="dot" style="background:var(--mob)"></span>On screen</div><div class="v">Demo <span class="scr">Continuity across devices</span> — laptop → desktop → phone, same session.</div></div>
+      <div class="cell"><div class="k">On-screen text</div><div class="v">“Continue from wherever you are.”</div></div>
+    </div>
+  </div>
+
+  <div class="beat mob">
+    <div class="beat-top"><span class="t">0:42 – 0:54</span><h3>Your work follows you into WhatsApp</h3><span class="tag">⭐ All the weight here</span></div>
+    <p class="vo">«Even when you’re away from the computer. An AI hits its limit, you get a <b>WhatsApp</b>, you reply “Yes, keep going” — and the work continues. <b>Your work follows you into the chat.</b>»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k"><span class="dot" style="background:var(--mob)"></span>On screen</div><div class="v">Demo <span class="scr">Your work follows you into the chat</span> — WhatsApp/Telegram: limit notice → “Yes, keep going” → “✅ Done. Quote ready.”</div></div>
+      <div class="cell"><div class="k">On-screen text</div><div class="v">“Your work follows you into WhatsApp.”</div></div>
+    </div>
+    <div class="note"><b>The differentiator (founder):</b> this doesn’t exist in most tools. It’s the beat with the most weight in the video.</div>
+  </div>
+
+  <div class="sec-divide"><span class="lbl">Block 5 · How easy it is → close</span><span class="ln"></span></div>
+
+  <div class="beat">
+    <div class="beat-top"><span class="t">0:54 – 0:62</span><h3>As easy as drag and drop</h3><span class="tag">Ease · familiar apps</span></div>
+    <p class="vo">«Need to connect your tools? <b>Drag Gmail, Notion or Drive</b> into your session — no keys, nothing to set up. And if you don’t know how to ask, <b>your assistant writes it for you</b>.»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k"><span class="dot" style="background:var(--accent)"></span>On screen</div><div class="v">Demo <span class="scr">Integrations</span> — drag Gmail/Notion/Drive (familiar apps = ease) + flash of the <span class="scr">Assistant</span> “Reply for me”.</div></div>
+      <div class="cell"><div class="k">On-screen text</div><div class="v">“If you can write a message, you already know how to use it.”</div></div>
+    </div>
+    <div class="note"><b>Ease microbeat (founder):</b> seeing <b>familiar apps</b> (Gmail, Notion, Drive) being dragged in = “this is for me, not for programmers.” Reinforces “you don’t need to learn AI.”</div>
+  </div>
+
+  <div class="beat diff">
+    <div class="beat-top"><span class="t">0:62 – 0:68</span><h3>Close</h3></div>
+    <p class="vo">«TerminalSync. <b>You don’t need to learn AI. Just work.</b>»</p>
+    <div class="grid2">
+      <div class="cell"><div class="k">On screen</div><div class="v">TerminalSync logo + “Start free” button.</div></div>
+      <div class="cell"><div class="k">On-screen text</div><div class="v">“You don’t need to learn AI. Just work.”<br><span style="opacity:.7">Subtitle: “All your AI, in one place.”</span></div></div>
+    </div>
+  </div>
+
+  <div class="note"><b>Order (founder, demos untouched):</b> 1) universal pain · 2) <b>Home up front</b> (where it all lives) · 3) finished result (the best demo) · 4) switch AI (short, support) · 5) continuity across devices · 6) <b>WhatsApp — all the weight</b> · 7) assistant (short) · 8) close. <b>Narrated from the business owner, without naming the AIs in the voice.</b></div>
+
+  <p class="foot">~68 s (full) · <b>Hero cut ~30 s</b> above. Same demos, only the order and the voiceover change. Closing claim: <b>“All your AI. In one place.”</b> · Subtitle: <b>“When one AI stops, your work doesn’t.”</b> · Category line: <b>“AIs stop. Your business doesn’t.”</b></p>
+</div>
+
+<script>
+  (function(){
+    const es=document.getElementById('doc-es'),en=document.getElementById('doc-en');
+    const bes=document.getElementById('g-es'),ben=document.getElementById('g-en');
+    function set(l){
+      es.style.display=l==='es'?'':'none'; en.style.display=l==='en'?'':'none';
+      bes.classList.toggle('on',l==='es'); ben.classList.toggle('on',l==='en');
+      document.documentElement.lang=l; try{localStorage.setItem('guion_lang',l);}catch(e){}
+    }
+    bes.onclick=()=>set('es'); ben.onclick=()=>set('en');
+    let s=null; try{s=localStorage.getItem('guion_lang');}catch(e){}
+    if(s==='en') set('en');
+  })();
+</script>
+</body>
+</html>
