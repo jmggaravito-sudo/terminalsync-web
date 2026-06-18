@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Brand" name="Demo · Asistente de prompts (Sugerencia del coach)" subtitle="Mejora el prompt + corrige ortografía · ES/EN" viewport="1280x820" -->
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Terminal Sync · Asistente de prompts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#ffffff; --ink:#1d2127; --ink2:#5b616b; --ink3:#9aa0aa;
+    --line:#e9eaee; --line2:#e0e2e7; --hover:#f4f5f7; --active:#eef0f3;
+    --indigo:#5b56e6; --green:#34b87a; --green-tx:#1f8f5d; --green-bg:#f0faf4; --green-bd:#bfe8d2; --navy:#1c2230;
+    --claude:#d9774f; --claude-tx:#bf6438;
+    --red:#e2574c;
+    --sans:'Geist',system-ui,sans-serif; --mono:'Geist Mono',ui-monospace,monospace;
+    --r:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:14px;-webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  svg{display:block;}
+  .ic{width:18px;height:18px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+  .ic.sm{width:15px;height:15px;}
+  .app{display:flex;flex-direction:column;height:100vh;min-height:600px;overflow:hidden;}
+
+  .top{height:54px;flex:none;display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:1px solid var(--line);}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15.5px;}
+  .brand .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#3f74f5,#7c5cf6);display:grid;place-items:center;}
+  .brand .logo i{width:11px;height:11px;border-radius:3px;background:rgba(255,255,255,.9);}
+  .top .menu{color:var(--ink2);}
+  .search{flex:1;max-width:560px;margin:0 auto;display:flex;align-items:center;gap:9px;height:38px;padding:0 14px;border:1px solid var(--line2);border-radius:999px;color:var(--ink3);background:var(--bg);}
+  .search input{border:none;outline:none;flex:1;font-family:inherit;font-size:13.5px;color:var(--ink);background:transparent;}
+  .top-right{display:flex;align-items:center;gap:14px;}
+  .sync{display:flex;align-items:center;gap:7px;color:var(--ink2);font-size:13.5px;}
+  .btn-navy{display:flex;align-items:center;gap:8px;background:var(--navy);color:#fff;font-weight:500;font-size:13.5px;padding:9px 15px;border-radius:999px;}
+  .avatar{width:30px;height:30px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;color:var(--ink2);}
+
+  .body{flex:1;display:flex;min-height:0;}
+  .side{width:224px;flex:none;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:14px 12px;gap:3px;}
+  .nav-i{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r);color:var(--ink2);font-weight:500;font-size:14px;}
+  .nav-i:hover{background:var(--hover);}
+  .nav-i.on{background:var(--active);color:var(--ink);font-weight:600;}
+  .nav-i .badge{margin-left:auto;font-size:12px;color:var(--ink3);}
+  .nav-i .chev{color:var(--ink3);}
+  .side .spacer{flex:1;}
+
+  .content{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .tabs{height:42px;flex:none;display:flex;align-items:center;gap:4px;padding:0 14px;border-bottom:1px solid var(--line);}
+  .tab{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:8px 8px 0 0;color:var(--ink2);font-size:13px;}
+  .tab.on{background:var(--bg);color:var(--ink);font-weight:600;box-shadow:inset 0 -2px 0 var(--ink);}
+  .tab .x{color:var(--ink3);width:14px;height:14px;}
+  .tabs .exit{margin-left:auto;display:flex;align-items:center;gap:7px;color:var(--ink2);font-size:13px;}
+
+  .subhead{height:54px;flex:none;display:flex;align-items:center;gap:14px;padding:0 18px;border-bottom:1px solid var(--line);}
+  .subhead .back{color:var(--ink2);}
+  .subhead h2{font-size:16px;margin:0;font-weight:600;}
+  .mode-tools{display:flex;gap:4px;margin-left:4px;}
+  .mt{width:34px;height:30px;border-radius:8px;border:1px solid var(--line2);display:grid;place-items:center;color:var(--ink2);}
+  .mt.on{background:#efe9ff;border-color:#d9ccff;color:#7c5cf6;}
+  .mode-pill{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;color:var(--ink2);}
+  .mode-pill b{color:var(--ink);font-weight:600;}
+  .subhead-right{margin-left:auto;display:flex;align-items:center;gap:14px;color:var(--ink2);}
+  .subhead-right .reduce{display:flex;align-items:center;gap:6px;font-size:13px;}
+
+  .chat{flex:1;overflow-y:auto;padding:26px clamp(18px,6vw,90px);display:flex;flex-direction:column;gap:20px;background:var(--bg);scroll-behavior:smooth;}
+  .row{display:flex;}
+  .row.user{justify-content:flex-end;}
+  .user-bubble{background:var(--indigo);color:#fff;border-radius:14px;padding:13px 17px;max-width:620px;font-size:14.5px;line-height:1.55;white-space:pre-wrap;box-shadow:0 6px 18px -8px rgba(91,86,230,.5);}
+
+  .ai-card{border:1px solid var(--line);border-left-width:4px;border-left-color:var(--claude);border-radius:12px;padding:18px 22px;background:#fff;box-shadow:0 1px 2px rgba(20,22,28,.03),0 14px 34px -26px rgba(20,22,28,.18);}
+  .ai-head{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.12em;margin-bottom:12px;color:var(--claude-tx);}
+  .ai-head .dot{width:8px;height:8px;border-radius:50%;background:var(--claude);}
+  .ai-body{font-size:14.5px;line-height:1.62;color:var(--ink);}
+  .ai-body p{margin:9px 0;} .ai-body > :first-child{margin-top:0;} .ai-body > :last-child{margin-bottom:0;}
+  .ai-body ul{margin:9px 0;padding-left:20px;} .ai-body li{margin:5px 0;}
+  .ai-body strong{font-weight:600;}
+
+  /* composer */
+  .composer-wrap{flex:none;border-top:1px solid var(--line);padding:14px clamp(18px,6vw,90px) 10px;position:relative;}
+  .composer{display:flex;align-items:flex-end;gap:10px;}
+  .comp-btn{width:42px;height:42px;flex:none;border:1px solid var(--line2);border-radius:11px;display:grid;place-items:center;color:var(--ink2);background:var(--bg);}
+  .comp-input{flex:1;display:flex;align-items:center;gap:10px;border:1px solid var(--line2);border-radius:13px;padding:0 8px 0 14px;min-height:48px;transition:border-color .25s,box-shadow .25s;}
+  .comp-input.assist{border-color:var(--green-bd);box-shadow:0 0 0 3px rgba(52,184,122,.14);}
+  .comp-input textarea{flex:1;border:none;outline:none;resize:none;font-family:inherit;font-size:14.5px;color:var(--ink);background:transparent;padding:13px 0;max-height:160px;line-height:1.55;}
+  .comp-input textarea::placeholder{color:var(--ink3);}
+  .clearx{color:var(--ink3);width:30px;height:30px;display:grid;place-items:center;border-radius:8px;flex:none;}
+  .clearx:hover{background:var(--hover);color:var(--ink2);}
+  .send{display:flex;align-items:center;gap:8px;background:var(--green);color:#fff;font-weight:600;font-size:14px;padding:11px 20px;border-radius:11px;align-self:center;}
+
+  .assist-row{display:flex;align-items:center;gap:10px;margin-top:10px;}
+  .assist-btn{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--green-tx);border:1px solid var(--green-bd);background:var(--green-bg);padding:8px 14px;border-radius:999px;transition:transform .12s,background .2s,box-shadow .2s;}
+  .assist-btn svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.9;fill:none;}
+  .assist-btn:hover{background:#e7f7ee;}
+  .assist-btn.pulse{animation:pulse 1.5s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(52,184,122,0);}50%{box-shadow:0 0 0 6px rgba(52,184,122,.16);}}
+  .assist-btn.working{color:var(--ink3);background:var(--hover);border-color:var(--line2);}
+  .assist-btn .sp{width:13px;height:13px;border-radius:50%;border:2px solid var(--line2);border-top-color:var(--green);animation:spin .7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .hist{text-align:right;color:var(--ink3);font-size:12px;margin-top:8px;}
+
+  /* Coach popover */
+  .coach{position:absolute;left:clamp(18px,6vw,90px);bottom:70px;width:min(420px,calc(100% - 36px));background:#fff;border:1px solid var(--line2);border-radius:16px;box-shadow:0 30px 70px -28px rgba(20,22,28,.5);overflow:hidden;opacity:0;transform:translateY(10px) scale(.985);transform-origin:bottom left;transition:opacity .24s var(--ease,ease),transform .24s var(--ease,ease);pointer-events:none;z-index:30;}
+  .coach.show{opacity:1;transform:none;pointer-events:auto;}
+  .coach-head{display:flex;align-items:center;gap:9px;padding:14px 16px;border-bottom:1px solid var(--line);}
+  .coach-head .ci{width:24px;height:24px;border-radius:7px;background:var(--green-bg);border:1px solid var(--green-bd);display:grid;place-items:center;color:var(--green-tx);flex:none;}
+  .coach-head .ci svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;}
+  .coach-head h4{font-size:14px;margin:0;font-weight:600;flex:1;}
+  .coach-head .cx{color:var(--ink3);width:26px;height:26px;display:grid;place-items:center;border-radius:7px;}
+  .coach-head .cx:hover{background:var(--hover);color:var(--ink2);}
+  .coach-sect{padding:14px 16px;}
+  .coach-sect + .coach-sect{border-top:1px solid var(--line);}
+  .coach-lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:9px;}
+  .coach-box{border:1px solid var(--line);border-radius:10px;background:var(--hover);padding:11px 13px;font-size:13.5px;line-height:1.5;color:var(--ink);}
+  .sp-fix{display:flex;align-items:center;gap:10px;font-size:13.5px;}
+  .sp-old{color:var(--red);text-decoration:line-through;}
+  .sp-arrow{color:var(--ink3);}
+  .sp-new{color:var(--green-tx);font-weight:600;}
+  .coach-note{font-size:12.5px;color:var(--ink2);font-style:italic;line-height:1.5;margin-top:11px;}
+  .coach-actions{display:flex;align-items:center;gap:9px;padding:13px 16px;border-top:1px solid var(--line);background:var(--bg);}
+  .cbtn{font-size:13px;font-weight:600;padding:9px 14px;border-radius:9px;transition:transform .12s,filter .2s,background .2s;}
+  .cbtn.primary{background:var(--green);color:#fff;box-shadow:0 8px 18px -10px rgba(52,184,122,.9);}
+  .cbtn.primary:hover{filter:brightness(1.04);} .cbtn:active{transform:scale(.97);}
+  .cbtn.ghost{background:#fff;border:1px solid var(--line2);color:var(--ink);font-weight:500;}
+  .cbtn.ghost:hover{background:var(--hover);}
+  .cbtn.text{color:var(--ink3);font-weight:500;}
+
+  .fab{position:fixed;right:22px;bottom:96px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#4f7dfb,#9b5cf6);box-shadow:0 14px 34px -10px rgba(124,92,246,.6);display:grid;place-items:center;color:#fff;}
+  .fab .stat{position:absolute;top:4px;right:4px;width:10px;height:10px;border-radius:50%;background:#34b87a;border:2px solid #fff;}
+  .lang-pill{position:fixed;right:22px;top:64px;z-index:60;display:inline-flex;gap:3px;padding:4px;background:#fff;border:1px solid var(--line2);border-radius:999px;box-shadow:0 10px 28px -14px rgba(20,22,28,.4);}
+  .lang-pill button{font-family:var(--mono);font-size:12px;padding:5px 12px;border-radius:999px;color:var(--ink2);}
+  .lang-pill button.on{background:var(--navy);color:#fff;font-weight:600;}
+  .replay-btn{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--ink2);border:1px solid var(--line2);background:#fff;padding:8px 15px;border-radius:999px;cursor:pointer;z-index:60;box-shadow:0 10px 30px -12px rgba(20,22,28,.3);}
+  .replay-btn:hover{border-color:var(--green);color:var(--green);}
+  .replay-btn svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;}
+  .fadein{animation:fade .4s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @media(max-width:920px){.side{display:none;} .search{display:none;}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <button class="menu"><svg class="ic" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    <div class="brand"><span class="logo"><i></i></span>Terminal Sync</div>
+    <div class="search">
+      <svg class="ic sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input data-i="search" placeholder="Buscar una sesión, archivo o computadora…" />
+    </div>
+    <div class="top-right">
+      <span class="sync"><svg class="ic sm" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg><span data-i="sync">Sincronizar</span></span>
+      <button class="btn-navy"><svg class="ic sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span data-i="newws">Nuevo espacio de trabajo</span></button>
+      <span class="avatar"><svg class="ic sm" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+    </div>
+  </header>
+
+  <div class="body">
+    <aside class="side">
+      <div class="nav-i on"><svg class="ic" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span data-i="inicio">Inicio</span></div>
+      <div class="nav-i"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/></svg><span data-i="ws">Espacios de Trabajo</span><span class="badge">10</span><svg class="ic sm chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div>
+      <div class="nav-i"><svg class="ic" viewBox="0 0 24 24"><path d="m4 7 4 5-4 5"/><path d="M12 17h8"/></svg><span data-i="acciones">Acciones</span><svg class="ic sm chev" style="margin-left:auto" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div>
+      <div class="nav-i"><svg class="ic" viewBox="0 0 24 24"><circle cx="8" cy="14" r="4"/><path d="m11 11 8-8 2 2-2 2 2 2-3 3-2-2"/></svg><span data-i="secretos">Secretos</span></div>
+      <div class="nav-i"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span data-i="integr">Integraciones</span></div>
+      <div class="spacer"></div>
+      <div class="nav-i"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 4 1.5c0 1.5-2 2-2 3"/><path d="M12 17h.01"/></svg><span data-i="ayuda">Ayuda</span></div>
+      <div class="nav-i"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.5-2.3 1a7 7 0 0 0-1.7-1l-.4-2.5h-4l-.4 2.5a7 7 0 0 0-1.7 1l-2.3-1-2 3.5 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.5 2.3-1a7 7 0 0 0 1.7 1l.4 2.5h4l.4-2.5a7 7 0 0 0 1.7-1l2.3 1 2-3.5-2-1.5a7 7 0 0 0 .1-1Z"/></svg><span data-i="ajustes">Ajustes</span></div>
+    </aside>
+
+    <div class="content">
+      <div class="tabs">
+        <div class="tab"><svg class="ic sm" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg><span data-i="inicio">Inicio</span></div>
+        <div class="tab on"><svg class="ic sm" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg>terminal-sync-reparaciones<svg class="ic x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></div>
+        <span class="exit"><svg class="ic sm" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"/></svg><span data-i="exit">Pantalla completa</span></span>
+      </div>
+
+      <div class="subhead">
+        <button class="back"><svg class="ic" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+        <h2>terminal-sync-reparaciones</h2>
+        <div class="mode-tools">
+          <span class="mt"><svg class="ic sm" viewBox="0 0 24 24"><path d="m5 8 4 4-4 4"/><path d="M13 16h6"/></svg></span>
+          <span class="mt on"><svg class="ic sm" viewBox="0 0 24 24"><path d="m12 3 1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/></svg></span>
+        </div>
+        <span class="mode-pill"><span data-i="modo">Modo:</span> <b>Experto</b></span>
+        <div class="subhead-right">
+          <svg class="ic" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+          <span class="reduce"><svg class="ic sm" viewBox="0 0 24 24"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3m8 0v-3a2 2 0 0 1 2-2h3"/></svg><span data-i="reducir">Reducir</span></span>
+        </div>
+      </div>
+
+      <div class="chat" id="chat"></div>
+
+      <div class="composer-wrap">
+        <div class="coach" id="coach">
+          <div class="coach-head">
+            <span class="ci"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></span>
+            <h4 data-i="coachTitle">Sugerencia del coach</h4>
+            <button class="cx" id="coachX"><svg class="ic sm" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+          <div class="coach-sect">
+            <div class="coach-lbl" data-i="lblPrompt">Prompt mejorado</div>
+            <div class="coach-box" id="coachPrompt"></div>
+          </div>
+          <div class="coach-sect" id="coachSpellSect">
+            <div class="coach-lbl" data-i="lblSpell">Ortografía y gramática</div>
+            <div class="sp-fix"><span class="sp-old" id="spOld"></span><span class="sp-arrow">→</span><span class="sp-new" id="spNew"></span></div>
+            <div class="coach-note" id="coachNote"></div>
+          </div>
+          <div class="coach-actions">
+            <button class="cbtn primary" id="useImproved" data-i="useImproved">Usar mejorado</button>
+            <button class="cbtn ghost" id="onlySpell" data-i="onlySpell">Solo ortografía</button>
+            <button class="cbtn text" id="coachClose" data-i="cerrar">Cerrar</button>
+          </div>
+        </div>
+
+        <div class="composer">
+          <button class="comp-btn"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg></button>
+          <button class="comp-btn"><svg class="ic" viewBox="0 0 24 24"><path d="M21 12.5 12.5 21a4 4 0 0 1-6-6l8-8a3 3 0 0 1 4 4l-8 8a1.5 1.5 0 0 1-2-2l7-7"/></svg></button>
+          <button class="comp-btn"><svg class="ic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+          <div class="comp-input" id="compInput"><textarea id="input" rows="1" data-i="ph" placeholder="Escribe un mensaje… (Enter para enviar, Shift+Enter salto de línea)"></textarea><button class="clearx" id="clearx"><svg class="ic sm" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+          <button class="send"><svg class="ic sm" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg><span data-i="enviar">Enviar</span></button>
+        </div>
+        <div class="assist-row" id="assistRow">
+          <button class="assist-btn" id="assistBtn">
+            <span class="ico"></span>
+            <span class="lbl" id="assistLbl">Responde por mí</span>
+          </button>
+        </div>
+        <div class="hist" data-i="hist">Historial de cambios</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fab"><span class="stat"></span><svg class="ic" viewBox="0 0 24 24"><path d="m12 3 1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/></svg></div>
+<div class="lang-pill"><button id="b-es" class="on">ES</button><button id="b-en">EN</button></div>
+<button class="replay-btn" id="reset"><svg viewBox="0 0 24 24"><path d="M3 2v6h6"/><path d="M3 13a9 9 0 1 0 3-7.7L3 8"/></svg><span data-i="replay">Otro ejemplo</span></button>
+
+<script>
+(function(){
+  'use strict';
+  const chat=document.getElementById('chat');
+  const input=document.getElementById('input');
+  const compInput=document.getElementById('compInput');
+  const assistBtn=document.getElementById('assistBtn');
+  const assistLbl=document.getElementById('assistLbl');
+  const assistIco=assistBtn.querySelector('.ico');
+  const coach=document.getElementById('coach');
+
+  const WAND='<svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>';
+
+  const T={
+    es:{search:'Buscar una sesión, archivo o computadora…',sync:'Sincronizar',newws:'Nuevo espacio de trabajo',
+      inicio:'Inicio',ws:'Espacios de Trabajo',acciones:'Acciones',secretos:'Secretos',integr:'Integraciones',
+      ayuda:'Ayuda',ajustes:'Ajustes',exit:'Pantalla completa',modo:'Modo:',reducir:'Reducir',
+      ph:'Escribe un mensaje… (Enter para enviar, Shift+Enter salto de línea)',enviar:'Enviar',hist:'Historial de cambios',
+      replay:'Otro ejemplo',analizando:'Analizando…',
+      btnArregla:'Arregla mi respuesta',btnResponde:'Responde por mí',
+      coachTitle:'Sugerencia del coach',lblPrompt:'Prompt mejorado',lblSpell:'Ortografía y gramática',
+      useImproved:'Usar mejorado',onlySpell:'Solo ortografía',cerrar:'Cerrar'
+    },
+    en:{search:'Search a session, file or computer…',sync:'Sync',newws:'New workspace',
+      inicio:'Home',ws:'Workspaces',acciones:'Actions',secretos:'Secrets',integr:'Integrations',
+      ayuda:'Help',ajustes:'Settings',exit:'Full screen',modo:'Mode:',reducir:'Reduce',
+      ph:'Type a message… (Enter to send, Shift+Enter for a new line)',enviar:'Send',hist:'Change history',
+      replay:'Another example',analizando:'Analyzing…',
+      btnArregla:'Fix my reply',btnResponde:'Reply for me',
+      coachTitle:'Coach suggestion',lblPrompt:'Improved prompt',lblSpell:'Spelling & grammar',
+      useImproved:'Use improved',onlySpell:'Spelling only',cerrar:'Close'
+    }
+  };
+  let lang='es';
+  const t=()=>T[lang];
+
+  // Two scenarios alternated by "Otro ejemplo"
+  const SC=[
+    { mode:'arregla',
+      ask:{es:'<p>Para la integración con <strong>Claude Design</strong> veo dos caminos:</p><ul><li><strong>A</strong> — extender <strong>FilePreview</strong> para abrir los formatos que exporta (HTML, PDF, ZIP).</li><li><strong>B</strong> — construir un preview propio para generación en vivo.</li></ul><p>Recomiendo A: es trabajo chico (~3 días) y sirve para todo el producto. ¿Lo trato como hito separado o atado al de Diseño?</p>',
+            en:'<p>For the <strong>Claude Design</strong> integration I see two paths:</p><ul><li><strong>A</strong> — extend <strong>FilePreview</strong> to open the formats it exports (HTML, PDF, ZIP).</li><li><strong>B</strong> — build a custom preview for live generation.</li></ul><p>I recommend A: it\u2019s small (~3 days) and benefits the whole product. Should I treat it as a separate milestone or tie it to Design?</p>'},
+      raw:{es:'quisiera que hicieras otras czas mas importantes',en:'i\u2019d like u to do other more importat thigs'},
+      prompt:{es:'Considerando la discusión reciente sobre la integración de Claude Design y el preview de TerminalSync, ¿cuáles son los puntos más importantes o las próximas acciones clave que deberíamos abordar?',
+              en:'Considering the recent discussion about the Claude Design integration and the TerminalSync preview, what are the most important points or key next actions we should tackle?'},
+      spell:{es:['czas','cosas'],en:['importat thigs','important things']},
+      note:{es:'El prompt mejorado es más específico y orienta la tarea del asistente hacia los puntos clave de la discusión previa, además de corregir un error ortográfico.',
+            en:'The improved prompt is more specific and steers the assistant toward the key points of the previous discussion, while also fixing a spelling error.'} },
+    { mode:'responde',
+      ask:{es:'<p>Listo el plan de campaña. Para los <strong>anuncios</strong>, ¿qué tono querés: cercano y directo, o más corporativo? ¿Y a qué público apuntamos primero — agencias o emprendedores?</p>',
+            en:'<p>Campaign plan ready. For the <strong>ads</strong>, what tone do you want: warm and direct, or more corporate? And which audience first — agencies or founders?</p>'},
+      raw:{es:'',en:''},
+      prompt:{es:'Tono cercano y directo, sin tecnicismos. Apuntemos primero a emprendedores y dueños de negocio (no developers): mensajes centrados en resultados — ahorrar tiempo y ganar capacidad. Dame 3 variantes de copy por anuncio.',
+              en:'Warm and direct tone, no jargon. Target founders and business owners first (not developers): results-focused messages — save time and gain capacity. Give me 3 copy variants per ad.'},
+      spell:null,
+      note:{es:'No sabías qué responder: el asistente redacta una respuesta completa a partir del contexto del chat, lista para enviar o editar.',
+            en:'You weren\u2019t sure what to say: the assistant drafts a full reply from the chat context, ready to send or edit.'} }
+  ];
+  let scIdx=1; // start on "Responde por mí" (empty composer), then auto-advances to "Arregla mi respuesta"
+
+  function applyStatic(){
+    document.documentElement.lang=lang;
+    document.querySelectorAll('[data-i]').forEach(el=>{
+      const k=el.dataset.i, v=t()[k]; if(typeof v!=='string') return;
+      if(el.tagName==='TEXTAREA'||el.tagName==='INPUT') el.placeholder=v; else el.textContent=v;
+    });
+    document.getElementById('b-es').classList.toggle('on',lang==='es');
+    document.getElementById('b-en').classList.toggle('on',lang==='en');
+  }
+  function aiCard(html){const r=document.createElement('div');r.className='row fadein';r.innerHTML='<div class="ai-card"><div class="ai-head"><span class="dot"></span>CLAUDE</div><div class="ai-body">'+html+'</div></div>';chat.appendChild(r);chat.scrollTop=chat.scrollHeight;return r;}
+
+  let timers=[],typing=null,coachOpen=false;
+  function sleep(ms){return new Promise(res=>{timers.push(setTimeout(res,ms));});}
+  function clearAll(){timers.forEach(clearTimeout);timers=[];if(typing){clearInterval(typing);typing=null;}}
+  function autoSize(){input.style.height='auto';input.style.height=Math.min(input.scrollHeight,160)+'px';}
+  function typeInto(text){return new Promise(res=>{ input.value=''; let i=0; if(!text){autoSize();updateAssistByInput();return res();}
+    typing=setInterval(()=>{ input.value=text.slice(0,++i); autoSize(); updateAssistByInput(); if(i>=text.length){clearInterval(typing);typing=null;res();} },22);
+  });}
+
+  function setAssist(sc){
+    assistIco.innerHTML=WAND;
+    assistBtn.classList.remove('working');
+    updateAssistByInput();
+  }
+  // Button is contextual: empty composer → "Responde por mí"; with a draft → "Arregla mi respuesta"
+  function updateAssistByInput(){
+    if(assistBtn.classList.contains('working')) return;
+    const hasText=input.value.trim().length>0;
+    assistIco.innerHTML=WAND;
+    assistLbl.textContent = hasText ? t().btnArregla : t().btnResponde;
+    assistBtn.dataset.mode = hasText ? 'arregla' : 'responde';
+  }
+  function buildCoach(sc){
+    document.getElementById('coachPrompt').textContent=sc.prompt[lang];
+    const spellSect=document.getElementById('coachSpellSect');
+    const onlyBtn=document.getElementById('onlySpell');
+    if(sc.spell){
+      spellSect.style.display='';
+      onlyBtn.style.display='';
+      document.getElementById('spOld').textContent=sc.spell[lang][0];
+      document.getElementById('spNew').textContent=sc.spell[lang][1];
+    }else{
+      spellSect.style.display='none';
+      onlyBtn.style.display='none';
+    }
+    document.getElementById('coachNote').textContent=sc.note[lang];
+  }
+  function showCoach(){coach.classList.add('show');coachOpen=true;}
+  function hideCoach(){coach.classList.remove('show');coachOpen=false;}
+
+  async function play(){
+    clearAll(); hideCoach();
+    const sc=SC[scIdx];
+    chat.innerHTML='';
+    compInput.classList.remove('assist'); input.value=''; autoSize();
+    setAssist(sc);
+    aiCard(sc.ask[lang]);
+    await sleep(800);
+
+    if(sc.mode==='responde'){
+      // empty composer → "Responde por mí" → drafts a full reply into the composer
+      assistBtn.classList.add('pulse');
+      await sleep(900);
+      assistBtn.classList.remove('pulse');
+      assistBtn.classList.add('working'); assistIco.innerHTML='<span class="sp"></span>'; assistLbl.textContent=t().analizando;
+      await sleep(1400);
+      assistBtn.classList.remove('working');
+      compInput.classList.add('assist');
+      await typeReply(sc.prompt[lang]);
+      updateAssistByInput();
+    } else {
+      // type a rough draft → button switches to "Arregla mi respuesta" → coach popover
+      await typeInto(sc.raw[lang]);
+      await sleep(700);
+      assistBtn.classList.add('pulse');
+      await sleep(800);
+      assistBtn.classList.remove('pulse');
+      assistBtn.classList.add('working'); assistIco.innerHTML='<span class="sp"></span>'; assistLbl.textContent=t().analizando;
+      await sleep(1300);
+      assistBtn.classList.remove('working'); updateAssistByInput();
+      buildCoach(sc); showCoach();
+      await sleep(2800);
+      if(coachOpen) applyImproved();
+    }
+    // auto-advance to the OTHER functionality so both are always shown
+    timers.push(setTimeout(()=>restart(true), 3400));
+  }
+  function typeReply(text){return new Promise(res=>{ input.value=''; let i=0;
+    typing=setInterval(()=>{ input.value=text.slice(0,++i); autoSize(); if(i>=text.length){clearInterval(typing);typing=null;res();} },20);
+  });}
+  function applyImproved(){
+    const sc=SC[scIdx];
+    hideCoach();
+    compInput.classList.add('assist');
+    input.value=sc.prompt[lang]; autoSize(); input.focus();
+  }
+  function applySpellOnly(){
+    const sc=SC[scIdx]; if(!sc.spell) return;
+    hideCoach();
+    compInput.classList.add('assist');
+    let v=sc.raw[lang]||''; v=v.replace(sc.spell[lang][0],sc.spell[lang][1]);
+    input.value=v; autoSize();
+  }
+
+  document.getElementById('useImproved').addEventListener('click',applyImproved);
+  document.getElementById('coachPrompt').addEventListener('click',applyImproved);
+  document.getElementById('onlySpell').addEventListener('click',applySpellOnly);
+  document.getElementById('coachClose').addEventListener('click',hideCoach);
+  document.getElementById('coachX').addEventListener('click',hideCoach);
+  document.getElementById('clearx').addEventListener('click',()=>{input.value='';autoSize();compInput.classList.remove('assist');});
+  assistBtn.addEventListener('click',()=>{
+    if(assistBtn.classList.contains('working'))return;
+    const sc=SC[scIdx];
+    if((assistBtn.dataset.mode||'responde')==='arregla'){ buildCoach(sc); showCoach(); }
+    else { compInput.classList.add('assist'); input.value=sc.prompt[lang]; autoSize(); updateAssistByInput(); input.focus(); }
+  });
+  input.addEventListener('input',updateAssistByInput);
+  function restart(advance){ clearAll(); if(advance) scIdx=(scIdx+1)%SC.length; compInput.classList.remove('assist'); input.value=''; autoSize(); play(); }
+  document.getElementById('reset').addEventListener('click',()=>restart(true));
+  document.getElementById('b-es').addEventListener('click',()=>{lang='es';applyStatic();restart(false);});
+  document.getElementById('b-en').addEventListener('click',()=>{lang='en';applyStatic();restart(false);});
+
+  applyStatic();
+  let started=false;
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting&&!started){started=true;play();}});},{threshold:.25});
+  io.observe(chat);
+  setTimeout(()=>{if(!started){started=true;play();}},600);
+})();
+</script>
+</body>
+</html>

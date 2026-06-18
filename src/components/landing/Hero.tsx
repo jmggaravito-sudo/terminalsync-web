@@ -114,6 +114,16 @@ export function Hero({ dict }: { dict: Dict }) {
 
       {/* Dashboard real (claro) */}
       <div className="relative mx-auto max-w-6xl px-3 sm:px-5 md:px-6 pb-16 md:pb-20">
+        {/* Shot title above the screenshot */}
+        <h2
+          className="text-center font-semibold text-[var(--color-fg-strong)] leading-tight max-w-[18ch] mx-auto mb-6 md:mb-8"
+          style={{ fontSize: "clamp(26px, 4vw, 42px)", letterSpacing: "-0.035em" }}
+        >
+          {dict.locale === "es"
+            ? "Desde acá se maneja tu empresa."
+            : "This is where your business runs from."}
+        </h2>
+
         <div className="rounded-[22px] border border-[var(--color-border)] bg-[var(--color-panel)] overflow-hidden" style={{ boxShadow: "var(--shadow-floating)" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -124,6 +134,23 @@ export function Hero({ dict }: { dict: Dict }) {
           />
         </div>
         <p className="mt-4 text-center text-[13px] text-[var(--color-fg-dim)]">{t.caption}</p>
+
+        {/* Trust bar — "Más de 2,000 empresas confían en TerminalSync" + logos */}
+        <div className="mt-12 md:mt-16 text-center">
+          <p className="text-[14px] text-[var(--color-fg-muted)] mb-5 md:mb-6">
+            {dict.locale === "es"
+              ? "Más de 2,000 empresas ya confían en TerminalSync"
+              : "Over 2,000 companies already trust TerminalSync"}
+          </p>
+          <div className="flex items-center justify-center gap-6 md:gap-8 lg:gap-12 flex-wrap">
+            <TrustLogo name="Google" />
+            <TrustLogo name="Notion" />
+            <TrustLogo name="Slack" />
+            <TrustLogo name="OpenAI" />
+            <TrustLogo name="AWS" />
+            <TrustLogo name="Miro" />
+          </div>
+        </div>
       </div>
 
       <VideoLightbox
@@ -142,6 +169,37 @@ function Chip({ color, children }: { color: string; children: React.ReactNode })
       <span className="h-2 w-2 rounded-full" style={{ background: color }} />
       {children}
     </span>
+  );
+}
+
+function TrustLogo({ name }: { name: string }) {
+  const logoMap: Record<string, string> = {
+    Google: "google",
+    Notion: "notion",
+    Slack: "slack",
+    OpenAI: "openai",
+    AWS: "amazonaws",
+    Miro: "miro",
+  };
+  const icon = logoMap[name];
+  const cdnUrl = `https://cdn.simpleicons.org/${icon}/9aa0aa`;
+
+  return (
+    <img
+      src={cdnUrl}
+      alt={name}
+      onError={(e) => {
+        // Fallback: show text if CDN fails
+        const img = e.target as HTMLImageElement;
+        img.style.display = "none";
+        const span = document.createElement("span");
+        span.textContent = name;
+        span.className = "text-[13px] font-medium text-[var(--color-fg-muted)]";
+        img.parentElement?.appendChild(span);
+      }}
+      className="h-6 w-auto opacity-70 hover:opacity-100 transition-opacity"
+      loading="lazy"
+    />
   );
 }
 

@@ -109,12 +109,12 @@ export function Nav({ dict, lang }: Props) {
           </span>
         </Link>
 
-        {/* Nav desktop */}
-        <nav className="hidden md:flex items-center gap-6 text-[13px] text-[var(--color-fg-muted)]">
+        {/* Nav desktop — centered links */}
+        <nav className="hidden md:flex flex-1 items-center justify-center gap-6 text-[13px] text-[var(--color-fg-muted)]">
           {items.map((it) => renderItem(it))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-auto">
           <div className="hidden sm:flex">
             <ThemeToggle labels={dict.theme} />
           </div>

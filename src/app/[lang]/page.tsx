@@ -5,10 +5,7 @@ import { Hero } from "@/components/landing/Hero";
 import { MemoryPersistent } from "@/components/landing/MemoryPersistent";
 import { MultiAI } from "@/components/landing/MultiAI";
 import { ChromeExtensionTeaser } from "@/components/landing/ChromeExtensionTeaser";
-import { Demos } from "@/components/landing/Demos";
-import { DemoCambioIA } from "@/components/landing/DemoCambioIA";
-import { DemoSyncDispositivos } from "@/components/landing/DemoSyncDispositivos";
-import { DemoConectores } from "@/components/landing/DemoConectores";
+import { DemosGrid } from "@/components/landing/DemosGrid";
 import { Comparison } from "@/components/landing/Comparison";
 import { SavingsCalculator } from "@/components/landing/SavingsCalculator";
 import { WhatYouCanBuild } from "@/components/landing/WhatYouCanBuild";
@@ -61,13 +58,7 @@ export default async function Landing({ params }: Props) {
           Calculadora → El cambio real → Comparativo → Chrome → Precios →
           Seguridad → FAQ → Afiliados → CTA final → Footer. */}
       <Hero dict={d} />
-      <Demos dict={d} />
-      {/* Demos interactivos (Fase 5): cambio de IA · continuidad · drag&drop */}
-      <section id="demos-interactivos" className="mx-auto max-w-3xl px-5 md:px-6 pb-16 space-y-6">
-        <DemoCambioIA lang={lang} />
-        <DemoSyncDispositivos lang={lang} />
-        <DemoConectores lang={lang} />
-      </section>
+      <DemosGrid lang={lang} />
       <HowItWorks lang={lang} />
       <WhatYouCanBuild lang={lang} />
       <UseCases lang={lang} />

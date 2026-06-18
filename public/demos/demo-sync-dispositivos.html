@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Brand" name="Demo · Misma sesión en todos tus dispositivos" subtitle="Continuidad: portátil → escritorio, misma sesión" viewport="1000x560" -->
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Terminal Sync · Misma sesión en todos tus dispositivos</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#1d2127;--ink2:#5b616b;--ink3:#9aa0aa;--line:#e7e8ec;
+    --indigo:#5b56e6;--claude:#d9774f;--claude-bg:#fdf6f1;--accent:#0f9d6e;
+    --bezel:#1b1f26;--bezel2:#0d1014;
+    --sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{font-family:var(--sans);color:var(--ink);background:
+      radial-gradient(70% 60% at 50% 0%,#ffffff,transparent 70%),
+      linear-gradient(180deg,#f7f5f1,#eef0ee);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:28px 18px;min-height:100vh;-webkit-font-smoothing:antialiased;}
+
+  .scene{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:clamp(10px,3vw,40px);width:100%;max-width:1000px;}
+
+  /* ---------- shared mini app screen ---------- */
+  .screen-wrap{position:relative;width:100%;aspect-ratio:16/10;background:#fff;border-radius:6px;overflow:hidden;}
+  .ts-mini{position:absolute;inset:0;display:flex;flex-direction:column;font-size:10px;background:#fff;}
+  .mini-bar{display:flex;align-items:center;gap:7px;padding:8px 11px;border-bottom:1px solid var(--line);font-weight:600;font-size:10.5px;}
+  .mini-bar .mb-dot{width:7px;height:7px;border-radius:50%;background:var(--claude);}
+  .mini-bar .mb-sync{margin-left:auto;font-family:var(--mono);font-size:8.5px;color:var(--accent);font-weight:500;display:flex;align-items:center;gap:4px;}
+  .mini-bar .mb-sync::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);}
+  .mini-chat{flex:1;padding:11px;display:flex;flex-direction:column;gap:9px;overflow:hidden;}
+  .mu{align-self:flex-end;background:var(--indigo);color:#fff;border-radius:9px;padding:7px 10px;max-width:78%;font-size:9.5px;line-height:1.4;}
+  .mc{border:1px solid var(--line);border-left:3px solid var(--claude);background:var(--claude-bg);border-radius:8px;padding:9px 11px;}
+  .mc-h{font-family:var(--mono);font-size:7.5px;font-weight:600;letter-spacing:.1em;color:#bf6438;display:flex;align-items:center;gap:5px;margin-bottom:6px;}
+  .mc-h::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--claude);}
+  .mc b{font-size:11px;display:block;margin-bottom:7px;}
+  .mc .ln{height:5px;border-radius:3px;background:#eadfd6;margin:5px 0;}
+  .mc .ln.s{width:60%;} .mc .ln.m{width:85%;}
+  .cursor{display:inline-block;width:5px;height:11px;background:var(--indigo);margin-left:1px;vertical-align:-1px;animation:bk 1s steps(1) infinite;}
+  @keyframes bk{50%{opacity:0;}}
+
+  /* screen overlays (desktop) */
+  .ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#06070a;color:#e8eaed;font-family:var(--mono);font-size:11px;z-index:2;}
+  .ov.hide{display:none;}
+  .spin{width:26px;height:26px;border-radius:50%;border:2.5px solid rgba(255,255,255,.18);border-top-color:var(--accent);animation:sp .8s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  .ov small{color:#9aa0aa;}
+
+  .badge-sync{position:absolute;top:9px;right:9px;background:var(--accent);color:#fff;font-family:var(--mono);font-size:8px;font-weight:600;padding:4px 8px;border-radius:999px;display:flex;align-items:center;gap:4px;opacity:0;transform:translateY(-4px);transition:opacity .4s,transform .4s;z-index:3;}
+  .badge-sync.show{opacity:1;transform:none;}
+  .badge-sync::before{content:"✓";}
+
+  /* ---------- devices ---------- */
+  .device{display:flex;flex-direction:column;align-items:center;gap:0;transition:opacity .5s,filter .5s;}
+  .dev-label{font-family:var(--mono);font-size:11px;color:var(--ink2);margin-top:14px;letter-spacing:.02em;}
+  .dev-label b{color:var(--ink);font-weight:600;}
+
+  /* laptop */
+  .laptop .lid{width:100%;max-width:360px;background:var(--bezel);border:6px solid var(--bezel);border-radius:12px 12px 0 0;padding:0;box-shadow:0 24px 50px -28px rgba(0,0,0,.5);}
+  .laptop .lid .screen-wrap{border-radius:5px;}
+  .laptop .base{width:calc(100% + 26px);max-width:386px;height:11px;background:linear-gradient(180deg,#c9ccd3,#a9adb6);border-radius:0 0 11px 11px;position:relative;}
+  .laptop .base::after{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:64px;height:5px;background:#8b8f99;border-radius:0 0 7px 7px;}
+  .laptop.dim .lid{filter:brightness(.45) saturate(.7);}
+
+  /* desktop monitor */
+  .desktop .monitor{position:relative;width:100%;max-width:380px;background:var(--bezel);border:7px solid var(--bezel);border-radius:14px;box-shadow:0 26px 54px -28px rgba(0,0,0,.55);}
+  .desktop .monitor .screen-wrap{border-radius:5px;background:#06070a;}
+  .desktop .power{position:absolute;bottom:-3px;right:14px;width:8px;height:8px;border-radius:50%;background:#3a3f48;transition:background .4s,box-shadow .4s;}
+  .desktop .power.on{background:var(--accent);box-shadow:0 0 10px var(--accent);}
+  .desktop .stand{width:90px;height:34px;background:linear-gradient(180deg,#c9ccd3,#a9adb6);clip-path:polygon(30% 0,70% 0,100% 100%,0 100%);margin-top:-1px;}
+  .desktop .stand-base{width:120px;height:7px;background:#a9adb6;border-radius:4px;margin-top:2px;}
+
+  /* sync link */
+  .sync{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:90px;}
+  .cloud{display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--ink2);}
+  .cloud svg{width:34px;height:34px;stroke:var(--accent);stroke-width:1.6;fill:none;}
+  .cloud span{font-family:var(--mono);font-size:9px;color:var(--accent);display:flex;align-items:center;gap:4px;}
+  .track{position:relative;width:100%;height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 5px,transparent 5px 10px);border-radius:2px;}
+  .pulse{position:absolute;top:50%;left:0;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);transform:translate(-50%,-50%);opacity:0;}
+  .pulse.go{animation:travel 1.6s ease forwards;}
+  @keyframes travel{0%{left:0;opacity:0;}15%{opacity:1;}85%{opacity:1;}100%{left:100%;opacity:0;}}
+
+  .caption{font-size:clamp(15px,2.2vw,19px);font-weight:500;color:var(--ink);text-align:center;max-width:46ch;min-height:2.6em;display:flex;align-items:center;justify-content:center;transition:opacity .35s;letter-spacing:-0.01em;}
+  .caption b{color:var(--accent);}
+  .replay{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--ink2);border:1px solid var(--line);background:#fff;padding:9px 16px;border-radius:999px;cursor:pointer;transition:border-color .2s,color .2s;}
+  .replay:hover{border-color:var(--accent);color:var(--accent);}
+  .replay svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;}
+
+  @media(max-width:640px){
+    .scene{grid-template-columns:1fr;gap:8px;}
+    .sync{flex-direction:row;width:60%;margin:6px auto;}
+    .track{width:80px;} .cloud svg{width:26px;height:26px;}
+    .desktop{order:3;}
+  }
+</style>
+</head>
+<body>
+  <div class="scene" id="scene">
+    <!-- LAPTOP -->
+    <div class="device laptop" id="laptop">
+      <div class="lid">
+        <div class="screen-wrap">
+          <div class="ts-mini">
+            <div class="mini-bar"><span class="mb-dot"></span>Agencia · skincare<span class="mb-sync">Sincronizado</span></div>
+            <div class="mini-chat">
+              <div class="mu">Dame un plan de campaña de 90 días para el cliente de skincare<span class="cursor" id="cur"></span></div>
+              <div class="mc"><div class="mc-h">CLAUDE</div><b>Plan de Campaña 90 días</b><div class="ln m"></div><div class="ln"></div><div class="ln s"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="base"></div>
+      <div class="dev-label"><b>Tu portátil</b> · en casa</div>
+    </div>
+
+    <!-- SYNC -->
+    <div class="sync">
+      <div class="cloud">
+        <svg viewBox="0 0 24 24"><path d="M17 18a4 4 0 0 0 .5-7.97A6 6 0 0 0 6 9a4.5 4.5 0 0 0 .5 9z"/><path d="M12 11v6"/><path d="m9.5 14.5 2.5 2.5 2.5-2.5"/></svg>
+        <span>Tu nube · E2EE</span>
+      </div>
+      <div class="track"><div class="pulse" id="pulse"></div></div>
+    </div>
+
+    <!-- DESKTOP -->
+    <div class="device desktop" id="desktop">
+      <div class="monitor">
+        <div class="screen-wrap">
+          <span class="badge-sync" id="badge">Al día</span>
+          <div class="ts-mini" id="deskApp">
+            <div class="mini-bar"><span class="mb-dot"></span>Agencia · skincare<span class="mb-sync">Sincronizado</span></div>
+            <div class="mini-chat">
+              <div class="mu">Dame un plan de campaña de 90 días para el cliente de skincare</div>
+              <div class="mc"><div class="mc-h">CLAUDE</div><b>Plan de Campaña 90 días</b><div class="ln m"></div><div class="ln"></div><div class="ln s"></div></div>
+            </div>
+          </div>
+          <div class="ov" id="ovOff"></div>
+          <div class="ov hide" id="ovBoot"><div class="spin"></div><span>Sincronizando sesión…</span><small>Recuperando contexto y memoria</small></div>
+        </div>
+        <div class="power" id="power"></div>
+      </div>
+      <div class="stand"></div>
+      <div class="stand-base"></div>
+      <div class="dev-label"><b>Escritorio</b> · en la oficina</div>
+    </div>
+  </div>
+
+  <div class="caption" id="caption">En tu portátil, trabajando con tu IA.</div>
+  <button class="replay" id="replay"><svg viewBox="0 0 24 24"><path d="M3 2v6h6"/><path d="M3 13a9 9 0 1 0 3-7.7L3 8"/></svg>Reproducir de nuevo</button>
+
+<script>
+(function(){
+  const laptop=document.getElementById('laptop');
+  const desktop=document.getElementById('desktop');
+  const power=document.getElementById('power');
+  const ovOff=document.getElementById('ovOff');
+  const ovBoot=document.getElementById('ovBoot');
+  const deskApp=document.getElementById('deskApp');
+  const badge=document.getElementById('badge');
+  const pulse=document.getElementById('pulse');
+  const cap=document.getElementById('caption');
+  const cur=document.getElementById('cur');
+  let timers=[];
+  const at=(ms,fn)=>timers.push(setTimeout(fn,ms));
+  function say(html){cap.style.opacity=0;setTimeout(()=>{cap.innerHTML=html;cap.style.opacity=1;},250);}
+
+  function reset(){
+    timers.forEach(clearTimeout);timers=[];
+    laptop.classList.remove('dim');
+    power.classList.remove('on');
+    ovOff.classList.remove('hide');
+    ovBoot.classList.add('hide');
+    badge.classList.remove('show');
+    pulse.classList.remove('go');
+    if(cur)cur.style.display='inline-block';
+    cap.innerHTML='En tu portátil, trabajando con tu IA.';
+    cap.style.opacity=1;
+  }
+
+  function play(){
+    reset();
+    // Phase 1: leave home — sync to cloud
+    at(2200,()=>{ say('Cierras el portátil y te vas a la oficina.'); if(cur)cur.style.display='none'; laptop.classList.add('dim'); void pulse.offsetWidth; pulse.classList.add('go'); });
+    // Phase 2: arrive, power on desktop
+    at(4400,()=>{ say('Enciendes el computador de la oficina…'); power.classList.add('on'); ovOff.classList.add('hide'); ovBoot.classList.remove('hide'); });
+    // Phase 3: same session appears
+    at(6600,()=>{ ovBoot.classList.add('hide'); });
+    at(7000,()=>{ badge.classList.add('show'); say('La <b>misma conversación</b>, justo donde la dejaste.'); });
+  }
+
+  document.getElementById('replay').addEventListener('click',play);
+
+  // autoplay when visible
+  let started=false;
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting&&!started){started=true;play();}});},{threshold:.35});
+  io.observe(document.getElementById('scene'));
+  reset();
+})();
+</script>
+</body>
+</html>
