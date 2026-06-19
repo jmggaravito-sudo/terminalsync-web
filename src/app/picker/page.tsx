@@ -259,9 +259,9 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
                         // único item seleccionable era un archivo. JM
                         // reportó que necesitaba poder marcar una carpeta
                         // sin tener que entrar y elegir cada archivo a mano.
-                        // El callback ya devuelve `mimeType` por item, así
+                        // El callback ya devuelve mimeType por item, así
                         // que el caller puede distinguir folder de file via
-                        // `application/vnd.google-apps.folder`.
+                        // application/vnd.google-apps.folder.
                         .setParent('root')
                         .setIncludeFolders(true)
                         .setSelectFolderEnabled(true)
