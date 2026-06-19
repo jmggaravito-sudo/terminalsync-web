@@ -73,13 +73,19 @@
 }
 
 html,
+/* Smooth scroll for anchor jumps (e.g. nav → #how-it-works). Lives on
+   `html` (no on `body`) because the scrolling element on most browsers is
+   the root element; placing it on body had no effect on Chrome/Safari. */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--color-bg);
   color: var(--color-fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
 }
 
 ::selection {

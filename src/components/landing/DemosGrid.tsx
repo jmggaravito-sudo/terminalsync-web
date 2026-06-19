@@ -143,7 +143,7 @@ export function DemosGrid({ lang }: { lang: Locale }) {
 
   return (
     <>
-      <section id="demos" className="mx-auto max-w-6xl px-5 md:px-6 py-20 md:py-28">
+      <section id="demos" className="scroll-mt-20 mx-auto max-w-6xl px-5 md:px-6 py-20 md:py-28">
         {/* Section header */}
         <div className="text-center max-w-2xl mx-auto mb-12 md:mb-16">
           <span className="text-[12.5px] font-mono uppercase tracking-[0.12em] text-[var(--color-accent)]">

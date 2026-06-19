@@ -30,7 +30,7 @@ const T = {
 export function HowItWorks({ lang }: { lang: Locale }) {
   const t = T[lang];
   return (
-    <section id="how-it-works" className="mx-auto max-w-5xl px-5 md:px-6 py-20 md:py-24">
+    <section id="how-it-works" className="scroll-mt-20 mx-auto max-w-5xl px-5 md:px-6 py-20 md:py-24">
       <div className="text-center max-w-2xl mx-auto">
         <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--color-accent)]">
           {t.eyebrow}
