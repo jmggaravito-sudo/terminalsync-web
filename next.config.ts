@@ -23,7 +23,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
-      "frame-src https://accounts.google.com https://docs.google.com https://*.google.com",
+      "frame-src 'self' https://accounts.google.com https://docs.google.com https://*.google.com",
       "connect-src 'self' https://*.googleapis.com https://*.google.com https://*.vercel.app https://vitals.vercel-insights.com https://r.wdfl.co https://api.getrewardful.com https://releases.terminalsync.ai",
       "frame-ancestors 'none'",
       "base-uri 'self'",
@@ -39,10 +39,11 @@ const securityHeaders = [
     value:
       "camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(self)",
   },
-  {
-    key: "X-Frame-Options",
-    value: "DENY",
-  },
+  // X-Frame-Options DENY se removió 2026-06-19 porque bloqueaba los iframes
+  // propios de la grilla de demos en la landing (servidos desde /demos/*.html).
+  // La protección contra clickjacking de terceros la mantiene la directiva CSP
+  // `frame-ancestors 'none'` — equivalente moderno y más granular (permite
+  // same-origin de forma implícita vs DENY global).
   {
     key: "X-Content-Type-Options",
     value: "nosniff",
