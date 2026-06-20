@@ -39,7 +39,7 @@ const LINES = {
     ['07-full-resultado', 'Propuesta enviada. Campaña publicada. Reporte entregado. Todo Listo con terminalsync.'],
     ['08-full-cambio',    'Si una IA se detiene, simplemente continúas con otra en el mismo chat. Sin copiar. Sin pegar. Sin perder nada.'],
     ['09-full-movilidad', 'Empiezas en la oficina. Sigues en el portátil o Sigues en tu Whatsaap o telegram. Tu trabajo va contigo, y tu diriges a tus agentes 24/7!.'],
-    ['10-full-whatsapp',  'Incluso cuando no estás frente al computador. Una IA llega a su límite, te llega un Email o un Telegrama, respondes sí, continúa, y el trabajo sigue. Tu trabajo te sigue hasta el chat.'],
+    ['10-full-whatsapp',  'Incluso cuando no estás frente al computador. Una IA llega a su límite, te llega un Email o un Telegram, respondes sí, continúa, y el trabajo sigue. Tu trabajo te sigue hasta el chat.'],
     ['11-full-facilidad', 'Conecta Gmail, Notion, Drive y miles de conectores mas, solo con  arrastrarlos. Y en tu chat con la IA, Si no sabes cómo pedir algo, tu asistente personal de IA lo redacta por ti.'],
     ['12-full-cierre',    'TerminalSync. Las IAs se detienen. Tu negocio no.'],
   ],
