@@ -31,9 +31,12 @@ const BASE = process.env.DEMO_BASE || 'http://localhost:3000/demos';
 const OUT = `video/tomas-${LANG}`;
 fs.mkdirSync(OUT, { recursive: true });
 
-// Resolución NATIVA 2K. recordVideo.size define la resolución final del WebM —
-// poniéndola a 2560x1640 grabamos a 2K real en vez de upscalear 1280x820 después.
-const W = 2560, H = 1640;
+// Viewport = el viewport de DISEÑO de los demos (anotado en cada HTML como
+// `@dsCard viewport="1280x820"`). Recording al viewport correcto hace que el
+// contenido llene el frame por diseño — sin white space ni necesidad de zoom
+// post. ffmpeg upscalea 2x a 2K (2560×1640) con lanczos.
+const W = 1280, H = 820;
+const SCALE = 2;
 
 for (const [name, secs] of DEMOS) {
   const mp4 = `${OUT}/${name}.mp4`;
@@ -45,6 +48,7 @@ for (const [name, secs] of DEMOS) {
   const ctx = await chromium.launchPersistentContext('', {
     headless: true,
     viewport: { width: W, height: H },
+    deviceScaleFactor: SCALE,  // HiDPI: render a 2x para que el upscale 2x sea pixel-perfect
     recordVideo: { dir: OUT, size: { width: W, height: H } },
   });
   const page = ctx.pages()[0] || await ctx.newPage();
@@ -56,7 +60,7 @@ for (const [name, secs] of DEMOS) {
   await ctx.close();
   const webm = await video.path();
   execSync(
-    `ffmpeg -y -i "${webm}" -vf "fps=30" -c:v libx264 -pix_fmt yuv420p -crf 18 "${mp4}"`,
+    `ffmpeg -y -i "${webm}" -vf "fps=30,scale=${W*SCALE}:${H*SCALE}:flags=lanczos" -c:v libx264 -pix_fmt yuv420p -crf 18 "${mp4}"`,
     { stdio: ['ignore', 'ignore', 'inherit'] }
   );
   fs.unlinkSync(webm);
