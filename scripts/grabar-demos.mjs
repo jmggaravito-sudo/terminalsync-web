@@ -24,6 +24,7 @@ const DEMOS = [
   ['demo-conectores',         16],
   ['demo-mensajeria',         24],
   ['demo-asistente-prompts',  20],
+  ['demo-tokens-cambio',      15],  // momento clave: Claude llega al límite → click → Codex retoma (autoplay ~7-8s, voz 13.28s)
   ['cierre-brand',             5],  // card estático: logo + tagline + URL, 5s buffer (cut lo recorta a 3.99s + fade)
 ];
 

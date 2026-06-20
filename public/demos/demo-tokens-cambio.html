@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Brand" name="Demo · Límite de tokens → cambia de IA en un clic" subtitle="Claude llega al límite → Continuar con otra IA → Codex sigue · ES/EN" viewport="1180x760" -->
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Terminal Sync · Límite de tokens → cambia de IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#ffffff; --ink:#1d2127; --ink2:#5b616b; --ink3:#9aa0aa;
+    --line:#e9eaee; --line2:#e0e2e7; --hover:#f4f5f7;
+    --indigo:#5b56e6; --green:#34b87a; --navy:#1c2230;
+    --claude:#d9774f; --claude-bg:#fdf6f1; --claude-tx:#bf6438;
+    --codex:#1f9d63;  --codex-bg:#f0faf4;  --codex-tx:#138551;
+    --amber:#e8920c; --amber-bg:#fff8ee; --amber-bd:#f1c98a; --amber-tx:#b9720a;
+    --sans:'Geist',system-ui,sans-serif; --mono:'Geist Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:14px;-webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  svg{display:block;}
+  .ic{width:18px;height:18px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+  .app{display:flex;flex-direction:column;height:100vh;min-height:560px;overflow:hidden;}
+
+  /* Top bar */
+  .top{height:52px;flex:none;display:flex;align-items:center;gap:13px;padding:0 16px;border-bottom:1px solid var(--line);}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:15px;}
+  .brand .logo{width:25px;height:25px;border-radius:7px;background:linear-gradient(135deg,#3f74f5,#7c5cf6);display:grid;place-items:center;}
+  .brand .logo i{width:10px;height:10px;border-radius:3px;background:rgba(255,255,255,.9);}
+  .ia-pill{margin-left:6px;display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);padding:6px 12px;border-radius:999px;border:1px solid var(--line2);transition:background .35s,border-color .35s;}
+  .ia-pill .dot{width:9px;height:9px;border-radius:50%;background:var(--claude);transition:background .35s;}
+  .ia-pill b{color:var(--ink);font-weight:600;}
+  .top-right{margin-left:auto;display:flex;align-items:center;gap:13px;color:var(--ink2);}
+  .top-right .sync{display:flex;align-items:center;gap:7px;font-size:13px;}
+  .avatar{width:29px;height:29px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;color:var(--ink2);}
+
+  /* Chat */
+  .chat{flex:1;overflow-y:auto;padding:24px clamp(20px,8vw,120px);display:flex;flex-direction:column;gap:18px;background:var(--bg);justify-content:flex-start;}
+  .row{display:flex;}
+  .row.user{justify-content:flex-end;}
+  .user-bubble{background:var(--indigo);color:#fff;border-radius:14px;padding:13px 17px;max-width:560px;font-size:14.5px;line-height:1.55;box-shadow:0 6px 18px -8px rgba(91,86,230,.5);}
+
+  .ai-card{border:1px solid var(--line);border-left:4px solid var(--claude);border-radius:13px;padding:18px 22px;background:#fff;box-shadow:0 1px 2px rgba(20,22,28,.03),0 16px 38px -28px rgba(20,22,28,.22);transition:border-left-color .35s;}
+  .ai-card.codex{border-left-color:var(--codex);}
+  .ai-head{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.12em;margin-bottom:11px;color:var(--claude-tx);}
+  .ai-card.codex .ai-head{color:var(--codex-tx);}
+  .ai-head .dot{width:8px;height:8px;border-radius:50%;background:var(--claude);}
+  .ai-card.codex .ai-head .dot{background:var(--codex);}
+  .ai-body{font-size:14.5px;line-height:1.62;color:var(--ink);}
+  .ai-body p{margin:8px 0;} .ai-body > :first-child{margin-top:0;} .ai-body > :last-child{margin-bottom:0;}
+  .ai-body strong{font-weight:600;}
+  .cursor{display:inline-block;width:8px;height:17px;background:var(--claude);vertical-align:-3px;margin-left:2px;animation:bk 1s steps(1) infinite;}
+  .ai-card.codex .cursor{background:var(--codex);}
+  @keyframes bk{50%{opacity:0;}}
+
+  /* Token-limit banner */
+  .limit{border:1px solid var(--amber-bd);background:var(--amber-bg);border-radius:14px;padding:18px 20px;box-shadow:0 16px 40px -24px rgba(184,114,10,.55);max-width:560px;align-self:flex-start;}
+  .limit-head{display:flex;align-items:center;gap:11px;margin-bottom:9px;}
+  .limit-head .ic-wrap{width:32px;height:32px;border-radius:9px;background:#fff;border:1px solid var(--amber-bd);display:grid;place-items:center;color:var(--amber);flex:none;}
+  .limit-head .ic-wrap svg{width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none;}
+  .limit-head .tt{font-weight:600;font-size:15px;}
+  .limit-head .sub{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber-tx);}
+  .limit p{margin:0 0 15px;font-size:13.5px;color:var(--ink2);line-height:1.5;}
+  .limit-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .btn-switch{display:inline-flex;align-items:center;gap:9px;font-size:14px;font-weight:600;color:#fff;background:var(--codex);border-radius:10px;padding:11px 18px;box-shadow:0 10px 24px -10px rgba(31,157,99,.8);transition:transform .12s,filter .2s;}
+  .btn-switch:hover{filter:brightness(1.05);} .btn-switch:active{transform:scale(.97);}
+  .btn-switch svg{width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;}
+  .btn-switch.pulse{animation:pulse 1.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{box-shadow:0 10px 24px -10px rgba(31,157,99,.8);}50%{box-shadow:0 10px 24px -10px rgba(31,157,99,.8),0 0 0 7px rgba(31,157,99,.14);}}
+  .btn-wait{font-size:13.5px;color:var(--ink3);padding:11px 6px;}
+  .cursor-ghost{position:fixed;width:22px;height:22px;z-index:50;pointer-events:none;opacity:0;transition:opacity .2s;}
+  .cursor-ghost svg{width:22px;height:22px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.3));}
+
+  .handoff{align-self:center;display:inline-flex;align-items:center;gap:8px;background:var(--codex-bg);border:1px solid #bfe8d2;color:var(--codex-tx);font-family:var(--mono);font-size:11.5px;font-weight:500;padding:7px 14px;border-radius:999px;}
+  .handoff svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;}
+
+  .context-chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:3px;}
+  .context-chips .c{font-family:var(--mono);font-size:10.5px;color:var(--codex-tx);background:var(--codex-bg);border:1px solid #cdeede;border-radius:999px;padding:3px 9px;}
+
+  /* Composer */
+  .composer-wrap{flex:none;border-top:1px solid var(--line);padding:13px clamp(20px,8vw,120px);}
+  .composer{display:flex;align-items:center;gap:10px;}
+  .comp-input{flex:1;display:flex;align-items:center;border:1px solid var(--line2);border-radius:12px;padding:0 14px;min-height:46px;color:var(--ink3);font-size:14px;}
+  .send{display:flex;align-items:center;gap:8px;background:var(--green);color:#fff;font-weight:600;font-size:14px;padding:11px 19px;border-radius:11px;}
+  .send svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none;}
+
+  .fadein{animation:fd .4s ease;} @keyframes fd{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  .lang-pill{position:fixed;right:18px;top:12px;z-index:60;display:inline-flex;gap:3px;padding:4px;background:#fff;border:1px solid var(--line2);border-radius:999px;box-shadow:0 10px 28px -14px rgba(20,22,28,.4);}
+  .lang-pill button{font-family:var(--mono);font-size:12px;padding:5px 12px;border-radius:999px;color:var(--ink2);}
+  .lang-pill button.on{background:var(--navy);color:#fff;font-weight:600;}
+  .replay-btn{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--ink2);border:1px solid var(--line2);background:#fff;padding:8px 15px;border-radius:999px;cursor:pointer;z-index:60;box-shadow:0 10px 30px -12px rgba(20,22,28,.3);}
+  .replay-btn:hover{border-color:var(--green);color:var(--green);}
+  .replay-btn svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><span class="logo"><i></i></span>Terminal Sync</div>
+    <span class="ia-pill" id="iaPill"><span class="dot" id="iaDot"></span><span data-i="ia">IA:</span> <b id="iaName">Claude</b></span>
+    <div class="top-right">
+      <span class="sync"><svg class="ic sm" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg><span data-i="proj">Proyecto · Cotizaciones</span></span>
+      <span class="avatar"><svg class="ic sm" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+    </div>
+  </header>
+
+  <div class="chat" id="chat"></div>
+
+  <div class="composer-wrap">
+    <div class="composer">
+      <div class="comp-input"><span data-i="ph">Escribe un mensaje…</span></div>
+      <button class="send"><svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg><span data-i="send">Enviar</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="cursor-ghost" id="ghost"><svg viewBox="0 0 24 24" fill="#1d2127"><path d="M5 3l15 9-6 1.5L17 20l-3 1-3-6.5L6 18z"/></svg></div>
+<div class="lang-pill"><button id="b-es" class="on">ES</button><button id="b-en">EN</button></div>
+<button class="replay-btn" id="reset"><svg viewBox="0 0 24 24"><path d="M3 2v6h6"/><path d="M3 13a9 9 0 1 0 3-7.7L3 8"/></svg><span data-i="replay">Reproducir de nuevo</span></button>
+
+<script>
+(function(){
+  'use strict';
+  const chat=document.getElementById('chat');
+  const iaName=document.getElementById('iaName');
+  const iaDot=document.getElementById('iaDot');
+  const iaPill=document.getElementById('iaPill');
+  const ghost=document.getElementById('ghost');
+
+  const T={
+    es:{
+      ia:'IA:', proj:'Proyecto · Cotizaciones', ph:'Escribe un mensaje…', send:'Enviar', replay:'Reproducir de nuevo',
+      userMsg:'Termina la cotización del cliente Martínez y prepárame el correo de envío.',
+      claudeTyping:'Preparando la cotización de Martínez: subtotal, descuento por volumen y condiciones de pago…',
+      limitTag:'Límite de uso alcanzado', limitTitle:'Claude llegó a su límite',
+      limitMsg:'Tu sesión de Claude se agotó a mitad de la tarea. Continúa con otra IA — tu proyecto, tu contexto y lo que llevas no se pierden.',
+      switchBtn:'Continuar con Codex', wait:'o espera a que se reinicie tu cuota',
+      handoff:'Continuando con Codex — mismo contexto, sin repetir nada',
+      chips:['Cliente: Martínez','Cotización en curso','Condiciones de pago'],
+      codexAnswer:'<p><strong>Listo — Codex.</strong> Retomo justo donde Claude se detuvo:</p><p>✅ Cotización <strong>#1042 · Martínez</strong> completada — $4.820 con tu descuento por volumen.<br>✅ Correo de envío redactado y listo para revisar.</p>',
+      onResume:'Sin perder el hilo.'
+    },
+    en:{
+      ia:'AI:', proj:'Project · Quotes', ph:'Type a message…', send:'Send', replay:'Play again',
+      userMsg:'Finish the quote for client Martínez and prepare the delivery email for me.',
+      claudeTyping:'Preparing Martínez’s quote: subtotal, volume discount and payment terms…',
+      limitTag:'Usage limit reached', limitTitle:'Claude hit its limit',
+      limitMsg:'Your Claude session ran out halfway through the task. Continue with another AI — your project, your context and your progress are not lost.',
+      switchBtn:'Continue with Codex', wait:'or wait for your quota to reset',
+      handoff:'Continuing with Codex — same context, nothing repeated',
+      chips:['Client: Martínez','Quote in progress','Payment terms'],
+      codexAnswer:'<p><strong>Done — Codex.</strong> I pick up right where Claude stopped:</p><p>✅ Quote <strong>#1042 · Martínez</strong> completed — $4,820 with your volume discount.<br>✅ Delivery email drafted and ready to review.</p>',
+      onResume:'Without losing the thread.'
+    }
+  };
+  let lang=(new URLSearchParams(location.search).get('lang')==='en')?'en':'es';
+  const embed=new URLSearchParams(location.search).get('embed')==='1';
+  const t=()=>T[lang];
+
+  function applyStatic(){
+    document.documentElement.lang=lang;
+    document.querySelectorAll('[data-i]').forEach(el=>{const v=t()[el.dataset.i];if(typeof v==='string')el.textContent=v;});
+    document.getElementById('b-es').classList.toggle('on',lang==='es');
+    document.getElementById('b-en').classList.toggle('on',lang==='en');
+    if(embed){const p=document.querySelector('.lang-pill');if(p)p.style.display='none';const rb=document.getElementById('reset');if(rb)rb.style.display='none';}
+  }
+  function scroll(){chat.scrollTop=chat.scrollHeight;}
+
+  let timers=[],playing=false;
+  const sleep=ms=>new Promise(r=>timers.push(setTimeout(r,ms)));
+  const clearAll=()=>{timers.forEach(clearTimeout);timers=[];};
+
+  function userMsg(txt){const r=document.createElement('div');r.className='row user fadein';r.innerHTML='<div class="user-bubble"></div>';r.querySelector('.user-bubble').textContent=txt;chat.appendChild(r);scroll();return r;}
+
+  function claudeCard(){
+    const r=document.createElement('div');r.className='row fadein';
+    r.innerHTML='<div class="ai-card"><div class="ai-head"><span class="dot"></span>CLAUDE</div><div class="ai-body"><p class="tw"></p></div></div>';
+    chat.appendChild(r);scroll();return r;
+  }
+  async function typeText(el,txt){
+    el.innerHTML='';const span=document.createElement('span');el.appendChild(span);
+    const cur=document.createElement('span');cur.className='cursor';el.appendChild(cur);
+    for(let i=0;i<txt.length;i++){span.textContent=txt.slice(0,i+1);if(i%2===0)scroll();await sleep(22);}
+    return cur;
+  }
+
+  function limitBanner(){
+    const r=document.createElement('div');r.className='row fadein';
+    r.innerHTML=
+      '<div class="limit" id="limitBox">'+
+        '<div class="limit-head"><span class="ic-wrap"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg></span>'+
+          '<div><div class="tt">'+t().limitTitle+'</div><div class="sub">'+t().limitTag+'</div></div></div>'+
+        '<p>'+t().limitMsg+'</p>'+
+        '<div class="limit-actions">'+
+          '<button class="btn-switch pulse" id="switchBtn"><svg viewBox="0 0 24 24"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>'+t().switchBtn+'</button>'+
+          '<span class="btn-wait">'+t().wait+'</span>'+
+        '</div>'+
+      '</div>';
+    chat.appendChild(r);scroll();return r;
+  }
+
+  function setIA(key){
+    const map={claude:['Claude','var(--claude)'],codex:['Codex','var(--codex)']};
+    iaName.textContent=map[key][0];iaDot.style.background=map[key][1];
+  }
+
+  async function moveGhostTo(el){
+    const cr=chat.getBoundingClientRect(); // ensure layout
+    const b=el.getBoundingClientRect();
+    ghost.style.left=(b.left+b.width*0.5)+'px';
+    ghost.style.top=(b.top+b.height*0.5)+'px';
+    ghost.style.opacity='1';
+    await sleep(650);
+  }
+
+  async function play(){
+    if(playing)return;playing=true;
+    clearAll();chat.innerHTML='';setIA('claude');iaPill.style.background='';iaPill.style.borderColor='';
+    ghost.style.opacity='0';
+
+    userMsg(t().userMsg);
+    await sleep(650);
+    const cc=claudeCard();
+    const cur=await typeText(cc.querySelector('.tw'),t().claudeTyping);
+    await sleep(500);
+    cur.remove();
+    // stalls → limit
+    await sleep(500);
+    const lim=limitBanner();
+    const btn=document.getElementById('switchBtn');
+    let clicked=false;
+    const doSwitch=async()=>{
+      if(clicked)return;clicked=true;
+      ghost.style.opacity='0';
+      btn.classList.remove('pulse');
+      document.getElementById('limitBox').style.opacity='.5';
+      // pill morphs to Codex
+      setIA('codex');
+      iaPill.style.background='var(--codex-bg)';iaPill.style.borderColor='#bfe8d2';
+      await sleep(550);
+      const h=document.createElement('div');h.className='row fadein';
+      h.innerHTML='<div class="handoff"><svg viewBox="0 0 24 24"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>'+t().handoff+'</div>';
+      chat.appendChild(h);scroll();
+      await sleep(700);
+      const r=document.createElement('div');r.className='row fadein';
+      r.innerHTML='<div class="ai-card codex"><div class="ai-head"><span class="dot"></span>CODEX</div>'+
+        '<div class="context-chips">'+t().chips.map(c=>'<span class="c">'+c+'</span>').join('')+'</div>'+
+        '<div class="ai-body" style="margin-top:11px">'+t().codexAnswer+'</div></div>';
+      chat.appendChild(r);scroll();
+      playing=false;
+    };
+    btn.addEventListener('click',doSwitch);
+    // auto-demo: ghost cursor flies to the button and clicks
+    await sleep(900);
+    if(!clicked){ await moveGhostTo(btn); await sleep(150); if(!clicked) doSwitch(); }
+  }
+  function restart(){clearAll();playing=false;play();}
+
+  document.getElementById('reset').addEventListener('click',restart);
+  document.getElementById('b-es').addEventListener('click',()=>{lang='es';applyStatic();restart();});
+  document.getElementById('b-en').addEventListener('click',()=>{lang='en';applyStatic();restart();});
+
+  applyStatic();
+  let started=false;
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting&&!started){started=true;play();}});},{threshold:.25});
+  io.observe(chat);
+  setTimeout(()=>{if(!started){started=true;play();}},600);
+})();
+</script>
+</body>
+</html>

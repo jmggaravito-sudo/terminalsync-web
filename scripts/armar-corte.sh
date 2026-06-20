@@ -30,13 +30,13 @@ mkdir -p video
 #              viewport elimina la necesidad).
 #   fade yes → fade-to-black en el último 1s del beat (solo cierre de marca).
 SEQ=(
-  "demo-mensajeria|01-hero-escena|no|no"          # opening dramático: AI llega al límite, WhatsApp arriva
-  "demo-cambio-ia|08-full-cambio|no|no"           # continúa con otra IA sin perder contexto
-  "demo-ai-director|06-full-recuerda|no|no"       # multi-AI en el mismo chat + recomendación
-  "demo-sync-dispositivos|09-full-movilidad|no|no" # portátil → escritorio (la escena más fuerte)
+  "demo-tokens-cambio|01-hero-escena|no|no"        # opening dramático: AI llega al límite → click → Codex retoma
+  "demo-ai-director|06-full-recuerda|no|no"        # multi-AI en el mismo chat + recomendación de costo
+  "demo-sync-dispositivos|09-full-movilidad|no|no" # portátil → escritorio (continuidad emocional)
+  "demo-mensajeria|10-full-whatsapp|no|no"         # tu trabajo continúa en WhatsApp / Telegram
   "demo-conectores|11-full-facilidad|no|no"        # tus IAs ya tienen tus herramientas
-  "demo-resultados|03-hero-resultado|no|no"       # resultado: no es chat, es trabajo terminado
-  "cierre-brand|12-full-cierre|no|yes"            # cierre de marca: logo + tagline + URL + fade
+  "demo-resultados|03-hero-resultado|no|no"        # resultado: no es chat, es trabajo terminado
+  "cierre-brand|12-full-cierre|no|yes"             # cierre de marca: logo + tagline + URL + fade
 )
 
 # Texto on-screen sugerido por beat (referencia editorial para CapCut). ffmpeg
@@ -44,9 +44,9 @@ SEQ=(
 # disponibles. Cuando edites en CapCut, usá estas líneas.
 TXT=(
   "Las IAs se detienen. Tu negocio no."
-  "Continúas con otra IA. Sin perder nada."
   "Claude, Codex y Gemini en el mismo chat."
   "Tu trabajo te sigue donde vayas."
+  "Continúa desde WhatsApp y Telegram."
   "Tus IAs ya tienen tus herramientas."
   "No es un chat. Es trabajo terminado."
   ""  # cierre-brand: tagline ya está quemada en la card HTML
