@@ -164,6 +164,7 @@ export interface Dict {
       internetImmunity: string;
       aiConversationSync: string;
       replyInjection: string;
+      whatsAppContinue: string;
       noVendorLockIn: string;
       zeroRuntime: string;
       zeroStorage: string;
@@ -226,6 +227,7 @@ export interface Dict {
       internetImmunity: string;
       aiConversationSync: string;
       replyInjection: string;
+      whatsAppContinue: string;
       noVendorLockIn: string;
       zeroRuntime: string;
       zeroStorage: string;

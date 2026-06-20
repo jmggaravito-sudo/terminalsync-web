@@ -51,6 +51,10 @@ const ROWS: Row[] = [
     cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
   },
   {
+    key: "whatsAppContinue",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
+  },
+  {
     key: "webMobileMirror",
     cells: { terminalSync: "yes", vercel: "yes", claudeCode: "no", codex: "no", gemini: "no" },
   },

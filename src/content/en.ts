@@ -340,6 +340,7 @@ const en: Dict = {
       internetImmunity: "Keeps going if the internet drops",
       aiConversationSync: "Conversations synced between computers",
       replyInjection: "Reply from your phone",
+      whatsAppContinue: "Continue your work from WhatsApp and Telegram",
       noVendorLockIn: "No lock-in — your files in your own cloud",
       zeroRuntime: "No server cost (runs on your computer)",
       zeroStorage: "No storage cost (uses your own cloud)",
@@ -416,6 +417,8 @@ const en: Dict = {
         "Your agent conversations sync across your Macs and devices. Start on the MacBook, continue on the Mac mini without pasting context.",
       replyInjection:
         "From your phone, inject replies into an agent that's waiting for input on your computer. Perfect for unblocking a command while you're out.",
+      whatsAppContinue:
+        "The same conversation you started in TerminalSync continues in WhatsApp or Telegram. You reply from the chat and your AIs keep working, without opening the app or browser.",
       noVendorLockIn:
         "Your files live in your own Google Drive (iCloud, S3, Dropbox coming soon). If you leave Terminal Sync, you take everything with you. No export fee.",
       zeroRuntime:
@@ -536,6 +539,7 @@ const en: Dict = {
           "Auto setup-on-arrival per project",
           "Your AI terminals travel with the project folder",
           "Anywhere Access (mobile + any browser)",
+          "Continue your work from WhatsApp and Telegram",
           "Connectors, skills and terminal tools synced",
           "Notifications via Email / WhatsApp / Telegram",
           "90-day history",
