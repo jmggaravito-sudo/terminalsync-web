@@ -24,6 +24,7 @@ const DEMOS = [
   ['demo-conectores',         16],
   ['demo-mensajeria',         24],
   ['demo-asistente-prompts',  20],
+  ['cierre-brand',             5],  // card estático: logo + tagline + URL, 5s buffer (cut lo recorta a 3.99s + fade)
 ];
 
 const LANG = process.argv[2] || 'es';

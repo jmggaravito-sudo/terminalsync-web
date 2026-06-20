@@ -25,18 +25,18 @@ mkdir -p video
 # La escena más fuerte es portátil↔escritorio + WhatsApp; cambio/multi-AI van
 # como capacidades, no como protagonistas.
 #
-# Formato: "demo|voz_block|zoom" donde zoom = yes|no.
-#   yes → scale 1.4x + crop 2K top-anchored (chat demos: contenido vive arriba,
-#         elimina el espacio blanco inferior).
-#   no  → sin zoom (demos de continuidad: portátil↔escritorio, mensajería,
-#         conectores funcionan mejor centrados con aire).
+# Formato: "demo|voz_block|zoom|fade" donde zoom = yes|no, fade = yes|no.
+#   zoom yes → scale 1.4x + crop 2K (en desuso desde v3 — recording al design
+#              viewport elimina la necesidad).
+#   fade yes → fade-to-black en el último 1s del beat (solo cierre de marca).
 SEQ=(
-  "demo-mensajeria|01-hero-escena|no"           # opening dramático: AI llega al límite, WhatsApp arriva
-  "demo-cambio-ia|08-full-cambio|no"            # continúa con otra IA sin perder contexto
-  "demo-ai-director|06-full-recuerda|no"        # multi-AI en el mismo chat
-  "demo-sync-dispositivos|09-full-movilidad|no"  # portátil → escritorio (la escena más fuerte)
-  "demo-conectores|11-full-facilidad|no"         # tus IAs ya tienen tus herramientas
-  "demo-resultados|03-hero-resultado|no"        # cierre: no es chat, es trabajo terminado
+  "demo-mensajeria|01-hero-escena|no|no"          # opening dramático: AI llega al límite, WhatsApp arriva
+  "demo-cambio-ia|08-full-cambio|no|no"           # continúa con otra IA sin perder contexto
+  "demo-ai-director|06-full-recuerda|no|no"       # multi-AI en el mismo chat + recomendación
+  "demo-sync-dispositivos|09-full-movilidad|no|no" # portátil → escritorio (la escena más fuerte)
+  "demo-conectores|11-full-facilidad|no|no"        # tus IAs ya tienen tus herramientas
+  "demo-resultados|03-hero-resultado|no|no"       # resultado: no es chat, es trabajo terminado
+  "cierre-brand|12-full-cierre|no|yes"            # cierre de marca: logo + tagline + URL + fade
 )
 
 # Texto on-screen sugerido por beat (referencia editorial para CapCut). ffmpeg
@@ -49,6 +49,7 @@ TXT=(
   "Tu trabajo te sigue donde vayas."
   "Tus IAs ya tienen tus herramientas."
   "No es un chat. Es trabajo terminado."
+  ""  # cierre-brand: tagline ya está quemada en la card HTML
 )
 
 # Zoom para chat-demos: scale 1.4x + crop 2K anclado arriba (y=0) → enfoca
@@ -62,27 +63,36 @@ dur () {
 }
 
 echo
-echo "─── Timing por beat (orden v2) ────────────────────────────────────"
-printf "%-3s %-26s %-22s %8s %8s %6s\n" "#" "Demo" "Voz block" "VozDur" "DemoMax" "Zoom"
+echo "─── Timing por beat (orden v3 + cierre brand) ────────────────────"
+printf "%-3s %-26s %-22s %8s %8s %5s %5s\n" "#" "Demo" "Voz block" "VozDur" "DemoMax" "Zoom" "Fade"
 
 parts=()
 voices=()
 total=0
 i=0
 for entry in "${SEQ[@]}"; do
-  IFS='|' read -r demo voz zoom <<< "$entry"
+  IFS='|' read -r demo voz zoom fade <<< "$entry"
   vid_in="$T/$demo.mp4"
   voz_in="$VOZ_DIR/$voz.mp3"
   [ -f "$vid_in" ] || { echo "✗ falta $vid_in"; exit 1; }
   [ -f "$voz_in" ] || { echo "✗ falta $voz_in"; exit 1; }
   vid_dur_max=$(dur "$vid_in")
   voz_dur=$(dur "$voz_in")
-  printf "%-3s %-26s %-22s %7.2fs %7.2fs %6s\n" "$i" "$demo" "$voz" "$voz_dur" "$vid_dur_max" "$zoom"
+  printf "%-3s %-26s %-22s %7.2fs %7.2fs %5s %5s\n" "$i" "$demo" "$voz" "$voz_dur" "$vid_dur_max" "$zoom" "$fade"
+
+  # Construir cadena -vf combinando zoom y fade según corresponda
+  vf_chain=""
+  if [ "$zoom" = "yes" ]; then vf_chain="$ZOOM_FILTER"; fi
+  if [ "$fade" = "yes" ]; then
+    fade_start=$(echo "$voz_dur - 1" | bc -l)
+    fade_filter="fade=t=out:st=${fade_start}:d=1"
+    if [ -n "$vf_chain" ]; then vf_chain="$vf_chain,$fade_filter"; else vf_chain="$fade_filter"; fi
+  fi
 
   out="video/.p$i.mp4"
-  if [ "$zoom" = "yes" ]; then
+  if [ -n "$vf_chain" ]; then
     ffmpeg -y -i "$vid_in" -t "$voz_dur" \
-      -vf "$ZOOM_FILTER" \
+      -vf "$vf_chain" \
       -an -c:v libx264 -pix_fmt yuv420p -crf 20 "$out" 2>/dev/null
   else
     ffmpeg -y -i "$vid_in" -t "$voz_dur" \

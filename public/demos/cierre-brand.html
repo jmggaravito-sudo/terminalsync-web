@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Brand" name="Cierre · Brand" subtitle="Logo + tagline + URL" viewport="1280x820" -->
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TerminalSync · Cierre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f5f1;
+    --ink: #16181d;
+    --ink2: #5b616b;
+    --accent: #0f9d6e;
+    --accent-soft: #0b8a5f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); }
+  body {
+    font-family: 'Geist', system-ui, sans-serif;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 60px;
+    text-align: center;
+    -webkit-font-smoothing: antialiased;
+  }
+  .logo {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 24px;
+    filter: drop-shadow(0 8px 20px rgba(15, 157, 110, 0.18));
+  }
+  .brand {
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 56px;
+    color: var(--ink);
+  }
+  .tagline {
+    font-size: 60px;
+    font-weight: 600;
+    line-height: 1.12;
+    margin: 0;
+    letter-spacing: -0.025em;
+    max-width: 18ch;
+  }
+  .tagline em {
+    color: var(--accent);
+    font-style: normal;
+  }
+  .url {
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 18px;
+    color: var(--ink2);
+    margin-top: 56px;
+    letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+  <img class="logo" src="/brand/logo-round.svg" alt="TerminalSync" />
+  <div class="brand">TerminalSync</div>
+  <h1 class="tagline" id="tagline">Las IAs se detienen.<br /><em>Tu negocio no.</em></h1>
+  <div class="url">terminalsync.ai</div>
+  <script>
+    var p = new URLSearchParams(window.location.search);
+    if ((p.get('lang') || 'es').toLowerCase() === 'en') {
+      document.documentElement.lang = 'en';
+      document.getElementById('tagline').innerHTML = "AIs stop.<br /><em>Your business doesn't.</em>";
+    }
+  </script>
+</body>
+</html>
