@@ -46,7 +46,7 @@ const LINES = {
   en: [
     ['01-hero-scene',     'You were working, suddenly the AI hit its limit. And your work stopped. A message from TerminalSync arrives: Continue with another AI? You reply yes. And your work keeps going.'],
     ['02-hero-category',  "AIs stop. Your business doesn't."],
-    ['03-hero-result',    "You ask for a job and watch it move forward. The proposal is written. The solution is built. The details are reviewed. Terminalsync It's not any chat. It's your finished."],
+    ['03-hero-result',    "You ask for a job and watch it move forward. The proposal is written. The solution is built. The details are reviewed. Terminalsync It's not any chat. It's your work finished."],
     ['04-hero-close',     "TerminalSync. AIs stop. Your business doesn't."],
     ['05-full-pain',      'When an AI stops, the work often stops too. You run out of tokens, you lose the context, and you have to start all over again.'],
     ['06-full-remembers', 'TerminalSync remembers what you were working on, switches AI on the same chat, without losing anything, and lets you continue from anywhere. No prompts or commands to learn. No complex setup.'],
