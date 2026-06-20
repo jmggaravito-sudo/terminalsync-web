@@ -189,27 +189,40 @@ export function DemosGrid({ lang }: { lang: Locale }) {
 
               {/* Demo iframe container */}
               <div className="relative flex-1 bg-[var(--color-panel-2)] overflow-hidden">
-                {/* Blurred preview */}
+                {/* Blurred preview - static, no pointer events */}
                 <iframe
                   src={demo.src}
                   title={demo.title}
                   className="w-full h-[320px] md:h-[360px] border-0 block"
                   style={{
-                    filter: "blur(6px) saturate(1.02)",
-                    transform: "scale(1.06)",
+                    filter: "blur(7px) saturate(1.02)",
+                    transform: "scale(1.08)",
                     pointerEvents: "none",
                   }}
                 />
 
-                {/* Click-to-expand overlay */}
+                {/* Frosted overlay — always visible, click anywhere to expand */}
                 <button
                   type="button"
                   onClick={() => setOpenId(demo.id)}
-                  className="absolute inset-0 z-10 flex items-center justify-center cursor-zoom-in transition-colors hover:bg-[var(--color-accent)]/8"
-                  aria-label={lang === "es" ? "Ampliar demo" : "Expand demo"}
+                  className="absolute inset-0 z-10 flex items-center justify-center cursor-zoom-in"
+                  style={{
+                    background: "color-mix(in srgb, white 55%, transparent)",
+                    backdropFilter: "blur(2px)",
+                    transition: "background 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.background =
+                      "color-mix(in srgb, white 42%, transparent)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.background =
+                      "color-mix(in srgb, white 55%, transparent)";
+                  }}
+                  aria-label={lang === "es" ? "Ver Demo" : "Watch Demo"}
                 >
-                  <span className="inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] text-white px-4 py-2 text-[13px] font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                    {lang === "es" ? "Ampliar" : "Expand"}
+                  <span className="inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] text-white px-4 py-2 text-[13px] font-medium shadow-sm">
+                    {lang === "es" ? "Ver Demo" : "Watch Demo"}
                   </span>
                 </button>
               </div>
