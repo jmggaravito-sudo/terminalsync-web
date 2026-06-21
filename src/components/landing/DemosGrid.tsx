@@ -15,6 +15,13 @@ interface Demo {
 const DEMOS: Record<Locale, Demo[]> = {
   es: [
     {
+      id: "tokens-cambio",
+      src: "/demos/demo-tokens-cambio.html",
+      eyebrow: "Límite de tokens",
+      title: "Una IA llega a su límite. Cambia y sigue.",
+      body: "Claude se queda sin tokens — pasas a Codex en un clic, con el mismo proyecto y contexto. Tu trabajo nunca se detiene.",
+    },
+    {
       id: "cambio-ia",
       src: "/demos/demo-cambio-ia.html",
       eyebrow: "Cambio de IA en un clic",
@@ -65,6 +72,13 @@ const DEMOS: Record<Locale, Demo[]> = {
     },
   ],
   en: [
+    {
+      id: "tokens-cambio",
+      src: "/demos/demo-tokens-cambio.html",
+      eyebrow: "Token limit",
+      title: "One AI hits its limit. Switch and continue.",
+      body: "Claude runs out of tokens — you move to Codex in one click, same project and context. Your work never stops.",
+    },
     {
       id: "cambio-ia",
       src: "/demos/demo-cambio-ia.html",
@@ -166,8 +180,8 @@ export function DemosGrid({ lang }: { lang: Locale }) {
           </p>
         </div>
 
-        {/* Demos grid: 2 columns on desktop, 1 on mobile */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+        {/* Demos grid: 4 cols desktop, 2 cols tablet/mobile */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
           {demos.map((demo) => (
             <article
               key={demo.id}
@@ -175,14 +189,14 @@ export function DemosGrid({ lang }: { lang: Locale }) {
               style={{ boxShadow: "var(--shadow-floating)" }}
             >
               {/* Card header */}
-              <div className="p-5 md:p-6 pb-4 text-center">
-                <span className="flex justify-center text-[10.5px] font-mono uppercase tracking-[0.14em] text-[var(--color-accent)] font-semibold">
+              <div className="p-4 md:p-5 pb-3 text-center">
+                <span className="flex justify-center text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--color-accent)] font-semibold">
                   {demo.eyebrow}
                 </span>
-                <h3 className="mt-3 text-[17px] font-semibold tracking-tight text-[var(--color-fg-strong)] leading-tight">
+                <h3 className="mt-2 text-[14px] md:text-[15px] font-semibold tracking-tight text-[var(--color-fg-strong)] leading-tight">
                   {demo.title}
                 </h3>
-                <p className="mt-2 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
+                <p className="mt-2 text-[12px] text-[var(--color-fg-muted)] leading-relaxed">
                   {demo.body}
                 </p>
               </div>
@@ -193,7 +207,7 @@ export function DemosGrid({ lang }: { lang: Locale }) {
                 <iframe
                   src={demo.src}
                   title={demo.title}
-                  className="w-full h-[320px] md:h-[360px] border-0 block"
+                  className="w-full h-[180px] md:h-[250px] border-0 block"
                   style={{
                     filter: "blur(9px)",
                     transform: "scale(1.1)",

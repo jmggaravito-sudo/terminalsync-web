@@ -3,13 +3,7 @@
 import { useState, useEffect } from "react";
 import { ArrowRight, Download, PlayCircle } from "lucide-react";
 import type { Dict, Locale } from "@/content";
-import { VideoLightbox } from "@/components/VideoLightbox";
 import { ClaudeMark, OpenAIMark, GeminiMark } from "@/components/brand/AILogos";
-
-const DEMO_VIDEO_URLS: Record<string, string> = {
-  es: "/video/corte-es.mp4",
-  en: "/video/corte-en.mp4",
-};
 
 const COPY = {
   es: {
@@ -40,7 +34,6 @@ const COPY = {
 } as const;
 
 export function Hero({ dict }: { dict: Dict }) {
-  const [videoOpen, setVideoOpen] = useState(false);
   const t = COPY[dict.locale];
 
   return (
@@ -92,15 +85,14 @@ export function Hero({ dict }: { dict: Dict }) {
             <Download size={16} strokeWidth={2.4} />
             {t.ctaPrimary}
           </a>
-          <button
-            type="button"
-            onClick={() => setVideoOpen(true)}
+          <a
+            href="#video"
             className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold text-[var(--color-fg)] bg-[var(--color-panel)] border border-[var(--color-border-strong)] hover:border-[var(--color-accent)]/40 transition-colors"
           >
             <PlayCircle size={16} strokeWidth={2} />
             {t.ctaSecondary}
             <ArrowRight size={14} strokeWidth={2.4} />
-          </button>
+          </a>
         </div>
 
         <p className="mt-3 text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">
@@ -156,12 +148,6 @@ export function Hero({ dict }: { dict: Dict }) {
         </div>
       </div>
 
-      <VideoLightbox
-        open={videoOpen}
-        onClose={() => setVideoOpen(false)}
-        dict={dict}
-        videoUrl={DEMO_VIDEO_URLS[dict.locale] ?? undefined}
-      />
     </section>
   );
 }
