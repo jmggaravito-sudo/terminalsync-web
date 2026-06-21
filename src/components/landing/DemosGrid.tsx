@@ -175,8 +175,8 @@ export function DemosGrid({ lang }: { lang: Locale }) {
               style={{ boxShadow: "var(--shadow-floating)" }}
             >
               {/* Card header */}
-              <div className="p-5 md:p-6 pb-4">
-                <span className="text-[10.5px] font-mono uppercase tracking-[0.14em] text-[var(--color-accent)] font-semibold">
+              <div className="p-5 md:p-6 pb-4 text-center">
+                <span className="flex justify-center text-[10.5px] font-mono uppercase tracking-[0.14em] text-[var(--color-accent)] font-semibold">
                   {demo.eyebrow}
                 </span>
                 <h3 className="mt-3 text-[17px] font-semibold tracking-tight text-[var(--color-fg-strong)] leading-tight">
@@ -195,8 +195,8 @@ export function DemosGrid({ lang }: { lang: Locale }) {
                   title={demo.title}
                   className="w-full h-[320px] md:h-[360px] border-0 block"
                   style={{
-                    filter: "blur(7px) saturate(1.02)",
-                    transform: "scale(1.08)",
+                    filter: "blur(9px)",
+                    transform: "scale(1.1)",
                     pointerEvents: "none",
                   }}
                 />
@@ -207,17 +207,17 @@ export function DemosGrid({ lang }: { lang: Locale }) {
                   onClick={() => setOpenId(demo.id)}
                   className="absolute inset-0 z-10 flex items-center justify-center cursor-zoom-in"
                   style={{
-                    background: "color-mix(in srgb, white 55%, transparent)",
-                    backdropFilter: "blur(2px)",
+                    background: "color-mix(in srgb, var(--color-bg) 78%, transparent)",
+                    backdropFilter: "blur(5px)",
                     transition: "background 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLButtonElement).style.background =
-                      "color-mix(in srgb, white 42%, transparent)";
+                      "color-mix(in srgb, var(--color-bg) 68%, transparent)";
                   }}
                   onMouseLeave={(e) => {
                     (e.currentTarget as HTMLButtonElement).style.background =
-                      "color-mix(in srgb, white 55%, transparent)";
+                      "color-mix(in srgb, var(--color-bg) 78%, transparent)";
                   }}
                   aria-label={lang === "es" ? "Ver Demo" : "Watch Demo"}
                 >
@@ -238,15 +238,23 @@ export function DemosGrid({ lang }: { lang: Locale }) {
           className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
         >
           <div className="relative w-full max-w-4xl bg-[var(--color-panel)] rounded-2xl overflow-hidden">
-            {/* Close button */}
-            <button
-              type="button"
-              onClick={() => setOpenId(null)}
-              className="absolute top-4 right-4 z-10 inline-flex items-center justify-center h-10 w-10 rounded-lg text-[var(--color-fg)] hover:bg-[var(--color-panel-2)] transition-colors"
-              aria-label={lang === "es" ? "Cerrar" : "Close"}
-            >
-              <X size={20} strokeWidth={2} />
-            </button>
+            {/* Lightbox header */}
+            <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--color-border)]">
+              <span
+                className="lb-title text-[var(--color-fg-strong)]"
+                style={{ fontSize: "19px", fontWeight: 700 }}
+              >
+                {demos.find((d) => d.id === openId)?.title}
+              </span>
+              <button
+                type="button"
+                onClick={() => setOpenId(null)}
+                className="inline-flex items-center justify-center h-9 w-9 rounded-lg text-[var(--color-fg)] hover:bg-[var(--color-panel-2)] transition-colors"
+                aria-label={lang === "es" ? "Cerrar" : "Close"}
+              >
+                <X size={20} strokeWidth={2} />
+              </button>
+            </div>
 
             {/* Demo iframe at full size */}
             <iframe

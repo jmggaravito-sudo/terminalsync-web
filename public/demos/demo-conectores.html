@@ -76,9 +76,9 @@
 
   .cap{font-size:clamp(14px,2vw,18px);font-weight:500;text-align:center;max-width:48ch;min-height:2.2em;display:flex;align-items:center;justify-content:center;transition:opacity .3s;}
   .cap b{color:var(--accent);}
-  .replay{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--ink2);border:1px solid var(--line);background:#fff;padding:8px 15px;border-radius:999px;cursor:pointer;}
-  .replay:hover{border-color:var(--accent);color:var(--accent);}
-  .replay svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;}
+  .replay{display:none;}
+  .replay:hover{}
+  .replay svg{}
   @media(max-width:720px){.grid{grid-template-columns:1fr;}.panel{flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid var(--line);}.board{grid-template-columns:1fr;}}
 </style>
 </head>
@@ -104,6 +104,60 @@
 
 <script>
 (function(){
+  const lang=(new URLSearchParams(location.search).get('lang')==='en')?'en':'es';
+  const _embed=new URLSearchParams(location.search).get('embed')==='1';
+  document.documentElement.lang=lang;
+
+  const UI={
+    es:{
+      winTitle:'Terminal Sync · Integraciones',ptitle:'Integraciones',
+      tabInstalled:'Instalados',tabExplore:'Explorar',
+      search:'Buscar kits, asistentes, conectores…',
+      catConns:'CONECTORES',catAsst:'ASISTENTES',catCli:'HERRAMIENTAS CLI',
+      drag:'arrastra →',mode:'Modo confianza',dropHint:'Suelta para instalar',
+      emptyConns:'Sin conectores · arrastra uno aquí',
+      card1Title:'Agencia',card1Body:'Plan de campaña · investigación de cliente',
+      card2Title:'Marketing-Site',card2Body:'Landing + automatización de emails',
+      installed:(n,t)=>n+' instalado en '+t,
+      capInit:'Arrastra un conector a tu sesión para instalarlo.',
+      cap1:(s,d)=>'<b>'+s+'</b> → sesión <b>'+d+'</b>.',
+      cap2:(s,d)=>'<b>'+s+'</b> → sesión <b>'+d+'</b>.',
+      cap3:'Listo. Tus IAs ya pueden usar esos conectores — <b>sin configurar nada</b>.',
+    },
+    en:{
+      winTitle:'Terminal Sync · Integrations',ptitle:'Integrations',
+      tabInstalled:'Installed',tabExplore:'Explore',
+      search:'Search kits, assistants, connectors…',
+      catConns:'CONNECTORS',catAsst:'ASSISTANTS',catCli:'CLI TOOLS',
+      drag:'drag →',mode:'Trust mode',dropHint:'Drop to install',
+      emptyConns:'No connectors · drag one here',
+      card1Title:'Agency',card1Body:'Campaign plan · client research',
+      card2Title:'Marketing-Site',card2Body:'Landing + email automation',
+      installed:(n,t)=>n+' installed in '+t,
+      capInit:'Drag a connector to your session to install it.',
+      cap1:(s,d)=>'<b>'+s+'</b> → session <b>'+d+'</b>.',
+      cap2:(s,d)=>'<b>'+s+'</b> → session <b>'+d+'</b>.',
+      cap3:'Done. Your AIs can now use those connectors — <b>no setup needed</b>.',
+    }
+  };
+  const u=UI[lang];
+
+  // Apply static HTML translations
+  document.querySelector('.win-bar .t').innerHTML='<b>Terminal Sync</b> · '+u.winTitle.split(' · ')[1];
+  document.querySelector('.ptitle').childNodes[1].textContent=u.ptitle;
+  const tabs=document.querySelectorAll('.tabs span');
+  if(tabs[0])tabs[0].textContent=u.tabInstalled;
+  if(tabs[1])tabs[1].textContent=u.tabExplore;
+  document.querySelector('.psearch').textContent=u.search;
+  document.querySelectorAll('.cat').forEach(c=>{
+    const span=c.querySelector('span');
+    const raw=c.textContent.replace(span?span.textContent:'','').trim();
+    if(raw.includes('CONECT'))c.innerHTML=u.catConns+(span?'<span>'+span.textContent+'</span>':'');
+    else if(raw.includes('ASIST'))c.innerHTML=u.catAsst+(span?'<span>'+span.textContent+'</span>':'');
+    else if(raw.includes('CLI'))c.innerHTML=u.catCli+(span?'<span>'+span.textContent+'</span>':'');
+  });
+  document.getElementById('cap').textContent=u.capInit;
+
   const CONN={
     notion:{n:'Notion',logo:'https://cdn.simpleicons.org/notion/000000',fb:'N',bg:'#f1f1ef'},
     gmail:{n:'Gmail',logo:'https://cdn.simpleicons.org/gmail/EA4335',fb:'G',bg:'#fdeceb'},
@@ -114,8 +168,8 @@
   };
   const ORDER=['notion','gmail','drive','airtable','make','vercel'];
   const CARDS=[
-    {id:'agencia',title:'Agencia',av:'#fde2d6',avc:'#d9774f',avt:'A',body:'Plan de campaña · investigación de cliente',conns:[]},
-    {id:'mkt',title:'Marketing-Site',av:'#e7eefe',avc:'#3f74f5',avt:'M',body:'Landing + automatización de emails',conns:['drive']}
+    {id:'agencia',title:u.card1Title,av:'#fde2d6',avc:'#d9774f',avt:'A',body:u.card1Body,conns:[]},
+    {id:'mkt',title:u.card2Title,av:'#e7eefe',avc:'#3f74f5',avt:'M',body:u.card2Body,conns:['drive']}
   ];
   const panelList=document.getElementById('connList');
   const board=document.getElementById('board');
@@ -128,7 +182,7 @@
     panelList.innerHTML='';
     ORDER.forEach(k=>{const c=CONN[k];
       const el=document.createElement('div');el.className='conn';el.dataset.k=k;
-      el.innerHTML=icoHTML(k)+'<span class="nm">'+c.n+'</span><span class="tag">arrastra →</span>';
+      el.innerHTML=icoHTML(k)+'<span class="nm">'+c.n+'</span><span class="tag">'+u.drag+'</span>';
       el.addEventListener('pointerdown',e=>startDrag(e,k));
       panelList.appendChild(el);
     });
@@ -138,16 +192,16 @@
     CARDS.forEach(cd=>{
       const el=document.createElement('div');el.className='card';el.dataset.id=cd.id;
       el.innerHTML='<div class="ct"><span class="av" style="background:'+cd.av+';color:'+cd.avc+'">'+cd.avt+'</span><span class="nm">'+cd.title+'</span>'+
-        '<span class="mode"><span class="sw"></span>Modo confianza</span></div>'+
+        '<span class="mode"><span class="sw"></span>'+u.mode+'</span></div>'+
         '<div class="body">'+cd.body+'</div>'+
-        '<div class="conns" data-conns></div><div class="drop-hint">Suelta para instalar</div>';
+        '<div class="conns" data-conns></div><div class="drop-hint">'+u.dropHint+'</div>';
       board.appendChild(el);
       refreshConns(cd);
     });
   }
   function refreshConns(cd){
     const wrap=board.querySelector('[data-id="'+cd.id+'"] [data-conns]');
-    if(!cd.conns.length){wrap.innerHTML='<span class="empty">Sin conectores · arrastra uno aquí</span>';return;}
+    if(!cd.conns.length){wrap.innerHTML='<span class="empty">'+u.emptyConns+'</span>';return;}
     wrap.innerHTML=cd.conns.map(k=>icoHTML(k,'chip-i')).join('');
   }
   function install(cardId,k,pop){
@@ -156,7 +210,7 @@
     refreshConns(cd);
     if(pop){const w=board.querySelector('[data-id="'+cardId+'"] [data-conns]');const last=w.lastElementChild;if(last)last.classList.add('pop');}
     const pc=panelList.querySelector('.conn[data-k="'+k+'"]'); if(pc)pc.classList.add('installed');
-    toast(CONN[k].n+' instalado en '+cd.title);
+    toast(u.installed(CONN[k].n,cd.title));
   }
 
   // toast
@@ -216,11 +270,11 @@
   async function play(){
     played=true;
     installed={};CARDS[0].conns=[];CARDS[1].conns=['drive'];renderPanel();renderBoard();
-    say('Arrastra un conector a tu sesión para instalarlo.');
+    say(u.capInit);
     await wait(1100);
-    say('<b>Notion</b> → sesión <b>Agencia</b>.'); await flyInstall('notion','agencia'); await wait(1100);
-    say('<b>Gmail</b> → sesión <b>Marketing-Site</b>.'); await flyInstall('gmail','mkt'); await wait(1000);
-    say('Listo. Tus IAs ya pueden usar esos conectores — <b>sin configurar nada</b>.');
+    say(u.cap1('Notion',CARDS[0].title)); await flyInstall('notion','agencia'); await wait(1100);
+    say(u.cap2('Gmail',CARDS[1].title)); await flyInstall('gmail','mkt'); await wait(1000);
+    say(u.cap3);
   }
   document.getElementById('replay').addEventListener('click',()=>{if(!drag)play();});
 

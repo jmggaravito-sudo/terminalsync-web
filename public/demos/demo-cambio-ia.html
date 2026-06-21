@@ -13,8 +13,8 @@
     --line:#e9eaee; --line2:#e0e2e7; --hover:#f4f5f7; --active:#eef0f3;
     --indigo:#5b56e6; --green:#34b87a; --navy:#1c2230;
     --claude:#d9774f; --claude-bg:#fdf6f1; --claude-tx:#bf6438;
-    --codex:#1f9d63;  --codex-bg:#f0faf4;  --codex-tx:#138551;
-    --gemini:#3f74f5; --gemini-bg:#eff4ff; --gemini-tx:#2f5fd6;
+    --codex:#1f9d63;  --codex-bg:#bbf7d0;  --codex-tx:#14532d;
+    --gemini:#3f74f5; --gemini-bg:#bfdbfe; --gemini-tx:#1e3a8a;
     --sans:'Geist',system-ui,sans-serif; --mono:'Geist Mono',ui-monospace,monospace;
     --r:10px;
   }
@@ -89,7 +89,7 @@
   .ai-body > :first-child{margin-top:0;}
   .ai-body p{margin:9px 0;}
   .ai-body ul,.ai-body ol{margin:9px 0;padding-left:20px;} .ai-body li{margin:5px 0;}
-  .ai-body strong{font-weight:600;}
+  .ai-body strong{font-weight:800;}
   .ai-body hr{border:none;border-top:1px solid var(--line);margin:16px 0;}
   .ai-body table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;}
   .ai-body th,.ai-body td{border:1px solid var(--line2);padding:8px 11px;text-align:left;vertical-align:top;}
@@ -135,7 +135,7 @@
   .demo-hint{position:fixed;left:50%;transform:translateX(-50%);bottom:108px;background:var(--navy);color:#fff;font-size:13px;padding:9px 16px;border-radius:999px;box-shadow:0 12px 30px -10px rgba(0,0,0,.4);display:flex;align-items:center;gap:9px;z-index:50;transition:opacity .4s;}
   .demo-hint b{color:#9be3b4;}
   .demo-hint .rst{margin-left:6px;text-decoration:underline;cursor:pointer;opacity:.8;}
-  .replay-btn{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--ink2);border:1px solid var(--line2);background:#fff;padding:8px 15px;border-radius:999px;cursor:pointer;z-index:60;box-shadow:0 10px 30px -12px rgba(20,22,28,.3);}
+  .replay-btn{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);display:none;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--ink2);border:1px solid var(--line2);background:#fff;padding:8px 15px;border-radius:999px;cursor:pointer;z-index:60;box-shadow:0 10px 30px -12px rgba(20,22,28,.3);}
   .replay-btn:hover{border-color:var(--green);color:var(--green);}
   .replay-btn svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;}
   @media(max-width:920px){.side{display:none;} .search{display:none;}}
@@ -224,6 +224,101 @@
 <script>
 (function(){
   'use strict';
+  const lang=(new URLSearchParams(location.search).get('lang')==='en')?'en':'es';
+  const _embed=new URLSearchParams(location.search).get('embed')==='1';
+  document.documentElement.lang=lang;
+
+  // Apply static UI translations
+  const UI={
+    es:{
+      search:'Buscar una sesión, archivo o computadora…',
+      sync:'Sincronizar',newWs:'Nuevo espacio de trabajo',
+      home:'Inicio',ws:'Espacios de Trabajo',actions:'Acciones',secrets:'Secretos',
+      help:'Ayuda',suggest:'Sugerencias',settings:'Ajustes',
+      tab0:'Inicio',tab1:'Proyecto gemini',tab2:'Cambios pagina Web',tab3:'Agencia',
+      exit:'Salir de pantalla completa',mode:'Modo: ',modeAdv:'Avanzado',
+      swapHint:'Continuar con otra IA — mismo proyecto y contexto',
+      placeholder:'Escribe un mensaje… (Enter para enviar, Shift+Enter salto de línea)',
+      send:'Enviar',hist:'Historial de cambios',replay:'Reproducir de nuevo',
+      handoff:(n)=>'Continuando con '+n+' — mismo proyecto, mismo contexto.',
+    },
+    en:{
+      search:'Search a session, file or computer…',
+      sync:'Sync',newWs:'New workspace',
+      home:'Home',ws:'Workspaces',actions:'Actions',secrets:'Secrets',
+      help:'Help',suggest:'Suggestions',settings:'Settings',
+      tab0:'Home',tab1:'Gemini project',tab2:'Website changes',tab3:'Agency',
+      exit:'Exit full screen',mode:'Mode: ',modeAdv:'Advanced',
+      swapHint:'Switch AI — same project and context',
+      placeholder:'Type a message… (Enter to send, Shift+Enter new line)',
+      send:'Send',hist:'Change history',replay:'Play again',
+      handoff:(n)=>'Continuing with '+n+' — same project, same context.',
+    }
+  };
+  const ui=UI[lang];
+  // Apply translations to HTML
+  const byId=id=>document.getElementById(id);
+  const qs=s=>document.querySelector(s);
+  const inp=qs('.search input');if(inp)inp.placeholder=ui.search;
+  const syncEl=qs('.sync');if(syncEl){const sv=syncEl.querySelector('svg');syncEl.textContent=ui.sync;if(sv)syncEl.insertBefore(sv,syncEl.firstChild);}
+  const navBtn=qs('.btn-navy');if(navBtn){const sv=navBtn.querySelector('svg');navBtn.textContent=ui.newWs;if(sv)navBtn.insertBefore(sv,navBtn.firstChild);}
+  const navIs=document.querySelectorAll('.nav-i');
+  const navMap=[ui.home,ui.ws,ui.actions,ui.secrets,null,ui.help,ui.suggest,ui.settings];
+  navIs.forEach((el,i)=>{if(navMap[i]){const sv=el.querySelector('svg');const badge=el.querySelector('.badge');const chev=el.querySelector('.chev');el.textContent=navMap[i];if(sv)el.insertBefore(sv,el.firstChild);if(badge)el.appendChild(badge);if(chev)el.appendChild(chev);}});
+  const tabs=document.querySelectorAll('.tab');
+  [ui.tab0,ui.tab1,ui.tab2,ui.tab3].forEach((t,i)=>{if(tabs[i]){const sv=tabs[i].querySelector('svg');const x=tabs[i].querySelector('.x');tabs[i].textContent=t;if(sv)tabs[i].insertBefore(sv,tabs[i].firstChild);if(x)tabs[i].appendChild(x);}});
+  const exitEl=qs('.exit');if(exitEl){const sv=exitEl.querySelector('svg');exitEl.textContent=ui.exit;if(sv)exitEl.insertBefore(sv,exitEl.firstChild);}
+  const modeLbl=qs('.mode-label');if(modeLbl){const mdl=modeLbl.querySelector('.mdl');modeLbl.innerHTML=ui.mode+'<b>'+ui.modeAdv+'</b> · <span class="mdl" id="modeAI">'+(mdl?mdl.textContent:'Claude')+'</span>';}
+  const mh=qs('.mh');if(mh)mh.textContent=ui.swapHint;
+  const ta=document.getElementById('input');if(ta)ta.placeholder=ui.placeholder;
+  const sendBtn=document.getElementById('send');if(sendBtn){const sv=sendBtn.querySelector('svg');sendBtn.textContent=ui.send;if(sv)sendBtn.insertBefore(sv,sendBtn.firstChild);}
+  const hist=qs('.hist');if(hist)hist.textContent=ui.hist;
+  const rb=qs('.replay-btn');if(rb){const sv=rb.querySelector('svg');const sp=rb.querySelector('span');if(sp)sp.textContent=ui.replay;}
+  if(_embed&&rb)rb.style.display='none';
+
+  const C={
+    es:{
+      Q1:'Somos una agencia. Cliente: tienda online de skincare, quiere +30% en ventas este trimestre. Dame un plan de campaña de 90 días: canales, mensajes clave, presupuesto y 3 KPIs.',
+      FOLLOW:{
+        codex:'Toma la semana 1 de ese plan y conviértela en entregables listos: 2 emails (asunto + cuerpo) y 1 anuncio de Meta (titular + texto), copy final en español. No vuelvas a explicar el plan, solo entrega.',
+        gemini:'Hazme un resumen de la conversación hasta ahora, en viñetas claras.',
+        claude:'Profundiza en la Fase 1: dame los primeros 5 creativos de Meta Ads con ángulo y copy corto cada uno.'
+      },
+      CLAUDE_SAMPLE:'## Plan de campaña 90 días — Skincare\n\n- **Meta Ads** (60%) — prospección + retargeting\n- **Email** (20%) — bienvenida, carrito, post-compra\n- **Influencers** (20%) — UGC y prueba social\n\n**KPIs:** ROAS ≥ 3.5× · CAC ≤ 40% del ticket · meta +30% en ventas.',
+      CODEX_SAMPLE:'## Semana 1 — Entregables\n\n**Email 1 · Bienvenida**\nAsunto: Tu piel no necesita más productos. Necesita la rutina correcta.\n\n**Anuncio Meta · Prospección**\nTitular: Rutinas simples para una piel más saludable.',
+      GEMINI_SAMPLE:'## Resumen de la sesión\n\n- Campaña de 90 días para skincare — meta **+30% en ventas**.\n- Canales: Meta Ads (60%), Email (20%), Influencers (20%).\n- Semana 1 ya entregada: 2 emails + 1 anuncio, copy final.\n- KPIs: ROAS ≥ 3.5× · CAC ≤ 40% del ticket.',
+      sysPrompt:{
+        claude:'Eres Claude dentro de TerminalSync, especialista en PENSAR y planear para negocios y agencias. Responde en español, conciso, con markdown simple (## encabezados, **negritas**, tablas, viñetas). Sin emojis.',
+        codex:'Eres Codex dentro de TerminalSync, especialista en EJECUTAR. Continúas el trabajo previo usando TODO el contexto, sin volver a pedir nada ni re-explicar. Responde en español con markdown simple. Sin emojis.',
+        gemini:'Eres Gemini dentro de TerminalSync, especialista en SÍNTESIS y documentos. Usa todo el contexto previo. Responde en español con markdown simple. Sin emojis.'
+      },
+      noAI:'IA no disponible',
+    },
+    en:{
+      Q1:'We\'re an agency. Client: skincare online store, wants +30% sales this quarter. Give me a 90-day campaign plan: channels, key messages, budget, and 3 KPIs.',
+      FOLLOW:{
+        codex:'Take week 1 of that plan and turn it into ready deliverables: 2 emails (subject + body) and 1 Meta ad (headline + copy), final copy in English. Don\'t re-explain the plan, just deliver.',
+        gemini:'Give me a summary of the conversation so far, in clear bullet points.',
+        claude:'Deep-dive into Phase 1: give me the first 5 Meta Ads creatives with angle and short copy each.'
+      },
+      CLAUDE_SAMPLE:'## 90-day Campaign Plan — Skincare\n\n- **Meta Ads** (60%) — prospecting + retargeting\n- **Email** (20%) — welcome, cart, post-purchase\n- **Influencers** (20%) — UGC and social proof\n\n**KPIs:** ROAS ≥ 3.5× · CAC ≤ 40% of ticket · target +30% in sales.',
+      CODEX_SAMPLE:'## Week 1 — Deliverables\n\n**Email 1 · Welcome**\nSubject: Your skin doesn\'t need more products. It needs the right routine.\n\n**Meta Ad · Prospecting**\nHeadline: Simple routines for healthier skin.',
+      GEMINI_SAMPLE:'## Session Summary\n\n- 90-day campaign for skincare — target **+30% in sales**.\n- Channels: Meta Ads (60%), Email (20%), Influencers (20%).\n- Week 1 delivered: 2 emails + 1 ad, final copy.\n- KPIs: ROAS ≥ 3.5× · CAC ≤ 40% of ticket.',
+      sysPrompt:{
+        claude:'You are Claude inside TerminalSync, specialist in THINKING and planning for businesses and agencies. Respond in English, concisely, with simple markdown (## headings, **bold**, tables, bullets). No emojis.',
+        codex:'You are Codex inside TerminalSync, specialist in EXECUTING. Continue the prior work using ALL context, without asking again or re-explaining. Respond in English with simple markdown. No emojis.',
+        gemini:'You are Gemini inside TerminalSync, specialist in SYNTHESIS and documents. Use all prior context. Respond in English with simple markdown. No emojis.'
+      },
+      noAI:'AI not available',
+    }
+  };
+  const c=C[lang];
+  const Q1=c.Q1;
+  const FOLLOW=c.FOLLOW;
+  const CLAUDE_SAMPLE=c.CLAUDE_SAMPLE;
+  const CODEX_SAMPLE=c.CODEX_SAMPLE;
+  const GEMINI_SAMPLE=c.GEMINI_SAMPLE;
+
   const chat=document.getElementById('chat');
   const input=document.getElementById('input');
   const send=document.getElementById('send');
@@ -237,16 +332,6 @@
     codex :{name:'Codex', label:'CODEX', dot:'var(--codex)', tx:'var(--codex-tx)', bg:'var(--codex-bg)', bd:'var(--codex)'},
     gemini:{name:'Gemini',label:'GEMINI',dot:'var(--gemini)',tx:'var(--gemini-tx)',bg:'var(--gemini-bg)',bd:'var(--gemini)'}
   };
-  const Q1='Somos una agencia. Cliente: tienda online de skincare, quiere +30% en ventas este trimestre. Dame un plan de campaña de 90 días: canales, mensajes clave, presupuesto y 3 KPIs.';
-  const FOLLOW={
-    codex:'Toma la semana 1 de ese plan y conviértela en entregables listos: 2 emails (asunto + cuerpo) y 1 anuncio de Meta (titular + texto), copy final en español. No vuelvas a explicar el plan, solo entrega.',
-    gemini:'Hazme un resumen de la conversación hasta ahora, en viñetas claras.',
-    claude:'Profundiza en la Fase 1: dame los primeros 5 creativos de Meta Ads con ángulo y copy corto cada uno.'
-  };
-  // Static showcase content (instant load → good thumbnail; ⇄ continues live from here)
-  const CLAUDE_SAMPLE='## Plan de campaña 90 días — Skincare\n\n- **Meta Ads** (60%) — prospección + retargeting\n- **Email** (20%) — bienvenida, carrito, post-compra\n- **Influencers** (20%) — UGC y prueba social\n\n**KPIs:** ROAS ≥ 3.5× · CAC ≤ 40% del ticket · meta +30% en ventas.';
-  const CODEX_SAMPLE='## Semana 1 — Entregables\n\n**Email 1 · Bienvenida**\nAsunto: Tu piel no necesita más productos. Necesita la rutina correcta.\n\n**Anuncio Meta · Prospección**\nTitular: Rutinas simples para una piel más saludable.';
-  const GEMINI_SAMPLE='## Resumen de la sesión\n\n- Campaña de 90 días para skincare — meta **+30% en ventas**.\n- Canales: Meta Ads (60%), Email (20%), Influencers (20%).\n- Semana 1 ya entregada: 2 emails + 1 anuncio, copy final.\n- KPIs: ROAS ≥ 3.5× · CAC ≤ 40% del ticket.';
 
   let conversation=[]; let active='claude'; let busy=false;
 
@@ -269,7 +354,7 @@
       try{ return await window.claude.complete(payload); }catch(e){ /* fall back to relay */ }
     }
     if(window.parent&&window.parent!==window){ return relay(payload); }
-    throw new Error('IA no disponible');
+    throw new Error(c.noAI);
   }
 
   function setActive(k){ active=k; document.getElementById('modeAI').textContent=AIS[k].name; }
@@ -299,11 +384,18 @@
 
   function scroll(){chat.scrollTop=chat.scrollHeight;}
   function addUser(t){const r=document.createElement('div');r.className='row user';r.innerHTML='<div class="user-bubble">'+escapeHtml(t)+'</div>';chat.appendChild(r);scroll();}
-  function addHandoff(k){const d=document.createElement('div');d.className='handoff';d.innerHTML='<svg viewBox="0 0 24 24"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg> Continuando con '+AIS[k].name+' — mismo proyecto, mismo contexto.';chat.appendChild(d);scroll();}
+  const HANDOFF_STYLE={codex:{bg:'#16a34a',tx:'#fff'},gemini:{bg:'#2563eb',tx:'#fff'}};
+  function addHandoff(k){
+    const d=document.createElement('div');d.className='handoff';
+    const s=HANDOFF_STYLE[k];
+    if(s){d.style.background=s.bg;d.style.color=s.tx;d.style.borderColor=s.bg;d.style.fontWeight='700';}
+    d.innerHTML='<svg viewBox="0 0 24 24" style="stroke:'+(s?s.tx:'currentColor')+'"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg> '+ui.handoff(AIS[k].name);
+    chat.appendChild(d);scroll();
+  }
   function addAI(k){
     const c=document.createElement('div');c.className='ai-card';
     c.style.borderLeftColor=AIS[k].bd;c.style.background=AIS[k].bg;
-    c.innerHTML='<div class="ai-head" style="color:'+AIS[k].tx+'"><span class="dot" style="background:'+AIS[k].dot+'"></span>'+AIS[k].label+'</div><div class="ai-body"><span class="typing"><i></i><i></i><i></i></span></div>';
+    c.innerHTML='<div class="ai-head" style="color:'+AIS[k].tx+'"><span class="dot" style="background:'+AIS[k].dot+'"></span>'+AIS[k].label+'</div><div class="ai-body" style="font-weight:700"><span class="typing"><i></i><i></i><i></i></span></div>';
     chat.appendChild(c);scroll();return c.querySelector('.ai-body');
   }
 
@@ -314,11 +406,7 @@
     conversation.push({role:'user',content:prompt});
     const body=addAI(k);
     try{
-      const sys=({
-        claude:'Eres Claude dentro de TerminalSync, especialista en PENSAR y planear para negocios y agencias. Responde en español, conciso, con markdown simple (## encabezados, **negritas**, tablas, viñetas). Sin emojis.',
-        codex :'Eres Codex dentro de TerminalSync, especialista en EJECUTAR. Continúas el trabajo previo usando TODO el contexto, sin volver a pedir nada ni re-explicar. Responde en español con markdown simple. Sin emojis.',
-        gemini:'Eres Gemini dentro de TerminalSync, especialista en SÍNTESIS y documentos. Usa todo el contexto previo. Responde en español con markdown simple. Sin emojis.'
-      })[k];
+      const sys=c.sysPrompt[k];
       const text=await complete({messages:[{role:'user',content:sys+'\n\nConversación hasta ahora:\n'+conversation.map(m=>(m.role==='user'?'Usuario: ':'IA: ')+m.content).join('\n\n')}]});
       body.innerHTML=text?md(text):'Sin respuesta.';
       conversation.push({role:'assistant',content:text});
@@ -394,6 +482,15 @@
   document.getElementById('reset').addEventListener('click',function(){animated=false;playAnimated();});
   reset();
   try{var _io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)playAnimated();});},{threshold:.3});_io.observe(document.querySelector('.app'));}catch(e){}
+})();
+</script>
+<script>
+(function(){
+  var p=new URLSearchParams(location.search);
+  if(p.get('embed')==='1'){
+    var rb=document.querySelector('.replay-btn');
+    if(rb){ rb.style.display='none'; }
+  }
 })();
 </script>
 </body>

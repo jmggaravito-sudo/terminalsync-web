@@ -59,10 +59,10 @@
   /* Token-limit banner */
   .limit{border:1px solid var(--amber-bd);background:var(--amber-bg);border-radius:14px;padding:18px 20px;box-shadow:0 16px 40px -24px rgba(184,114,10,.55);max-width:560px;align-self:flex-start;}
   .limit-head{display:flex;align-items:center;gap:11px;margin-bottom:9px;}
-  .limit-head .ic-wrap{width:32px;height:32px;border-radius:9px;background:#fff;border:1px solid var(--amber-bd);display:grid;place-items:center;color:var(--amber);flex:none;}
+  .limit-head .ic-wrap{width:32px;height:32px;border-radius:9px;background:#fff;border:1px solid #fca5a5;display:grid;place-items:center;color:#dc2626;flex:none;}
   .limit-head .ic-wrap svg{width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none;}
   .limit-head .tt{font-weight:600;font-size:15px;}
-  .limit-head .sub{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber-tx);}
+  .limit-head .sub{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#dc2626;}
   .limit p{margin:0 0 15px;font-size:13.5px;color:var(--ink2);line-height:1.5;}
   .limit-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
   .btn-switch{display:inline-flex;align-items:center;gap:9px;font-size:14px;font-weight:600;color:#fff;background:var(--codex);border-radius:10px;padding:11px 18px;box-shadow:0 10px 24px -10px rgba(31,157,99,.8);transition:transform .12s,filter .2s;}
@@ -91,9 +91,9 @@
   .lang-pill{position:fixed;right:18px;top:12px;z-index:60;display:inline-flex;gap:3px;padding:4px;background:#fff;border:1px solid var(--line2);border-radius:999px;box-shadow:0 10px 28px -14px rgba(20,22,28,.4);}
   .lang-pill button{font-family:var(--mono);font-size:12px;padding:5px 12px;border-radius:999px;color:var(--ink2);}
   .lang-pill button.on{background:var(--navy);color:#fff;font-weight:600;}
-  .replay-btn{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--ink2);border:1px solid var(--line2);background:#fff;padding:8px 15px;border-radius:999px;cursor:pointer;z-index:60;box-shadow:0 10px 30px -12px rgba(20,22,28,.3);}
-  .replay-btn:hover{border-color:var(--green);color:var(--green);}
-  .replay-btn svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;}
+  .replay-btn{display:none;}
+  .replay-btn:hover{}
+  .replay-btn svg{}
 </style>
 </head>
 <body>
@@ -268,6 +268,15 @@
   const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting&&!started){started=true;play();}});},{threshold:.25});
   io.observe(chat);
   setTimeout(()=>{if(!started){started=true;play();}},600);
+})();
+</script>
+<script>
+(function(){
+  var p=new URLSearchParams(location.search);
+  if(p.get('embed')==='1'){
+    var rb=document.querySelector('.replay-btn');
+    if(rb){ rb.style.display='none'; }
+  }
 })();
 </script>
 </body>

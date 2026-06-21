@@ -83,9 +83,9 @@
 
   .caption{font-size:clamp(15px,2.2vw,19px);font-weight:500;color:var(--ink);text-align:center;max-width:46ch;min-height:2.6em;display:flex;align-items:center;justify-content:center;transition:opacity .35s;letter-spacing:-0.01em;}
   .caption b{color:var(--accent);}
-  .replay{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--ink2);border:1px solid var(--line);background:#fff;padding:9px 16px;border-radius:999px;cursor:pointer;transition:border-color .2s,color .2s;}
-  .replay:hover{border-color:var(--accent);color:var(--accent);}
-  .replay svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;}
+  .replay{display:none;}
+  .replay:hover{}
+  .replay svg{}
 
   @media(max-width:640px){
     .scene{grid-template-columns:1fr;gap:8px;}
@@ -151,12 +151,75 @@
 
 <script>
 (function(){
+  const lang=(new URLSearchParams(location.search).get('lang')==='en')?'en':'es';
+  const _embed=new URLSearchParams(location.search).get('embed')==='1';
+  document.documentElement.lang=lang;
+
+  const T={
+    es:{
+      sessionTitle:'Agencia · skincare',
+      synced:'Sincronizado',
+      userMsg:'Dame un plan de campaña de 90 días para el cliente de skincare',
+      planTitle:'Plan de Campaña 90 días',
+      laptopLabel:'Tu portátil · en casa',
+      desktopLabel:'Escritorio · en la oficina',
+      cloudLabel:'Tu nube · E2EE',
+      badge:'Al día',
+      booting:'Sincronizando sesión…',
+      bootingSub:'Recuperando contexto y memoria',
+      capInit:'En tu portátil, trabajando con tu IA.',
+      cap1:'Cierras el portátil y te vas a la oficina.',
+      cap2:'Enciendes el computador de la oficina…',
+      cap3:'La&nbsp;<b>misma conversación</b>, justo donde la dejaste.',
+    },
+    en:{
+      sessionTitle:'Agency · skincare',
+      synced:'Synced',
+      userMsg:'Give me a 90-day campaign plan for the skincare client',
+      planTitle:'90-day Campaign Plan',
+      laptopLabel:'Your laptop · at home',
+      desktopLabel:'Desktop · at the office',
+      cloudLabel:'Your cloud · E2EE',
+      badge:'Up to date',
+      booting:'Syncing session…',
+      bootingSub:'Recovering context and memory',
+      capInit:'On your laptop, working with your AI.',
+      cap1:'You close the laptop and head to the office.',
+      cap2:'You turn on the office computer…',
+      cap3:'The&nbsp;<b>same conversation</b>, right where you left it.',
+    }
+  };
+  const t=T[lang];
+
+  // Apply static translations to HTML
+  document.querySelectorAll('.mini-bar').forEach(el=>{
+    const sync=el.querySelector('.mb-sync');
+    const dot=el.querySelector('.mb-dot');
+    if(dot) el.innerHTML='';
+    if(dot){el.appendChild(dot);}
+    el.appendChild(document.createTextNode(t.sessionTitle));
+    if(sync){sync.textContent=t.synced;el.appendChild(sync);}
+  });
+  document.querySelectorAll('.mu').forEach(el=>{
+    const cur=el.querySelector('#cur');
+    el.textContent=t.userMsg;
+    if(cur)el.appendChild(cur);
+  });
+  document.querySelectorAll('.mc b').forEach(el=>{ el.textContent=t.planTitle; });
+  const laptopLabel=document.querySelector('.laptop .dev-label');
+  if(laptopLabel) laptopLabel.innerHTML='<b>'+t.laptopLabel.split(' · ')[0]+'</b> · '+t.laptopLabel.split(' · ')[1];
+  const desktopLabel=document.querySelector('.desktop .dev-label');
+  if(desktopLabel) desktopLabel.innerHTML='<b>'+t.desktopLabel.split(' · ')[0]+'</b> · '+t.desktopLabel.split(' · ')[1];
+  const cloudSpan=document.querySelector('.cloud span');
+  if(cloudSpan) cloudSpan.textContent=t.cloudLabel;
+  document.getElementById('badge').textContent=t.badge;
+  const ovBoot=document.getElementById('ovBoot');
+  if(ovBoot){ ovBoot.querySelector('span').textContent=t.booting; ovBoot.querySelector('small').textContent=t.bootingSub; }
+
   const laptop=document.getElementById('laptop');
   const desktop=document.getElementById('desktop');
   const power=document.getElementById('power');
   const ovOff=document.getElementById('ovOff');
-  const ovBoot=document.getElementById('ovBoot');
-  const deskApp=document.getElementById('deskApp');
   const badge=document.getElementById('badge');
   const pulse=document.getElementById('pulse');
   const cap=document.getElementById('caption');
@@ -174,24 +237,20 @@
     badge.classList.remove('show');
     pulse.classList.remove('go');
     if(cur)cur.style.display='inline-block';
-    cap.innerHTML='En tu portátil, trabajando con tu IA.';
+    cap.innerHTML=t.capInit;
     cap.style.opacity=1;
   }
 
   function play(){
     reset();
-    // Phase 1: leave home — sync to cloud
-    at(2200,()=>{ say('Cierras el portátil y te vas a la oficina.'); if(cur)cur.style.display='none'; laptop.classList.add('dim'); void pulse.offsetWidth; pulse.classList.add('go'); });
-    // Phase 2: arrive, power on desktop
-    at(4400,()=>{ say('Enciendes el computador de la oficina…'); power.classList.add('on'); ovOff.classList.add('hide'); ovBoot.classList.remove('hide'); });
-    // Phase 3: same session appears
+    at(2200,()=>{ say(t.cap1); if(cur)cur.style.display='none'; laptop.classList.add('dim'); void pulse.offsetWidth; pulse.classList.add('go'); });
+    at(4400,()=>{ say(t.cap2); power.classList.add('on'); ovOff.classList.add('hide'); ovBoot.classList.remove('hide'); });
     at(6600,()=>{ ovBoot.classList.add('hide'); });
-    at(7000,()=>{ badge.classList.add('show'); say('La <b>misma conversación</b>, justo donde la dejaste.'); });
+    at(7000,()=>{ badge.classList.add('show'); say(t.cap3); });
   }
 
   document.getElementById('replay').addEventListener('click',play);
 
-  // autoplay when visible
   let started=false;
   const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting&&!started){started=true;play();}});},{threshold:.35});
   io.observe(document.getElementById('scene'));

@@ -6,7 +6,10 @@ import type { Dict, Locale } from "@/content";
 import { VideoLightbox } from "@/components/VideoLightbox";
 import { ClaudeMark, OpenAIMark, GeminiMark } from "@/components/brand/AILogos";
 
-const DEMO_VIDEO_URL: string | null = null;
+const DEMO_VIDEO_URLS: Record<string, string> = {
+  es: "/video/corte-es.mp4",
+  en: "/video/corte-en.mp4",
+};
 
 const COPY = {
   es: {
@@ -157,7 +160,7 @@ export function Hero({ dict }: { dict: Dict }) {
         open={videoOpen}
         onClose={() => setVideoOpen(false)}
         dict={dict}
-        videoUrl={DEMO_VIDEO_URL ?? undefined}
+        videoUrl={DEMO_VIDEO_URLS[dict.locale] ?? undefined}
       />
     </section>
   );

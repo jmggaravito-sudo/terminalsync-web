@@ -56,7 +56,15 @@ export function VideoLightbox({ open, onClose, dict, videoUrl }: Props) {
         </button>
 
         <div className="relative aspect-video bg-black">
-          {videoUrl ? (
+          {videoUrl && videoUrl.startsWith("/") ? (
+            <video
+              src={videoUrl}
+              title={dict.video.title}
+              controls
+              autoPlay
+              className="absolute inset-0 w-full h-full"
+            />
+          ) : videoUrl ? (
             <iframe
               src={videoUrl}
               title={dict.video.title}

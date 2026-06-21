@@ -118,9 +118,9 @@
   .lang-pill{position:fixed;right:16px;top:14px;z-index:60;display:inline-flex;gap:3px;padding:4px;background:#fff;border:1px solid var(--line);border-radius:999px;box-shadow:0 10px 28px -14px rgba(20,22,28,.4);}
   .lang-pill button{font-family:var(--mono);font-size:12px;padding:5px 12px;border-radius:999px;color:var(--ink2);border:none;background:none;cursor:pointer;}
   .lang-pill button.on{background:var(--bezel);color:#fff;font-weight:600;}
-  .replay-btn{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--ink2);border:1px solid var(--line);background:#fff;padding:8px 15px;border-radius:999px;cursor:pointer;z-index:60;box-shadow:0 10px 30px -12px rgba(20,22,28,.3);}
-  .replay-btn:hover{border-color:var(--accent);color:var(--accent);}
-  .replay-btn svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;}
+  .replay-btn{display:none;}
+  .replay-btn:hover{}
+  .replay-btn svg{}
 </style>
 </head>
 <body>
@@ -245,7 +245,8 @@
       tg_ai2:'Sent to the client\u2019s email. ✅ I\u2019ll tell you when they reply.'
     }
   };
-  let lang='es';
+  let lang=(new URLSearchParams(location.search).get('lang')==='en')?'en':'es';
+  const _embed=new URLSearchParams(location.search).get('embed')==='1';
   const t=()=>T[lang];
 
   function applyStatic(){
@@ -345,10 +346,20 @@
   document.getElementById('b-en').addEventListener('click',()=>{lang='en';applyStatic();restart();});
 
   applyStatic();
+  if(_embed){const p=document.querySelector('.lang-pill');if(p)p.style.display='none';}
   let started=false;
   const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting&&!started){started=true;play();}});},{threshold:.2});
   io.observe(document.querySelector('.scene'));
   setTimeout(()=>{if(!started){started=true;play();}},700);
+})();
+</script>
+<script>
+(function(){
+  var p=new URLSearchParams(location.search);
+  if(p.get('embed')==='1'){
+    var rb=document.querySelector('.replay-btn');
+    if(rb){ rb.style.display='none'; }
+  }
 })();
 </script>
 </body>
