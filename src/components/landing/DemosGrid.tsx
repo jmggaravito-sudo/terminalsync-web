@@ -205,7 +205,7 @@ export function DemosGrid({ lang }: { lang: Locale }) {
               <div className="relative flex-1 bg-[var(--color-panel-2)] overflow-hidden">
                 {/* Blurred preview - static, no pointer events */}
                 <iframe
-                  src={demo.src}
+                  src={`${demo.src}?lang=${lang}&embed=1`}
                   title={demo.title}
                   className="w-full h-[180px] md:h-[250px] border-0 block"
                   style={{
@@ -272,7 +272,7 @@ export function DemosGrid({ lang }: { lang: Locale }) {
 
             {/* Demo iframe at full size */}
             <iframe
-              src={demos.find((d) => d.id === openId)?.src}
+              src={`${demos.find((d) => d.id === openId)?.src}?lang=${lang}&embed=1`}
               title={demos.find((d) => d.id === openId)?.title}
               className="w-full h-[80vh] border-0 block"
             />
