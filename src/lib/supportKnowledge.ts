@@ -53,7 +53,7 @@ export function getSupportKnowledge(locale: SupportLocale) {
       memory:
         "La memoria persistente guarda aprendizajes compactos del proyecto: decisiones, convenciones, arquitectura, bugs resueltos y preferencias. No reemplaza el transcript; reduce repetición y ayuda a varias IAs a trabajar con contexto compartido.",
       marketplace:
-        "Marketplace/Power-Ups organiza conectores, skills y CLI tools. Connectors conectan servicios/MCPs; Skills son capacidades reutilizables; CLI Tools ayudan a instalar/autenticar herramientas como GitHub CLI, Supabase CLI, Vercel CLI, Stripe CLI y Wrangler.",
+        "Integraciones organiza conectores, skills y CLI tools. Connectors conectan servicios/MCPs; Skills son capacidades reutilizables; CLI Tools ayudan a instalar/autenticar herramientas como GitHub CLI, Supabase CLI, Vercel CLI, Stripe CLI y Wrangler.",
       plans:
         "Free es para probar (3 terminales, 2 dispositivos). Pro ($19/mes) es para power users: 10 terminales, vault de secretos, Git-native sync, setup-on-arrival, memoria persistente entre IAs, hasta 5 dispositivos, e incluye la Extensión Chrome con 3 IAs en paralelo. Max ($39/mes) es para quienes necesitan terminales ilimitadas y hasta 10 dispositivos. (El plan se llamaba Dev hasta 2026-05-20 — si alguien menciona 'Dev', es lo mismo que Max.) No inventes precios si no estás seguro; dirige a /#pricing.",
       billing:
@@ -107,7 +107,7 @@ export function getSupportKnowledge(locale: SupportLocale) {
     memory:
       "Persistent memory stores compact project learnings: decisions, conventions, architecture, fixed bugs and preferences. It does not replace the transcript; it reduces repetition and helps multiple AIs work with shared context.",
     marketplace:
-      "Marketplace/Power-Ups organizes connectors, skills and CLI tools. Connectors connect services/MCPs; Skills are reusable capabilities; CLI Tools help install/auth tools like GitHub CLI, Supabase CLI, Vercel CLI, Stripe CLI and Wrangler.",
+      "Integrations organizes connectors, skills and CLI tools. Connectors connect services/MCPs; Skills are reusable capabilities; CLI Tools help install/auth tools like GitHub CLI, Supabase CLI, Vercel CLI, Stripe CLI and Wrangler.",
     plans:
       "Free is for trying the product (3 terminals, 2 devices). Pro ($19/mo) is for power users: 10 terminals, secrets vault, Git-native sync, setup-on-arrival, persistent memory across AIs, up to 5 devices, and includes the Chrome Extension with 3 AIs side-by-side. Max ($39/mo) is for users who need unlimited terminals and up to 10 devices. (The plan was called Dev until 2026-05-20 — if someone mentions 'Dev', it's the same as Max.) Do not invent prices if unsure; point to /#pricing.",
     billing:

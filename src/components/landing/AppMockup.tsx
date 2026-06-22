@@ -159,7 +159,7 @@ export function AppMockup({ dict }: { dict: Dict }) {
               </div>
             </div>
 
-            {/* AI Power-Ups — highlighted */}
+            {/* Integraciones — highlighted */}
             <div className="relative overflow-hidden rounded-xl border border-[var(--color-claude)]/40 bg-[var(--color-panel)] ring-2 ring-[var(--color-claude-glow)] shadow-[0_12px_32px_-12px_var(--color-claude-glow)]">
               <div
                 className="absolute inset-0 pointer-events-none"
@@ -176,7 +176,7 @@ export function AppMockup({ dict }: { dict: Dict }) {
                   <div className="flex items-center gap-1">
                     <Sparkles size={9} className="text-[var(--color-claude)]" />
                     <span className="text-[9px] font-mono uppercase tracking-[0.14em] text-[var(--color-claude)] font-semibold">
-                      AI Power-Ups
+                      {dict.locale === "es" ? "Integraciones" : "Integrations"}
                     </span>
                   </div>
                   <div className="mt-0.5 text-[12.5px] font-semibold text-[var(--color-fg-strong)] leading-tight">

@@ -7,6 +7,7 @@ import { MultiAI } from "@/components/landing/MultiAI";
 import { ChromeExtensionTeaser } from "@/components/landing/ChromeExtensionTeaser";
 import { DemosGrid } from "@/components/landing/DemosGrid";
 import { VideoSection } from "@/components/landing/VideoSection";
+import { IntegrationsDiscovery } from "@/components/landing/IntegrationsDiscovery";
 import { Comparison } from "@/components/landing/Comparison";
 import { SavingsCalculator } from "@/components/landing/SavingsCalculator";
 import { WhatYouCanBuild } from "@/components/landing/WhatYouCanBuild";
@@ -61,6 +62,7 @@ export default async function Landing({ params }: Props) {
       <Hero dict={d} />
       <VideoSection lang={lang} />
       <DemosGrid lang={lang} />
+      <IntegrationsDiscovery lang={lang} />
       <HowItWorks lang={lang} />
       <WhatYouCanBuild lang={lang} />
       <UseCases lang={lang} />

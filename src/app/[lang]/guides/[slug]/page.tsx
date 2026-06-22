@@ -45,7 +45,7 @@ export default async function GeoGuidePage({ params }: Props) {
         <p className="mt-5 max-w-3xl text-[18px] leading-relaxed text-[var(--color-fg-muted)]">{page.intro}</p>
         <div className="mt-8 flex flex-col sm:flex-row gap-3">
           <a href="/api/download" className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-accent)] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[var(--color-accent)]/20">{page.cta} <ArrowRight size={16} /></a>
-          <Link href={`/${lang}/marketplace`} className="inline-flex items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-panel)] px-5 py-3 text-sm font-semibold text-[var(--color-fg)]">{isEs ? "Ver power-ups" : "View power-ups"}</Link>
+          <Link href={`/${lang}/stacks`} className="inline-flex items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-panel)] px-5 py-3 text-sm font-semibold text-[var(--color-fg)]">{isEs ? "Ver integraciones" : "View integrations"}</Link>
         </div>
       </section>
       <section className="mx-auto max-w-4xl px-5 md:px-6 pb-10"><div className="grid gap-3 md:grid-cols-2">{page.bullets.map((bullet) => <div key={bullet} className="flex items-start gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4 text-sm text-[var(--color-fg)]"><CheckCircle2 className="mt-0.5 shrink-0 text-[var(--color-ok)]" size={17} /><span>{bullet}</span></div>)}</div></section>

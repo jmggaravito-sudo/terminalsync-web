@@ -78,7 +78,7 @@ export default async function OpengraphImage() {
                 fontWeight: 600,
               }}
             >
-              AI Power-Ups · Official with Anthropic
+              Integrations · Official with Anthropic
             </div>
             <div
               style={{

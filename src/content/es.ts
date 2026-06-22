@@ -666,7 +666,7 @@ const es: Dict = {
       install:
         "Descarga TerminalSync, crea una terminal y elige la IA que quieres usar: Claude Code, Codex, Gemini CLI o Sin IA. Desde Integraciones puedes configurar conectores, skills y herramientas de terminal. Si me dices tu caso de uso, te recomiendo por dónde empezar.",
       pricing:
-        "Tenemos planes para probar, power users y usuarios técnicos/equipos. Starter sirve para empezar; Pro agrega capacidades avanzadas como memoria/power-ups; Max está pensado para Git-native sync, vault de secretos y workflows más completos. Mira la sección de Precios para el detalle actualizado. ¿Quieres que te recomiende un plan según tu uso?",
+        "Tenemos planes para probar, power users y usuarios técnicos/equipos. Starter sirve para empezar; Pro agrega capacidades avanzadas como memoria/integraciones; Max está pensado para Git-native sync, vault de secretos y workflows más completos. Mira la sección de Precios para el detalle actualizado. ¿Quieres que te recomiende un plan según tu uso?",
       security:
         "Tu código y tu llave de acceso se cifran con AES-256 en tu computadora ANTES de subir a Drive. Usamos cifrado total (ni nosotros podemos leer): ni nosotros ni Google podemos leer tu contenido. La llave maestra la tienes tú en tu keychain local.",
       fallback:

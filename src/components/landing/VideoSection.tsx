@@ -6,15 +6,15 @@ import type { Locale } from "@/content";
 
 const COPY: Record<Locale, { eyebrow: string; title: string; sub: string; play: string }> = {
   es: {
-    eyebrow: "Mira TerminalSync en acción",
+    eyebrow: "Míralo en 1 minuto",
     title: "Ve TerminalSync en acción.",
     sub: "Una IA se detiene, cambias a otra y el trabajo sigue — incluso desde WhatsApp. Dale play.",
     play: "Reproducir video",
   },
   en: {
-    eyebrow: "See TerminalSync in action",
+    eyebrow: "See it in 1 minute",
     title: "See TerminalSync in action.",
-    sub: "One AI stops, you switch to another and work keeps going — even from WhatsApp. Hit play.",
+    sub: "One AI stops, you switch to another and the work keeps going — even from WhatsApp. Press play.",
     play: "Play video",
   },
 };
