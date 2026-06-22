@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { GET, type CatalogResponse } from "./route";
 
 /**
@@ -113,6 +113,48 @@ describe("GET /api/marketplace/catalog", () => {
     expect(sample.href).toBe("/x");
   });
 
+  it("hydrates DB-only connector items in a bundle with install fields (terminalsync-web#72/#74)", async () => {
+    // End-to-end coverage of the catalog-side fix: a bundle whose
+    // items reference DB-only connectors used to get back items with
+    // `hasManifest:false` and no install fields, breaking Phase 2
+    // install in the desktop. The route now batches a query to
+    // `connector_versions` and hydrates the resolved items.
+    //
+    // We mock the Supabase admin client so the route exercises the
+    // full integration path (bundles → bundle_listings → connector
+    // batch manifest → resolver) without a real database.
+    const SUPABASE_MOCK = await import("@/lib/supabaseAdmin");
+    const sbStub = makeSupabaseStubForBundleHydration();
+    const spy = vi
+      .spyOn(SUPABASE_MOCK, "getSupabaseAdmin")
+      .mockReturnValue(sbStub);
+    try {
+      const { body } = await callCatalog("es");
+      // Find the bundle the mock returned.
+      const stack = body.bundles.find((b) => b.slug === "sales-stack");
+      expect(stack, "bundle should be returned").toBeDefined();
+      expect(stack!.items.length).toBeGreaterThan(0);
+
+      // The DB-only item that got hydrated from connector_versions.
+      const hydrated = stack!.items.find(
+        (i) => i.slug === "salesforcecli-mcp",
+      );
+      expect(hydrated, "DB-only item should be in the bundle").toBeDefined();
+      expect(hydrated!.hasManifest).toBe(true);
+      expect(hydrated!.installMethod).toBe("npm");
+      expect(hydrated!.installSpec).toBe(
+        "@salesforce/mcp-server-salesforce",
+      );
+      // Manifest contains `${SECRET:SALESFORCE_TOKEN}` → flag must flip.
+      expect(hydrated!.requiresEnvSecrets).toBe(true);
+      expect(hydrated!.installEnv).toEqual({
+        SALESFORCE_TOKEN: "SALESFORCE_TOKEN",
+      });
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
   it("declares a 10-minute revalidate window for Vercel's edge cache", async () => {
     // Asserts the route segment config — NOT the local response header.
     //
@@ -132,3 +174,166 @@ describe("GET /api/marketplace/catalog", () => {
     expect((mod as { revalidate?: number }).revalidate).toBe(600);
   });
 });
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+/**
+ * Build a minimal Supabase admin stub that the route's bundle path can
+ * traverse:
+ *
+ *   1. `from("bundles").select(...).eq("status", "active").order(...)`
+ *       → one fake bundle row.
+ *   2. `from("bundle_listings").select(...).in("bundle_id", [bid])`
+ *       → one connector item (DB-only slug).
+ *   3. `from("connector_listings").select("slug, connector_versions(...)").in("slug", [...]).eq("status", "approved")`
+ *       → manifest pre-fetch (new code path).
+ *   4. `from("connector_listings").select("slug, name, tagline, logo_url, ...").eq("slug", X).eq("status", "approved").maybeSingle()`
+ *       → resolveConnector's row lookup (existing).
+ *
+ * The stub distinguishes calls by the table name and (for
+ * `connector_listings`) by which terminator gets invoked. PostgREST
+ * builders are chainable — we model only the methods our code uses.
+ */
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+function makeSupabaseStubForBundleHydration(): SupabaseClient {
+  const BUNDLE_ID = "bundle-uuid-1";
+  const SALESFORCE_MANIFEST = {
+    mcpServers: {
+      salesforce: {
+        command: "npx",
+        args: ["-y", "@salesforce/mcp-server-salesforce"],
+        env: { SALESFORCE_TOKEN: "${SECRET:SALESFORCE_TOKEN}" },
+      },
+    },
+  };
+
+  return {
+    from(table: string) {
+      // Per-table dispatch. Each builder records calls so the terminator
+      // can decide what to return based on the chain it received.
+      const state: {
+        filters: Array<[string, unknown]>;
+        inFilter: { col: string; values: readonly unknown[] } | null;
+      } = { filters: [], inFilter: null };
+
+      // The Supabase admin client is also consumed by `listMarketplaceConnectors`
+      // and other code paths during the same `GET` call. We only need to
+      // hand back bespoke responses for the 4 bundle-related queries; any
+      // other chain (any unknown table, any `.is()` / `.not()` / `.limit()`
+      // call) gets the safe default of an empty array. Chainable methods
+      // therefore have to be permissive — return the same builder for
+      // anything the call site might throw at us.
+      const builder: Record<string, unknown> = {
+        select(_cols: string) {
+          return builder;
+        },
+        eq(col: string, val: unknown) {
+          state.filters.push([col, val]);
+          return builder;
+        },
+        in(col: string, values: readonly unknown[]) {
+          state.inFilter = { col, values };
+          return builder;
+        },
+        is(_col: string, _val: unknown) {
+          return builder;
+        },
+        not(_col: string, _op: string, _val: unknown) {
+          return builder;
+        },
+        gte(_col: string, _val: unknown) {
+          return builder;
+        },
+        lte(_col: string, _val: unknown) {
+          return builder;
+        },
+        limit(_n: number) {
+          return builder;
+        },
+        range(_a: number, _b: number) {
+          return builder;
+        },
+        order(_col: string, _opts: unknown) {
+          return builder;
+        },
+        then(resolve: (v: { data: unknown; error: null }) => unknown) {
+          // Terminator for awaited builders (no `.maybeSingle()` called).
+          // Returns the table-appropriate dataset.
+          if (table === "bundles") {
+            return resolve({
+              data: [
+                {
+                  id: BUNDLE_ID,
+                  slug: "sales-stack",
+                  name: "Sales Stack",
+                  tagline: "CRM + email + agenda",
+                  hero_image_url: null,
+                  price_cents: 1900,
+                  currency: "usd",
+                  purchase_count: 0,
+                  sort_order: 0,
+                  description_md: null,
+                  is_exclusive_ts: false,
+                },
+              ],
+              error: null,
+            });
+          }
+          if (table === "bundle_listings") {
+            return resolve({
+              data: [
+                {
+                  bundle_id: BUNDLE_ID,
+                  kind: "connector",
+                  item_slug: "salesforcecli-mcp",
+                  sort_order: 0,
+                },
+              ],
+              error: null,
+            });
+          }
+          if (table === "connector_listings") {
+            // The batched manifest pre-fetch — uses `.in("slug", [...])`.
+            return resolve({
+              data: [
+                {
+                  slug: "salesforcecli-mcp",
+                  connector_versions: [
+                    {
+                      manifest_json: SALESFORCE_MANIFEST,
+                      created_at: "2026-06-21T00:00:00Z",
+                    },
+                  ],
+                },
+              ],
+              error: null,
+            });
+          }
+          return resolve({ data: [], error: null });
+        },
+        async maybeSingle() {
+          // Terminator for the resolveConnector single-row lookup.
+          if (table === "connector_listings") {
+            return {
+              data: {
+                slug: "salesforcecli-mcp",
+                name: "Salesforce MCP",
+                tagline: "CRM in the agent",
+                logo_url: null,
+                cta_url: null,
+                repo_url: "https://github.com/salesforcecli/mcp",
+                source_url: null,
+              },
+              error: null,
+            };
+          }
+          return { data: null, error: null };
+        },
+      };
+      return builder;
+    },
+  } as unknown as SupabaseClient;
+}

@@ -52,6 +52,7 @@ import { listCliTools, type CliToolMeta } from "@/lib/cliTools";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import {
   isBundleItemKind,
+  loadDbConnectorManifests,
   resolveBundleItems,
   type BundleItemKind,
   type BundleItemRef,
@@ -207,13 +208,24 @@ async function loadBundles(lang: string): Promise<BundleSummary[]> {
     sort_order: number;
   };
   const linksByBundle = new Map<string, BundleItemRef[]>();
+  const connectorSlugs: string[] = [];
   for (const raw of linksRes.data ?? []) {
     const row = raw as LinkRow;
     if (!isBundleItemKind(row.kind)) continue;
     const arr = linksByBundle.get(row.bundle_id) ?? [];
     arr.push({ kind: row.kind, slug: row.item_slug, sortOrder: row.sort_order });
     linksByBundle.set(row.bundle_id, arr);
+    if (row.kind === "connector") connectorSlugs.push(row.item_slug);
   }
+
+  // Single-batch prefetch of `connector_versions.manifest_json` for
+  // every connector slug referenced across any bundle. The resolver
+  // uses it to hydrate DB-only connector items with install fields +
+  // accurate `requiresEnvSecrets` — the gap reported in
+  // terminalsync-web#72/#74. Failures silently return an empty map
+  // (the resolver falls back to the legacy `hasManifest:false` branch,
+  // bundle still renders).
+  const manifestBySlug = await loadDbConnectorManifests(sb, connectorSlugs);
 
   // Resolve items per bundle in parallel — each bundle's resolution is
   // an independent lookup against the same markdown/DB sources the
@@ -221,7 +233,7 @@ async function loadBundles(lang: string): Promise<BundleSummary[]> {
   const resolved = await Promise.all(
     bundles.map(async (b) => {
       const refs = linksByBundle.get(b.id) ?? [];
-      const items = await resolveBundleItems(refs, lang);
+      const items = await resolveBundleItems(refs, lang, { manifestBySlug });
       const summary: BundleSummary = {
         id: b.id,
         slug: b.slug,

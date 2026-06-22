@@ -22,6 +22,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { manifestRequiresEnvSecrets } from "@/lib/marketplace/secrets";
 import {
@@ -29,6 +30,18 @@ import {
   mergeInstallFields,
   readInstallOverrideFromFrontmatter,
 } from "@/lib/marketplace/installFields";
+
+/**
+ * Map from connector slug to the raw `manifest_json` payload pulled
+ * from the latest active version row in `connector_versions`. Built
+ * by [`loadDbConnectorManifests`] for the slugs a bundle references,
+ * then passed into [`resolveBundleItems`] so the resolver can hydrate
+ * DB-only connector items with the install fields + accurate
+ * `requiresEnvSecrets` flag the desktop's Phase 2 install path needs.
+ *
+ * Treat as read-only: the resolver never mutates entries.
+ */
+export type ManifestBySlug = ReadonlyMap<string, unknown>;
 
 export type BundleItemKind = "connector" | "skill" | "cli";
 
@@ -136,6 +149,7 @@ function stringField(
 async function resolveConnector(
   slug: string,
   lang: string,
+  manifestBySlug?: ManifestBySlug,
 ): Promise<ResolvedBundleItem | null> {
   // Connectors live in the DB (`connector_listings`) but for first-party
   // ones the markdown file under `content/connectors/<lang>/<slug>.md` is
@@ -202,7 +216,40 @@ async function resolveConnector(
       repo_url: string | null;
       source_url: string | null;
     };
-    const cta = row.cta_url ?? row.repo_url ?? row.source_url ?? "";
+
+    // Optional manifest pre-fetched in a single batch by the caller
+    // (catalog route). When present, lift the install fields and
+    // secret flag from it — same code path as the markdown branch
+    // above, just sourced from `connector_versions.manifest_json`
+    // instead of frontmatter. When absent (caller didn't pre-fetch,
+    // version row missing, query failed), we fall back to the legacy
+    // hardcoded `false` — terminalsync-web#74's documented gap.
+    //
+    // The bundle never breaks on absence: the item is still shown
+    // with `hasManifest:false`, exactly as it does today.
+    const manifest = manifestBySlug?.get(slug);
+    const hasManifest =
+      !!manifest &&
+      typeof manifest === "object" &&
+      !!(manifest as { mcpServers?: unknown }).mcpServers &&
+      typeof (manifest as { mcpServers?: unknown }).mcpServers === "object" &&
+      Object.keys(
+        (manifest as { mcpServers: Record<string, unknown> }).mcpServers,
+      ).length > 0;
+    const requiresEnvSecrets =
+      hasManifest && manifestRequiresEnvSecrets(manifest);
+    const installFields = hasManifest
+      ? deriveInstallFromManifest(manifest)
+      : {};
+    // When we have a manifest, prefer the deep-link CTA the desktop
+    // recognizes for installable connectors — matches the markdown
+    // branch's behavior. Otherwise fall back to whatever URL the row
+    // carries (still surfaces affiliate / source links).
+    const fallbackCta = row.cta_url ?? row.repo_url ?? row.source_url ?? "";
+    const cta = hasManifest
+      ? `terminalsync://install/connector?slug=${encodeURIComponent(row.slug)}`
+      : fallbackCta;
+
     return {
       kind: "connector",
       slug: row.slug,
@@ -210,21 +257,14 @@ async function resolveConnector(
       tagline: row.tagline,
       logo: row.logo_url ?? `/connectors/${row.slug}.svg`,
       ctaUrl: cta,
-      // Hardcoded `false` (both flags). Mirrors `listMarketplaceConnectors`
-      // and `getMarketplaceConnector` in `lib/connectors.ts:354,218` —
-      // `connector_listings` rows don't carry the manifest inline; it
-      // lives in `connector_versions.manifest_json`, which the catalog
-      // query doesn't join today. Re-curating bundles to reference
-      // first-party slugs (`airtable` instead of `domdomegg-airtable-mcp-
-      // server`) is the operations-side path forward; widening the
-      // marketplace query to join versions is the code-side path. Both
-      // are tracked in terminalsync-web#74. See also migration 0017
-      // (auto-promoted marketplace rows are hidden until they get
-      // attribution + license backfill).
-      hasManifest: false,
-      requiresEnvSecrets: false,
+      hasManifest,
+      requiresEnvSecrets,
       href: `/${lang}/connectors/${row.slug}`,
       sortOrder: 0,
+      installMethod: installFields.installMethod,
+      installSpec: installFields.installSpec,
+      installArgs: installFields.installArgs,
+      installEnv: installFields.installEnv,
     };
   } catch {
     return null;
@@ -330,10 +370,11 @@ export async function resolveBundleItem(
   kind: BundleItemKind,
   slug: string,
   lang: string,
+  manifestBySlug?: ManifestBySlug,
 ): Promise<ResolvedBundleItem | null> {
   switch (kind) {
     case "connector":
-      return resolveConnector(slug, lang);
+      return resolveConnector(slug, lang, manifestBySlug);
     case "skill":
       return resolveSkill(slug, lang);
     case "cli":
@@ -343,6 +384,25 @@ export async function resolveBundleItem(
   }
 }
 
+/** Options for [`resolveBundleItems`]. Backward-compatible: every field
+ *  is optional. Callers that don't care about install-field hydration
+ *  for DB-only connector items can call `resolveBundleItems(refs, lang)`
+ *  exactly as before. */
+export interface ResolveBundleItemsOptions {
+  /**
+   * Pre-fetched manifests keyed by connector slug (see [`ManifestBySlug`]).
+   * The catalog endpoint builds this map in a single batch query before
+   * resolving items, so the resolver doesn't have to issue one query
+   * per item to derive install fields for marketplace connectors.
+   *
+   * When omitted, DB-only connector items fall back to the legacy
+   * behavior (`hasManifest:false`, no install fields) — same as the
+   * pre-fix world. The bundle still renders all items; only the
+   * install-field hydration is degraded.
+   */
+  manifestBySlug?: ManifestBySlug;
+}
+
 /** Resolve a list of bundle item refs in parallel. Items that don't
  *  resolve (deleted markdown, dropped DB row, etc.) are silently
  *  dropped from the result — the bundle page treats a missing item as
@@ -350,10 +410,12 @@ export async function resolveBundleItem(
 export async function resolveBundleItems(
   items: BundleItemRef[],
   lang: string,
+  options?: ResolveBundleItemsOptions,
 ): Promise<ResolvedBundleItem[]> {
+  const manifestBySlug = options?.manifestBySlug;
   const resolved = await Promise.all(
     items.map(async (it): Promise<ResolvedBundleItem | null> => {
-      const r = await resolveBundleItem(it.kind, it.slug, lang);
+      const r = await resolveBundleItem(it.kind, it.slug, lang, manifestBySlug);
       if (!r) return null;
       return { ...r, sortOrder: it.sortOrder, whyItHelps: it.whyItHelps };
     }),
@@ -361,6 +423,84 @@ export async function resolveBundleItems(
   return resolved
     .filter((r): r is ResolvedBundleItem => r !== null)
     .sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
+/**
+ * Batch-fetch the latest `manifest_json` for each connector slug a
+ * bundle references, in a SINGLE Supabase query.
+ *
+ * Returns a `Map<slug, manifest_json>`. Slugs without an approved
+ * listing — or whose listing has no version rows yet — are simply
+ * absent from the map; the caller falls back to the legacy
+ * `hasManifest:false` resolver branch for those.
+ *
+ * **Why batch + client-side dedupe (vs Supabase nested `.order().limit(1)`):**
+ * The embedded-resource syntax for ordering + limiting a nested table
+ * is fragile and easy to break on schema changes. Three lines of JS
+ * `sort + [0]` per row is clearer, easier to test, and indifferent to
+ * how PostgREST renames embedded selections.
+ *
+ * **Failure modes (all safe):**
+ * - `slugs` empty → returns empty map without hitting the DB.
+ * - PostgREST error → returns empty map (caller renders items with no
+ *   install fields; bundle stays intact).
+ * - Slug present but `connector_versions` empty array → slug is NOT
+ *   in the map (resolver treats it as no-manifest).
+ *
+ * Exported because `loadBundles` in the catalog route uses it directly,
+ * and so tests can exercise it without going through the route.
+ */
+export async function loadDbConnectorManifests(
+  sb: SupabaseClient,
+  slugs: readonly string[],
+): Promise<Map<string, unknown>> {
+  const out = new Map<string, unknown>();
+  if (slugs.length === 0) return out;
+
+  // De-dupe slugs to keep the IN-list compact (slugs come from
+  // bundle_listings, which can legitimately reference the same
+  // connector across multiple bundles).
+  const unique = Array.from(new Set(slugs));
+
+  try {
+    const { data, error } = await sb
+      .from("connector_listings")
+      .select("slug, connector_versions(manifest_json, created_at)")
+      .in("slug", unique)
+      .eq("status", "approved");
+    if (error || !data) return out;
+
+    type VersionRow = {
+      manifest_json: unknown;
+      created_at: string;
+    };
+    type ListingRow = {
+      slug: string;
+      connector_versions: VersionRow[] | null;
+    };
+
+    for (const raw of data as ListingRow[]) {
+      const versions = (raw.connector_versions ?? []).filter(
+        (v): v is VersionRow =>
+          !!v && v.manifest_json !== null && v.manifest_json !== undefined,
+      );
+      if (versions.length === 0) continue;
+      // Pick newest version by created_at. Stable across PostgREST
+      // version changes (we don't depend on the embedded result's
+      // implicit order).
+      versions.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+      out.set(raw.slug, versions[0].manifest_json);
+    }
+  } catch {
+    // Defensive: any network / serialization error returns the empty
+    // map. Caller renders bundle items with no install fields — the
+    // bundle itself never crashes because of this fetch.
+    return out;
+  }
+  return out;
 }
 
 /** Synchronous existence check used by the admin API to soft-validate
