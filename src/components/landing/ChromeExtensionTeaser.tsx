@@ -102,6 +102,7 @@ export function ChromeExtensionTeaser({ dict }: { dict: Dict }) {
                 rel="noreferrer"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-accent)] text-white px-4 py-2 text-[13px] font-semibold shadow-[0_6px_18px_-6px_var(--color-accent-glow)] hover:bg-[var(--color-accent-soft)] transition-colors"
               >
+                <Chrome size={13} strokeWidth={2.4} />
                 {c.primaryCta}
                 <ArrowRight size={13} strokeWidth={2.4} />
               </a>
@@ -113,6 +114,11 @@ export function ChromeExtensionTeaser({ dict }: { dict: Dict }) {
                 <ArrowRight size={12} strokeWidth={2.4} />
               </a>
             </div>
+            {/* Note: no Pro PIN affordance on the landing — JM's call. The
+                desktop app is the canonical surface for that (it already
+                knows the logged-in user + plan via fetchMe(), so no
+                cross-domain cookies / second sign-in needed). The landing
+                only sells the install. */}
           </div>
         </div>
       </article>
