@@ -578,7 +578,7 @@ const en: Dict = {
       "Full markdown + one-click copy",
     ],
     status: "Coming soon to the Chrome Web Store · Functional MVP in early access",
-    primaryCta: "Try the early access",
+    primaryCta: "Install extension",
     primaryHref: "https://github.com/jmggaravito-sudo/terminalsync-chrome",
     secondaryCta: "Compare with the desktop app",
     secondaryHref: "#pricing",
