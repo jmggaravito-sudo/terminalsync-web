@@ -1,16 +1,22 @@
 // CORS helper for the Chrome extension endpoints.
 //
-// The extension's popup runs from a `chrome-extension://<id>` origin.
-// The id is fixed for the published Web Store build but randomized for
-// unpacked dev installs, so we accept any `chrome-extension://*` origin.
-// That's safe because:
-//   - Hosted mode enforces a UUID lookup + per-day cap in
-//     /api/extension/chat — anonymous traffic is metered.
-//   - BYOK mode forwards a key the caller already had on their machine.
+// Origins we allow:
+//   - chrome-extension://*    — the published popup, plus randomized
+//                                unpacked dev installs.
+//   - moz-extension://*       — the published popup on Firefox.
+//   - tauri://*               — the TerminalSync desktop app (Tauri
+//                                WebView on macOS — origin is
+//                                tauri://localhost regardless of port).
+//   - http://tauri.localhost  — Tauri WebView on Linux / Windows.
+//   - https://terminalsync.ai + www variant — the marketing site (for
+//                                docs page smoke tests / the landing's
+//                                self-serve flows).
+//   - http://localhost*       — local dev of either client.
+//   - http://127.0.0.1*       — same.
 //
-// We also accept the marketing site origin (handy for /api/extension/*
-// endpoints that the docs page might surface as a smoke test) and
-// localhost during local dev.
+// Safety: every endpoint that mutates state still enforces a per-call
+// auth check (Bearer token, install UUID + per-day cap, etc.). CORS is
+// just a browser gate.
 
 const STATIC_ALLOWED = new Set<string>([
   "https://terminalsync.ai",
@@ -25,6 +31,11 @@ export function extensionCorsHeaders(
     origin !== null &&
     (origin.startsWith("chrome-extension://") ||
       origin.startsWith("moz-extension://") ||
+      // Tauri WebView (macOS): tauri://localhost (no port, no path).
+      origin.startsWith("tauri://") ||
+      // Tauri WebView (Linux/Windows on Tauri 2): http://tauri.localhost.
+      origin === "http://tauri.localhost" ||
+      origin.startsWith("https://tauri.localhost") ||
       origin.startsWith("http://localhost") ||
       origin.startsWith("http://127.0.0.1") ||
       STATIC_ALLOWED.has(origin));
