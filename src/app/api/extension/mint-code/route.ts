@@ -30,7 +30,12 @@ import { mintLinkCode } from "../_lib/linkCodes";
 export const runtime = "nodejs";
 
 const ACTIVE_STATUSES = ["active", "trialing"] as const;
-const PAID_PLANS = ["pro", "max"] as const;
+// "dev" is the LEGACY name for what's now "max" — subscriptions written
+// before the 2026-05-20 rename still carry it. The Stripe webhook now
+// writes "max" for new ones, but old rows are not backfilled. The desktop
+// app's normalizePlan() handles this transparently; we mirror that here
+// rather than running a destructive migration on production rows.
+const PAID_PLANS = ["pro", "max", "dev"] as const;
 
 export function OPTIONS(req: Request): Response {
   return extensionPreflight(req, "POST, OPTIONS");
