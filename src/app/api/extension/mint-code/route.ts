@@ -118,8 +118,34 @@ export async function POST(req: Request): Promise<Response> {
     return jerr(500, "mint_failed", "Could not mint a code.", cors);
   }
 
+  // 5. Has this user EVER successfully linked an extension?
+  //    A consumed code with consumed_by_extension_user_id != null means a
+  //    real extension install bound itself to this user. We use this as a
+  //    soft "you already have it installed" signal — the desktop app can't
+  //    introspect Chrome from the Tauri WebView, but this row is the next
+  //    best thing. Errors are non-fatal: assume false on lookup failure
+  //    (worst case the UI shows the install link even though they have it).
+  let hasLinkedExtension = false;
+  try {
+    const { count } = await supabase
+      .from("extension_link_codes")
+      .select("code", { count: "exact", head: true })
+      .eq("supabase_user_id", userId)
+      .not("consumed_by_extension_user_id", "is", null);
+    hasLinkedExtension = (count ?? 0) > 0;
+  } catch (err) {
+    console.warn("[extension/mint-code] hasLinkedExtension lookup failed", {
+      userId,
+      err,
+    });
+  }
+
   return new Response(
-    JSON.stringify({ code: result.code, expiresAt: result.expiresAt }),
+    JSON.stringify({
+      code: result.code,
+      expiresAt: result.expiresAt,
+      hasLinkedExtension,
+    }),
     { status: 200, headers: cors },
   );
 }
