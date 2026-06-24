@@ -3,27 +3,33 @@ name: Webflow
 logo: /connectors/webflow.svg
 category: productivity
 status: available
-simpleTitle: "Que tu IA edite tu sitio sin abrir Webflow"
-simpleSubtitle: "Cambios de copy, posts del CMS y publicaciones — pedidos en lenguaje natural."
-devTitle: "Webflow MCP Connector"
-devSubtitle: "Designer + CMS APIs as tools — query collections, push items, publish staging."
-ctaUrl: "https://webflow.com/"
+simpleTitle: "Que tu IA trabaje con tu sitio Webflow"
+simpleSubtitle: "Consultá sitios, colecciones y CMS items usando un token guardado como secreto."
+devTitle: "Webflow MCP Server"
+devSubtitle: "Official Webflow MCP server over the Webflow Data API and Designer bridge."
+ctaUrl: "https://developers.webflow.com/data/v2.0.0/docs/ai-tools"
+manifest:
+  mcpServers:
+    webflow:
+      command: npx
+      args: ["-y", "webflow-mcp-server"]
+      env:
+        WEBFLOW_TOKEN: "${SECRET:WEBFLOW_TOKEN}"
 affiliate: false
-tagline: "Editá tu sitio hablando"
-originalAuthor: "Webflow Inc."
+tagline: "Webflow y CMS desde el chat"
+originalAuthor: "Webflow"
 originalAuthorUrl: "https://webflow.com"
-license: "proprietary"
+license: "MIT"
+licenseUrl: "https://unpkg.com/webflow-mcp-server@1.0.0/LICENSE.md"
+marketplaceSource: "official"
+marketplaceCategory: "web"
 ---
-Tu sitio en Webflow tiene 80 posts, 40 productos y un CMS con 12 colecciones. Cada cambio chico te obliga a abrir el editor, esperar que cargue y buscar el ítem correcto.
+Tu sitio en Webflow puede tener páginas, colecciones y contenido CMS que cambian todo el tiempo. Con este conector, el agente puede trabajar contra la API de Webflow usando un token que guardás como secreto.
 
-Con este conector, le decís a Claude *"actualizá el precio del plan Pro a $19, publicá los 3 borradores del blog que están listos y avisame qué se rompió"* y él lo hace contra tus colecciones en segundos.
-
-Una sola configuración, sincronizada en todas tus máquinas: editás desde donde sea sin re-pegar API keys.
+Para edición visual y puente con Designer, seguí la guía oficial de Webflow para AI tools y MCP Bridge App.
 
 --- dev ---
 
-Webflow's Data API exposes Sites, Collections, CMS Items, and the Designer extension surface. The community MCP wrapper turns those into first-class tools — read collections, upsert items, trigger staging publishes, query asset library.
+`webflow-mcp-server` es el paquete publicado por Webflow para correr el MCP server local con `npx`. En instalación local usa `WEBFLOW_TOKEN` para autenticarse contra Webflow Data API; la documentación oficial también describe un modo remoto OAuth vía `mcp-remote`.
 
-Terminal Sync rides the API token in the OS Keychain (`apiKeyHelper`) and syncs your `claude_desktop_config.json` between machines. The token never lands on disk plaintext and never enters the repo.
-
-**Best for**: agencies running multiple Webflow sites who want bulk CMS edits from the IDE; founders pushing copy changes without opening the visual editor.
+Licencia: MIT. Fuente: npm `webflow-mcp-server` y documentación oficial de Webflow AI tools.

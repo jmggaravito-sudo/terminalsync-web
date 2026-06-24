@@ -4,24 +4,30 @@ logo: /connectors/memory.svg
 category: dev
 status: available
 simpleTitle: "Tu IA recuerda entre conversaciones"
-simpleSubtitle: "\"Acordate que prefiero Tailwind\", \"olvidate el contexto del workout\" — y de verdad lo recuerda."
-devTitle: "Knowledge Graph Memory MCP"
-devSubtitle: "Store local persistente de memoria. Entidades, relaciones, observaciones."
+simpleSubtitle: "Guardá preferencias, hechos y relaciones para que el agente no arranque de cero cada vez."
+devTitle: "Memory MCP Server"
+devSubtitle: "Persistent local knowledge graph with entities, relations and observations."
 ctaUrl: "https://github.com/modelcontextprotocol/servers/tree/main/src/memory"
+manifest:
+  mcpServers:
+    memory:
+      command: npx
+      args: ["-y", "@modelcontextprotocol/server-memory"]
 affiliate: false
-tagline: "Memoria persistente entre conversaciones"
-originalAuthor: "Anthropic"
-originalAuthorUrl: "https://github.com/modelcontextprotocol/servers"
+tagline: "Memoria persistente para el agente"
+originalAuthor: "modelcontextprotocol"
+originalAuthorUrl: "https://github.com/modelcontextprotocol"
 license: "MIT"
+licenseUrl: "https://github.com/modelcontextprotocol/servers/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
 ---
-Cada conversación nueva normalmente arranca de cero. Con esto no — tu IA recuerda qué decidiste la semana pasada, qué te gustó sobre tu stack, qué queda fuera de alcance.
+Cada conversación nueva normalmente arranca de cero. Con Memory, tu IA puede guardar hechos como "prefiero Tailwind", relaciones entre entidades y observaciones que conviene recordar para la próxima sesión.
 
-Todo queda local; nada sale de tu computadora.
+Funciona como un grafo de conocimiento local para continuidad básica entre chats. No necesita API key.
 
 --- dev ---
 
-`@modelcontextprotocol/server-memory` implementa un knowledge graph local. Operaciones: `create_entities`, `create_relations`, `add_observations`, `delete_entities`, `delete_observations`, `delete_relations`, `read_graph`, `search_nodes`, `open_nodes`. Store: archivo JSON en `MEMORY_FILE_PATH`.
+`@modelcontextprotocol/server-memory` implementa un knowledge graph local con entidades, relaciones y observaciones. Expone herramientas como `create_entities`, `create_relations`, `add_observations`, `read_graph`, `search_nodes` y `open_nodes`. No requiere secrets.
 
-Licencia: MIT.
+Licencia: MIT. Fuente: github.com/modelcontextprotocol/servers/tree/main/src/memory.
