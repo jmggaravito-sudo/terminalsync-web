@@ -4,24 +4,44 @@ logo: /connectors/filesystem.svg
 category: dev
 status: available
 simpleTitle: "Your AI reads and writes files on your computer"
-simpleSubtitle: "\"Review every README in this folder\", \"create the missing tests\" — directly on disk."
-devTitle: "Local Filesystem MCP"
-devSubtitle: "Sandboxed file read/write over allow-listed directories."
+simpleSubtitle: "Pick an allowed folder and the AI works only there: read, list, edit and create files."
+devTitle: "Filesystem MCP Server"
+devSubtitle: "Expose allow-listed local directories over the official MCP filesystem server."
 ctaUrl: "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem"
+manifest:
+  mcpServers:
+    filesystem:
+      command: npx
+      args: ["-y", "@modelcontextprotocol/server-filesystem"]
 affiliate: false
-tagline: "Read and write local files safely"
-originalAuthor: "Anthropic"
-originalAuthorUrl: "https://github.com/modelcontextprotocol/servers"
+tagline: "Local files, with an allow-list"
+originalAuthor: "modelcontextprotocol"
+originalAuthorUrl: "https://github.com/modelcontextprotocol"
 license: "MIT"
+licenseUrl: "https://github.com/modelcontextprotocol/servers/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
 ---
-You tell your AI: "look at this folder and tell me what's in each subdirectory." It does. You say: "create file `notes.md` with this summary." It does — only in the folders you allowed.
+You say: "look at this folder and tell me what's in each subdirectory." It does. You say: "create file `notes.md` with this summary." It does — only inside the path you allowed.
 
-Sandboxed by allow-list: paths outside the list are invisible to the AI.
+The key point: it is not full access to your disk. The server receives a list of allowed directories and everything else is out of reach.
+
+**Before using:** this connector needs to know which folders your AI can access. After installing, open `~/.claude.json`, find the `filesystem` block, and append the allowed paths to its `args` array. Example:
+
+```json
+"filesystem": {
+  "type": "stdio",
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/your-name/Desktop", "/Users/your-name/Documents"]
+}
+```
+
+Without paths, the connector starts but can't read or write anything.
 
 --- dev ---
 
-`@modelcontextprotocol/server-filesystem` accepts an allow-list of directories. Operations: `read_file`, `write_file`, `edit_file`, `create_directory`, `list_directory`, `move_file`, `search_files`. Paths outside the allow-list return permission denied — no silent escapes.
+`@modelcontextprotocol/server-filesystem` runs through `npx` and requires at least one allow-listed path as a positional argument. It exposes tools to read, write, edit, list, create directories, move files and search inside the allowed paths. No secrets required.
+
+The catalog manifest ships without paths by default — the Lab doesn't inject the session workspace into MCP args yet. The user must edit `~/.claude.json` post-install. Known debt: once the Lab gains an `installPath` field analogous to `installEnv`, the `InstallModal` will prompt for it interactively.
 
 License: MIT. Source: github.com/modelcontextprotocol/servers/tree/main/src/filesystem.
