@@ -8,6 +8,11 @@ simpleSubtitle: "\"Acordate que prefiero Tailwind\", \"olvidate el contexto del 
 devTitle: "Knowledge Graph Memory MCP"
 devSubtitle: "Store local persistente de memoria. Entidades, relaciones, observaciones."
 ctaUrl: "https://github.com/modelcontextprotocol/servers/tree/main/src/memory"
+manifest:
+  mcpServers:
+    memory:
+      command: npx
+      args: ["-y", "@modelcontextprotocol/server-memory"]
 affiliate: false
 tagline: "Memoria persistente entre conversaciones"
 originalAuthor: "Anthropic"

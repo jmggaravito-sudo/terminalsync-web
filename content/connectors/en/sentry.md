@@ -8,6 +8,13 @@ simpleSubtitle: "\"What's the latest error in checkout?\", \"summarize errors of
 devTitle: "Sentry MCP"
 devSubtitle: "Sentry API access. Issues, events, stacktraces."
 ctaUrl: "https://github.com/modelcontextprotocol/servers/tree/main/src/sentry"
+manifest:
+  mcpServers:
+    sentry:
+      command: npx
+      args: ["-y", "@sentry/mcp-server"]
+      env:
+        SENTRY_ACCESS_TOKEN: "${SECRET:SENTRY_ACCESS_TOKEN}"
 affiliate: false
 tagline: "Production errors at chat distance"
 originalAuthor: "Anthropic"

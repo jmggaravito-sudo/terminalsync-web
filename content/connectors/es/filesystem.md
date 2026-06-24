@@ -8,6 +8,11 @@ simpleSubtitle: "\"Revisame todos los README de esta carpeta\", \"creame los tes
 devTitle: "Filesystem MCP local"
 devSubtitle: "Lectura/escritura sandboxed sobre directorios allow-listed."
 ctaUrl: "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem"
+manifest:
+  mcpServers:
+    filesystem:
+      command: npx
+      args: ["-y", "@modelcontextprotocol/server-filesystem"]
 affiliate: false
 tagline: "Lee y escribe archivos locales con seguridad"
 originalAuthor: "Anthropic"
@@ -19,6 +24,18 @@ marketplaceCategory: "desktop"
 Le decís: "miráme esta carpeta y contame qué hay en cada subdirectorio." Lo hace. Le decís: "creá el archivo `notas.md` con este resumen." Lo hace — solo en las carpetas que vos permitiste.
 
 Sandboxed por allow-list: las rutas fuera de la lista son invisibles para la IA.
+
+**Antes de usarlo:** este conector necesita saber a qué carpetas puede acceder tu IA. Después de instalarlo, abrí `~/.claude.json`, buscá el bloque `filesystem` y agregale los paths permitidos al final del array `args`. Ejemplo:
+
+```json
+"filesystem": {
+  "type": "stdio",
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/tu-nombre/Desktop", "/Users/tu-nombre/Documents"]
+}
+```
+
+Sin paths, el conector arranca pero no puede leer ni escribir nada.
 
 --- dev ---
 

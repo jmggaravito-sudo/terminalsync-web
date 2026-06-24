@@ -8,6 +8,13 @@ simpleSubtitle: "Copy tweaks, CMS posts, and publishes — requested in plain la
 devTitle: "Webflow MCP Connector"
 devSubtitle: "Designer + CMS APIs as tools — query collections, push items, publish staging."
 ctaUrl: "https://webflow.com/"
+manifest:
+  mcpServers:
+    webflow:
+      command: npx
+      args: ["-y", "webflow-mcp-server"]
+      env:
+        WEBFLOW_TOKEN: "${SECRET:WEBFLOW_TOKEN}"
 affiliate: false
 tagline: "Edit your site by talking to it"
 originalAuthor: "Webflow Inc."

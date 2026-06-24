@@ -8,6 +8,11 @@ simpleSubtitle: "\"Remember I prefer Tailwind\", \"forget the workout context\" 
 devTitle: "Knowledge Graph Memory MCP"
 devSubtitle: "Local persistent memory store. Entities, relations, observations."
 ctaUrl: "https://github.com/modelcontextprotocol/servers/tree/main/src/memory"
+manifest:
+  mcpServers:
+    memory:
+      command: npx
+      args: ["-y", "@modelcontextprotocol/server-memory"]
 affiliate: false
 tagline: "Persistent memory across conversations"
 originalAuthor: "Anthropic"

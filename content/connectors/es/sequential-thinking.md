@@ -8,6 +8,11 @@ simpleSubtitle: "Para decisiones con muchas variables — desarma el razonamient
 devTitle: "Sequential Thinking MCP"
 devSubtitle: "Tool que expone un scratchpad de razonamiento stepwise al modelo."
 ctaUrl: "https://github.com/modelcontextprotocol/servers/tree/main/src/sequential-thinking"
+manifest:
+  mcpServers:
+    sequential-thinking:
+      command: npx
+      args: ["-y", "@modelcontextprotocol/server-sequential-thinking"]
 affiliate: false
 tagline: "Razonamiento stepwise estructurado"
 originalAuthor: "Anthropic"
