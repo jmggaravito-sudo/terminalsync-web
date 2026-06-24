@@ -4,24 +4,30 @@ logo: /connectors/filesystem.svg
 category: dev
 status: available
 simpleTitle: "Tu IA lee y escribe archivos en tu computadora"
-simpleSubtitle: "\"Revisame todos los README de esta carpeta\", \"creame los tests que faltan\" — directo en disco."
-devTitle: "Filesystem MCP local"
-devSubtitle: "Lectura/escritura sandboxed sobre directorios allow-listed."
+simpleSubtitle: "Elegís una carpeta permitida y la IA trabaja solo ahí: leer, listar, editar y crear archivos."
+devTitle: "Filesystem MCP Server"
+devSubtitle: "Expose allow-listed local directories over the official MCP filesystem server."
 ctaUrl: "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem"
+manifest:
+  mcpServers:
+    filesystem:
+      command: npx
+      args: ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/allowed/directory"]
 affiliate: false
-tagline: "Lee y escribe archivos locales con seguridad"
-originalAuthor: "Anthropic"
-originalAuthorUrl: "https://github.com/modelcontextprotocol/servers"
+tagline: "Archivos locales, con allow-list"
+originalAuthor: "modelcontextprotocol"
+originalAuthorUrl: "https://github.com/modelcontextprotocol"
 license: "MIT"
+licenseUrl: "https://github.com/modelcontextprotocol/servers/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
 ---
-Le decís: "miráme esta carpeta y contame qué hay en cada subdirectorio." Lo hace. Le decís: "creá el archivo `notas.md` con este resumen." Lo hace — solo en las carpetas que vos permitiste.
+Le decís: "miráme esta carpeta y contame qué hay en cada subdirectorio". Lo hace. Le decís: "creá el archivo `notas.md` con este resumen". Lo hace — solo dentro de la ruta que vos permitiste.
 
-Sandboxed por allow-list: las rutas fuera de la lista son invisibles para la IA.
+El punto importante: no es acceso total a tu disco. El servidor recibe una lista de directorios permitidos y todo lo demás queda fuera de alcance.
 
 --- dev ---
 
-`@modelcontextprotocol/server-filesystem` toma un allow-list de directorios. Operaciones: `read_file`, `write_file`, `edit_file`, `create_directory`, `list_directory`, `move_file`, `search_files`. Rutas fuera del allow-list devuelven permission denied — no hay escapes silenciosos.
+`@modelcontextprotocol/server-filesystem` corre por `npx` y recibe al menos una ruta allow-listed como argumento. Expone herramientas para leer, escribir, editar, listar, crear directorios, mover archivos y buscar dentro de las rutas permitidas. No requiere secrets.
 
 Licencia: MIT. Fuente: github.com/modelcontextprotocol/servers/tree/main/src/filesystem.
