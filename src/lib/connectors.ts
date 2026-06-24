@@ -129,6 +129,25 @@ export interface ConnectorMeta {
    *  third-party items get "community". The desktop renders a small badge
    *  with the corresponding label (PERSONALIZADO / INCLUIDO / Comunidad). */
   marketplaceSource?: "ts-curated" | "anthropic" | "community";
+  /** Long-form description, in markdown source (not HTML). This is the
+   *  "simple" half of the connector's .md body — everything before the
+   *  `--- dev ---` separator. Consumed by the desktop Lab's detail panel
+   *  to render a rich explanation (what the product is, what the
+   *  connector does, examples of what to ask).
+   *
+   *  Populated by `listConnectors` when the markdown file has a body.
+   *  Undefined for marketplace-DB-only connectors (no .md content). The
+   *  panel falls back to `tagline` when this is missing, so it's
+   *  always safe to consume defensively. */
+  description?: string;
+  /** Optional direct link to the page where a user generates the token
+   *  this connector requires. Only meaningful when
+   *  `requiresEnvSecrets === true` (a connector with no secret has
+   *  nowhere to go). The Lab's "Qué necesitás" section uses this to
+   *  jump the user straight to the right setting in the vendor's
+   *  console — no hunt through docs. Curator-authored in the
+   *  frontmatter as `tokenHelpUrl`. */
+  tokenHelpUrl?: string;
 }
 
 export interface ConnectorDoc extends ConnectorMeta {
@@ -154,9 +173,18 @@ export async function listConnectors(lang: string): Promise<ConnectorMeta[]> {
   const metas: ConnectorMeta[] = [];
   for (const file of files) {
     const raw = fs.readFileSync(path.join(dir, file), "utf8");
-    const { data } = matter(raw);
+    const { data, content } = matter(raw);
     const meta = normalizeMeta(file.replace(/\.md$/, ""), data);
     if (meta.hidden) continue; // Suppressed from the public catalog.
+    // Lift the "simple" half of the markdown body (everything before
+    // `--- dev ---`) so the desktop Lab's detail panel can render a
+    // rich description. We deliberately keep markdown source — not
+    // pre-rendered HTML — because the Lab uses react-markdown for
+    // styling consistency with its own theme. Empty body → undefined
+    // (panel falls back to tagline).
+    const [simpleSrc] = splitSimpleDev(content);
+    const trimmed = simpleSrc.trim();
+    if (trimmed.length > 0) meta.description = trimmed;
     metas.push(meta);
   }
   // Stable ordering: available first, then by frontmatter `order` if present, else name
@@ -330,6 +358,11 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMe
     installSpec: installFields.installSpec,
     installArgs: installFields.installArgs,
     installEnv: installFields.installEnv,
+    // Curator-authored direct link to "where you generate the token".
+    // Only meaningful for connectors with `requiresEnvSecrets:true`.
+    // When absent, the Lab's "Qué necesitás" section falls back to the
+    // generic `ctaUrl` if useful; otherwise it just names the token.
+    tokenHelpUrl: get("tokenHelpUrl") || undefined,
   };
 }
 

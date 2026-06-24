@@ -83,6 +83,27 @@ describe("GET /api/marketplace/catalog", () => {
     }
   });
 
+  it("exposes description (markdown body) and tokenHelpUrl on the catalog connector entries", async () => {
+    // 2026-06-24: the desktop Lab's detail panel was rendering a near-
+    // empty card because the catalog only exposed `tagline` (a 1-liner).
+    // Two new fields fix that:
+    //   - `description`: the markdown body's "simple" half (before
+    //     `--- dev ---`), so the panel can render a rich explanation.
+    //   - `tokenHelpUrl`: direct link to "where you generate the token"
+    //     so users with `requiresEnvSecrets:true` can find it.
+    //
+    // Sentry is the molde-de-oro for this contract — pinned here so a
+    // regression that drops either field surfaces immediately.
+    const { body } = await callCatalog("es");
+    const sentry = body.connectors.find((c) => c.slug === "sentry");
+    expect(sentry, "sentry should be in the catalog").toBeDefined();
+    expect(typeof sentry!.description).toBe("string");
+    expect(sentry!.description!.length).toBeGreaterThan(40);
+    expect(sentry!.tokenHelpUrl).toBe(
+      "https://sentry.io/settings/account/api/auth-tokens/",
+    );
+  });
+
   it("requiresEnvSecrets matches !!authCommand on CLI tools", async () => {
     const { body } = await callCatalog("es");
     for (const item of body.cliTools) {
