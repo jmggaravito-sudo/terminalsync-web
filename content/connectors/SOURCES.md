@@ -27,6 +27,11 @@
 | **github** | npm `@modelcontextprotocol/server-github` README oficial (tarball 2025.4.8) | npm package metadata + README — Anthropic, PBC; `GITHUB_PERSONAL_ACCESS_TOKEN`; 26 tools; scopes `repo` / `public_repo`; nota de deprecación hacia `github/github-mcp-server`. |
 | **slack** | npm `@modelcontextprotocol/server-slack` README oficial (tarball 2025.4.25) | npm package metadata + README — Anthropic, PBC; `SLACK_BOT_TOKEN`, `SLACK_TEAM_ID`; scopes Slack verbatim; 8 tools. |
 | **postgres** | npm `@modelcontextprotocol/server-postgres` README oficial (tarball 0.6.2) | npm package metadata + README — Anthropic, PBC; URL Postgres posicional; tool `query`; READ ONLY transaction; schema resources. |
+| **gitlab** | npm `@modelcontextprotocol/server-gitlab` README oficial (tarball 2025.4.25) | npm package metadata + README — GitLab, PBC; `GITLAB_PERSONAL_ACCESS_TOKEN`; `GITLAB_API_URL` opcional; 9 tools; scopes `api` / `read_api` / `read_repository` / `write_repository`. |
+| **google-maps** | npm `@modelcontextprotocol/server-google-maps` README oficial (tarball 0.6.2) | npm package metadata + README — Anthropic, PBC; `GOOGLE_MAPS_API_KEY`; 7 tools; geocoding, places, distance matrix, elevation, directions. |
+| **brave-search** | npm `@modelcontextprotocol/server-brave-search` README oficial (tarball 0.6.2) | npm package metadata + README — Anthropic, PBC; `BRAVE_API_KEY`; `brave_web_search`; `brave_local_search`; free tier mencionado por README. |
+| **puppeteer** | npm `@modelcontextprotocol/server-puppeteer` README oficial (tarball 2025.5.12) | npm package metadata + README — Anthropic, PBC; sin secrets; browser automation, screenshots, console logs, resources. |
+| **time** | SKIP 2026-06-25 | Gate duro falló: `@modelcontextprotocol/server-time` no existe en npm (E404), por lo tanto no cumple paquete npm + manifest instalable. |
 
 ## Estructura del molde de oro (verificada en estos 8)
 
