@@ -4,7 +4,7 @@ logo: /connectors/filesystem.svg
 category: dev
 status: available
 simpleTitle: "Tu IA lee y escribe archivos en tu computadora"
-simpleSubtitle: "Elegís una carpeta permitida y la IA trabaja solo ahí: leer, listar, editar y crear archivos."
+simpleSubtitle: "Elegís qué carpetas puede tocar — todo lo demás queda fuera de alcance."
 devTitle: "Filesystem MCP Server"
 devSubtitle: "Expose allow-listed local directories over the official MCP filesystem server."
 ctaUrl: "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem"
@@ -22,26 +22,36 @@ licenseUrl: "https://github.com/modelcontextprotocol/servers/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
 ---
-Le decís: "miráme esta carpeta y contame qué hay en cada subdirectorio". Lo hace. Le decís: "creá el archivo `notas.md` con este resumen". Lo hace — solo dentro de la ruta que vos permitiste.
+**Filesystem** es la herramienta más simple y más útil del catálogo: tu IA pasa a poder leer y escribir archivos directamente en tu disco. Sin copiar-pegar, sin capturas de pantalla, sin describir contenido a mano.
 
-El punto importante: no es acceso total a tu disco. El servidor recibe una lista de directorios permitidos y todo lo demás queda fuera de alcance.
+Pero no es acceso total. Vos le declarás una lista de carpetas permitidas (un "allow-list") y todo lo que esté afuera de esa lista es invisible para el agente. Si le permitís `~/Documents/proyectos`, no puede mirar `~/Desktop`, ni `/etc`, ni tus fotos. Sandboxed por diseño.
 
-**Antes de usarlo:** este conector necesita saber a qué carpetas puede acceder tu IA. Después de instalarlo, abrí `~/.claude.json`, buscá el bloque `filesystem` y agregale los paths permitidos al final del array `args`. Ejemplo:
+### Qué le podés pedir
+
+- *"Leéme todos los `.md` de mi carpeta de notas y decime cuáles son apuntes de viaje y cuáles de reuniones."*
+- *"En `~/Documents/proyectos/cliente-X`, creame una carpeta `propuesta-mayo/` con un `README.md` que explique la estructura."*
+- *"Buscá en mis notas dónde mencioné 'pricing' la semana pasada y traeme el contexto."*
+
+### Qué necesitás configurar
+
+A diferencia del resto, este conector **no pide token**, pero sí pide que vos elijas **qué carpetas puede acceder**. Sin eso, el servidor arranca pero no tiene nada para mirar.
+
+Después de instalarlo, abrí `~/.claude.json`, buscá el bloque `filesystem` y agregale al final del array `args` cada carpeta permitida. Ejemplo típico:
 
 ```json
 "filesystem": {
   "type": "stdio",
   "command": "npx",
-  "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/tu-nombre/Desktop", "/Users/tu-nombre/Documents"]
+  "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/tu-nombre/Desktop", "/Users/tu-nombre/Documents/proyectos"]
 }
 ```
 
-Sin paths, el conector arranca pero no puede leer ni escribir nada.
+Podés agregar tantas como quieras. Pensalo así: cada path que sumes es una llave más en el llavero del agente. Empezá con poco (una carpeta específica de proyectos) y andá agregando a medida que veas que necesitás.
 
 --- dev ---
 
-`@modelcontextprotocol/server-filesystem` corre por `npx` y recibe al menos una ruta allow-listed como argumento posicional. Expone herramientas para leer, escribir, editar, listar, crear directorios, mover archivos y buscar dentro de las rutas permitidas. No requiere secrets.
+`@modelcontextprotocol/server-filesystem` corre por `npx` y recibe al menos una ruta allow-listed como argumento posicional. Tools expuestas: `read_file`, `write_file`, `edit_file`, `create_directory`, `list_directory`, `move_file`, `search_files`. Operaciones sobre paths fuera del allow-list devuelven `permission denied` — no hay escapes silenciosos.
 
-El manifest del catálogo ship sin paths por defecto — el Lab no inyecta el workspace de la sesión en los args de MCP todavía. El usuario debe editar `~/.claude.json` post-install. Deuda conocida: cuando el Lab gane un campo `installPath` análogo a `installEnv`, el `InstallModal` lo pedirá interactivamente.
+Hoy el manifest se sirve sin paths por defecto. El Lab no inyecta el workspace de la sesión en los args de MCP en runtime; deuda conocida que se cierra cuando el `InstallModal` gane un campo `installPath` análogo a `installEnv`.
 
 Licencia: MIT. Fuente: github.com/modelcontextprotocol/servers/tree/main/src/filesystem.

@@ -4,7 +4,7 @@ logo: /connectors/filesystem.svg
 category: dev
 status: available
 simpleTitle: "Your AI reads and writes files on your computer"
-simpleSubtitle: "Pick an allowed folder and the AI works only there: read, list, edit and create files."
+simpleSubtitle: "You pick which folders it can touch — everything else is out of reach."
 devTitle: "Filesystem MCP Server"
 devSubtitle: "Expose allow-listed local directories over the official MCP filesystem server."
 ctaUrl: "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem"
@@ -22,26 +22,36 @@ licenseUrl: "https://github.com/modelcontextprotocol/servers/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
 ---
-You say: "look at this folder and tell me what's in each subdirectory." It does. You say: "create file `notes.md` with this summary." It does — only inside the path you allowed.
+**Filesystem** is the simplest and most useful tool in the catalog: your AI gains the ability to read and write files directly on your disk. No copy-paste, no screenshots, no describing content by hand.
 
-The key point: it is not full access to your disk. The server receives a list of allowed directories and everything else is out of reach.
+But it's not full access. You declare a list of allowed folders (an "allow-list") and anything outside that list is invisible to the agent. If you allow `~/Documents/projects`, it can't look at `~/Desktop`, `/etc`, or your photos. Sandboxed by design.
 
-**Before using:** this connector needs to know which folders your AI can access. After installing, open `~/.claude.json`, find the `filesystem` block, and append the allowed paths to its `args` array. Example:
+### What you can ask
+
+- *"Read every `.md` in my notes folder and tell me which ones are travel notes vs meeting notes."*
+- *"In `~/Documents/projects/client-X`, create a `proposal-may/` folder with a `README.md` explaining the structure."*
+- *"Search my notes for where I mentioned 'pricing' last week and pull the context."*
+
+### What you need to configure
+
+Unlike the rest, this connector **doesn't ask for a token**, but it does ask that you pick **which folders it can access**. Without that, the server starts but has nothing to look at.
+
+After installing, open `~/.claude.json`, find the `filesystem` block, and append each allowed folder to the end of the `args` array. Typical example:
 
 ```json
 "filesystem": {
   "type": "stdio",
   "command": "npx",
-  "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/your-name/Desktop", "/Users/your-name/Documents"]
+  "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/your-name/Desktop", "/Users/your-name/Documents/projects"]
 }
 ```
 
-Without paths, the connector starts but can't read or write anything.
+You can add as many as you want. Think of it this way: each path you add is one more key on the agent's keyring. Start small (one specific projects folder) and grow it as you find you need to.
 
 --- dev ---
 
-`@modelcontextprotocol/server-filesystem` runs through `npx` and requires at least one allow-listed path as a positional argument. It exposes tools to read, write, edit, list, create directories, move files and search inside the allowed paths. No secrets required.
+`@modelcontextprotocol/server-filesystem` runs through `npx` and requires at least one allow-listed path as a positional argument. Exposed tools: `read_file`, `write_file`, `edit_file`, `create_directory`, `list_directory`, `move_file`, `search_files`. Operations on paths outside the allow-list return `permission denied` — no silent escapes.
 
-The catalog manifest ships without paths by default — the Lab doesn't inject the session workspace into MCP args yet. The user must edit `~/.claude.json` post-install. Known debt: once the Lab gains an `installPath` field analogous to `installEnv`, the `InstallModal` will prompt for it interactively.
+The catalog manifest currently ships without paths by default. The Lab doesn't inject the session workspace into MCP args at runtime yet; known debt that closes when the `InstallModal` gains an `installPath` field analogous to `installEnv`.
 
 License: MIT. Source: github.com/modelcontextprotocol/servers/tree/main/src/filesystem.
