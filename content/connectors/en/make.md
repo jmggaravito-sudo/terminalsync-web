@@ -7,8 +7,8 @@ simpleTitle: "Let your AI fire automations for you"
 simpleSubtitle: "Tell Claude what you need and it builds the Make workflow without you touching a thing."
 devTitle: "Make Automation Hub MCP"
 devSubtitle: "Trigger Make scenarios + build new ones from natural language."
-ctaUrl: "https://www.make.com/en/register?pc=REPLACE_WITH_JUANS_MAKE_AFFILIATE"
-affiliate: true
+ctaUrl: "https://www.make.com"
+affiliate: false
 tagline: "Automate by talking, not clicking"
 originalAuthor: "Make.com"
 originalAuthorUrl: "https://make.com"
