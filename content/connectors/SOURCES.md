@@ -68,7 +68,8 @@ Cerrar con licencia + fuente.
 4. **URLs de tokenHelpUrl** se verifican navegando hasta el form de creación del token. NO inventar paths.
 5. **Sin afiliados.** `affiliate: false` siempre; `ctaUrl` al sitio oficial real, sin query params de tracking ni placeholders de ejemplo.
 6. **Paridad es+en estricta.** Mismo número de ejemplos, mismas secciones, misma estructura.
-7. **Cuando la fuente oficial está en inglés**, los ejemplos canónicos van en inglés en es+en (verbatim), no traducidos.
+7. **Ejemplos de "Qué le podés pedir / What you can ask"** van en el **idioma del archivo** (español en `/es/`, inglés en `/en/`). Cuando la fuente oficial trae ejemplos en inglés, se usan como inspiración pero se **traducen y se adaptan a lenguaje natural para no-técnicos** — sin jerga SQL/CLI/API si la primera mitad del documento es para audiencia general. Lo que sí se cita **verbatim en su idioma original** son **frases técnicas cortas** del README/docs oficiales que aportan precisión, integradas en una oración en el idioma del archivo. Ejemplo aceptable en un `/es/`: *"El server lo garantiza por diseño: en sus palabras, 'All queries are executed within a READ ONLY transaction'."*
+8. **Tono por sección.** La parte simple (qué es / qué hace / ejemplos / qué token o configurar) tiene que entenderla **alguien sin background técnico**. Sustituí jerga: *introspección de schema* → "ver cómo está armada la base"; *read-only transaction* → "modo solo-lectura"; *defensa en profundidad* → "cerrar dos puertas en vez de una"; *fine-grained PAT* → "token con permisos exactos por repo"; *RLS-scoped* → "limitado por permisos del rol". La sección `--- dev ---` puede usar todo el vocabulario técnico que haga falta — esa parte sí es para devs.
 
 ## Dónde está cada cosa en este repo
 

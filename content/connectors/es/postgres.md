@@ -3,8 +3,8 @@ name: PostgreSQL
 logo: /connectors/postgres.svg
 category: database
 status: available
-simpleTitle: "Que tu IA consulte Postgres en modo seguro"
-simpleSubtitle: "Introspección de schema y queries read-only para análisis sin escribir SQL a mano."
+simpleTitle: "Que tu IA consulte tu base Postgres en modo seguro"
+simpleSubtitle: "Mirá cómo está armada la base y hacé preguntas — sin tocar nada, sin escribir SQL."
 devTitle: "Postgres MCP Connector"
 devSubtitle: "Servidor oficial @modelcontextprotocol: schema resources + tool query en transacción READ ONLY."
 ctaUrl: "https://www.postgresql.org"
@@ -14,7 +14,7 @@ manifest:
       command: npx
       args: ["-y", "@modelcontextprotocol/server-postgres", "${SECRET:POSTGRES_URL}"]
 affiliate: false
-tagline: "Consultas Postgres read-only desde tu IA"
+tagline: "Consultas Postgres en modo solo-lectura"
 originalAuthor: "Anthropic, PBC"
 originalAuthorUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-postgres"
 license: "MIT"
@@ -22,25 +22,25 @@ licenseUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-postgres
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
 ---
-**PostgreSQL** es la base de datos relacional open-source que usan miles de productos para datos críticos. El server MCP oficial provee *"read-only access to PostgreSQL databases"* para que Claude inspeccione schemas y ejecute consultas de lectura sin abrir una herramienta SQL aparte.
+**PostgreSQL** es una de las bases de datos más usadas del mundo: muchas apps guardan ahí sus datos importantes (usuarios, pedidos, facturación). Tradicionalmente, para hacerle una pregunta a esa base hace falta saber SQL y una herramienta tipo TablePlus o pgAdmin.
 
-Qué hace: expone una tool `query` para ejecutar SQL read-only contra la base conectada y recursos de schema por tabla. El README oficial aclara que *"All queries are executed within a READ ONLY transaction"*, por eso es ideal para análisis, soporte, debugging y exploración de datos.
+Este conector deja que tu IA mire tus tablas y conteste preguntas sobre los datos — **pero solo leer, nunca modificar**. El server oficial de Anthropic lo garantiza por diseño: en sus palabras, *"All queries are executed within a READ ONLY transaction"*. Si la IA intenta cambiar algo, Postgres lo rechaza.
 
 ### Qué le podés pedir
 
-- *"List the tables available in this database and explain the likely relationships."*
-- *"Run a SELECT that counts active customers by plan for the last 30 days."*
-- *"Inspect the schema for the `orders` table and suggest the safest query for revenue by month."*
+- *"Mostrame qué tablas tiene esta base y cómo creés que están conectadas entre sí."*
+- *"Contame cuántos clientes activos hay en cada plan en los últimos 30 días."*
+- *"Mirá la tabla de pedidos y proponeme la forma más segura de sacar la facturación mes a mes."*
 
 ### Qué conexión necesitás
 
-Necesitás una **Postgres connection URL** para una base concreta, por ejemplo `postgresql://user:password@host:5432/db`. El README oficial muestra el argumento de conexión en `args` y dice: *"Replace `/mydb` with your database name."*
+Necesitás una **URL de conexión a Postgres**, con este formato: `postgresql://usuario:password@host:5432/nombre-de-base`. La hace el equipo técnico que mantiene la base (o tu proveedor de hosting, si usás Supabase, Neon o Render).
 
-1. Creá un usuario Postgres dedicado para Terminal Sync.
-2. Dale permisos mínimos de lectura sobre las tablas necesarias.
-3. Pegá la connection URL cuando el Lab pida `POSTGRES_URL`. Terminal Sync la guarda cifrada en tu Keychain.
+1. **Pedile a quien administra la base que cree un usuario nuevo solo para Terminal Sync** — separado de los usuarios reales o de tu app.
+2. **Dale a ese usuario permisos solo de lectura** sobre las tablas que querés que la IA vea.
+3. Pegá la URL completa cuando el Lab te pida `POSTGRES_URL`. Terminal Sync la guarda cifrada en tu Keychain — nunca queda en texto plano.
 
-Aunque el server ejecuta queries en transacción READ ONLY, recomendamos usar además un rol de base de datos read-only para defensa en profundidad.
+El conector ya garantiza por su lado que solo lee. Crear además un usuario de Postgres con permisos solo de lectura es **cerrar dos puertas en vez de una** — recomendado para cualquier base con datos sensibles.
 
 --- dev ---
 

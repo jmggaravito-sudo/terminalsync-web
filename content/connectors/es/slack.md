@@ -4,7 +4,7 @@ logo: /connectors/slack.svg
 category: messaging
 status: available
 simpleTitle: "Que tu IA lea y escriba en Slack"
-simpleSubtitle: "Canales, threads, usuarios, perfiles, mensajes y reacciones — con scopes explícitos."
+simpleSubtitle: "Resúmenes de canales, respuestas en threads, mensajes nuevos — con permisos explícitos que vos elegís."
 devTitle: "Slack MCP Connector"
 devSubtitle: "Servidor oficial @modelcontextprotocol para Slack Web API: channel history, post, replies, users."
 ctaUrl: "https://slack.com"
@@ -26,28 +26,35 @@ licenseUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-slack"
 marketplaceSource: "anthropic"
 marketplaceCategory: "web"
 ---
-**Slack** es el lugar donde quedan decisiones, status, incidentes, threads y conversaciones del equipo. El server MCP oficial conecta Claude con la Slack Web API para *"interact with Slack workspaces"*: leer canales, recuperar threads, listar usuarios, consultar perfiles, publicar mensajes y agregar reacciones.
+**Slack** es donde el equipo conversa: canales por tema, threads en los mensajes importantes, decisiones que quedan ahí escritas, incidentes que se gestionan en vivo. Con el tiempo se acumula mucha información valiosa — y mucho ruido también.
 
-Qué hace: lista canales públicos o predefinidos, lee historial reciente de un canal, trae replies de un thread, postea mensajes, responde en threads, agrega emoji reactions y consulta usuarios/perfiles. Si definís `SLACK_CHANNEL_IDS`, limitás el alcance a canales concretos.
+Este conector deja que tu IA entre a Slack para leer y escribir, igual que un compañero de equipo más. Puede resumir lo que pasó en un canal, contestar threads, postear mensajes nuevos o reaccionar con emojis. Importante: **solo puede hacer lo que vos le permitiste explícitamente** al instalar la Slack App — cada permiso (leer canales, escribir, ver usuarios) se activa por separado.
 
 ### Qué le podés pedir
 
-- *"Summarize the last 50 messages in the incident channel and extract action items."*
-- *"Post this deploy status in `#engineering` and reply in the release thread."*
-- *"Find the profile for this user ID and tell me their timezone before I ping them."*
+- *"Resumime los últimos 50 mensajes del canal de incidentes y sacame una lista de pendientes."*
+- *"Posteá este estado del deploy en `#engineering` y respondé también en el thread del release."*
+- *"Buscá el perfil de este usuario y decime en qué zona horaria está antes de que le escriba."*
 
 ### Qué token necesitás
 
-Necesitás una **Slack App** instalada en tu workspace y su **Bot User OAuth Token** (`xoxb-...`). El README oficial pide crear la app desde [api.slack.com/apps](https://api.slack.com/apps), ir a OAuth & Permissions y agregar estos scopes:
+Necesitás dos cosas: instalar una **Slack App** en tu workspace y conseguir su **Bot User OAuth Token** (empieza con `xoxb-`). La app es la que va a hablar con Slack en nombre del agente.
 
-- `channels:history` — View messages and other content in public channels
-- `channels:read` — View basic channel information
-- `chat:write` — Send messages as the app
-- `reactions:write` — Add emoji reactions to messages
-- `users:read` — View users and their basic information
-- `users.profile:read` — View detailed profiles about users
+1. Andá a [api.slack.com/apps](https://api.slack.com/apps) y creá una app nueva.
+2. En **OAuth & Permissions**, agregá estos permisos (cada uno habilita una capacidad concreta):
 
-Después instalá la app en el workspace, copiá el Bot User OAuth Token y buscá el Team ID (empieza con `T`). Pegalos cuando el Lab pida `SLACK_BOT_TOKEN` y `SLACK_TEAM_ID`. Terminal Sync los guarda cifrados en tu Keychain.
+   - `channels:history` — leer mensajes de canales públicos
+   - `channels:read` — ver información básica de canales
+   - `chat:write` — postear mensajes como la app
+   - `reactions:write` — agregar reacciones con emojis
+   - `users:read` — ver usuarios y su info básica
+   - `users.profile:read` — ver perfiles detallados de usuarios
+
+3. **Instalá la app en tu workspace** desde esa misma página. Slack te va a pedir confirmación de los permisos.
+4. Copiá el Bot User OAuth Token y también el **Team ID** (el ID de tu workspace, empieza con `T` — lo ves en la URL cuando estás en `app.slack.com/...`).
+5. Pegá ambos cuando el Lab te pida `SLACK_BOT_TOKEN` y `SLACK_TEAM_ID`. Terminal Sync los guarda cifrados en tu Keychain.
+
+Buena práctica: agregá el bot solo a los canales donde realmente lo querés. Aunque el token tenga permiso de leer canales públicos, si el bot no está invitado a un canal privado, no lo ve.
 
 --- dev ---
 
