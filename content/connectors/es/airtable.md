@@ -8,7 +8,7 @@ simpleSubtitle: "Airtable guarda tus CRMs, inventarios y trackers — ahora Clau
 devTitle: "Airtable MCP Connector"
 devSubtitle: "Base + table introspection with read/write to Claude Code."
 ctaUrl: "https://www.airtable.com"
-tokenHelpUrl: "https://airtable.com/create/tokens"
+tokenHelpUrl: "https://airtable.com/create/tokens/new"
 manifest:
   mcpServers:
     airtable:
@@ -23,9 +23,9 @@ originalAuthorUrl: "https://github.com/domdomegg"
 license: "MIT"
 licenseUrl: "https://github.com/domdomegg/airtable-mcp-server/blob/master/LICENSE"
 ---
-**Airtable** es una de las herramientas de base de datos no-código más usadas del mundo: pinta como una hoja de cálculo, funciona como una base relacional. Empresas la usan como CRM, inventario, tracker de pedidos, calendario editorial, pipeline de contenidos — todo sin programar.
+**Airtable** es una de las herramientas de base de datos no-código más usadas del mundo: pinta como una hoja de cálculo, funciona como una base relacional. Empresas la usan como CRM, inventario, tracker de pedidos, calendario editorial, pipeline de contenidos — todo sin programar. La descripción oficial del conector en el directorio de Anthropic lo resume así: *"Bring your structured data to Claude"*.
 
-Con este conector, tu IA puede leer y escribir en cualquier base de Airtable a la que le des acceso. Le preguntás *"¿qué clientes no han comprado en 60 días?"* y arma la query de filterByFormula, la corre contra Airtable y te entrega el listado. Le pedís *"marcá el pedido 487 como enviado"* y actualiza el record sin que abras la app.
+Con este conector, tu IA puede leer y escribir en cualquier base de Airtable a la que le des acceso. Le preguntás *"¿qué clientes no han comprado en 60 días?"* y arma la query de filterByFormula, la corre y te entrega el listado. Le pedís *"marcá el pedido 487 como enviado"* y actualiza el record sin que abras la app.
 
 ### Qué le podés pedir
 
@@ -35,20 +35,23 @@ Con este conector, tu IA puede leer y escribir en cualquier base de Airtable a l
 
 ### Qué token necesitás
 
-Necesitás un **Personal Access Token (PAT)** de Airtable — reemplaza a las viejas API keys, da control fino sobre qué bases ve el agente.
+Necesitás un **Personal Access Token (PAT)** de Airtable, formato `pat123.abc123`. Reemplaza a las viejas API keys.
 
-1. Andá a [airtable.com/create/tokens](https://airtable.com/create/tokens).
-2. Click en "Create new token". Ponele un nombre tipo "Terminal Sync — Claude".
-3. **Scopes**: marcá `data.records:read` y `data.records:write` (también `schema.bases:read` si querés que el agente entienda la estructura de la base sin que le expliques).
-4. **Access**: elegí qué bases puede ver — podés ser quirúrgico y darle solo "CRM Clientes" sin tocar el resto.
-5. Copiá el token (sólo lo ves una vez) y pegalo cuando el Lab te pida `AIRTABLE_API_KEY`. Viaja cifrado en tu Keychain.
+1. Andá a [airtable.com/create/tokens/new](https://airtable.com/create/tokens/new).
+2. Ponele un nombre tipo "Terminal Sync — Claude".
+3. **Scopes requeridos** (según el README oficial): `schema.bases:read` y `data.records:read`.
+4. **Scopes opcionales**: `schema.bases:write`, `data.records:write`, `data.recordComments:read`, `data.recordComments:write`. Sumalos solo si querés que el agente edite o trabaje con comentarios.
+5. **Access**: elegí qué bases puede ver — podés ser quirúrgico y darle solo "CRM Clientes" sin tocar el resto.
+6. Copiá el token (solo lo ves una vez) y pegalo cuando el Lab te pida `AIRTABLE_API_KEY`. Cifrado en tu Keychain.
 
 Si trabajás con varios clientes o proyectos, conviene un PAT por contexto en vez de uno omnipotente.
 
 --- dev ---
 
-`airtable-mcp-server` (Adam Jones / @domdomegg) expone bases, tables, fields y records sobre la Airtable REST API. Soporta `filterByFormula` para queries server-side, batch upserts y attachments. El PAT define el alcance: bases específicas + scopes granulares (`data.records:read/write`, `schema.bases:read`, `webhook:manage`).
+`airtable-mcp-server` (Adam Jones / @domdomegg) expone tools verificadas contra el README oficial. Records: `list_records`, `search_records`, `get_record`, `create_record`, `update_records`, `delete_records`. Schema: `list_bases`, `list_tables`, `describe_table`, `create_table`, `update_table`, `create_field`, `update_field`. Collaboration: `create_comment`, `list_comments`.
 
-Terminal Sync mantiene el token + base IDs en tu Keychain, sincronizados cifrados entre máquinas con AES-256-GCM. La sub-cuenta del bot ve solo lo que el PAT autoriza.
+Auth via `AIRTABLE_API_KEY` env. Required scopes: `schema.bases:read` + `data.records:read`. Writes son scopes opcionales separados. El PAT define también qué bases ve el server.
+
+Terminal Sync mantiene el token + base IDs en tu Keychain, sincronizados cifrados entre máquinas con AES-256-GCM.
 
 Licencia: MIT. Fuente: github.com/domdomegg/airtable-mcp-server.

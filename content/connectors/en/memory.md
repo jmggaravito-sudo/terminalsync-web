@@ -22,9 +22,9 @@ licenseUrl: "https://github.com/modelcontextprotocol/servers/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
 ---
-**Memory** solves one of the oldest pains of working with AI: every new conversation starts from scratch. You explain your business again, your stack, your preferences, which client is which. Human memory pouring into an amnesiac agent.
+**Memory** is, in the official README's words, *"a basic implementation of persistent memory using a local knowledge graph. This lets Claude remember information about the user across chats."* It solves one of the oldest pains of working with AI: every new conversation starting from scratch.
 
-This connector gives your agent its own notebook where it can write down important facts ("Juan prefers Tailwind over styled-components", "client X bills in USD", "grandma's chocolate cake recipe uses 3 eggs"). Every new conversation starts with that notebook available, so context accumulates instead of evaporating.
+The official model has three pieces: **entities** (graph nodes with a name, a type, and observations — e.g. *"Juan_Garavito"* of type *"person"* with observation *"prefers Tailwind"*); **relations** (directed connections between entities — e.g. *Juan_Garavito → works_at → NexFlowAI*); and **observations** (atomic facts as strings, one per data point).
 
 ### What you can ask
 
@@ -32,16 +32,18 @@ This connector gives your agent its own notebook where it can write down importa
 - *"What did we decide last time we discussed the checkout redesign?"*
 - *"Note that the 'La Mariposa' restaurant has issues with the vegan menu — keep it in mind next time we write to them."*
 
+For the agent to get the most out of this, the official README recommends a short system prompt instructing it to *"identify the user and retrieve memory at the start of the conversation; record new facts at the end."* That way the notebook accumulates without you asking every time.
+
 ### What you need to configure
 
-**Nothing.** It doesn't ask for a token, doesn't ask for an external account, doesn't ask you to configure folders. The memory lives on your own computer (a small JSON file on disk) and the agent reads/writes it automatically when it needs to.
+**Nothing.** No token, no external account, no folders. Memory lives on your own computer as a JSON file and the agent reads/writes it via the MCP tools.
 
-If you want to clear everything or export what it remembered, the file is in `~/.local/share/mcp-memory/` (or equivalent path depending on your system). It's yours.
+The file path is configurable via the `MEMORY_FILE_PATH` env. If you don't set it, the file is born in the process cwd — better to pin it to an absolute path so it persists across sessions.
 
 --- dev ---
 
-`@modelcontextprotocol/server-memory` implements a local knowledge graph with entities, relations and observations. Exposes tools like `create_entities`, `create_relations`, `add_observations`, `read_graph`, `search_nodes` and `open_nodes`. No secrets required.
+`@modelcontextprotocol/server-memory` (official) exposes 9 tools verified against the README: `create_entities`, `create_relations`, `add_observations`, `delete_entities`, `delete_observations`, `delete_relations`, `read_graph`, `search_nodes`, `open_nodes`. No secrets required.
 
-The backing store is a JSON file (path configurable via env `MEMORY_FILE_PATH`); by default it lives in the process cwd, which you'll want to pin to an absolute path if you want it to persist across invocations from different sessions.
+The backing store is a JSON file (path via `MEMORY_FILE_PATH` env); by default it lives in the process cwd. The README includes a reference "chat personalization" system prompt that's worth copying verbatim to the client so the agent uses the graph consistently.
 
 License: MIT. Source: github.com/modelcontextprotocol/servers/tree/main/src/memory.

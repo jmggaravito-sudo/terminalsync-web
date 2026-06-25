@@ -4,9 +4,9 @@ logo: /connectors/supabase.svg
 category: database
 status: available
 simpleTitle: "Que tu IA lea y escriba en tu base de datos"
-simpleSubtitle: "Sin darle acceso total — solo las tablas que elegís, con las llaves guardadas seguras."
+simpleSubtitle: "Postgres administrado de Supabase — con modo read-only para producción crítica."
 devTitle: "Supabase MCP Connector"
-devSubtitle: "Expose Postgres schemas + RLS-scoped queries to Claude Code."
+devSubtitle: "Official supabase-community server: SQL, migrations, edge functions, storage."
 ctaUrl: "https://supabase.com"
 tokenHelpUrl: "https://supabase.com/dashboard/account/tokens"
 manifest:
@@ -23,9 +23,9 @@ originalAuthorUrl: "https://github.com/supabase-community"
 license: "Apache-2.0"
 licenseUrl: "https://github.com/supabase-community/supabase-mcp/blob/main/LICENSE"
 ---
-**Supabase** es la alternativa open-source más popular a Firebase: Postgres administrado, auth, storage, realtime, edge functions — todo bajo un solo panel. Si tu app guarda datos ahí, este conector le da a tu IA acceso seguro y acotado a ese Postgres, sin que vos toques el dashboard.
+**Supabase** es la alternativa open-source más popular a Firebase: Postgres administrado, auth, storage, realtime, edge functions — todo bajo un solo panel. El conector oficial expone tools en 8 categorías (Account, Database, Knowledge Base, Development, Edge Functions, Debugging, Branching, Storage), permitiendo al agente leer schemas, ejecutar SQL, aplicar migrations, generar tipos TypeScript y desplegar edge functions.
 
-Le preguntás *"¿cuántos usuarios se registraron la semana pasada?"* y genera la query SQL, la corre y te entrega el número. Le pedís *"exportame los pedidos de marzo a CSV"* y arma el dump. Le pedís *"creame una tabla nueva para tracking de invitaciones"* y prepara el migration SQL para que vos lo apliques.
+Le preguntás *"¿cuántos usuarios se registraron la semana pasada?"* y genera la query SQL, la corre y te entrega el número. Le pedís *"creame una tabla nueva para tracking de invitaciones"* y prepara el migration SQL — *"SQL passed to this tool will be tracked within the database, so LLMs should use this for DDL operations"*, según el README oficial.
 
 ### Qué le podés pedir
 
@@ -33,24 +33,28 @@ Le preguntás *"¿cuántos usuarios se registraron la semana pasada?"* y genera 
 - *"Cuántos usuarios activos tuvimos en los últimos 30 días, agrupados por país."*
 - *"Generá la migration para agregar una columna `subscription_tier` a la tabla `users` con default 'free'."*
 
+### Modo read-only (recomendado para producción)
+
+El server soporta un **read-only mode** documentado oficialmente: *"all queries execute as a read-only Postgres user, disabling mutating tools entirely."* Es la forma segura de dejar al agente analizar producción sin riesgo de UPDATEs/DROPs accidentales.
+
+Para activarlo, pasale el flag `--read-only` al server o usá un Postgres role read-only en tu proyecto. Ideal para dashboards, análisis y debugging; activá el modo write solo en proyectos de desarrollo.
+
 ### Qué token necesitás
 
-Necesitás un **Personal Access Token (PAT)** de Supabase — distinto al `service_role` o `anon` key de tu proyecto. El PAT te identifica como dueño/colaborador y permite que el agente liste proyectos, lea schemas, ejecute queries.
+Necesitás un **Personal Access Token (PAT)** de Supabase — el server opera *"under the context of your developer permissions"* via este PAT. Distinto al `service_role` o `anon` key de tu proyecto.
 
 1. Andá a [supabase.com/dashboard/account/tokens](https://supabase.com/dashboard/account/tokens).
 2. Click "Generate new token". Ponele un nombre tipo "Terminal Sync — Claude".
-3. Copialo (solo lo ves una vez) y pegalo cuando el Lab te pida `SUPABASE_ACCESS_TOKEN`. Cifrado en tu Keychain, nunca plaintext en disco.
+3. Copialo (solo lo ves una vez) y pegalo cuando el Lab te pida `SUPABASE_ACCESS_TOKEN`. Cifrado en tu Keychain.
 
-El alcance del PAT es a nivel de **tu cuenta de Supabase**: el agente puede ver todos los proyectos donde sos owner/member. Si querés alcance más fino (solo un proyecto, solo lectura), pasale al agente instrucciones explícitas — no hay scope granular en el PAT mismo todavía.
-
-Para producción crítica, recomendamos crear un proyecto Supabase aparte como "sandbox del agente", o usar una cuenta dedicada.
+El alcance del PAT es a nivel de **tu cuenta de Supabase**: el agente puede ver todos los proyectos donde sos owner/member. Para producción crítica, recomendamos crear un proyecto Supabase aparte como "sandbox del agente" o usar una cuenta dedicada.
 
 --- dev ---
 
-`@supabase/mcp-server-supabase` envuelve la Management API + SQL execution. Tools clave: `list_projects`, `list_tables`, `execute_sql`, `apply_migration`, `get_logs`. El PAT es scope cuenta — no es service_role.
+`@supabase/mcp-server-supabase` (supabase-community, oficial) expone tools en 8 grupos verificados contra el README: Account (`list_projects`, `create_project`, etc.), Database (`list_tables`, `execute_sql`, `apply_migration`), Knowledge Base (docs search), Development (TS type generation, API key retrieval), Edge Functions (deploy/manage), Debugging (logs, advisory notices), Branching (paid plans), Storage (buckets).
 
-Para queries con RLS, el server ejecuta como `postgres` rol (bypass RLS por default). Si necesitás simular un user específico, hay que usar `set role` dentro del SQL o configurar un PAT más restringido cuando Supabase lo soporte.
+Auth: PAT vía `SUPABASE_ACCESS_TOKEN`, account-scoped. `apply_migration` tracker en la DB para que el LLM lo use en DDL. Flag `--read-only` ejecuta todas las queries como rol Postgres read-only y deshabilita las tools mutantes — usar siempre en prod.
 
-Terminal Sync mantiene el PAT en el Keychain via `apiKeyHelper`, sincronizado cifrado con AES-256-GCM entre máquinas. El project URL y anon key (si los necesitás aparte) viven en `~/.claude/claude_desktop_config.json`, también cifrado en transit.
+Terminal Sync mantiene el PAT en el Keychain via `apiKeyHelper`, sincronizado cifrado con AES-256-GCM entre máquinas.
 
 Licencia: Apache-2.0. Fuente: github.com/supabase-community/supabase-mcp.

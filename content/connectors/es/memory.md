@@ -22,9 +22,9 @@ licenseUrl: "https://github.com/modelcontextprotocol/servers/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
 ---
-**Memory** resuelve uno de los dolores más viejos de trabajar con IA: cada conversación nueva arranca de cero. Le contás otra vez tu negocio, tu stack, tus preferencias, qué cliente es cuál. Memoria humana hacia un agente sin memoria.
+**Memory** es, en palabras del README oficial, *"a basic implementation of persistent memory using a local knowledge graph. This lets Claude remember information about the user across chats."* Resuelve uno de los dolores más viejos de trabajar con IA: que cada conversación arranque de cero.
 
-Este conector le da a tu agente un cuaderno propio donde puede ir anotando hechos importantes ("Juan prefiere Tailwind sobre styled-components", "el cliente X factura en USD", "la receta de la torta de chocolate de la abuela usa 3 huevos"). Cada conversación nueva empieza con ese cuaderno disponible, así que el contexto se acumula en vez de evaporarse.
+El modelo del oficial tiene tres piezas: **entidades** (nodos del grafo con un nombre, un tipo, y observaciones — por ejemplo *"Juan_Garavito"* tipo *"persona"* con observación *"prefiere Tailwind"*); **relaciones** (conexiones direccionales entre entidades — por ejemplo *Juan_Garavito → works_at → NexFlowAI*); y **observaciones** (hechos atómicos como strings, uno por dato).
 
 ### Qué le podés pedir
 
@@ -32,16 +32,18 @@ Este conector le da a tu agente un cuaderno propio donde puede ir anotando hecho
 - *"¿Qué decidimos la última vez que hablamos del rediseño del checkout?"*
 - *"Anotá que el restaurante 'La Mariposa' tiene problemas con el menú vegano — para tenerlo en cuenta la próxima vez que les escribamos."*
 
+Para que el agente lo aproveche al máximo, el README oficial recomienda un system prompt corto que le diga: *"al inicio de la conversación, identificá al usuario y consultá la memoria; al final, anotá hechos nuevos."* Así el cuaderno se acumula sin que vos tengas que pedirlo cada vez.
+
 ### Qué necesitás configurar
 
-**Nada.** No pide token, no pide cuenta externa, no pide configurar carpetas. La memoria vive en tu propia computadora (un archivito JSON en disco) y el agente la lee/escribe automáticamente cuando lo necesita.
+**Nada.** No pide token, no pide cuenta externa, no pide carpetas. La memoria vive en tu propia computadora como un archivo JSON y el agente la lee/escribe vía las tools del MCP.
 
-Si querés borrar todo o exportar lo que recordó, el archivo está en `~/.local/share/mcp-memory/` (o ruta equivalente según tu sistema). Es tuyo.
+El path del archivo es configurable vía la env `MEMORY_FILE_PATH`. Si no la setteás, el archivo nace en el cwd del proceso — conviene fijarlo a una ruta absoluta para que persista entre sesiones.
 
 --- dev ---
 
-`@modelcontextprotocol/server-memory` implementa un knowledge graph local con entidades, relaciones y observaciones. Expone herramientas como `create_entities`, `create_relations`, `add_observations`, `read_graph`, `search_nodes` y `open_nodes`. No requiere secrets.
+`@modelcontextprotocol/server-memory` (oficial) expone 9 tools verificadas contra el README: `create_entities`, `create_relations`, `add_observations`, `delete_entities`, `delete_observations`, `delete_relations`, `read_graph`, `search_nodes`, `open_nodes`. No requiere secrets.
 
-El backing store es un JSON file (path configurable via env `MEMORY_FILE_PATH`); por default vive en el cwd del proceso, lo cual conviene fijar a una ruta absoluta si querés que persista entre invocaciones de distintas sesiones.
+El backing store es un JSON file (path vía env `MEMORY_FILE_PATH`); por default vive en el cwd del proceso. El README incluye un system prompt de referencia para "chat personalization" que vale la pena copiar tal cual al cliente para que el agente use el grafo de forma consistente.
 
 Licencia: MIT. Fuente: github.com/modelcontextprotocol/servers/tree/main/src/memory.

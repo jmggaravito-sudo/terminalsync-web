@@ -22,26 +22,28 @@ licenseUrl: "https://github.com/modelcontextprotocol/servers/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
 ---
-**Sequential Thinking** is a tool for tasks where the AI tends to jump to the answer before thinking it through. It gives structure to break the problem apart, write hypotheses, revise steps and correct course if it gets it wrong, instead of dropping the first idea that pops up.
+**Sequential Thinking** enables, in the official README's words, *"a detailed, step-by-step thinking process for problem-solving and analysis"*. It's built for tasks *"where the full scope might not be clear initially"* and where you need *"course correction"* — scenarios where the AI tends to jump to the conclusion before looking properly.
 
-It doesn't add new capabilities — it adds discipline. It's the difference between "let me answer right away" and "let me answer after looking at it from 3 angles." Especially useful when there's uncertainty, several variables in play, or when an early mistake would drag the whole result down.
+It gives structure to reasoning: each thought is numbered, you can revise a previous one (`isRevision`/`revisesThought`), or open a parallel branch with an alternative hypothesis (`branchFromThought`/`branchId`). It also lets you *"adjust the total number of thoughts dynamically"* and *"generate and verify solution hypotheses"*. It doesn't add new capabilities — it adds discipline.
 
 ### What you can ask
 
-- *"I'm deciding between 3 corporate structures for my new company — think it through step by step, considering taxes, complexity, and my personal situation."*
-- *"I have a strange bug: the app freezes only on Tuesdays at 3pm. Reason through possible causes before proposing a fix."*
-- *"Plan the migration of my database to Postgres, considering I have 200 GB of data in production and can't have downtime."*
+The three examples from the official README show what it's for:
+
+- *"Plan a database migration from PostgreSQL 14 to 16, list risks, and revise the plan if downtime exceeds 5 minutes."*
+- *"Debug why this deployment only fails in production and show your reasoning step by step."*
+- *"Compare three architecture options for a file sync engine and branch if one assumption turns out to be wrong."*
 
 ### What you need to configure
 
-**Nothing.** No token, no account, no access to files or services required. It's a pure reasoning tool that lives inside the agent — install it and it's available.
+**Nothing.** No token, no account, no access to files or services. It's a pure reasoning tool that lives inside the agent — install it and it's available.
 
-Think of it as giving the agent a mental scratchpad where it can think out loud before speaking. Especially useful combined with other connectors: when the agent has to decide what to query in Sentry, which files to read from Filesystem, what query to run against Supabase, this connector helps it plan that sequence.
+Think of it as giving the agent a mental scratchpad to think out loud before speaking. Especially useful combined with other connectors: when the agent has to decide what to query in Sentry, which files to read from Filesystem, what query to run against Supabase, this connector helps it plan that sequence.
 
 --- dev ---
 
-`@modelcontextprotocol/server-sequential-thinking` exposes the `sequentialthinking` tool. Each step has `thought`, `thoughtNumber`, `totalThoughts`, `nextThoughtNeeded`. Supports revision (`isRevision`, `revisesThought`) and branching (`branchFromThought`, `branchId`). The server persists nothing — all state lives in the turn's tool call chain.
+`@modelcontextprotocol/server-sequential-thinking` (official) exposes the `sequentialthinking` tool. Each step has `thought`, `thoughtNumber`, `totalThoughts`, `nextThoughtNeeded`. Supports revision (`isRevision`, `revisesThought`) and branching (`branchFromThought`, `branchId`). `totalThoughts` adjusts dynamically.
 
-No secrets or configuration required. Good complement for multi-step tasks where the agent combines multiple MCPs.
+The server persists nothing — all state lives in the turn's tool call chain. No secrets or configuration required.
 
 License: MIT. Source: github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking.
