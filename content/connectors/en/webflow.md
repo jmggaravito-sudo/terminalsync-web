@@ -4,9 +4,9 @@ logo: /connectors/webflow.svg
 category: productivity
 status: available
 simpleTitle: "Let your AI work with your Webflow site"
-simpleSubtitle: "Query sites, collections and CMS items using a token stored as a secret."
+simpleSubtitle: "Edit the canvas, manage the CMS, audit SEO — from chat."
 devTitle: "Webflow MCP Server"
-devSubtitle: "Official Webflow MCP server over the Webflow Data API and Designer bridge."
+devSubtitle: "Official Webflow MCP server over the Designer API and Data API."
 ctaUrl: "https://developers.webflow.com/data/v2.0.0/docs/ai-tools"
 tokenHelpUrl: "https://webflow.com/dashboard/account/integrations"
 manifest:
@@ -25,30 +25,40 @@ licenseUrl: "https://unpkg.com/webflow-mcp-server@1.0.0/LICENSE.md"
 marketplaceSource: "official"
 marketplaceCategory: "web"
 ---
-**Webflow** is one of the most widely used visual website builders — hand-designed pages, CMS collections, e-commerce, all managed without code. If your site (or a client's) runs on Webflow, this connector lets your AI read and edit the content directly, without you opening the panel.
+**Webflow** is one of the most widely used visual website builders — hand-designed pages, CMS collections, e-commerce, all managed without code. If your site (or a client's) runs on Webflow, this connector lets your AI work against the site directly, without you opening the panel.
 
-Scope ranges from the simplest — *"update the home page title"* — to juicier things like managing CMS collections (blog posts, realtor properties, products), answering with real-time site data, or auditing SEO across every page at once.
+The official docs split the two APIs the connector exposes:
+
+- **Designer API tools** — real-time canvas work: *"Create and modify elements, styles, and components"*, *"Manage responsive breakpoints and positioning"*, *"variables, classes, and component instances"*.
+- **Data API tools** — content operations: *"Create, read, update, and delete collection items"*, *"Upload, organize, and manage media files"*, *"Access site settings, domains, and configuration"*.
+
+Scope ranges from *"update the home page title"* to juicier things like auditing SEO across every page at once, or building entire design system components.
 
 ### What you can ask
 
-- *"List every blog post published in the last 30 days and tell me which ones are under 500 words."*
-- *"Update the meta description on the pricing page to this text: [...]"*
-- *"Create a new item in the 'Case Studies' collection with this data: title X, client Y, summary Z."*
+The three representative prompts the official documentation suggests:
+
+- *"List all my collections and show me their field structures."*
+- *"Audit my site for broken links, missing alt text, and incomplete meta descriptions."*
+- *"Create a responsive hero section with a headline, description, and CTA button."*
 
 ### What token you need
 
-You need a **Webflow API token** (Site Token or Workspace Token, depending on whether you want scope of a specific site or your entire account).
+The official documentation emphasizes **OAuth** as the recommended method: the agent authenticates against your Webflow account without you copy-pasting API keys.
 
-1. Go to [webflow.com/dashboard/account/integrations](https://webflow.com/dashboard/account/integrations) (or `Workspace Settings → Integrations → API Access` from your site).
-2. Generate a new token — Webflow lets you pick scopes (CMS read, CMS write, Sites read, etc.). To start, give it CMS read + Sites read; add write when you need it.
-3. Copy and paste it when the Lab asks for `WEBFLOW_TOKEN`. The token is never stored as plaintext on disk — it travels encrypted in your Keychain.
+For the local mode with `webflow-mcp-server` (what this connector installs), you use an **API token** generated at [webflow.com/dashboard/account/integrations](https://webflow.com/dashboard/account/integrations):
 
-Important: if you want visual editing with the Designer bridge (editing page elements, not just CMS), Webflow has an extra component documented in their [official AI tools guide](https://developers.webflow.com/data/v2.0.0/docs/ai-tools). This connector covers the standard Data API mode.
+1. Go to the "API Access" / "Integrations" section of your Workspace or account.
+2. Create a new token, choosing between Site Token (scope: one site) or Workspace Token (scope: entire workspace).
+3. Check the scopes you need: `sites:read`, `cms:read`, `cms:write`, `pages:read`, `pages:write`.
+4. Copy the token and paste it when the Lab asks for `WEBFLOW_TOKEN`. Encrypted in your Keychain, never plaintext on disk.
+
+For visual editing with the Designer bridge (not just CMS) follow the [official AI tools guide](https://developers.webflow.com/data/v2.0.0/docs/ai-tools) — it includes installing Webflow's MCP Bridge App.
 
 --- dev ---
 
-`webflow-mcp-server` is the package published by Webflow to run the MCP server locally with `npx`. In local install it uses `WEBFLOW_TOKEN` to authenticate against the Webflow Data API; Webflow's docs also describe a remote OAuth mode via `mcp-remote`.
+`webflow-mcp-server` (official, Webflow) runs via `npx` and authenticates via `WEBFLOW_TOKEN` against the Data API. The official docs split two surfaces: Designer API (canvas) and Data API (CMS + site config); the local server primarily covers the latter.
 
-The token can be a Site Token (scope: a specific site) or a Workspace Token (scope: the entire workspace). Individual scopes — `sites:read`, `cms:read`, `cms:write`, `pages:read`, `pages:write` — are configured when generating it.
+Remote OAuth mode also supported via `mcp-remote`, avoiding per-user token management. Site Token = per-site scope; Workspace Token = workspace-wide scope. Individual scopes are picked at token generation time.
 
-License: MIT. Source: npm `webflow-mcp-server` and Webflow's official AI tools documentation.
+License: MIT. Source: npm `webflow-mcp-server` and `developers.webflow.com/data/v2.0.0/docs/ai-tools`.

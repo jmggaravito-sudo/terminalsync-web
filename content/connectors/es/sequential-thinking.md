@@ -22,15 +22,17 @@ licenseUrl: "https://github.com/modelcontextprotocol/servers/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
 ---
-**Sequential Thinking** es una herramienta para tareas donde la IA tiende a saltar a la respuesta antes de pensar bien. Le da estructura para desarmar el problema, escribir hipótesis, revisar pasos y corregir el rumbo si se equivoca, en vez de tirar la primera idea que se le ocurre.
+**Sequential Thinking** habilita, en palabras del README oficial, *"a detailed, step-by-step thinking process for problem-solving and analysis"*. Está pensado para tareas *"where the full scope might not be clear initially"* y donde necesitás *"course correction"* — escenarios en los que la IA tiende a saltar a la conclusión antes de mirar bien.
 
-No agrega capacidades nuevas, agrega disciplina. Es la diferencia entre "te respondo de una" y "te respondo después de mirarlo desde 3 ángulos". Especialmente útil cuando hay incertidumbre, varias variables en juego, o cuando un error temprano arrastraría todo el resultado.
+Le da estructura al razonamiento: cada pensamiento se numera, se puede revisar uno anterior (`isRevision`/`revisesThought`), o abrir una rama paralela con una hipótesis alternativa (`branchFromThought`/`branchId`). Además permite *"adjust the total number of thoughts dynamically"* y *"generate and verify solution hypotheses"*. No agrega capacidades nuevas — agrega disciplina.
 
 ### Qué le podés pedir
 
-- *"Estoy decidiendo entre 3 estructuras societarias para mi empresa nueva — pensalo paso a paso, considerando impuestos, complejidad y mi situación personal."*
-- *"Tengo un bug raro: la app se cuelga solo los martes a las 3pm. Razoná las causas posibles antes de proponer un fix."*
-- *"Planeá la migración de mi base de datos a Postgres, considerando que tengo 200 GB de datos en producción y no puedo tener downtime."*
+Los tres ejemplos del README oficial muestran bien para qué sirve:
+
+- *"Plan a database migration from PostgreSQL 14 to 16, list risks, and revise the plan if downtime exceeds 5 minutes."*
+- *"Debug why this deployment only fails in production and show your reasoning step by step."*
+- *"Compare three architecture options for a file sync engine and branch if one assumption turns out to be wrong."*
 
 ### Qué necesitás configurar
 
@@ -40,8 +42,8 @@ Pensalo como darle al agente una hoja en blanco mental donde puede pensar fuerte
 
 --- dev ---
 
-`@modelcontextprotocol/server-sequential-thinking` expone la herramienta `sequentialthinking`. Cada step tiene `thought`, `thoughtNumber`, `totalThoughts`, `nextThoughtNeeded`. Soporta revisión (`isRevision`, `revisesThought`) y branching (`branchFromThought`, `branchId`). El server no persiste nada — todo el state vive en la cadena de tool calls del turno.
+`@modelcontextprotocol/server-sequential-thinking` (oficial) expone la tool `sequentialthinking`. Cada step tiene `thought`, `thoughtNumber`, `totalThoughts`, `nextThoughtNeeded`. Soporta revisión (`isRevision`, `revisesThought`) y branching (`branchFromThought`, `branchId`). `totalThoughts` se ajusta dinámicamente.
 
-No requiere secrets ni configuración. Buen complemento para tareas multi-paso donde el agente combina varios MCPs.
+El server no persiste nada — todo el state vive en la cadena de tool calls del turno. No requiere secrets ni configuración.
 
 Licencia: MIT. Fuente: github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking.
