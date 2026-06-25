@@ -19,12 +19,12 @@ manifest:
         GITLAB_API_URL: "https://gitlab.com/api/v4"
 affiliate: false
 tagline: "GitLab from your AI"
-originalAuthor: "GitLab, PBC"
+originalAuthor: "Anthropic, PBC"
 originalAuthorUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-gitlab"
 license: "MIT"
 licenseUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-gitlab"
 marketplaceSource: "anthropic"
-marketplaceCategory: "desktop"
+marketplaceCategory: "web"
 ---
 **GitLab** is a platform for storing code, organizing technical work and reviewing changes before they ship. It is where many teams keep their projects, issues and merge requests.
 

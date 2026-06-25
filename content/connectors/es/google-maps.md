@@ -23,7 +23,7 @@ originalAuthorUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-g
 license: "MIT"
 licenseUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-google-maps"
 marketplaceSource: "anthropic"
-marketplaceCategory: "desktop"
+marketplaceCategory: "web"
 ---
 **Google Maps** es la plataforma de mapas de Google: direcciones, lugares, rutas, tiempos de viaje y datos de ubicación. Mucha gente la usa para logística, investigación de zonas, viajes y atención al cliente.
 

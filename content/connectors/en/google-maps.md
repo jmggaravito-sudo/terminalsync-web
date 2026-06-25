@@ -23,7 +23,7 @@ originalAuthorUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-g
 license: "MIT"
 licenseUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-google-maps"
 marketplaceSource: "anthropic"
-marketplaceCategory: "desktop"
+marketplaceCategory: "web"
 ---
 **Google Maps** is Google's mapping platform: addresses, places, routes, travel times and location data. Many teams use it for logistics, area research, travel and customer support.
 

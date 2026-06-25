@@ -23,7 +23,7 @@ originalAuthorUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-b
 license: "MIT"
 licenseUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-brave-search"
 marketplaceSource: "anthropic"
-marketplaceCategory: "desktop"
+marketplaceCategory: "web"
 ---
 **Brave Search** is Brave's search engine. It uses its own index, useful when you want your AI to search the web without depending on Google.
 
