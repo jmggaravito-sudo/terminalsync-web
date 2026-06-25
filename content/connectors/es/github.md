@@ -4,7 +4,7 @@ logo: /connectors/github.svg
 category: dev
 status: available
 simpleTitle: "Que tu IA trabaje sobre tus repos"
-simpleSubtitle: "Archivos, issues, PRs y búsquedas de código desde el chat — limitado por el token que le des."
+simpleSubtitle: "Leé archivos, abrí pull requests, buscá en issues — desde el chat, con los permisos que vos elijas."
 devTitle: "GitHub MCP Connector"
 devSubtitle: "Servidor oficial @modelcontextprotocol: repos, files, issues, PRs, reviews y búsqueda."
 ctaUrl: "https://github.com"
@@ -25,26 +25,26 @@ licenseUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-github"
 marketplaceSource: "anthropic"
 marketplaceCategory: "web"
 ---
-**GitHub** es la plataforma donde viven tus repos, issues, pull requests y revisiones de código. El server MCP oficial de `@modelcontextprotocol` conecta Claude con la API de GitHub para *"file operations, repository management, search functionality, and more"*, usando siempre los permisos del Personal Access Token que configurás.
+**GitHub** es donde viven el código y las conversaciones técnicas de cualquier proyecto de software: los archivos del repo, las tareas pendientes (issues), las propuestas de cambio (pull requests) y las discusiones del equipo. Es la plataforma estándar para guardar y revisar código.
 
-Qué hace: permite leer contenido de archivos y directorios, buscar repos/código/issues/usuarios, crear issues, abrir pull requests, comentar, revisar PRs, crear ramas y subir cambios. El README oficial destaca *"Automatic Branch Creation"*, *"Batch Operations"* y *"Advanced Search"* como capacidades centrales.
+Este conector deja que tu IA trabaje contra GitHub directamente: leer archivos, contestar preguntas sobre el código, abrir tareas nuevas, proponer cambios — todo con los permisos que vos le des en el token. En palabras del README oficial, el server cubre *"file operations, repository management, search functionality, and more"*. Si el token solo permite leer, la IA solo lee; si autorizás escribir, puede abrir PRs y comentar.
 
 ### Qué le podés pedir
 
-- *"Find where this repo defines the auth middleware and summarize the relevant files."*
-- *"Open a draft pull request from `feature/login` into `main` with this title and body."*
-- *"List open issues labeled `bug`, sorted by most recently updated, and tell me what needs action."*
+- *"Buscá en este repo dónde está definida la lógica de login y resumime los archivos relevantes."*
+- *"Abrí un pull request en borrador desde la rama `feature/login` hacia `main`, con este título y descripción."*
+- *"Listame los issues abiertos con la etiqueta `bug`, ordenados por los más recientes, y decime cuáles parecen urgentes."*
 
 ### Qué token necesitás
 
-Necesitás un **GitHub Personal Access Token**. El README oficial indica: *"Create a token with the `repo` scope"* y aclara que, si trabajás solo con repos públicos, podés usar `public_repo`.
+Necesitás un **GitHub Personal Access Token** — una clave que GitHub genera para identificarte y delimitar qué puede hacer la IA en tu nombre. El README oficial pide *"Create a token with the `repo` scope"* para repos privados, o `public_repo` si solo trabajás con repos públicos.
 
-1. Andá a [github.com/settings/tokens](https://github.com/settings/tokens).
-2. Creá un token para los repos exactos que querés usar con Terminal Sync.
-3. Para repos privados, incluí `repo`; para repos públicos, preferí `public_repo`.
-4. Pegalo cuando el Lab te pida `GITHUB_PERSONAL_ACCESS_TOKEN`. Terminal Sync lo guarda cifrado en tu Keychain.
+1. Andá a [github.com/settings/tokens](https://github.com/settings/tokens) (estando logueado en GitHub).
+2. **Creá un token nuevo** y elegí los repos exactos a los que querés darle acceso (GitHub te deja seleccionar uno por uno con los "fine-grained tokens").
+3. **Para repos privados**: marcá el scope `repo`. **Para repos públicos**: alcanza con `public_repo`.
+4. Pegá el token cuando el Lab te pida `GITHUB_PERSONAL_ACCESS_TOKEN`. Terminal Sync lo guarda cifrado en tu Keychain — nunca queda en texto plano.
 
-Dale el mínimo acceso posible: si el agente solo necesita leer, usá un token limitado a esos repos; si va a abrir PRs o escribir archivos, habilitá permisos de escritura solo donde haga falta.
+Buena práctica: **dale el mínimo acceso posible**. Si solo querés que la IA lea y conteste preguntas, no le des permisos de escritura. Si más adelante querés que abra PRs, generás otro token con permisos extra para esos repos puntuales.
 
 --- dev ---
 
