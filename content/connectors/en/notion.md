@@ -4,10 +4,11 @@ logo: /connectors/notion.svg
 category: productivity
 status: available
 simpleTitle: "Give your assistant superpowers with Notion"
-simpleSubtitle: "So your AI can read your recipes, notes and projects without you copy-pasting every time."
+simpleSubtitle: "So your AI reads your recipes, notes and projects without copy-paste."
 devTitle: "Notion MCP Connector"
 devSubtitle: "Expose Notion databases + pages to Claude Code via the Model Context Protocol."
-ctaUrl: "https://affiliate.notion.so/REPLACE_WITH_JUANS_NOTION_AFFILIATE"
+ctaUrl: "https://www.notion.so"
+tokenHelpUrl: "https://www.notion.so/my-integrations"
 manifest:
   mcpServers:
     notion:
@@ -15,25 +16,41 @@ manifest:
       args: ["-y", "@notionhq/notion-mcp-server"]
       env:
         NOTION_API_KEY: "${SECRET:NOTION_API_KEY}"
-affiliate: true
-tagline: "Make your AI understand your workspace"
+affiliate: false
+tagline: "Let your AI understand your workspace"
 originalAuthor: "Notion Labs (@makenotion)"
 originalAuthorUrl: "https://github.com/makenotion"
 license: "MIT"
 licenseUrl: "https://github.com/makenotion/notion-mcp-server/blob/main/LICENSE"
 ---
-Your Notion has years of work: recipes, decisions, links, client notes. Today, when you ask Claude for something, you have to copy-paste the context every time.
+**Notion** is where many people keep years of work: recipes, client notes, team decisions, links, project plans, internal handbooks. It's the most complete knowledge base you have — but until today, every time you asked Claude something you had to copy-paste context.
 
-With the Notion connector, Claude Code reads your workspace directly (with your permission) and answers based on **your** knowledge. Ask *"what did we decide with client X last month?"* and it pulls the answer from the right doc.
+With this connector, the agent reads your Notion workspace directly (with your permission) and answers from **your** knowledge. Ask *"what did we decide with client X last month?"* and it goes to the right doc. Ask *"draft a meeting brief based on this week's notes"* and it builds it from the actual blocks, no hallucination.
 
-Configured once, it follows you to every machine automatically thanks to Terminal Sync.
+### What you can ask
+
+- *"Read my '2026 Meetings' database and summarize the 3 most important decisions from March."*
+- *"Create a new page inside 'Recipes' titled 'Lemon Pasta' with this ingredient list and steps."*
+- *"Search my workspace for any mention of 'pricing' and bring me the relevant paragraphs."*
+
+### What token you need
+
+You need a **Notion Integration** (Internal Integration), which generates a `secret_xxx`-style token.
+
+1. Go to [notion.so/my-integrations](https://www.notion.so/my-integrations).
+2. Click "+ New integration". Name it something like "Terminal Sync — Claude". Capabilities: leave the defaults (Read content, Update content, Insert content) or adjust to taste.
+3. Save and copy the "Internal Integration Secret".
+4. **Important** — Notion requires you to explicitly share each page or database with the integration. Go to the root page/database you want the agent to see, open the "..." menu → Connections → find your integration → Confirm. What you don't share, it can't see.
+5. Paste the token when the Lab asks for `NOTION_API_KEY`. It travels encrypted in your Keychain.
+
+If you share only one parent page, the agent gets all its children. If you want tighter scope, share only specific databases.
 
 --- dev ---
 
-Notion's official MCP server exposes databases, pages, and blocks as first-class tools to any MCP-aware client (Claude Code, Cursor, Aider).
+`@notionhq/notion-mcp-server` (officially maintained by Notion Labs) exposes databases, pages and blocks as tools over the Notion REST API. Key tools: `notion_search`, `notion_get_page`, `notion_query_database`, `notion_create_page`, `notion_update_block_children`.
 
-Terminal Sync handles the part nobody wants to: syncing your `claude_desktop_config.json` between machines. Set up the Notion MCP once on your laptop — open Claude Code on your studio tower and your queries hit the same workspace without re-configuring.
+The permission model is opt-in per page: the integration's token only accesses pages/databases explicitly shared from the UI. No workspace-wide scope; always per-page tree.
 
-The API token lives in the OS Keychain via `apiKeyHelper`, encrypted end-to-end in your Drive. Never on disk plaintext, never in the repo.
+Terminal Sync syncs `claude_desktop_config.json` encrypted across machines. The secret lives in Keychain via `apiKeyHelper`, never plaintext on disk.
 
-**Scope**: read databases, read/write pages, query children. Terminal Sync does not touch Notion data — only syncs the config.
+License: MIT. Source: github.com/makenotion/notion-mcp-server.
