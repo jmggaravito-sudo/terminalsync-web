@@ -24,6 +24,9 @@
 | **airtable** | claude.com/partners/mcp (descripción: *"Bring your structured data to Claude"*) | github.com/domdomegg/airtable-mcp-server — scopes requeridos vs opcionales explícitos, URL /create/tokens/new. |
 | **notion** | github.com/makenotion/notion-mcp-server (README oficial) | Mismo — 22 tools en 6 grupos, URL canónica notion.so/profile/integrations, warning del propio repo sobre risk to workspace data. |
 | **supabase** | github.com/supabase-community/supabase-mcp (README) | Mismo — 8 grupos de tools, modo `--read-only` documentado como feature de seguridad, PAT account-scoped. |
+| **github** | npm `@modelcontextprotocol/server-github` README oficial (tarball 2025.4.8) | npm package metadata + README — Anthropic, PBC; `GITHUB_PERSONAL_ACCESS_TOKEN`; 26 tools; scopes `repo` / `public_repo`; nota de deprecación hacia `github/github-mcp-server`. |
+| **slack** | npm `@modelcontextprotocol/server-slack` README oficial (tarball 2025.4.25) | npm package metadata + README — Anthropic, PBC; `SLACK_BOT_TOKEN`, `SLACK_TEAM_ID`; scopes Slack verbatim; 8 tools. |
+| **postgres** | npm `@modelcontextprotocol/server-postgres` README oficial (tarball 0.6.2) | npm package metadata + README — Anthropic, PBC; URL Postgres posicional; tool `query`; READ ONLY transaction; schema resources. |
 
 ## Estructura del molde de oro (verificada en estos 8)
 
@@ -63,7 +66,7 @@ Cerrar con licencia + fuente.
 2. **Citar verbatim cuando sea valioso** — descripciones cortas oficiales y use cases canónicos van entre asteriscos en cursiva.
 3. **Scopes y permisos** se sacan del README oficial. Si el oficial dice "required X + Y, optional Z, W", reproducir esa estructura — no inventar combinaciones.
 4. **URLs de tokenHelpUrl** se verifican navegando hasta el form de creación del token. NO inventar paths.
-5. **Sin afiliados.** `affiliate: false` siempre; `ctaUrl` al sitio oficial real, sin query params de tracking ni `REPLACE_WITH_...`.
+5. **Sin afiliados.** `affiliate: false` siempre; `ctaUrl` al sitio oficial real, sin query params de tracking ni placeholders de ejemplo.
 6. **Paridad es+en estricta.** Mismo número de ejemplos, mismas secciones, misma estructura.
 7. **Cuando la fuente oficial está en inglés**, los ejemplos canónicos van en inglés en es+en (verbatim), no traducidos.
 
