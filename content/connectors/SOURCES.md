@@ -32,6 +32,12 @@
 | **brave-search** | npm `@modelcontextprotocol/server-brave-search` README oficial (tarball 0.6.2) | npm package metadata + README — Anthropic, PBC; `BRAVE_API_KEY`; `brave_web_search`; `brave_local_search`; free tier mencionado por README. |
 | **puppeteer** | npm `@modelcontextprotocol/server-puppeteer` README oficial (tarball 2025.5.12) | npm package metadata + README — Anthropic, PBC; sin secrets; browser automation, screenshots, console logs, resources. |
 | **time** | SKIP 2026-06-25 | Gate duro falló: `@modelcontextprotocol/server-time` no existe en npm (E404), por lo tanto no cumple paquete npm + manifest instalable. |
+| **sqlite** | SKIP 2026-06-25 | Gate duro falló: `@modelcontextprotocol/server-sqlite` no existe en npm (E404), por lo tanto no cumple paquete npm + manifest instalable. |
+| **vercel** | SKIP 2026-06-25 | Gate duro falló: no se encontró servidor MCP oficial de Vercel en npm; `@vercel/mcp-adapter` es un adapter/framework, y `vercel-mcp`/similares son third-party. |
+| **gmail** | SKIP 2026-06-25 | Gate duro falló: no se encontró servidor MCP oficial de Google/Gmail en npm; los paquetes encontrados son comunitarios, no publisher oficial. |
+| **whatsapp** | SKIP 2026-06-25 | Gate duro falló: no se encontró servidor MCP oficial de Meta/WhatsApp en npm; los paquetes encontrados son comunitarios o wrappers de terceros. |
+| **kit** | SKIP 2026-06-25 | Gate duro falló: no se encontró servidor MCP oficial de Kit/ConvertKit en npm; `kit-mcp-server` es comunitario. |
+| **pipedream** | npm `@pipedream/mcp` README oficial (tarball 0.0.1) + docs `pipedream.com/docs/connect/mcp` | npm package metadata + README — Pipedream, Inc.; stdio requiere `--app`; env `PIPEDREAM_CLIENT_ID`, `PIPEDREAM_CLIENT_SECRET`, `PIPEDREAM_PROJECT_ID`, `PIPEDREAM_PROJECT_ENVIRONMENT`; tools dinámicas por componentes + `configure_component`; licencia Pipedream Source Available 1.0. |
 
 ## Estructura del molde de oro (verificada en estos 8)
 
