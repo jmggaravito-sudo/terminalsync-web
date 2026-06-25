@@ -3,32 +3,61 @@ name: Pipedream
 logo: /connectors/pipedream.svg
 category: automation
 status: available
-simpleTitle: "Workflows built by talking"
-simpleSubtitle: "Connect 2,500+ apps. Tell Claude what you need and it builds the workflow in Pipedream."
+simpleTitle: "Connect your AI to thousands of apps"
+simpleSubtitle: "Let it run approved actions in Slack, Gmail, Sheets, GitHub and more through Pipedream."
 devTitle: "Pipedream MCP Connector"
-devSubtitle: "Workflows, sources and SQL data stores as tools — codegen Node steps from natural language."
-ctaUrl: "https://pipedream.com/"
+devSubtitle: "Official @pipedream/mcp server: local stdio or self-hosted SSE over Pipedream Connect."
+ctaUrl: "https://pipedream.com/docs/connect/mcp/users"
+tokenHelpUrl: "https://pipedream.com/docs/rest-api/auth/#creating-an-oauth-client"
 manifest:
   mcpServers:
     pipedream:
       command: npx
-      args: ["-y", "@pipedream/mcp"]
+      args: ["-y", "@pipedream/mcp", "stdio", "--app", "${SECRET:PIPEDREAM_APP}", "--external-user-id", "${SECRET:PIPEDREAM_EXTERNAL_USER_ID}"]
       env:
-        PIPEDREAM_API_KEY: "${SECRET:PIPEDREAM_API_KEY}"
+        PIPEDREAM_CLIENT_ID: "${SECRET:PIPEDREAM_CLIENT_ID}"
+        PIPEDREAM_CLIENT_SECRET: "${SECRET:PIPEDREAM_CLIENT_SECRET}"
+        PIPEDREAM_PROJECT_ID: "${SECRET:PIPEDREAM_PROJECT_ID}"
+        PIPEDREAM_PROJECT_ENVIRONMENT: "development"
 affiliate: false
-tagline: "Workflows you build by talking"
+tagline: "Thousands of app actions through Pipedream"
+originalAuthor: "Pipedream, Inc."
+originalAuthorUrl: "https://www.npmjs.com/package/@pipedream/mcp"
+license: "Pipedream Source Available License 1.0"
+licenseUrl: "https://github.com/PipedreamHQ/pipedream/blob/master/LICENSE"
 hidden: true
+marketplaceSource: "official"
 ---
-Pipedream connects 2,500+ apps with the flexibility of a real code editor (Node, Python, Go) — but that same flexibility means more friction when you just want to fire off a quick workflow.
+**Pipedream** connects apps and APIs so you can automate work that usually means opening five tabs: messages, spreadsheets, tickets, calendars, databases and internal tools.
 
-With this connector, you tell Claude *"when an email lands in my Gmail with a subject starting with 'Invoice', OCR the amount and vendor, push to Sheets and ping me in Slack"* — it writes the steps in Pipedream ready to deploy.
+This connector lets your AI use Pipedream's official MCP layer for a specific app, such as Slack, Gmail, GitHub, Google Sheets or thousands more. Pipedream's docs describe the promise as adding *"10,000+ tools from 3,000+ APIs"* to AI tools, with managed account connection handled by Pipedream.
 
-Set up once, follows you across machines via Terminal Sync.
+### What you can ask
+
+- *"Find the new Typeform responses and add the qualified leads to Google Sheets."*
+- *"Create a GitHub issue from this customer note and post the link in Slack."*
+- *"Look up today's calendar events and draft a follow-up email for each meeting."*
+
+### What setup you need
+
+You need a **Pipedream project** and OAuth client credentials. You also choose the app slug for this MCP server — for example `slack`, `gmail`, `github` or `google_sheets`.
+
+1. Create or open a Pipedream project.
+2. Create a Pipedream OAuth client from the REST API auth settings.
+3. Copy the client ID, client secret and project ID.
+4. Pick the app slug you want this server to expose. Pipedream shows app slugs in each app's Authentication section.
+5. Paste those values when the Lab asks for `PIPEDREAM_CLIENT_ID`, `PIPEDREAM_CLIENT_SECRET`, `PIPEDREAM_PROJECT_ID`, `PIPEDREAM_APP` and `PIPEDREAM_EXTERNAL_USER_ID`. Terminal Sync stores them encrypted in your Keychain.
+
+Start with one app at a time. Pipedream can reach a very wide set of tools, so limiting the app slug is the easiest way to keep the first install understandable.
 
 --- dev ---
 
-Pipedream's Connect API + Sources/Workflows endpoints expose the full programmatic surface: create workflows, add sources, write Node code steps, deploy and trigger. The community MCP wrapper bridges all of it: `pd.workflows.create`, `pd.workflows.deploy`, `pd.sources.add`, `pd.runs.invoke`.
+`@pipedream/mcp` is the official npm package published by Pipedream maintainers. Verified package: `@pipedream/mcp@0.0.1`, dist-tag `latest` only (no canary tag). Verified entrypoints: `npx -y @pipedream/mcp --help`, `npx -y @pipedream/mcp stdio --help`, and SSE startup with dummy credentials staying alive until terminated.
 
-Terminal Sync stores the API key in the OS Keychain and replicates your `claude_desktop_config.json` between machines. Switch from laptop to tower — your workflows, sources and data stores stay accessible without re-pasting credentials.
+Manifest used here targets stdio: `npx -y @pipedream/mcp stdio --app ${SECRET:PIPEDREAM_APP} --external-user-id ${SECRET:PIPEDREAM_EXTERNAL_USER_ID}` with `PIPEDREAM_CLIENT_ID`, `PIPEDREAM_CLIENT_SECRET`, `PIPEDREAM_PROJECT_ID` and `PIPEDREAM_PROJECT_ENVIRONMENT` in `env`. The README documents the same env vars and says the stdio mode runs a server for one app slug.
 
-**Best for**: devs and indie hackers who want the power of a code editor + the speed of a low-code builder; teams who outgrew Make/Zapier on complexity.
+Tools are registered dynamically from Pipedream components for the selected app. The implementation calls `getComponents({ app, componentType: "action" })`, registers each component key as an MCP tool, and also registers `configure_component` for progressive option lookup. Gotcha: without valid Pipedream OAuth credentials, stdio exits while retrieving the OAuth access token; the gate therefore verifies the CLI and transport entrypoints locally and relies on real credentials for full tool hydration.
+
+Terminal Sync keeps the Pipedream credentials in Keychain via `apiKeyHelper`, synced encrypted with AES-256-GCM across machines.
+
+License: Pipedream Source Available License 1.0. Source: official README and package metadata for `@pipedream/mcp` on npm, plus Pipedream MCP docs.
