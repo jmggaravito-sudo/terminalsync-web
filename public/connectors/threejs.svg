@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Three.js">
+  <rect width="64" height="64" rx="14" fill="#f5f3ff"/>
+  <path d="M32 9l20 12v22L32 55 12 43V21z" fill="#fff" stroke="#7c3aed" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M32 9v22l20-10M32 31L12 21M32 31v24" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M22 39l10-6 10 6-10 6z" fill="#a78bfa" opacity=".9"/>
+</svg>
