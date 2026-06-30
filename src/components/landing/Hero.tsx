@@ -97,14 +97,15 @@ export function Hero({ dict }: { dict: Dict }) {
             <Download size={16} strokeWidth={2.4} />
             {t.ctaPrimary}
           </a>
-          <a
-            href="#video"
+          <button
+            type="button"
+            onClick={() => setVideoOpen(true)}
             className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold text-[var(--color-fg)] bg-[var(--color-panel)] border border-[var(--color-border-strong)] hover:border-[var(--color-accent)]/40 transition-colors"
           >
             <PlayCircle size={16} strokeWidth={2} />
             {t.ctaSecondary}
             <ArrowRight size={14} strokeWidth={2.4} />
-          </a>
+          </button>
         </div>
 
         <p className="mt-3 text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">
