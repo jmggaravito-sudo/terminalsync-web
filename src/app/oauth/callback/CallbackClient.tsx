@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, AlertTriangle, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { buildDeepLink } from "./buildDeepLink";
 
 interface Params {
   code?: string;
@@ -22,22 +23,14 @@ export function CallbackClient({ params }: { params: Params }) {
   const isError = !!params.error;
   const isMissing = !params.code || !params.state;
 
-  // Build the deep link URL exactly once per render — Tauri parses code/state
-  // out of the query on its side. Lab builds prefix OAuth state with
-  // `tslab:` so this shared production web callback can return to the
-  // isolated `terminalsync-lab://` handler instead of touching production.
-  const deepLink = useMemo(() => {
-    if (!params.code || !params.state) return null;
-    const qs = new URLSearchParams({
-      code: params.code,
-      state: params.state,
-    });
-    if (params.scope) qs.set("scope", params.scope);
-    const scheme = params.state.startsWith("tslab:")
-      ? "terminalsync-lab"
-      : "terminalsync";
-    return `${scheme}://oauth/callback?${qs.toString()}`;
-  }, [params.code, params.state, params.scope]);
+  // Build the deep link URL exactly once per render. The helper picks
+  // terminalsync-lab:// vs terminalsync:// from the state's prefix and
+  // serializes `state` with a literal `:` (NOT %3A) so the native app's
+  // byte-exact CSRF check passes. See buildDeepLink.ts for the contract.
+  const deepLink = useMemo(
+    () => buildDeepLink(params),
+    [params.code, params.state, params.scope],
+  );
 
   useEffect(() => {
     if (!deepLink || dispatched) return;
