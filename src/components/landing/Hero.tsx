@@ -16,8 +16,8 @@ const COPY = {
     eyebrow: "Piensan, construyen y ejecutan. Tú diriges el equipo.",
     subtitle:
       "Describe cómo funciona tu empresa. TerminalSync crea los programas, recuerda todo el contexto y sigue mejorándolo contigo.",
-    resultsPrefix: "Crea en minutos:",
-    resultsItems: ["CRM", "Portales", "Dashboards", "Inventarios", "Propuestas", "Automatizaciones", "Reportes", "Cotizadores"],
+    results: "",
+    resultsStrong: "Crea en minutos: CRM · Portales · Dashboards · Inventarios · Propuestas · Automatizaciones · Reportes · Cotizadores",
     ctaPrimary: "Empieza gratis",
     ctaSecondary: "Mira cómo funciona",
     os: "macOS · Linux · Windows",
@@ -32,8 +32,8 @@ const COPY = {
     eyebrow: "They think, build and execute. You run the team.",
     subtitle:
       "Describe how your business works. TerminalSync builds the tools, remembers everything, and keeps improving with you.",
-    resultsPrefix: "Build in minutes:",
-    resultsItems: ["CRM", "Portals", "Dashboards", "Inventory", "Proposals", "Automations", "Reports", "Quotes"],
+    results: "",
+    resultsStrong: "Build in minutes: CRM · Portals · Dashboards · Inventory · Proposals · Automations · Reports · Quotes",
     ctaPrimary: "Start free",
     ctaSecondary: "See how it works",
     os: "macOS · Linux · Windows",
@@ -80,9 +80,9 @@ export function Hero({ dict }: { dict: Dict }) {
 
         {/* Línea de resultados */}
         <p className="mt-4 text-[14px] text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed">
-          {t.resultsPrefix}{" "}
+          {t.results}
           <strong className="font-bold text-[var(--color-fg-strong)]">
-            {t.resultsItems.join(" · ")}
+            {t.resultsStrong}
           </strong>
         </p>
 
@@ -159,7 +159,7 @@ export function Hero({ dict }: { dict: Dict }) {
             type="button"
             aria-label={t.playVideo}
             onClick={() => setVideoOpen(true)}
-            className="absolute z-50 flex items-center justify-center rounded-full text-white transition-transform hover:scale-105 active:scale-95"
+            className="absolute z-50 flex items-center justify-center rounded-full text-white transition-transform hover:scale-110 active:scale-95"
             style={{
               width: "72px",
               height: "72px",
