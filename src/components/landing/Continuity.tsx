@@ -1,10 +1,9 @@
-import { ArrowRight, ShieldCheck } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { ArrowRight, ShieldCheck, X } from "lucide-react";
 import type { Locale } from "@/content";
 
-/**
- * §06 Continuidad inteligente — sección DEDICADA. Lidera con el beneficio,
- * sin jerga ni el nombre interno. Bilingüe (ES neutro / EN).
- */
 const T = {
   es: {
     eyebrow: "Continuidad",
@@ -16,9 +15,9 @@ const T = {
     moat: "Una herramienta de una sola IA no puede hacer esto. TerminalSync no depende de ninguna — por eso tu trabajo nunca choca contra una pared.",
     behaviors: [
       { title: "Se da cuenta cuando una IA se traba", body: "Detecta cuando una IA llega a su límite, se cae o deja de responder — sin que tengas que estar mirando." },
-      { title: "Cambia a otra IA por ti", body: "Pasa el trabajo a otra IA disponible automáticamente. Tú no tienes que hacer nada." },
-      { title: "Lleva tu contexto con ella", body: "La IA que continúa retoma con todo lo que ya sabías: el proyecto, las decisiones, dónde ibas." },
-      { title: "Sigue donde quedaste", body: "No empieza de cero. Continúa la tarea exactamente en el punto en que se cortó." },
+      { title: "Cambia de IA por ti", body: "Pasa el proyecto a otra IA disponible. Tú no haces nada." },
+      { title: "Lleva tu contexto", body: "Retoma con el proyecto, las decisiones y dónde ibas, intactos." },
+      { title: "Sigue donde quedaste", body: "No empieza de cero: continúa el proyecto en el punto exacto del corte." },
     ],
     neverAgain: [
       "Nunca vuelves a copiar contexto.",
@@ -36,6 +35,8 @@ const T = {
         "Tus IAs te avisan cuando terminan",
         "El proyecto sigue aunque no estés en el computador",
       ],
+      watchDemo: "Ver Demo",
+      closeDemo: "Cerrar",
     },
   },
   en: {
@@ -48,9 +49,9 @@ const T = {
     moat: "A single-AI tool can't do this. TerminalSync doesn't depend on any one of them — that's why your work never hits a wall.",
     behaviors: [
       { title: "It notices when an AI gets stuck", body: "Detects when an AI hits its limit, goes down or stops responding — without you watching." },
-      { title: "It switches to another AI for you", body: "Hands the work to another available AI automatically. You don't have to do anything." },
-      { title: "It carries your context along", body: "The AI that continues picks up with everything you already had: the project, the decisions, where you were." },
-      { title: "It keeps going where you left off", body: "It doesn't start over. It continues the task at the exact point it was cut off." },
+      { title: "Switches to another AI for you", body: "Passes the project to another available AI. You don't do a thing." },
+      { title: "Carries your context", body: "Picks up with the project, decisions, and where you left off — intact." },
+      { title: "Keeps going where you left off", body: "It doesn't start over: it continues the project at the exact point of the cutoff." },
     ],
     neverAgain: [
       "Never copy context again.",
@@ -68,12 +69,16 @@ const T = {
         "Your AIs notify you when they're done",
         "The project keeps going even when you're away",
       ],
+      watchDemo: "Watch Demo",
+      closeDemo: "Close",
     },
   },
 } as const;
 
 export function Continuity({ lang }: { lang: Locale }) {
   const t = T[lang];
+  const [demoOpen, setDemoOpen] = useState(false);
+
   return (
     <section id="continuity" className="mx-auto max-w-5xl px-5 md:px-6 py-20 md:py-24">
       <div className="text-center max-w-2xl mx-auto">
@@ -114,10 +119,10 @@ export function Continuity({ lang }: { lang: Locale }) {
       </div>
 
       {/* Lista "Nunca vuelves a..." */}
-      <ul className="mt-10 flex flex-col sm:flex-row flex-wrap justify-center gap-x-8 gap-y-3">
+      <ul className="mt-10 flex flex-col gap-3 max-w-[520px] mx-auto">
         {t.neverAgain.map((item) => (
-          <li key={item} className="flex items-start gap-2 text-[14.5px] text-[var(--color-fg-muted)]">
-            <span className="mt-0.5 text-[var(--color-ok)] font-bold">✓</span>
+          <li key={item} className="flex items-start gap-3 text-[16px] text-[var(--color-fg-muted)]">
+            <span className="mt-0.5 text-[var(--color-ok)] font-bold shrink-0">✓</span>
             <span>{item}</span>
           </li>
         ))}
@@ -129,41 +134,97 @@ export function Continuity({ lang }: { lang: Locale }) {
           className="text-[var(--color-fg-muted)] leading-snug"
           style={{ fontSize: "clamp(1.125rem, 2.5vw, 1.5rem)" }}
         >
-          &ldquo;<strong className="text-[var(--color-fg-strong)]">{t.quote}</strong>&rdquo;
+          {lang === "es" ? (
+            <>Mientras otras plataformas terminan conversaciones, <strong className="text-[var(--color-fg-strong)]">TerminalSync termina proyectos.</strong></>
+          ) : (
+            <>While other platforms end conversations, <strong className="text-[var(--color-fg-strong)]">TerminalSync finishes projects.</strong></>
+          )}
         </p>
       </blockquote>
 
-      {/* Bloque WhatsApp / Telegram */}
-      <div className="mt-16 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-8 md:p-10">
-        <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--color-accent)]">
-          {t.whatsapp.eyebrow}
-        </span>
-        <h3
-          className="mt-3 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.1]"
-          style={{ fontSize: "clamp(1.375rem, 3vw, 1.875rem)" }}
-        >
-          {t.whatsapp.title}
-        </h3>
-        <p className="mt-3 text-[15px] text-[var(--color-fg-muted)] leading-relaxed max-w-xl">
-          {t.whatsapp.body}
-        </p>
-        <ul className="mt-5 flex flex-col gap-2">
-          {t.whatsapp.bullets.map((b) => (
-            <li key={b} className="flex items-start gap-2 text-[14px] text-[var(--color-fg-muted)]">
-              <span className="mt-0.5 text-[var(--color-ok)] font-bold">✓</span>
-              <span>{b}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-8 rounded-xl overflow-hidden border border-[var(--color-border)]" style={{ height: "360px" }}>
-          <iframe
-            src={`/demos/demo-mensajeria.html?lang=${lang}&embed=1`}
-            title={t.whatsapp.title}
-            className="w-full h-full"
-            loading="lazy"
-          />
+      {/* Bloque WhatsApp / Telegram — 2 columnas desktop */}
+      <div className="mt-16 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+          {/* Columna izquierda: texto */}
+          <div className="p-8 md:p-10 flex flex-col justify-center">
+            <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--color-accent)]">
+              {t.whatsapp.eyebrow}
+            </span>
+            <h3
+              className="mt-3 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.1]"
+              style={{ fontSize: "clamp(1.375rem, 3vw, 1.875rem)" }}
+            >
+              {t.whatsapp.title}
+            </h3>
+            <p className="mt-3 text-[15px] text-[var(--color-fg-muted)] leading-relaxed">
+              {t.whatsapp.body}
+            </p>
+            <ul className="mt-5 flex flex-col gap-2.5">
+              {t.whatsapp.bullets.map((b) => (
+                <li key={b} className="flex items-start gap-2 text-[14px] text-[var(--color-fg-muted)]">
+                  <span className="mt-0.5 text-[var(--color-ok)] font-bold shrink-0">→</span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Columna derecha: demo iframe con overlay borroso */}
+          <div className="relative bg-[var(--color-panel-2)] min-h-[280px] md:min-h-0 border-t md:border-t-0 md:border-l border-[var(--color-border)]">
+            {/* Preview borrosa */}
+            <iframe
+              src={`/demos/demo-mensajeria.html?lang=${lang}&embed=1`}
+              title={t.whatsapp.title}
+              className="absolute inset-0 w-full h-full border-0"
+              style={{ filter: "blur(8px)", transform: "scale(1.05)", pointerEvents: "none" }}
+              loading="lazy"
+            />
+            {/* Overlay + botón */}
+            <button
+              type="button"
+              onClick={() => setDemoOpen(true)}
+              className="absolute inset-0 z-10 flex items-center justify-center cursor-zoom-in"
+              style={{
+                background: "color-mix(in srgb, var(--color-bg) 75%, transparent)",
+                backdropFilter: "blur(4px)",
+              }}
+            >
+              <span className="inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] text-white px-5 py-2.5 text-[13px] font-medium shadow-sm">
+                {t.whatsapp.watchDemo}
+              </span>
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Lightbox del demo mensajería */}
+      {demoOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setDemoOpen(false); }}
+        >
+          <div className="relative w-full max-w-4xl bg-[var(--color-panel)] rounded-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--color-border)]">
+              <span className="text-[17px] font-semibold text-[var(--color-fg-strong)]">
+                {t.whatsapp.title}
+              </span>
+              <button
+                type="button"
+                onClick={() => setDemoOpen(false)}
+                className="inline-flex items-center justify-center h-9 w-9 rounded-lg text-[var(--color-fg)] hover:bg-[var(--color-panel-2)] transition-colors"
+                aria-label={t.whatsapp.closeDemo}
+              >
+                <X size={20} strokeWidth={2} />
+              </button>
+            </div>
+            <iframe
+              src={`/demos/demo-mensajeria.html?lang=${lang}&embed=1`}
+              title={t.whatsapp.title}
+              className="w-full h-[80vh] border-0 block"
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 }
