@@ -1,40 +1,54 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowRight, Download, PlayCircle } from "lucide-react";
+import { ArrowRight, Download, Play, PlayCircle } from "lucide-react";
 import type { Dict, Locale } from "@/content";
 import { ClaudeMark, OpenAIMark, GeminiMark } from "@/components/brand/AILogos";
+import { VideoLightbox } from "@/components/VideoLightbox";
+
+const VIDEO_SRC: Record<Locale, string> = {
+  es: "/assets/terminalsync.mp4",
+  en: "/assets/terminalsync-en.mp4",
+};
 
 const COPY = {
   es: {
     eyebrow: "Piensan, construyen y ejecutan. Tú diriges el equipo.",
     subtitle:
-      "Describe lo que necesitas. Tus IAs lo crean, lo mantienen y nunca olvidan tu negocio — aunque cierres todo o cambies de computadora.",
-    results:
-      "Seguimientos · Propuestas · Portales para clientes · Reportes · Automatizaciones — ",
-    resultsStrong: "creados por tus IAs mientras trabajas.",
+      "Describe cómo funciona tu empresa. TerminalSync crea los programas, recuerda todo el contexto y sigue mejorándolo contigo.",
+    resultsPrefix: "Crea en minutos:",
+    resultsItems: ["CRM", "Portales", "Dashboards", "Inventarios", "Propuestas", "Automatizaciones", "Reportes", "Cotizadores"],
     ctaPrimary: "Empieza gratis",
     ctaSecondary: "Mira cómo funciona",
     os: "macOS · Linux · Windows",
-    trust: ["Claude · Codex · Gemini incluidas", "Listo en minutos", "Cifrado E2EE · ni nosotros lo leemos"],
-    caption: "Tus espacios de trabajo de IA, sincronizados en todas partes.",
+    trust: ["Sin programar", "Memoria permanente", "Continúa aunque cambie la IA"],
+    caption: "Cada proyecto tiene su propio espacio. Su memoria. Sus archivos. Su equipo de IAs.",
+    prefixLabel: "CON TERMINALSYNC:",
+    shotTitle: "Desde acá se maneja tu empresa.",
+    playVideo: "Ver video",
+    trustCount: "Más de 2,000 empresas ya confían en TerminalSync",
   },
   en: {
     eyebrow: "They think, build and execute. You run the team.",
     subtitle:
-      "Describe what you need. Your AIs build it, maintain it and never forget your business — even if you close everything or switch computers.",
-    results: "Follow-ups · Proposals · Client portals · Reports · Automations — ",
-    resultsStrong: "built by your AIs while you work.",
+      "Describe how your business works. TerminalSync builds the tools, remembers everything, and keeps improving with you.",
+    resultsPrefix: "Build in minutes:",
+    resultsItems: ["CRM", "Portals", "Dashboards", "Inventory", "Proposals", "Automations", "Reports", "Quotes"],
     ctaPrimary: "Start free",
     ctaSecondary: "See how it works",
     os: "macOS · Linux · Windows",
-    trust: ["Claude · Codex · Gemini included", "Ready in minutes", "E2EE encrypted · not even we can read it"],
-    caption: "Your AI workspaces, synced everywhere.",
+    trust: ["No coding", "Persistent memory", "Continues even if the AI changes"],
+    caption: "Every project has its own space. Its memory. Its files. Its AI team.",
+    prefixLabel: "WITH TERMINALSYNC:",
+    shotTitle: "This is where your business runs from.",
+    playVideo: "Watch video",
+    trustCount: "Over 2,000 companies already trust TerminalSync",
   },
 } as const;
 
 export function Hero({ dict }: { dict: Dict }) {
   const t = COPY[dict.locale];
+  const [videoOpen, setVideoOpen] = useState(false);
 
   return (
     <section id="hero" className="relative overflow-hidden">
@@ -46,17 +60,13 @@ export function Hero({ dict }: { dict: Dict }) {
         }}
       />
       <div className="relative mx-auto max-w-5xl px-5 md:px-6 pt-12 sm:pt-16 md:pt-20 pb-10 text-center">
-        {/* Chips de IAs + eyebrow */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-          <div className="inline-flex items-center gap-2">
-            <Chip color="var(--color-claude)"><ClaudeMark size={15} /> Claude</Chip>
-            <Chip color="var(--color-codex)"><OpenAIMark size={14} className="text-[var(--color-fg-strong)]" /> Codex</Chip>
-            <Chip color="var(--color-gemini)"><GeminiMark size={15} /> Gemini</Chip>
-          </div>
-          <span className="text-[12.5px] font-mono uppercase tracking-[0.12em] text-[var(--color-accent)]">
-            {t.eyebrow}
-          </span>
-        </div>
+        {/* Prefijo estático encima del H1 rotativo */}
+        <p
+          className="mb-2 font-mono uppercase text-[var(--color-fg-strong)] opacity-75"
+          style={{ letterSpacing: "0.08em", fontSize: "14px" }}
+        >
+          {t.prefixLabel}
+        </p>
 
         {/* Titular grande rotativo */}
         <RotatingHeadline lang={dict.locale} />
@@ -70,8 +80,10 @@ export function Hero({ dict }: { dict: Dict }) {
 
         {/* Línea de resultados */}
         <p className="mt-4 text-[14px] text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed">
-          {t.results}
-          <span className="font-semibold text-[var(--color-fg-strong)]">{t.resultsStrong}</span>
+          {t.resultsPrefix}{" "}
+          <strong className="font-bold text-[var(--color-fg-strong)]">
+            {t.resultsItems.join(" · ")}
+          </strong>
         </p>
 
         {/* CTAs */}
@@ -85,14 +97,15 @@ export function Hero({ dict }: { dict: Dict }) {
             <Download size={16} strokeWidth={2.4} />
             {t.ctaPrimary}
           </a>
-          <a
-            href="#video"
+          <button
+            type="button"
+            onClick={() => setVideoOpen(true)}
             className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold text-[var(--color-fg)] bg-[var(--color-panel)] border border-[var(--color-border-strong)] hover:border-[var(--color-accent)]/40 transition-colors"
           >
             <PlayCircle size={16} strokeWidth={2} />
             {t.ctaSecondary}
             <ArrowRight size={14} strokeWidth={2.4} />
-          </a>
+          </button>
         </div>
 
         <p className="mt-3 text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">
@@ -107,19 +120,33 @@ export function Hero({ dict }: { dict: Dict }) {
         </div>
       </div>
 
-      {/* Dashboard real (claro) */}
+      {/* Dashboard */}
       <div className="relative mx-auto max-w-6xl px-3 sm:px-5 md:px-6 pb-16 md:pb-20">
-        {/* Shot title above the screenshot */}
+        {/* Shot title */}
         <h2
-          className="text-center font-semibold text-[var(--color-fg-strong)] leading-tight max-w-[18ch] mx-auto mb-6 md:mb-8"
+          className="text-center font-semibold text-[var(--color-fg-strong)] leading-tight max-w-[18ch] mx-auto mb-4"
           style={{ fontSize: "clamp(26px, 4vw, 42px)", letterSpacing: "-0.035em" }}
         >
-          {dict.locale === "es"
-            ? "Desde acá se maneja tu empresa."
-            : "This is where your business runs from."}
+          {t.shotTitle}
         </h2>
 
-        <div className="rounded-[22px] border border-[var(--color-border)] bg-[var(--color-panel)] overflow-hidden" style={{ boxShadow: "var(--shadow-floating)" }}>
+        {/* Pills de IAs + eyebrow — debajo del shot title, encima del mockup */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-6 md:mb-8">
+          <div className="inline-flex items-center gap-2">
+            <Chip color="var(--color-claude)"><ClaudeMark size={15} /> Claude</Chip>
+            <Chip color="var(--color-codex)"><OpenAIMark size={14} className="text-[var(--color-fg-strong)]" /> Codex</Chip>
+            <Chip color="var(--color-gemini)"><GeminiMark size={15} /> Gemini</Chip>
+          </div>
+          <span className="text-[12.5px] font-mono uppercase tracking-[0.12em] text-[var(--color-accent)]">
+            {t.eyebrow}
+          </span>
+        </div>
+
+        {/* Imagen del dashboard con botón ▶ */}
+        <div
+          className="relative rounded-[22px] border border-[var(--color-border)] bg-[var(--color-panel)] overflow-hidden"
+          style={{ boxShadow: "var(--shadow-floating)" }}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/redesign/dashboard-hero.png"
@@ -127,15 +154,31 @@ export function Hero({ dict }: { dict: Dict }) {
             className="w-full h-auto block"
             loading="eager"
           />
+          {/* Botón de video */}
+          <button
+            type="button"
+            aria-label={t.playVideo}
+            onClick={() => setVideoOpen(true)}
+            className="absolute z-50 flex items-center justify-center rounded-full text-white transition-transform hover:scale-105 active:scale-95"
+            style={{
+              width: "72px",
+              height: "72px",
+              background: "rgba(0,0,0,0.75)",
+              top: "50%",
+              left: "58%",
+              transform: "translate(-50%, -50%)",
+            }}
+          >
+            <Play size={26} strokeWidth={0} fill="white" className="ml-1" />
+          </button>
         </div>
+
         <p className="mt-4 text-center text-[13px] text-[var(--color-fg-dim)]">{t.caption}</p>
 
-        {/* Trust bar — "Más de 2,000 empresas confían en TerminalSync" + logos */}
+        {/* Trust bar */}
         <div className="mt-12 md:mt-16 text-center">
           <p className="text-[14px] text-[var(--color-fg-muted)] mb-5 md:mb-6">
-            {dict.locale === "es"
-              ? "Más de 2,000 empresas ya confían en TerminalSync"
-              : "Over 2,000 companies already trust TerminalSync"}
+            {t.trustCount}
           </p>
           <div className="flex items-center justify-center gap-6 md:gap-8 lg:gap-12 flex-wrap">
             <TrustLogo name="Google" />
@@ -148,6 +191,13 @@ export function Hero({ dict }: { dict: Dict }) {
         </div>
       </div>
 
+      {/* Modal de video */}
+      <VideoLightbox
+        open={videoOpen}
+        onClose={() => setVideoOpen(false)}
+        dict={dict}
+        videoUrl={VIDEO_SRC[dict.locale]}
+      />
     </section>
   );
 }
@@ -178,7 +228,6 @@ function TrustLogo({ name }: { name: string }) {
       src={cdnUrl}
       alt={name}
       onError={(e) => {
-        // Fallback: show text if CDN fails
         const img = e.target as HTMLImageElement;
         img.style.display = "none";
         const span = document.createElement("span");
@@ -196,13 +245,15 @@ function TrustLogo({ name }: { name: string }) {
 type Headline = { pre: string; hi: string; post: string };
 const HERO_HEADLINES: Record<Locale, Headline[]> = {
   es: [
-    { pre: "Convierte tus ideas en ", hi: "herramientas reales", post: " hablando con IA." },
-    { pre: "Tu IA ", hi: "aprende de tu empresa", post: " y no se olvida nunca." },
-    { pre: "Pasa de una IA a ", hi: "un equipo de IAs", post: "." },
-    { pre: "Multiplica tu capacidad ", hi: "sin multiplicar tu nómina", post: "." },
-    { pre: "La IA escribe el código. ", hi: "Tú diriges el negocio", post: "." },
-    { pre: "Cuando una IA se detiene, ", hi: "otra continúa", post: "." },
+    { pre: "La forma más fácil de ", hi: "crear programas", post: " para tu empresa con IA." },
+    { pre: "Deja de comprar programas, empieza a ", hi: "crearlos", post: "." },
     { pre: "Tu oficina ", hi: "cabe en cualquier computadora", post: "." },
+    { pre: "Describe el problema. Tus IAs ", hi: "construyen la solución", post: "." },
+    { pre: "Claude, Codex y Gemini. ", hi: "Una sola memoria", post: "." },
+    { pre: "Convierte tus ideas en ", hi: "herramientas reales", post: " hablando con IA." },
+    { pre: "Multiplica tu capacidad, ", hi: "sin multiplicar tu nómina", post: "." },
+    { pre: "Tu empresa ahora ", hi: "recuerda todo", post: "." },
+    { pre: "Cada problema nuevo ", hi: "ya no necesita otro programa", post: "." },
   ],
   en: [
     { pre: "Turn your ideas into ", hi: "real tools", post: " by talking to AI." },

@@ -6,7 +6,6 @@ import { MemoryPersistent } from "@/components/landing/MemoryPersistent";
 import { MultiAI } from "@/components/landing/MultiAI";
 import { ChromeExtensionTeaser } from "@/components/landing/ChromeExtensionTeaser";
 import { DemosGrid } from "@/components/landing/DemosGrid";
-import { VideoSection } from "@/components/landing/VideoSection";
 import { IntegrationsDiscovery } from "@/components/landing/IntegrationsDiscovery";
 import { Comparison } from "@/components/landing/Comparison";
 import { SavingsCalculator } from "@/components/landing/SavingsCalculator";
@@ -60,7 +59,6 @@ export default async function Landing({ params }: Props) {
           Calculadora → El cambio real → Comparativo → Chrome → Precios →
           Seguridad → FAQ → Afiliados → CTA final → Footer. */}
       <Hero dict={d} />
-      <VideoSection lang={lang} />
       <DemosGrid lang={lang} />
       <IntegrationsDiscovery lang={lang} />
       <HowItWorks lang={lang} />

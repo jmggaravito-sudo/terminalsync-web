@@ -36,7 +36,7 @@ export function HowItWorks({ lang }: { lang: Locale }) {
           {t.eyebrow}
         </span>
         <h2
-          className="mt-3 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.08]"
+          className="mt-3 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.08] md:whitespace-nowrap"
           style={{ fontSize: "clamp(1.75rem, 4.5vw, 2.75rem)" }}
         >
           {t.title}
