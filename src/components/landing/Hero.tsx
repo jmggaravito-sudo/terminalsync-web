@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowRight, Download, Play, PlayCircle } from "lucide-react";
 import type { Dict, Locale } from "@/content";
 import { ClaudeMark, OpenAIMark, GeminiMark } from "@/components/brand/AILogos";
@@ -268,36 +268,52 @@ const HERO_HEADLINES: Record<Locale, Headline[]> = {
 
 function RotatingHeadline({ lang }: { lang: Locale }) {
   const phrases = HERO_HEADLINES[lang];
-  const [i, setI] = useState(0);
+  const [idx, setIdx] = useState(0);
+  const [fading, setFading] = useState(false);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setI((prev) => (prev + 1) % phrases.length);
-    }, 6500);
+    const id = setInterval(() => setFading(true), 6500);
     return () => clearInterval(id);
-  }, [phrases.length]);
+  }, []);
 
-  const p = phrases[i];
+  function handleTransitionEnd(e: React.TransitionEvent<HTMLHeadingElement>) {
+    if (e.propertyName !== "opacity" || !fading) return;
+    setIdx((prev) => (prev + 1) % phrases.length);
+    setFading(false);
+  }
+
+  const p = phrases[idx];
   return (
     <div className="mt-6">
-      <h1
-        key={i}
-        className="hero-rotate font-semibold tracking-tight leading-[1.06] text-[var(--color-fg-strong)] max-w-4xl mx-auto break-words min-h-[2.2em]"
-        style={{ fontSize: "clamp(2.375rem, 6.6vw, 4.75rem)", letterSpacing: "-0.045em" }}
-        aria-live="polite"
+      {/* Fixed-height wrapper prevents layout shift when phrases wrap to different line counts */}
+      <div
+        className="relative w-full"
+        style={{ height: `calc(3.4 * clamp(2.375rem, 6.6vw, 4.75rem))` }}
       >
-        {p.pre}
-        <span className="bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-soft)] bg-clip-text text-transparent">
-          {p.hi}
-        </span>
-        {p.post}
-      </h1>
+        <h1
+          className="hero-rotate font-semibold tracking-tight leading-[1.06] text-[var(--color-fg-strong)] max-w-4xl mx-auto break-words absolute inset-x-0 top-0 text-center"
+          style={{
+            fontSize: "clamp(2.375rem, 6.6vw, 4.75rem)",
+            letterSpacing: "-0.045em",
+            opacity: fading ? 0 : 1,
+            transition: "opacity 0.22s ease",
+          }}
+          aria-live="polite"
+          onTransitionEnd={handleTransitionEnd}
+        >
+          {p.pre}
+          <span className="bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-soft)] bg-clip-text text-transparent">
+            {p.hi}
+          </span>
+          {p.post}
+        </h1>
+      </div>
       <div className="mt-4 flex items-center justify-center gap-1.5">
-        {phrases.map((_, idx) => (
+        {phrases.map((_, i) => (
           <span
-            key={idx}
+            key={i}
             className={`h-1.5 rounded-full transition-all ${
-              idx === i ? "w-4 bg-[var(--color-accent)]" : "w-1.5 bg-[var(--color-border-strong)]"
+              i === idx ? "w-4 bg-[var(--color-accent)]" : "w-1.5 bg-[var(--color-border-strong)]"
             }`}
           />
         ))}

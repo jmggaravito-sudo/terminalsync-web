@@ -298,7 +298,6 @@
     await sleep(350);
     status.className='status done'; status.querySelector('.lab').textContent=t().finished;
     document.getElementById('deliver').classList.add('show');
-    document.getElementById('deliver').scrollIntoView({block:'nearest'});
     await sleep(2600);
     pIdx=(pIdx+1)%PROJ.length; syncSwitch(); play();
   }
