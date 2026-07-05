@@ -151,7 +151,7 @@ export default async function StacksIndex({ params }: Props) {
       )}
 
       {/* Trust footer — guarantee + how it works */}
-      <section className="mx-auto max-w-3xl px-6 pb-24">
+      <section id="how-it-works" className="scroll-mt-20 mx-auto max-w-3xl px-6 pb-24">
         <div className="rounded-3xl border border-[var(--color-accent)]/20 bg-[var(--color-accent)]/5 p-7 text-center">
           <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--color-accent)] mb-3">
             {isEs ? "Cómo funciona" : "How it works"}
