@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { ArrowRight, Download, Play, PlayCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowRight, Download, PlayCircle } from "lucide-react";
 import type { Dict, Locale } from "@/content";
-import { ClaudeMark, OpenAIMark, GeminiMark } from "@/components/brand/AILogos";
 import { VideoLightbox } from "@/components/VideoLightbox";
 
 const VIDEO_SRC: Record<Locale, string> = {
@@ -130,52 +129,6 @@ export function Hero({ dict }: { dict: Dict }) {
           {t.shotTitle}
         </h2>
 
-        {/* Pills de IAs + eyebrow — debajo del shot title, encima del mockup */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-6 md:mb-8">
-          <div className="inline-flex items-center gap-2">
-            <Chip color="var(--color-claude)"><ClaudeMark size={15} /> Claude</Chip>
-            <Chip color="var(--color-codex)"><OpenAIMark size={14} className="text-[var(--color-fg-strong)]" /> Codex</Chip>
-            <Chip color="var(--color-gemini)"><GeminiMark size={15} /> Gemini</Chip>
-          </div>
-          <span className="text-[12.5px] font-mono uppercase tracking-[0.12em] text-[var(--color-accent)]">
-            {t.eyebrow}
-          </span>
-        </div>
-
-        {/* Imagen del dashboard con botón ▶ */}
-        <div
-          className="relative rounded-[22px] border border-[var(--color-border)] bg-[var(--color-panel)] overflow-hidden"
-          style={{ boxShadow: "var(--shadow-floating)" }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/redesign/dashboard-hero.png"
-            alt={t.caption}
-            className="w-full h-auto block"
-            loading="eager"
-            width={1249}
-            height={794}
-          />
-          {/* Botón de video */}
-          <button
-            type="button"
-            aria-label={t.playVideo}
-            onClick={() => setVideoOpen(true)}
-            className="absolute z-50 flex items-center justify-center rounded-full text-white transition-transform hover:scale-110 active:scale-95"
-            style={{
-              width: "72px",
-              height: "72px",
-              background: "rgba(0,0,0,0.75)",
-              top: "50%",
-              left: "58%",
-              transform: "translate(-50%, -50%)",
-            }}
-          >
-            <Play size={26} strokeWidth={0} fill="white" className="ml-1" />
-          </button>
-        </div>
-
-        <p className="mt-4 text-center text-[13px] text-[var(--color-fg-dim)]">{t.caption}</p>
 
         {/* Trust bar */}
         <div className="mt-12 md:mt-16 text-center">
@@ -204,14 +157,6 @@ export function Hero({ dict }: { dict: Dict }) {
   );
 }
 
-function Chip({ color, children }: { color: string; children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-[var(--color-panel)] px-3 py-1 text-[13px] font-medium text-[var(--color-fg)]">
-      <span className="h-2 w-2 rounded-full" style={{ background: color }} />
-      {children}
-    </span>
-  );
-}
 
 function TrustLogo({ name }: { name: string }) {
   const logoMap: Record<string, string> = {
