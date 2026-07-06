@@ -67,7 +67,6 @@ export function VideoSection({ lang }: { lang: Locale }) {
         <video
           ref={videoRef}
           src={VIDEO_SRC[lang]}
-          poster="/redesign/dashboard-hero.png"
           controls={playing}
           playsInline
           preload="metadata"
