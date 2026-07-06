@@ -21,10 +21,8 @@ const COPY = {
     ctaSecondary: "Mira cómo funciona",
     os: "macOS · Linux · Windows",
     trust: ["Sin programar", "Memoria permanente", "Continúa aunque cambie la IA"],
-    caption: "Cada proyecto tiene su propio espacio. Su memoria. Sus archivos. Su equipo de IAs.",
     prefixLabel: "CON TERMINALSYNC:",
     shotTitle: "Desde acá se maneja tu empresa.",
-    playVideo: "Ver video",
     trustCount: "Más de 2,000 empresas ya confían en TerminalSync",
   },
   en: {
@@ -37,10 +35,8 @@ const COPY = {
     ctaSecondary: "See how it works",
     os: "macOS · Linux · Windows",
     trust: ["No coding", "Persistent memory", "Continues even if the AI changes"],
-    caption: "Every project has its own space. Its memory. Its files. Its AI team.",
     prefixLabel: "WITH TERMINALSYNC:",
     shotTitle: "This is where your business runs from.",
-    playVideo: "Watch video",
     trustCount: "Over 2,000 companies already trust TerminalSync",
   },
 } as const;
