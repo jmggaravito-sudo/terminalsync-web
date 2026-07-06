@@ -153,6 +153,8 @@ export function Hero({ dict }: { dict: Dict }) {
             alt={t.caption}
             className="w-full h-auto block"
             loading="eager"
+            width={1249}
+            height={794}
           />
           {/* Botón de video */}
           <button
@@ -298,7 +300,6 @@ function RotatingHeadline({ lang }: { lang: Locale }) {
             opacity: fading ? 0 : 1,
             transition: "opacity 0.22s ease",
           }}
-          aria-live="polite"
           onTransitionEnd={handleTransitionEnd}
         >
           {p.pre}
