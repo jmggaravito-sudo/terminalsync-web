@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ArrowRight, Download, PlayCircle } from "lucide-react";
 import type { Dict, Locale } from "@/content";
 import { VideoLightbox } from "@/components/VideoLightbox";
@@ -211,54 +211,51 @@ const HERO_HEADLINES: Record<Locale, Headline[]> = {
 
 function RotatingHeadline({ lang }: { lang: Locale }) {
   const phrases = HERO_HEADLINES[lang];
-  const [idx, setIdx] = useState(0);
-  const [fading, setFading] = useState(false);
+  const n = phrases.length;
+  const perPhrase = 6.5;
+  const total = n * perPhrase;
+  const animName = `headline-show-${n}`;
 
-  useEffect(() => {
-    const id = setInterval(() => setFading(true), 6500);
-    return () => clearInterval(id);
-  }, []);
+  const sharedClass =
+    "font-semibold tracking-tight leading-[1.06] text-[var(--color-fg-strong)] max-w-4xl mx-auto break-words absolute inset-x-0 top-0 text-center";
+  const sharedStyle = (i: number): React.CSSProperties => ({
+    fontSize: "clamp(2.375rem, 6.6vw, 4.75rem)",
+    letterSpacing: "-0.045em",
+    opacity: i === 0 ? 1 : 0,
+    animation: `${animName} ${total}s linear infinite`,
+    animationDelay: i === 0 ? "0s" : `${i * perPhrase}s`,
+  });
 
-  function handleTransitionEnd(e: React.TransitionEvent<HTMLHeadingElement>) {
-    if (e.propertyName !== "opacity" || !fading) return;
-    setIdx((prev) => (prev + 1) % phrases.length);
-    setFading(false);
-  }
-
-  const p = phrases[idx];
   return (
     <div className="mt-6">
-      {/* Fixed-height wrapper prevents layout shift when phrases wrap to different line counts */}
       <div
         className="relative w-full"
         style={{ height: `calc(3.4 * clamp(2.375rem, 6.6vw, 4.75rem))` }}
       >
-        <h1
-          className="hero-rotate font-semibold tracking-tight leading-[1.06] text-[var(--color-fg-strong)] max-w-4xl mx-auto break-words absolute inset-x-0 top-0 text-center"
-          style={{
-            fontSize: "clamp(2.375rem, 6.6vw, 4.75rem)",
-            letterSpacing: "-0.045em",
-            opacity: fading ? 0 : 1,
-            transition: "opacity 0.22s ease",
-          }}
-          onTransitionEnd={handleTransitionEnd}
-        >
-          {p.pre}
-          <span className="bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-soft)] bg-clip-text text-transparent">
-            {p.hi}
-          </span>
-          {p.post}
-        </h1>
-      </div>
-      <div className="mt-4 flex items-center justify-center gap-1.5">
-        {phrases.map((_, i) => (
-          <span
-            key={i}
-            className={`h-1.5 rounded-full transition-all ${
-              i === idx ? "w-4 bg-[var(--color-accent)]" : "w-1.5 bg-[var(--color-border-strong)]"
-            }`}
-          />
-        ))}
+        {phrases.map((p, i) =>
+          i === 0 ? (
+            <h1 key={i} className={sharedClass} style={sharedStyle(i)}>
+              {p.pre}
+              <span className="bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-soft)] bg-clip-text text-transparent">
+                {p.hi}
+              </span>
+              {p.post}
+            </h1>
+          ) : (
+            <div
+              key={i}
+              aria-hidden="true"
+              className={sharedClass}
+              style={sharedStyle(i)}
+            >
+              {p.pre}
+              <span className="bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-soft)] bg-clip-text text-transparent">
+                {p.hi}
+              </span>
+              {p.post}
+            </div>
+          )
+        )}
       </div>
     </div>
   );

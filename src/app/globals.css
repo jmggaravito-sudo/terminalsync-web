@@ -138,6 +138,22 @@ body {
     0 12px 32px -10px var(--color-accent-glow);
 }
 
+/* Hero rotating headline — CSS-only, no JS re-renders.
+   headline-show-N: phrase visible for 1/N of the total cycle, then hidden.
+   Spanish = 9 phrases (58.5s cycle), English = 7 phrases (45.5s cycle).   */
+@keyframes headline-show-9 {
+  0%     { opacity: 1; }
+  10.7%  { opacity: 1; }
+  11.1%  { opacity: 0; }
+  100%   { opacity: 0; }
+}
+@keyframes headline-show-7 {
+  0%     { opacity: 1; }
+  13.8%  { opacity: 1; }
+  14.3%  { opacity: 0; }
+  100%   { opacity: 0; }
+}
+
 /* Price swap on pricing toggle — quick fade-up so the number change reads
    as intentional without being distracting. */
 @keyframes fade-swap {
