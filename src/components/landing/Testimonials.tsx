@@ -40,7 +40,7 @@ const COPY: Record<
           "Lo que más me sorprendió fue dejar de pensar en chats. Ahora tengo un espacio para ventas, otro para operaciones y otro para contabilidad. Se siente como tener departamentos completos trabajando con IA.",
       },
       {
-        company: "Emprendedor independiente",
+        company: "Kelaya Brokers",
         author: "Christian Reber",
         initials: "CR",
         quote:
@@ -106,7 +106,7 @@ const COPY: Record<
           "What surprised me most was letting go of thinking in chats. Now I have one space for sales, another for operations and another for accounting. It feels like having entire departments working with AI.",
       },
       {
-        company: "Independent entrepreneur",
+        company: "Kelaya Brokers",
         author: "Christian Reber",
         initials: "CR",
         quote:
