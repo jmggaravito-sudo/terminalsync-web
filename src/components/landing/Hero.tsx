@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { ArrowRight, Download, PlayCircle } from "lucide-react";
 import type { Dict, Locale } from "@/content";
-import { VideoLightbox } from "@/components/VideoLightbox";
 
 const VIDEO_SRC: Record<Locale, string> = {
   es: "/assets/terminalsync.mp4",
@@ -44,6 +43,17 @@ const COPY = {
 export function Hero({ dict }: { dict: Dict }) {
   const t = COPY[dict.locale];
   const [videoOpen, setVideoOpen] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  function openVideo() {
+    setVideoOpen(true);
+    setTimeout(() => videoRef.current?.play(), 60);
+  }
+
+  function closeVideo() {
+    videoRef.current?.pause();
+    setVideoOpen(false);
+  }
 
   return (
     <section id="hero" className="relative overflow-hidden">
@@ -94,7 +104,7 @@ export function Hero({ dict }: { dict: Dict }) {
           </a>
           <button
             type="button"
-            onClick={() => setVideoOpen(true)}
+            onClick={openVideo}
             className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold text-[var(--color-fg)] bg-[var(--color-panel)] border border-[var(--color-border-strong)] hover:border-[var(--color-accent)]/40 transition-colors"
           >
             <PlayCircle size={16} strokeWidth={2} />
@@ -125,6 +135,28 @@ export function Hero({ dict }: { dict: Dict }) {
           {t.shotTitle}
         </h2>
 
+        {/* Portada del video con botón ▶ */}
+        <div className="relative mt-6 rounded-2xl overflow-hidden group cursor-pointer shadow-floating">
+          <div style={{ aspectRatio: "1525/909" }}>
+            <img
+              src="/redesign/dashboard-hero.png"
+              alt="TerminalSync dashboard"
+              className="w-full h-full object-cover object-top"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={openVideo}
+            aria-label={dict.locale === "es" ? "Reproducir video" : "Play video"}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            <span className="w-[78px] h-[78px] rounded-full flex items-center justify-center bg-[rgba(15,17,21,0.78)] group-hover:bg-[rgba(15,17,21,0.92)] group-hover:scale-[1.08] transition-all duration-[180ms]">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </span>
+          </button>
+        </div>
 
         {/* Trust bar */}
         <div className="mt-12 md:mt-16 text-center">
@@ -143,12 +175,30 @@ export function Hero({ dict }: { dict: Dict }) {
       </div>
 
       {/* Modal de video */}
-      <VideoLightbox
-        open={videoOpen}
-        onClose={() => setVideoOpen(false)}
-        dict={dict}
-        videoUrl={VIDEO_SRC[dict.locale]}
-      />
+      {videoOpen && (
+        <div
+          onClick={(e) => { if (e.target === e.currentTarget) closeVideo(); }}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.85)", zIndex: 999, display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
+          <div style={{ position: "relative", width: "min(900px, 92vw)" }}>
+            <button
+              aria-label={dict.locale === "es" ? "Cerrar" : "Close"}
+              onClick={closeVideo}
+              style={{ position: "absolute", top: -40, right: 0, background: "none", border: "none", color: "white", fontSize: 28, cursor: "pointer", lineHeight: 1 }}
+            >
+              ✕
+            </button>
+            <video
+              ref={videoRef}
+              playsInline
+              controls
+              style={{ width: "100%", borderRadius: 12, display: "block" }}
+            >
+              <source src={VIDEO_SRC[dict.locale]} type="video/mp4" />
+            </video>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
