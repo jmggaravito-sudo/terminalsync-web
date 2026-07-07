@@ -4,11 +4,8 @@ import { listSkillSlugs } from "@/lib/skills";
 import { TOOL_SLUGS } from "@/lib/vsPages";
 import { GEO_PAGE_SLUGS } from "@/lib/geoPages";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { listSlugs as listBlogSlugs } from "@/lib/blog";
 
-// Active Stack Pack slugs (curated bundles sold in /stacks). Mirrors the
-// existing `listSkillSlugs` / `listConnectorSlugs` pattern but reads from
-// Supabase since bundles live in the DB, not on disk. Returns [] on any
-// error so sitemap generation never blocks on a Supabase outage.
 async function listBundleSlugs(): Promise<string[]> {
   try {
     const sb = getSupabaseAdmin();
@@ -27,10 +24,6 @@ async function listBundleSlugs(): Promise<string[]> {
 const BASE = "https://terminalsync.ai";
 const LANGS = ["es", "en"] as const;
 
-// Sitemap is dynamic: every connector + skill page gets indexed by search
-// engines, in both locales. That's the SEO compound effect we want — each
-// listing becomes a separate entry point that ranks for its own niche
-// keywords ("claude meta ads skill", "codex copywriter skill", etc.).
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const entries: MetadataRoute.Sitemap = [];
@@ -46,10 +39,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const STATIC_PATHS = [
     "ai-terminal",
-    // "marketplace" retirada 2026-06-06 — la página fue eliminada y vive
-    // como 301 redirect a /stacks. Mantenerla en el sitemap haría que
-    // los crawlers redireccionen en cada visita; sacarla los lleva
-    // directo al destino.
     "skills",
     "cli-tools",
     "connectors",
@@ -75,10 +64,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  const [skillSlugs, connectorSlugs, bundleSlugs] = await Promise.all([
+  const [skillSlugs, connectorSlugs, bundleSlugs, blogSlugs] = await Promise.all([
     listSkillSlugs(),
     listConnectorSlugs(),
     listBundleSlugs(),
+    listBlogSlugs(),
   ]);
 
   for (const lang of LANGS) {
@@ -98,8 +88,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.7,
       });
     }
-    // /vs/<tool> SEO comparison pages — TerminalSync vs Cursor / Cline /
-    // Aider / etc. High-priority because each captures long-tail intent.
     for (const tool of TOOL_SLUGS) {
       entries.push({
         url: `${BASE}/${lang}/vs/${tool}`,
@@ -116,8 +104,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.75,
       });
     }
-    // /stacks/<slug> — curated bundles (Stack Packs) sold via marketplace.
-    // High commercial intent so priority matches skills/connectors.
+    for (const slug of blogSlugs) {
+      entries.push({
+        url: `${BASE}/${lang}/blog/${slug}`,
+        lastModified: now,
+        changeFrequency: "monthly",
+        priority: 0.75,
+      });
+    }
     for (const slug of bundleSlugs) {
       entries.push({
         url: `${BASE}/${lang}/stacks/${slug}`,
