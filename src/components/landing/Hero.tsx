@@ -251,14 +251,16 @@ export function Hero({ dict }: { dict: Dict }) {
               className="w-full h-full object-cover object-top"
             />
           </div>
+          {/* Scrim: oscurece levemente la captura para que el botón ▶ no compita con los iconos del UI */}
+          <div className="absolute inset-0 bg-black/30" />
           <button
             type="button"
             onClick={openVideo}
             aria-label={dict.locale === "es" ? "Reproducir video" : "Play video"}
             className="absolute inset-0 flex items-center justify-center"
           >
-            <span className="w-[78px] h-[78px] rounded-full flex items-center justify-center bg-[rgba(15,17,21,0.78)] group-hover:bg-[rgba(15,17,21,0.92)] group-hover:scale-[1.08] transition-all duration-[180ms]">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+            <span className="w-[88px] h-[88px] rounded-full flex items-center justify-center bg-[rgba(15,17,21,0.82)] group-hover:bg-[rgba(15,17,21,0.96)] group-hover:scale-[1.08] transition-all duration-[180ms] ring-2 ring-white/20">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="white" aria-hidden="true">
                 <path d="M8 5v14l11-7z" />
               </svg>
             </span>
