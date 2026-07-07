@@ -1,0 +1,197 @@
+[
+  {
+    "slug": "how-to-give-ai-persistent-memory",
+    "category": "how-to",
+    "painPoint": "Tener que repetir el contexto",
+    "en": {
+      "title": "How to Give Your AI Persistent Memory Across Sessions",
+      "angle": "Step-by-step guide: why AI forgets everything and how to fix it with project workspaces"
+    },
+    "es": {
+      "title": "Cómo Darle Memoria Persistente a Tu IA Entre Sesiones",
+      "angle": "Guía paso a paso: por qué la IA olvida todo y cómo solucionarlo con espacios de trabajo"
+    }
+  },
+  {
+    "slug": "ai-for-project-managers",
+    "category": "use-case",
+    "painPoint": "Procesos manuales repetitivos",
+    "en": {
+      "title": "How Project Managers Are Using AI to Run Projects Without Manual Updates",
+      "angle": "Real use case: connecting AI to project folders, tracking status without copy-pasting"
+    },
+    "es": {
+      "title": "Cómo los Project Managers Usan IA para Gestionar Proyectos sin Actualizaciones Manuales",
+      "angle": "Caso de uso real: conectar la IA a carpetas de proyectos, seguimiento de estado sin copiar y pegar"
+    }
+  },
+  {
+    "slug": "switch-between-claude-gpt-gemini",
+    "category": "how-to",
+    "painPoint": "No saber qué IA utilizar",
+    "en": {
+      "title": "When to Use Claude vs GPT vs Gemini (And How to Switch Without Losing Context)",
+      "angle": "Practical comparison: each model's strengths and how multi-AI workspaces solve the switching problem"
+    },
+    "es": {
+      "title": "Cuándo Usar Claude vs GPT vs Gemini (Y Cómo Cambiar Sin Perder el Contexto)",
+      "angle": "Comparación práctica: las fortalezas de cada modelo y cómo los espacios multi-IA resuelven el problema del cambio"
+    }
+  },
+  {
+    "slug": "ai-workspace-for-consultants",
+    "category": "use-case",
+    "painPoint": "Perder conversaciones importantes",
+    "en": {
+      "title": "Why Consultants Are Building AI Workspaces Per Client (Not Per Chat)",
+      "angle": "How consulting firms organize AI around clients instead of conversations — and why it changes everything"
+    },
+    "es": {
+      "title": "Por Qué los Consultores Están Creando Espacios de IA por Cliente (No por Chat)",
+      "angle": "Cómo las firmas de consultoría organizan la IA alrededor de clientes en lugar de conversaciones"
+    }
+  },
+  {
+    "slug": "ai-operating-system-explained",
+    "category": "explainer",
+    "painPoint": "No entender qué es realmente una IA para empresas",
+    "en": {
+      "title": "What Is an AI Operating System? The Next Layer After ChatGPT",
+      "angle": "Beyond the chat: what separates a toy AI from business-grade AI infrastructure"
+    },
+    "es": {
+      "title": "¿Qué Es un Sistema Operativo de IA? La Próxima Capa Después de ChatGPT",
+      "angle": "Más allá del chat: qué separa una IA de juguete de una infraestructura de IA para empresas"
+    }
+  },
+  {
+    "slug": "automate-workflows-with-ai-agents",
+    "category": "how-to",
+    "painPoint": "No poder dejar trabajando a la IA mientras no está presente",
+    "en": {
+      "title": "How to Run AI Agents in the Background While You Do Other Work",
+      "angle": "Background automation: setting up AI agents that execute tasks without you being present"
+    },
+    "es": {
+      "title": "Cómo Dejar a los Agentes de IA Trabajando en Segundo Plano Mientras Hacés Otra Cosa",
+      "angle": "Automatización en segundo plano: configurar agentes de IA que ejecutan tareas sin tu presencia"
+    }
+  },
+  {
+    "slug": "ai-workspace-for-law-firms",
+    "category": "use-case",
+    "painPoint": "Procesos manuales repetitivos",
+    "en": {
+      "title": "How Law Firms Are Using AI Workspaces to Handle Repetitive Work",
+      "angle": "Legal industry use case: document review, contract drafting, case summaries with persistent AI context"
+    },
+    "es": {
+      "title": "Cómo los Estudios de Abogados Usan Espacios de IA para el Trabajo Repetitivo",
+      "angle": "Caso de uso legal: revisión de documentos, redacción de contratos, resúmenes con contexto de IA persistente"
+    }
+  },
+  {
+    "slug": "rag-vs-project-memory",
+    "category": "explainer",
+    "painPoint": "Confusión sobre qué es realmente la IA empresarial",
+    "en": {
+      "title": "RAG vs Project Memory: What's the Difference and Which One Do You Need?",
+      "angle": "Technical explainer without jargon: why TerminalSync is not just RAG but a full AI workspace"
+    },
+    "es": {
+      "title": "RAG vs Memoria de Proyecto: ¿Cuál es la Diferencia y Cuál Necesitás?",
+      "angle": "Explicación técnica sin jerga: por qué TerminalSync no es solo RAG sino un espacio de trabajo de IA completo"
+    }
+  },
+  {
+    "slug": "ai-workspace-for-real-estate",
+    "category": "use-case",
+    "painPoint": "Subir los mismos archivos una y otra vez",
+    "en": {
+      "title": "How Real Estate Agencies Are Using AI to Manage Listings, Clients and Contracts",
+      "angle": "Real estate use case: one workspace per client, AI that knows every property and every deal"
+    },
+    "es": {
+      "title": "Cómo las Inmobiliarias Usan IA para Gestionar Propiedades, Clientes y Contratos",
+      "angle": "Caso de uso inmobiliario: un espacio por cliente, IA que conoce cada propiedad y cada operación"
+    }
+  },
+  {
+    "slug": "digital-team-ai-agents",
+    "category": "explainer",
+    "painPoint": "Procesos manuales repetitivos",
+    "en": {
+      "title": "Your Digital Team: What It Means to Have AI Agents That Think, Build and Execute",
+      "angle": "The shift from AI as a tool to AI as a team member — agents that run processes end to end"
+    },
+    "es": {
+      "title": "Tu Equipo Digital: Qué Significa Tener Agentes de IA que Piensan, Construyen y Ejecutan",
+      "angle": "El cambio de IA como herramienta a IA como miembro del equipo — agentes que ejecutan procesos de extremo a extremo"
+    }
+  },
+  {
+    "slug": "how-to-sync-claude-between-devices",
+    "category": "how-to",
+    "painPoint": "Perder el trabajo al cambiar de dispositivo",
+    "en": {
+      "title": "How to Keep Your Claude Context When Switching Between Computers",
+      "angle": "Practical guide: syncing AI sessions, memory and files across Mac, Windows and Linux"
+    },
+    "es": {
+      "title": "Cómo Mantener el Contexto de Claude al Cambiar de Computadora",
+      "angle": "Guía práctica: sincronizar sesiones, memoria y archivos de IA entre Mac, Windows y Linux"
+    }
+  },
+  {
+    "slug": "ai-workspace-for-marketing-agencies",
+    "category": "use-case",
+    "painPoint": "Repetir contexto de marca y clientes",
+    "en": {
+      "title": "How Marketing Agencies Run Multiple Client AIs Without Mixing Up Contexts",
+      "angle": "Agency use case: separate AI workspaces per client, brand voice and assets always in context"
+    },
+    "es": {
+      "title": "Cómo las Agencias de Marketing Manejan Múltiples Clientes de IA Sin Mezclar Contextos",
+      "angle": "Caso de uso de agencia: espacios de IA separados por cliente, voz de marca y assets siempre en contexto"
+    }
+  },
+  {
+    "slug": "leave-ai-working-overnight",
+    "category": "how-to",
+    "painPoint": "No poder dejar trabajando a la IA mientras no está presente",
+    "en": {
+      "title": "How to Leave Your AI Working Overnight (And Find the Work Done in the Morning)",
+      "angle": "Setting up autonomous AI tasks: what's possible, what's safe, and how workspaces make it reliable"
+    },
+    "es": {
+      "title": "Cómo Dejar Tu IA Trabajando de Noche (Y Encontrar el Trabajo Listo por la Mañana)",
+      "angle": "Configurar tareas autónomas de IA: qué es posible, qué es seguro y cómo los espacios de trabajo lo hacen confiable"
+    }
+  },
+  {
+    "slug": "ai-workspace-vs-chatgpt",
+    "category": "comparison",
+    "painPoint": "No entender la diferencia entre ChatGPT y un workspace",
+    "en": {
+      "title": "AI Workspace vs ChatGPT: Why a Chat Is Not Enough for Business Work",
+      "angle": "Honest comparison: what ChatGPT does well and where it falls short for ongoing business work"
+    },
+    "es": {
+      "title": "AI Workspace vs ChatGPT: Por Qué un Chat No Es Suficiente para el Trabajo Empresarial",
+      "angle": "Comparación honesta: lo que ChatGPT hace bien y dónde se queda corto para trabajo empresarial continuo"
+    }
+  },
+  {
+    "slug": "first-day-context-for-ai",
+    "category": "explainer",
+    "painPoint": "La IA no entiende el proyecto desde el primer día",
+    "en": {
+      "title": "What It Means for Your AI to Understand the Project From Day One",
+      "angle": "The difference between starting cold and starting oriented — how workspaces pre-load project intelligence"
+    },
+    "es": {
+      "title": "Qué Significa que Tu IA Entienda el Proyecto Desde el Primer Día",
+      "angle": "La diferencia entre empezar en frío y empezar orientado — cómo los espacios de trabajo pre-cargan la inteligencia del proyecto"
+    }
+  }
+]
