@@ -15,6 +15,7 @@ import { UseCases } from "@/components/landing/UseCases";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { BeforeAfter } from "@/components/landing/BeforeAfter";
 import { MidCta } from "@/components/landing/MidCta";
+import { Testimonials } from "@/components/landing/Testimonials";
 import { Pricing } from "@/components/landing/Pricing";
 import { Trust } from "@/components/landing/Trust";
 import { Footer } from "@/components/landing/Footer";
@@ -71,6 +72,7 @@ export default async function Landing({ params }: Props) {
       <BeforeAfter dict={d} />
       <Comparison dict={d} />
       <ChromeExtensionTeaser dict={d} />
+      <Testimonials lang={lang} />
       <Pricing dict={d} />
       <Trust dict={d} />
       <FAQ dict={d} />
