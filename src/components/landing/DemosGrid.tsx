@@ -207,6 +207,7 @@ export function DemosGrid({ lang }: { lang: Locale }) {
                 <iframe
                   src={`${demo.src}?lang=${lang}&embed=1`}
                   title={demo.title}
+                  sandbox=""
                   className="w-full h-[180px] md:h-[250px] border-0 block"
                   style={{
                     filter: "blur(9px)",
