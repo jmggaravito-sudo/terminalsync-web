@@ -286,6 +286,19 @@ body {
   font-weight: 600;
 }
 
+/* §01 Hero — acento en titulares rotativos */
+.grad {
+  background: linear-gradient(to bottom right, var(--color-accent), var(--color-accent-soft));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Transitions are only triggered by JS; this is an extra safety net. */
+  .hero-rot, .hero-sub { transition: none !important; }
+}
+
 /* §01 Hero — fade del subhead rotativo */
 @keyframes heroRotateFade {
   from { opacity: 0; transform: translateY(4px); }

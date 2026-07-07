@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import { ArrowRight, Download, PlayCircle } from "lucide-react";
 import type { Dict, Locale } from "@/content";
 
@@ -9,13 +9,132 @@ const VIDEO_SRC: Record<Locale, string> = {
   en: "/assets/terminalsync-en.mp4",
 };
 
+// 10 rotating pairs — headline (h) + subtitle (s).
+// <span class="grad"> receives the brand accent gradient.
+const ROTATE_DATA: Record<Locale, Array<{ h: string; s: string }>> = {
+  es: [
+    {
+      h: 'Tu empresa trabaja con IA, <span class="grad">incluso cuando tú no estás.</span>',
+      s: "Supervisa el trabajo desde cualquier dispositivo.",
+    },
+    {
+      h: 'La IA trabaja <span class="grad">donde ya viven tus archivos.</span>',
+      s: "No lleves tus archivos a la IA. Lleva la IA hasta ellos.",
+    },
+    {
+      h: 'Deja de subir documentos. <span class="grad">Conecta la IA a tus carpetas.</span>',
+      s: "Trabaja siempre con la versión más reciente de tus archivos.",
+    },
+    {
+      h: 'Cada cliente, proyecto o área tiene <span class="grad">su propia memoria.</span>',
+      s: "La IA nunca pierde el contexto de tu trabajo.",
+    },
+    {
+      h: 'No es otro chat. <span class="grad">Es tu oficina digital con IA.</span>',
+      s: "Porque trabajar es mucho más que conversar.",
+    },
+    {
+      h: 'Convierte cada proceso de tu empresa en <span class="grad">un trabajador digital.</span>',
+      s: "Cada área puede tener su propio equipo de IA.",
+    },
+    {
+      h: 'Tu trabajo continúa <span class="grad">aunque cierres el computador.</span>',
+      s: "TerminalSync puede seguir trabajando mientras tú haces otras cosas.",
+    },
+    {
+      h: 'Usa Claude, Codex y Gemini <span class="grad">sin perder el contexto.</span>',
+      s: "Siempre podrás continuar con la IA más conveniente.",
+    },
+    {
+      h: 'Tu empresa <span class="grad">recuerda, organiza y ejecuta.</span>',
+      s: "TerminalSync: tu equipo digital organizado.",
+    },
+    {
+      h: 'La IA cambia cada pocos meses. <span class="grad">El trabajo de tu empresa permanece.</span>',
+      s: "TerminalSync une los dos mundos.",
+    },
+  ],
+  en: [
+    {
+      h: 'Your business works with AI, <span class="grad">even when you\'re away.</span>',
+      s: "Monitor the work from any device.",
+    },
+    {
+      h: 'AI works <span class="grad">where your files already live.</span>',
+      s: "Don't bring your files to the AI. Bring the AI to them.",
+    },
+    {
+      h: 'Stop uploading documents. <span class="grad">Connect AI to your folders.</span>',
+      s: "Always work with the latest version of your files.",
+    },
+    {
+      h: 'Every client, project or team has <span class="grad">its own memory.</span>',
+      s: "The AI never loses the context of your work.",
+    },
+    {
+      h: 'It\'s not another chat. <span class="grad">It\'s your digital office with AI.</span>',
+      s: "Because work is much more than a conversation.",
+    },
+    {
+      h: 'Turn every process in your business into <span class="grad">a digital worker.</span>',
+      s: "Each team can have its own AI crew.",
+    },
+    {
+      h: 'Your work keeps going <span class="grad">even after you close your laptop.</span>',
+      s: "TerminalSync keeps working while you do other things.",
+    },
+    {
+      h: 'Use Claude, Codex and Gemini <span class="grad">without losing context.</span>',
+      s: "Always pick up with whichever AI suits you best.",
+    },
+    {
+      h: 'Your business <span class="grad">remembers, organizes and executes.</span>',
+      s: "TerminalSync: your digital team, organized.",
+    },
+    {
+      h: 'AI changes every few months. <span class="grad">Your company\'s work stays.</span>',
+      s: "TerminalSync bridges both worlds.",
+    },
+  ],
+};
+
+// Module-level helpers — take DOM elements as args so they're free of closure deps.
+function doLock(
+  head: HTMLDivElement,
+  rot: HTMLHeadingElement,
+  sub: HTMLParagraphElement,
+) {
+  head.style.minHeight = "";
+  const ph = rot.innerHTML, ps = sub.innerHTML;
+  let max = 0;
+  for (const l of ["es", "en"] as Locale[]) {
+    for (const pair of ROTATE_DATA[l]) {
+      rot.innerHTML = pair.h;
+      sub.innerHTML = pair.s;
+      const h = head.offsetHeight;
+      if (h > max) max = h;
+    }
+  }
+  rot.innerHTML = ph;
+  sub.innerHTML = ps;
+  head.style.minHeight = `${max}px`;
+}
+
+function doPaint(
+  rot: HTMLHeadingElement,
+  sub: HTMLParagraphElement,
+  lang: Locale,
+  idx: number,
+) {
+  const d = ROTATE_DATA[lang][idx];
+  rot.innerHTML = d.h;
+  sub.innerHTML = d.s;
+}
+
 const COPY = {
   es: {
-    eyebrow: "Piensan, construyen y ejecutan. Tú diriges el equipo.",
-    subtitle:
-      "Describe cómo funciona tu empresa. TerminalSync crea los programas, recuerda todo el contexto y sigue mejorándolo contigo.",
-    results: "",
-    resultsStrong: "Crea en minutos: CRM · Portales · Dashboards · Inventarios · Propuestas · Automatizaciones · Reportes · Cotizadores",
+    resultsStrong:
+      "Crea en minutos: CRM · Portales · Dashboards · Inventarios · Propuestas · Automatizaciones · Reportes · Cotizadores",
     ctaPrimary: "Empieza gratis",
     ctaSecondary: "Mira cómo funciona",
     os: "macOS · Linux · Windows",
@@ -25,11 +144,8 @@ const COPY = {
     trustCount: "Más de 2,000 empresas ya confían en TerminalSync",
   },
   en: {
-    eyebrow: "They think, build and execute. You run the team.",
-    subtitle:
-      "Describe how your business works. TerminalSync builds the tools, remembers everything, and keeps improving with you.",
-    results: "",
-    resultsStrong: "Build in minutes: CRM · Portals · Dashboards · Inventory · Proposals · Automations · Reports · Quotes",
+    resultsStrong:
+      "Build in minutes: CRM · Portals · Dashboards · Inventory · Proposals · Automations · Reports · Quotes",
     ctaPrimary: "Start free",
     ctaSecondary: "See how it works",
     os: "macOS · Linux · Windows",
@@ -65,7 +181,7 @@ export function Hero({ dict }: { dict: Dict }) {
         }}
       />
       <div className="relative mx-auto max-w-5xl px-5 md:px-6 pt-12 sm:pt-16 md:pt-20 pb-10 text-center">
-        {/* Prefijo estático encima del H1 rotativo */}
+        {/* Prefijo estático */}
         <p
           className="mb-2 font-mono uppercase text-[var(--color-fg-strong)] opacity-75"
           style={{ letterSpacing: "0.08em", fontSize: "14px" }}
@@ -73,19 +189,11 @@ export function Hero({ dict }: { dict: Dict }) {
           {t.prefixLabel}
         </p>
 
-        {/* Titular grande rotativo */}
-        <RotatingHeadline lang={dict.locale} />
-
-        <p
-          className="mt-5 text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed"
-          style={{ fontSize: "clamp(0.9375rem, 1.6vw, 1.125rem)" }}
-        >
-          {t.subtitle}
-        </p>
+        {/* Titular + subtítulo rotativos sincronizados */}
+        <RotatingPair lang={dict.locale} />
 
         {/* Línea de resultados */}
         <p className="mt-4 text-[14px] text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed">
-          {t.results}
           <strong className="font-bold text-[var(--color-fg-strong)]">
             {t.resultsStrong}
           </strong>
@@ -127,7 +235,6 @@ export function Hero({ dict }: { dict: Dict }) {
 
       {/* Dashboard */}
       <div className="relative mx-auto max-w-6xl px-3 sm:px-5 md:px-6 pb-16 md:pb-20">
-        {/* Shot title */}
         <h2
           className="text-center font-semibold text-[var(--color-fg-strong)] leading-tight max-w-[18ch] mx-auto mb-4"
           style={{ fontSize: "clamp(26px, 4vw, 42px)", letterSpacing: "-0.035em" }}
@@ -177,14 +284,34 @@ export function Hero({ dict }: { dict: Dict }) {
       {/* Modal de video */}
       {videoOpen && (
         <div
-          onClick={(e) => { if (e.target === e.currentTarget) closeVideo(); }}
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.85)", zIndex: 999, display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeVideo();
+          }}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,.85)",
+            zIndex: 999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <div style={{ position: "relative", width: "min(900px, 92vw)" }}>
             <button
               aria-label={dict.locale === "es" ? "Cerrar" : "Close"}
               onClick={closeVideo}
-              style={{ position: "absolute", top: -40, right: 0, background: "none", border: "none", color: "white", fontSize: 28, cursor: "pointer", lineHeight: 1 }}
+              style={{
+                position: "absolute",
+                top: -40,
+                right: 0,
+                background: "none",
+                border: "none",
+                color: "white",
+                fontSize: 28,
+                cursor: "pointer",
+                lineHeight: 1,
+              }}
             >
               ✕
             </button>
@@ -202,7 +329,6 @@ export function Hero({ dict }: { dict: Dict }) {
     </section>
   );
 }
-
 
 function TrustLogo({ name }: { name: string }) {
   const logoMap: Record<string, string> = {
@@ -234,79 +360,102 @@ function TrustLogo({ name }: { name: string }) {
   );
 }
 
-/** Frases maestras completas para el titular del Hero (bilingüe). */
-type Headline = { pre: string; hi: string; post: string };
-const HERO_HEADLINES: Record<Locale, Headline[]> = {
-  es: [
-    { pre: "La forma más fácil de ", hi: "crear programas", post: " para tu empresa con IA." },
-    { pre: "Deja de comprar programas, empieza a ", hi: "crearlos", post: "." },
-    { pre: "Tu oficina ", hi: "cabe en cualquier computadora", post: "." },
-    { pre: "Describe el problema. Tus IAs ", hi: "construyen la solución", post: "." },
-    { pre: "Claude, Codex y Gemini. ", hi: "Una sola memoria", post: "." },
-    { pre: "Convierte tus ideas en ", hi: "herramientas reales", post: " hablando con IA." },
-    { pre: "Multiplica tu capacidad, ", hi: "sin multiplicar tu nómina", post: "." },
-    { pre: "Tu empresa ahora ", hi: "recuerda todo", post: "." },
-    { pre: "Cada problema nuevo ", hi: "ya no necesita otro programa", post: "." },
-  ],
-  en: [
-    { pre: "Turn your ideas into ", hi: "real tools", post: " by talking to AI." },
-    { pre: "Your AI ", hi: "learns your business", post: " and never forgets." },
-    { pre: "Go from one AI to ", hi: "a team of AIs", post: "." },
-    { pre: "Multiply your capacity ", hi: "without growing payroll", post: "." },
-    { pre: "The AI writes the code. ", hi: "You run the business", post: "." },
-    { pre: "When one AI stops, ", hi: "another continues", post: "." },
-    { pre: "Your office ", hi: "fits in any computer", post: "." },
-  ],
-};
+// React.memo prevents re-renders when Hero's videoOpen state changes,
+// which would otherwise reset dangerouslySetInnerHTML to pair 0.
+const RotatingPair = React.memo(function RotatingPair({ lang }: { lang: Locale }) {
+  const headRef = useRef<HTMLDivElement>(null);
+  const rotRef = useRef<HTMLHeadingElement>(null);
+  const subRef = useRef<HTMLParagraphElement>(null);
+  const idxRef = useRef(0);
+  // Always reflects the latest lang without restarting the interval.
+  const langRef = useRef(lang);
+  langRef.current = lang;
 
-function RotatingHeadline({ lang }: { lang: Locale }) {
-  const phrases = HERO_HEADLINES[lang];
-  const n = phrases.length;
-  const perPhrase = 6.5;
-  const total = n * perPhrase;
-  const animName = `headline-show-${n}`;
+  // Runs before browser paint — paint + re-lock on every lang change (no flash).
+  useLayoutEffect(() => {
+    const head = headRef.current;
+    const rot = rotRef.current;
+    const sub = subRef.current;
+    if (!head || !rot || !sub) return;
+    doPaint(rot, sub, lang, idxRef.current);
+    doLock(head, rot, sub);
+  }, [lang]);
 
-  const sharedClass =
-    "font-semibold tracking-tight leading-[1.06] text-[var(--color-fg-strong)] max-w-4xl mx-auto break-words absolute inset-x-0 top-0 text-center";
-  const sharedStyle = (i: number): React.CSSProperties => ({
-    fontSize: "clamp(2.375rem, 6.6vw, 4.75rem)",
-    letterSpacing: "-0.045em",
-    opacity: i === 0 ? 1 : 0,
-    animation: `${animName} ${total}s linear infinite`,
-    animationDelay: i === 0 ? "0s" : `${i * perPhrase}s`,
-  });
+  // Interval + resize + ts-lang — mounted once, never restarted.
+  useEffect(() => {
+    const head = headRef.current!;
+    const rot = rotRef.current!;
+    const sub = subRef.current!;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => doLock(head, rot, sub), 150);
+    };
+    window.addEventListener("resize", onResize, { passive: true });
+
+    // External language-change event (dispatched by the i18n switcher).
+    const onLangChange = () => {
+      doPaint(rot, sub, langRef.current, idxRef.current);
+      doLock(head, rot, sub);
+    };
+    window.addEventListener("ts-lang", onLangChange);
+
+    const timer = setInterval(() => {
+      idxRef.current =
+        (idxRef.current + 1) % ROTATE_DATA[langRef.current].length;
+
+      if (reduce) {
+        doPaint(rot, sub, langRef.current, idxRef.current);
+        return;
+      }
+
+      rot.style.opacity = "0";
+      rot.style.transform = "translateY(12px)";
+      sub.style.opacity = "0";
+      sub.style.transform = "translateY(10px)";
+
+      setTimeout(() => {
+        doPaint(rot, sub, langRef.current, idxRef.current);
+        rot.style.opacity = "1";
+        rot.style.transform = "";
+        sub.style.opacity = "1";
+        sub.style.transform = "";
+      }, 420);
+    }, 6000);
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(resizeTimer);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("ts-lang", onLangChange);
+    };
+  }, []);
 
   return (
-    <div className="mt-6">
-      <div
-        className="relative w-full"
-        style={{ height: `calc(3.4 * clamp(2.375rem, 6.6vw, 4.75rem))` }}
-      >
-        {phrases.map((p, i) =>
-          i === 0 ? (
-            <h1 key={i} className={sharedClass} style={sharedStyle(i)}>
-              {p.pre}
-              <span className="bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-soft)] bg-clip-text text-transparent">
-                {p.hi}
-              </span>
-              {p.post}
-            </h1>
-          ) : (
-            <div
-              key={i}
-              aria-hidden="true"
-              className={sharedClass}
-              style={sharedStyle(i)}
-            >
-              {p.pre}
-              <span className="bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-soft)] bg-clip-text text-transparent">
-                {p.hi}
-              </span>
-              {p.post}
-            </div>
-          )
-        )}
-      </div>
+    <div ref={headRef} className="mt-6 pb-1">
+      <h1
+        ref={rotRef}
+        className="font-semibold tracking-tight leading-[1.06] text-[var(--color-fg-strong)] max-w-4xl mx-auto text-center break-words"
+        style={{
+          fontSize: "clamp(2.375rem, 6.6vw, 4.75rem)",
+          letterSpacing: "-0.045em",
+          transition: "opacity .42s ease, transform .42s ease",
+        }}
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: ROTATE_DATA[lang][0].h }}
+      />
+      <p
+        ref={subRef}
+        className="mt-5 text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed text-center"
+        style={{
+          fontSize: "clamp(0.9375rem, 1.6vw, 1.125rem)",
+          transition: "opacity .42s ease, transform .42s ease",
+        }}
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: ROTATE_DATA[lang][0].s }}
+      />
     </div>
   );
-}
+});
