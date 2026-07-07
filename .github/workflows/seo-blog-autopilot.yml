@@ -1,0 +1,58 @@
+name: SEO Blog Autopilot
+
+on:
+  schedule:
+    # Every day at 09:00 UTC
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+    inputs:
+      topic_slug:
+        description: "Force a specific topic slug (leave empty for auto-pick)"
+        required: false
+        default: ""
+      dry_run:
+        description: "Dry run (no Claude API call)"
+        required: false
+        default: "false"
+
+jobs:
+  generate-post:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate post
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TOPIC_SLUG: ${{ github.event.inputs.topic_slug }}
+          DRY_RUN: ${{ github.event.inputs.dry_run == 'true' && '1' || '0' }}
+          POST_DATE: ""
+        run: node scripts/seo-autopilot/generate-post.mjs
+
+      - name: Check for new files
+        id: check
+        run: |
+          if git diff --quiet HEAD -- content/blog/; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "seo-autopilot[bot]"
+          git config user.email "noreply@anthropic.com"
+          git add content/blog/
+          SLUG=$(git diff --cached --name-only | head -1 | sed 's|content/blog/en/||' | sed 's|\.md||' | sed 's|^[0-9-]*/||' || echo "new-post")
+          git commit -m "content(blog): auto-generated post — $SLUG"
+          git push origin main
