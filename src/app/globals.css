@@ -30,8 +30,8 @@
   --color-claude: #d97757;
   --color-claude-soft: #e8946d;
   --color-claude-glow: color-mix(in oklch, #d97757 18%, transparent);
-  --color-codex: #2dd4a7;
-  --color-gemini: #5b9cff;
+  --color-codex: #10a37f;
+  --color-gemini: #4a7cf0;
 
   /* Soft floating shadow — long, diffuse ink so cards feel like they hover
      above white paper, never stamped onto it. */
