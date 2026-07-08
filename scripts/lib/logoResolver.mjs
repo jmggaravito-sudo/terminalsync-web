@@ -2,10 +2,10 @@
  * Logo resolver — runtime-agnostic ESM mirror of
  * src/lib/marketplace/logoResolver.ts.
  *
- * Kept as a separate file so Node-only scripts (auto_promote_connectors,
- * backfill_logos) can import it without a TypeScript loader. The two files
- * must stay behaviorally identical — if you change the cascade in the
- * TypeScript module, mirror the change here.
+ * Kept as a separate file so Node-only scripts such as backfill_logos can
+ * import it without a TypeScript loader. The two files must stay behaviorally
+ * identical — if you change the cascade in the TypeScript module, mirror the
+ * change here.
  */
 
 const BRANDFETCH_CLIENT_ID = "1idV7VfdJ_5wKnIeShI";

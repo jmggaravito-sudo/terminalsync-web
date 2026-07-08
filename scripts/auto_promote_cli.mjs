@@ -1,10 +1,9 @@
 /**
  * Auto-promote `discovery_cli_tools` rows into `cli_tool_listings`.
  *
- * Sister of `auto_promote_connectors.mjs`, with a stricter quality bar
- * because CLIs ship a binary into the user's $PATH — a bad row costs
- * the user real time. JM's rule: "toca traer solo lo bueno y lo
- * probado".
+ * CLIs use a stricter quality bar because they ship a binary into the user's
+ * $PATH — a bad row costs the user real time. JM's rule: "toca traer solo lo
+ * bueno y lo probado".
  *
  * Hard requirements for auto-promote (all must hold):
  *   - review_status = 'pending'

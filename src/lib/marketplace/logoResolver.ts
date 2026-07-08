@@ -1,8 +1,7 @@
 /**
  * Logo resolver for marketplace listings.
  *
- * The auto-promote pipeline (n8n → Supabase → scripts/auto_promote_connectors.mjs)
- * inserts `connector_listings` rows without a real logo — they end up with
+ * Some marketplace rows can arrive without a real logo — they end up with
  * empty strings or `/connectors/<slug>.svg` placeholders that don't exist on
  * disk. The result is a blank rounded square in every catalog card.
  *
