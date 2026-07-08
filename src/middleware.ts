@@ -29,6 +29,7 @@ export function middleware(req: NextRequest) {
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
+    pathname.startsWith("/admin") || // non-localized admin routes, e.g. /admin/loop-runs
     pathname.startsWith("/oauth") || // OAuth callback is language-agnostic
     pathname.startsWith("/picker") || // Google Picker bridge for desktop app
     pathname.startsWith("/auth/callback") || // Supabase magic-link landing
