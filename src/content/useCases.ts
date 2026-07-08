@@ -1,9 +1,8 @@
 // TerminalSync — Use Cases data module
-// Tab 1: 28 prompt cases (CASES). Tab 2: 12 automated jobs (JOBS).
+// Tab 1: 29 prompt cases (CASES). Tab 2: 12 automated jobs (JOBS).
 
-export type AI = "claude" | "codex" | "gemini" | "multi";
-export type Level = "starter" | "pro";
-export type Cadence = "daily" | "weekly" | "monthly" | "event";
+export type AI = "Claude" | "Codex" | "Gemini";
+export type Level = "basico" | "intermedio" | "avanzado";
 
 export interface Area {
   id: string;
@@ -14,7 +13,7 @@ export interface Area {
 
 export interface AIWhy {
   id: AI;
-  cssVar: string;
+  color: string;
   es: string;
   en: string;
 }
@@ -30,7 +29,7 @@ export interface UseCase {
   area: string;
   ai: AI;
   level: Level;
-  used?: string;
+  used?: boolean;
   es: { t: string; d: string; p: string };
   en: { t: string; d: string; p: string };
 }
@@ -42,410 +41,739 @@ export interface JobCategory {
   en: string;
 }
 
-export interface CadenceMeta {
-  id: Cadence;
-  icon: string;
-  es: string;
-  en: string;
-}
-
 export interface Job {
   id: string;
-  category: string;
+  cat: string;
   ai: AI;
-  level: Level;
-  cadence: Cadence;
-  es: {
-    t: string;
-    d: string;
-    steps: string[];
-    report: string;
-  };
-  en: {
-    t: string;
-    d: string;
-    steps: string[];
-    report: string;
-  };
+  es: { t: string; d: string; cad: string; rep: string; steps: string[] };
+  en: { t: string; d: string; cad: string; rep: string; steps: string[] };
 }
 
 // ─── Tab 1 metadata ───────────────────────────────────────────────────────────
 
 export const AREAS: Area[] = [
-  { id: "sync",         icon: "🔄", es: "Sync & Memoria",  en: "Sync & Memory"    },
-  { id: "multi-ai",     icon: "🤖", es: "Multi-IA",        en: "Multi-AI"         },
-  { id: "messaging",    icon: "💬", es: "Mensajería",      en: "Messaging"        },
-  { id: "integrations", icon: "🔌", es: "Integraciones",   en: "Integrations"     },
-  { id: "automation",   icon: "⚙️",  es: "Automatización",  en: "Automation"       },
-  { id: "analysis",     icon: "📊", es: "Análisis",        en: "Analysis"         },
+  { id: "usados",      icon: "⭐", es: "Más usados",                en: "Most used"              },
+  { id: "todas",       icon: "",   es: "Todas las áreas",           en: "All areas"              },
+  { id: "clientes",    icon: "🎯", es: "Conseguir más clientes",    en: "Win more clients"       },
+  { id: "marketing",   icon: "📣", es: "Marketing",                 en: "Marketing"              },
+  { id: "atencion",    icon: "💬", es: "Atención al cliente",       en: "Customer service"       },
+  { id: "operaciones", icon: "⚙️", es: "Operaciones",               en: "Operations"             },
+  { id: "rrhh",        icon: "👥", es: "Recursos Humanos",          en: "Human Resources"        },
+  { id: "finanzas",    icon: "💰", es: "Finanzas",                  en: "Finance"                },
+  { id: "legal",       icon: "⚖️", es: "Legal",                     en: "Legal"                  },
+  { id: "ecommerce",   icon: "🛒", es: "E-commerce",                en: "E-commerce"             },
+  { id: "software",    icon: "🛠️", es: "Automatización y Software", en: "Automation & Software"  },
+  { id: "direccion",   icon: "🧭", es: "Dirección y estrategia",    en: "Strategy & leadership"  },
+  { id: "continuidad", icon: "🔁", es: "Continuidad",               en: "Continuity"             },
 ];
 
 export const AI_WHY: AIWhy[] = [
-  { id: "claude",  cssVar: "var(--color-claude)",  es: "Razonamiento profundo y escritura de largo aliento.",      en: "Deep reasoning and long-form writing."                    },
-  { id: "codex",   cssVar: "var(--color-codex)",   es: "Generación de código, debugging y tareas técnicas.",       en: "Code generation, debugging, and technical tasks."         },
-  { id: "gemini",  cssVar: "var(--color-gemini)",  es: "Análisis de datos, documentos y búsqueda en tiempo real.", en: "Data analysis, documents, and real-time search."          },
-  { id: "multi",   cssVar: "var(--color-accent)",  es: "Tarea dividida entre modelos para máximos resultados.",    en: "Task split across models for maximum results."            },
+  { id: "Claude", color: "var(--color-accent)", es: "Mejor para redactar, organizar y pensar.",          en: "Best for writing, organizing and thinking."      },
+  { id: "Codex",  color: "#10b981",             es: "Mejor para construir herramientas y automatizar.", en: "Best for building tools and automating."         },
+  { id: "Gemini", color: "#3b82f6",             es: "Mejor para analizar documentos y datos.",          en: "Best for analyzing documents and data."          },
 ];
 
-export const LEVELS: LevelMeta[] = [
-  { id: "starter", es: "Starter", en: "Starter" },
-  { id: "pro",     es: "Pro",     en: "Pro"     },
+export const LEVEL_LABELS: LevelMeta[] = [
+  { id: "basico",     es: "Básico",     en: "Basic"        },
+  { id: "intermedio", es: "Intermedio", en: "Intermediate" },
+  { id: "avanzado",   es: "Avanzado",   en: "Advanced"     },
 ];
 
 // ─── Tab 2 metadata ───────────────────────────────────────────────────────────
 
-export const JOB_CATEGORIES: JobCategory[] = [
-  { id: "reportes",      icon: "📋", es: "Reportes",       en: "Reports"       },
-  { id: "comunicacion",  icon: "✉️",  es: "Comunicación",   en: "Communication" },
-  { id: "research",      icon: "🔍", es: "Investigación",  en: "Research"      },
-  { id: "contenido",     icon: "✍️",  es: "Contenido",      en: "Content"       },
-  { id: "mantenimiento", icon: "🛠️",  es: "Mantenimiento",  en: "Maintenance"   },
+export const JOB_CATS: JobCategory[] = [
+  { id: "todos",        icon: "",   es: "Todos",        en: "All"        },
+  { id: "ventas",       icon: "🎯", es: "Ventas",       en: "Sales"      },
+  { id: "marketing",    icon: "📣", es: "Marketing",    en: "Marketing"  },
+  { id: "operaciones",  icon: "⚙️", es: "Operaciones",  en: "Operations" },
+  { id: "legal",        icon: "⚖️", es: "Legal",        en: "Legal"      },
+  { id: "alojamientos", icon: "🏠", es: "Alojamientos", en: "Rentals"    },
+  { id: "software",     icon: "🛠️", es: "Software",     en: "Software"   },
 ];
 
-export const CADENCES: CadenceMeta[] = [
-  { id: "daily",   icon: "☀️",  es: "Diario",    en: "Daily"         },
-  { id: "weekly",  icon: "📅", es: "Semanal",   en: "Weekly"        },
-  { id: "monthly", icon: "🗓️", es: "Mensual",   en: "Monthly"       },
-  { id: "event",   icon: "⚡", es: "Por evento", en: "Event-driven"  },
-];
-
-// ─── Tab 1: 28 prompt cases ───────────────────────────────────────────────────
+// ─── Tab 1: 29 prompt cases ───────────────────────────────────────────────────
 
 export const CASES: UseCase[] = [
-  // — SYNC & MEMORIA (4) —
   {
-    id: "sync-1", area: "sync", ai: "claude", level: "starter", used: "Consultores, Fundadores",
-    es: { t: "Retomá donde lo dejaste", d: "Abrís TerminalSync en tu segunda computadora y el contexto completo de tu sesión anterior ya está cargado. Sin explicarle nada a la IA.", p: "Ideal para quien trabaja entre laptop y escritorio. Eliminá el ritual de «resumime el proyecto» cada mañana." },
-    en: { t: "Pick up where you left off", d: "Open TerminalSync on your second computer and your full previous session context is already loaded. No need to explain anything to the AI.", p: "Ideal for anyone working between a laptop and desktop. Eliminate the 'summarize the project for me' ritual every morning." },
+    id: "propuesta", area: "clientes", ai: "Claude", level: "basico", used: true,
+    es: {
+      t: "Crear propuesta comercial",
+      d: "Genera una propuesta profesional lista para enviar a un cliente.",
+      p: "Ayúdame a crear una propuesta comercial para mi empresa.\n\nMi empresa vende: [describir tu producto o servicio].\nMi cliente ideal es: [tipo de cliente].\nEl objetivo de la propuesta es: [cerrar venta / agendar reunión / firmar contrato].\n\nIncluye: resumen ejecutivo, propuesta de valor, alcance del servicio, beneficios, precio sugerido, condiciones y próximos pasos.",
+    },
+    en: {
+      t: "Create a business proposal",
+      d: "Generate a professional proposal ready to send to a client.",
+      p: "Help me create a business proposal for my company.\n\nMy company sells: [describe your product or service].\nMy ideal client is: [type of client].\nThe goal of the proposal is: [close a sale / book a meeting / sign a contract].\n\nInclude: executive summary, value proposition, scope of service, benefits, suggested price, terms and next steps.",
+    },
   },
   {
-    id: "sync-2", area: "sync", ai: "multi", level: "starter", used: "Agencias, Fundadores",
-    es: { t: "Contexto que sobrevive el cambio de modelo", d: "Pasás de Claude a Gemini sin perder el hilo. Tu proyecto, tus instrucciones y tu historial viajan con vos.", p: "Cuando Claude llega a su límite de tokens, el contexto pasa a Gemini intacto. Continuás la misma conversación, no empezás de cero." },
-    en: { t: "Context that survives model switches", d: "Switch from Claude to Gemini without losing the thread. Your project, instructions and history travel with you.", p: "When Claude hits its token limit, the context passes to Gemini intact. You continue the same conversation, not start over from scratch." },
+    id: "reunion-ventas", area: "clientes", ai: "Claude", level: "basico",
+    es: {
+      t: "Preparar una reunión de ventas",
+      d: "Te llega un guion con preguntas clave y objeciones esperadas.",
+      p: "Tengo una reunión de ventas con [nombre / tipo de cliente].\n\nLo que vendo: [producto o servicio].\nLo que sé del cliente: [contexto].\n\nPrepárame: guion de apertura, 5 preguntas clave, objeciones probables con respuestas y un cierre claro.",
+    },
+    en: {
+      t: "Prepare a sales meeting",
+      d: "Get a script with key questions and expected objections.",
+      p: "I have a sales meeting with [name / type of client].\n\nWhat I sell: [product or service].\nWhat I know about the client: [context].\n\nPrepare: opening script, 5 key questions, likely objections with answers and a clear close.",
+    },
   },
   {
-    id: "sync-3", area: "sync", ai: "claude", level: "pro", used: "Brokers, Consultores",
-    es: { t: "Vault de secretos cifrado", d: "Tus API keys, tokens y credenciales guardados con cifrado AES-256 local. Ni nosotros podemos verlos.", p: "Cada secreto viaja cifrado a tu propio Drive o iCloud. Sin vendor lock-in — si dejás TerminalSync mañana, las llaves son tuyas." },
-    en: { t: "Encrypted secrets vault", d: "Your API keys, tokens and credentials stored with local AES-256 encryption. Not even we can see them.", p: "Each secret travels encrypted to your own Drive or iCloud. No vendor lock-in — if you leave TerminalSync tomorrow, the keys are yours." },
+    id: "seguimiento", area: "clientes", ai: "Claude", level: "basico", used: true,
+    es: {
+      t: "Hacer seguimiento a prospectos",
+      d: "Mensajes de seguimiento que reactivan conversaciones sin sonar insistente.",
+      p: "Necesito hacer seguimiento a un prospecto que no responde hace [días/semanas].\n\nContexto: [última conversación].\nMi tono: [cercano / formal].\n\nEscríbeme 3 mensajes distintos: uno breve, uno con valor agregado y uno de última llamada.",
+    },
+    en: {
+      t: "Follow up with prospects",
+      d: "Follow-up messages that revive conversations without sounding pushy.",
+      p: "I need to follow up with a prospect who hasn’t replied in [days/weeks].\n\nContext: [last conversation].\nMy tone: [friendly / formal].\n\nWrite 3 different messages: one short, one adding value and one final call.",
+    },
   },
   {
-    id: "sync-4", area: "sync", ai: "claude", level: "starter", used: "Ecommerce, Agencias",
-    es: { t: "Memoria persistente entre sesiones", d: "La IA recuerda las decisiones que tomaste ayer, el sprint de la semana pasada y el contexto de cada cliente.", p: "Sin memoria, cada sesión empieza de cero. Con TerminalSync, tu agente construye sobre lo que ya aprendió de tu negocio." },
-    en: { t: "Persistent memory across sessions", d: "The AI remembers the decisions you made yesterday, last week's sprint, and each client's context.", p: "Without memory, every session starts from scratch. With TerminalSync, your agent builds on what it already learned about your business." },
-  },
-  // — MULTI-IA (4) —
-  {
-    id: "multi-1", area: "multi-ai", ai: "multi", level: "starter", used: "Fundadores, Agencias",
-    es: { t: "Claude escribe, Codex construye, Gemini revisa", d: "Pedís un trabajo complejo y tres IAs lo ejecutan en secuencia: estrategia → código → revisión.", p: "No es elegir una IA. Es tener un equipo. Cada modelo hace lo que mejor hace, en el orden correcto." },
-    en: { t: "Claude writes, Codex builds, Gemini reviews", d: "You request a complex job and three AIs execute it in sequence: strategy → code → review.", p: "It's not about picking one AI. It's having a team. Each model does what it does best, in the right order." },
-  },
-  {
-    id: "multi-2", area: "multi-ai", ai: "claude", level: "starter", used: "Consultores, Brokers",
-    es: { t: "AI Director que elige por vos", d: "TerminalSync analiza tu tarea y recomienda qué modelo usar — y cuánto te ahorrás vs hacerlo manualmente.", p: "Cuando llegás con «necesito redactar una propuesta comercial», el Director ya sabe que Claude es la herramienta correcta." },
-    en: { t: "AI Director that chooses for you", d: "TerminalSync analyzes your task and recommends which model to use — and how much you save vs doing it manually.", p: "When you come in with 'I need to draft a sales proposal', the Director already knows Claude is the right tool." },
+    id: "llamada-fria", area: "clientes", ai: "Claude", level: "intermedio",
+    es: {
+      t: "Crear guion de llamada en frío",
+      d: "Guion claro de 60 segundos para abrir conversaciones nuevas.",
+      p: "Crea un guion de llamada en frío de 60 segundos.\n\nVendo: [producto o servicio].\nLlamo a: [tipo de cliente].\nEl dolor que resuelvo: [problema].\n\nIncluye: apertura, pregunta gancho, propuesta breve y cierre para agendar.",
+    },
+    en: {
+      t: "Create a cold-call script",
+      d: "A clear 60-second script to open new conversations.",
+      p: "Create a 60-second cold-call script.\n\nI sell: [product or service].\nI’m calling: [type of client].\nThe pain I solve: [problem].\n\nInclude: opener, hook question, short pitch and a scheduling close.",
+    },
   },
   {
-    id: "multi-3", area: "multi-ai", ai: "multi", level: "pro", used: "Agencias, Ecommerce",
-    es: { t: "Sin tokens, sin parar", d: "Una IA llega a su límite en el medio del trabajo. TerminalSync cambia al siguiente modelo y continúa exactamente donde se quedó.", p: "El límite de contexto de una IA no es tu límite. Tu proyecto continúa sin interrupciones, sin reexplicar nada." },
-    en: { t: "No tokens, no stopping", d: "An AI hits its limit mid-work. TerminalSync switches to the next model and continues exactly where it left off.", p: "One AI's context limit is not your limit. Your project continues without interruption, without re-explaining anything." },
+    id: "email-frio", area: "clientes", ai: "Claude", level: "basico",
+    es: {
+      t: "Escribir email de venta en frío",
+      d: "Email corto que abre conversaciones sin parecer spam.",
+      p: "Escribe un email de venta en frío.\n\nVendo: [producto o servicio].\nDestinatario: [cargo / industria].\nBeneficio principal: [resultado concreto].\n\nMáximo 120 palabras, asunto llamativo y un solo llamado a la acción.",
+    },
+    en: {
+      t: "Write a cold sales email",
+      d: "A short email that opens conversations without feeling like spam.",
+      p: "Write a cold sales email.\n\nI sell: [product or service].\nRecipient: [role / industry].\nMain benefit: [concrete result].\n\nMax 120 words, catchy subject line and a single call to action.",
+    },
   },
   {
-    id: "multi-4", area: "multi-ai", ai: "claude", level: "starter", used: "Fundadores, Agencias",
-    es: { t: "Asistente que mejora tu prompt", d: "No sabés cómo pedirle algo a la IA. El asistente redacta o mejora el mensaje por vos para que salga mejor.", p: "Para los que recién empiezan con IAs y quieren resultados profesionales desde el primer día." },
-    en: { t: "Assistant that improves your prompt", d: "Not sure how to ask the AI something. The assistant drafts or improves the message for you to get better results.", p: "For those just starting with AIs who want professional results from day one." },
-  },
-  // — MENSAJERÍA (4) —
-  {
-    id: "msg-1", area: "messaging", ai: "claude", level: "starter", used: "Consultores, Brokers",
-    es: { t: "Respondé desde WhatsApp", d: "Tu conversación de TerminalSync te sigue al celular. Respondés desde WhatsApp y tus agentes siguen trabajando.", p: "Sin abrir la laptop. La misma sesión, el mismo contexto, desde cualquier chat." },
-    en: { t: "Reply from WhatsApp", d: "Your TerminalSync conversation follows you to your phone. You reply from WhatsApp and your agents keep working.", p: "Without opening the laptop. The same session, the same context, from any chat." },
-  },
-  {
-    id: "msg-2", area: "messaging", ai: "claude", level: "starter", used: "Ecommerce, Fundadores",
-    es: { t: "Notificaciones inteligentes en Telegram", d: "Tu agente te avisa por Telegram cuando termina una tarea, necesita una decisión o detecta algo urgente.", p: "El agente trabaja solo. Vos intervenís solo cuando importa. No estás pegado a la terminal para saber qué pasó." },
-    en: { t: "Smart notifications in Telegram", d: "Your agent notifies you via Telegram when it finishes a task, needs a decision, or detects something urgent.", p: "The agent works on its own. You step in only when it matters. You're not stuck at the terminal to know what happened." },
+    id: "venta-perdida", area: "clientes", ai: "Gemini", level: "intermedio",
+    es: {
+      t: "Analizar por qué perdí una venta",
+      d: "Diagnóstico claro y acciones concretas para no perder ventas similares.",
+      p: "Perdí una venta y quiero entender por qué.\n\nContexto: [resumen del proceso].\nObjeciones que surgieron: [lista].\nCompetencia: [si aplica].\n\nDame: diagnóstico probable, 3 señales que ignoré y qué cambiar en la próxima oportunidad.",
+    },
+    en: {
+      t: "Analyze why I lost a sale",
+      d: "A clear diagnosis and concrete actions to avoid losing similar deals.",
+      p: "I lost a sale and want to understand why.\n\nContext: [process summary].\nObjections raised: [list].\nCompetition: [if any].\n\nGive me: likely diagnosis, 3 signals I missed and what to change next time.",
+    },
   },
   {
-    id: "msg-3", area: "messaging", ai: "multi", level: "pro", used: "Agencias, Consultores",
-    es: { t: "Aprobación de equipo desde el chat", d: "Tu agente prepara un entregable y lo manda al canal de Telegram del equipo para aprobación. Un emoji y ya.", p: "Flujos de aprobación sin emails, sin Slack separado, sin perder el hilo del trabajo en curso." },
-    en: { t: "Team approval from chat", d: "Your agent prepares a deliverable and sends it to the team's Telegram channel for approval. One emoji and done.", p: "Approval flows without emails, without separate Slack, without losing track of the work in progress." },
+    id: "calendario", area: "marketing", ai: "Claude", level: "basico", used: true,
+    es: {
+      t: "Armar calendario de contenido",
+      d: "Un mes de contenido alineado a tus objetivos, listo para producir.",
+      p: "Arma un calendario de contenido de 4 semanas.\n\nMi negocio: [descripción].\nCanales: [Instagram / LinkedIn / blog...].\nObjetivo del mes: [ventas / awareness / comunidad].\n\nPor pieza: fecha, canal, formato, tema y gancho.",
+    },
+    en: {
+      t: "Build a content calendar",
+      d: "A month of content aligned to your goals, ready to produce.",
+      p: "Build a 4-week content calendar.\n\nMy business: [description].\nChannels: [Instagram / LinkedIn / blog...].\nGoal for the month: [sales / awareness / community].\n\nPer piece: date, channel, format, topic and hook.",
+    },
   },
   {
-    id: "msg-4", area: "messaging", ai: "multi", level: "pro", used: "Ecommerce, Brokers",
-    es: { t: "Alertas de clientes en riesgo", d: "Tu agente monitorea señales de abandono y te avisa en WhatsApp antes de que el cliente se vaya.", p: "Para ecommerce con suscripciones o brokers con deals que se enfrían. La alerta llega antes de que sea tarde." },
-    en: { t: "At-risk client alerts", d: "Your agent monitors abandonment signals and notifies you on WhatsApp before the client leaves.", p: "For subscription ecommerce or brokers with cooling deals. The alert arrives before it's too late." },
-  },
-  // — INTEGRACIONES (4) —
-  {
-    id: "int-1", area: "integrations", ai: "claude", level: "starter", used: "Consultores, Agencias",
-    es: { t: "Gmail directo en tu sesión de IA", d: "Arrastrás Gmail a tu sesión. El agente lee, redacta y organiza sin que vos abras el inbox.", p: "Sin claves, sin configurar. La integración se activa en un clic y el agente ya tiene acceso al contexto de tus correos." },
-    en: { t: "Gmail directly in your AI session", d: "You drag Gmail into your session. The agent reads, drafts, and organizes without you opening the inbox.", p: "No keys, no setup. The integration activates in one click and the agent already has access to your email context." },
-  },
-  {
-    id: "int-2", area: "integrations", ai: "gemini", level: "starter", used: "Brokers, Ecommerce",
-    es: { t: "Notion como base de conocimiento viva", d: "Gemini lee tus páginas de Notion en tiempo real y trabaja con la info actualizada de tu empresa.", p: "Sin copiar-pegar documentos. El agente accede a las wikis, SOPs y bases de datos de Notion directamente." },
-    en: { t: "Notion as a living knowledge base", d: "Gemini reads your Notion pages in real time and works with up-to-date company info.", p: "No copy-pasting documents. The agent accesses your Notion wikis, SOPs, and databases directly." },
+    id: "campana", area: "marketing", ai: "Claude", level: "intermedio",
+    es: {
+      t: "Lanzar una campaña completa",
+      d: "Copies, piezas y secuencia de correos de una sola vez.",
+      p: "Quiero lanzar una campaña para [producto / oferta].\n\nAudiencia: [quién].\nPresupuesto: [monto o \"orgánico\"].\nDuración: [semanas].\n\nEntrega: mensaje central, 5 copies para anuncios, 3 correos de secuencia y el plan de publicación.",
+    },
+    en: {
+      t: "Launch a full campaign",
+      d: "Copy, assets and an email sequence in one pass.",
+      p: "I want to launch a campaign for [product / offer].\n\nAudience: [who].\nBudget: [amount or \"organic\"].\nDuration: [weeks].\n\nDeliver: core message, 5 ad copies, a 3-email sequence and the publishing plan.",
+    },
   },
   {
-    id: "int-3", area: "integrations", ai: "gemini", level: "pro", used: "Agencias, Fundadores",
-    es: { t: "Google Drive como fuente de contexto", d: "El agente lee contratos, briefs y decks de tu Drive para entender el contexto real del proyecto.", p: "Sin reenviar archivos, sin resumir documentos a mano. El agente toma el contexto directamente de donde ya vivís." },
-    en: { t: "Google Drive as context source", d: "The agent reads contracts, briefs, and decks from your Drive to understand the real project context.", p: "Without forwarding files, without summarizing documents by hand. The agent takes context directly from where you already live." },
+    id: "reporte-campanas", area: "marketing", ai: "Gemini", level: "intermedio",
+    es: {
+      t: "Analizar resultados de campañas",
+      d: "Lee tus métricas y te dice qué escalar y qué apagar.",
+      p: "Analiza los resultados de mis campañas.\n\nPego las métricas: [datos o CSV].\nMi objetivo era: [meta].\n\nDime: qué funcionó, qué apagar, qué escalar y 3 hipótesis para probar la próxima semana.",
+    },
+    en: {
+      t: "Analyze campaign results",
+      d: "Reads your metrics and tells you what to scale and what to kill.",
+      p: "Analyze my campaign results.\n\nHere are the metrics: [data or CSV].\nMy goal was: [target].\n\nTell me: what worked, what to kill, what to scale and 3 hypotheses to test next week.",
+    },
   },
   {
-    id: "int-4", area: "integrations", ai: "codex", level: "pro", used: "Fundadores, Agencias",
-    es: { t: "GitHub integrado para devs", d: "Codex lee tu repo, propone cambios y abre PRs — todo desde la terminal de TerminalSync.", p: "Sin cambiar de contexto entre editor y agente. El agente trabaja sobre el código real, no en un sandbox." },
-    en: { t: "GitHub integrated for devs", d: "Codex reads your repo, proposes changes, and opens PRs — all from the TerminalSync terminal.", p: "No context switching between editor and agent. The agent works on the real code, not in a sandbox." },
-  },
-  // — AUTOMATIZACIÓN (5) —
-  {
-    id: "auto-1", area: "automation", ai: "claude", level: "starter", used: "Consultores, Brokers",
-    es: { t: "Seguimientos que no se olvidan", d: "Le decís al agente «seguí con esto en 3 días» y lo hace. Sin recordatorios manuales, sin leads fríos.", p: "Para brokers y consultores que pierden negocios por seguimientos olvidados. El agente agenda y ejecuta." },
-    en: { t: "Follow-ups that don't slip through", d: "You tell the agent 'follow up on this in 3 days' and it does. No manual reminders, no cold leads.", p: "For brokers and consultants who lose deals to forgotten follow-ups. The agent schedules and executes." },
-  },
-  {
-    id: "auto-2", area: "automation", ai: "multi", level: "pro", used: "Agencias, Ecommerce",
-    es: { t: "Reporte semanal en automático", d: "Todos los lunes tu reporte de cliente está listo: métricas, avances, próximos pasos — sin que lo hagas vos.", p: "El agente toma los datos de las integraciones, los procesa con Gemini y redacta el reporte con Claude. Listo para enviar." },
-    en: { t: "Weekly report on autopilot", d: "Every Monday your client report is ready: metrics, progress, next steps — without you doing it.", p: "The agent pulls data from integrations, processes it with Gemini, and drafts the report with Claude. Ready to send." },
+    id: "faq-clientes", area: "atencion", ai: "Claude", level: "basico", used: true,
+    es: {
+      t: "Responder preguntas frecuentes",
+      d: "Respuestas listas en tu tono para las dudas de siempre.",
+      p: "Estas son las 10 preguntas que más me hacen los clientes: [lista].\n\nMi tono: [cercano / formal].\nMi negocio: [descripción].\n\nEscribe una respuesta modelo para cada una, breve y en mi voz.",
+    },
+    en: {
+      t: "Answer frequent questions",
+      d: "Ready-made answers in your tone for the usual questions.",
+      p: "These are the 10 questions clients ask me most: [list].\n\nMy tone: [friendly / formal].\nMy business: [description].\n\nWrite a model answer for each one, short and in my voice.",
+    },
   },
   {
-    id: "auto-3", area: "automation", ai: "codex", level: "pro", used: "Fundadores, Agencias",
-    es: { t: "Pipeline de datos sin código", d: "Describís lo que querés procesar y Codex arma el script. Lo ejecuta, testea y te entrega el resultado.", p: "Sin contratar a un data engineer para tareas recurrentes. El agente arma el pipeline, lo documenta y lo mantiene." },
-    en: { t: "Data pipeline without code", d: "You describe what you want to process and Codex builds the script. Runs it, tests it, delivers the result.", p: "No need to hire a data engineer for recurring tasks. The agent builds the pipeline, documents it, and maintains it." },
+    id: "cliente-molesto", area: "atencion", ai: "Claude", level: "intermedio",
+    es: {
+      t: "Responder a un cliente molesto",
+      d: "Baja la tensión, protege la relación y resuelve.",
+      p: "Un cliente está molesto por: [motivo].\n\nSu mensaje: [pegar mensaje].\nLo que puedo ofrecer: [opciones reales].\n\nEscribe una respuesta que reconozca el problema, baje la tensión y proponga una solución concreta.",
+    },
+    en: {
+      t: "Reply to an upset customer",
+      d: "Lower the tension, protect the relationship and resolve it.",
+      p: "A customer is upset about: [reason].\n\nTheir message: [paste message].\nWhat I can offer: [real options].\n\nWrite a reply that acknowledges the problem, lowers the tension and proposes a concrete solution.",
+    },
   },
   {
-    id: "auto-4", area: "automation", ai: "claude", level: "starter", used: "Ecommerce, Consultores",
-    es: { t: "Respuestas repetitivas en piloto automático", d: "El agente identifica las preguntas que te llegan siempre y propone respuestas. Vos aprobás una vez, él responde siempre.", p: "Para ecommerce y negocios de servicios donde el 80% de los mensajes son las mismas 10 preguntas." },
-    en: { t: "Repetitive replies on autopilot", d: "The agent identifies questions you always get and drafts answers. You approve once, it replies always.", p: "For ecommerce and service businesses where 80% of messages are the same 10 questions." },
+    id: "tickets-resumen", area: "atencion", ai: "Gemini", level: "intermedio",
+    es: {
+      t: "Resumir los tickets del día",
+      d: "Qué se repite, qué urge y qué mejorar de fondo.",
+      p: "Aquí están los tickets/conversaciones de hoy: [pegar].\n\nDame: temas que se repiten, casos urgentes, tono general de los clientes y 2 mejoras de fondo para reducir estos tickets.",
+    },
+    en: {
+      t: "Summarize today’s tickets",
+      d: "What repeats, what’s urgent and what to fix at the root.",
+      p: "Here are today’s tickets/conversations: [paste].\n\nGive me: recurring topics, urgent cases, overall customer tone and 2 root-cause fixes to reduce these tickets.",
+    },
   },
   {
-    id: "auto-5", area: "automation", ai: "claude", level: "pro", used: "Brokers, Consultores",
-    es: { t: "Portal para que cada cliente entre", d: "Claude arma un portal personalizado donde tu cliente sube documentos, aprueba avances y ve el estado de su proyecto.", p: "Para consultores con múltiples clientes activos. Sin mails de «adjunto el archivo v2 final»." },
-    en: { t: "Portal each client can log into", d: "Claude builds a personalized portal where your client uploads documents, approves progress, and sees their project status.", p: "For consultants with multiple active clients. No more 'see attached Tuesday file v2 final' emails." },
-  },
-  // — ANÁLISIS (7) —
-  {
-    id: "analysis-1", area: "analysis", ai: "gemini", level: "starter", used: "Brokers, Consultores",
-    es: { t: "Estado de cada negocio en un vistazo", d: "Gemini procesa tus deals abiertos y te da una vista de semáforo: qué avanza, qué está estancado, qué se enfría.", p: "Para brokers con muchos leads activos. Sin abrir el CRM — el resumen llega como un briefing de 30 segundos." },
-    en: { t: "Every deal's status at a glance", d: "Gemini processes your open deals and gives you a traffic light view: what's moving, what's stalled, what's going cold.", p: "For brokers with many active leads. Without opening the CRM — the summary arrives as a 30-second briefing." },
-  },
-  {
-    id: "analysis-2", area: "analysis", ai: "gemini", level: "starter", used: "Ecommerce, Agencias",
-    es: { t: "Dashboard de lo que realmente se vende", d: "Gemini cruza tus datos de ventas, devuelve lo que está funcionando y señala lo que conviene reactivar.", p: "Sin horas en spreadsheets. En minutos tenés una lectura clara de qué productos impulsar y a quién recuperar." },
-    en: { t: "Dashboard of what's actually selling", d: "Gemini cross-references your sales data, returns what's working, and flags what's worth reactivating.", p: "No hours in spreadsheets. In minutes you have a clear read on which products to push and who to win back." },
+    id: "sop", area: "operaciones", ai: "Claude", level: "basico",
+    es: {
+      t: "Documentar un proceso (SOP)",
+      d: "Convierte lo que haces de memoria en un manual paso a paso.",
+      p: "Quiero documentar este proceso: [nombre].\n\nAsí lo hago hoy: [describir pasos como salgan].\n\nConviértelo en un SOP claro: objetivo, responsable, pasos numerados, herramientas y errores comunes.",
+    },
+    en: {
+      t: "Document a process (SOP)",
+      d: "Turn what you do from memory into a step-by-step manual.",
+      p: "I want to document this process: [name].\n\nThis is how I do it today: [describe steps roughly].\n\nTurn it into a clear SOP: goal, owner, numbered steps, tools and common mistakes.",
+    },
   },
   {
-    id: "analysis-3", area: "analysis", ai: "gemini", level: "pro", used: "Fundadores, Consultores",
-    es: { t: "Investigación de mercado sin contratar a nadie", d: "Gemini busca en tiempo real, cruza fuentes y te entrega un análisis de competidores, tendencias o precios.", p: "Investigación que antes tomaba días, ahora toma minutos. Con fuentes citadas, no solo resúmenes genéricos." },
-    en: { t: "Market research without hiring anyone", d: "Gemini searches in real time, cross-references sources, and delivers a competitor, trend, or pricing analysis.", p: "Research that used to take days now takes minutes. With cited sources, not just generic summaries." },
+    id: "reporte-semanal", area: "operaciones", ai: "Codex", level: "intermedio", used: true,
+    es: {
+      t: "Automatizar el reporte semanal",
+      d: "Un script que arma el reporte solo, cada semana.",
+      p: "Quiero automatizar mi reporte semanal.\n\nDatos que uso: [fuentes: hojas de cálculo / sistema].\nLo que debe mostrar: [métricas].\nFormato: [correo / PDF / hoja].\n\nConstruye la herramienta y explícame cómo correrla cada lunes.",
+    },
+    en: {
+      t: "Automate the weekly report",
+      d: "A script that builds the report by itself, every week.",
+      p: "I want to automate my weekly report.\n\nData sources: [spreadsheets / system].\nWhat it must show: [metrics].\nFormat: [email / PDF / sheet].\n\nBuild the tool and explain how to run it every Monday.",
+    },
   },
   {
-    id: "analysis-4", area: "analysis", ai: "multi", level: "pro", used: "Consultores, Agencias",
-    es: { t: "Propuesta de venta desde una llamada", d: "Cargás la transcripción de tu reunión. Claude extrae los pain points, Gemini los cruza con tu oferta, y sale la propuesta lista.", p: "El proceso que tomaba 3 horas de trabajo se convierte en 10 minutos. Propuesta personalizada al dolor real del cliente." },
-    en: { t: "Sales proposal from a call", d: "You upload the transcript of your meeting. Claude extracts the pain points, Gemini cross-references with your offer, and the proposal comes out ready.", p: "The process that used to take 3 hours of work becomes 10 minutes. Proposal personalized to the client's real pain." },
+    id: "organizar-carpetas", area: "operaciones", ai: "Codex", level: "basico",
+    es: {
+      t: "Ordenar y clasificar archivos",
+      d: "Limpia carpetas desordenadas y les pone reglas.",
+      p: "Mi carpeta [ruta] es un desorden.\n\nContiene: [tipos de archivos].\nQuiero organizarla por: [cliente / fecha / tipo].\n\nPropón la estructura, muéveme los archivos y deja una regla clara para lo nuevo.",
+    },
+    en: {
+      t: "Sort and organize files",
+      d: "Cleans messy folders and gives them rules.",
+      p: "My folder [path] is a mess.\n\nIt contains: [file types].\nI want it organized by: [client / date / type].\n\nPropose the structure, move the files and leave a clear rule for new ones.",
+    },
   },
   {
-    id: "analysis-5", area: "analysis", ai: "claude", level: "starter", used: "Brokers, Consultores",
-    es: { t: "Briefing diario en 60 segundos", d: "Cada mañana tu agente procesa emails, pendientes y agenda y te da un briefing para empezar el día con claridad.", p: "Sin revisar 5 apps al despertarte. Un solo resumen con prioridades, follow-ups y lo que no puede esperar." },
-    en: { t: "Daily briefing in 60 seconds", d: "Every morning your agent processes emails, tasks, and calendar and gives you a briefing to start the day with clarity.", p: "Without checking 5 apps when you wake up. One summary with priorities, follow-ups, and what can't wait." },
+    id: "job-post", area: "rrhh", ai: "Claude", level: "basico",
+    es: {
+      t: "Escribir una oferta de empleo",
+      d: "Descripción del cargo que atrae al perfil correcto.",
+      p: "Necesito publicar una vacante.\n\nCargo: [nombre].\nResponsabilidades: [lista].\nMi empresa: [descripción breve].\nRango salarial: [opcional].\n\nEscribe la oferta: título atractivo, misión del rol, responsabilidades, requisitos y beneficios.",
+    },
+    en: {
+      t: "Write a job posting",
+      d: "A role description that attracts the right profile.",
+      p: "I need to post a job opening.\n\nRole: [name].\nResponsibilities: [list].\nMy company: [short description].\nSalary range: [optional].\n\nWrite the posting: attractive title, role mission, responsibilities, requirements and benefits.",
+    },
   },
   {
-    id: "analysis-6", area: "analysis", ai: "codex", level: "pro", used: "Ecommerce, Fundadores",
-    es: { t: "Sistema de operaciones simple para tu equipo", d: "Codex construye el panel interno que necesita tu equipo para trabajar sin depender de vos para cada decisión.", p: "Un sistema que se usa desde el navegador, sin instalar nada, que tu equipo entiende en 10 minutos." },
-    en: { t: "Simple ops system for your team", d: "Codex builds the internal panel your team needs to work without depending on you for every decision.", p: "A system accessed from the browser, nothing to install, that your team understands in 10 minutes." },
+    id: "onboarding", area: "rrhh", ai: "Claude", level: "intermedio",
+    es: {
+      t: "Crear plan de onboarding",
+      d: "Los primeros 30 días de un empleado nuevo, organizados.",
+      p: "Crea el plan de onboarding para: [cargo].\n\nMi empresa hace: [descripción].\nHerramientas que usamos: [lista].\n\nOrganiza los primeros 30 días: semana a semana, con objetivos, accesos y a quién conocer.",
+    },
+    en: {
+      t: "Create an onboarding plan",
+      d: "A new hire’s first 30 days, organized.",
+      p: "Create the onboarding plan for: [role].\n\nMy company does: [description].\nTools we use: [list].\n\nOrganize the first 30 days: week by week, with goals, access and who to meet.",
+    },
   },
   {
-    id: "analysis-7", area: "analysis", ai: "gemini", level: "starter", used: "Agencias, Fundadores",
-    es: { t: "Auditoría de contenidos en minutos", d: "Gemini revisa lo que publicaste en el último mes, detecta qué funcionó y propone qué replicar la semana que viene.", p: "Para agencias y fundadores que publican en múltiples canales y necesitan tomar decisiones con datos, no con intuición." },
-    en: { t: "Content audit in minutes", d: "Gemini reviews what you published in the last month, detects what worked, and proposes what to replicate next week.", p: "For agencies and founders publishing on multiple channels who need to make decisions with data, not intuition." },
+    id: "flujo-caja", area: "finanzas", ai: "Gemini", level: "intermedio",
+    es: {
+      t: "Analizar el flujo de caja",
+      d: "Entiende a dónde se va la plata y qué viene.",
+      p: "Analiza mi flujo de caja.\n\nPego los movimientos: [datos / CSV].\nPeriodo: [rango].\n\nDame: entradas vs salidas por categoría, gastos que crecen, meses de riesgo y 3 acciones para mejorar la caja.",
+    },
+    en: {
+      t: "Analyze cash flow",
+      d: "Understand where the money goes and what’s coming.",
+      p: "Analyze my cash flow.\n\nHere are the transactions: [data / CSV].\nPeriod: [range].\n\nGive me: inflows vs outflows by category, growing expenses, risky months and 3 actions to improve cash.",
+    },
+  },
+  {
+    id: "cotizador", area: "finanzas", ai: "Codex", level: "avanzado",
+    es: {
+      t: "Construir un cotizador",
+      d: "Una herramienta que arma cotizaciones con tus precios y reglas.",
+      p: "Construye un cotizador para mi negocio.\n\nVendo: [productos/servicios con precios].\nReglas: [descuentos, mínimos, extras].\nSalida: [PDF / correo listo para enviar].\n\nHazlo simple de usar: yo pongo los datos del cliente y me devuelve la cotización lista.",
+    },
+    en: {
+      t: "Build a quoting tool",
+      d: "A tool that builds quotes with your prices and rules.",
+      p: "Build a quoting tool for my business.\n\nI sell: [products/services with prices].\nRules: [discounts, minimums, extras].\nOutput: [PDF / ready-to-send email].\n\nMake it simple: I enter the client’s details and it returns a ready quote.",
+    },
+  },
+  {
+    id: "contrato", area: "legal", ai: "Claude", level: "intermedio",
+    es: {
+      t: "Redactar un contrato de servicios",
+      d: "Borrador claro para revisar con tu abogado.",
+      p: "Redacta un borrador de contrato de servicios.\n\nServicio: [qué haré].\nPartes: [mi empresa] y [cliente].\nCondiciones clave: [pago, plazos, entregables].\n\nIncluye: alcance, pagos, confidencialidad, propiedad del trabajo y terminación. Nota: es un borrador para revisión legal.",
+    },
+    en: {
+      t: "Draft a services contract",
+      d: "A clear draft to review with your lawyer.",
+      p: "Draft a services contract.\n\nService: [what I’ll do].\nParties: [my company] and [client].\nKey terms: [payment, deadlines, deliverables].\n\nInclude: scope, payments, confidentiality, work ownership and termination. Note: this is a draft for legal review.",
+    },
+  },
+  {
+    id: "revisar-contrato", area: "legal", ai: "Gemini", level: "avanzado",
+    es: {
+      t: "Revisar un contrato antes de firmar",
+      d: "Encuentra cláusulas riesgosas y te las explica en simple.",
+      p: "Revisa este contrato antes de que lo firme: [pegar o adjuntar].\n\nYo soy: [parte que firma].\nMe preocupa: [pagos / exclusividad / responsabilidad].\n\nSeñala cláusulas riesgosas, explícalas en lenguaje simple y sugiere qué negociar.",
+    },
+    en: {
+      t: "Review a contract before signing",
+      d: "Finds risky clauses and explains them in plain language.",
+      p: "Review this contract before I sign it: [paste or attach].\n\nI am: [signing party].\nMy concerns: [payments / exclusivity / liability].\n\nFlag risky clauses, explain them in plain language and suggest what to negotiate.",
+    },
+  },
+  {
+    id: "fichas-producto", area: "ecommerce", ai: "Claude", level: "basico",
+    es: {
+      t: "Escribir fichas de producto",
+      d: "Descripciones que venden y posicionan en buscadores.",
+      p: "Escribe las fichas de estos productos: [lista con datos básicos].\n\nMi tienda: [descripción y tono].\nCliente típico: [quién compra].\n\nPor producto: título SEO, descripción persuasiva, bullets de beneficios y meta description.",
+    },
+    en: {
+      t: "Write product listings",
+      d: "Descriptions that sell and rank in search.",
+      p: "Write listings for these products: [list with basic data].\n\nMy store: [description and tone].\nTypical customer: [who buys].\n\nPer product: SEO title, persuasive description, benefit bullets and meta description.",
+    },
+  },
+  {
+    id: "inventario", area: "ecommerce", ai: "Codex", level: "avanzado",
+    es: {
+      t: "Montar control de inventario",
+      d: "Una herramienta que avisa antes de que algo se agote.",
+      p: "Construye un control de inventario simple.\n\nMis productos: [fuente: hoja de cálculo / plataforma].\nQuiero: stock actual, alertas de mínimos y reporte semanal de rotación.\n\nHazlo para alguien no técnico: explícame cómo usarlo día a día.",
+    },
+    en: {
+      t: "Set up inventory control",
+      d: "A tool that warns you before something runs out.",
+      p: "Build a simple inventory control.\n\nMy products: [source: spreadsheet / platform].\nI want: current stock, low-stock alerts and a weekly rotation report.\n\nMake it non-technical: explain how to use it day to day.",
+    },
+  },
+  {
+    id: "dashboard", area: "software", ai: "Codex", level: "avanzado", used: true,
+    es: {
+      t: "Construir un dashboard del negocio",
+      d: "Tus números clave en una sola pantalla, siempre al día.",
+      p: "Construye un dashboard para mi negocio.\n\nFuentes de datos: [hojas / sistemas].\nMétricas clave: [ventas, caja, clientes...].\nQuién lo ve: [yo / equipo].\n\nHazlo claro y visual, y explícame cómo se actualiza.",
+    },
+    en: {
+      t: "Build a business dashboard",
+      d: "Your key numbers on one screen, always up to date.",
+      p: "Build a dashboard for my business.\n\nData sources: [sheets / systems].\nKey metrics: [sales, cash, customers...].\nWho sees it: [me / team].\n\nMake it clear and visual, and explain how it updates.",
+    },
+  },
+  {
+    id: "portal-clientes", area: "software", ai: "Codex", level: "avanzado",
+    es: {
+      t: "Crear un portal para clientes",
+      d: "Un lugar donde tus clientes ven avances, archivos y estados.",
+      p: "Crea un portal simple para mis clientes.\n\nDeben poder ver: [avances / archivos / facturas].\nMis clientes son: [tipo].\nAcceso: [link privado / clave].\n\nConstrúyelo paso a paso y dime cómo darle acceso a cada cliente.",
+    },
+    en: {
+      t: "Create a client portal",
+      d: "A place where clients see progress, files and statuses.",
+      p: "Create a simple portal for my clients.\n\nThey should see: [progress / files / invoices].\nMy clients are: [type].\nAccess: [private link / password].\n\nBuild it step by step and tell me how to grant each client access.",
+    },
+  },
+  {
+    id: "plan-trimestre", area: "direccion", ai: "Claude", level: "intermedio",
+    es: {
+      t: "Planear el próximo trimestre",
+      d: "Convierte tus metas en un plan con dueños y fechas.",
+      p: "Ayúdame a planear el próximo trimestre.\n\nMi negocio: [descripción].\nResultados del trimestre pasado: [resumen].\nMetas: [3 objetivos].\n\nEntrega: prioridades, iniciativas por meta, responsable sugerido y qué NO hacer este trimestre.",
+    },
+    en: {
+      t: "Plan next quarter",
+      d: "Turn your goals into a plan with owners and dates.",
+      p: "Help me plan next quarter.\n\nMy business: [description].\nLast quarter’s results: [summary].\nGoals: [3 objectives].\n\nDeliver: priorities, initiatives per goal, suggested owner and what NOT to do this quarter.",
+    },
+  },
+  {
+    id: "decision", area: "direccion", ai: "Claude", level: "avanzado",
+    es: {
+      t: "Pensar una decisión difícil",
+      d: "Un segundo cerebro que te muestra ángulos que no viste.",
+      p: "Tengo que tomar una decisión difícil: [describirla].\n\nOpciones que veo: [A, B, C].\nLo que me preocupa: [riesgos].\n\nAyúdame: pros y contras reales, riesgos que no estoy viendo, qué haría falta para decidir con datos y tu recomendación con argumentos.",
+    },
+    en: {
+      t: "Think through a hard decision",
+      d: "A second brain that shows you angles you missed.",
+      p: "I have a hard decision to make: [describe it].\n\nOptions I see: [A, B, C].\nWhat worries me: [risks].\n\nHelp me: real pros and cons, risks I’m not seeing, what data would settle it and your recommendation with reasoning.",
+    },
+  },
+  {
+    id: "cambiar-ia", area: "continuidad", ai: "Claude", level: "basico", used: true,
+    es: {
+      t: "Continuar cuando la IA llega a su límite",
+      d: "Cambia de IA con un clic y sigue exactamente donde ibas.",
+      p: "Estoy trabajando en: [tarea].\n\nSi llegas a tu límite de uso, quiero continuar con otra IA sin perder el contexto.\n\nMantén un resumen vivo del proyecto: qué estamos haciendo, decisiones tomadas y próximos pasos, para que cualquier IA pueda continuar.",
+    },
+    en: {
+      t: "Continue when the AI hits its limit",
+      d: "Switch AIs in one click and continue exactly where you were.",
+      p: "I’m working on: [task].\n\nIf you hit your usage limit, I want to continue with another AI without losing context.\n\nKeep a living summary of the project: what we’re doing, decisions made and next steps, so any AI can pick it up.",
+    },
+  },
+  {
+    id: "memoria-empresa", area: "continuidad", ai: "Claude", level: "intermedio",
+    es: {
+      t: "Enseñarle tu empresa a la IA",
+      d: "Una memoria que evita repetir el contexto en cada chat.",
+      p: "Quiero que aprendas mi empresa de una vez.\n\nQué hacemos: [descripción].\nNuestro tono: [cómo escribimos].\nClientes: [tipos].\nReglas: [qué nunca hacer].\n\nGuarda esto como memoria del espacio y úsalo en todo lo que trabajemos aquí.",
+    },
+    en: {
+      t: "Teach the AI your business",
+      d: "A memory that avoids repeating context in every chat.",
+      p: "I want you to learn my business once.\n\nWhat we do: [description].\nOur tone: [how we write].\nClients: [types].\nRules: [what never to do].\n\nSave this as the workspace memory and use it in everything we do here.",
+    },
   },
 ];
 
 // ─── Tab 2: 12 automated jobs ─────────────────────────────────────────────────
 
 export const JOBS: Job[] = [
-  // — REPORTES (3) —
   {
-    id: "job-1", category: "reportes", ai: "claude", level: "starter", cadence: "daily",
+    id: "buscar-clientes", cat: "ventas", ai: "Gemini",
     es: {
-      t: "Briefing diario personalizado",
-      d: "Cada mañana a las 8am tu agente lee emails, calendario y tareas pendientes y te manda un briefing de 5 puntos en WhatsApp.",
-      steps: ["Lee emails nuevos y calendario del día", "Clasifica por urgencia y contexto", "Cruza con tareas pendientes y deadlines", "Redacta briefing ejecutivo de 5 puntos", "Envía por WhatsApp o Telegram antes de las 8:30am"],
-      report: "Mensaje de WhatsApp con prioridades del día, 3 follow-ups urgentes y un recordatorio de agenda.",
+      t: "Buscador de clientes potenciales",
+      d: "Investiga tu mercado y te entrega una lista de prospectos calificados.",
+      cad: "Cada lunes",
+      rep: "Lista con contactos y por qué encajan, en tu carpeta de Ventas",
+      steps: [
+        "Investiga empresas que encajan con tu cliente ideal",
+        "Filtra y califica según tus criterios",
+        "Prepara el primer mensaje sugerido para cada uno",
+      ],
     },
     en: {
-      t: "Personalized daily briefing",
-      d: "Every morning at 8am your agent reads emails, calendar and pending tasks and sends you a 5-point briefing on WhatsApp.",
-      steps: ["Reads new emails and daily calendar", "Classifies by urgency and context", "Cross-references with pending tasks and deadlines", "Drafts a 5-point executive briefing", "Sends via WhatsApp or Telegram before 8:30am"],
-      report: "WhatsApp message with day priorities, 3 urgent follow-ups, and one calendar reminder.",
+      t: "Prospect finder",
+      d: "Researches your market and delivers a list of qualified prospects.",
+      cad: "Every Monday",
+      rep: "A list with contacts and why they fit, in your Sales folder",
+      steps: [
+        "Researches companies matching your ideal client",
+        "Filters and qualifies by your criteria",
+        "Drafts a suggested first message for each",
+      ],
     },
   },
   {
-    id: "job-2", category: "reportes", ai: "multi", level: "pro", cadence: "weekly",
+    id: "propuestas-auto", cat: "ventas", ai: "Claude",
     es: {
-      t: "Reporte semanal de cliente listo el lunes",
-      d: "Todos los lunes a las 9am el reporte de cada cliente está en tu inbox: métricas, avances y próximos pasos redactados por Claude.",
-      steps: ["Gemini extrae métricas de las integraciones conectadas", "Gemini compara con la semana anterior y detecta variaciones", "Claude redacta la narrativa con el tono de tu agencia", "El borrador llega a tu inbox para revisión en 1 clic", "Podés editar y enviar directo al cliente desde TerminalSync"],
-      report: "Email listo para enviar al cliente con secciones de resultados, análisis y próximos pasos. Sin que lo hagas vos.",
+      t: "Preparador de propuestas",
+      d: "Convierte los datos de un cliente en una propuesta lista para revisar.",
+      cad: "Cuando se lo pidas",
+      rep: "Propuesta en tu formato, avisa por WhatsApp al terminar",
+      steps: [
+        "Lee la carpeta del cliente y el histórico",
+        "Arma la propuesta con tu plantilla y precios",
+        "Te la deja lista para revisar y enviar",
+      ],
     },
     en: {
-      t: "Client weekly report ready on Monday",
-      d: "Every Monday at 9am the report for each client is in your inbox: metrics, progress and next steps drafted by Claude.",
-      steps: ["Gemini pulls metrics from connected integrations", "Gemini compares against the prior week and flags variations", "Claude drafts the narrative in your agency's tone", "The draft lands in your inbox for 1-click review", "Edit and send to the client directly from TerminalSync"],
-      report: "Email ready to send to the client with results, analysis, and next steps sections. Without you doing it.",
+      t: "Proposal builder",
+      d: "Turns a client’s details into a proposal ready to review.",
+      cad: "On demand",
+      rep: "Proposal in your format, pings you on WhatsApp when done",
+      steps: [
+        "Reads the client folder and history",
+        "Builds the proposal with your template and pricing",
+        "Leaves it ready to review and send",
+      ],
     },
   },
   {
-    id: "job-3", category: "reportes", ai: "gemini", level: "starter", cadence: "monthly",
+    id: "crm-aldia", cat: "ventas", ai: "Codex",
     es: {
-      t: "Resumen mensual de negocio",
-      d: "El primer día del mes Gemini analiza tus números y te manda un resumen: qué funcionó, qué no y qué ajustar.",
-      steps: ["Gemini lee datos de ventas, clientes y operaciones del mes", "Identifica los 3 logros más importantes", "Detecta las 2 caídas o alertas principales", "Propone 3 ajustes para el mes siguiente", "Envía el resumen formateado a tu email"],
-      report: "Informe de una página con métricas clave, análisis de tendencias y recomendaciones para el próximo mes.",
+      t: "CRM siempre al día",
+      d: "Registra cada interacción y te avisa qué seguimiento toca hoy.",
+      cad: "Todos los días, 7:00 am",
+      rep: "Resumen diario: qué se movió y a quién contactar",
+      steps: [
+        "Revisa correos y conversaciones nuevas",
+        "Actualiza el estado de cada negocio",
+        "Prepara la lista de seguimientos del día",
+      ],
     },
     en: {
-      t: "Monthly business summary",
-      d: "On the first day of each month Gemini analyzes your numbers and sends you a summary: what worked, what didn't, and what to adjust.",
-      steps: ["Gemini reads sales, client, and operations data for the month", "Identifies the 3 most important achievements", "Detects the 2 main drops or alerts", "Proposes 3 adjustments for next month", "Sends the formatted summary to your email"],
-      report: "One-page report with key metrics, trend analysis, and recommendations for next month.",
-    },
-  },
-  // — COMUNICACIÓN (3) —
-  {
-    id: "job-4", category: "comunicacion", ai: "claude", level: "starter", cadence: "daily",
-    es: {
-      t: "Inbox procesado y respuestas listas",
-      d: "Claude lee tus emails cada mañana, extrae los action items y prepara borradores de respuesta que vos aprobás con un clic.",
-      steps: ["Claude lee todos los emails nuevos del día", "Extrae action items y clasifica por urgencia", "Redacta borradores de respuesta en tu tono", "Te manda la lista de borradores para aprobar", "Vos aprobás y Claude envía — o editás en 30 segundos"],
-      report: "Lista de emails procesados con borradores de respuesta listos para aprobar. Tu inbox vacío en 10 minutos.",
-    },
-    en: {
-      t: "Processed inbox with ready replies",
-      d: "Claude reads your emails every morning, extracts action items and prepares draft responses that you approve with one click.",
-      steps: ["Claude reads all new emails for the day", "Extracts action items and classifies by urgency", "Drafts responses in your tone", "Sends you the list of drafts to approve", "You approve and Claude sends — or edit in 30 seconds"],
-      report: "List of processed emails with ready-to-approve reply drafts. Empty inbox in 10 minutes.",
+      t: "CRM always up to date",
+      d: "Logs every interaction and tells you which follow-up is due today.",
+      cad: "Daily, 7:00 am",
+      rep: "Daily digest: what moved and who to contact",
+      steps: [
+        "Reviews new emails and conversations",
+        "Updates each deal’s status",
+        "Prepares today’s follow-up list",
+      ],
     },
   },
   {
-    id: "job-5", category: "comunicacion", ai: "claude", level: "starter", cadence: "event",
+    id: "seo-mensual", cat: "marketing", ai: "Gemini",
     es: {
-      t: "Follow-up automático de leads",
-      d: "Cuando un lead no responde en X días, Claude redacta un follow-up personalizado y te lo manda para aprobar antes de enviarlo.",
-      steps: ["Detecta leads sin respuesta después de N días configurados", "Recupera el contexto de la conversación anterior", "Claude redacta un follow-up cálido y personalizado", "Te manda el borrador por WhatsApp para aprobación", "Vos aprobás con 'sí' y Claude lo envía"],
-      report: "Borrador de follow-up listo para aprobar con un clic. Nunca más un lead frío por olvido.",
+      t: "Analista SEO mensual",
+      d: "Revisa tu sitio y el de tus competidores y te dice dónde ganar.",
+      cad: "El 1° de cada mes",
+      rep: "Informe con hallazgos y 5 acciones priorizadas",
+      steps: [
+        "Analiza posiciones, contenido y competidores",
+        "Detecta oportunidades y caídas",
+        "Prioriza qué publicar o corregir este mes",
+      ],
     },
     en: {
-      t: "Automated lead follow-up",
-      d: "When a lead hasn't replied in X days, Claude drafts a personalized follow-up and sends it to you to approve before sending.",
-      steps: ["Detects leads without a reply after N configured days", "Recovers context from the previous conversation", "Claude drafts a warm, personalized follow-up", "Sends you the draft on WhatsApp for approval", "You approve with 'yes' and Claude sends it"],
-      report: "Follow-up draft ready to approve with one click. No more cold leads due to forgetting.",
+      t: "Monthly SEO analyst",
+      d: "Reviews your site and competitors and tells you where to win.",
+      cad: "1st of every month",
+      rep: "Report with findings and 5 prioritized actions",
+      steps: [
+        "Analyzes rankings, content and competitors",
+        "Spots opportunities and drops",
+        "Prioritizes what to publish or fix this month",
+      ],
     },
   },
   {
-    id: "job-6", category: "comunicacion", ai: "claude", level: "pro", cadence: "weekly",
+    id: "contenido-semanal", cat: "marketing", ai: "Claude",
     es: {
-      t: "Newsletter semanal lista en 5 minutos",
-      d: "Claude recopila lo más importante de la semana y redacta tu newsletter. Vos la revisás, ajustás y enviás — sin escribir desde cero.",
-      steps: ["Recopila el contenido más relevante de la semana (posts, noticias, hitos)", "Claude estructura la newsletter con tu formato habitual", "Redacta con tu tono de voz y estilo", "Te manda el borrador para revisión y ajustes finales", "Enviás desde TerminalSync o copiás a tu plataforma de email"],
-      report: "Newsletter completa, formateada y lista para enviar. De cero a listo en menos de 5 minutos.",
+      t: "Productor de contenido",
+      d: "Produce los borradores de la semana en tu voz, listos para aprobar.",
+      cad: "Cada viernes",
+      rep: "Piezas en tu carpeta de Marketing + aviso por Telegram",
+      steps: [
+        "Lee tu calendario y temas del mes",
+        "Escribe posts, correos y guiones en tu tono",
+        "Deja todo en borradores para tu revisión",
+      ],
     },
     en: {
-      t: "Weekly newsletter ready in 5 minutes",
-      d: "Claude collects the week's highlights and drafts your newsletter. You review, tweak, and send — without writing from scratch.",
-      steps: ["Collects the most relevant content of the week (posts, news, milestones)", "Claude structures the newsletter in your usual format", "Writes in your voice and style", "Sends you the draft for final review and tweaks", "Send from TerminalSync or copy to your email platform"],
-      report: "Complete newsletter, formatted and ready to send. Zero to ready in under 5 minutes.",
-    },
-  },
-  // — INVESTIGACIÓN (2) —
-  {
-    id: "job-7", category: "research", ai: "gemini", level: "pro", cadence: "weekly",
-    es: {
-      t: "Radar de competidores actualizado",
-      d: "Cada semana Gemini rastrea novedades de tus competidores y te manda un mapa actualizado con oportunidades detectadas.",
-      steps: ["Gemini busca en tiempo real novedades de competidores configurados", "Analiza cambios de precios, features, comunicación y casos de éxito", "Cruza con tu posicionamiento actual", "Identifica las 2-3 oportunidades más relevantes", "Manda el informe el viernes a las 5pm"],
-      report: "Mapa de competidores con actualizaciones de la semana y 2-3 oportunidades accionables para explotar.",
-    },
-    en: {
-      t: "Updated competitor radar",
-      d: "Every week Gemini tracks your competitors' news and sends you an updated map with detected opportunities.",
-      steps: ["Gemini searches in real time for configured competitor news", "Analyzes price changes, features, messaging and case studies", "Cross-references with your current positioning", "Identifies the 2-3 most relevant opportunities", "Sends the report Friday at 5pm"],
-      report: "Competitor map with weekly updates and 2-3 actionable opportunities to exploit.",
+      t: "Content producer",
+      d: "Produces the week’s drafts in your voice, ready to approve.",
+      cad: "Every Friday",
+      rep: "Pieces in your Marketing folder + Telegram ping",
+      steps: [
+        "Reads your calendar and monthly topics",
+        "Writes posts, emails and scripts in your tone",
+        "Leaves everything as drafts for review",
+      ],
     },
   },
   {
-    id: "job-8", category: "research", ai: "gemini", level: "starter", cadence: "event",
+    id: "vigia-campanas", cat: "marketing", ai: "Gemini",
     es: {
-      t: "Alerta de mención de marca",
-      d: "En cuanto alguien menciona tu marca online, Gemini te avisa con contexto y sentimiento — antes de que se vuelva un problema.",
-      steps: ["Gemini monitorea menciones de la marca en tiempo real", "Clasifica el sentimiento (positivo / neutro / negativo)", "Para menciones negativas, alerta inmediata por WhatsApp", "Para menciones positivas, las agrupa en el resumen diario", "Sugiere cómo responder si la mención requiere acción"],
-      report: "Alerta inmediata para menciones negativas + resumen diario de todas las menciones con análisis de sentimiento.",
+      t: "Vigía de campañas",
+      d: "Monitorea tus anuncios y te alerta antes de quemar presupuesto.",
+      cad: "Todos los días",
+      rep: "Alerta solo si algo se sale de rango; resumen semanal",
+      steps: [
+        "Revisa métricas de cada campaña activa",
+        "Compara contra tus metas y costos máximos",
+        "Sugiere pausar, escalar o ajustar",
+      ],
     },
     en: {
-      t: "Brand mention alert",
-      d: "As soon as someone mentions your brand online, Gemini notifies you with context and sentiment — before it becomes a problem.",
-      steps: ["Gemini monitors brand mentions in real time", "Classifies sentiment (positive / neutral / negative)", "For negative mentions, immediate WhatsApp alert", "For positive mentions, groups them in the daily summary", "Suggests how to respond if the mention requires action"],
-      report: "Immediate alert for negative mentions + daily summary of all mentions with sentiment analysis.",
-    },
-  },
-  // — CONTENIDO (2) —
-  {
-    id: "job-9", category: "contenido", ai: "multi", level: "pro", cadence: "weekly",
-    es: {
-      t: "Calendario de contenido del mes siguiente",
-      d: "Cada viernes Claude y Gemini preparan el calendario de la semana siguiente: temas, formatos y copies listos para aprobar.",
-      steps: ["Gemini analiza qué publicaste y qué funcionó mejor", "Gemini identifica trending topics de tu industria", "Claude propone 5-7 ideas de publicaciones con ángulo original", "Claude redacta el copy de cada una en tu tono", "Te llega el calendario completo para aprobar o ajustar"],
-      report: "Calendario semanal con 5-7 publicaciones: tema, formato, copy completo y propuesta de visual. Listo para aprobar.",
-    },
-    en: {
-      t: "Next week's content calendar",
-      d: "Every Friday Claude and Gemini prepare next week's calendar: topics, formats and copy ready to approve.",
-      steps: ["Gemini analyzes what you published and what performed best", "Gemini identifies trending topics in your industry", "Claude proposes 5-7 post ideas with original angles", "Claude drafts the copy for each in your tone", "The full calendar arrives for you to approve or adjust"],
-      report: "Weekly calendar with 5-7 posts: topic, format, full copy, and visual suggestion. Ready to approve.",
+      t: "Campaign watchdog",
+      d: "Monitors your ads and alerts you before budget burns.",
+      cad: "Daily",
+      rep: "Alerts only if something drifts; weekly summary",
+      steps: [
+        "Checks metrics on every active campaign",
+        "Compares against your targets and max costs",
+        "Suggests pausing, scaling or adjusting",
+      ],
     },
   },
   {
-    id: "job-10", category: "contenido", ai: "claude", level: "starter", cadence: "event",
+    id: "reporte-lunes", cat: "operaciones", ai: "Codex",
     es: {
-      t: "Publicación lista al instante",
-      d: "Le mandás una idea, nota de voz o foto a TerminalSync y Claude la convierte en una publicación pulida lista para subir.",
-      steps: ["Recibe el input (texto, nota de voz, imagen o URL)", "Claude extrae la idea central y el ángulo más fuerte", "Redacta el copy en tu tono de voz", "Propone hashtags y hora óptima de publicación", "Te manda el resultado en menos de 2 minutos"],
-      report: "Publicación completa con copy, hashtags y timing óptimo. Lista para subir en 2 minutos desde que compartiste la idea.",
+      t: "Reportero de los lunes",
+      d: "Arma el informe semanal del negocio sin que nadie lo persiga.",
+      cad: "Cada lunes, 6:00 am",
+      rep: "Informe en PDF + correo al equipo",
+      steps: [
+        "Junta los datos de tus fuentes",
+        "Arma el informe con tu formato",
+        "Lo envía al equipo y te avisa",
+      ],
     },
     en: {
-      t: "Post ready in an instant",
-      d: "Send an idea, voice note or photo to TerminalSync and Claude turns it into a polished post ready to publish.",
-      steps: ["Receives the input (text, voice note, image or URL)", "Claude extracts the core idea and strongest angle", "Drafts the copy in your voice", "Proposes hashtags and optimal posting time", "Sends you the result in under 2 minutes"],
-      report: "Complete post with copy, hashtags, and optimal timing. Ready to publish in 2 minutes from when you shared the idea.",
-    },
-  },
-  // — MANTENIMIENTO (2) —
-  {
-    id: "job-11", category: "mantenimiento", ai: "codex", level: "pro", cadence: "event",
-    es: {
-      t: "Alerta de error en producción",
-      d: "Cuando algo falla en producción, Codex analiza los logs, identifica la causa raíz y te manda el diagnóstico en 5 minutos.",
-      steps: ["Detecta el error vía webhook o log watch", "Codex analiza los logs relevantes del período afectado", "Identifica la causa raíz con probabilidad de ocurrencia", "Propone el fix con el código específico a cambiar", "Abre un issue en GitHub con todo el diagnóstico"],
-      report: "Issue en GitHub con causa raíz, severidad, fix propuesto con código exacto y tiempo estimado de resolución.",
-    },
-    en: {
-      t: "Production error alert",
-      d: "When something fails in production, Codex analyzes the logs, identifies the root cause, and sends you the diagnosis in 5 minutes.",
-      steps: ["Detects the error via webhook or log watch", "Codex analyzes relevant logs from the affected period", "Identifies root cause with probability of occurrence", "Proposes the fix with the specific code to change", "Opens a GitHub issue with the full diagnosis"],
-      report: "GitHub issue with root cause, severity, proposed fix with exact code, and estimated resolution time.",
+      t: "Monday reporter",
+      d: "Builds the weekly business report without anyone chasing it.",
+      cad: "Every Monday, 6:00 am",
+      rep: "PDF report + email to the team",
+      steps: [
+        "Gathers data from your sources",
+        "Builds the report in your format",
+        "Sends it to the team and pings you",
+      ],
     },
   },
   {
-    id: "job-12", category: "mantenimiento", ai: "codex", level: "pro", cadence: "weekly",
+    id: "clasificador", cat: "operaciones", ai: "Codex",
     es: {
-      t: "Limpieza automática de base de datos",
-      d: "Cada semana Codex revisa tu base de datos, detecta duplicados e inactivos y te propone la limpieza para que la apruebes.",
-      steps: ["Codex analiza la base de datos en busca de duplicados y registros inactivos", "Clasifica lo que es seguro borrar vs. lo que necesita revisión manual", "Genera el script de limpieza con preview de qué se elimina", "Te manda el plan para aprobación antes de ejecutar", "Ejecuta solo después de tu aprobación explícita"],
-      report: "Script de limpieza listo para aprobar con preview exacto: X duplicados, Y inactivos, Z registros huérfanos. Nada se borra sin tu ok.",
+      t: "Clasificador de correos y documentos",
+      d: "Ordena lo que llega: facturas, contratos, soporte, spam.",
+      cad: "Cada hora",
+      rep: "Todo archivado en su carpeta; urgentes a tu WhatsApp",
+      steps: [
+        "Lee lo nuevo en el correo y las carpetas",
+        "Clasifica y archiva según tus reglas",
+        "Escala solo lo que necesita tu decisión",
+      ],
     },
     en: {
-      t: "Automated database cleanup",
-      d: "Every week Codex checks your database, detects duplicates and inactives, and proposes the cleanup for you to approve.",
-      steps: ["Codex analyzes the database for duplicates and inactive records", "Classifies what's safe to delete vs. needs manual review", "Generates the cleanup script with a preview of what gets removed", "Sends you the plan for approval before executing", "Executes only after your explicit approval"],
-      report: "Cleanup script ready to approve with exact preview: X duplicates, Y inactives, Z orphan records. Nothing deleted without your ok.",
+      t: "Email & document sorter",
+      d: "Sorts what comes in: invoices, contracts, support, spam.",
+      cad: "Hourly",
+      rep: "Everything filed in its folder; urgent items to your WhatsApp",
+      steps: [
+        "Reads new mail and folder drops",
+        "Classifies and files by your rules",
+        "Escalates only what needs your decision",
+      ],
+    },
+  },
+  {
+    id: "pendientes", cat: "operaciones", ai: "Claude",
+    es: {
+      t: "Monitor de pendientes",
+      d: "Persigue las tareas vencidas para que nada se enfríe.",
+      cad: "Todos los días, 5:00 pm",
+      rep: "Lista de vencidos y quién los tiene, cada tarde",
+      steps: [
+        "Revisa tareas y compromisos de cada espacio",
+        "Detecta lo vencido o a punto de vencer",
+        "Redacta los recordatorios para enviar",
+      ],
+    },
+    en: {
+      t: "Overdue tracker",
+      d: "Chases overdue tasks so nothing goes cold.",
+      cad: "Daily, 5:00 pm",
+      rep: "List of overdue items and owners, every afternoon",
+      steps: [
+        "Reviews tasks and commitments in each space",
+        "Flags overdue and at-risk items",
+        "Drafts the reminders to send",
+      ],
+    },
+  },
+  {
+    id: "revisor-contratos", cat: "legal", ai: "Gemini",
+    es: {
+      t: "Revisor de contratos",
+      d: "Cada contrato nuevo llega revisado, con riesgos señalados en simple.",
+      cad: "Cuando llega un contrato",
+      rep: "Resumen de riesgos y qué negociar, antes de tu firma",
+      steps: [
+        "Lee el contrato que llega a la carpeta",
+        "Señala cláusulas riesgosas y las explica",
+        "Prepara la lista de puntos a negociar",
+      ],
+    },
+    en: {
+      t: "Contract reviewer",
+      d: "Every new contract arrives reviewed, risks flagged in plain language.",
+      cad: "When a contract arrives",
+      rep: "Risk summary and negotiation points, before you sign",
+      steps: [
+        "Reads contracts dropped in the folder",
+        "Flags risky clauses and explains them",
+        "Prepares the negotiation checklist",
+      ],
+    },
+  },
+  {
+    id: "huespedes", cat: "alojamientos", ai: "Claude",
+    es: {
+      t: "Anfitrión digital",
+      d: "Procesa cada reserva: bienvenida, portería e ingreso registrado.",
+      cad: "Con cada reserva",
+      rep: "Todo registrado; te avisa solo si algo requiere tu decisión",
+      steps: [
+        "Envía la bienvenida e instrucciones al huésped",
+        "Notifica a portería con los datos del ingreso",
+        "Registra la reserva y el pago en tu control",
+      ],
+    },
+    en: {
+      t: "Digital host",
+      d: "Handles each booking: welcome, front desk and logged check-in.",
+      cad: "With every booking",
+      rep: "Everything logged; pings you only if something needs your call",
+      steps: [
+        "Sends the guest welcome and instructions",
+        "Notifies the front desk with check-in details",
+        "Logs the booking and payment in your tracker",
+      ],
+    },
+  },
+  {
+    id: "guardian-bugs", cat: "software", ai: "Codex",
+    es: {
+      t: "Guardián del código",
+      d: "Revisa bugs reportados, corre pruebas y propone correcciones.",
+      cad: "Cada noche",
+      rep: "Resumen matutino: qué se arregló y qué espera tu OK",
+      steps: [
+        "Revisa los bugs e issues nuevos",
+        "Corre las pruebas y reproduce errores",
+        "Propone la corrección y la deja lista para revisar",
+      ],
+    },
+    en: {
+      t: "Code guardian",
+      d: "Reviews reported bugs, runs tests and proposes fixes.",
+      cad: "Every night",
+      rep: "Morning digest: what was fixed and what awaits your OK",
+      steps: [
+        "Reviews new bugs and issues",
+        "Runs tests and reproduces errors",
+        "Proposes the fix, ready for your review",
+      ],
     },
   },
 ];
