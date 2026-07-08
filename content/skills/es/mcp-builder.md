@@ -5,32 +5,41 @@ category: dev
 vendors: ["claude", "codex"]
 author: "Anthropic"
 status: available
-tagline: "Construí MCP servers production-grade"
-description: "Te guía paso a paso para diseñar, codear y testear un MCP server que conecta tu IA con una API externa."
+tagline: "Diseñá y endurecé MCP servers"
+description: "Guía el diseño, implementación, testing y hardening de un MCP server, con chequeos explícitos antes de llamarlo production-ready."
 license: "MIT"
 marketplaceSource: "anthropic"
 compatibleWith: ["claude", "codex", "gemini"]
 ---
-## Cuándo usar
+## Cuándo usarlo
 
-- Querés conectar tu IA a una API que todavía no tiene MCP.
-- Tenés un MCP a medias y querés una forma estructurada de endurecerlo.
-- Querés aprender cómo se escribe un MCP de calidad sin leer toda la spec.
+- Querés exponer una API externa, herramienta interna, base de datos o workflow a un cliente de IA mediante MCP.
+- Necesitás decidir qué tools exponer, qué schemas aceptan y cómo mantener la interfaz chica y segura.
+- Tenés un MCP server prototipo y querés agregar validación, manejo de errores, tests, límites de autenticación y notas operativas.
+- Querés una ruta de construcción estructurada sin fingir que el código generado queda automáticamente production-ready.
+
+No lo uses para saltear documentación del vendor, evitar reglas de autenticación, exponer secretos o shippear tools sin tests. El skill puede ayudar a producir código con mentalidad de producción, pero sólo debe llamar a un server "production-ready" cuando existan tests, revisión de seguridad, manejo realista de errores y evidencia de deploy/runbook.
 
 ## Qué hace
 
-- Te guía el diseño: qué tools exponer, cómo nombrarlas, qué schemas aceptan.
-- Genera código boilerplate (TS, Python, etc.) siguiendo best practices del equipo de Anthropic.
-- Sugiere casos de test comunes: inputs vacíos, argumentos inválidos, rate limits.
-- Revisa setup de autenticación y seguridad antes de declarar el MCP "listo".
+Guía la construcción de un MCP por:
 
-## Cómo usar
+- **Diseño de scope**: define trabajos del usuario, set mínimo de tools, naming, schemas, paginación y límites read/write.
+- **Plan de implementación**: sugiere estructura TypeScript o Python, uso del MCP SDK, inputs tipados, configuración de entorno y layout de archivos claro.
+- **Revisión de seguridad**: chequea modelo de auth, manejo de secretos, least privilege, validación de inputs, rate limits, retries, idempotencia y operaciones de escritura peligrosas.
+- **Plan de tests**: cubre happy path, argumentos inválidos, respuestas vacías, errores de API, paginación, falla de auth, rate limits y confirmación para acciones destructivas.
+- **Readiness operativa**: documenta instalación, env vars, logging, versionado, rollback y limitaciones conocidas.
 
-1. Decile a tu IA: *"Quiero construir un MCP para la API de X usando `mcp-builder`"*.
-2. Respondé preguntas sobre el objetivo del MCP.
-3. Generás el código skeleton; iterás las tools una por una.
-4. Corrés la suite de test que te sugiere; fixeás lo que aparezca.
+Baja o matiza claims cuando falta evidencia. "Production-grade" requiere prueba: tests pasando, auth/permisos auditados, modos de falla documentados y una ruta de deploy que el usuario pueda ejecutar.
 
-## Mejor para
+## Cómo usarlo
 
-Solo devs construyendo MCPs para APIs nicho. Equipos que quieren un MCP interno para sus herramientas propietarias. Cualquiera aprendiendo a escribir MCPs production-grade.
+1. Describí la API o herramienta que querés exponer, el cliente de IA, lenguaje preferido y si las tools son read-only o pueden escribir datos.
+2. Pasá docs de API, requisitos de auth, requests/responses de ejemplo, rate limits y restricciones de compliance o sensibilidad de datos.
+3. Pedí diseño antes de código: tools, schemas, límites, lista de riesgos y plan de tests.
+4. Generá el server incrementalmente. Después de cada tool, corré los tests sugeridos y arreglá fallas antes de sumar más tools.
+5. Antes de publicar, pedí revisión de readiness: seguridad, permisos, tests, logs, docs, pasos de instalación y caveats.
+
+## Ideal para
+
+Devs y equipos técnicos que construyen MCP servers internos o de nicho donde importan corrección y seguridad. Funciona mejor con docs de API y datos de ejemplo; es más débil cuando la API externa no está documentada, faltan credenciales o el usuario quiere acceso amplio de escritura sin proceso de revisión.
