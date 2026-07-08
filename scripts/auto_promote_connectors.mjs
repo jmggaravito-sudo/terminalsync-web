@@ -51,13 +51,6 @@ const MIN_CONFIDENCE_AUTO = Number(process.env.MIN_CONFIDENCE_AUTO ?? "0.8");
 const MIN_CONFIDENCE_CLAUDE = Number(process.env.MIN_CONFIDENCE_CLAUDE ?? "0.5");
 const BATCH = Number(process.env.BATCH ?? "100");
 const DRY_RUN = process.env.DRY_RUN === "1";
-const LOOP_RUNS_WRITE_TOKEN = process.env.LOOP_RUNS_WRITE_TOKEN;
-const LOOP_RUNS_PR_URL = process.env.LOOP_RUNS_PR_URL;
-const LOOP_RUNS_ENDPOINT =
-  process.env.LOOP_RUNS_ENDPOINT ||
-  (process.env.NEXT_PUBLIC_SITE_URL
-    ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")}/api/internal/loop-runs`
-    : null);
 
 const ALLOWED_CATEGORIES = new Set([
   "productivity",
@@ -232,41 +225,6 @@ async function reject(row, decidedBy, reason) {
     .eq("id", row.id);
 }
 
-
-async function recordLoopRun({ connectorsFound, connectorsSkipped, prUrl }) {
-  if (!LOOP_RUNS_ENDPOINT || !LOOP_RUNS_WRITE_TOKEN) {
-    console.log(
-      "loop run history: skipped (set LOOP_RUNS_ENDPOINT and LOOP_RUNS_WRITE_TOKEN to record)",
-    );
-    return;
-  }
-
-  try {
-    const res = await fetch(LOOP_RUNS_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${LOOP_RUNS_WRITE_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        connectorsFound,
-        connectorsSkipped,
-        prUrl: prUrl || null,
-      }),
-    });
-    if (!res.ok) {
-      const body = await res.text().catch(() => "");
-      console.warn(`loop run history: failed ${res.status} ${body}`);
-      return;
-    }
-    console.log("loop run history: recorded");
-  } catch (e) {
-    console.warn(
-      `loop run history: failed ${e instanceof Error ? e.message : String(e)}`,
-    );
-  }
-}
-
 async function main() {
   const publisherId = await getCuratedPublisherId();
   console.log(`curated publisher: ${publisherId}`);
@@ -342,12 +300,6 @@ async function main() {
   console.log(
     `done. promoted=${promoted} rejected=${rejected} skipped=${skipped}`,
   );
-
-  await recordLoopRun({
-    connectorsFound: pending.length,
-    connectorsSkipped: skipped,
-    prUrl: LOOP_RUNS_PR_URL,
-  });
 }
 
 await main();
