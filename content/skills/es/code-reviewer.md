@@ -6,31 +6,36 @@ vendors: ["claude", "codex"]
 author: "TerminalSync"
 status: available
 tagline: "Review honesto antes de mergear"
-description: "Revisa diffs como un senior cansado pero justo: bugs reales, no lint."
+description: "Revisa diffs reales para detectar bugs, riesgos de seguridad, performance, tests faltantes y edge cases bloqueantes antes de publicar."
 license: "proprietary"
+marketplaceSource: "terminalsync"
+compatibleWith: ["claude", "codex", "gemini"]
 ---
-## Cuándo usar
+## Cuándo usarlo
 
-- Pediste "reviseme este PR", "qué le falta a este diff", "ojos críticos antes de mergear".
-- Estás por hacer merge y querés un last-pass antes del CI.
+- Pediste "revisá este PR", "qué le falta a este diff" u "ojos críticos antes de mergear".
+- Tenés un diff, archivo o URL de PR real y querés encontrar riesgos antes de que los capture CI o un teammate.
+- El cambio toca autenticación, pagos, escrituras de datos, concurrencia, migraciones, permisos u otro código donde una review superficial sale cara.
 
 ## Qué hace
 
 Lee el diff y devuelve:
 
-- **Bugs reales** (no estilo): off-by-one, race conditions, error handling faltante, leaks.
-- **Riesgos arquitectónicos**: cambios que tocan algo crítico sin tests.
-- **Edge cases olvidados**: el listado típico que un senior revisaría.
-- **Veredicto**: ship / fix-first / no-ship con razón concreta.
+- **Bugs reales**: off-by-one, race conditions, error handling faltante, leaks, estado stale y contratos de datos rotos.
+- **Riesgos de seguridad y privacidad**: checks de auth inseguros, exposición de secretos, autorización faltante, inyección o permisos demasiado amplios.
+- **Riesgos arquitectónicos**: cambios en flujos críticos sin tests, migraciones, plan de rollback o notas de compatibilidad.
+- **Edge cases olvidados**: estados vacíos, retries, fallas parciales, zonas horarias, eventos duplicados, idempotencia y compatibilidad hacia atrás.
+- **Veredicto**: ship / fix-first / no-ship con razón concreta y el fix mínimo útil.
 
-No te tira lint, no te dice "considerá usar TypeScript", no te dice "agregá comentarios". Va al grano.
+Evita feedback de lint, consejos vagos tipo "agregá comentarios" y reescrituras amplias salvo que el diff muestre un riesgo real de producto.
 
-## Cómo usar
+## Cómo usarlo
 
-1. Pegale el diff (`git diff main...HEAD`) o pasale el PR URL.
-2. Si querés contexto, agregale: *"este código maneja pagos, ojo con concurrency."*
-3. Lee el output; lo importante está marcado con 🔴 (bloqueante), 🟡 (revisar), 🟢 (ok).
+1. Pegá el diff (`git diff main...HEAD`), un fragmento de archivo o la URL del PR.
+2. Agregá contexto de riesgo si importa: *"esto maneja pagos; mirá concurrencia e idempotencia"*.
+3. Decí si querés solo bloqueantes o una revisión completa.
+4. Leé el output; los puntos clave se marcan como 🔴 bloqueante, 🟡 revisar o 🟢 OK, con archivo/línea cuando el diff los trae.
 
-## Mejor para
+## Ideal para
 
-Devs solos sin team de review, juniors que quieren simular code review de senior, equipos que usan CI para lint pero no tienen reviewer humano disponible.
+Devs solos sin equipo de review, juniors que quieren simular una revisión senior, equipos que ya tienen CI para formato y tests pero necesitan una pasada de riesgo más humana antes de mergear.
