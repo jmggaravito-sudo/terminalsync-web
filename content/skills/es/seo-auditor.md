@@ -5,31 +5,42 @@ category: marketing
 vendors: ["claude", "codex"]
 author: "TerminalSync"
 status: available
-tagline: "Auditoría SEO accionable, no checklist"
-description: "Audita tu URL y devuelve solo lo que mueve la aguja, ordenado por impacto."
+tagline: "Auditoría SEO con evidencia y límites"
+description: "Audita una URL o datos de página provistos, prioriza problemas SEO por impacto probable y declara evidencia, límites de acceso e incertidumbre antes de hacer claims de ranking."
 license: "proprietary"
+marketplaceSource: "terminalsync"
+compatibleWith: ["claude", "codex", "gemini"]
 ---
-## Cuándo usar
+## Cuándo usarlo
 
-- Pediste "auditá mi sitio", "qué le mejoro al SEO", "por qué no rankea esta página".
-- Querés un plan de acción, no un PDF de 60 páginas.
+- Tenés una URL, export de página, crawl, datos de Search Console o HTML y querés una auditoría SEO ordenada por impacto probable.
+- Sospechás problemas de indexación, canonical, robots, sitemap, metadata, headings, structured data, internal linking o performance.
+- Querés una lista de acciones práctica en vez de un checklist SEO genérico.
+- Podés dar acceso suficiente para inspección: URL pública, HTML renderizado, screenshots, output de crawl o datos relevantes de analytics/search.
+
+Si no hay URL ni datos de página, el skill debe pedirlos o aclarar que sólo puede dar un checklist de planificación. No debe afirmar que una página va a rankear, que el tráfico va a subir o que los ingresos van a mejorar sin evidencia y medición posterior.
 
 ## Qué hace
 
-Mira tu URL y devuelve un reporte priorizado:
+Produce una auditoría SEO priorizada con:
 
-- **🔴 Bloqueantes**: noindex accidental, redirects rotas, canonical mal seteado, robots bloqueando.
-- **🟡 Alto impacto**: title duplicado, H1 ausente, schema faltante, internal linking pobre, page speed crítico.
-- **🟢 Mejora marginal**: alt-text, meta descriptions débiles, sitemap.xml incompleto.
+- **Nota de acceso**: qué se inspeccionó, qué no se pudo inspeccionar y qué datos mejorarían la auditoría.
+- **Bloqueantes primero**: noindex, robots bloqueando, canonical incorrecto, redirects rotas, contenido indexable faltante, fallas graves de crawl.
+- **Fixes de alto impacto**: mismatch title/H1, metadata duplicada, intent débil, schema faltante, internal links pobres, páginas críticas lentas, contenido thin.
+- **Mejoras de menor prioridad**: alt text, pulir meta descriptions, higiene de sitemap, gaps chicos de contenido.
+- **Evidencia por hallazgo**: síntoma observado, impacto probable en usuario/búsqueda, fix exacto, owner y esfuerzo estimado.
+- **Límites de claims**: separa hallazgos verificados de hipótesis y evita garantías de ranking.
 
-Cada item incluye: el problema, qué cambiar exacto, cuánto tiempo lleva (5 min / 1 hora / 1 día).
+Sólo puede inspeccionar lo que el modelo o las herramientas conectadas puedan acceder. Si no hay render JavaScript, páginas autenticadas, Search Console, logs de servidor o Lighthouse, debe decirlo.
 
-## Cómo usar
+## Cómo usarlo
 
-1. Pasale la URL (o varias si querés comparar).
-2. Pedile contexto si quiere: *"competimos con X.com, queremos rankear para 'término Y'."*
-3. El skill te devuelve la lista priorizada y vos atacás de arriba para abajo.
+1. Pasá la URL objetivo y el objetivo de negocio: *"Auditá https://example.com/pricing para demo signups e intención SEO."*
+2. Agregá país/idioma objetivo, keywords prioritarias, competidores, CMS y si la página es pública o gated.
+3. Si el asistente no puede navegar, pegá HTML renderizado, screenshots, crawl, reporte Lighthouse o extractos de Search Console.
+4. Pedí hallazgos agrupados como bloqueantes, alto impacto y menor prioridad, con evidencia y caveats.
+5. Tratá las recomendaciones como hipótesis hasta que Search Console, crawl, analytics o datos de ranking confirmen el efecto.
 
-## Mejor para
+## Ideal para
 
-Founders haciendo SEO solos, marketing teams que quieren second opinion antes de pagar agencia, agencias para reportes baseline a clientes nuevos.
+Founders, marketers, equipos de contenido y agencias que necesitan una primera auditoría SEO rápida con prioridades claras y límites honestos. Funciona mejor con URLs públicas o páginas donde el usuario puede aportar evidencia de crawl/search; es más débil para apps privadas, páginas muy dependientes de JavaScript sin HTML renderizado o mercados sin datos de keywords.
