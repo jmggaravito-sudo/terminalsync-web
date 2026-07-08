@@ -22,32 +22,17 @@ type Row = {
   cells: Record<ColumnKey, Cell>;
 };
 
-// Order = order of importance per JM. Memoria persistente is the
-// headline differentiator (engram-backed via MCP), then session
-// resurrection (Zellij engine), then multi-model + interactive
-// notifications + browser/mobile mirroring. Everything else after.
 const ROWS: Row[] = [
   {
     key: "persistentMemory",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
+    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "partial", codex: "partial", gemini: "partial" },
   },
   {
     key: "resurrection",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
+    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "partial", codex: "partial", gemini: "partial" },
   },
   {
     key: "multiModel",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
-  },
-  {
-    key: "responsiveNotifications",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
-  },
-  // Reply-injection lives right under the notifications row — they
-  // are the same conversational loop (you get pinged on phone, you
-  // reply from phone, the agent picks it up). JM 2026-05-07.
-  {
-    key: "replyInjection",
     cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
   },
   {
@@ -55,12 +40,20 @@ const ROWS: Row[] = [
     cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
   },
   {
+    key: "responsiveNotifications",
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
+  },
+  {
+    key: "replyInjection",
+    cells: { terminalSync: "yes", vercel: "yes", claudeCode: "no", codex: "no", gemini: "no" },
+  },
+  {
     key: "webMobileMirror",
     cells: { terminalSync: "yes", vercel: "yes", claudeCode: "no", codex: "no", gemini: "no" },
   },
   {
     key: "aiConversationSync",
-    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
+    cells: { terminalSync: "yes", vercel: "yes", claudeCode: "no", codex: "no", gemini: "no" },
   },
   {
     key: "internetImmunity",
@@ -72,7 +65,7 @@ const ROWS: Row[] = [
   },
   {
     key: "secretsVault",
-    cells: { terminalSync: "yes", vercel: "partial", claudeCode: "no", codex: "no", gemini: "no" },
+    cells: { terminalSync: "yes", vercel: "no", claudeCode: "no", codex: "no", gemini: "no" },
   },
   {
     key: "offlineLocal",

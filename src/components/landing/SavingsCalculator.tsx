@@ -198,8 +198,8 @@ export function SavingsCalculator({ dict }: { dict: Dict }) {
             }
             help={
               dict.locale === "es"
-                ? "Con memoria persistente no repites quién eres, tus reglas ni dónde quedaste — eso se recupera completo."
-                : "With persistent memory you never repeat who you are, your rules, or where you left off — fully recovered."
+                ? "Con TerminalSync no repites quién eres ni dónde quedaste."
+                : "With TerminalSync you don't repeat who you are or where you left off."
             }
             value={memHrs}
             onChange={setMemHrs}

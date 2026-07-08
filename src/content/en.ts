@@ -309,7 +309,7 @@ const en: Dict = {
       },
       {
         q: "Do I need to configure anything?",
-        a: "No. That's exactly the point. You install, sign in, and that's it. The first time takes 2 minutes to connect your cloud (Drive, iCloud or Dropbox); after that, you open any computer and everything is in place.",
+        a: "No. You open your space and your terminals, tools and memory are ready from the first session. Nothing to configure.",
       },
     ],
   },
@@ -323,16 +323,16 @@ const en: Dict = {
     columns: {
       feature: "Feature",
       terminalSync: "Terminal Sync",
-      vercel: "Vercel",
-      claudeCode: "Claude alone",
-      codex: "Codex alone",
-      gemini: "Gemini alone",
+      vercel: "ChatGPT (web)",
+      claudeCode: "Claude Code",
+      codex: "Codex CLI",
+      gemini: "Gemini CLI",
     },
     rows: {
       persistentMemory: "Memory across sessions (your AI remembers)",
       resurrection: "Picks up where you left off (close it all, comes back the same)",
       multiModel: "Several AIs together (Claude + Codex + Gemini)",
-      responsiveNotifications: "Alerts you via email, Telegram and WhatsApp",
+      responsiveNotifications: "Alerts you via email and Telegram",
       webMobileMirror: "The same session on browser or phone",
       offlineLocal: "Works without internet",
       aes256: "Strong encryption · not even we can read your content",
@@ -402,7 +402,7 @@ const en: Dict = {
       multiModel:
         "One interface for Claude Code, Codex, and Gemini CLI. Switch models without losing context and use the best one for each task.",
       responsiveNotifications:
-        "When your agent finishes something, fails, or needs a call from you, it pings you via email, Telegram, and (soon) WhatsApp. Reply from wherever you are.",
+        "When your agent finishes something, fails, or needs a call from you, it pings you via email and Telegram. Reply from wherever you are.",
       webMobileMirror:
         "Your active session looks and feels the same from your computer, a browser, or your phone. Same terminal, same context, same agent.",
       offlineLocal:
@@ -533,10 +533,10 @@ const en: Dict = {
         features: [
           "10 terminals with persistence + resurrection",
           "Claude + Codex + Gemini in one workspace",
-          "Persistent memory across AIs",
+          "Your AI remembers your business — you never explain twice",
           "Per-project folder secrets vault",
           "Git-native sync for project folders and snapshots",
-          "Auto setup-on-arrival per project",
+          "Your environment is ready when you open any project",
           "Your AI terminals travel with the project folder",
           "Anywhere Access (mobile + any browser)",
           "Continue your work from WhatsApp and Telegram",
@@ -558,7 +558,7 @@ const en: Dict = {
           "Unlimited terminals",
           "Up to 10 devices",
           "Portable .terminalsync/ project folder terminal metadata",
-          "Helpful commands, terminal tool sign-in and MCPs per machine",
+          "Shared tools and commands per team",
           "Read-only pair programming",
           "Priority email support",
         ],

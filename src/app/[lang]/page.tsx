@@ -13,6 +13,8 @@ import { WhatYouCanBuild } from "@/components/landing/WhatYouCanBuild";
 import { Continuity } from "@/components/landing/Continuity";
 import { UseCases } from "@/components/landing/UseCases";
 import { HowItWorks } from "@/components/landing/HowItWorks";
+import { RealFolders } from "@/components/landing/RealFolders";
+import { CategoryBlock } from "@/components/landing/CategoryBlock";
 import { BeforeAfter } from "@/components/landing/BeforeAfter";
 import { MidCta } from "@/components/landing/MidCta";
 import { Testimonials } from "@/components/landing/Testimonials";
@@ -63,6 +65,7 @@ export default async function Landing({ params }: Props) {
       <DemosGrid lang={lang} />
       <IntegrationsDiscovery lang={lang} />
       <HowItWorks lang={lang} />
+      <RealFolders lang={lang} />
       <WhatYouCanBuild lang={lang} />
       <UseCases lang={lang} />
       <MultiAI dict={d} />
@@ -70,6 +73,7 @@ export default async function Landing({ params }: Props) {
       <MemoryPersistent dict={d} />
       <SavingsCalculator dict={d} />
       <BeforeAfter dict={d} />
+      <CategoryBlock lang={lang} />
       <Comparison dict={d} />
       <ChromeExtensionTeaser dict={d} />
       <Testimonials lang={lang} />

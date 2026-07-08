@@ -36,6 +36,15 @@ export function ThemeToggle({
     setChoice(saved);
   }, []);
 
+  // Re-apply when OS theme changes and user hasn't overridden manually.
+  useEffect(() => {
+    if (choice !== "system") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = () => apply(resolve("system"));
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [choice]);
+
   function change(next: Choice) {
     setChoice(next);
     localStorage.setItem(STORAGE, next);

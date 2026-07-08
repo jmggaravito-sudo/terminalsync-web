@@ -309,7 +309,7 @@ const es: Dict = {
       },
       {
         q: "¿Necesito configurar algo?",
-        a: "No. Ese es justamente el punto. Instalas, inicias sesión y ya está. La primera vez tomas 2 minutos para conectar tu nube (Drive, iCloud o Dropbox); de ahí en adelante, abres cualquier computadora y todo está en su lugar.",
+        a: "No. Abres tu espacio y tus terminales, herramientas y memoria ya están listas desde la primera sesión. Nada que configurar.",
       },
     ],
   },
@@ -323,16 +323,16 @@ const es: Dict = {
     columns: {
       feature: "Funcionalidad",
       terminalSync: "Terminal Sync",
-      vercel: "Vercel",
-      claudeCode: "Claude solo",
-      codex: "Codex solo",
-      gemini: "Gemini solo",
+      vercel: "ChatGPT (web)",
+      claudeCode: "Claude Code",
+      codex: "Codex CLI",
+      gemini: "Gemini CLI",
     },
     rows: {
       persistentMemory: "Memoria entre sesiones (tu IA recuerda)",
       resurrection: "Retoma donde quedaste (cierras todo y vuelve igual)",
       multiModel: "Varias IAs juntas (Claude + Codex + Gemini)",
-      responsiveNotifications: "Te avisa por correo, Telegram y WhatsApp",
+      responsiveNotifications: "Te avisa por correo y Telegram",
       webMobileMirror: "La misma sesión en el navegador o el celular",
       offlineLocal: "Funciona sin internet",
       aes256: "Cifrado fuerte · ni nosotros podemos leer tu contenido",
@@ -402,7 +402,7 @@ const es: Dict = {
       multiModel:
         "Una sola interfaz para Claude Code, Codex y Gemini CLI. Cambias de modelo sin perder contexto y usas el mejor para cada tarea.",
       responsiveNotifications:
-        "Cuando tu agente termina algo, falla, o te pide una decisión, te avisa por correo, Telegram y (próximamente) WhatsApp. Respondes desde donde estés.",
+        "Cuando tu agente termina algo, falla, o te pide una decisión, te avisa por correo y Telegram. Respondes desde donde estés.",
       webMobileMirror:
         "Tu sesión activa se ve y se controla igual desde tu computadora, desde un navegador o desde tu celular. Misma terminal, mismo contexto, mismo agente.",
       offlineLocal:
@@ -532,11 +532,11 @@ const es: Dict = {
         priceNote: "/mes",
         features: [
           "10 terminales con persistencia + resurrección",
-          "Claude + Codex + Gemini en un workspace",
-          "Memoria persistente entre IAs",
+          "Claude + Codex + Gemini en un espacio de trabajo",
+          "Tu IA recuerda tu empresa — no explicas dos veces",
           "Vault de secretos por carpeta de proyecto",
           "Sync nativo de Git para carpetas de proyecto y snapshots",
-          "Setup-on-arrival automático por proyecto",
+          "Tu entorno está listo al abrir cualquier proyecto",
           "Tus terminales IA viajan con la carpeta de proyecto",
           "Tu sesión en cualquier dispositivo (móvil + navegador)",
           "Continúa el trabajo desde WhatsApp y Telegram",
@@ -558,7 +558,7 @@ const es: Dict = {
           "Terminales ilimitadas",
           "Hasta 10 dispositivos",
           ".terminalsync/ portable para terminales de la carpeta de proyecto",
-          "Comandos útiles, conexión de herramientas de terminal y MCPs por equipo",
+          "Herramientas y comandos compartidos por equipo",
           "Pair programming read-only",
           "Soporte prioritario por email",
         ],
