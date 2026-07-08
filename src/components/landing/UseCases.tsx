@@ -57,8 +57,8 @@ export function UseCases({ lang }: { lang: Locale }) {
           {t.eyebrow}
         </span>
         <h2
-          className="mt-3 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.08]"
-          style={{ fontSize: "clamp(1.75rem, 4.5vw, 2.75rem)" }}
+          className="mt-3 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.08] whitespace-nowrap"
+          style={{ fontSize: "clamp(1.1rem, 3vw, 2rem)" }}
         >
           {t.title}
         </h2>
