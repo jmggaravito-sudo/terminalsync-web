@@ -40,6 +40,7 @@ export function Nav({ dict, lang }: Props) {
         // Nav del rediseño (handoff): 4 ítems, sin Marketplace (retirado).
         { href: "#how-it-works", label: lang === "es" ? "Cómo funciona" : "How it works" },
         { href: "#multi-ai", label: lang === "es" ? "Tu equipo de IAs" : "Your AI team" },
+        { href: `/${lang}/casos-de-uso`, label: lang === "es" ? "Casos de uso" : "Use cases", external: true },
         { href: `/${lang}/stacks`, label: lang === "es" ? "Integraciones" : "Integrations", external: true },
         { href: "#pricing", label: dict.nav.pricing },
       ];
