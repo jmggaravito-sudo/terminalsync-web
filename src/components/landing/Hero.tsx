@@ -140,7 +140,7 @@ const COPY = {
     os: "macOS · Linux · Windows",
     trust: ["Sin programar", "Memoria permanente", "Continúa aunque cambie la IA"],
     prefixLabel: "CON TERMINALSYNC:",
-    shotTitle: "Desde acá se maneja tu empresa.",
+    shotTitle: "Desde acá manejas tu empresa con IA",
     trustCount: "Más de 2,000 empresas ya confían en TerminalSync",
   },
   en: {
@@ -236,8 +236,8 @@ export function Hero({ dict }: { dict: Dict }) {
       {/* Dashboard */}
       <div className="relative mx-auto max-w-6xl px-3 sm:px-5 md:px-6 pb-16 md:pb-20">
         <h2
-          className="text-center font-semibold text-[var(--color-fg-strong)] leading-tight max-w-[18ch] mx-auto mb-4"
-          style={{ fontSize: "clamp(26px, 4vw, 42px)", letterSpacing: "-0.035em" }}
+          className="text-center font-semibold text-[var(--color-fg-strong)] leading-tight mx-auto mb-4"
+          style={{ fontSize: "clamp(22px, 3.2vw, 36px)", letterSpacing: "-0.03em" }}
         >
           {t.shotTitle}
         </h2>
