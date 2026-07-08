@@ -246,7 +246,7 @@ export function Hero({ dict }: { dict: Dict }) {
         <div className="relative mt-6 rounded-2xl overflow-hidden group cursor-pointer shadow-floating">
           <div style={{ aspectRatio: "1525/909" }}>
             <img
-              src="/redesign/dashboard-hero.png"
+              src={dict.locale === "en" ? "/redesign/dashboard-hero-en.png" : "/redesign/dashboard-hero.png"}
               alt="TerminalSync dashboard"
               className="w-full h-full object-cover object-top"
             />
