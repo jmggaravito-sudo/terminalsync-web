@@ -4,7 +4,7 @@ logo: /skills/deep-research.svg
 category: research
 vendors: ["claude", "codex"]
 author: "TerminalSync"
-status: available
+status: soon
 tagline: "Investigación con fuentes si hay herramientas"
 description: "Planifica y sintetiza investigación multi-fuente, declarando dependencias de search/fetch y límites de citación antes de afirmar hallazgos con fuentes."
 license: "proprietary"

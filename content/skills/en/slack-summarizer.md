@@ -4,7 +4,7 @@ logo: /skills/slack-summarizer.svg
 category: productivity
 vendors: ["claude", "codex"]
 author: "TerminalSync"
-status: available
+status: soon
 tagline: "Slack digests when connected"
 description: "Summarizes Slack channels and threads into decisions, blockers, action items, and follow-ups, but only when the Slack connector or pasted messages provide access."
 license: "proprietary"
