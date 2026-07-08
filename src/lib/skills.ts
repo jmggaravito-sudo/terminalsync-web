@@ -65,7 +65,7 @@ export interface SkillMeta {
    *  "Compatible with Claude / Codex / Gemini" without re-deriving. */
   compatibleWith?: ("claude" | "codex" | "gemini")[];
   /** Provenance tracking for the visual badge. See ConnectorMeta. */
-  marketplaceSource?: "ts-curated" | "anthropic" | "community";
+  marketplaceSource?: "terminalsync" | "ts-curated" | "anthropic" | "community";
 }
 
 export interface SkillDoc extends SkillMeta {
@@ -157,6 +157,22 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): SkillMeta {
   const vendors = vendorsRaw.filter(
     (v): v is SkillVendor => v === "claude" || v === "codex",
   );
+  const compatibleWithRaw = Array.isArray(data.compatibleWith)
+    ? data.compatibleWith
+    : [];
+  const compatibleWith = compatibleWithRaw.filter(
+    (v): v is "claude" | "codex" | "gemini" =>
+      v === "claude" || v === "codex" || v === "gemini",
+  );
+  const marketplaceSourceRaw = get("marketplaceSource");
+  const marketplaceSource = [
+    "terminalsync",
+    "ts-curated",
+    "anthropic",
+    "community",
+  ].includes(marketplaceSourceRaw)
+    ? (marketplaceSourceRaw as SkillMeta["marketplaceSource"])
+    : undefined;
   return {
     slug,
     name: get("name", slug),
@@ -172,5 +188,7 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): SkillMeta {
     status: (get("status", "available") as SkillMeta["status"]),
     tagline: get("tagline"),
     description: get("description"),
+    compatibleWith: compatibleWith.length > 0 ? compatibleWith : undefined,
+    marketplaceSource,
   };
 }
