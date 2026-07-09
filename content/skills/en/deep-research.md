@@ -4,6 +4,7 @@ vendor: community
 logo: /skills/deep-research.svg
 category: research
 status: soon
+hidden: true
 simpleTitle: "Multi-source research in one prompt"
 simpleSubtitle: "Claude reads, cross-references and cites — like a junior analyst, but in 90 seconds."
 devTitle: "Deep Research Skill"

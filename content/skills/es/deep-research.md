@@ -4,6 +4,7 @@ vendor: community
 logo: /skills/deep-research.svg
 category: research
 status: soon
+hidden: true
 simpleTitle: "Investigación multi-fuente en un prompt"
 simpleSubtitle: "Claude lee, cruza referencias y cita — como un analista junior, pero en 90 segundos."
 devTitle: "Deep Research Skill"

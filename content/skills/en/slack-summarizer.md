@@ -4,6 +4,7 @@ vendor: community
 logo: /skills/slack-summarizer.svg
 category: productivity
 status: soon
+hidden: true
 simpleTitle: "Catch up on Slack in 30 seconds"
 simpleSubtitle: "Coming back from PTO? Lunch? A long meeting? Claude reads the channels you care about and writes the TL;DR."
 devTitle: "Slack Summarizer Skill"

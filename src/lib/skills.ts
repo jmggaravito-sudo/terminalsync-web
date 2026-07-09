@@ -142,12 +142,8 @@ export async function getSkill(
 }
 
 export async function listSkillSlugs(): Promise<string[]> {
-  const dir = resolveLangDir("en");
-  if (!fs.existsSync(dir)) return [];
-  return fs
-    .readdirSync(dir)
-    .filter((f: string) => f.endsWith(".md"))
-    .map((f: string) => f.replace(/\.md$/, ""));
+  const skills = await listSkills("en");
+  return skills.map((skill) => skill.slug);
 }
 
 function normalizeMeta(slug: string, data: Record<string, unknown>): SkillMeta {

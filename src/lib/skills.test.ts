@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getSkill, listSkills } from "./skills";
+import { getSkill, listSkillSlugs, listSkills } from "./skills";
 
 const REQUIRED_SKILL_META = {
   marketplaceSource: "terminalsync",
@@ -34,28 +34,49 @@ describe("skills content mold", () => {
     });
   });
 
-  it("parks borderline generic assistants as soon without deleting their files", async () => {
-    const parkedSlugs = ["email-drafter", "copywriter", "learn"] as const;
+  it("keeps only the seven launch-ready skills in the public catalog", async () => {
+    const publicSlugs = [
+      "brand-guidelines",
+      "code-reviewer",
+      "doc-coauthoring",
+      "mcp-builder",
+      "meta-ads-creator",
+      "seo-auditor",
+      "skill-creator",
+    ] as const;
+
+    for (const lang of ["en", "es"] as const) {
+      const skills = await listSkills(lang);
+      expect(skills.map((skill) => skill.slug)).toEqual([...publicSlugs]);
+    }
+
+    await expect(listSkillSlugs()).resolves.toEqual([...publicSlugs]);
+  });
+
+  it("hides retired skills from public catalog and detail pages without deleting content", async () => {
+    const hiddenSlugs = [
+      // Product decision: borderline/generic assistants stay reversible.
+      "email-drafter",
+      "copywriter",
+      "learn",
+      // Product decision: external dependencies are not guaranteed yet.
+      "deep-research",
+      "slack-summarizer",
+      // Current launch catalog is intentionally capped to the seven ready skills.
+      "brand-voice",
+      "internal-comms",
+    ] as const;
 
     for (const lang of ["en", "es"] as const) {
       const skills = await listSkills(lang);
 
-      for (const slug of parkedSlugs) {
-        const listed = skills.find((skill) => skill.slug === slug);
+      for (const slug of hiddenSlugs) {
         expect(
-          listed,
-          `${lang}/${slug} should remain reversible in the catalog data`,
-        ).toBeDefined();
-        expect(
-          listed?.status,
-          `${lang}/${slug} should not be publicly available`,
-        ).toBe("soon");
+          skills.find((skill) => skill.slug === slug),
+          `${lang}/${slug} should be hidden from the public catalog`,
+        ).toBeUndefined();
 
-        const doc = await getSkill(lang, slug);
-        expect(
-          doc?.status,
-          `${lang}/${slug} detail file should remain readable`,
-        ).toBe("soon");
+        await expect(getSkill(lang, slug)).resolves.toBeNull();
       }
     }
   });

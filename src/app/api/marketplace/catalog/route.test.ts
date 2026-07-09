@@ -63,22 +63,44 @@ describe("GET /api/marketplace/catalog", () => {
     expect(body.skills.every((s) => !s.hidden)).toBe(true);
   });
 
-  it("parks borderline generic assistants as soon in the public catalog response", async () => {
-    const parkedSlugs = ["email-drafter", "copywriter", "learn"] as const;
+  it("returns exactly the seven launch-ready skills in the public catalog response", async () => {
+    const publicSlugs = [
+      "brand-guidelines",
+      "code-reviewer",
+      "doc-coauthoring",
+      "mcp-builder",
+      "meta-ads-creator",
+      "seo-auditor",
+      "skill-creator",
+    ] as const;
 
     for (const lang of ["en", "es"] as const) {
       const { body } = await callCatalog(lang);
 
-      for (const slug of parkedSlugs) {
-        const skill = body.skills.find((item) => item.slug === slug);
+      expect(body.skills).toHaveLength(7);
+      expect(body.skills.map((skill) => skill.slug)).toEqual([...publicSlugs]);
+    }
+  });
+
+  it("hides retired skills from the public catalog response", async () => {
+    const hiddenSlugs = [
+      "email-drafter",
+      "copywriter",
+      "learn",
+      "deep-research",
+      "slack-summarizer",
+      "brand-voice",
+      "internal-comms",
+    ] as const;
+
+    for (const lang of ["en", "es"] as const) {
+      const { body } = await callCatalog(lang);
+
+      for (const slug of hiddenSlugs) {
         expect(
-          skill,
-          `${lang}/${slug} should remain reversible in catalog data`,
-        ).toBeDefined();
-        expect(
-          skill?.status,
-          `${lang}/${slug} should not be available`,
-        ).toBe("soon");
+          body.skills.find((skill) => skill.slug === slug),
+          `${lang}/${slug} should not be in the public catalog response`,
+        ).toBeUndefined();
       }
     }
   });

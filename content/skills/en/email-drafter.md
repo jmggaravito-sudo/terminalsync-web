@@ -5,6 +5,7 @@ category: productivity
 vendors: ["claude", "codex"]
 author: "TerminalSync"
 status: soon
+hidden: true
 tagline: "Emails people actually reply to"
 description: "Short, clear, specific drafts — paste and send."
 license: "proprietary"

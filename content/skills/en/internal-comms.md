@@ -5,6 +5,7 @@ category: productivity
 vendors: ["claude", "codex"]
 author: "Anthropic"
 status: available
+hidden: true
 tagline: "Internal communications that actually land"
 description: "Helps you write team-facing comms: status updates, post-mortems, change announcements, with the right tone for each audience."
 license: "MIT"

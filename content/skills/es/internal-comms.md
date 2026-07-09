@@ -5,6 +5,7 @@ category: productivity
 vendors: ["claude", "codex"]
 author: "Anthropic"
 status: available
+hidden: true
 tagline: "Comunicación interna que aterriza"
 description: "Te ayuda a redactar comunicaciones internas: status updates, post-mortems, anuncios de cambios, con el tono correcto para cada audiencia."
 license: "MIT"
