@@ -4,7 +4,7 @@ vendor: community
 logo: /skills/brand-voice.svg
 category: marketing
 status: available
-hidden: true
+catalogReady: false
 simpleTitle: "Hacé que Claude escriba en TU voz"
 simpleSubtitle: "Dale 5 muestras de tu escritura una sola vez. De ahí en más cada mail, post, copy de anuncio suena a vos."
 devTitle: "Brand Voice Skill"

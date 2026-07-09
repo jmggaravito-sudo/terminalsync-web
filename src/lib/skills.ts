@@ -43,6 +43,10 @@ export interface SkillMeta {
   /** When true, the skill is suppressed from the public catalog without
    *  losing its content. */
   hidden?: boolean;
+  /** When explicitly false, the skill is pending evaluation: excluded from
+   *  the public catalog like `hidden`, but semantically distinct — it is
+   *  not retired, just not cleared for launch yet. */
+  catalogReady?: boolean;
   /** Always `false` for skills. They're prompt recipes (SKILL.md), not
    *  tools that need API keys or env vars — the install path is a file
    *  copy. Catalog includes this so the desktop panel can treat the four
@@ -118,6 +122,7 @@ export async function listSkills(lang: string): Promise<SkillMeta[]> {
     const { data } = matter(raw);
     const meta = normalizeMeta(file.replace(/\.md$/, ""), data);
     if (meta.hidden) continue; // Suppressed from the public catalog.
+    if (meta.catalogReady === false) continue; // Pending evaluation.
     metas.push(meta);
   }
   return metas.sort((a, b) => {
@@ -137,6 +142,7 @@ export async function getSkill(
   const { data, content } = matter(raw);
   const meta = normalizeMeta(slug, data);
   if (meta.hidden) return null;
+  if (meta.catalogReady === false) return null;
   const bodyHtml = String(await remark().use(html).process(content));
   return { ...meta, bodyHtml };
 }
@@ -179,6 +185,7 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): SkillMeta {
     license: get("license") || undefined,
     licenseUrl: get("licenseUrl") || undefined,
     hidden: data.hidden === true,
+    catalogReady: data.catalogReady === false ? false : undefined,
     // Always false — see SkillMeta.requiresEnvSecrets doc.
     requiresEnvSecrets: false,
     status: (get("status", "available") as SkillMeta["status"]),

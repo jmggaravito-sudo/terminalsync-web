@@ -1,44 +1,48 @@
 import { describe, expect, it } from "vitest";
+import fs from "node:fs";
+import path from "node:path";
 import { getSkill, listSkillSlugs, listSkills } from "./skills";
 
-const REQUIRED_SKILL_META = {
-  marketplaceSource: "terminalsync",
-  compatibleWith: ["claude", "codex", "gemini"],
-};
-
-const MOLDED_TERMINALSYNC_SKILLS = [
-  "code-reviewer",
-  "meta-ads-creator",
-  "seo-auditor",
+// Molded skills that are live in the public catalog.
+const MOLDED_PUBLIC_SKILLS = [
+  { slug: "code-reviewer", source: "terminalsync" },
+  { slug: "meta-ads-creator", source: "terminalsync" },
+  { slug: "seo-auditor", source: "terminalsync" },
+  { slug: "mcp-builder", source: "anthropic" },
+  { slug: "doc-coauthoring", source: "anthropic" },
+  { slug: "internal-comms", source: "anthropic" },
+  { slug: "skill-creator", source: "anthropic" },
 ] as const;
 
+// Molded content that is hidden from the catalog (dependency-bound) but must
+// stay intact on disk for when the external tooling is guaranteed.
+const MOLDED_HIDDEN_SKILLS = ["deep-research", "slack-summarizer"] as const;
+
+const readRawSkill = (lang: string, slug: string): string =>
+  fs.readFileSync(
+    path.join(process.cwd(), "content", "skills", lang, `${slug}.md`),
+    "utf8",
+  );
+
 describe("skills content mold", () => {
-  it("TerminalSync-molded skills expose RULES.md-required frontmatter", async () => {
+  it("molded skills expose RULES.md-required frontmatter", async () => {
     const skills = await listSkills("es");
 
-    for (const slug of MOLDED_TERMINALSYNC_SKILLS) {
+    for (const { slug, source } of MOLDED_PUBLIC_SKILLS) {
       const skill = skills.find((item) => item.slug === slug);
       expect(skill, `${slug} should be listed`).toBeDefined();
-      expect(skill).toMatchObject(REQUIRED_SKILL_META);
+      expect(skill).toMatchObject({
+        marketplaceSource: source,
+        compatibleWith: ["claude", "codex", "gemini"],
+      });
     }
-  });
-
-  it("Anthropic MCP Builder exposes RULES.md-required frontmatter", async () => {
-    const skills = await listSkills("es");
-    const mcpBuilder = skills.find((skill) => skill.slug === "mcp-builder");
-
-    expect(mcpBuilder).toMatchObject({
-      name: "MCP Builder",
-      marketplaceSource: "anthropic",
-      compatibleWith: ["claude", "codex", "gemini"],
-    });
   });
 
   it("keeps only the seven launch-ready skills in the public catalog", async () => {
     const publicSlugs = [
-      "brand-guidelines",
       "code-reviewer",
       "doc-coauthoring",
+      "internal-comms",
       "mcp-builder",
       "meta-ads-creator",
       "seo-auditor",
@@ -62,9 +66,6 @@ describe("skills content mold", () => {
       // Product decision: external dependencies are not guaranteed yet.
       "deep-research",
       "slack-summarizer",
-      // Current launch catalog is intentionally capped to the seven ready skills.
-      "brand-voice",
-      "internal-comms",
     ] as const;
 
     for (const lang of ["en", "es"] as const) {
@@ -77,19 +78,72 @@ describe("skills content mold", () => {
         ).toBeUndefined();
 
         await expect(getSkill(lang, slug)).resolves.toBeNull();
+
+        expect(
+          readRawSkill(lang, slug).length,
+          `${lang}/${slug} content file must stay on disk (reversible)`,
+        ).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it("parks brand skills as catalogReady:false — pending evaluation, distinct from hidden", async () => {
+    const pendingSlugs = ["brand-guidelines", "brand-voice"] as const;
+
+    for (const lang of ["en", "es"] as const) {
+      const skills = await listSkills(lang);
+
+      for (const slug of pendingSlugs) {
+        expect(
+          skills.find((skill) => skill.slug === slug),
+          `${lang}/${slug} should not be publicly listed while pending evaluation`,
+        ).toBeUndefined();
+
+        await expect(getSkill(lang, slug)).resolves.toBeNull();
+
+        const raw = readRawSkill(lang, slug);
+        expect(
+          raw,
+          `${lang}/${slug} should carry the catalogReady:false marker`,
+        ).toContain("catalogReady: false");
+        expect(
+          raw,
+          `${lang}/${slug} is pending evaluation, NOT retired — no hidden flag`,
+        ).not.toContain("hidden: true");
       }
     }
   });
 
   it("molded Spanish skill pages use localized RULES.md headings", async () => {
-    for (const slug of [
-      ...MOLDED_TERMINALSYNC_SKILLS,
-      "mcp-builder",
-    ] as const) {
+    for (const { slug } of MOLDED_PUBLIC_SKILLS) {
       const doc = await getSkill("es", slug);
       expect(doc?.bodyHtml, `${slug} should render`).toContain("Cuándo usarlo");
       expect(doc?.bodyHtml, `${slug} should render`).toContain("Cómo usarlo");
       expect(doc?.bodyHtml, `${slug} should render`).toContain("Ideal para");
+    }
+
+    // Hidden molded content keeps the localized mold on disk even though the
+    // public detail page is suppressed.
+    for (const slug of MOLDED_HIDDEN_SKILLS) {
+      const raw = readRawSkill("es", slug);
+      expect(raw, `${slug} raw content keeps the mold`).toContain("Cuándo usarlo");
+      expect(raw, `${slug} raw content keeps the mold`).toContain("Qué hace");
+    }
+  });
+
+  it("keeps dependency-bound skills out of the catalog until their external tools are guaranteed", async () => {
+    const skills = await listSkills("es");
+
+    // Dependency-bound skills are fully hidden (see the retired-skills test);
+    // they must not resurface as "soon" placeholders.
+    for (const slug of MOLDED_HIDDEN_SKILLS) {
+      expect(skills.find((item) => item.slug === slug)).toBeUndefined();
+    }
+
+    for (const { slug } of MOLDED_PUBLIC_SKILLS) {
+      expect(skills.find((item) => item.slug === slug)?.status).toBe(
+        "available",
+      );
     }
   });
 
@@ -105,5 +159,29 @@ describe("skills content mold", () => {
     const mcpBuilder = await getSkill("es", "mcp-builder");
     expect(mcpBuilder?.bodyHtml).toContain("production-ready");
     expect(mcpBuilder?.bodyHtml).toContain("tests pasando");
+  });
+
+  it("sensitive or dependency-bound skills declare their limits", async () => {
+    const docCoauthoring = await getSkill("es", "doc-coauthoring");
+    expect(docCoauthoring?.bodyHtml).toContain("contratos legalmente vinculantes");
+    expect(docCoauthoring?.bodyHtml).toContain("abogado");
+
+    const internalComms = await getSkill("es", "internal-comms");
+    expect(internalComms?.bodyHtml).toContain("layoffs");
+    expect(internalComms?.bodyHtml).toContain("HR/legal/compliance");
+
+    const skillCreator = await getSkill("es", "skill-creator");
+    expect(skillCreator?.bodyHtml).toContain("RULES.md");
+    expect(skillCreator?.bodyHtml).toContain("baseline");
+
+    // Hidden dependency-bound skills: limits live in the raw content since
+    // their public detail pages are suppressed.
+    const deepResearch = readRawSkill("es", "deep-research");
+    expect(deepResearch).toContain("search/fetch");
+    expect(deepResearch).toContain("citas falsas");
+
+    const slackSummarizer = readRawSkill("es", "slack-summarizer");
+    expect(slackSummarizer).toContain("conector Slack");
+    expect(slackSummarizer).toContain("inventar un resumen");
   });
 });

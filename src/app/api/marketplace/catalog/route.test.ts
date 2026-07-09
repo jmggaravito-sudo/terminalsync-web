@@ -65,9 +65,9 @@ describe("GET /api/marketplace/catalog", () => {
 
   it("returns exactly the seven launch-ready skills in the public catalog response", async () => {
     const publicSlugs = [
-      "brand-guidelines",
       "code-reviewer",
       "doc-coauthoring",
+      "internal-comms",
       "mcp-builder",
       "meta-ads-creator",
       "seo-auditor",
@@ -84,13 +84,15 @@ describe("GET /api/marketplace/catalog", () => {
 
   it("hides retired skills from the public catalog response", async () => {
     const hiddenSlugs = [
+      // Retired (hidden: true).
       "email-drafter",
       "copywriter",
       "learn",
       "deep-research",
       "slack-summarizer",
+      // Pending evaluation (catalogReady: false).
       "brand-voice",
-      "internal-comms",
+      "brand-guidelines",
     ] as const;
 
     for (const lang of ["en", "es"] as const) {
