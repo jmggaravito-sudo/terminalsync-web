@@ -34,6 +34,32 @@ describe("skills content mold", () => {
     });
   });
 
+  it("parks borderline generic assistants as soon without deleting their files", async () => {
+    const parkedSlugs = ["email-drafter", "copywriter", "learn"] as const;
+
+    for (const lang of ["en", "es"] as const) {
+      const skills = await listSkills(lang);
+
+      for (const slug of parkedSlugs) {
+        const listed = skills.find((skill) => skill.slug === slug);
+        expect(
+          listed,
+          `${lang}/${slug} should remain reversible in the catalog data`,
+        ).toBeDefined();
+        expect(
+          listed?.status,
+          `${lang}/${slug} should not be publicly available`,
+        ).toBe("soon");
+
+        const doc = await getSkill(lang, slug);
+        expect(
+          doc?.status,
+          `${lang}/${slug} detail file should remain readable`,
+        ).toBe("soon");
+      }
+    }
+  });
+
   it("molded Spanish skill pages use localized RULES.md headings", async () => {
     for (const slug of [
       ...MOLDED_TERMINALSYNC_SKILLS,

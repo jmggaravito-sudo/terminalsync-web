@@ -4,7 +4,7 @@ logo: /skills/learn.svg
 category: productivity
 vendors: ["claude", "codex"]
 author: "Anthropic"
-status: available
+status: soon
 tagline: "Personalized tutor for what you want to learn"
 description: "Turns your AI into a tutor: assesses your level, builds a study path, generates exercises, gives structured feedback."
 license: "MIT"

@@ -63,6 +63,26 @@ describe("GET /api/marketplace/catalog", () => {
     expect(body.skills.every((s) => !s.hidden)).toBe(true);
   });
 
+  it("parks borderline generic assistants as soon in the public catalog response", async () => {
+    const parkedSlugs = ["email-drafter", "copywriter", "learn"] as const;
+
+    for (const lang of ["en", "es"] as const) {
+      const { body } = await callCatalog(lang);
+
+      for (const slug of parkedSlugs) {
+        const skill = body.skills.find((item) => item.slug === slug);
+        expect(
+          skill,
+          `${lang}/${slug} should remain reversible in catalog data`,
+        ).toBeDefined();
+        expect(
+          skill?.status,
+          `${lang}/${slug} should not be available`,
+        ).toBe("soon");
+      }
+    }
+  });
+
   it("requiresEnvSecrets is a boolean on every connector item", async () => {
     const { body } = await callCatalog("es");
     for (const item of body.connectors) {
