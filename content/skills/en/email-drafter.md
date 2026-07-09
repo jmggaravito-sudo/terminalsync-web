@@ -4,7 +4,8 @@ logo: /skills/email-drafter.svg
 category: productivity
 vendors: ["claude", "codex"]
 author: "TerminalSync"
-status: available
+status: soon
+hidden: true
 tagline: "Emails people actually reply to"
 description: "Short, clear, specific drafts — paste and send."
 license: "proprietary"

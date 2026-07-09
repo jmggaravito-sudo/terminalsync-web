@@ -5,6 +5,7 @@ category: design
 vendors: ["claude", "codex"]
 author: "Anthropic"
 status: available
+catalogReady: false
 tagline: "Apply your brand to any artifact"
 description: "Loads your brand colors, typography, voice, and applies them automatically to docs, presentations, landings, copy."
 license: "MIT"

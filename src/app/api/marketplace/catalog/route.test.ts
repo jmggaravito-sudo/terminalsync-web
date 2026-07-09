@@ -63,6 +63,50 @@ describe("GET /api/marketplace/catalog", () => {
     expect(body.skills.every((s) => !s.hidden)).toBe(true);
   });
 
+  it("returns exactly the seven launch-ready skills in the public catalog response", async () => {
+    const publicSlugs = [
+      "code-reviewer",
+      "doc-coauthoring",
+      "internal-comms",
+      "mcp-builder",
+      "meta-ads-creator",
+      "seo-auditor",
+      "skill-creator",
+    ] as const;
+
+    for (const lang of ["en", "es"] as const) {
+      const { body } = await callCatalog(lang);
+
+      expect(body.skills).toHaveLength(7);
+      expect(body.skills.map((skill) => skill.slug)).toEqual([...publicSlugs]);
+    }
+  });
+
+  it("hides retired skills from the public catalog response", async () => {
+    const hiddenSlugs = [
+      // Retired (hidden: true).
+      "email-drafter",
+      "copywriter",
+      "learn",
+      "deep-research",
+      "slack-summarizer",
+      // Pending evaluation (catalogReady: false).
+      "brand-voice",
+      "brand-guidelines",
+    ] as const;
+
+    for (const lang of ["en", "es"] as const) {
+      const { body } = await callCatalog(lang);
+
+      for (const slug of hiddenSlugs) {
+        expect(
+          body.skills.find((skill) => skill.slug === slug),
+          `${lang}/${slug} should not be in the public catalog response`,
+        ).toBeUndefined();
+      }
+    }
+  });
+
   it("requiresEnvSecrets is a boolean on every connector item", async () => {
     const { body } = await callCatalog("es");
     for (const item of body.connectors) {

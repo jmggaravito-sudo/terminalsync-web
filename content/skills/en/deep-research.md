@@ -5,6 +5,7 @@ category: research
 vendors: ["claude", "codex"]
 author: "TerminalSync"
 status: soon
+hidden: true
 tagline: "Research with sources when tools exist"
 description: "Plans and synthesizes multi-source research, while declaring search/fetch tool dependencies and citation limits before claiming sourced findings."
 license: "proprietary"

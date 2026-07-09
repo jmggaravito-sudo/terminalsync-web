@@ -5,6 +5,7 @@ category: productivity
 vendors: ["claude", "codex"]
 author: "TerminalSync"
 status: soon
+hidden: true
 tagline: "Slack digests when connected"
 description: "Summarizes Slack channels and threads into decisions, blockers, action items, and follow-ups, but only when the Slack connector or pasted messages provide access."
 license: "proprietary"

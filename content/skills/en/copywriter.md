@@ -4,7 +4,8 @@ logo: /skills/copywriter.svg
 category: marketing
 vendors: ["claude", "codex"]
 author: "TerminalSync"
-status: available
+status: soon
+hidden: true
 tagline: "Your landing, hero and emails in your voice"
 description: "Writes direct, specific copy — no AI clichés."
 license: "proprietary"

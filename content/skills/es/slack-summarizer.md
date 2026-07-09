@@ -5,6 +5,7 @@ category: productivity
 vendors: ["claude", "codex"]
 author: "TerminalSync"
 status: soon
+hidden: true
 tagline: "Resúmenes de Slack cuando está conectado"
 description: "Resume canales y threads de Slack en decisiones, blockers, acciones y follow-ups, pero sólo cuando el conector Slack o mensajes pegados dan acceso."
 license: "proprietary"
