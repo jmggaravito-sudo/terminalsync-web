@@ -16,8 +16,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : "Security — TerminalSync";
   const description =
     lang === "es"
-      ? "Cómo TerminalSync protege tus datos: AES-256-GCM fully encrypted (no one else can read it), llaves en Keychain, almacenamiento en tu propia nube, y disclosure responsable."
-      : "How TerminalSync protects your data: AES-256-GCM fully encrypted (no one else can read it), keys in Keychain, your-own-cloud storage, and responsible disclosure.";
+      ? "Cómo TerminalSync protege tus datos: secretos y conversaciones cifrados con AES-256-GCM, archivos en tu propia nube, y disclosure responsable."
+      : "How TerminalSync protects your data: secrets and conversations encrypted with AES-256-GCM, files in your own cloud, and responsible disclosure.";
   return {
     title,
     description,
@@ -47,11 +47,15 @@ export default async function SecurityPage({ params }: Props) {
         subtitle="Cómo protegemos los datos que sincronizás con TerminalSync, qué arquitectura usamos, y cómo reportar vulnerabilidades."
         lastUpdated="Última actualización: 4 de mayo de 2026"
       >
-        <h2>1. Modelo zero-knowledge</h2>
+        <h2>1. Qué se cifra y qué no</h2>
         <p>
-          TerminalSync está diseñado para que <strong>nosotros nunca
-          podamos acceder al contenido que sincronizás</strong>. Todo se
-          cifra localmente en tu Mac antes de salir.
+          TerminalSync está diseñado para que <strong>nosotros nunca podamos
+          acceder a tu contenido</strong>: nada de lo que sincronizás pasa por
+          nuestros servidores. Además, lo sensible — secretos, credenciales,
+          memoria y conversaciones de IA — se cifra localmente en tu Mac antes
+          de salir. Tus archivos de proyecto se guardan en tu propia nube en su
+          formato original (así podés abrirlos desde Drive), bajo el control
+          exclusivo de tu cuenta.
         </p>
         <ul>
           <li>
@@ -61,8 +65,10 @@ export default async function SecurityPage({ params }: Props) {
           </li>
           <li>
             <strong>Llave maestra</strong>: 256 bits, generada localmente la
-            primera vez que abrís la app. Se persiste en el llavero del
-            sistema operativo (macOS Keychain). Nunca toca disco plano.
+            primera vez que abrís la app. Se guarda en tu Mac como archivo
+            protegido por permisos del sistema (solo tu usuario puede leerlo)
+            y envuelta con tu frase secreta. Nunca sale de tus dispositivos
+            sin cifrar.
           </li>
           <li>
             <strong>Passphrase opcional</strong>: la llave maestra puede ir
@@ -73,14 +79,14 @@ export default async function SecurityPage({ params }: Props) {
 
         <h2>2. Tu nube, no la nuestra</h2>
         <p>
-          Los archivos cifrados viajan al proveedor de almacenamiento que vos
+          Tus archivos viajan directo al proveedor de almacenamiento que vos
           elegís: Google Drive, iCloud Drive, o Dropbox. <strong>TerminalSync
           no opera servidores de almacenamiento.</strong> El contenido nunca
           pasa por nuestra infraestructura.
         </p>
         <p>
           Si querés cambiar de proveedor, simplemente lo configurás en la app
-          — los archivos se re-suben cifrados al nuevo destino.
+          — todo se re-sube al nuevo destino.
         </p>
 
         <h2>3. Vault de secretos</h2>
@@ -129,11 +135,12 @@ export default async function SecurityPage({ params }: Props) {
           security advisory.
         </p>
 
-        <h2>8. Auditoría futura</h2>
+        <h2>8. Transparencia</h2>
         <p>
-          El motor de cifrado va a ser auditable públicamente. Estamos
-          trabajando en open-sourcing del módulo crypto para que cualquier
-          experto pueda verificar los claims de esta página.
+          Esta página describe lo que la app hace hoy, no promesas a futuro.
+          Cuando el alcance del cifrado cambie (por ejemplo, si sumamos capas
+          de cifrado adicionales), actualizamos esta página y avisamos en el
+          changelog.
         </p>
 
         <h2>9. Contacto</h2>
@@ -153,11 +160,15 @@ export default async function SecurityPage({ params }: Props) {
       subtitle="How we protect the data you sync with TerminalSync, what architecture we use, and how to report vulnerabilities."
       lastUpdated="Last updated: May 4, 2026"
     >
-      <h2>1. Zero-knowledge model</h2>
+      <h2>1. What is encrypted and what isn't</h2>
       <p>
-        TerminalSync is designed so that <strong>we can never access the
-        content you sync</strong>. Everything is encrypted locally on your
-        Mac before leaving.
+        TerminalSync is designed so that <strong>we can never access your
+        content</strong>: nothing you sync passes through our servers. On top
+        of that, the sensitive parts — secrets, credentials, memory and AI
+        conversations — are encrypted locally on your Mac before leaving.
+        Your project files are stored in your own cloud in their original
+        format (so you can open them from Drive), under the exclusive control
+        of your account.
       </p>
       <ul>
         <li>
@@ -167,8 +178,9 @@ export default async function SecurityPage({ params }: Props) {
         </li>
         <li>
           <strong>Master key</strong>: 256-bit, generated locally the first
-          time you open the app. Persisted in the OS keychain (macOS
-          Keychain). Never touches plain disk.
+          time you open the app. Stored on your Mac as a file protected by
+          system permissions (only your user can read it) and wrapped with
+          your secret phrase. It never leaves your devices unencrypted.
         </li>
         <li>
           <strong>Optional passphrase</strong>: the master key can be wrapped
@@ -179,14 +191,14 @@ export default async function SecurityPage({ params }: Props) {
 
       <h2>2. Your cloud, not ours</h2>
       <p>
-        Encrypted files travel to the storage provider you pick: Google Drive,
-        iCloud Drive, or Dropbox. <strong>TerminalSync does not operate
+        Your files travel straight to the storage provider you pick: Google
+        Drive, iCloud Drive, or Dropbox. <strong>TerminalSync does not operate
         storage servers.</strong> Content never passes through our
         infrastructure.
       </p>
       <p>
         If you want to switch providers, just configure it in the app —
-        files are re-uploaded encrypted to the new destination.
+        everything is re-uploaded to the new destination.
       </p>
 
       <h2>3. Secrets vault</h2>
@@ -235,11 +247,11 @@ export default async function SecurityPage({ params }: Props) {
         advisory.
       </p>
 
-      <h2>8. Future audit</h2>
+      <h2>8. Transparency</h2>
       <p>
-        The crypto engine will be publicly auditable. We're working on
-        open-sourcing the crypto module so any expert can verify the claims
-        on this page.
+        This page describes what the app does today, not future promises.
+        When the scope of encryption changes (for example, if we add further
+        encryption layers), we update this page and note it in the changelog.
       </p>
 
       <h2>9. Contact</h2>

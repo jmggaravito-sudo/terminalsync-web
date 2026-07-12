@@ -49,10 +49,11 @@ export default function PrivacyPolicyPage() {
           appDataFolder.
         </li>
         <li>
-          <strong>App-specific Drive file content</strong>: encrypted TerminalSync
-          sync blobs such as terminal/session state, sync indexes, settings,
-          and encrypted developer-tool or AI-assistant configuration files that
-          you choose to sync.
+          <strong>App-specific Drive file content</strong>: TerminalSync sync
+          data such as terminal/session state, sync indexes, settings, project
+          files you choose to sync (stored in your Drive in their original
+          format), and encrypted payloads (secrets, credentials, memory and
+          AI-assistant conversations are encrypted on-device before upload).
         </li>
         <li>
           <strong>Drive quota information</strong>: storage quota and usage values
@@ -65,9 +66,9 @@ export default function PrivacyPolicyPage() {
       <p>
         TerminalSync uses Google user data only to provide user-requested sync
         features between your own devices: authenticate Google Drive, create and
-        find TerminalSync folders, upload encrypted sync data, download encrypted
-        sync data, update sync data, delete sync data when you delete it in the
-        app, and show storage/quota status.
+        find TerminalSync folders, upload sync data (sensitive payloads are
+        encrypted on-device first), download sync data, update sync data, delete
+        sync data when you delete it in the app, and show storage/quota status.
       </p>
       <p>
         TerminalSync does not use Google user data for advertising, profiling,

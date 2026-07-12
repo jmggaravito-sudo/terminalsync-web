@@ -61,8 +61,9 @@ export default async function AboutPage({ params }: Props) {
         <p>
           <strong>TerminalSync es la tercera opción</strong>: una capa local
           que le da memoria, privacidad y movilidad a tus agentes — corriendo
-          en tu propia Mac, guardando en tu propia nube, con cifrado
-          AES-256 zero-knowledge que ni nosotros podemos romper.
+          en tu propia Mac, guardando en tu propia nube — tus archivos nunca
+          pasan por nuestros servidores, y tus secretos y conversaciones
+          viajan con cifrado AES-256 que ni nosotros podemos romper.
         </p>
 
         <h2>En qué creemos</h2>
@@ -72,8 +73,9 @@ export default async function AboutPage({ params }: Props) {
             vivir en la base de datos de un vendor. Punto.
           </li>
           <li>
-            <strong>Cifrado por default, no como upgrade.</strong> Zero-knowledge
-            no es un feature premium, es la base.
+            <strong>Privacidad por default, no como upgrade.</strong> El cifrado
+            de tus secretos y conversaciones no es un feature premium, es la
+            base.
           </li>
           <li>
             <strong>Sin vendor lock-in.</strong> Tu sync se hace contra tu
@@ -127,8 +129,9 @@ export default async function AboutPage({ params }: Props) {
       <p>
         <strong>TerminalSync is the third option</strong>: a local layer
         that gives memory, privacy, and mobility to your agents — running on
-        your own Mac, storing on your own cloud, with AES-256 zero-knowledge
-        encryption that even we can't break.
+        your own Mac, storing on your own cloud — your files never pass
+        through our servers, and your secrets and conversations travel with
+        AES-256 encryption that even we can't break.
       </p>
 
       <h2>What we believe</h2>
@@ -138,8 +141,9 @@ export default async function AboutPage({ params }: Props) {
           live in a vendor's database. Period.
         </li>
         <li>
-          <strong>Encryption by default, not as an upgrade.</strong> Zero-knowledge
-          isn't a premium feature — it's the foundation.
+          <strong>Privacy by default, not as an upgrade.</strong> Encrypting
+          your secrets and conversations isn't a premium feature — it's the
+          foundation.
         </li>
         <li>
           <strong>No vendor lock-in.</strong> Your sync runs against your

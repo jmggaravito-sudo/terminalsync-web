@@ -5,7 +5,7 @@ const es: Dict = {
   meta: {
     title: "TerminalSync — Memoria, privacidad y movilidad para tu IA",
     description:
-      "Tus IAs siguen trabajando aunque se caiga el internet o cambies de computadora. Cifrado fuerte: ni nosotros podemos leer tu contenido. Acceso desde cualquier dispositivo.",
+      "Tus IAs siguen trabajando aunque se caiga el internet o cambies de computadora. Tus secretos y conversaciones viajan cifrados; tus archivos viven en TU nube, no en la nuestra. Acceso desde cualquier dispositivo.",
   },
   nav: {
     features: "Funciones",
@@ -31,7 +31,7 @@ const es: Dict = {
     ],
     ctaPrimary: "Empieza gratis",
     ctaSecondary: "Mira cómo funciona",
-    trustLine: "Sin instalación · Sin perder contexto · Funciona en cualquier computadora · Cifrado fuerte · ni nosotros podemos leer tu contenido",
+    trustLine: "Sin instalación · Sin perder contexto · Funciona en cualquier computadora · Secretos y conversaciones cifrados · Tus archivos en TU nube",
     nextUp: {
       eyebrow: "Lo último",
       body: "Tu sesión en cualquier dispositivo — ábrela desde el celular sin instalar nada. Un solo flujo entre Claude y Codex con el mismo contexto. Bóveda de secretos por terminal.",
@@ -65,8 +65,8 @@ const es: Dict = {
       },
       shield: {
         kicker: "Demo · Privacidad",
-        title: "Cifrado de grado bancario antes de salir de tu computadora.",
-        body: "Tus archivos viajan ya cifrados a tu propia nube (Drive, iCloud o Dropbox). Ni Google, ni las IAs, ni nosotros vemos lo que hay adentro. La llave vive solo en tu dispositivo.",
+        title: "Lo sensible viaja cifrado. Tus archivos, en TU nube.",
+        body: "Tus secretos, credenciales y conversaciones con la IA se cifran (AES-256) en tu computadora antes de subir — ni Google ni nosotros podemos leerlos. Tus archivos de proyecto viven en tu propia nube, bajo tu cuenta: nunca pasan por nuestros servidores y puedes abrirlos desde Drive cuando quieras.",
       },
     },
   },
@@ -281,11 +281,11 @@ const es: Dict = {
     items: [
       {
         q: "¿En qué se diferencia de guardar mi carpeta en Drive o iCloud?",
-        a: "Drive e iCloud guardan tus archivos sin cifrar — el proveedor puede ver el contenido. TerminalSync cifra TODO en tu computadora antes de salir. Llegan a tu Drive, iCloud o Dropbox ilegibles para todos: ni Google, ni Apple, ni las IAs, ni nosotros podemos abrirlos. La llave vive solo en tu dispositivo.",
+        a: "Guardar una carpeta en Drive no guarda tu TRABAJO: pierdes las sesiones de IA, la memoria, los secretos y la configuración. TerminalSync hace portable todo eso entre tus computadoras, y lo sensible — secretos, credenciales, memoria y conversaciones con la IA — viaja cifrado (AES-256): ni Google ni nosotros podemos leerlo. Tus archivos de proyecto quedan en tu propia nube, bajo tu cuenta y tu control.",
       },
       {
         q: "¿Mis archivos quedan en su servidor?",
-        a: "No. Todo se cifra en tu computadora antes de salir y sube a TU nube, no a la nuestra. Ni las IAs ni nosotros podemos ver tus archivos. La única llave la tienes tú.",
+        a: "No. Tus archivos van directo de tu computadora a TU nube (tu Drive) — nunca pasan por nuestros servidores ni podemos verlos. Y lo sensible (secretos, credenciales, conversaciones con la IA) sube cifrado, con una llave que solo tienes tú.",
       },
       {
         q: "¿Funciona si solo tengo una computadora?",
@@ -297,7 +297,7 @@ const es: Dict = {
       },
       {
         q: "¿Puedo confiar en su seguridad?",
-        a: "Sí. El sistema de cifrado va a ser auditable públicamente para que cualquier experto pueda revisarlo. Y tu contenido nunca sale sin cifrar de tu computadora.",
+        a: "Sí. Usamos AES-256, el estándar de la industria, para cifrar tus secretos, credenciales y conversaciones con la IA antes de que salgan de tu computadora — la llave la tienes solo tú. Tus archivos de proyecto no pasan por nuestros servidores: van directo a tu propia nube, bajo tu cuenta.",
       },
       {
         q: "¿Funciona con cualquier IA o solo con Claude y Codex?",
@@ -335,7 +335,7 @@ const es: Dict = {
       responsiveNotifications: "Te avisa por correo y Telegram",
       webMobileMirror: "La misma sesión en el navegador o el celular",
       offlineLocal: "Funciona sin internet",
-      aes256: "Cifrado fuerte · ni nosotros podemos leer tu contenido",
+      aes256: "Secretos y conversaciones cifrados · tus archivos en TU nube",
       secretsVault: "Bóveda de claves integrada",
       internetImmunity: "Sigue andando si se cae el internet",
       aiConversationSync: "Conversaciones sincronizadas entre computadoras",
@@ -349,7 +349,7 @@ const es: Dict = {
     },
     legend: { yes: "Sí", no: "No", partial: "Parcial", soon: "Próximamente" },
     footnote:
-      "Comparativo basado en información pública de cada herramienta. Cifrado fuerte antes de salir de tu computadora — ni Anthropic, ni OpenAI, ni Vercel, ni nosotros vemos tus archivos.",
+      "Comparativo basado en información pública de cada herramienta. Tus archivos nunca pasan por nuestros servidores — van directo a tu propia nube; tus secretos y conversaciones viajan cifrados.",
     calculator: {
       eyebrow: "Calcula tu ahorro",
       title: "¿Cuánto te ahorra orquestar las 3 IAs?",
@@ -408,7 +408,7 @@ const es: Dict = {
       offlineLocal:
         "Funciona sin internet. Tu computadora es la fuente de verdad — la sincronización con la nube es asíncrona y nunca bloquea tu trabajo.",
       aes256:
-        "Todo se cifra en tu computadora antes de salir, con la clave maestra guardada en tu Keychain. Ni Anthropic, ni OpenAI, ni Google, ni nosotros podemos abrir tus archivos.",
+        "Tus secretos, credenciales y conversaciones con la IA se cifran en tu computadora antes de salir, con una llave maestra que solo tienes tú, protegida por tu frase secreta. Tus archivos van directo a tu propia nube — nunca pasan por nuestros servidores.",
       secretsVault:
         "Vault integrado para llaves de acceso, tokens y credenciales. Disponibles en tus terminales como variables de entorno — nunca escritos en archivos planos.",
       internetImmunity:
@@ -448,7 +448,7 @@ const es: Dict = {
       },
       agency: {
         title: "El que maneja datos sensibles",
-        body: "Trabajas con llaves de acceso, credenciales de clientes, contratos, datos privados. No quieres que vivan en la nube de un vendor que un día puede leerlos. Cifrado AES-256 antes de salir de tu computadora — ni nosotros podemos abrirlos.",
+        body: "Trabajas con llaves de acceso, credenciales de clientes, contratos, datos privados. Tus credenciales y secretos se cifran con AES-256 antes de salir de tu computadora — ni nosotros podemos abrirlos — y tus archivos viven en TU nube, no en la de un vendor.",
         tag: "Privacidad-first",
       },
     },
@@ -517,7 +517,7 @@ const es: Dict = {
           "3 terminales activas con persistencia real",
           "Claude Code, Codex, Gemini CLI o Sin IA",
           "Tu código sigue en Git; metadata en .terminalsync/",
-          "AES-256 · ni nosotros podemos leer tu contenido",
+          "AES-256 en secretos y conversaciones · tus archivos en TU nube",
           "Sync con Google Drive (tu cuenta)",
           "Notificaciones de silencio en el agente",
           "2 dispositivos vinculados (laptop + escritorio)",
@@ -585,12 +585,12 @@ const es: Dict = {
   },
   trust: {
     title: "Tus archivos son tuyos. Punto.",
-    body: "Tus secretos, tus ajustes, tus sesiones — todo se cifra en tu computadora antes de salir. Va a TU nube, no a la nuestra. El sistema de cifrado va a ser auditable públicamente.",
+    body: "Tus secretos, tus ajustes, tu memoria y tus conversaciones con la IA se cifran en tu computadora antes de salir. Todo va a TU nube, no a la nuestra — tus archivos nunca pasan por nuestros servidores.",
     guarantee: "Pruébalo 7 días gratis. Cancelas antes del día 7 y no te cobramos.",
     features: {
-      e2ee: "Cifrado de grado bancario",
+      e2ee: "AES-256 en todo lo sensible",
       keychain: "Llaves solo en tu dispositivo",
-      opensource: "Sistema de cifrado auditable",
+      opensource: "Tus archivos, siempre en TU nube",
       noVendor: "Sin amarres con proveedores",
     },
   },
@@ -668,7 +668,7 @@ const es: Dict = {
       pricing:
         "Tenemos planes para probar, power users y usuarios técnicos/equipos. Starter sirve para empezar; Pro agrega capacidades avanzadas como memoria/integraciones; Max está pensado para Git-native sync, vault de secretos y workflows más completos. Mira la sección de Precios para el detalle actualizado. ¿Quieres que te recomiende un plan según tu uso?",
       security:
-        "Tu código y tu llave de acceso se cifran con AES-256 en tu computadora ANTES de subir a Drive. Usamos cifrado total (ni nosotros podemos leer): ni nosotros ni Google podemos leer tu contenido. La llave maestra la tienes tú en tu keychain local.",
+        "Tus secretos, credenciales y conversaciones con la IA se cifran con AES-256 en tu computadora ANTES de subir a Drive — ni nosotros ni Google podemos leerlos, y la llave maestra la tienes solo tú, protegida por tu frase secreta. Tus archivos de proyecto van directo a tu propia nube: nunca pasan por nuestros servidores.",
       fallback:
         "Gracias por tu mensaje. Un humano del equipo te contactará pronto. Mientras tanto, ¿quieres ver nuestras preguntas frecuentes o descargar la app?",
     },

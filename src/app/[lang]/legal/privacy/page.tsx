@@ -16,8 +16,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : "Privacy Policy — TerminalSync";
   const description =
     lang === "es"
-      ? "Cómo TerminalSync trata tus datos: cifrado AES-256 fully encrypted (no one else can read it), almacenamiento en tu propia nube, sin acceso del proveedor."
-      : "How TerminalSync handles your data: AES-256 fully encrypted (no one else can read it) encryption, your-own-cloud storage, zero vendor access.";
+      ? "Cómo TerminalSync trata tus datos: secretos y conversaciones cifrados con AES-256, archivos en tu propia nube, sin pasar por nuestros servidores."
+      : "How TerminalSync handles your data: secrets and conversations encrypted with AES-256, files in your own cloud, never passing through our servers.";
   return {
     title,
     description,
@@ -84,16 +84,20 @@ export default async function PrivacyPage({ params }: Props) {
 
         <h2>3. Datos que NO recolectamos</h2>
         <p>
-          <strong>El contenido cifrado de tus terminales, archivos, secretos o
-          conversaciones de IA NUNCA toca nuestros servidores.</strong> Todo
-          ese contenido se cifra localmente en tu Mac con AES-256-GCM
-          (zero-knowledge) antes de subirse al proveedor de nube que vos
-          elegís. Las llaves de cifrado viven en el llavero del sistema
-          operativo de tu Mac y nunca salen de él.
+          <strong>El contenido de tus terminales, archivos, secretos y
+          conversaciones de IA NUNCA toca nuestros servidores.</strong> Va
+          directo de tu Mac al proveedor de nube que vos elegís, bajo tu
+          propia cuenta. Tus secretos, credenciales, memoria y conversaciones
+          de IA se cifran además localmente con AES-256-GCM antes de subir —
+          <em>aunque quisiéramos, no podríamos</em> leerlos. La llave maestra
+          vive en tu Mac, protegida por los permisos del sistema y por tu
+          frase secreta, y nunca sale de tus dispositivos sin cifrar.
         </p>
         <p>
-          Esto significa que <em>aunque quisiéramos, no podríamos</em> leer
-          tus archivos ni tus conversaciones con Claude/Codex.
+          Tus archivos de proyecto se guardan en tu propia nube en su formato
+          original — así podés abrirlos directamente desde Drive cuando
+          quieras. Quedan bajo el control de tu cuenta de Google, no de la
+          nuestra: nosotros no podemos acceder a ellos.
         </p>
 
         <h2>4. Para qué usamos tus datos</h2>
@@ -112,6 +116,11 @@ export default async function PrivacyPage({ params }: Props) {
           <li><strong>Vercel</strong>: hosting del sitio web y de la API (Edge Network global).</li>
           <li><strong>Resend</strong>: envío de emails transaccionales (US).</li>
           <li><strong>Rewardful</strong>: tracking de afiliados (cookie first-party).</li>
+          <li><strong>n8n (automatización, servidor gestionado por nosotros)</strong>: procesa
+            los mensajes que escribís al chat de soporte, tu email cuando pedís que te
+            contactemos, y el contenido de las notificaciones que elegís recibir.</li>
+          <li><strong>Groq</strong>: transcripción de voz — solo si usás el dictado por voz,
+            el audio del micrófono se envía para transcribirse (US).</li>
         </ul>
         <p>
           No vendemos tus datos a terceros. Nunca hemos. Nunca vamos a hacerlo.
@@ -137,7 +146,7 @@ export default async function PrivacyPage({ params }: Props) {
         <h2>7. Retención</h2>
         <p>
           Mantenemos tus datos de cuenta mientras tu cuenta esté activa. Si
-          cancelás, borramos tus datos personales dentro de 90 días, salvo
+          cancelás, borramos tus datos personales dentro de 30 días, salvo
           aquellos que estamos obligados a retener por ley (registros
           fiscales: 7 años).
         </p>
@@ -211,15 +220,20 @@ export default async function PrivacyPage({ params }: Props) {
 
       <h2>3. Data we DO NOT collect</h2>
       <p>
-        <strong>The encrypted content of your terminals, files, secrets, or
-        AI conversations NEVER touches our servers.</strong> All that content
-        is encrypted locally on your Mac with AES-256-GCM (zero-knowledge)
-        before being uploaded to the cloud provider you choose. The encryption
-        keys live in your Mac's OS keychain and never leave it.
+        <strong>The content of your terminals, files, secrets, and AI
+        conversations NEVER touches our servers.</strong> It goes straight
+        from your Mac to the cloud provider you choose, under your own
+        account. Your secrets, credentials, memory and AI conversations are
+        additionally encrypted locally with AES-256-GCM before upload —
+        <em>even if we wanted to, we couldn't</em> read them. The master key
+        lives on your Mac, protected by system permissions and by your secret
+        phrase, and never leaves your devices unencrypted.
       </p>
       <p>
-        This means that <em>even if we wanted to, we couldn't</em> read your
-        files or your conversations with Claude/Codex.
+        Your project files are stored in your own cloud in their original
+        format — so you can open them directly from Drive whenever you want.
+        They stay under your Google account's control, not ours: we cannot
+        access them.
       </p>
 
       <h2>4. What we use your data for</h2>
@@ -238,6 +252,11 @@ export default async function PrivacyPage({ params }: Props) {
         <li><strong>Vercel</strong>: website + API hosting (global Edge Network).</li>
         <li><strong>Resend</strong>: transactional email delivery (US).</li>
         <li><strong>Rewardful</strong>: affiliate tracking (first-party cookie).</li>
+        <li><strong>n8n (automation, on a server we manage)</strong>: processes the
+          messages you type into the support chat, your email when you ask to be
+          contacted, and the content of notifications you opt into.</li>
+        <li><strong>Groq</strong>: voice transcription — only if you use voice dictation,
+          your microphone audio is sent for transcription (US).</li>
       </ul>
       <p>We don't sell your data. We never have. We never will.</p>
 
@@ -259,7 +278,7 @@ export default async function PrivacyPage({ params }: Props) {
       <h2>7. Retention</h2>
       <p>
         We keep your account data while your account is active. If you cancel,
-        we delete your personal data within 90 days, except for data we are
+        we delete your personal data within 30 days, except for data we are
         legally required to retain (tax records: 7 years).
       </p>
 
