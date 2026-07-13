@@ -95,6 +95,13 @@ Cerrar con licencia + fuente.
    - Si no se consigue logo oficial, usar fallback TS y declararlo explícitamente en el PR. No inventar logos.
    - El PR del Loop debe mostrar el logo propuesto de cada conector nuevo para aprobación de JM, igual que muestra y justifica el publisher.
 
+### Licencia y uso de logos
+
+- Los logos descargados desde Simple Icons se tratan como assets de marca para uso nominativo: identificar la integración/conector correspondiente, no sugerir partnership, certificación ni endorsement.
+- Simple Icons publica el proyecto bajo CC0, pero su disclaimer aclara que cada icono puede tener licencia/guidelines propias y que las marcas registradas siguen perteneciendo a sus dueños. Antes de agregar o actualizar un logo, verificar la entrada del icono y/o las brand guidelines del vendor cuando existan.
+- Aunque la fuente permita descargar el SVG, el uso en TerminalSync debe respetar las reglas de marca: no deformar, no recortar, no recolorear contra guidelines conocidas, y no usar el logo como marca principal de TerminalSync.
+- Todo logo aprobado debe quedar vendorizado en `public/connectors/` para evitar dependencia runtime de CDNs externos.
+
 ## Dónde está cada cosa en este repo
 
 - `content/connectors/es/<slug>.md` — versión en español

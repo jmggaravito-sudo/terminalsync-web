@@ -1,7 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Map">
-  <rect width="64" height="64" rx="14" fill="#ecfeff"/>
-  <path d="M13 18l13-5 12 5 13-5v33l-13 5-12-5-13 5z" fill="#fff" stroke="#0891b2" stroke-width="3" stroke-linejoin="round"/>
-  <path d="M26 13v33M38 18v33" stroke="#0891b2" stroke-width="3" stroke-linecap="round"/>
-  <path d="M32 35c4-5 8-10 8-15a8 8 0 10-16 0c0 5 4 10 8 15z" fill="#06b6d4" stroke="#0e7490" stroke-width="2"/>
-  <circle cx="32" cy="20" r="3" fill="#fff"/>
+<svg role="img" aria-label="TerminalSync curated logo for Map" xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><title>TerminalSync curated logo for Map</title>
+  <rect x="62"  y="62"  width="420" height="420" rx="88" fill="#d97757"/>
+  <rect x="542" y="62"  width="420" height="420" rx="88" fill="#10a37f"/>
+  <rect x="62"  y="542" width="420" height="420" rx="88" fill="#4a7cf0"/>
+  <rect x="542" y="542" width="420" height="420" rx="88" fill="#6d3bf5"/>
 </svg>
