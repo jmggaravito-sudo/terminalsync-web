@@ -3,6 +3,9 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { OP_STATUSES, type OpStatus, type Lead } from "@/lib/outreach/types";
 import { TEMPLATES, templateTrack, templateLang } from "@/lib/outreach/templates";
+import { authedFetch } from "@/lib/supabase/browser";
+
+type AuthState = "checking" | "anon" | "forbidden" | "ready";
 
 // ─────────────────────────────────────────────────────────────
 // OUTREACH QUEUE — cola de contacto manual para TerminalSync
@@ -41,7 +44,8 @@ const fmtSubs = (n: number | null) => {
 type Counts = Record<OpStatus, number>;
 const EMPTY_COUNTS: Counts = { pendiente: 0, enviado: 0, respondio: 0, descartado: 0 };
 
-export default function OutreachQueue() {
+export default function OutreachQueue({ lang: _lang }: { lang: string }) {
+  const [auth, setAuth] = useState<AuthState>("checking");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [counts, setCounts] = useState<Counts>(EMPTY_COUNTS);
   const [filter, setFilter] = useState<OpStatus>("pendiente");
@@ -61,11 +65,14 @@ export default function OutreachQueue() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/outreach/queue?status=${status}`, { cache: "no-store" });
+      const res = await authedFetch(`/api/outreach/queue?status=${status}`, { cache: "no-store" } as RequestInit);
+      if (res.status === 401) { setAuth("anon"); setLoading(false); return; }
+      if (res.status === 403) { setAuth("forbidden"); setLoading(false); return; }
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
       setLeads(Array.isArray(json.items) ? (json.items as Lead[]) : []);
       setCounts({ ...EMPTY_COUNTS, ...(json.counts || {}) });
+      setAuth("ready");
     } catch (e) {
       const msg = e instanceof Error ? e.message : "unknown error";
       setError(msg);
@@ -143,9 +150,8 @@ export default function OutreachQueue() {
           body.op_hook = hook;
           body.op_last_message = draft;
         }
-        const res = await fetch("/api/outreach/update", {
+        const res = await authedFetch("/api/outreach/update", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
         const json = await res.json();
@@ -176,6 +182,27 @@ export default function OutreachQueue() {
     () => OP_STATUSES.reduce((acc, s) => acc + (counts[s] || 0), 0),
     [counts]
   );
+
+  if (auth === "checking") {
+    return <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "#8b98a8" }}>Verificando sesión…</div>;
+  }
+  if (auth === "anon") {
+    return (
+      <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "#e6edf3" }}>
+        <p>Iniciá sesión con tu cuenta admin.</p>
+        <p style={{ marginTop: 8, color: "#8b98a8", fontSize: 13 }}>
+          Ir a <a href="/es/login" style={{ color: "#3fb950" }}>/es/login</a> → magic link → volvé acá.
+        </p>
+      </div>
+    );
+  }
+  if (auth === "forbidden") {
+    return (
+      <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "#f0b3b3" }}>
+        Tu cuenta no tiene permisos de admin. Verificá que tu email esté en ADMIN_EMAILS.
+      </div>
+    );
+  }
 
   return (
     <div className="oq">
