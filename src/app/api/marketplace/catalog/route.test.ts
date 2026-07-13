@@ -18,10 +18,20 @@ async function callCatalog(lang: string): Promise<{
   status: number;
   body: CatalogResponse;
 }> {
-  const req = new Request(`http://localhost/api/marketplace/catalog?lang=${lang}`);
+  const req = new Request(
+    `http://localhost/api/marketplace/catalog?lang=${lang}`,
+  );
   const res = await GET(req);
   const body = (await res.json()) as CatalogResponse;
   return { status: res.status, body };
+}
+
+function publicAssetPathFromCatalogUrl(value: string): string | null {
+  if (value.startsWith("https://terminalsync.ai/")) {
+    return new URL(value).pathname;
+  }
+  if (value.startsWith("/")) return value;
+  return null;
 }
 
 describe("GET /api/marketplace/catalog", () => {
@@ -53,6 +63,51 @@ describe("GET /api/marketplace/catalog", () => {
     expect(body.connectors.length).toBeGreaterThan(0);
     expect(body.skills.length).toBeGreaterThan(0);
     expect(body.cliTools.length).toBeGreaterThan(0);
+  });
+
+  it("returns the file-based Marketing kit in ES and EN", async () => {
+    for (const lang of ["es", "en"] as const) {
+      const { body } = await callCatalog(lang);
+      const kit = body.bundles.find((b) => b.slug === "marketing-campaign-seo");
+      expect(kit, `${lang} marketing kit should be in bundles[]`).toBeDefined();
+      expect(kit!.id).toBe("kit:marketing-campaign-seo");
+      expect(kit!.priceCents).toBe(0);
+      expect(kit!.isExclusiveTS).toBe(true);
+      expect(kit!.href).toBe(`/${lang}/stacks/marketing-campaign-seo`);
+    }
+  });
+
+  it("resolves the Marketing kit's three catalog items", async () => {
+    const { body } = await callCatalog("es");
+    const kit = body.bundles.find((b) => b.slug === "marketing-campaign-seo");
+    expect(kit, "marketing kit should be in bundles[]").toBeDefined();
+    expect(kit!.items.map((item) => `${item.kind}:${item.slug}`)).toEqual([
+      "skill:meta-ads-creator",
+      "skill:seo-auditor",
+      "connector:brave-search",
+    ]);
+    for (const item of kit!.items) {
+      expect(item.name, `${item.slug} name`).not.toBe("");
+      expect(item.tagline, `${item.slug} tagline`).not.toBe("");
+    }
+  });
+
+  it("exposes an absolute existing TS kit logo through heroImageUrl", async () => {
+    const { body } = await callCatalog("es");
+    const kit = body.bundles.find((b) => b.slug === "marketing-campaign-seo");
+    expect(kit, "marketing kit should be in bundles[]").toBeDefined();
+    expect(kit!.heroImageUrl).toMatch(
+      /^https:\/\/terminalsync\.ai\/logos\/ts-kit\.svg\?v=/,
+    );
+    const pathname = publicAssetPathFromCatalogUrl(kit!.heroImageUrl!);
+    expect(pathname).toBe("/logos/ts-kit.svg");
+    expect(existsSync(join(process.cwd(), "public", pathname!))).toBe(true);
+  });
+
+  it("does not return duplicate bundle or kit slugs", async () => {
+    const { body } = await callCatalog("es");
+    const slugs = body.bundles.map((bundle) => bundle.slug);
+    expect(new Set(slugs).size).toBe(slugs.length);
   });
 
   it("filters hidden items out of connectors and skills", async () => {
@@ -119,18 +174,22 @@ describe("GET /api/marketplace/catalog", () => {
     }
   });
 
-  it("all relative connector logos resolve to committed public assets", async () => {
-    // Prevent production 404s: the catalog may expose `/connectors/<slug>.svg`,
-    // but Next will only serve it if the asset exists under `public/`.
-    // External DB logos are allowed through this specific gate; file-based
-    // curated connectors should keep local, committed assets.
+  it("normalizes connector logos to absolute terminalsync.ai URLs backed by committed assets", async () => {
+    // Desktop Lab renders the catalog inside a local WebView. A root-relative
+    // `/connectors/<slug>.svg` would resolve against the app origin and 404,
+    // so file-based connector logos must leave the API as absolute web URLs.
     const { body } = await callCatalog("es");
     const missing: string[] = [];
 
     for (const item of body.connectors) {
-      if (!item.logo.startsWith("/")) continue;
-      const assetPath = join(process.cwd(), "public", item.logo);
-      if (!existsSync(assetPath)) missing.push(`${item.slug}: ${item.logo}`);
+      expect(
+        item.logo.startsWith("https://terminalsync.ai/connectors/"),
+        `${item.slug} logo should be an absolute terminalsync.ai connector asset`,
+      ).toBe(true);
+      const pathname = publicAssetPathFromCatalogUrl(item.logo);
+      if (!pathname || !existsSync(join(process.cwd(), "public", pathname))) {
+        missing.push(`${item.slug}: ${item.logo}`);
+      }
     }
 
     expect(missing).toEqual([]);
@@ -220,20 +279,30 @@ describe("GET /api/marketplace/catalog", () => {
       expect(stack!.items.length).toBeGreaterThan(0);
 
       // The DB-only item that got hydrated from connector_versions.
-      const hydrated = stack!.items.find(
-        (i) => i.slug === "salesforcecli-mcp",
-      );
+      const hydrated = stack!.items.find((i) => i.slug === "salesforcecli-mcp");
       expect(hydrated, "DB-only item should be in the bundle").toBeDefined();
       expect(hydrated!.hasManifest).toBe(true);
       expect(hydrated!.installMethod).toBe("npm");
-      expect(hydrated!.installSpec).toBe(
-        "@salesforce/mcp-server-salesforce",
-      );
+      expect(hydrated!.installSpec).toBe("@salesforce/mcp-server-salesforce");
       // Manifest contains `${SECRET:SALESFORCE_TOKEN}` → flag must flip.
       expect(hydrated!.requiresEnvSecrets).toBe(true);
       expect(hydrated!.installEnv).toEqual({
         SALESFORCE_TOKEN: "SALESFORCE_TOKEN",
       });
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it("fails loudly when a Supabase bundle duplicates a file-based kit slug", async () => {
+    const SUPABASE_MOCK = await import("@/lib/supabaseAdmin");
+    const spy = vi
+      .spyOn(SUPABASE_MOCK, "getSupabaseAdmin")
+      .mockReturnValue(makeSupabaseStubForDuplicateBundleSlug());
+    try {
+      await expect(callCatalog("es")).rejects.toThrow(
+        /Duplicate bundle\/kit slugs.*marketing-campaign-seo/,
+      );
     } finally {
       spy.mockRestore();
     }
@@ -414,6 +483,77 @@ function makeSupabaseStubForBundleHydration(): SupabaseClient {
               error: null,
             };
           }
+          return { data: null, error: null };
+        },
+      };
+      return builder;
+    },
+  } as unknown as SupabaseClient;
+}
+
+function makeSupabaseStubForDuplicateBundleSlug(): SupabaseClient {
+  const BUNDLE_ID = "bundle-duplicate-uuid";
+
+  return {
+    from(table: string) {
+      const builder: Record<string, unknown> = {
+        select(_cols: string) {
+          return builder;
+        },
+        eq(_col: string, _val: unknown) {
+          return builder;
+        },
+        in(_col: string, _values: readonly unknown[]) {
+          return builder;
+        },
+        is(_col: string, _val: unknown) {
+          return builder;
+        },
+        not(_col: string, _op: string, _val: unknown) {
+          return builder;
+        },
+        gte(_col: string, _val: unknown) {
+          return builder;
+        },
+        lte(_col: string, _val: unknown) {
+          return builder;
+        },
+        limit(_n: number) {
+          return builder;
+        },
+        range(_a: number, _b: number) {
+          return builder;
+        },
+        order(_col: string, _opts: unknown) {
+          return builder;
+        },
+        then(resolve: (v: { data: unknown; error: null }) => unknown) {
+          if (table === "bundles") {
+            return resolve({
+              data: [
+                {
+                  id: BUNDLE_ID,
+                  slug: "marketing-campaign-seo",
+                  name: "Duplicate Marketing Kit",
+                  tagline: "Should fail before returning the catalog",
+                  hero_image_url: null,
+                  price_cents: 1900,
+                  currency: "usd",
+                  purchase_count: 0,
+                  sort_order: 10,
+                  description_md: null,
+                  is_exclusive_ts: false,
+                },
+              ],
+              error: null,
+            });
+          }
+          if (table === "bundle_listings" || table === "connector_listings") {
+            return resolve({ data: [], error: null });
+          }
+          return resolve({ data: [], error: null });
+        },
+        async maybeSingle() {
           return { data: null, error: null };
         },
       };

@@ -45,6 +45,9 @@
  * test passed because invoking `GET(req)` direct reads the Response
  * before Vercel's edge layer touches it.
  */
+import fs from "node:fs";
+import path from "node:path";
+import matter from "gray-matter";
 import { NextResponse } from "next/server";
 import { listAllConnectors, type ConnectorMeta } from "@/lib/connectors";
 import { listSkills, type SkillMeta } from "@/lib/skills";
@@ -76,6 +79,69 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
+const PUBLIC_ASSET_ORIGIN = "https://terminalsync.ai";
+const PUBLIC_ASSET_VERSION = "2026-07-13";
+const CONTENT_ROOT = path.join(process.cwd(), "content");
+const PUBLIC_ROOT = path.join(process.cwd(), "public");
+
+function localizePublicAssetUrl(
+  value: string | null | undefined,
+): string | null {
+  if (!value) return value ?? null;
+  if (!value.startsWith("/")) return value;
+  // Do not rewrite app routes or terminalsync:// deep links — this helper is
+  // only used on logo/image fields, all of which point at public assets when
+  // they are root-relative. Append a stable asset version so desktop WebViews
+  // don't keep stale logo bytes under the same URL after a deployment.
+  return `${PUBLIC_ASSET_ORIGIN}${value}?v=${PUBLIC_ASSET_VERSION}`;
+}
+
+function localizeBundleItemAssets(
+  item: ResolvedBundleItem,
+): ResolvedBundleItem {
+  return { ...item, logo: localizePublicAssetUrl(item.logo) ?? item.logo };
+}
+
+function localizeBundleAssets(bundle: BundleSummary): BundleSummary {
+  return {
+    ...bundle,
+    heroImageUrl: localizePublicAssetUrl(bundle.heroImageUrl),
+    items: bundle.items.map(localizeBundleItemAssets),
+  };
+}
+
+function localizeCatalogAssets(body: CatalogResponse): CatalogResponse {
+  return {
+    connectors: body.connectors.map((item) => ({
+      ...item,
+      logo: localizePublicAssetUrl(item.logo) ?? item.logo,
+    })),
+    skills: body.skills.map((item) => ({
+      ...item,
+      logo: localizePublicAssetUrl(item.logo) ?? item.logo,
+    })),
+    cliTools: body.cliTools.map((item) => ({
+      ...item,
+      logo: localizePublicAssetUrl(item.logo) ?? item.logo,
+    })),
+    bundles: body.bundles.map(localizeBundleAssets),
+  };
+}
+
+function publicAssetExists(value: string | null | undefined): boolean {
+  if (!value) return true;
+  let pathname = value;
+  if (value.startsWith("http://") || value.startsWith("https://")) {
+    try {
+      pathname = new URL(value).pathname;
+    } catch {
+      return false;
+    }
+  }
+  if (!pathname.startsWith("/")) return true;
+  return fs.existsSync(path.join(PUBLIC_ROOT, pathname));
+}
+
 export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
 }
@@ -105,9 +171,10 @@ export interface BundleSummary {
    * see `src/app/[lang]/stacks/[slug]/page.tsx`. The endpoint absorbs
    * that vocabulary mismatch so the desktop can stay vocabulary-free.
    *
-   * Consumers that need an absolute URL prepend their own origin
-   * (`https://terminalsync.ai${href}`) — the endpoint stays relative so
-   * the same response works for preview deploys, local dev, and prod.
+   * Public asset fields (logos / hero images) are normalized to absolute
+   * `https://terminalsync.ai/...` URLs before leaving the endpoint because
+   * desktop WebViews resolve root-relative image paths against the local app
+   * origin, not the marketing site. `href` remains a web route path.
    */
   href: string;
   items: ResolvedBundleItem[];
@@ -154,12 +221,12 @@ export async function GET(req: Request) {
   const visibleConnectors = connectors.filter((c) => !c.hidden);
   const visibleSkills = skills.filter((s) => !s.hidden);
 
-  const body: CatalogResponse = {
+  const body = localizeCatalogAssets({
     connectors: visibleConnectors,
     skills: visibleSkills,
     cliTools,
     bundles,
-  };
+  });
 
   // Cache-Control intentionally NOT set here. The `export const
   // revalidate = 600` above is what Vercel reads to emit the s-maxage
@@ -181,6 +248,15 @@ export async function GET(req: Request) {
  * `bundles` array — same as having no kits curated yet.
  */
 async function loadBundles(lang: string): Promise<BundleSummary[]> {
+  const [fileKits, dbBundles] = await Promise.all([
+    loadFileKits(lang),
+    loadDbBundles(lang),
+  ]);
+  assertNoDuplicateBundleSlugs([...fileKits, ...dbBundles]);
+  return [...fileKits, ...dbBundles];
+}
+
+async function loadDbBundles(lang: string): Promise<BundleSummary[]> {
   const sb = getSupabaseAdmin();
   if (!sb) return [];
 
@@ -213,7 +289,11 @@ async function loadBundles(lang: string): Promise<BundleSummary[]> {
     const row = raw as LinkRow;
     if (!isBundleItemKind(row.kind)) continue;
     const arr = linksByBundle.get(row.bundle_id) ?? [];
-    arr.push({ kind: row.kind, slug: row.item_slug, sortOrder: row.sort_order });
+    arr.push({
+      kind: row.kind,
+      slug: row.item_slug,
+      sortOrder: row.sort_order,
+    });
     linksByBundle.set(row.bundle_id, arr);
     if (row.kind === "connector") connectorSlugs.push(row.item_slug);
   }
@@ -253,10 +333,126 @@ async function loadBundles(lang: string): Promise<BundleSummary[]> {
           (b as { description_md?: string | null }).description_md ?? undefined,
         isExclusiveTS:
           ((b as { is_exclusive_ts?: boolean | null }).is_exclusive_ts ??
-            false) || undefined,
+            false) ||
+          undefined,
       };
       return summary;
     }),
   );
   return resolved;
+}
+
+function kitsLangDir(lang: string): string {
+  const dir = path.join(CONTENT_ROOT, "kits", lang);
+  if (fs.existsSync(dir)) return dir;
+  return path.join(CONTENT_ROOT, "kits", "en");
+}
+
+function stringValue(data: Record<string, unknown>, key: string): string {
+  const value = data[key];
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function parseKitItems(raw: unknown): BundleItemRef[] {
+  if (!Array.isArray(raw)) return [];
+  const items: BundleItemRef[] = [];
+  for (const [index, value] of raw.entries()) {
+    if (!value || typeof value !== "object") continue;
+    const row = value as Record<string, unknown>;
+    const kind = row.kind;
+    const slug = row.slug;
+    if (!isBundleItemKind(kind) || typeof slug !== "string" || !slug.trim()) {
+      continue;
+    }
+    const sortOrder =
+      typeof row.sortOrder === "number"
+        ? row.sortOrder
+        : typeof row.sort_order === "number"
+          ? row.sort_order
+          : index;
+    const reason = typeof row.reason === "string" ? row.reason.trim() : "";
+    items.push({
+      kind,
+      slug: slug.trim(),
+      sortOrder,
+      whyItHelps: reason || undefined,
+    });
+  }
+  return items;
+}
+
+async function loadFileKits(lang: string): Promise<BundleSummary[]> {
+  const dir = kitsLangDir(lang);
+  if (!fs.existsSync(dir)) return [];
+
+  const files = fs
+    .readdirSync(dir)
+    .filter((file) => file.endsWith(".md"))
+    .sort();
+
+  const kits = await Promise.all(
+    files.map(async (file, index): Promise<BundleSummary | null> => {
+      const slug = file.replace(/\.md$/, "");
+      const raw = fs.readFileSync(path.join(dir, file), "utf8");
+      const { data, content } = matter(raw);
+      const fm = data as Record<string, unknown>;
+      if (stringValue(fm, "status") !== "available") return null;
+
+      const refs = parseKitItems(fm.items);
+      const items = await resolveBundleItems(refs, lang);
+      const logo = stringValue(fm, "logo") || "/logos/ts-kit.svg";
+      if (!publicAssetExists(logo)) {
+        throw new Error(
+          `File kit ${slug} references missing logo asset: ${logo}`,
+        );
+      }
+
+      return {
+        id: `kit:${slug}`,
+        slug,
+        name: stringValue(fm, "name") || slug,
+        tagline: stringValue(fm, "tagline") || null,
+        // The desktop BundleSummary contract renders kits from heroImageUrl.
+        // File-based kits author `logo`, so bridge that field here instead
+        // of requiring a desktop release just to show the TS kit mark.
+        heroImageUrl: logo,
+        priceCents: 0,
+        currency: "usd",
+        purchaseCount: 0,
+        sortOrder:
+          typeof fm.sortOrder === "number"
+            ? fm.sortOrder
+            : typeof fm.sort_order === "number"
+              ? fm.sort_order
+              : index,
+        href: `/${lang}/stacks/${slug}`,
+        items,
+        descriptionMd:
+          content.trim() || stringValue(fm, "description") || undefined,
+        isExclusiveTS: true,
+      };
+    }),
+  );
+
+  return kits
+    .filter((kit): kit is BundleSummary => kit !== null)
+    .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name));
+}
+
+function assertNoDuplicateBundleSlugs(bundles: BundleSummary[]): void {
+  const seen = new Map<string, string>();
+  const duplicates: string[] = [];
+  for (const bundle of bundles) {
+    const previous = seen.get(bundle.slug);
+    if (previous) {
+      duplicates.push(`${bundle.slug} (${previous}, ${bundle.id})`);
+    } else {
+      seen.set(bundle.slug, bundle.id);
+    }
+  }
+  if (duplicates.length > 0) {
+    throw new Error(
+      `Duplicate bundle/kit slugs in marketplace catalog: ${duplicates.join(", ")}`,
+    );
+  }
 }
