@@ -5,7 +5,7 @@ const en: Dict = {
   meta: {
     title: "TerminalSync — Memory, privacy and mobility for your AI",
     description:
-      "Your AIs keep working even if the internet drops or you switch computers. Strong encryption: not even we can read your content. Access from any device.",
+      "Your AIs keep working even if the internet drops or you switch computers. Your secrets and conversations travel encrypted; your files live in YOUR cloud, not ours. Access from any device.",
   },
   nav: {
     features: "Features",
@@ -31,7 +31,7 @@ const en: Dict = {
     ],
     ctaPrimary: "Start free",
     ctaSecondary: "See how it works",
-    trustLine: "No install · No context loss · Works on any computer · Strong encryption · not even we can read your content",
+    trustLine: "No install · No context loss · Works on any computer · Encrypted secrets & conversations · Your files in YOUR cloud",
     nextUp: {
       eyebrow: "Latest",
       body: "Anywhere Access via Cloudflare Tunnel — open your session from your phone with zero install. Unified multi-AI workflow: Claude and Codex sharing the same context. Per-terminal secrets vault.",
@@ -65,8 +65,8 @@ const en: Dict = {
       },
       shield: {
         kicker: "Demo · Privacy",
-        title: "Bank-grade encryption before it leaves your computer.",
-        body: "Your files travel already encrypted to your own cloud (Drive, iCloud or Dropbox). Neither Google, nor the AIs, nor we see what's inside. The key lives only on your device.",
+        title: "Sensitive data travels encrypted. Your files, in YOUR cloud.",
+        body: "Your secrets, credentials and AI conversations are encrypted (AES-256) on your computer before upload — neither Google nor we can read them. Your project files live in your own cloud, under your account: they never touch our servers, and you can open them from Drive anytime.",
       },
     },
   },
@@ -281,11 +281,11 @@ const en: Dict = {
     items: [
       {
         q: "How is this different from keeping my folder in Drive or iCloud?",
-        a: "Drive and iCloud keep your files unencrypted — the provider can see the content. TerminalSync encrypts EVERYTHING on your computer before it leaves. They arrive at your Drive, iCloud or Dropbox unreadable to everyone: neither Google, nor Apple, nor the AIs, nor we can open them. The key lives only on your device.",
+        a: "Putting a folder in Drive doesn't save your WORK: you lose the AI sessions, the memory, the secrets and the configuration. TerminalSync makes all of that portable between your computers, and the sensitive parts — secrets, credentials, memory and AI conversations — travel encrypted (AES-256): neither Google nor we can read them. Your project files stay in your own cloud, under your account and your control.",
       },
       {
         q: "Do my files end up on your servers?",
-        a: "No. Everything is encrypted on your computer before it leaves and uploads to YOUR cloud, not ours. Neither the AIs nor we can see your files. You hold the only key.",
+        a: "No. Your files go straight from your computer to YOUR cloud (your Drive) — they never pass through our servers and we can't see them. And the sensitive parts (secrets, credentials, AI conversations) upload encrypted, with a key only you hold.",
       },
       {
         q: "Does it work with just one computer?",
@@ -297,7 +297,7 @@ const en: Dict = {
       },
       {
         q: "Can I trust its security?",
-        a: "Yes. The encryption system will be publicly auditable so any expert can review it. And your content never leaves your computer unencrypted.",
+        a: "Yes. We use AES-256, the industry standard, to encrypt your secrets, credentials and AI conversations before they leave your computer — only you hold the key. Your project files never pass through our servers: they go straight to your own cloud, under your account.",
       },
       {
         q: "Does it work with any AI or just Claude and Codex?",
@@ -335,7 +335,7 @@ const en: Dict = {
       responsiveNotifications: "Alerts you via email and Telegram",
       webMobileMirror: "The same session on browser or phone",
       offlineLocal: "Works without internet",
-      aes256: "Strong encryption · not even we can read your content",
+      aes256: "Encrypted secrets & conversations · your files in YOUR cloud",
       secretsVault: "Built-in key vault",
       internetImmunity: "Keeps going if the internet drops",
       aiConversationSync: "Conversations synced between computers",
@@ -349,7 +349,7 @@ const en: Dict = {
     },
     legend: { yes: "Yes", no: "No", partial: "Partial", soon: "Coming soon" },
     footnote:
-      "Comparison based on each tool's public information. Strong encryption before it leaves your computer — neither Anthropic, OpenAI, Vercel, nor we can see your files.",
+      "Comparison based on each tool's public information. Your files never pass through our servers — they go straight to your own cloud; your secrets and conversations travel encrypted.",
     calculator: {
       eyebrow: "Crunch your savings",
       title: "How much do you save by orchestrating all 3 AIs?",
@@ -408,7 +408,7 @@ const en: Dict = {
       offlineLocal:
         "Works without internet. Your computer is the source of truth — cloud sync is asynchronous and never blocks your work.",
       aes256:
-        "Everything is encrypted on your computer before it leaves, with the master key stored in your Keychain. Neither Anthropic, OpenAI, Google, nor we can open your files.",
+        "Your secrets, credentials and AI conversations are encrypted on your computer before they leave, with a master key only you hold, protected by your secret phrase. Your files go straight to your own cloud — they never pass through our servers.",
       secretsVault:
         "Built-in vault for access keys, tokens, and credentials. Available to your terminals as environment variables — never written to plain files.",
       internetImmunity:
@@ -448,7 +448,7 @@ const en: Dict = {
       },
       agency: {
         title: "Handles sensitive data",
-        body: "You work with access keys, client credentials, contracts, private data. You don't want them living in a vendor's cloud that could one day read them. AES-256 encryption before it leaves your computer — not even we can open them.",
+        body: "You work with access keys, client credentials, contracts, private data. Your credentials and secrets are encrypted with AES-256 before they leave your computer — not even we can open them — and your files live in YOUR cloud, not a vendor's.",
         tag: "Privacy-first",
       },
     },
@@ -517,7 +517,7 @@ const en: Dict = {
           "3 active terminals with real persistence",
           "Claude Code, Codex, Gemini CLI or No AI",
           "Your code stays in Git; metadata in .terminalsync/",
-          "AES-256 · not even we can read your content",
+          "AES-256 on secrets & conversations · your files in YOUR cloud",
           "Google Drive sync (your account)",
           "Silence detection for your AI agent",
           "2 linked devices (laptop + desktop)",
@@ -585,12 +585,12 @@ const en: Dict = {
   },
   trust: {
     title: "Your files are yours. Full stop.",
-    body: "Your secrets, settings, sessions — all encrypted on your computer before leaving. Goes to YOUR cloud, not ours. The encryption system will be publicly auditable.",
+    body: "Your secrets, settings, memory and AI conversations are encrypted on your computer before leaving. Everything goes to YOUR cloud, not ours — your files never pass through our servers.",
     guarantee: "Try it 7 days free. Cancel before day 7 and you're not charged.",
     features: {
-      e2ee: "Bank-grade encryption",
+      e2ee: "AES-256 on everything sensitive",
       keychain: "Keys only on your device",
-      opensource: "Auditable encryption system",
+      opensource: "Your files, always in YOUR cloud",
       noVendor: "No provider lock-in",
     },
   },
@@ -668,7 +668,7 @@ const en: Dict = {
       pricing:
         "There are plans for trying the product, power users and technical users/teams. Starter is for getting started; Pro adds advanced capabilities like memory/integrations; Max is for Git-native sync, secrets vault and our most complete workflows. Check Pricing for the current details. Want me to recommend a plan for your use case?",
       security:
-        "Your code and access key are encrypted with AES-256 on your computer BEFORE uploading to Drive. fully encrypted (no one else can read it): neither we nor Google can read your content. You hold the master key in your local keychain.",
+        "Your secrets, credentials and AI conversations are encrypted with AES-256 on your computer BEFORE uploading to Drive — neither we nor Google can read them, and only you hold the master key, protected by your secret phrase. Your project files go straight to your own cloud: they never pass through our servers.",
       fallback:
         "Thanks for your message. A human on the team will reach out shortly. In the meantime, want to check our FAQ or download the app?",
     },

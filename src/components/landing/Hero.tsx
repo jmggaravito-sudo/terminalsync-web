@@ -138,6 +138,8 @@ const COPY = {
     ctaPrimary: "Empieza gratis",
     ctaSecondary: "Mira cómo funciona",
     os: "macOS · Linux · Windows",
+    intelNote: "¿Tu Mac es de 2020 o anterior (procesador Intel)?",
+    intelLink: "Descarga la versión para Mac Intel",
     trust: ["Sin programar", "Memoria permanente", "Continúa aunque cambie la IA"],
     prefixLabel: "CON TERMINALSYNC:",
     shotTitle: "Desde acá manejas tu empresa con IA",
@@ -149,6 +151,8 @@ const COPY = {
     ctaPrimary: "Start free",
     ctaSecondary: "See how it works",
     os: "macOS · Linux · Windows",
+    intelNote: "Is your Mac from 2020 or earlier (Intel processor)?",
+    intelLink: "Download the Intel Mac version",
     trust: ["No coding", "Persistent memory", "Continues even if the AI changes"],
     prefixLabel: "WITH TERMINALSYNC:",
     shotTitle: "This is where your business runs from.",
@@ -223,6 +227,20 @@ export function Hero({ dict }: { dict: Dict }) {
 
         <p className="mt-3 text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">
           {t.os}
+        </p>
+
+        {/* Macs Intel (2020 y anteriores) descargan su propio DMG — el
+            navegador no puede detectar el chip (Safari en ARM se reporta
+            como Intel), así que se le pregunta al visitante en simple. */}
+        <p className="mt-1.5 text-[12px] text-[var(--color-fg-muted)]">
+          {t.intelNote}{" "}
+          <a
+            href="/api/download?arch=x86_64"
+            data-cta="hero-intel"
+            className="underline underline-offset-2 hover:text-[var(--color-fg)] transition-colors"
+          >
+            {t.intelLink}
+          </a>
         </p>
 
         {/* Trust line */}

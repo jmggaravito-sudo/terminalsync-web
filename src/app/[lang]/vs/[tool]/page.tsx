@@ -65,8 +65,8 @@ const ROW_LABELS: Record<string, { es: string; en: string }> = {
     en: "Access from your phone or any browser",
   },
   aes256: {
-    es: "Cifrado militar AES-256 — ni nosotros vemos tus datos",
-    en: "Military-grade AES-256 — not even we see your data",
+    es: "AES-256 en tus secretos y conversaciones — y tus archivos en TU nube",
+    en: "AES-256 on your secrets and conversations — and your files in YOUR cloud",
   },
   secretsVault: {
     es: "Caja fuerte para tus claves API y credenciales",
