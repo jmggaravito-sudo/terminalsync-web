@@ -1,1 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="Memory"><rect width="32" height="32" rx="7" fill="#6366F1"/><text x="16" y="22" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">M</text></svg>
+<svg role="img" aria-label="TerminalSync curated logo for Memory" xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><title>TerminalSync curated logo for Memory</title>
+  <rect x="62"  y="62"  width="420" height="420" rx="88" fill="#d97757"/>
+  <rect x="542" y="62"  width="420" height="420" rx="88" fill="#10a37f"/>
+  <rect x="62"  y="542" width="420" height="420" rx="88" fill="#4a7cf0"/>
+  <rect x="542" y="542" width="420" height="420" rx="88" fill="#6d3bf5"/>
+</svg>

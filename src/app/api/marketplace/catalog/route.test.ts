@@ -1,4 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { GET, type CatalogResponse } from "./route";
 
 /**
@@ -115,6 +117,23 @@ describe("GET /api/marketplace/catalog", () => {
         `${item.slug} has non-boolean requiresEnvSecrets`,
       ).toBe("boolean");
     }
+  });
+
+  it("all relative connector logos resolve to committed public assets", async () => {
+    // Prevent production 404s: the catalog may expose `/connectors/<slug>.svg`,
+    // but Next will only serve it if the asset exists under `public/`.
+    // External DB logos are allowed through this specific gate; file-based
+    // curated connectors should keep local, committed assets.
+    const { body } = await callCatalog("es");
+    const missing: string[] = [];
+
+    for (const item of body.connectors) {
+      if (!item.logo.startsWith("/")) continue;
+      const assetPath = join(process.cwd(), "public", item.logo);
+      if (!existsSync(assetPath)) missing.push(`${item.slug}: ${item.logo}`);
+    }
+
+    expect(missing).toEqual([]);
   });
 
   it("requiresEnvSecrets is `false` on every skill (skills don't have secrets)", async () => {
