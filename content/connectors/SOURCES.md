@@ -86,6 +86,14 @@ Cerrar con licencia + fuente.
 6. **Paridad es+en estricta.** Mismo número de ejemplos, mismas secciones, misma estructura.
 7. **Ejemplos de "Qué le podés pedir / What you can ask"** van en el **idioma del archivo** (español en `/es/`, inglés en `/en/`). Cuando la fuente oficial trae ejemplos en inglés, se usan como inspiración pero se **traducen y se adaptan a lenguaje natural para no-técnicos** — sin jerga SQL/CLI/API si la primera mitad del documento es para audiencia general. Lo que sí se cita **verbatim en su idioma original** son **frases técnicas cortas** del README/docs oficiales que aportan precisión, integradas en una oración en el idioma del archivo. Ejemplo aceptable en un `/es/`: *"El server lo garantiza por diseño: en sus palabras, 'All queries are executed within a READ ONLY transaction'."*
 8. **Tono por sección.** La parte simple (qué es / qué hace / ejemplos / qué token o configurar) tiene que entenderla **alguien sin background técnico**. Sustituí jerga: *introspección de schema* → "ver cómo está armada la base"; *read-only transaction* → "modo solo-lectura"; *defensa en profundidad* → "cerrar dos puertas en vez de una"; *fine-grained PAT* → "token con permisos exactos por repo"; *RLS-scoped* → "limitado por permisos del rol". La sección `--- dev ---` puede usar todo el vocabulario técnico que haga falta — esa parte sí es para devs.
+9. **Logos oficiales, no tiles inventados.** Cada conector nuevo debe traer el **logo oficial del vendor**, no un tile casero con iniciales. Procedimiento obligatorio en cada corrida del Loop:
+   - Buscar el logo oficial del vendor en fuentes oficiales: sitio oficial, repo oficial o brand assets. Cascada sugerida: brand kit del vendor → avatar del owner **oficial** en GitHub → favicon del sitio oficial.
+   - Verificar que la fuente sea oficial con el mismo criterio del gate de publisher: si el repo es de un tercero, su avatar **NO** es el logo del vendor.
+   - Bajar el asset a `public/connectors/<slug>.svg` o `public/connectors/<slug>.png`. **NO** referenciar URLs externas: dependen de CDNs que cambian y pueden romper el catálogo en producción.
+   - Usar la marca correctamente: no deformar, no recortar y no sugerir partnership/endorsement.
+   - Para conectores propios de TerminalSync o sin vendor claro, usar logo TS (`ts-curated` / `ts-fallback`). **NO** inventar un tile con iniciales.
+   - Si no se consigue logo oficial, usar fallback TS y declararlo explícitamente en el PR. No inventar logos.
+   - El PR del Loop debe mostrar el logo propuesto de cada conector nuevo para aprobación de JM, igual que muestra y justifica el publisher.
 
 ## Dónde está cada cosa en este repo
 
