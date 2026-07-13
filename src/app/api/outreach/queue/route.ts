@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { authenticate, isAdmin } from "@/lib/marketplace/auth";
 import { isOpStatus, OP_STATUSES, type OpStatus } from "@/lib/outreach/types";
 
 export const runtime = "nodejs";
@@ -25,6 +26,11 @@ const SELECT_COLS = [
 ].join(",");
 
 export async function GET(req: Request) {
+  const user = await authenticate(req);
+  if (!user || !isAdmin(user)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const sb = getSupabaseAdmin();
   if (!sb) return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
 
