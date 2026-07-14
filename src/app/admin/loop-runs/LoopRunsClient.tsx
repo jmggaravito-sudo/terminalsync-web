@@ -178,9 +178,9 @@ function RunsTable({ runs, loading }: { runs: LoopRun[]; loading: boolean }) {
 function Banner({ tone, children }: { tone: "muted" | "warn" | "error"; children: ReactNode }) {
   const cls =
     tone === "error"
-      ? "border-red-500/30 bg-red-500/5 text-red-300"
+      ? "border-red-500/40 bg-red-500/10 text-red-800 dark:text-red-200"
       : tone === "warn"
-        ? "border-amber-500/30 bg-amber-500/5 text-amber-200"
+        ? "border-amber-500/40 bg-amber-500/10 text-amber-900 dark:text-amber-200"
         : "border-[var(--color-border)] bg-[var(--color-panel)]/60 text-[var(--color-fg-muted)]";
   return <div className={`rounded-2xl border p-5 text-[14px] ${cls}`}>{children}</div>;
 }
