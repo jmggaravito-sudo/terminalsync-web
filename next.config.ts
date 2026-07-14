@@ -9,8 +9,10 @@ import type { NextConfig } from "next";
 //   - font-src: Google's CDN.
 //   - img-src: self + data: + https: so OG/social/marketplace icons render
 //     without breakage. blob: for any future canvas/screenshot work.
-//   - connect-src: self + Vercel domains for Speed Insights / Analytics +
-//     Rewardful's API endpoint.
+//   - connect-src: self + Supabase (auth/magic-link/OAuth token exchange +
+//     REST + realtime — without this the browser blocks the fetch to
+//     *.supabase.co with "Failed to fetch") + Vercel domains for Speed
+//     Insights / Analytics + Rewardful's API endpoint.
 //   - frame-ancestors 'self' — clickjacking protection against third
 //     parties (equivalent to X-Frame-Options: SAMEORIGIN). Same-origin
 //     iframes are allowed so the landing demo grid (/demos/*.html) can
@@ -27,7 +29,7 @@ const securityHeaders = [
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
       "frame-src 'self' https://accounts.google.com https://docs.google.com https://*.google.com",
-      "connect-src 'self' https://*.googleapis.com https://*.google.com https://*.vercel.app https://vitals.vercel-insights.com https://r.wdfl.co https://api.getrewardful.com https://releases.terminalsync.ai",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.googleapis.com https://*.google.com https://*.vercel.app https://vitals.vercel-insights.com https://r.wdfl.co https://api.getrewardful.com https://releases.terminalsync.ai",
       "frame-ancestors 'self'",
       "base-uri 'self'",
       "form-action 'self'",
