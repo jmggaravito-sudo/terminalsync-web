@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Track the app's theme toggle (data-theme="dark" on :root) instead of the
+   OS-level prefers-color-scheme, so dark: utilities follow the same switch as
+   the CSS custom properties below. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /* ── Apple-Clean palette — light is the default, dark is an override ─── */
 @theme {
   /* Rediseño 2026 — Geist + tema claro "papel cálido + esmeralda" */
