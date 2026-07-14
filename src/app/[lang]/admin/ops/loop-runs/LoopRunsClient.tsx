@@ -105,7 +105,7 @@ export function LoopRunsClient() {
         {auth === "anon" ? (
           <Banner tone="warn">
             Tenés que estar logueado para ver este historial.{" "}
-            <a className="underline" href={`/es/login?next=${encodeURIComponent("/admin/loop-runs")}`}>
+            <a className="underline" href={`/es/login?next=${encodeURIComponent("/es/admin/ops/loop-runs")}`}>
               Entrar →
             </a>
           </Banner>

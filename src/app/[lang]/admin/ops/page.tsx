@@ -27,6 +27,20 @@ export default async function AdminOps({ params }: Props) {
             ? "Resultados reales de cada flujo: qué produjo, cuándo, qué cambió. Todo visible sin login ni clicks."
             : "Real results from each flow: what it produced, when, what changed. All visible without login or clicks."}
         </p>
+        <nav className="mt-4 flex flex-wrap gap-2">
+          <a
+            href={`/${lang}/admin/ops/outreach`}
+            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-[var(--color-panel)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--color-fg)] hover:bg-[var(--color-panel-2)] transition-colors"
+          >
+            📇 {isEs ? "Cola de outreach" : "Outreach queue"}
+          </a>
+          <a
+            href={`/${lang}/admin/ops/loop-runs`}
+            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-[var(--color-panel)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--color-fg)] hover:bg-[var(--color-panel-2)] transition-colors"
+          >
+            🔁 {isEs ? "Corridas del Loop" : "Loop runs"}
+          </a>
+        </nav>
         <div className="mt-6">
           <OpsDashboard lang={lang} />
         </div>

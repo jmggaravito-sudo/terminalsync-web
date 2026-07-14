@@ -13,8 +13,38 @@ export function LoginForm({ lang }: { lang: string }) {
 
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [googleSubmitting, setGoogleSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Same callback the magic link uses — /auth/callback handles the PKCE
+  // `?code=` exchange, so Google-via-Supabase lands in the same place and
+  // honours lang + next. This is the email-free path: Supabase's shared SMTP
+  // drops magic links often enough that Google is the reliable admin login.
+  function callbackUrl(): string | undefined {
+    if (typeof window === "undefined") return undefined;
+    return `${window.location.origin}/auth/callback?lang=${lang}&next=${encodeURIComponent(next)}`;
+  }
+
+  async function onGoogle() {
+    setGoogleSubmitting(true);
+    setError(null);
+    const sb = getSupabaseBrowser();
+    if (!sb) {
+      setError(isEs ? "Sign-in no configurado" : "Sign-in not configured");
+      setGoogleSubmitting(false);
+      return;
+    }
+    const { error: err } = await sb.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: callbackUrl() },
+    });
+    // On success the browser navigates to Google; we only reach here on error.
+    if (err) {
+      setError(err.message);
+      setGoogleSubmitting(false);
+    }
+  }
 
   useEffect(() => {
     const sb = getSupabaseBrowser();
@@ -144,6 +174,31 @@ export function LoginForm({ lang }: { lang: string }) {
         {submitting
           ? (isEs ? "Enviando…" : "Sending…")
           : (isEs ? "Mandarme el enlace" : "Send me the link")}
+      </button>
+
+      <div className="flex items-center gap-3 py-1" aria-hidden="true">
+        <span className="h-px flex-1 bg-[var(--color-border)]" />
+        <span className="text-[11px] font-mono lowercase tracking-[0.12em] text-[var(--color-fg-dim)]">
+          {isEs ? "o" : "or"}
+        </span>
+        <span className="h-px flex-1 bg-[var(--color-border)]" />
+      </div>
+
+      <button
+        type="button"
+        onClick={onGoogle}
+        disabled={googleSubmitting}
+        className="inline-flex w-full items-center justify-center gap-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--color-panel)] px-5 py-2.5 text-[14px] font-semibold text-[var(--color-fg)] hover:bg-[var(--color-panel-2)] disabled:opacity-50 transition-colors"
+      >
+        <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true">
+          <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.71-1.57 2.68-3.89 2.68-6.62z" />
+          <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z" />
+          <path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z" />
+          <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.9 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z" />
+        </svg>
+        {googleSubmitting
+          ? (isEs ? "Redirigiendo…" : "Redirecting…")
+          : (isEs ? "Entrar con Google" : "Continue with Google")}
       </button>
     </form>
   );

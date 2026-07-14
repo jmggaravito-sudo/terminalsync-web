@@ -1,13 +1,7 @@
-import type { Metadata } from "next";
-import { LoopRunsClient } from "./LoopRunsClient";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export const metadata: Metadata = {
-  title: "Admin · Loop runs",
-  robots: { index: false },
-};
-
-export default function LoopRunsPage() {
-  return <LoopRunsClient />;
+// Loop runs moved into the Ops section so it lives alongside the Outreach
+// Queue under /admin/ops. Keep this redirect so the old link still works.
+export default function LegacyLoopRunsRedirect() {
+  redirect("/es/admin/ops/loop-runs");
 }
