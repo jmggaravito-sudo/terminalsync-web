@@ -49,6 +49,15 @@
 | **exa** (2026-07-14) | npm `exa-mcp-server` README oficial (v3.2.1) | npm package metadata + README — maintainer `theishangoswami <ishan@exa.ai>`; repo `exa-labs/exa-mcp-server`; `npx -y exa-mcp-server` con `EXA_API_KEY`; tools `web_search_exa`, `web_search_advanced_exa`, `company_research_exa`, `crawling_exa`, `people_search_exa`, `linkedin_search_exa`, `deep_researcher_start/check`, `get_code_context_exa`, `deep_search_exa`; token `dashboard.exa.ai/api-keys`; LICENSE del tarball = MIT (Exa Labs, 2025). **Logo: FALLBACK TS** — no está en simple-icons y el sitio del vendor está bloqueado por el proxy en este entorno. JM: subir el logo oficial de Exa a `public/connectors/exa.svg`. |
 | **playwright** | SKIP 2026-07-14 | Considerado (`@playwright/mcp`, publisher Microsoft oficial — `*@microsoft.com`, repo `microsoft/playwright-mcp`) pero diferido: (a) solapa con el conector **puppeteer** ya publicado (ambos automatización de navegador), y (b) el campo `readme` del registro npm viene vacío, así que no hay fuente oficial vía npm para redactar sin `WebFetch` (bloqueado en este entorno). Reconsiderar en una corrida con acceso al README del repo. |
 
+## Logos pendientes (deuda del Loop)
+
+> El Loop **tiene que conseguir el logo oficial** de cada conector (regla #9). Cuando un conector se publica con el fallback TS porque el logo oficial no se pudo obtener en esa corrida, queda anotado acá y la **próxima corrida del Loop debe cerrarlo** (bajar el oficial a `public/connectors/<slug>.svg` y borrar la fila). No es un estado terminal.
+
+| Conector | Logo actual | Qué falta | Anotado |
+|---|---|---|---|
+| **firecrawl** | fallback TS (`public/connectors/firecrawl.svg`) | Logo oficial de Firecrawl. No está en simple-icons; el sitio del vendor estuvo bloqueado por el proxy en la corrida 2026-07-14. Bajar el SVG/PNG oficial de firecrawl.dev o su brand kit. | 2026-07-14 |
+| **exa** | fallback TS (`public/connectors/exa.svg`) | Logo oficial de Exa. No está en simple-icons; sitio del vendor bloqueado en 2026-07-14. Bajar de exa.ai o su brand kit. | 2026-07-14 |
+
 ## Estructura del molde de oro (verificada en estos 8)
 
 ```

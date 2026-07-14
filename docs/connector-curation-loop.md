@@ -15,9 +15,11 @@ auto-promotion pipeline and must not be used as the Loop entrypoint.
    - no canary, alpha, typo-squat, SDK-only, or protocol-test package is published as a user-facing connector;
    - README/source material was checked directly.
 5. Write approved connectors in `content/connectors/en` and `content/connectors/es` using the gold mold and `content/connectors/SOURCES.md` rules.
-6. Document SKIPs in `content/connectors/SOURCES.md`.
-7. Validate the change and open one draft PR.
-8. Stop. Do not merge and do not push to `main`.
+6. Source the **official vendor logo** for each new connector (SOURCES.md rule #9) and vendorize it under `public/connectors/`. When the official logo can't be obtained in the run's environment, ship the TS fallback, record it in the "Logos pendientes" backlog of `content/connectors/SOURCES.md`, and flag it in the PR — a fallback logo is a debt the **next** Loop run must close, not a finished state.
+7. Document SKIPs in `content/connectors/SOURCES.md`.
+8. Before finishing, clear any items in the "Logos pendientes" backlog whose official logo is now obtainable — replacing a fallback counts toward the run.
+9. Validate the change and open one draft PR.
+10. Stop. Do not merge and do not push to `main`.
 
 ## Required run-history registration
 
