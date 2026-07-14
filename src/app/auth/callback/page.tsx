@@ -148,12 +148,27 @@ function CallbackInner() {
         // PKCE flow: Supabase puts ?code=... in the query.
         const code = url.searchParams.get("code");
         if (code) {
-          const { error: e } = await sb!.auth.exchangeCodeForSession(code);
-          if (e) throw e;
-          await fireWelcomeIfFresh(sb!, lang);
-          setStage("session");
-          setTimeout(() => router.replace(next), 800);
-          return;
+          // The shared client has detectSessionInUrl: true, so supabase-js may
+          // have already exchanged this code when getSupabaseBrowser()
+          // initialized on this page. A second manual exchange then fails —
+          // the code/verifier is spent — sometimes surfacing as a "Failed to
+          // fetch" TypeError from the racing request. Don't dead-end on that:
+          // treat any failure as "maybe already handled" and fall through to
+          // the getSession poll below, which succeeds if the auto-handler
+          // established the session.
+          try {
+            const { error: e } = await sb!.auth.exchangeCodeForSession(code);
+            if (!e) {
+              await fireWelcomeIfFresh(sb!, lang);
+              setStage("session");
+              setTimeout(() => router.replace(next), 800);
+              return;
+            }
+            console.warn("[auth/callback] code exchange returned error, polling session:", e.message);
+          } catch (e) {
+            console.warn("[auth/callback] code exchange threw, polling session:", e);
+          }
+          // fall through to the getSession poll
         }
 
         // Implicit hash flow: parse access_token + refresh_token from
