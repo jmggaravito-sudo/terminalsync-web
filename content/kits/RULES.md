@@ -96,8 +96,10 @@ Required field meanings:
 
 - `name`: user-facing kit name. It must name the workflow, not just a pile of
   tools.
-- `logo`: default to `/logos/ts-kit.svg` unless a reviewed kit-specific asset
-  exists.
+- `logo`: **must be the TerminalSync kit logo `/logos/ts-kit.svg`.** Kits are
+  first-party TerminalSync bundles, not vendor products, so they carry the
+  TerminalSync mark — never a connector/skill/vendor logo. This value is fixed;
+  do not substitute a per-kit asset.
 - `category`: role/function category. Use role language such as `marketing`,
   `sales`, `legal`, `dev`, `finance`, `operations`, `support`, `research`, or
   `design`. Do not categorize by vendor/tool.
@@ -304,6 +306,7 @@ A kit PR must include:
 
 - ES and EN files with matching slugs.
 - Required frontmatter in both files.
+- `logo` set to the TerminalSync kit logo `/logos/ts-kit.svg` (never a vendor logo).
 - Required body sections in both files.
 - Role/function category, not tool/vendor category.
 - `items[]` with `kind`, `slug`, and purpose-specific `reason` for every item.
