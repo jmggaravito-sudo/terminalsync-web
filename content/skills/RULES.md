@@ -123,6 +123,13 @@ Each skill must include at least 5 test cases in the PR evidence:
 The tests must be reproducible: include the input prompt, the expected behavior,
 and the actual output or summarized result.
 
+Reproducibility is mechanized by the skills-eval harness
+(`scripts/skills-eval/`): encode the cases as a fixture
+(`scripts/skills-eval/fixtures/<slug>.json`) and run
+`node scripts/skills-eval/run-evals.mjs <slug>` to generate the baseline-vs-skill
+evidence report at `docs/skills-evals/<slug>.md`. The harness produces evidence
+only — see "Evidence is not the verdict" below.
+
 ### Baseline comparison
 
 The skill must be compared against an equivalent generic prompt.

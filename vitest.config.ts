@@ -15,7 +15,10 @@ import path from "node:path";
 export default defineConfig({
   test: {
     environment: "node",
-    include: ["src/**/*.test.ts"],
+    // `src/**` covers the app libs/routes. `scripts/**/*.test.mjs` lets
+    // dependency-free harnesses (e.g. the skills-eval harness) live next to
+    // their code and still run under `vitest run` in CI.
+    include: ["src/**/*.test.ts", "scripts/**/*.test.mjs"],
   },
   resolve: {
     alias: {
