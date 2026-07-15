@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { CategoryBar, DragStrip } from "@/components/landing/CatalogChrome";
-import Link from "next/link";
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { listSkills } from "@/lib/skills";
 import { SkillsExplorer } from "./Explorer";
 
@@ -89,29 +88,6 @@ export default async function SkillsIndex({ params }: Props) {
         }}
       />
 
-      <section className="mx-auto max-w-5xl px-6 pb-32">
-        <Link
-          href={`/${lang}/publishers`}
-          className="group flex items-center justify-between gap-4 rounded-2xl border border-[var(--color-accent)]/25 bg-[var(--color-accent)]/5 hover:bg-[var(--color-accent)]/10 p-5 transition-colors"
-        >
-          <div>
-            <p className="text-[13.5px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-              {isEs
-                ? "¿Tenés skills propias? Publicalas acá."
-                : "Got your own skills? Publish them here."}
-            </p>
-            <p className="mt-1 text-[12.5px] text-[var(--color-fg-muted)]">
-              {isEs
-                ? "Cobrás el 90%. Los primeros 50 publishers no pagan comisión durante 6 meses."
-                : "You keep 90%. First 50 publishers pay 0% for 6 months."}
-            </p>
-          </div>
-          <ArrowUpRight
-            size={18}
-            className="text-[var(--color-accent)] shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
-          />
-        </Link>
-      </section>
       <DragStrip lang={lang} />
     </main>
   );

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, Download, Menu, X } from "lucide-react";
+import { Download, Menu, X } from "lucide-react";
 import type { Dict, Locale } from "@/content";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -15,8 +15,8 @@ interface Props {
 }
 
 // Slim variant on marketplace-context routes: hides landing-only anchors
-// (they 404 from non-home pages anyway) and the Download CTA — the
-// marketplace promo banner already pitches the app.
+// (they 404 from non-home pages anyway) and swaps in catalog links. The
+// Download CTA stays as the primary action across the site.
 function isMarketplaceContext(pathname: string | null): boolean {
   if (!pathname) return false;
   return /^\/(es|en)\/(marketplace|admin|publishers|connectors|skills|cli-tools)(\/|$)/.test(pathname);
@@ -61,16 +61,7 @@ export function Nav({ dict, lang }: Props) {
       </a>
     );
 
-  const cta = marketplace ? (
-    <Link
-      href={`/${lang}/publishers/onboard`}
-      data-cta="nav-onboarding"
-      className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[12.5px] font-semibold transition-all shadow-[0_6px_20px_-8px_var(--color-accent-glow)] hover:shadow-[0_10px_26px_-8px_var(--color-accent-glow)]"
-    >
-      {lang === "es" ? "Empezar onboarding" : "Start onboarding"}
-      <ArrowRight size={12} strokeWidth={2.4} />
-    </Link>
-  ) : (
+  const cta = (
     <a
       href="/api/download"
       data-cta="nav-download"
@@ -83,9 +74,7 @@ export function Nav({ dict, lang }: Props) {
 
   // En el menú móvil aclaramos que la descarga es para la computadora
   // (la app es de escritorio, no se instala en el teléfono).
-  const mobileCta = marketplace ? (
-    cta
-  ) : (
+  const mobileCta = (
     <a
       href="/api/download"
       data-cta="nav-download-mobile"
