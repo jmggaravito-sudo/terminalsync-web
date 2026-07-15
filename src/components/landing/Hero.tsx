@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
+import Link from "next/link";
 import { ArrowRight, Download, PlayCircle } from "lucide-react";
 import type { Dict, Locale } from "@/content";
 
@@ -143,7 +144,6 @@ const COPY = {
     trust: ["Sin programar", "Memoria permanente", "Continúa aunque cambie la IA"],
     prefixLabel: "CON TERMINALSYNC:",
     shotTitle: "Desde acá manejas tu empresa con IA",
-    trustCount: "Más de 2,000 empresas ya confían en TerminalSync",
   },
   en: {
     resultsStrong:
@@ -156,7 +156,6 @@ const COPY = {
     trust: ["No coding", "Persistent memory", "Continues even if the AI changes"],
     prefixLabel: "WITH TERMINALSYNC:",
     shotTitle: "This is where your business runs from.",
-    trustCount: "Over 2,000 companies already trust TerminalSync",
   },
 } as const;
 
@@ -283,20 +282,8 @@ export function Hero({ dict }: { dict: Dict }) {
           </button>
         </div>
 
-        {/* Trust bar */}
-        <div className="mt-12 md:mt-16 text-center">
-          <p className="text-[14px] text-[var(--color-fg-muted)] mb-5 md:mb-6">
-            {t.trustCount}
-          </p>
-          <div className="flex items-center justify-center gap-6 md:gap-8 lg:gap-12 flex-wrap">
-            <TrustLogo name="Google" />
-            <TrustLogo name="Notion" />
-            <TrustLogo name="Slack" />
-            <TrustLogo name="OpenAI" />
-            <TrustLogo name="AWS" />
-            <TrustLogo name="Miro" />
-          </div>
-        </div>
+        {/* Integraciones — tiles con logos a color de las integraciones reales */}
+        <IntegrationTiles lang={dict.locale} />
       </div>
 
       {/* Modal de video */}
@@ -348,33 +335,76 @@ export function Hero({ dict }: { dict: Dict }) {
   );
 }
 
-function TrustLogo({ name }: { name: string }) {
-  const logoMap: Record<string, string> = {
-    Google: "google",
-    Notion: "notion",
-    Slack: "slack",
-    OpenAI: "openai",
-    AWS: "amazonaws",
-    Miro: "miro",
-  };
-  const icon = logoMap[name];
-  const cdnUrl = `https://cdn.simpleicons.org/${icon}/9aa0aa`;
+// Integraciones reales del catálogo. Iconos a color desde simpleicons; los que
+// se ven pesados en negro (Notion, GitHub) van en gris. OJO: el slug "slack" ya
+// no existe en simpleicons — no usarlo. Si un icono falla al cargar, se oculta
+// el tile completo (nunca dejar un tile vacío).
+type IconTile = { name: string; slug: string; color?: string };
 
+const INT_ROW_1: IconTile[] = [
+  { name: "Google Sheets", slug: "googlesheets" },
+  { name: "Notion", slug: "notion", color: "9aa0aa" },
+  { name: "Gmail", slug: "gmail" },
+  { name: "Google Drive", slug: "googledrive" },
+  { name: "Stripe", slug: "stripe" },
+  { name: "WhatsApp", slug: "whatsapp" },
+  { name: "GitHub", slug: "github", color: "9aa0aa" },
+  { name: "Airtable", slug: "airtable" },
+  { name: "Telegram", slug: "telegram" },
+];
+
+const INT_ROW_2: IconTile[] = [
+  { name: "Sentry", slug: "sentry" },
+  { name: "Supabase", slug: "supabase" },
+  { name: "PostgreSQL", slug: "postgresql" },
+  { name: "Webflow", slug: "webflow" },
+  { name: "Google Calendar", slug: "googlecalendar" },
+  { name: "GitLab", slug: "gitlab" },
+  { name: "Google Maps", slug: "googlemaps" },
+  { name: "SQLite", slug: "sqlite" },
+  { name: "Brave", slug: "brave" },
+];
+
+function IntegrationTile({ name, slug, color, edge }: IconTile & { edge: boolean }) {
+  const src = `https://cdn.simpleicons.org/${slug}${color ? `/${color}` : ""}`;
   return (
-    <img
-      src={cdnUrl}
-      alt={name}
-      onError={(e) => {
-        const img = e.target as HTMLImageElement;
-        img.style.display = "none";
-        const span = document.createElement("span");
-        span.textContent = name;
-        span.className = "text-[13px] font-medium text-[var(--color-fg-muted)]";
-        img.parentElement?.appendChild(span);
-      }}
-      className="h-6 w-auto opacity-70 hover:opacity-100 transition-opacity"
-      loading="lazy"
-    />
+    <div className={`int-tile${edge ? " edge" : ""}`} title={name}>
+      <img
+        src={src}
+        alt={name}
+        loading="lazy"
+        onError={(e) => {
+          const tile = e.currentTarget.parentElement as HTMLElement | null;
+          if (tile) tile.style.display = "none";
+        }}
+      />
+    </div>
+  );
+}
+
+function IntegrationTiles({ lang }: { lang: Locale }) {
+  return (
+    <div className="mt-12 md:mt-16 flex flex-col items-center gap-3">
+      {[INT_ROW_1, INT_ROW_2].map((row, ri) => (
+        <div key={ri} className="int-tiles-row">
+          {row.map((it, i) => (
+            <IntegrationTile
+              key={it.slug}
+              {...it}
+              edge={i === 0 || i === row.length - 1}
+            />
+          ))}
+        </div>
+      ))}
+      <Link
+        href={`/${lang}/connectors`}
+        className="mt-6 inline-flex items-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] transition-all hover:-translate-y-px"
+        style={{ boxShadow: "0 8px 30px -10px var(--color-accent)" }}
+      >
+        {lang === "es" ? "Ver todas las integraciones" : "Browse all integrations"}
+        <ArrowRight size={16} strokeWidth={2.4} />
+      </Link>
+    </div>
   );
 }
 

@@ -89,6 +89,13 @@ body {
   background: color-mix(in oklch, var(--color-accent) 30%, transparent);
 }
 
+/* Anchor targets sit below the sticky header (h-14 = 56px). Give every
+   id'd section a scroll margin so in-page nav (e.g. /#pricing) doesn't land
+   under the header. Matches the header height plus a little breathing room. */
+section[id] {
+  scroll-margin-top: 76px;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
@@ -289,6 +296,52 @@ body {
 .prose-legal strong {
   color: var(--color-fg-strong);
   font-weight: 600;
+}
+
+/* §01 Hero — grilla de tiles de integraciones (reemplaza la franja de logos).
+   Dos filas de 9; los tiles .edge (primero/último de cada fila) se desvanecen
+   como referencia visual y se ocultan en móvil. Sin animaciones de scroll. */
+.int-tiles-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+.int-tile {
+  flex: 0 0 auto;
+  width: 62px;
+  height: 62px;
+  border-radius: 15px;
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+.int-tile:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-border-strong);
+}
+.int-tile.edge {
+  opacity: 0.38;
+}
+.int-tile img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+@media (max-width: 720px) {
+  .int-tiles-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .int-tile {
+    width: 52px;
+    height: 52px;
+  }
+  .int-tile.edge {
+    display: none;
+  }
 }
 
 /* §01 Hero — acento en titulares rotativos */
