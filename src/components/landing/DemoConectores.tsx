@@ -23,7 +23,7 @@ const T = {
   es: {
     title: "Integraciones drag & drop",
     replay: "Reproducir de nuevo",
-    lead: "Conecta kits, conectores y asistentes arrastrándolos. Cero código.",
+    lead: "Conecta kits, conectores y skills arrastrándolos. Cero código.",
     drop: "Suelta aquí para instalar",
     installed: (n: string) => `${n} instalado en tu sesión`,
     dragging: "Arrastrando…",
@@ -31,7 +31,7 @@ const T = {
   en: {
     title: "Drag & drop integrations",
     replay: "Play again",
-    lead: "Connect kits, connectors and assistants by dragging them. Zero code.",
+    lead: "Connect kits, connectors and skills by dragging them. Zero code.",
     drop: "Drop here to install",
     installed: (n: string) => `${n} installed in your session`,
     dragging: "Dragging…",

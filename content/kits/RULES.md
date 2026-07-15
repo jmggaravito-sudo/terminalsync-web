@@ -20,7 +20,7 @@ Use that pattern, not a tool-first catalog dump:
   operations, support, research, design, or another specific job function.
 - State the job the kit helps with: campaign planning, deal prep, incident
   response, contract review, close support, etc.
-- Include only the assistants, connectors, and CLI tools that directly support
+- Include only the skills, connectors, and CLI tools that directly support
   that job.
 - Explain why each item belongs in the kit.
 
