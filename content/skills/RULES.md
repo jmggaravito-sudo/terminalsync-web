@@ -144,6 +144,21 @@ Required evidence:
 
 If the skill does not clearly beat the generic baseline, it does not publish.
 
+### Cross-provider coverage (claude / codex / gemini)
+
+`compatibleWith: ["claude", "codex", "gemini"]` is a claim to the user, not a
+default. A skill may only declare a provider it was actually evaluated on.
+
+- Run the eval set on **each** provider the skill claims in `compatibleWith`,
+  not on Claude alone. The skills-eval harness takes a `provider` dimension for
+  this; the report shows per-provider results.
+- The skill must beat its baseline on every claimed provider. If it only clears
+  the bar on Claude, narrow `compatibleWith` to `["claude"]` — do not ship a
+  three-AI claim backed by one-AI evidence.
+- A skill whose behavior depends on Claude-specific tools, formatting, or the
+  Agent Skills (`SKILL.md`) mechanism is Claude-only until it is rewritten to be
+  portable. Flag such coupling in the PR.
+
 ### Evidence is not the verdict
 
 The evals produce evidence, not the final verdict.
