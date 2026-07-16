@@ -10,7 +10,7 @@ tagline: "Tutor personalizado para lo que quieras aprender"
 description: "Convierte tu IA en un tutor: te diagnostica el nivel, arma un plan de estudio, genera ejercicios, te da feedback estructurado."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## Cuándo usar
 

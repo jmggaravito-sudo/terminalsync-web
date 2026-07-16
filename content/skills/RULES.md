@@ -39,7 +39,7 @@ tagline: "Short one-line promise"
 description: "Concrete description of what the assistant does and when it helps."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]  # only providers with real delivery + eval — see "Cross-provider coverage"
 ---
 ```
 
@@ -146,15 +146,29 @@ If the skill does not clearly beat the generic baseline, it does not publish.
 
 ### Cross-provider coverage (claude / codex / gemini)
 
-`compatibleWith: ["claude", "codex", "gemini"]` is a claim to the user, not a
-default. A skill may only declare a provider it was actually evaluated on.
+`compatibleWith` is a claim to the user, not a default. A skill may only declare
+a provider that has **both** a real delivery path **and** eval evidence.
+
+Delivery reality today:
+
+- **Claude** and **Codex** are deliverable: the catalog raw endpoint emits
+  `vendors` and the same `SKILL.md`, and the desktop writes it to
+  `~/.claude/skills/<slug>/` and `~/.codex/skills/<slug>/` (`skills_sync`,
+  `Vendor::{Claude, Codex}`). These are the only two `SkillVendor` values.
+- **Gemini has no delivery path yet** — it is not a `SkillVendor`, the raw
+  endpoint filters it out, and the desktop has no Gemini skills directory. Do
+  **not** put `gemini` in `compatibleWith` until that path ships (context
+  injection, e.g. `GEMINI.md` / system-prompt preamble) **and** the skill is
+  evaluated on it. The default template is `["claude", "codex"]`.
+
+Evaluation rule:
 
 - Run the eval set on **each** provider the skill claims in `compatibleWith`,
   not on Claude alone. The skills-eval harness takes a `provider` dimension for
   this; the report shows per-provider results.
 - The skill must beat its baseline on every claimed provider. If it only clears
   the bar on Claude, narrow `compatibleWith` to `["claude"]` — do not ship a
-  three-AI claim backed by one-AI evidence.
+  multi-AI claim backed by one-AI evidence.
 - A skill whose behavior depends on Claude-specific tools, formatting, or the
   Agent Skills (`SKILL.md`) mechanism is Claude-only until it is rewritten to be
   portable. Flag such coupling in the PR.

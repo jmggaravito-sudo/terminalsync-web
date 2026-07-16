@@ -9,7 +9,7 @@ tagline: "Internal communications that land"
 description: "Helps plan and draft team-facing messages with audience, context, tone, unanswered questions, and sensitive-topic boundaries handled explicitly."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## When to use
 

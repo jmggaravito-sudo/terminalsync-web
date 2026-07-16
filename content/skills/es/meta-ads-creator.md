@@ -9,7 +9,7 @@ tagline: "Conceptos de ads con caveats de testing"
 description: "Arma una matriz de anuncios para Meta con ángulos creativos, copy, prompts visuales, specs de formato, supuestos de audiencia y caveats explícitos para cualquier claim de performance."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## Cuándo usarlo
 

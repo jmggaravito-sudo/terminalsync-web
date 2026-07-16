@@ -9,7 +9,7 @@ tagline: "Review honesto antes de mergear"
 description: "Revisa diffs reales para detectar bugs, riesgos de seguridad, performance, tests faltantes y edge cases bloqueantes antes de publicar."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## Cuándo usarlo
 

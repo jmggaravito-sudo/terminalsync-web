@@ -10,7 +10,7 @@ tagline: "Research with sources when tools exist"
 description: "Plans and synthesizes multi-source research, while declaring search/fetch tool dependencies and citation limits before claiming sourced findings."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## When to use
 

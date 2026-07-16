@@ -9,7 +9,7 @@ tagline: "Coautor estructurado para docs largos"
 description: "Guía documentos complejos por brief, outline, drafts por sección, rondas de revisión y pulido final sin perder el hilo."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## Cuándo usarlo
 
