@@ -4,12 +4,67 @@
 // once email design needs to scale.
 
 interface Props {
+  lang: "es" | "en";
   firstName: string;
   downloadUrl: string;
   unsubscribeUrl: string;
 }
 
-export function WelcomeEmail({ firstName, downloadUrl, unsubscribeUrl }: Props) {
+export function WelcomeEmail({ lang, firstName, downloadUrl, unsubscribeUrl }: Props) {
+  const COPY = {
+    es: {
+      brand: "TerminalSync",
+      heading: "🛡️ Tu Claude Code ahora tiene superpoderes (y memoria)",
+      greeting: "¡Hola",
+      intro:
+        "Bienvenido a la nueva forma de trabajar con IA. Acabas de dar el primer paso para liberar tu flujo de trabajo de las limitaciones de una sola computadora.",
+      whatsNext: "¿Qué sigue ahora?",
+      step1Strong: "Descarga la App",
+      step1Rest: " — hacelo desde el botón de abajo.",
+      step2Strong: "Configura tu IA",
+      step2Rest:
+        " — dentro de la app, usa nuestro AI Power-Up para instalar Claude Code y configurar tu API Key con un solo clic.",
+      step3Strong: "Sé Nómada",
+      step3Rest:
+        " — crea tu primera “Terminal”, actívala y vete a cualquier otra computadora. Tu contexto te estará esperando.",
+      cta: "Descargar TerminalSync para Desktop",
+      securityStrong: "🔒 Un dato importante:",
+      securityRest:
+        " tus secretos, tus claves API y tus conversaciones con la IA viajan cifrados con AES-256 antes de salir de tu computadora. Tus archivos de proyecto se guardan en tu propia nube (tu Google Drive), en tu cuenta y en su formato original — nunca pasan por nuestros servidores.",
+      closing:
+        "Si tienes alguna duda, responde a este correo. Estoy aquí para ayudarte a que tu IA sea tan móvil como tú.",
+      signName: "Juan",
+      signRole: "Fundador, TerminalSync.ai",
+      unsubscribe: "Cancelar suscripción",
+    },
+    en: {
+      brand: "TerminalSync",
+      heading: "🛡️ Your Claude Code now has superpowers (and memory)",
+      greeting: "Hi",
+      intro:
+        "Welcome to the new way of working with AI. You've just taken the first step to free your workflow from the limits of a single computer.",
+      whatsNext: "What's next?",
+      step1Strong: "Download the App",
+      step1Rest: " — grab it from the button below.",
+      step2Strong: "Set up your AI",
+      step2Rest:
+        " — inside the app, use our AI Power-Up to install Claude Code and configure your API Key with a single click.",
+      step3Strong: "Go Nomad",
+      step3Rest:
+        " — create your first “Terminal”, activate it, and move to any other computer. Your context will be waiting for you.",
+      cta: "Download TerminalSync for Desktop",
+      securityStrong: "🔒 One important thing:",
+      securityRest:
+        " your secrets, API keys and AI conversations are encrypted with AES-256 before they ever leave your computer. Your project files stay in your own cloud (your Google Drive), under your account and in their original format — they never pass through our servers.",
+      closing:
+        "If you have any questions, just reply to this email. I'm here to help make your AI as mobile as you are.",
+      signName: "Juan",
+      signRole: "Founder, TerminalSync.ai",
+      unsubscribe: "Unsubscribe",
+    },
+  } as const;
+  const t = COPY[lang];
+
   return (
     <html>
       <head />
@@ -83,7 +138,7 @@ export function WelcomeEmail({ firstName, downloadUrl, unsubscribeUrl }: Props) 
                             color: "#0b1733",
                           }}
                         >
-                          TerminalSync
+                          {t.brand}
                         </td>
                       </tr>
                     </table>
@@ -102,7 +157,7 @@ export function WelcomeEmail({ firstName, downloadUrl, unsubscribeUrl }: Props) 
                         fontWeight: 600,
                       }}
                     >
-                      🛡️ Tu Claude Code ahora tiene superpoderes (y memoria)
+                      {t.heading}
                     </h1>
                     <p
                       style={{
@@ -112,7 +167,7 @@ export function WelcomeEmail({ firstName, downloadUrl, unsubscribeUrl }: Props) 
                         lineHeight: 1.55,
                       }}
                     >
-                      ¡Hola {firstName}!
+                      {t.greeting} {firstName}!
                     </p>
                     <p
                       style={{
@@ -122,9 +177,7 @@ export function WelcomeEmail({ firstName, downloadUrl, unsubscribeUrl }: Props) 
                         lineHeight: 1.55,
                       }}
                     >
-                      Bienvenido a la nueva forma de trabajar con IA. Acabas de
-                      dar el primer paso para liberar tu flujo de trabajo de
-                      las limitaciones de una sola computadora.
+                      {t.intro}
                     </p>
 
                     <h2
@@ -136,7 +189,7 @@ export function WelcomeEmail({ firstName, downloadUrl, unsubscribeUrl }: Props) 
                         color: "#0b1733",
                       }}
                     >
-                      ¿Qué sigue ahora?
+                      {t.whatsNext}
                     </h2>
 
                     <ol
@@ -148,18 +201,16 @@ export function WelcomeEmail({ firstName, downloadUrl, unsubscribeUrl }: Props) 
                       }}
                     >
                       <li style={{ marginBottom: 6 }}>
-                        <strong>Descarga la App</strong> — hacelo desde el
-                        botón de abajo.
+                        <strong>{t.step1Strong}</strong>
+                        {t.step1Rest}
                       </li>
                       <li style={{ marginBottom: 6 }}>
-                        <strong>Configura tu IA</strong> — dentro de la app,
-                        usa nuestro AI Power-Up para instalar Claude Code y
-                        configurar tu API Key con un solo clic.
+                        <strong>{t.step2Strong}</strong>
+                        {t.step2Rest}
                       </li>
                       <li style={{ marginBottom: 6 }}>
-                        <strong>Sé Nómada</strong> — crea tu primera
-                        &ldquo;Terminal&rdquo;, actívala y vete a cualquier
-                        otra computadora. Tu contexto te estará esperando.
+                        <strong>{t.step3Strong}</strong>
+                        {t.step3Rest}
                       </li>
                     </ol>
 
@@ -184,7 +235,7 @@ export function WelcomeEmail({ firstName, downloadUrl, unsubscribeUrl }: Props) 
                               fontSize: 14,
                             }}
                           >
-                            Descargar TerminalSync para Desktop
+                            {t.cta}
                           </a>
                         </td>
                       </tr>
@@ -202,10 +253,8 @@ export function WelcomeEmail({ firstName, downloadUrl, unsubscribeUrl }: Props) 
                         lineHeight: 1.55,
                       }}
                     >
-                      <strong>🔒 Un dato importante:</strong> tus archivos y tu
-                      API Key están protegidos por cifrado AES-256 antes de
-                      salir de tu computadora. Nosotros no podemos ver tu
-                      código, y Google tampoco.
+                      <strong>{t.securityStrong}</strong>
+                      {t.securityRest}
                     </div>
 
                     <p
@@ -215,15 +264,14 @@ export function WelcomeEmail({ firstName, downloadUrl, unsubscribeUrl }: Props) 
                         lineHeight: 1.55,
                       }}
                     >
-                      Si tienes alguna duda, responde a este correo. Estoy aquí
-                      para ayudarte a que tu IA sea tan móvil como tú.
+                      {t.closing}
                     </p>
 
                     <p style={{ marginTop: 24, fontSize: 14 }}>
-                      <strong>Juan</strong>
+                      <strong>{t.signName}</strong>
                       <br />
                       <span style={{ color: "#4b5563" }}>
-                        Fundador, TerminalSync.ai
+                        {t.signRole}
                       </span>
                     </p>
                   </td>
@@ -245,7 +293,7 @@ export function WelcomeEmail({ firstName, downloadUrl, unsubscribeUrl }: Props) 
                       href={unsubscribeUrl}
                       style={{ color: "#9ca3af", textDecoration: "underline" }}
                     >
-                      Unsubscribe
+                      {t.unsubscribe}
                     </a>
                   </td>
                 </tr>

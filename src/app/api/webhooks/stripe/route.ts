@@ -12,6 +12,7 @@ import {
   revokeSubscription,
 } from "@/lib/subscriptionsSync";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { resolveUserLang } from "@/lib/userLang";
 
 /** Friendly plan + cycle label from Stripe metadata. Falls back to a
  *  generic name if metadata wasn't propagated (older subs). */
@@ -145,14 +146,20 @@ async function handle(event: Stripe.Event) {
       });
 
       // Fire the welcome email (idempotency header inside sendWelcomeEmail
-      // prevents duplicates if Stripe retries).
+      // prevents duplicates if Stripe retries). Localize to the user's
+      // profile language (falls back to es).
       if (email) {
         try {
+          const lang = await resolveUserLang({
+            email,
+            userId: session.metadata?.supabase_user_id,
+          });
           await sendWelcomeEmail({
             to: email,
             firstName,
-            downloadUrl: "https://terminalsync.ai/es#hero",
-            unsubscribeUrl: `https://terminalsync.ai/es/unsubscribe?e=${encodeURIComponent(email)}`,
+            downloadUrl: `https://terminalsync.ai/${lang}#hero`,
+            unsubscribeUrl: `https://terminalsync.ai/${lang}/unsubscribe?e=${encodeURIComponent(email)}`,
+            lang,
           });
           console.log("[stripe] welcome email sent");
         } catch (err) {
@@ -195,6 +202,10 @@ async function handle(event: Stripe.Event) {
       const { email, firstName } = await fetchCustomerProfile(customerId);
       if (email) {
         try {
+          const lang = await resolveUserLang({
+            email,
+            userId: sub.metadata?.supabase_user_id,
+          });
           await sendTrialEndingEmail({
             to: email,
             firstName,
@@ -202,6 +213,7 @@ async function handle(event: Stripe.Event) {
             trialEnd: new Date(sub.trial_end * 1000),
             customerId,
             subscriptionId: sub.id,
+            lang,
           });
           console.log("[stripe] trial-ending email sent");
         } catch (err) {
@@ -246,6 +258,10 @@ async function handle(event: Stripe.Event) {
       const { email, firstName } = await fetchCustomerProfile(customerId);
       if (email) {
         try {
+          const lang = await resolveUserLang({
+            email,
+            userId: sub.metadata?.supabase_user_id,
+          });
           await sendCancellationEmail({
             to: email,
             firstName,
@@ -257,6 +273,7 @@ async function handle(event: Stripe.Event) {
               sub.cancellation_details?.comment ??
               undefined,
             subscriptionId: sub.id,
+            lang,
           });
           console.log("[stripe] cancellation email sent");
         } catch (err) {
@@ -293,6 +310,7 @@ async function handle(event: Stripe.Event) {
       const { email, firstName } = await fetchCustomerProfile(customerId);
       if (email) {
         try {
+          const lang = await resolveUserLang({ email });
           // Generic plan label for the email — fetching the linked
           // subscription to get its metadata is a round-trip we skip
           // (Stripe's API location for `invoice.subscription` keeps
@@ -306,6 +324,7 @@ async function handle(event: Stripe.Event) {
             amountCents: invoice.amount_due ?? 0,
             currency: invoice.currency ?? "usd",
             invoiceId: invoice.id,
+            lang,
           });
           console.log("[stripe] payment-failed email sent");
         } catch (err) {
