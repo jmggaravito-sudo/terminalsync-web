@@ -1,5 +1,95 @@
 import type Stripe from "stripe";
 import { getSupabaseAdmin } from "./supabaseAdmin";
+import { stripe } from "./stripe";
+
+type SupabaseAdmin = NonNullable<ReturnType<typeof getSupabaseAdmin>>;
+
+/** Fetch the email attached to a subscription's Stripe customer.
+ *  The Subscription object usually carries only the customer id, so we
+ *  retrieve the customer unless it arrived already expanded. */
+async function customerEmail(sub: Stripe.Subscription): Promise<string | null> {
+  if (typeof sub.customer !== "string") {
+    if ("deleted" in sub.customer && sub.customer.deleted) return null;
+    const expanded = (sub.customer as Stripe.Customer).email;
+    if (expanded) return expanded;
+  }
+  if (!stripe) return null;
+  const customerId =
+    typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+  try {
+    const c = await stripe.customers.retrieve(customerId);
+    if (c.deleted) return null;
+    return c.email ?? null;
+  } catch (err) {
+    console.error("[stripe→supabase] customers.retrieve failed", {
+      customerId,
+      err: err instanceof Error ? err.message : err,
+    });
+    return null;
+  }
+}
+
+/**
+ * Resolve the Terminal Sync account (Supabase user id) a subscription
+ * belongs to.
+ *
+ *  1. **Metadata (primary):** `supabase_user_id` is stamped into the
+ *     subscription metadata at checkout creation when the purchase started
+ *     from the desktop app (which knows the signed-in user).
+ *  2. **Email cross-match (fallback):** purchases started from the marketing
+ *     site's pricing buttons carry NO metadata — the visitor may not even be
+ *     signed in. We match the email the buyer entered at Stripe checkout
+ *     against `profiles`. On a hit we ALSO backfill the subscription metadata
+ *     so every later event (updated / deleted / cancel) links directly.
+ *
+ *  Returns null only when the account genuinely can't be identified (paid
+ *  with an email that has no Terminal Sync profile yet) — the caller logs it
+ *  loudly for manual reconciliation.
+ */
+async function resolveUserId(
+  sb: SupabaseAdmin,
+  sub: Stripe.Subscription,
+): Promise<string | null> {
+  const fromMeta = sub.metadata?.supabase_user_id as string | undefined;
+  if (fromMeta) return fromMeta;
+
+  const email = await customerEmail(sub);
+  if (!email) return null;
+
+  const { data, error } = await sb
+    .from("profiles")
+    .select("id")
+    .ilike("email", email)
+    .maybeSingle();
+  if (error) {
+    console.error("[stripe→supabase] profile email lookup failed", {
+      email,
+      error: error.message,
+    });
+    return null;
+  }
+  const userId = (data?.id as string | undefined) ?? null;
+  if (!userId) return null;
+
+  // Backfill so future lifecycle events + revoke-on-cancel link by metadata
+  // without repeating this lookup (revokeSubscription reads metadata only).
+  if (stripe) {
+    try {
+      await stripe.subscriptions.update(sub.id, {
+        metadata: { ...(sub.metadata ?? {}), supabase_user_id: userId },
+      });
+    } catch (err) {
+      console.warn("[stripe→supabase] metadata backfill failed (non-fatal)", {
+        subscriptionId: sub.id,
+        err: err instanceof Error ? err.message : err,
+      });
+    }
+  }
+  console.log("[stripe→supabase] linked subscription via email cross-match", {
+    subscriptionId: sub.id,
+  });
+  return userId;
+}
 
 // Maps Stripe priceIds back to our internal plan enum. Driven by env vars
 // so the same code works in test mode (via the *_TEST overrides the
@@ -68,14 +158,10 @@ export async function syncSubscriptionToSupabase(
     return false;
   }
 
-  const userId =
-    (sub.metadata?.supabase_user_id as string | undefined) ??
-    // Fallback to metadata on the first line item (attached at
-    // checkout creation when using subscription_data.metadata).
-    undefined;
+  const userId = await resolveUserId(sb, sub);
   if (!userId) {
     console.warn(
-      "[stripe→supabase] missing supabase_user_id in subscription metadata — can't link",
+      "[stripe→supabase] could not resolve account (no metadata AND the checkout email had no matching profile) — subscription NOT linked, needs manual reconciliation",
       { subscriptionId: sub.id, customer: sub.customer },
     );
     return false;
@@ -150,10 +236,10 @@ export async function revokeSubscription(sub: Stripe.Subscription): Promise<bool
   const sb = getSupabaseAdmin();
   if (!sb) return false;
 
-  const userId = sub.metadata?.supabase_user_id as string | undefined;
+  const userId = await resolveUserId(sb, sub);
   if (!userId) {
     console.warn(
-      "[stripe→supabase] delete event missing supabase_user_id — can't revoke",
+      "[stripe→supabase] delete event: could not resolve account (no metadata AND no matching profile by email) — can't revoke",
       { subscriptionId: sub.id },
     );
     return false;
