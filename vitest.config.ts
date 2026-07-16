@@ -15,7 +15,9 @@ import path from "node:path";
 export default defineConfig({
   test: {
     environment: "node",
-    include: ["src/**/*.test.ts"],
+    // `.tsx` under emails/ covers the React Email templates (bilingual
+    // render tests). renderToStaticMarkup runs fine in the node env.
+    include: ["src/**/*.test.ts", "emails/**/*.test.tsx"],
   },
   resolve: {
     alias: {

@@ -12,6 +12,7 @@ import { MarketplaceListingApprovedEmail } from "../../emails/marketplace-listin
 import { MarketplaceListingRejectedEmail } from "../../emails/marketplace-listing-rejected";
 import { MarketplaceNewSubmissionEmail } from "../../emails/marketplace-new-submission";
 import { signBillingToken, signUnsubToken } from "./signedTokens";
+import type { EmailLang } from "./userLang";
 
 const key = process.env.RESEND_API_KEY;
 const resend = key ? new Resend(key) : null;
@@ -20,19 +21,28 @@ const SUPPORT_FROM = "Juan de TerminalSync <support@terminalsync.ai>";
 const BILLING_FROM = "Terminal Sync <billing@terminalsync.ai>";
 const MARKETPLACE_FROM = "TerminalSync Marketplace <marketplace@terminalsync.ai>";
 
-function unsubUrl(email: string): string {
-  // HMAC-signed so random visitors can't unsub other people by enumerating
-  // emails. 90-day expiry mirrors RFC 8058 norms.
-  return `https://terminalsync.ai/es/unsubscribe?t=${encodeURIComponent(signUnsubToken(email))}`;
+// Format a date in the recipient's language (no timezone noise).
+function formatDate(d: Date, lang: EmailLang): string {
+  return d.toLocaleDateString(lang === "en" ? "en-US" : "es-AR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
-function manageBillingUrl(customerId?: string): string {
+function unsubUrl(email: string, lang: EmailLang = "es"): string {
+  // HMAC-signed so random visitors can't unsub other people by enumerating
+  // emails. 90-day expiry mirrors RFC 8058 norms.
+  return `https://terminalsync.ai/${lang}/unsubscribe?t=${encodeURIComponent(signUnsubToken(email))}`;
+}
+
+function manageBillingUrl(customerId?: string, lang: EmailLang = "es"): string {
   // When the caller has the Stripe customer ID, sign it into the URL so
-  // the /es/billing page can skip asking for the email — one-click portal.
-  // When it's missing, fall back to the bare page where the user types
-  // their email manually.
-  if (!customerId) return "https://terminalsync.ai/es/billing";
-  return `https://terminalsync.ai/es/billing?t=${encodeURIComponent(signBillingToken(customerId))}`;
+  // the /<lang>/billing page can skip asking for the email — one-click
+  // portal. When it's missing, fall back to the bare page where the user
+  // types their email manually.
+  if (!customerId) return `https://terminalsync.ai/${lang}/billing`;
+  return `https://terminalsync.ai/${lang}/billing?t=${encodeURIComponent(signBillingToken(customerId))}`;
 }
 
 export async function sendWelcomeEmail(opts: {
@@ -40,20 +50,28 @@ export async function sendWelcomeEmail(opts: {
   firstName: string;
   downloadUrl: string;
   unsubscribeUrl: string;
+  lang?: EmailLang;
 }) {
   if (!resend) {
     console.warn("[email] RESEND_API_KEY missing — skipping welcome send");
     return { skipped: true as const };
   }
 
+  const lang = opts.lang ?? "es";
+  const subject =
+    lang === "en"
+      ? "🛡️ Your Claude Code now has superpowers (and memory)"
+      : "🛡️ Tu Claude Code ahora tiene superpoderes (y memoria)";
+
   const result = await resend.emails.send({
     from: SUPPORT_FROM,
     to: [opts.to],
-    subject: "🛡️ Tu Claude Code ahora tiene superpoderes (y memoria)",
+    subject,
     react: WelcomeEmail({
       firstName: opts.firstName,
       downloadUrl: opts.downloadUrl,
       unsubscribeUrl: opts.unsubscribeUrl,
+      lang,
     }),
     // Idempotency so retried webhooks don't double-send.
     headers: { "X-Entity-Ref-ID": `welcome:${opts.to}` },
@@ -73,31 +91,33 @@ export async function sendTrialEndingEmail(opts: {
   /** Subscription ID for idempotency — Stripe can re-fire trial_will_end. */
   subscriptionId: string;
   /** Stripe customer ID — when present, the billing link is signed and
-   *  one-click; otherwise it falls back to /es/billing. */
+   *  one-click; otherwise it falls back to /<lang>/billing. */
   customerId?: string;
+  lang?: EmailLang;
 }) {
   if (!resend) {
     console.warn("[email] RESEND_API_KEY missing — skipping trial-ending");
     return { skipped: true as const };
   }
 
-  // Format date in Spanish without timezone noise.
-  const trialEndStr = opts.trialEnd.toLocaleDateString("es-AR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  const lang = opts.lang ?? "es";
+  const trialEndStr = formatDate(opts.trialEnd, lang);
+  const subject =
+    lang === "en"
+      ? `⏰ Your ${opts.planName} trial ends on ${trialEndStr}`
+      : `⏰ Tu prueba ${opts.planName} termina el ${trialEndStr}`;
 
   const result = await resend.emails.send({
     from: BILLING_FROM,
     to: [opts.to],
-    subject: `⏰ Tu prueba ${opts.planName} termina el ${trialEndStr}`,
+    subject,
     react: TrialEndingEmail({
       firstName: opts.firstName,
       planName: opts.planName,
       trialEndDate: trialEndStr,
-      manageBillingUrl: manageBillingUrl(),
-      unsubscribeUrl: unsubUrl(opts.to),
+      manageBillingUrl: manageBillingUrl(opts.customerId, lang),
+      unsubscribeUrl: unsubUrl(opts.to, lang),
+      lang,
     }),
     // Stripe fires trial_will_end exactly once at ~3-day mark, but in
     // practice retries can dupe — key on subscriptionId so we never
@@ -121,27 +141,34 @@ export async function sendPaymentFailedEmail(opts: {
   currency: string;
   /** Stripe invoice ID for idempotency (one email per failed invoice). */
   invoiceId: string;
+  lang?: EmailLang;
 }) {
   if (!resend) {
     console.warn("[email] RESEND_API_KEY missing — skipping payment-failed");
     return { skipped: true as const };
   }
 
+  const lang = opts.lang ?? "es";
   const amountFormatted = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: opts.currency.toUpperCase(),
   }).format(opts.amountCents / 100);
+  const subject =
+    lang === "en"
+      ? `⚠️ We couldn't charge your ${opts.planName} plan`
+      : `⚠️ No pudimos cobrar tu plan ${opts.planName}`;
 
   const result = await resend.emails.send({
     from: BILLING_FROM,
     to: [opts.to],
-    subject: `⚠️ No pudimos cobrar tu plan ${opts.planName}`,
+    subject,
     react: PaymentFailedEmail({
       firstName: opts.firstName,
       planName: opts.planName,
       amountFormatted,
-      updatePaymentUrl: manageBillingUrl(),
-      unsubscribeUrl: unsubUrl(opts.to),
+      updatePaymentUrl: manageBillingUrl(undefined, lang),
+      unsubscribeUrl: unsubUrl(opts.to, lang),
+      lang,
     }),
     headers: { "X-Entity-Ref-ID": `payment-failed:${opts.invoiceId}` },
   });
@@ -160,22 +187,30 @@ export async function sendCancellationEmail(opts: {
   reason?: string;
   /** Subscription ID for idempotency. */
   subscriptionId: string;
+  lang?: EmailLang;
 }) {
   if (!resend) {
     console.warn("[email] RESEND_API_KEY missing — skipping cancellation");
     return { skipped: true as const };
   }
 
+  const lang = opts.lang ?? "es";
+  const subject =
+    lang === "en"
+      ? `You canceled your ${opts.planName} plan — all good`
+      : `Cancelaste tu plan ${opts.planName} — todo bien`;
+
   const result = await resend.emails.send({
     from: BILLING_FROM,
     to: [opts.to],
-    subject: `Cancelaste tu plan ${opts.planName} — todo bien`,
+    subject,
     react: CancellationConfirmedEmail({
       firstName: opts.firstName,
       planName: opts.planName,
-      manageBillingUrl: manageBillingUrl(),
+      manageBillingUrl: manageBillingUrl(undefined, lang),
       reason: opts.reason,
-      unsubscribeUrl: unsubUrl(opts.to),
+      unsubscribeUrl: unsubUrl(opts.to, lang),
+      lang,
     }),
     headers: { "X-Entity-Ref-ID": `cancellation:${opts.subscriptionId}` },
   });
@@ -201,23 +236,31 @@ export async function sendAccountDeletionRequestedEmail(opts: {
   reason?: string;
   /** Supabase user id — used for idempotency. */
   userId: string;
+  lang?: EmailLang;
 }) {
   if (!resend) {
     console.warn("[email] RESEND_API_KEY missing — skipping deletion email");
     return { skipped: true as const };
   }
 
+  const lang = opts.lang ?? "es";
+  const subject =
+    lang === "en"
+      ? `Your Terminal Sync account will be deleted on ${opts.purgeAtHuman}`
+      : `Tu cuenta de Terminal Sync se elimina el ${opts.purgeAtHuman}`;
+
   const result = await resend.emails.send({
     from: BILLING_FROM,
     to: [opts.to],
-    subject: `Tu cuenta de Terminal Sync se elimina el ${opts.purgeAtHuman}`,
+    subject,
     react: AccountDeletionRequestedEmail({
       firstName: opts.firstName,
       purgeAtIso: opts.purgeAtIso,
       purgeAtHuman: opts.purgeAtHuman,
-      signInUrl: "https://terminalsync.ai/es/login",
+      signInUrl: `https://terminalsync.ai/${lang}/login`,
       reason: opts.reason,
-      unsubscribeUrl: unsubUrl(opts.to),
+      unsubscribeUrl: unsubUrl(opts.to, lang),
+      lang,
     }),
     headers: { "X-Entity-Ref-ID": `account-deletion:${opts.userId}` },
   });

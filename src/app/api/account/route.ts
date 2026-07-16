@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { stripe } from "@/lib/stripe";
 import { sendAccountDeletionRequestedEmail } from "@/lib/email";
+import { resolveUserLang } from "@/lib/userLang";
 import { corsHeaders, preflight } from "@/lib/cors";
 
 export const runtime = "nodejs";
@@ -188,11 +189,15 @@ export async function DELETE(req: Request) {
         (userRes.user.user_metadata?.first_name as string | undefined) ??
         (userRes.user.user_metadata?.full_name as string | undefined)?.split(" ")[0] ??
         "hola";
-      const purgeAtHuman = purgeAtDate.toLocaleDateString("es", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      });
+      const lang = await resolveUserLang({ userId, email });
+      const purgeAtHuman = purgeAtDate.toLocaleDateString(
+        lang === "en" ? "en-US" : "es",
+        {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        },
+      );
       await sendAccountDeletionRequestedEmail({
         to: email,
         firstName,
@@ -200,6 +205,7 @@ export async function DELETE(req: Request) {
         purgeAtHuman,
         reason: reason ?? undefined,
         userId,
+        lang,
       });
     } catch (err) {
       console.error("[account-delete] email send failed", {
