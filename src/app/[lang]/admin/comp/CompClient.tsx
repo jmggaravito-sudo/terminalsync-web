@@ -11,6 +11,12 @@ interface Comp {
   updatedAt: string | null;
 }
 
+interface Pending {
+  email: string;
+  plan: string;
+  months: number;
+}
+
 async function authedFetch(path: string, init?: RequestInit) {
   const sb = getSupabaseBrowser();
   const token = sb ? (await sb.auth.getSession()).data.session?.access_token : null;
@@ -35,6 +41,7 @@ export function CompClient({ lang }: { lang: string }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const [comps, setComps] = useState<Comp[] | null>(null);
+  const [pending, setPending] = useState<Pending[]>([]);
 
   async function loadComps() {
     try {
@@ -46,6 +53,7 @@ export function CompClient({ lang }: { lang: string }) {
       if (!r.ok) return;
       const j = await r.json();
       setComps(j.comps ?? []);
+      setPending(j.pending ?? []);
     } catch (e) {
       if (e instanceof Error && e.message === "not-signed-in") {
         setMsg({ kind: "err", text: t("No estás logueado.", "Not signed in.") });
@@ -68,6 +76,16 @@ export function CompClient({ lang }: { lang: string }) {
       const j = await r.json();
       if (!r.ok) {
         setMsg({ kind: "err", text: j.error ?? `API ${r.status}` });
+      } else if (j.pending) {
+        setMsg({
+          kind: "ok",
+          text: t(
+            `Pre-otorgado — ${j.email} recibirá ${j.plan.toUpperCase()} automáticamente cuando cree su cuenta.`,
+            `Pre-granted — ${j.email} will get ${j.plan.toUpperCase()} automatically when they sign up.`,
+          ),
+        });
+        setEmail("");
+        void loadComps();
       } else {
         setMsg({
           kind: "ok",
@@ -126,8 +144,8 @@ export function CompClient({ lang }: { lang: string }) {
           </h1>
           <p className="text-[13px] text-[var(--color-fg-muted)] mt-1">
             {t(
-              "Otorgá Pro/Max gratis a influencers. La persona primero crea su cuenta en la app; después la buscás por email acá.",
-              "Grant Pro/Max for free to influencers. The person signs up in the app first; then you grant it here by email.",
+              "Otorgá Pro/Max gratis a influencers. Si la cuenta ya existe, se aplica al toque. Si todavía no se registró, queda pre-otorgado: recibe el plan solo cuando crea su cuenta.",
+              "Grant Pro/Max for free to influencers. If the account already exists it applies instantly. If they haven't signed up yet it's pre-granted: they get the plan automatically when they create their account.",
             )}
           </p>
         </header>
@@ -190,6 +208,44 @@ export function CompClient({ lang }: { lang: string }) {
             }`}
           >
             {msg.text}
+          </div>
+        ) : null}
+
+        {pending.length > 0 ? (
+          <div className="mb-8">
+            <h2 className="text-[14px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-muted)] mb-3">
+              {t("Pre-otorgados (esperando registro)", "Pre-granted (awaiting signup)")}
+            </h2>
+            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 overflow-hidden">
+              <table className="w-full text-[13px]">
+                <thead className="text-[var(--color-fg-muted)]">
+                  <tr>
+                    <th className="text-left px-4 py-2 font-medium">{t("Email", "Email")}</th>
+                    <th className="text-left px-4 py-2 font-medium">{t("Plan", "Plan")}</th>
+                    <th className="text-left px-4 py-2 font-medium">{t("Meses", "Months")}</th>
+                    <th className="px-4 py-2" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {pending.map((p) => (
+                    <tr key={p.email} className="border-t border-amber-500/20">
+                      <td className="px-4 py-2">{p.email}</td>
+                      <td className="px-4 py-2 uppercase">{p.plan}</td>
+                      <td className="px-4 py-2">{p.months}</td>
+                      <td className="px-4 py-2 text-right">
+                        <button
+                          onClick={() => revoke(p.email)}
+                          disabled={busy}
+                          className="text-[12px] text-red-400 hover:underline disabled:opacity-50"
+                        >
+                          {t("Cancelar", "Cancel")}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : null}
 

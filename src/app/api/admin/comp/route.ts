@@ -89,13 +89,34 @@ export async function POST(req: Request) {
 
   const target = await userIdForEmail(sb, email);
   if (!target) {
-    return NextResponse.json(
+    // No account yet → PRE-GRANT. Store the intent keyed by email; the
+    // `handle_new_user` DB trigger consumes it automatically when this
+    // person signs up (migration 0016). Zero manual work after this.
+    const { error: pgErr } = await sb.from("comp_grants").upsert(
       {
-        error:
-          "no account found for that email — the person must sign up in the app first, then grant the comp",
+        email: email.toLowerCase(),
+        plan: body.plan,
+        months,
+        granted_by: user.email,
+        claimed_at: null,
+        claimed_user_id: null,
+        updated_at: new Date().toISOString(),
       },
-      { status: 404 },
+      { onConflict: "email" },
     );
+    if (pgErr) {
+      return NextResponse.json(
+        { error: `pre-grant failed: ${pgErr.message}` },
+        { status: 500 },
+      );
+    }
+    return NextResponse.json({
+      ok: true,
+      pending: true,
+      email: email.toLowerCase(),
+      plan: body.plan,
+      months,
+    });
   }
 
   const periodEnd = new Date(Date.now() + months * 30 * 86400_000).toISOString();
@@ -109,7 +130,6 @@ export async function POST(req: Request) {
     stripe_subscription_id: sentinelSub,
     plan: body.plan,
     status: "active" as const,
-    price_cents: 0, // comps never count toward MRR
     current_period_start: new Date().toISOString(),
     current_period_end: periodEnd,
     cancel_at_period_end: false,
@@ -180,7 +200,23 @@ export async function GET(req: Request) {
     updatedAt: s.updated_at,
   }));
 
-  return NextResponse.json({ comps });
+  // Pending pre-grants: emails queued before the person signed up. The
+  // trigger clears `claimed_at` when consumed, so unclaimed = still waiting.
+  let pending: Array<{ email: string; plan: string; months: number }> = [];
+  const { data: pg } = await sb
+    .from("comp_grants")
+    .select("email,plan,months,claimed_at")
+    .is("claimed_at", null)
+    .order("updated_at", { ascending: false });
+  if (pg) {
+    pending = pg.map((g) => ({
+      email: g.email as string,
+      plan: g.plan as string,
+      months: (g.months as number) ?? 12,
+    }));
+  }
+
+  return NextResponse.json({ comps, pending });
 }
 
 export async function DELETE(req: Request) {
@@ -207,9 +243,14 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: "email required" }, { status: 400 });
   }
 
+  // Always clear any pending pre-grant for this email (whether or not an
+  // account exists yet) so a queued grant can be cancelled before signup.
+  await sb.from("comp_grants").delete().eq("email", email.toLowerCase());
+
   const target = await userIdForEmail(sb, email);
   if (!target) {
-    return NextResponse.json({ error: "no account for that email" }, { status: 404 });
+    // No account — the only thing to remove was the pending pre-grant, done.
+    return NextResponse.json({ ok: true, email: email.toLowerCase(), pendingRemoved: true });
   }
 
   // Only revoke if this is actually a comp — never touch a real paid sub.
