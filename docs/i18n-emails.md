@@ -61,14 +61,17 @@ Your Terminal Sync sign-in link · Tu enlace de acceso a Terminal Sync
 
 ---
 
-## 🟡 Lo que quedó pendiente (menor, no bloquea launch)
+## Marketplace (publishers)
 
-- **Correos de marketplace** (`listing-approved`, `listing-rejected`,
-  `new-submission`): siguen en español. Van a **publishers/admins** (audiencia
-  técnica chica), no al cliente final — prioridad baja. Mismo patrón para
-  cuando se haga.
-- **Bot de soporte** (`terminal-sync/src-tauri/src/sync_ai/mod.rs`): recibe el
-  `user_locale` pero el prompt no fuerza responder en ese idioma. Fix de 1 línea
-  (agregar "Always respond in the user's language (locale provided).").
-- **App UI**: 2 claves faltan en `en` (`batch.protecting`,
-  `onboarding.skills.note`) — el resto (1441 claves) está balanceado.
+- **`listing-approved`** y **`listing-rejected`** (van a un publisher):
+  bilingües, mismo patrón — resuelven el idioma con `resolveUserLang({email})`
+  del publisher.
+- **`new-submission`** (alerta a los admins internos): queda en español a
+  propósito — es un correo interno del equipo, no del cliente.
+
+## Cerrado en otros PRs (misma tanda de i18n)
+
+- **Bot de soporte**: `sync_ai/mod.rs` ahora fuerza responder en el idioma del
+  usuario (terminal-sync, PR aparte).
+- **App UI**: `onboarding.skills.note` agregada en `en` (terminal-sync).
+  `batch.protecting` era falso positivo (EN usa formas de plural).

@@ -5,6 +5,8 @@ import { TrialEndingEmail } from "./trial-ending";
 import { PaymentFailedEmail } from "./payment-failed";
 import { CancellationConfirmedEmail } from "./cancellation-confirmed";
 import { AccountDeletionRequestedEmail } from "./account-deletion-requested";
+import { MarketplaceListingApprovedEmail } from "./marketplace-listing-approved";
+import { MarketplaceListingRejectedEmail } from "./marketplace-listing-rejected";
 
 // Behavioral proof that every customer email renders in the chosen
 // language — an English marker must appear in en output and NOT in es, and
@@ -74,5 +76,40 @@ describe("emails render bilingually", () => {
     };
     expect(html(AccountDeletionRequestedEmail({ ...props, lang: "en" }))).toMatch(/scheduled for deletion|Sign in to undo/i);
     expect(html(AccountDeletionRequestedEmail({ ...props, lang: "es" }))).toMatch(/eliminación|Ingresar para deshacer/i);
+  });
+
+  it("marketplace-listing-approved", () => {
+    const props = {
+      publisherName: "Sam",
+      listingName: "My Connector",
+      listingSlug: "my-connector",
+      isPaid: true,
+      unsubscribeUrl: "#",
+    };
+    const en = html(MarketplaceListingApprovedEmail({ ...props, lang: "en" }));
+    const es = html(MarketplaceListingApprovedEmail({ ...props, lang: "es" }));
+    expect(en).toMatch(/was approved|live in the marketplace/i);
+    expect(en).not.toMatch(/fue aprobado/);
+    expect(es).toMatch(/fue aprobado|visible en el marketplace/i);
+    // URL is lang-aware.
+    expect(en).toMatch(/terminalsync\.ai\/en\/connectors\/my-connector/);
+    expect(es).toMatch(/terminalsync\.ai\/es\/connectors\/my-connector/);
+  });
+
+  it("marketplace-listing-rejected", () => {
+    const props = {
+      publisherName: "Sam",
+      listingName: "My Connector",
+      reviewNotes: "Fix the manifest icon.",
+      unsubscribeUrl: "#",
+    };
+    const en = html(MarketplaceListingRejectedEmail({ ...props, lang: "en" }));
+    const es = html(MarketplaceListingRejectedEmail({ ...props, lang: "es" }));
+    expect(en).toMatch(/needs a few tweaks|couldn't approve/i);
+    expect(en).not.toMatch(/necesita ajustes/);
+    expect(es).toMatch(/necesita ajustes|No pudimos aprobar/i);
+    // Review notes pass through regardless of language.
+    expect(en).toMatch(/Fix the manifest icon\./);
+    expect(es).toMatch(/Fix the manifest icon\./);
   });
 });

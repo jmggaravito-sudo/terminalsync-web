@@ -12,7 +12,7 @@ import { MarketplaceListingApprovedEmail } from "../../emails/marketplace-listin
 import { MarketplaceListingRejectedEmail } from "../../emails/marketplace-listing-rejected";
 import { MarketplaceNewSubmissionEmail } from "../../emails/marketplace-new-submission";
 import { signBillingToken, signUnsubToken } from "./signedTokens";
-import type { EmailLang } from "./userLang";
+import { resolveUserLang, type EmailLang } from "./userLang";
 
 const key = process.env.RESEND_API_KEY;
 const resend = key ? new Resend(key) : null;
@@ -283,16 +283,23 @@ export async function sendListingApprovedEmail(opts: {
     console.warn("[email] RESEND_API_KEY missing — skipping listing-approved");
     return { skipped: true as const };
   }
+  // Publisher-facing: localize to the publisher's profile language.
+  const lang = await resolveUserLang({ email: opts.to });
+  const subject =
+    lang === "en"
+      ? `Your listing "${opts.listingName}" is approved`
+      : `Tu listing "${opts.listingName}" está aprobado`;
   const result = await resend.emails.send({
     from: MARKETPLACE_FROM,
     to: [opts.to],
-    subject: `Tu listing "${opts.listingName}" está aprobado`,
+    subject,
     react: MarketplaceListingApprovedEmail({
       publisherName: opts.publisherName,
       listingName: opts.listingName,
       listingSlug: opts.listingSlug,
       isPaid: opts.isPaid,
-      unsubscribeUrl: unsubUrl(opts.to),
+      unsubscribeUrl: unsubUrl(opts.to, lang),
+      lang,
     }),
     headers: { "X-Entity-Ref-ID": `marketplace-approved:${opts.listingId}` },
   });
@@ -313,15 +320,21 @@ export async function sendListingRejectedEmail(opts: {
     console.warn("[email] RESEND_API_KEY missing — skipping listing-rejected");
     return { skipped: true as const };
   }
+  const lang = await resolveUserLang({ email: opts.to });
+  const subject =
+    lang === "en"
+      ? `Your listing "${opts.listingName}" needs a few tweaks`
+      : `Tu listing "${opts.listingName}" necesita ajustes`;
   const result = await resend.emails.send({
     from: MARKETPLACE_FROM,
     to: [opts.to],
-    subject: `Tu listing "${opts.listingName}" necesita ajustes`,
+    subject,
     react: MarketplaceListingRejectedEmail({
       publisherName: opts.publisherName,
       listingName: opts.listingName,
       reviewNotes: opts.reviewNotes,
-      unsubscribeUrl: unsubUrl(opts.to),
+      unsubscribeUrl: unsubUrl(opts.to, lang),
+      lang,
     }),
     headers: { "X-Entity-Ref-ID": `marketplace-rejected:${opts.listingId}` },
   });
