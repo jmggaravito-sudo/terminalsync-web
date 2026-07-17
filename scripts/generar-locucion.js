@@ -88,6 +88,21 @@ async function tts(text, voiceId, outPath) {
   throw lastErr;
 }
 
+const DESKTOP_DIR = path.join(process.env.HOME, 'Desktop', 'terminalsync-locucion');
+
+function syncToDesktop(lang, name) {
+  const src = path.join('locucion', lang, `${name}.mp3`);
+  const destDir = path.join(DESKTOP_DIR, lang);
+  const dest = path.join(destDir, `${name}.mp3`);
+  try {
+    fs.mkdirSync(destDir, { recursive: true });
+    fs.copyFileSync(src, dest);
+    console.log('  → copiado a', dest);
+  } catch (e) {
+    console.warn('  ⚠ no se pudo copiar al escritorio:', e.message);
+  }
+}
+
 (async () => {
   const only = process.argv[2];
   const langs = only ? [only] : ['es', 'en'];
@@ -96,7 +111,9 @@ async function tts(text, voiceId, outPath) {
     const dir = path.join('locucion', lang);
     fs.mkdirSync(dir, { recursive: true });
     for (const [name, text] of LINES[lang]) {
-      totalChars += await tts(text, VOICES[lang], path.join(dir, `${name}.mp3`));
+      const chars = await tts(text, VOICES[lang], path.join(dir, `${name}.mp3`));
+      if (chars > 0) syncToDesktop(lang, name); // solo copia los recién generados (chars=0 = skip)
+      totalChars += chars;
       await new Promise(r => setTimeout(r, 400));
     }
   }
