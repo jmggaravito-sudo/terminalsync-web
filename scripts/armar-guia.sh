@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Concatena los 12 MP3 de cada idioma en una pista guía única (`locucion/{es,en}-guia.mp3`)
+# Concatena los 13 MP3 de cada idioma en una pista guía única (`locucion/{es,en}-guia.mp3`)
 # insertando silencios entre bloques para que el editor pueda alinear los demos
 # encima de cada beat sin volver a cortar las voces.
 #
@@ -14,7 +14,7 @@ command -v ffmpeg >/dev/null || { echo "ffmpeg no instalado. brew install ffmpeg
 
 # Silencio en segundos DESPUÉS de cada bloque, según los tiempos del guion.
 # Hero (1-4) + Completa (5-12). Ajustá a gusto al editar.
-GAPS=(0.6 0.6 0.6 1.2  0.5 0.5 0.5 0.5 0.5 0.6 0.5 1.0)
+GAPS=(0.6 0.6 0.6 1.2  0.5 0.5 0.5 0.5 0.5 0.5 0.6 0.5 1.0)
 
 build () {
   local lang="$1"
@@ -23,7 +23,7 @@ build () {
   [ -d "$dir" ] || { echo "✗ falta $dir"; return 1; }
   : > "$list"
   local i=0
-  for f in "$dir"/[0-9][0-9]-*.mp3; do
+  for f in "$dir"/[0-9][0-9]*-*.mp3; do
     echo "file '$(pwd)/$f'" >> "$list"
     local gap="${GAPS[$i]:-0.5}"
     local sil="locucion/.sil-$lang-$i.mp3"

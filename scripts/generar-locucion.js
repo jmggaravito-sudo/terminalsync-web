@@ -4,7 +4,7 @@
 //   node scripts/generar-locucion.js           # ES + EN
 //   node scripts/generar-locucion.js es        # solo ES
 //   node scripts/generar-locucion.js en        # solo EN
-// Output: ./locucion/{es,en}/NN-nombre.mp3 (12 archivos por idioma).
+// Output: ./locucion/{es,en}/NN-nombre.mp3 (13 archivos por idioma).
 // Idempotente: skip-if-exists + retry con backoff exponencial.
 
 const fs = require('fs');
@@ -38,7 +38,8 @@ const LINES = {
     ['06-full-recuerda',  'TerminalSync recuerda en qué estabas trabajando, cambias de IA en el mismo chat, sin perder nada y te permite continuar desde cualquier lugar. Sin aprender comandos raros y Sin configuraciones complejas.'],
     ['07-full-resultado', 'Propuesta enviada. Campaña publicada. Reporte entregado. Todo Listo con terminalsync.'],
     ['08-full-cambio',    'Si una IA se detiene, simplemente continúas con otra en el mismo chat. Sin copiar. Sin pegar. Sin perder nada.'],
-    ['09-full-movilidad', 'Empiezas en tu portátil, sigues en la oficina. Tu trabajo va contigo, y tú diriges a tus agentes 24/7.'],
+    ['09-full-movilidad',  'Empiezas en tu portátil, sigues en la oficina. Tu trabajo va contigo, y tú diriges a tus agentes 24/7.'],
+    ['09b-full-espacios', 'Abres un espacio de trabajo... y Claude empieza a trabajar. Lo extraes a su propia ventana... y Claude sigue... mientras tú continúas con otra cosa. Abres otro proyecto... esta vez con otra IA. En TerminalSync... cada proyecto tiene su propio espacio. Una IA... o varias al mismo tiempo. Tú decides. Tu trabajo ya no depende... de una sola conversación.'],
     ['10-full-whatsapp',  'Incluso cuando no estás frente al computador. Puedes continuar tu trabajo desde WhatsApp, Telegram o ambos! Tu trabajo te sigue hasta el chat.'],
     ['11-full-facilidad', 'Conecta Gmail, Notion, Drive y miles de conectores más, solo con arrastrarlos. Y en tu chat con la IA, Si no sabes cómo pedir algo, tu asistente personal de IA lo redacta por ti.'],
     ['12-full-cierre',    'TerminalSync. Las IAs se detienen. Tu negocio no.'],
@@ -52,8 +53,9 @@ const LINES = {
     ['06-full-remembers', 'TerminalSync remembers what you were working on, switches AI on the same chat, without losing anything, and lets you continue from anywhere. No prompts or commands to learn. No complex setup.'],
     ['07-full-result',    'Proposal sent. Campaign published. Report delivered. All done with TerminalSync.'],
     ['08-full-switch',    'If one AI stops, you simply continue with another in the same chat. No copying. No pasting. Nothing lost.'],
-    ['09-full-mobility',  'Start on your laptop, continue at the office. Your work goes wherever you go, while you direct your AI agents 24/7.'],
-    ['10-full-whatsapp',  "Even when you're away from your computer. Continue your work from WhatsApp, Telegram, or both. Your work follows you all the way to the chat."],
+    ['09-full-mobility',    'Start on your laptop, continue at the office. Your work goes wherever you go, while you direct your AI agents 24/7.'],
+    ['09b-full-workspaces', 'You open a workspace... and Claude gets to work. You pop it out into its own window... and Claude keeps going... while you move on to something else. You open another project... this time with a different AI. In TerminalSync... every project has its own workspace. One AI... or several at once. You decide. Your work no longer depends... on a single conversation.'],
+    ['10-full-whatsapp',    "Even when you're away from your computer. Continue your work from WhatsApp, Telegram, or both. Your work follows you all the way to the chat."],
     ['11-full-ease',      "Connect Gmail, Notion, Drive and thousands more by just dragging them in. Also If you don't know how to ask your AI, your own AI assistant writes it for you."],
     ['12-full-close',     "TerminalSync. AIs stop. Your business doesn't."],
   ],
