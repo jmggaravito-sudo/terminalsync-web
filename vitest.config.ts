@@ -17,8 +17,13 @@ export default defineConfig({
     environment: "node",
     // `src/**` covers the app libs/routes. `scripts/**/*.test.mjs` lets
     // dependency-free harnesses (e.g. the skills-eval harness) live next to
-    // their code and still run under `vitest run` in CI.
-    include: ["src/**/*.test.ts", "scripts/**/*.test.mjs"],
+    // their code. `.tsx` under emails/ covers the React Email templates
+    // (bilingual render tests); renderToStaticMarkup runs fine in node env.
+    include: [
+      "src/**/*.test.ts",
+      "scripts/**/*.test.mjs",
+      "emails/**/*.test.tsx",
+    ],
   },
   resolve: {
     alias: {
