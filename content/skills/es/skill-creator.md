@@ -6,10 +6,10 @@ vendors: ["claude", "codex"]
 author: "Anthropic"
 status: available
 tagline: "Creá skills que superen baseline"
-description: "Guía una skill desde caso recurrente hasta contenido compatible con RULES.md, evals, comparación contra baseline, límites y plan de iteración."
+description: "Guía una skill desde caso recurrente hasta contenido que cumple el molde, evals, comparación contra baseline, límites y plan de iteración."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## Cuándo usarlo
 
@@ -25,7 +25,7 @@ No lo uses para aprobar skills débiles automáticamente. Si el asistente sólo 
 Convierte una skill propuesta en un artefacto revisable:
 
 - **Diagnóstico del caso de uso**: identifica trabajo real, triggers, usuarios, inputs requeridos y no-objetivos.
-- **Alineación al molde**: redacta frontmatter y secciones de cuerpo que cumplen `content/skills/RULES.md` en inglés y español.
+- **Alineación al molde**: redacta el frontmatter completo (name, logo, category, vendors, author, status, tagline, description, license, marketplaceSource, compatibleWith) y las cuatro secciones de cuerpo requeridas — **Cuándo usarlo / Qué hace / Cómo usarlo / Ideal para** — en inglés y español, con slugs coincidentes.
 - **Diseño de proceso**: captura la expertise o workflow que la skill debe imponer, no sólo el formato de salida.
 - **Diseño de límites**: define cuándo preguntar, cuándo rechazar, dependencias, límites de seguridad y claims que la skill no debe hacer.
 - **Plan de evidencia**: crea al menos 5 evals: 3 normales, 1 ambiguo, 1 rechazo/límite.
@@ -37,7 +37,7 @@ Debe decir explícitamente cuando la evidencia no alcanza. La skill puede genera
 
 1. Describí la tarea recurrente, prompt actual, usuario objetivo y ejemplos de buenos/malos outputs.
 2. Pedí a Skill Creator decidir si esto merece una skill o debería quedarse como prompt/template.
-3. Si califica, generá la skill con el frontmatter y headings requeridos por `RULES.md`.
+3. Si califica, generá la skill con ese frontmatter completo y esos cuatro headings localizados en ambos idiomas.
 4. Generá los 5 evals más comparación contra baseline genérico antes de publicar.
 5. Iterá hasta que la skill demuestre ventaja real de proceso o expertise frente al baseline genérico.
 

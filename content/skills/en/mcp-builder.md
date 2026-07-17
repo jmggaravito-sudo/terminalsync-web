@@ -9,7 +9,7 @@ tagline: "Design and harden MCP servers"
 description: "Guides the design, implementation, testing, and hardening of an MCP server, with explicit checks before calling it production-ready."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## When to use
 

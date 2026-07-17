@@ -9,7 +9,7 @@ tagline: "Honest review before you merge"
 description: "Reviews real diffs for bugs, security issues, performance risks, missing tests, and merge-blocking edge cases before you ship."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## When to use
 

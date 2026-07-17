@@ -33,7 +33,10 @@ describe("skills content mold", () => {
       expect(skill, `${slug} should be listed`).toBeDefined();
       expect(skill).toMatchObject({
         marketplaceSource: source,
-        compatibleWith: ["claude", "codex", "gemini"],
+        // Only providers with a real delivery path + eval. Gemini has no
+        // skills delivery yet, so it is NOT claimed (see RULES.md →
+        // "Cross-provider coverage").
+        compatibleWith: ["claude", "codex"],
       });
     }
   });
@@ -171,7 +174,10 @@ describe("skills content mold", () => {
     expect(internalComms?.bodyHtml).toContain("HR/legal/compliance");
 
     const skillCreator = await getSkill("es", "skill-creator");
-    expect(skillCreator?.bodyHtml).toContain("RULES.md");
+    // skill-creator is self-contained (the mold is inlined, not referenced by
+    // a repo path the installed user won't have). Its declared boundary is
+    // that it does not self-approve: human review decides publication.
+    expect(skillCreator?.bodyHtml).toContain("revisión humana");
     expect(skillCreator?.bodyHtml).toContain("baseline");
 
     // Hidden dependency-bound skills: limits live in the raw content since

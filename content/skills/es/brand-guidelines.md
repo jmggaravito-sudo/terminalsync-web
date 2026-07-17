@@ -10,7 +10,7 @@ tagline: "Aplicá tu marca a cualquier artifact"
 description: "Carga tus colores, tipografía, voz de marca y los aplica automáticamente a docs, presentaciones, landings, copy."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## Cuándo usar
 

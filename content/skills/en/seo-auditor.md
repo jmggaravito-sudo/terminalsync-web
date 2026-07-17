@@ -9,7 +9,7 @@ tagline: "SEO audit with evidence and limits"
 description: "Audits a URL or supplied page data, prioritizes SEO issues by likely impact, and states evidence, access limits, and uncertainty before making ranking claims."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## When to use
 

@@ -10,7 +10,7 @@ tagline: "Investigación con fuentes si hay herramientas"
 description: "Planifica y sintetiza investigación multi-fuente, declarando dependencias de search/fetch y límites de citación antes de afirmar hallazgos con fuentes."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## Cuándo usarlo
 

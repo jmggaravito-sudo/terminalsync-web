@@ -9,7 +9,7 @@ tagline: "Structured co-author for long docs"
 description: "Guides complex documents through brief, outline, section drafts, review passes, and final polish without losing the thread."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## When to use
 

@@ -10,7 +10,7 @@ tagline: "Slack digests when connected"
 description: "Summarizes Slack channels and threads into decisions, blockers, action items, and follow-ups, but only when the Slack connector or pasted messages provide access."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## When to use
 

@@ -6,10 +6,10 @@ vendors: ["claude", "codex"]
 author: "Anthropic"
 status: available
 tagline: "Create skills that beat baseline"
-description: "Guides new skills from recurring use case to RULES.md-compliant content, evals, baseline comparison, boundaries, and iteration plan."
+description: "Guides new skills from recurring use case to mold-compliant content, evals, baseline comparison, boundaries, and iteration plan."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## When to use
 
@@ -25,7 +25,7 @@ Do not use it to rubber-stamp weak skills. If the assistant only reformats an ob
 Turns a proposed skill into a reviewable artifact:
 
 - **Use-case diagnosis**: identifies the real job, trigger phrases, users, required inputs, and non-goals.
-- **Mold alignment**: drafts frontmatter and body sections matching `content/skills/RULES.md` in English and Spanish.
+- **Mold alignment**: drafts complete frontmatter (name, logo, category, vendors, author, status, tagline, description, license, marketplaceSource, compatibleWith) and the four required body sections — **When to use / What it does / How to use / Best for** — in both English and Spanish, with matching slugs.
 - **Process design**: captures the expertise or workflow the skill should enforce, not just the output format.
 - **Boundary design**: defines clarification triggers, refusals, dependencies, safety limits, and claims the skill must not make.
 - **Evidence plan**: creates at least 5 evals: 3 normal, 1 ambiguous, 1 refusal/boundary.
@@ -37,7 +37,7 @@ It should explicitly say when evidence is insufficient. The skill can generate e
 
 1. Describe the recurring task, current prompt, desired user, and examples of good/bad outputs.
 2. Ask Skill Creator to decide whether this deserves a skill or should stay a prompt/template.
-3. If it qualifies, generate the skill with the required frontmatter and headings from `RULES.md`.
+3. If it qualifies, generate the skill with that complete frontmatter and those four localized headings in both languages.
 4. Generate the 5 evals plus generic baseline comparison before publication.
 5. Iterate until the skill demonstrates a real process or expertise advantage over the generic baseline.
 

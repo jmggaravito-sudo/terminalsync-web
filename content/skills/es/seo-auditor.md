@@ -9,7 +9,7 @@ tagline: "Auditoría SEO con evidencia y límites"
 description: "Audita una URL o datos de página provistos, prioriza problemas SEO por impacto probable y declara evidencia, límites de acceso e incertidumbre antes de hacer claims de ranking."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## Cuándo usarlo
 

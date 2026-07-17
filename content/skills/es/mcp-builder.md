@@ -9,7 +9,7 @@ tagline: "Diseñá y endurecé MCP servers"
 description: "Guía el diseño, implementación, testing y hardening de un MCP server, con chequeos explícitos antes de llamarlo production-ready."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## Cuándo usarlo
 

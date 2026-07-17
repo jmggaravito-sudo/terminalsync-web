@@ -9,7 +9,7 @@ tagline: "Comunicación interna que aterriza"
 description: "Ayuda a planear y redactar mensajes internos considerando audiencia, contexto, tono, preguntas abiertas y límites en temas sensibles."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex", "gemini"]
+compatibleWith: ["claude", "codex"]
 ---
 ## Cuándo usarlo
 
