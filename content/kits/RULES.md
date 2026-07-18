@@ -219,29 +219,18 @@ until they pass review and are republished:
 
 ### Allowed connectors
 
-Kits may include only the 18 public installable connectors:
+Kits may include **any connector that is public and installable** — i.e. its
+`content/connectors/en/<slug>.md` has a `manifest:` block and is not `hidden`.
+This is a principle, not a frozen list, so it doesn't go stale as the catalog
+grows: check the connector file before including it.
 
-- `airtable`
-- `brave-search`
-- `filesystem`
-- `github`
-- `gitlab`
-- `google-maps`
-- `map`
-- `memory`
-- `notion`
-- `pdf`
-- `postgres`
-- `puppeteer`
-- `sentry`
-- `sequential-thinking`
-- `slack`
-- `supabase`
-- `threejs`
-- `webflow`
+Business-relevant installable connectors a business-owner kit will reach for
+(non-exhaustive): `stripe` (sales/payments), `notion`, `slack`, `airtable`,
+`google-maps`, plus the dev/data ones (`postgres`, `supabase`, `github`,
+`mongodb`, `pinecone`, `posthog`, `neon`, …) for technical kits.
 
-Do not include card-only or non-installable connectors. Specifically banned from
-kits until they become public installable connectors:
+Do not include **card-only** connectors (no `manifest:` — they render a card but
+can't be installed) or `hidden` connectors. Card-only today:
 
 - `gmail`
 - `gdrive`
