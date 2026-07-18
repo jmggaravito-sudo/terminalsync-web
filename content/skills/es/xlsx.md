@@ -1,8 +1,9 @@
 ---
 name: XLSX
 vendor: anthropic
+author: "Anthropic"
 logo: /skills/xlsx.svg
-category: documents
+category: productivity
 status: available
 simpleTitle: "Hojas de cálculo que se llenan solas"
 simpleSubtitle: "Tablas dinámicas, fórmulas, gráficos — describí qué querés y Claude arma el .xlsx."
@@ -12,7 +13,7 @@ ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
 affiliate: false
 tagline: "Excel sin cazar fórmulas"
 tsInstallable: true
-hidden: true
+included: true
 ---
 *"Tomá este CSV de ventas del mes pasado, armá un P&L por región con gráfico, y resaltá en rojo las regiones bajo target."* Claude arma el workbook — vos lo abrís en Numbers o Excel y lo presentás.
 

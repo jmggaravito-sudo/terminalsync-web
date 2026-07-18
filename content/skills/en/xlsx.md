@@ -1,8 +1,9 @@
 ---
 name: XLSX
 vendor: anthropic
+author: "Anthropic"
 logo: /skills/xlsx.svg
-category: documents
+category: productivity
 status: available
 simpleTitle: "Spreadsheets that fill themselves"
 simpleSubtitle: "Pivot tables, formulas, charts — describe what you want and Claude builds the .xlsx."
@@ -12,7 +13,7 @@ ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
 affiliate: false
 tagline: "Excel without the formula hunt"
 tsInstallable: true
-hidden: true
+included: true
 ---
 *"Take this CSV of last month's sales, build a P&L by region with a chart, and highlight regions below target in red."* Claude builds the workbook — you open it in Numbers or Excel and present.
 

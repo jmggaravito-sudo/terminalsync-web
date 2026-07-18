@@ -41,7 +41,9 @@ describe("skills content mold", () => {
     }
   });
 
-  it("keeps only the seven launch-ready skills in the public catalog", async () => {
+  it("keeps only the launch-ready skills in the public catalog", async () => {
+    // 7 molded skills + the 4 native document skills (included: true) which
+    // ship with Claude Code and are surfaced as "Included", not installable.
     const publicSlugs = [
       "code-reviewer",
       "doc-coauthoring",
@@ -50,14 +52,20 @@ describe("skills content mold", () => {
       "meta-ads-creator",
       "seo-auditor",
       "skill-creator",
+      "docx",
+      "pdf",
+      "pptx",
+      "xlsx",
     ] as const;
+    const sorted = [...publicSlugs].sort();
 
     for (const lang of ["en", "es"] as const) {
       const skills = await listSkills(lang);
-      expect(skills.map((skill) => skill.slug)).toEqual([...publicSlugs]);
+      // Set-based comparison — robust to display-name sort order.
+      expect(skills.map((skill) => skill.slug).sort()).toEqual(sorted);
     }
 
-    await expect(listSkillSlugs()).resolves.toEqual([...publicSlugs]);
+    await expect(listSkillSlugs().then((s) => s.sort())).resolves.toEqual(sorted);
   });
 
   it("hides retired skills from public catalog and detail pages without deleting content", async () => {
