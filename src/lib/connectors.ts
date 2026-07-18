@@ -126,9 +126,10 @@ export interface ConnectorMeta {
   marketplaceCategory?: "web" | "desktop";
   /** Provenance tracking for the visual badge on the card. Anthropic-imported
    *  items get "anthropic"; TS-curated items get "ts-curated"; community
-   *  third-party items get "community". The desktop renders a small badge
-   *  with the corresponding label (PERSONALIZADO / INCLUIDO / Comunidad). */
-  marketplaceSource?: "ts-curated" | "anthropic" | "community";
+   *  third-party items get "community"; first-party official vendor servers
+   *  (Stripe, MongoDB, Pinecone, …) get "official". The desktop renders a small
+   *  badge with the corresponding label (PERSONALIZADO / INCLUIDO / Comunidad). */
+  marketplaceSource?: "ts-curated" | "anthropic" | "community" | "official";
   /** Long-form description, in markdown source (not HTML). This is the
    *  "simple" half of the connector's .md body — everything before the
    *  `--- dev ---` separator. Consumed by the desktop Lab's detail panel
