@@ -18,6 +18,30 @@ pero están `hidden` por no pasar el molde (categoría inválida `documents`, si
 paridad ES, sin evals). Destaparlas —moldearlas + evals— es el win no-dev más
 barato disponible; tiene prioridad sobre skills nuevas de nicho dev.
 
+## El veredicto — decisión, no ensayo (skills de decisión)
+
+Las skills que producen una **recomendación sobre la que el dueño actúa**
+(marketing, ventas, operaciones) deben **cerrar su salida con un "Veredicto"**:
+una decisión clara, no un choclo de texto que obliga al dueño a interpretar.
+Es cómo cierra un buen asesor ("hacelo / todavía no"), pero **sin traicionar la
+honestidad** — el puntaje es la lectura del modelo sobre lo que pudo ver, NO una
+garantía de mercado.
+
+El Veredicto cierra con:
+
+- **Un puntaje 0–100** de "qué tan listo/fuerte está esto", según SOLO los datos
+  que el usuario dio o el modelo pudo inspeccionar.
+- **Un semáforo con umbral explícito**: 🟢 80+ = listo para actuar/probar;
+  🟡 50–79 = actuá, pero cerrá primero estos gaps; 🔴 <50 = falta contexto o hay
+  bloqueantes, todavía no.
+- **La única próxima acción de mayor impacto** (una sola, no una lista).
+- **El caveat de honestidad**: el puntaje refleja lo que el modelo pudo ver, no
+  una promesa de resultados; los números reales (cuenta, ranking, ventas) mandan.
+
+No pongas un puntaje donde no aplica: una skill que solo redacta un texto
+(comunicación, documentos) informa, no puntúa una decisión de negocio. El
+Veredicto es para skills de **decisión**.
+
 ## File structure
 
 Every published skill must ship in both languages with strict ES/EN parity:

@@ -30,6 +30,7 @@ Te arma una tanda de avisos para Meta (Facebook + Instagram) con:
 - **Los formatos**: feed cuadrado, feed vertical e historias/reels.
 - **Un plan para probar**: cuánta plata poner al principio, qué probar primero, qué número decide el ganador y cuándo todavía no conviene agrandar.
 - **Los límites**: te avisa cuando algo sobre ventas, resultados o rendimiento es un supuesto y no un hecho.
+- **El veredicto (cierra siempre con esto)**: un **puntaje 0–100** de qué tan listos están estos avisos para probar, según lo que pudiste dar; un semáforo con umbral (🟢 80+ listos para probar; 🟡 50–79 probá arrancando por la idea más fuerte y sumá los datos que faltan; 🔴 <50 falta contexto para recomendar con confianza); **cuál idea probar primero**; y el recordatorio de que el puntaje es la lectura del modelo sobre lo que le diste, no una garantía — los números reales de tu cuenta mandan.
 
 Es un asistente para **planear y escribir** los avisos, no un vendedor que garantiza ventas. Te dice cuándo necesita ver tu página, tus avisos anteriores o los números de tu cuenta antes de recomendarte con más fuerza.
 

@@ -30,6 +30,7 @@ Builds a batch of Meta ads (Facebook + Instagram) with:
 - **The formats**: square feed, vertical feed, and Stories/Reels.
 - **A plan to test**: how much to spend at first, what to test first, which number decides the winner, and when not to scale yet.
 - **The limits**: it flags when anything about sales, results, or performance is an assumption and not a fact.
+- **The verdict (always close with this)**: a **0–100 score** for how ready these ads are to test, based on what you could provide; a traffic light with a threshold (🟢 80+ ready to test; 🟡 50–79 test, starting with the strongest idea, and add the missing data; 🔴 <50 not enough context to recommend with confidence); **which idea to test first**; and the reminder that the score is the model's read of what you gave it, not a guarantee — your account's real numbers decide.
 
 It's an assistant to **plan and write** the ads, not a salesperson that guarantees sales. It tells you when it needs to see your page, your past ads, or your account numbers before recommending more strongly.
 
