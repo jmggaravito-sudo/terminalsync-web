@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   composePlugin,
+  getPlugin,
   isValidPlugin,
   listPlugins,
   listPluginSlugs,
@@ -76,11 +77,30 @@ describe("plugins — composition contract", () => {
   });
 });
 
-describe("plugins — catalog (Fase 0: no public pilots yet)", () => {
-  it("listPlugins is empty until Fase 1 ships pilot plugins", async () => {
+describe("plugins — catalog (Fase 1: first pilot)", () => {
+  it("lists the seo-audit pilot in both languages", async () => {
     for (const lang of ["en", "es"] as const) {
-      await expect(listPlugins(lang)).resolves.toEqual([]);
+      const plugins = await listPlugins(lang);
+      const seo = plugins.find((p) => p.slug === "seo-audit");
+      expect(seo, `seo-audit should be listed in ${lang}`).toBeDefined();
+      expect(seo?.connectorSlug).toBe("firecrawl");
+      expect(seo?.skillSlugs).toEqual(["seo-auditor"]);
     }
-    await expect(listPluginSlugs()).resolves.toEqual([]);
+    await expect(listPluginSlugs()).resolves.toContain("seo-audit");
+  });
+
+  it("composes the pilot by resolving its real pieces by slug", async () => {
+    const doc = await getPlugin("es", "seo-audit");
+    expect(doc).not.toBeNull();
+    // The connector piece resolves to the real Firecrawl connector...
+    expect(doc?.connector?.slug).toBe("firecrawl");
+    // ...and the skill piece resolves to the real SEO Auditor skill.
+    expect(doc?.skills.map((s) => s.slug)).toEqual(["seo-auditor"]);
+    // The plugin file itself carries no duplicated piece content — only glue.
+    expect(doc?.bodyHtml).toContain("Firecrawl");
+  });
+
+  it("returns null for a slug that does not exist", async () => {
+    await expect(getPlugin("es", "nope-not-real")).resolves.toBeNull();
   });
 });
