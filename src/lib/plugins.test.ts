@@ -103,4 +103,21 @@ describe("plugins — catalog (Fase 1: first pilot)", () => {
   it("returns null for a slug that does not exist", async () => {
     await expect(getPlugin("es", "nope-not-real")).resolves.toBeNull();
   });
+
+  it("packages existing official connectors with evaluated skills (gmail, gdrive)", async () => {
+    const cases = [
+      { slug: "gmail", connector: "gmail", skill: "internal-comms" },
+      { slug: "gdrive", connector: "gdrive", skill: "doc-coauthoring" },
+    ] as const;
+
+    for (const lang of ["en", "es"] as const) {
+      const slugs = (await listPlugins(lang)).map((p) => p.slug);
+      for (const c of cases) {
+        expect(slugs, `${c.slug} listed in ${lang}`).toContain(c.slug);
+        const doc = await getPlugin(lang, c.slug);
+        expect(doc?.connector?.slug, `${c.slug} connector`).toBe(c.connector);
+        expect(doc?.skills.map((s) => s.slug), `${c.slug} skill`).toEqual([c.skill]);
+      }
+    }
+  });
 });
