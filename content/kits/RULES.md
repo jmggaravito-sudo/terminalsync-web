@@ -8,6 +8,16 @@ A kit is not published because the pieces are individually useful. A kit must
 prove that the pieces work together for a clear job function and help a specific
 user accomplish a real workflow.
 
+## Filtro de persona (empresario-first)
+
+Aplica el filtro de persona del Loop (definido en `content/connectors/SOURCES.md`
+→ "Filtro de persona"): el norte es el **dueño de negocio no técnico**. Test de
+5 segundos — *"¿un empresario lo entiende y lo usaría esta semana?"*. Los kits de
+rol dev (code review, ship-app) son válidos para el segmento dev, pero **el Loop
+debe priorizar kits de rol de negocio** (dueño, ventas, operaciones, finanzas,
+marketing) — hoy sub-construidos. No cerrar una tanda de kits sin al menos uno
+para un rol de negocio real.
+
 ## Reference pattern
 
 TerminalSync kits follow the role-first pattern used by Anthropic's knowledge
