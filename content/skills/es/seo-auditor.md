@@ -30,6 +30,7 @@ Produce una auditoría SEO priorizada con:
 - **Mejoras de menor prioridad**: alt text, pulir meta descriptions, higiene de sitemap, gaps chicos de contenido.
 - **Evidencia por hallazgo**: síntoma observado, impacto probable en usuario/búsqueda, fix exacto, owner y esfuerzo estimado.
 - **Límites de claims**: separa hallazgos verificados de hipótesis y evita garantías de ranking.
+- **El veredicto (cierra siempre con esto)**: un **puntaje 0–100** de salud SEO de la página según lo que se pudo inspeccionar; un semáforo con umbral (🟢 80+ base sólida, a pulir; 🟡 50–79 corregí los fixes de alto impacto primero; 🔴 <50 hay bloqueantes que frenan todo lo demás); **el único fix de mayor impacto para arrancar**; y el recordatorio de que el puntaje refleja lo que se pudo ver, no una garantía de ranking.
 
 Sólo puede inspeccionar lo que el modelo o las herramientas conectadas puedan acceder. Si no hay render JavaScript, páginas autenticadas, Search Console, logs de servidor o Lighthouse, debe decirlo.
 

@@ -47,6 +47,13 @@ export interface SkillMeta {
    *  the public catalog like `hidden`, but semantically distinct — it is
    *  not retired, just not cleared for launch yet. */
   catalogReady?: boolean;
+  /** When true, the capability ships NATIVELY with Claude Code (e.g. the
+   *  official docx/pdf/pptx/xlsx document skills) — Terminal Sync doesn't
+   *  install it, it's already there. The catalog surfaces it as "Included"
+   *  instead of an install button, and `getSkillInstallPayload` refuses to
+   *  ship it (installing would drop the marketing card as a fake SKILL.md
+   *  next to the real native skill). */
+  included?: boolean;
   /** Always `false` for skills. They're prompt recipes (SKILL.md), not
    *  tools that need API keys or env vars — the install path is a file
    *  copy. Catalog includes this so the desktop panel can treat the four
@@ -93,7 +100,10 @@ export async function getSkillInstallPayload(
   const file = path.join(dir, `${slug}.md`);
   if (!fs.existsSync(file)) return null;
   const raw = fs.readFileSync(file, "utf8");
-  const { content } = matter(raw);
+  const { content, data } = matter(raw);
+  // Native/included skills (docx, pdf, …) ship with Claude Code — never
+  // install them; the .md is a marketing card, not the real skill.
+  if (data.included === true) return null;
   const skillMd = content.trimStart();
   return {
     vendor: "claude",
@@ -188,6 +198,7 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): SkillMeta {
     license: get("license") || undefined,
     licenseUrl: get("licenseUrl") || undefined,
     hidden: data.hidden === true,
+    included: data.included === true,
     catalogReady: data.catalogReady === false ? false : undefined,
     // Always false — see SkillMeta.requiresEnvSecrets doc.
     requiresEnvSecrets: false,

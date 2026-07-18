@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Download, Share2 } from "lucide-react";
+import { ArrowLeft, Check, Download, Share2 } from "lucide-react";
 import { getSkill, listSkillSlugs } from "@/lib/skills";
 import { SkillLogo } from "../Logo";
 
@@ -112,13 +112,22 @@ export default async function SkillDetail({ params }: Props) {
         </div>
 
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <a
-            href={installDeepLink}
-            className="inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] glow-accent transition-all hover:-translate-y-px"
-          >
-            <Download size={14} strokeWidth={2.4} />
-            {isEs ? "Instalar en TerminalSync" : "Install in TerminalSync"}
-          </a>
+          {skill.included ? (
+            <span
+              className="inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold border border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-200"
+            >
+              <Check size={14} strokeWidth={2.6} />
+              {isEs ? "Incluido — ya viene con la app" : "Included — it ships with the app"}
+            </span>
+          ) : (
+            <a
+              href={installDeepLink}
+              className="inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] glow-accent transition-all hover:-translate-y-px"
+            >
+              <Download size={14} strokeWidth={2.4} />
+              {isEs ? "Instalar en TerminalSync" : "Install in TerminalSync"}
+            </a>
+          )}
           <button
             type="button"
             className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[var(--color-fg-muted)] hover:text-[var(--color-fg-strong)] transition-colors"
@@ -144,7 +153,17 @@ export default async function SkillDetail({ params }: Props) {
         />
 
         <div className="mt-14 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
-          {isEs ? (
+          {skill.included ? (
+            isEs ? (
+              <>
+                <strong className="text-[var(--color-fg-strong)]">¿Hay que instalar algo?</strong> No. Esta capacidad ya viene con Terminal Sync (la trae Claude Code por dentro), así que está lista para usar en cuanto abrís la app — no hay nada que instalar ni configurar.
+              </>
+            ) : (
+              <>
+                <strong className="text-[var(--color-fg-strong)]">Anything to install?</strong> No. This capability already ships with Terminal Sync (Claude Code provides it under the hood), so it's ready the moment you open the app — nothing to install or set up.
+              </>
+            )
+          ) : isEs ? (
             <>
               <strong className="text-[var(--color-fg-strong)]">¿Cómo funciona la instalación?</strong> El botón de arriba abre TerminalSync (la app desktop) y baja el <code>SKILL.md</code> a <code>~/.claude/skills/{skill.slug}/</code>. Si tenés Codex, también lo escribe en <code>~/.codex/skills/{skill.slug}/</code>. Skills Sync lo replica en todas tus máquinas automáticamente.
             </>

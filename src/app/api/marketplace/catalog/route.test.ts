@@ -120,7 +120,8 @@ describe("GET /api/marketplace/catalog", () => {
     expect(body.skills.every((s) => !s.hidden)).toBe(true);
   });
 
-  it("returns exactly the seven launch-ready skills in the public catalog response", async () => {
+  it("returns exactly the launch-ready skills in the public catalog response", async () => {
+    // 7 molded skills + the 4 native document skills (included: true).
     const publicSlugs = [
       "code-reviewer",
       "doc-coauthoring",
@@ -129,13 +130,19 @@ describe("GET /api/marketplace/catalog", () => {
       "meta-ads-creator",
       "seo-auditor",
       "skill-creator",
+      "docx",
+      "pdf",
+      "pptx",
+      "xlsx",
     ] as const;
+    const sorted = [...publicSlugs].sort();
 
     for (const lang of ["en", "es"] as const) {
       const { body } = await callCatalog(lang);
 
-      expect(body.skills).toHaveLength(7);
-      expect(body.skills.map((skill) => skill.slug)).toEqual([...publicSlugs]);
+      expect(body.skills).toHaveLength(publicSlugs.length);
+      // Set-based — robust to display-name sort order.
+      expect(body.skills.map((skill) => skill.slug).sort()).toEqual(sorted);
     }
   });
 

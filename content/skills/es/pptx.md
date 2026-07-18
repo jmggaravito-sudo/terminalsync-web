@@ -1,8 +1,9 @@
 ---
 name: PPTX
 vendor: anthropic
+author: "Anthropic"
 logo: /skills/pptx.svg
-category: documents
+category: productivity
 status: available
 simpleTitle: "Decks armados en minutos, no en tardes"
 simpleSubtitle: "Pitches de ventas, all-hands, revisiones con clientes — Claude compone las slides por vos."
@@ -12,7 +13,7 @@ ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
 affiliate: false
 tagline: "PowerPoint a velocidad de prompt"
 tsInstallable: true
-hidden: true
+included: true
 ---
 *"Armá un deck de 10 slides para la review de mañana con el cliente. Bajá las métricas del mes pasado de Supabase, usá nuestro template, cerrá con un ask claro."* Claude arma, aplica tema y exporta — vos ajustás copy y presentás.
 
