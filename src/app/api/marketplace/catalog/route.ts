@@ -52,6 +52,7 @@ import { NextResponse } from "next/server";
 import { listAllConnectors, type ConnectorMeta } from "@/lib/connectors";
 import { listSkills, type SkillMeta } from "@/lib/skills";
 import { listCliTools, type CliToolMeta } from "@/lib/cliTools";
+import { listPlugins, type PluginMeta } from "@/lib/plugins";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import {
   isBundleItemKind,
@@ -125,6 +126,10 @@ function localizeCatalogAssets(body: CatalogResponse): CatalogResponse {
       logo: localizePublicAssetUrl(item.logo) ?? item.logo,
     })),
     bundles: body.bundles.map(localizeBundleAssets),
+    plugins: body.plugins.map((item) => ({
+      ...item,
+      logo: localizePublicAssetUrl(item.logo) ?? item.logo,
+    })),
   };
 }
 
@@ -192,11 +197,21 @@ export interface BundleSummary {
   isExclusiveTS?: boolean;
 }
 
+/** A plugin as served to the desktop, plus the one derived signal the
+ *  Capability Check (Carril B / auto-provision) needs: whether installing it
+ *  will require the owner to provide a key/secret. True when its connector
+ *  declares env secrets; a skill-only plugin — or one whose connector needs
+ *  no secrets — is auto-installable without asking the owner for anything. */
+export interface PluginSummary extends PluginMeta {
+  requiresEnvSecrets: boolean;
+}
+
 export interface CatalogResponse {
   connectors: ConnectorMeta[];
   skills: SkillMeta[];
   cliTools: CliToolMeta[];
   bundles: BundleSummary[];
+  plugins: PluginSummary[];
 }
 
 export async function GET(req: Request) {
@@ -207,12 +222,27 @@ export async function GET(req: Request) {
   // total wait is max(N), not sum(N). `bundles` reaches into Supabase
   // and may be slowest in cold cache; running it next to the markdown
   // reads keeps the wall-clock short.
-  const [connectors, skills, cliTools, bundles] = await Promise.all([
+  const [connectors, skills, cliTools, bundles, pluginsRaw] = await Promise.all([
     listAllConnectors(lang),
     listSkills(lang),
     listCliTools(lang),
     loadBundles(lang),
+    listPlugins(lang),
   ]);
+
+  // Derive each plugin's "needs a key?" signal by joining its connector slug
+  // against the connectors we already loaded — no extra IO. This is the
+  // contract the desktop Capability Check reads to decide auto-install vs.
+  // pause-and-ask-the-owner-to-connect.
+  const secretByConnector = new Map(
+    connectors.map((c) => [c.slug, c.requiresEnvSecrets] as const),
+  );
+  const plugins: PluginSummary[] = pluginsRaw.map((p) => ({
+    ...p,
+    requiresEnvSecrets: p.connectorSlug
+      ? (secretByConnector.get(p.connectorSlug) ?? false)
+      : false,
+  }));
 
   // Drop hidden items from the public response. The lib functions
   // already filter their own `hidden:true` entries, but defensively
@@ -226,6 +256,7 @@ export async function GET(req: Request) {
     skills: visibleSkills,
     cliTools,
     bundles,
+    plugins,
   });
 
   // Cache-Control intentionally NOT set here. The `export const
