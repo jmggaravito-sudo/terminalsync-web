@@ -5,42 +5,42 @@ category: marketing
 vendors: ["claude", "codex"]
 author: "TerminalSync"
 status: available
-tagline: "Conceptos de ads con caveats de testing"
-description: "Arma una matriz de anuncios para Meta con ángulos creativos, copy, prompts visuales, specs de formato, supuestos de audiencia y caveats explícitos para cualquier claim de performance."
+tagline: "Avisos para tu negocio, listos para probar"
+description: "Convierte lo que vendés en avisos para Facebook e Instagram: cinco ideas distintas con su texto, el botón, cómo se ve la imagen y un plan simple para probar cuál funciona — sin inventar resultados."
 license: "proprietary"
 marketplaceSource: "terminalsync"
 compatibleWith: ["claude", "codex"]
 ---
 ## Cuándo usarlo
 
-- Necesitás conceptos de ads para Facebook o Instagram para un producto, servicio, lanzamiento, funnel, flujo de WhatsApp u oferta ecommerce real.
-- Querés más que una idea suelta: ángulos distintos, direcciones visuales, variantes de copy, specs de formato y un plan práctico de testing.
-- Tenés contexto básico del negocio: oferta, país o ciudad, audiencia, precio, ruta de conversión, tono de marca y hooks probados si existen.
-- Necesitás planear un test creativo sin fingir que la performance en Meta se puede garantizar.
+- Tenés un negocio, producto, servicio o local y querés avisos para Facebook o Instagram sin contratar una agencia.
+- No querés una sola idea suelta: querés varias, cada una con su texto, su formato y un plan de cuál probar primero.
+- Podés contar lo básico: qué vendés, en qué ciudad o país, a quién, a qué precio, y qué querés que haga la persona que ve el aviso (que escriba, que compre, que reserve).
+- Querés planear una prueba real, sin que nadie te prometa números mágicos.
 
-No lo uses para inventar tasas de conversión, ROAS, CPA, resultados médicos/legales/financieros ni estadísticas falsas. Si faltan datos de performance, el skill debe marcar supuestos y recomendar un test en vez de prometer resultados.
+No sirve para inventar cuánta gente va a comprar, ni ROAS, CPA ni estadísticas falsas. Si faltan datos, el skill marca los supuestos y te recomienda **probar**, en vez de **prometer resultados**.
 
 ## Qué hace
 
-Crea una matriz de ads para Meta con:
+Te arma una tanda de avisos para Meta (Facebook + Instagram) con:
 
-- **Cinco conceptos distintos**: dolor, demo/show-don't-tell, antes/después, prueba u objeción, y formato mobile-native/UGC.
-- **Copy para cada concepto**: headline corto, body copy, CTA oficial de Meta y label opcional para overlay.
-- **Dirección visual**: prompt de imagen o video con composición, aspect ratio, espacio vacío para overlays y nota de "sin texto en la imagen" salvo que el usuario pida texto generado.
-- **Specs de formato**: feed cuadrado, feed vertical y Stories/Reels.
-- **Plan de testing**: rangos de presupuesto, qué testear primero, qué métrica define ganador y cuándo no escalar todavía.
-- **Límites**: caveats para cualquier afirmación sobre conversión, performance, ROAS, CPA, tamaño de audiencia o resultados de plataforma.
+- **Cinco ideas distintas**: una que toca el problema, una que muestra el producto en uso, una de antes/después, una con prueba o que responde una objeción, y una estilo video casero de celular.
+- **El texto de cada una**: título corto, cuerpo, el botón oficial de Meta y una frase opcional para poner sobre la imagen.
+- **Cómo se ve la imagen**: una descripción para la foto o el video — qué se muestra, la forma (cuadrada, vertical) y dónde dejar espacio para el texto.
+- **Los formatos**: feed cuadrado, feed vertical e historias/reels.
+- **Un plan para probar**: cuánta plata poner al principio, qué probar primero, qué número decide el ganador y cuándo todavía no conviene agrandar.
+- **Los límites**: te avisa cuando algo sobre ventas, resultados o rendimiento es un supuesto y no un hecho.
 
-Es un asistente de planificación creativa, no un media buyer que garantiza resultados. Debe decir cuándo necesita landing, historial del pixel, ads anteriores, economía de la oferta o datos de la cuenta antes de recomendar con más fuerza.
+Es un asistente para **planear y escribir** los avisos, no un vendedor que garantiza ventas. Te dice cuándo necesita ver tu página, tus avisos anteriores o los números de tu cuenta antes de recomendarte con más fuerza.
 
 ## Cómo usarlo
 
-1. Describí la oferta: producto/servicio, precio, geografía, cliente objetivo, ruta de conversión y acción esperada del ad.
-2. Agregá prueba si existe: testimonios, evidencia de antes/después, ganadores previos, restricciones, voz de marca, claims prohibidos y requisitos de cumplimiento.
-3. Pedí la matriz: *"Creá 5 conceptos de Meta Ads con prompts de imagen, copy, CTAs, supuestos de audiencia, plan de testing y caveats."*
-4. Revisá los supuestos antes de pautar. Reemplazá cualquier estadística inventada por una fuente real o elimínala.
-5. Usá el plan de testing como hipótesis inicial. Definí ganadores con datos reales de la cuenta, no con la confianza del modelo.
+1. Contale tu oferta: qué vendés, a qué precio, en qué zona, a quién, y qué querés que haga la persona (escribir, comprar, reservar).
+2. Sumá prueba si tenés: testimonios, fotos de antes/después, avisos que ya te funcionaron, tu tono de marca y cualquier cosa que no puedas prometer por ley.
+3. Pedí la tanda: *"Hacéme 5 avisos de Meta para mi negocio, con el texto, los botones, cómo se ve cada imagen y un plan para probar."*
+4. Revisá los supuestos antes de pautar. Si aparece un número inventado, cambialo por uno real o sacalo.
+5. Usá el plan como punto de partida. El ganador lo definen los números reales de tu cuenta, no la confianza del modelo.
 
 ## Ideal para
 
-Founders, ecommerce operators, negocios de servicios, agencias y equipos de growth que necesitan un batch creativo estructurado antes de producir piezas o briefear a un media buyer. Funciona mejor cuando el usuario puede dar detalles de la oferta y acepta que los resultados dependen de calidad creativa, targeting, presupuesto, historial de cuenta, landing y demanda del mercado.
+Dueños de negocios chicos, locales, profesionales independientes, emprendedores de ecommerce y negocios de servicios que quieren avisos listos para probar sin armar un equipo de marketing. También sirve a agencias y equipos de growth que necesitan una tanda creativa rápida. Funciona mejor cuando podés dar los detalles de tu oferta y entendés que los resultados dependen de la creatividad, el público, el presupuesto, tu página y la demanda del mercado.

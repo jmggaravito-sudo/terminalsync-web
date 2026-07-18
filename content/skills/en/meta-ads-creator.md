@@ -5,42 +5,42 @@ category: marketing
 vendors: ["claude", "codex"]
 author: "TerminalSync"
 status: available
-tagline: "Ad concepts with testing caveats"
-description: "Builds a Meta ads concept matrix with creative angles, copy, visual prompts, format specs, audience assumptions, and explicit caveats for any performance claim."
+tagline: "Ads for your business, ready to test"
+description: "Turns what you sell into Facebook and Instagram ads: five distinct ideas with copy, the button, how the image looks, and a simple plan to test which one works — without inventing results."
 license: "proprietary"
 marketplaceSource: "terminalsync"
 compatibleWith: ["claude", "codex"]
 ---
 ## When to use
 
-- You need Facebook or Instagram ad concepts for a real product, service, launch, funnel, WhatsApp flow, or ecommerce offer.
-- You want more than one ad idea: distinct angles, visual directions, copy variants, format specs, and a practical testing plan.
-- You have basic business context: offer, country or city, audience, price point, conversion path, brand tone, and any proven hooks.
-- You need help planning a creative test without pretending Meta performance can be guaranteed.
+- You run a business, product, service, or local shop and you want Facebook or Instagram ads without hiring an agency.
+- You don't want a single stray idea: you want several, each with its own copy, format, and a plan for which to test first.
+- You can share the basics: what you sell, in what city or country, to whom, at what price, and what you want the viewer to do (message you, buy, book).
+- You want to plan a real test without anyone promising magic numbers.
 
-Do not use it to invent conversion rates, ROAS, CPA, medical/legal/financial outcomes, or fake statistics. If performance data is missing, the skill must label assumptions and recommend a test rather than promise results.
+Do not use it to invent how many people will buy, ROAS, CPA, or fake statistics. If data is missing, the skill labels the assumptions and recommends a **test** instead of promising results.
 
 ## What it does
 
-Creates a Meta ads matrix with:
+Builds a batch of Meta ads (Facebook + Instagram) with:
 
-- **Five distinct concepts**: pain point, demo/show-don't-tell, before/after, proof or objection, and mobile-native/UGC-style.
-- **Copy for each concept**: short headline, body copy, official Meta CTA, and optional overlay label.
-- **Visual direction**: image or video prompt with composition, aspect ratio, empty space for overlays, and a "no text on image" note unless the user explicitly wants generated text.
-- **Format specs**: feed square, feed vertical, and Stories/Reels dimensions.
-- **Testing plan**: budget ranges, what to test first, what metric decides the winner, and when not to scale yet.
-- **Boundaries**: caveats for any statement about conversion, performance, ROAS, CPA, audience size, or platform outcomes.
+- **Five distinct ideas**: one that names the problem, one that shows the product in use, a before/after, one with proof or that answers an objection, and a mobile, home-video style.
+- **Copy for each**: short headline, body, the official Meta button, and an optional line to put over the image.
+- **How the image looks**: a description for the photo or video — what's shown, the shape (square, vertical), and where to leave room for the text.
+- **The formats**: square feed, vertical feed, and Stories/Reels.
+- **A plan to test**: how much to spend at first, what to test first, which number decides the winner, and when not to scale yet.
+- **The limits**: it flags when anything about sales, results, or performance is an assumption and not a fact.
 
-It is a creative planning assistant, not a media buyer guaranteeing results. It should say when it needs the landing page, pixel history, past ads, offer economics, or account data before making stronger recommendations.
+It's an assistant to **plan and write** the ads, not a salesperson that guarantees sales. It tells you when it needs to see your page, your past ads, or your account numbers before recommending more strongly.
 
 ## How to use
 
-1. Describe the offer: product/service, price, geography, target customer, conversion path, and the action you want from the ad.
-2. Add proof if available: testimonials, before/after evidence, past winners, constraints, brand voice, prohibited claims, and compliance requirements.
-3. Ask for the matrix: *"Create 5 Meta ad concepts with image prompts, copy, CTAs, audience assumptions, testing plan, and caveats."*
-4. Review assumptions before launching. Replace any invented stat with a sourced stat or remove it.
-5. Use the testing plan as a starting hypothesis. Judge winners by real account data, not by the model's confidence.
+1. Describe your offer: what you sell, at what price, in what area, to whom, and what you want the person to do (message, buy, book).
+2. Add proof if you have it: testimonials, before/after photos, ads that already worked, your brand tone, and anything you can't promise by law.
+3. Ask for the batch: *"Make me 5 Meta ads for my business, with the copy, the buttons, how each image looks, and a plan to test."*
+4. Review the assumptions before you run ads. If an invented number shows up, replace it with a real one or remove it.
+5. Use the plan as a starting point. The winner is decided by your account's real numbers, not by the model's confidence.
 
 ## Best for
 
-Solo founders, ecommerce operators, service businesses, agencies, and growth teams that need a structured creative batch before producing assets or briefing a media buyer. Best when the user can provide offer details and accepts that ad results depend on creative quality, targeting, budget, account history, landing page, and market demand.
+Small business owners, local shops, independent professionals, ecommerce sellers, and service businesses who want ads ready to test without building a marketing team. It also serves agencies and growth teams that need a fast creative batch. Works best when you can give offer details and understand that results depend on creative, audience, budget, your page, and market demand.
