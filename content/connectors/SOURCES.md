@@ -2,6 +2,20 @@
 
 > **Para el Loop:** todo conector instalable nuevo se redacta a partir de su fuente oficial, NO de memoria. Estos 8 son el molde de oro definitivo aprobado para el catálogo (en + es, paridad estricta).
 
+## Filtro de persona (empresario-first) — regla del Loop
+
+**Norte de producto:** el comprador de Terminal Sync es un **dueño/director de negocio NO técnico**. El marketplace ya se escoró una vez al lado dev (bases de datos, monitoreo, LSPs) — items que un empresario nunca va a tocar. Este filtro corrige eso sin cerrarle la puerta al segmento dev, que es real.
+
+Por cada candidato del Loop (conector, kit o skill), etiquetá la **audiencia** y aplicá el test:
+
+- **Test de 5 segundos:** *"¿un dueño de negocio lo entiende en 5 segundos y lo usaría esta semana?"* Si sí → `business`. Si es infra que solo un dev toca (DB, monitoreo, CI, colas, LSP) → `dev`. Si sirve a ambos (Notion, Slack, Drive) → `both`.
+- **Los `dev` se PUEDEN agregar** (el segmento dev existe), pero **no se destacan** para el empresario ni cuentan para la meta de crecimiento no-dev. No featurear infra de dev en la vista del dueño de negocio.
+- **Cada corrida del Loop debe traer al menos 1 item `business`.** No cerrar una corrida 100% infra de dev.
+- **Preferencia fuerte por conectores remotos/OAuth** para la persona business: *"Conectá con Google/Notion"* (un botón) le gana a *"pegá tu API key"* — es el desbloqueo #1 del onboarding no-técnico.
+- **Prioridad de valor para el empresario** (donde debería empujar el Loop): documentos de un clic (Word/Excel/PPT/PDF), ventas (Stripe/facturación), marketing (ads/SEO/redes), comunicación (email/WhatsApp/Slack), y **memoria del negocio** (estilo Engram). Ahí es donde el producto se vuelve "lo abro y lo uso el día uno".
+
+Este filtro aplica igual a **kits** (`content/kits/RULES.md`) y **skills** (`content/skills/RULES.md`).
+
 ## Fuentes principales
 
 | Capa | URL | Para qué |

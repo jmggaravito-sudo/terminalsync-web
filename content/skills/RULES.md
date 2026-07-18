@@ -7,6 +7,17 @@ new skills must follow this mold before they can be reviewed for publication.
 A skill is not published because it sounds useful. It must prove that it reliably
 helps a user do a specific job better than a generic prompt.
 
+## Filtro de persona (empresario-first)
+
+Aplica el filtro de persona del Loop (definido en `content/connectors/SOURCES.md`
+→ "Filtro de persona"): el norte es el **dueño de negocio no técnico**. Priorizá
+skills que un empresario entiende y usa esta semana — documentos de un clic
+(Word/Excel/PPT/PDF), ventas, marketing, comunicación, memoria del negocio.
+**Nota de backlog:** las skills `docx`/`pdf`/`pptx`/`xlsx` (documentos) ya existen
+pero están `hidden` por no pasar el molde (categoría inválida `documents`, sin
+paridad ES, sin evals). Destaparlas —moldearlas + evals— es el win no-dev más
+barato disponible; tiene prioridad sobre skills nuevas de nicho dev.
+
 ## File structure
 
 Every published skill must ship in both languages with strict ES/EN parity:
