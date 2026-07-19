@@ -24,6 +24,7 @@ export function MercadoPagoSetupClient({ lang }: { lang: string }) {
   const isEs = lang !== "en";
   const [pro, setPro] = useState(DEFAULT_PRO);
   const [max, setMax] = useState(DEFAULT_MAX);
+  const [testToken, setTestToken] = useState("");
   const [result, setResult] = useState<PlanResult | null>(null);
   const [existing, setExisting] = useState<ExistingPlan[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -69,7 +70,12 @@ export function MercadoPagoSetupClient({ lang }: { lang: string }) {
       const r = await fetch("/api/admin/mercadopago/create-plans", {
         method: "POST",
         headers: { ...headers, "Content-Type": "application/json" },
-        body: JSON.stringify({ proAmount: pro, maxAmount: max, currency: "COP" }),
+        body: JSON.stringify({
+          proAmount: pro,
+          maxAmount: max,
+          currency: "COP",
+          token: testToken.trim() || undefined,
+        }),
       });
       const d = await r.json();
       if (!r.ok) {
@@ -120,6 +126,24 @@ export function MercadoPagoSetupClient({ lang }: { lang: string }) {
             />
           </label>
         </div>
+
+        <label className="mt-4 block">
+          <span className="text-[12px] font-mono uppercase tracking-[0.12em] text-[var(--color-fg-muted)]">
+            {isEs ? "Token de prueba (opcional)" : "Test token (optional)"}
+          </span>
+          <input
+            type="text"
+            value={testToken}
+            onChange={(e) => setTestToken(e.target.value)}
+            placeholder="TEST-..."
+            className="mt-1.5 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-panel)] px-3 py-2 text-[13px] font-mono"
+          />
+          <span className="mt-1 block text-[11.5px] text-[var(--color-fg-dim)]">
+            {isEs
+              ? "Si lo dejás vacío, usa el token de producción de Vercel. Pegá un TEST-… para probar sin tocar producción."
+              : "Empty = use the production token on Vercel. Paste a TEST-… to try without touching production."}
+          </span>
+        </label>
 
         <div className="mt-6 flex items-center gap-3">
           <button
