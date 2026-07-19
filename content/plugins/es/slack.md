@@ -13,24 +13,30 @@ skillSlugs: ["internal-comms"]
 ## Cuándo usarlo
 
 - Querés que tu IA redacte y publique novedades, anuncios o recordatorios en tus canales de Slack.
-- Manejás la comunicación de un equipo chico y querés sacarte el trabajo repetitivo de escribir cada mensaje.
+- Manejás la comunicación de un equipo chico y querés sacarte el trabajo repetitivo de redactar cada mensaje.
 - Querés que la IA proponga el mensaje pero **vos aprobás antes de que se publique**.
 
 ## Qué hace
 
 Junta dos piezas que se potencian, en un solo install:
 
-- **Slack (el conector)** lee y publica en tus canales.
-- **Internal Comms (la skill)** redacta el mensaje con el tono justo — novedad, anuncio, recordatorio — y declara sus límites (temas sensibles como RR.HH. o legales van con revisión humana).
+- **Slack (el conector)** lee y publica en tus canales —así la IA puede ver el contexto reciente del canal antes de escribir.
+- **Internal Comms (la skill)** redacta el mensaje con el tono justo —novedad, anuncio, recordatorio— y declara sus límites (temas sensibles como RR.HH. o legales van con revisión humana).
 
-Juntas: *"anunciale al canal #general que la entrega se movió al viernes"* → redactado y listo para publicar.
+**Un ejemplo real:** se movió una fecha de entrega y tenés que avisarle al equipo sin sonar alarmista. Le decís *"avisale a #general que la entrega pasó al viernes, en tono tranquilo, aclarando que no cambia nada más"*. Internal Comms redacta un mensaje claro y sereno, y Slack lo deja listo para publicar en el canal. Vos leés, aprobás, y sale —sin que suene a incendio.
 
 ## Cómo usarlo
 
 1. Instalá el Plugin y conectá tu workspace de Slack.
 2. Pedí: *"redactá un recordatorio para #ventas sobre la reunión de mañana"*.
-3. Revisá el mensaje — **vos aprobás** — y se publica en el canal.
+3. Revisá el mensaje —**vos aprobás**— y se publica en el canal.
 
-## Ideal para
+## Por qué el combo funciona
 
-Dueños de negocio y equipos chicos que coordinan por Slack y quieren que la IA redacte y publique con ellos aprobando antes. Requiere conectar tu workspace de Slack.
+La skill de comunicación sola te deja el texto, pero después tenés que copiarlo y publicarlo en el canal correcto. El conector solo publica, pero no sabe redactar con el tono justo. Juntos: la IA lee el canal, escribe con criterio, y publica —con tu OK antes de que lo vea el equipo.
+
+## Límites
+
+- **No publica sin tu aprobación** —redacta y te muestra; vos decidís qué se manda.
+- Los temas delicados (conflictos, RR.HH., anuncios sensibles) los marca para revisión humana.
+- Requiere conectar tu workspace de Slack; solo ve y publica en los canales que ese acceso permita.
