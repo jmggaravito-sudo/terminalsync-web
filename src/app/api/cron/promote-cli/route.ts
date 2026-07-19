@@ -1,9 +1,8 @@
 /**
  * Daily cron: auto-promote discovery_cli_tools → cli_tool_listings.
  *
- * Sister route of /api/cron/promote-connectors. Same shape, stricter
- * quality bar because CLIs ship a binary into the user's $PATH — a
- * bad row costs trust, not just clutter:
+ * CLI-specific promotion uses a strict quality bar because CLIs ship a binary
+ * into the user's $PATH — a bad row costs trust, not just clutter:
  *
  *   - confidence >= MIN_CONFIDENCE_AUTO (default 0.85, vs 0.8 for connectors)
  *   - binary + install_command + homepage all present
@@ -15,9 +14,7 @@
  * leave the row pending for admin review. CLI volume is small enough
  * that a hard threshold is fine.
  *
- * Schedule: 06:15 UTC (15 min after promote-connectors so they don't
- * race for the same Supabase connection budget). Defined in
- * vercel.json -> crons.
+ * Schedule: 06:15 UTC. Defined in vercel.json -> crons.
  */
 import fs from "node:fs";
 import path from "node:path";
