@@ -20,7 +20,7 @@ licenseUrl: "https://terminalsync.ai"
 
 A diferencia de otras integraciones, **no se instala pegando un paquete**: se conecta **desde adentro de la app**, en **Ajustes → Integraciones → Shopify**. Pegás la dirección de tu tienda y una clave de acceso que generás en Shopify, le das "Probar conexión", y listo. La clave se guarda **cifrada en tu computadora** (nunca en un archivo a la vista).
 
-Le preguntás *"¿cuánto vendí esta semana?"* y lee tus datos de Shopify y te contesta. Le pedís *"mostrame los pedidos sin enviar"* y te arma la lista. En esta versión el agente trabaja en **modo consulta** — lee información, no hace cambios en la tienda —, así que es seguro de usar desde el día uno.
+Le preguntás *"¿cuánto vendí esta semana?"* y lee tus datos de Shopify y te contesta. Le pedís *"mostrame los pedidos sin enviar"* y te arma la lista. También puede **hacer cambios seguros** — como crear un producto (queda en borrador) o publicar/despublicar uno — pero **siempre te muestra primero qué va a hacer y espera tu OK** antes de tocar nada. Nunca cambia tu tienda sin que confirmes.
 
 ### Qué le podés pedir
 
@@ -44,6 +44,6 @@ Conector **first-party**: Terminal Sync bundlea su propio servidor MCP (`termina
 
 **Config (inyectada por la app desde el almacén cifrado):** `SHOPIFY_STORE_DOMAIN` (ej. `mi-tienda.myshopify.com`), `SHOPIFY_ADMIN_ACCESS_TOKEN` (`shpat_…`, guardado en el llavero del sistema, nunca en un archivo de config), y `SHOPIFY_API_VERSION` opcional.
 
-**Tools (solo lectura en esta versión):** `shopify_shop_info`, `shopify_list_orders`, `shopify_sales_summary`, `shopify_list_products`, `shopify_search_customers`. La escritura (crear/editar productos, ajustar inventario, reembolsos) queda diferida hasta que esté la red de seguridad/confirmación.
+**Tools de lectura:** `shopify_shop_info`, `shopify_list_orders`, `shopify_sales_summary`, `shopify_list_products`, `shopify_search_customers`. **Tools de escritura (con confirm gate de dos pasos):** `shopify_create_product` (crea en BORRADOR), `shopify_set_product_status` (publica/despublica). Sin `confirm` devuelven un PREVIEW y no mutan nada; el agente muestra el preview y recién con `confirm: true` (tras aprobación del usuario) aplican. Más writes (precio, inventario, fulfillment) pueden agregarse con el mismo patrón.
 
 La conexión se hace desde **Ajustes → Integraciones → Shopify** (verifica la tienda antes de guardar y cablea el servidor en Claude/Codex/Gemini). Fuente: Admin GraphQL API oficial de Shopify (`help.shopify.com`, `shopify.dev`).
