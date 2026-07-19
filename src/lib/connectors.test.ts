@@ -24,6 +24,23 @@ describe("listConnectors / requiresEnvSecrets", () => {
     expect(airtable?.requiresEnvSecrets).toBe(true);
   });
 
+  it("ships Google Sheets + Calendar as installable manifests requiring OAuth secrets", async () => {
+    // The two highest-demand loop-catalog connectors (13 + 11 loops).
+    // Both install via npx templates and authenticate with a Google
+    // Cloud OAuth client, so their manifest templates GOOGLE_CLIENT_ID /
+    // GOOGLE_CLIENT_SECRET. If either loses its manifest or secret, the
+    // desktop's "necesita clave" badge would disagree with the install
+    // modal — this test forces that change to be explicit.
+    const items = await listConnectors("en");
+    for (const slug of ["google-sheets", "google-calendar"]) {
+      const c = items.find((x) => x.slug === slug);
+      expect(c, `${slug} missing from catalog`).toBeDefined();
+      expect(c?.hasManifest, `${slug} should ship a manifest`).toBe(true);
+      expect(c?.requiresEnvSecrets, `${slug} should require env secrets`).toBe(true);
+      expect(c?.installMethod, `${slug} should derive an installMethod`).toBe("npm");
+    }
+  });
+
   it("flags affiliate-only connectors (no manifest) as requiresEnvSecrets=false", async () => {
     const items = await listConnectors("en");
     // Gmail is an affiliate-only entry — opens gmail.com, no MCP
