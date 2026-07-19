@@ -24,15 +24,15 @@ describe("listConnectors / requiresEnvSecrets", () => {
     expect(airtable?.requiresEnvSecrets).toBe(true);
   });
 
-  it("ships Google Sheets + Calendar as installable manifests requiring OAuth secrets", async () => {
-    // The two highest-demand loop-catalog connectors (13 + 11 loops).
-    // Both install via npx templates and authenticate with a Google
-    // Cloud OAuth client, so their manifest templates GOOGLE_CLIENT_ID /
-    // GOOGLE_CLIENT_SECRET. If either loses its manifest or secret, the
+  it("ships Sheets, Calendar + Xero as installable manifests requiring OAuth secrets", async () => {
+    // High-demand loop-catalog connectors that install via npx templates
+    // and authenticate with an OAuth client id/secret (Google for the two
+    // Google servers, a Xero custom connection for xero). If any loses its
+    // manifest or secret placeholder, the
     // desktop's "necesita clave" badge would disagree with the install
     // modal — this test forces that change to be explicit.
     const items = await listConnectors("en");
-    for (const slug of ["google-sheets", "google-calendar"]) {
+    for (const slug of ["google-sheets", "google-calendar", "xero"]) {
       const c = items.find((x) => x.slug === slug);
       expect(c, `${slug} missing from catalog`).toBeDefined();
       expect(c?.hasManifest, `${slug} should ship a manifest`).toBe(true);
