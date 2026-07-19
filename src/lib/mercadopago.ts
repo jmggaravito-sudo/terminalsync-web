@@ -137,6 +137,71 @@ export interface PreapprovalState {
   payer_email?: string;
 }
 
+export interface PreapprovalPlanSummary {
+  id: string;
+  reason?: string;
+  status?: string;
+  auto_recurring?: {
+    transaction_amount?: number;
+    currency_id?: string;
+    frequency?: number;
+    frequency_type?: string;
+  };
+}
+
+/** Creates a recurring subscription plan (preapproval_plan) in MP — the MP
+ *  analogue of a Stripe Price. The amount + currency live on the plan, so the
+ *  currency-per-country decision (COP for Colombia) is captured here. Returns
+ *  the created plan id, which is what goes in MERCADOPAGO_PLAN_PRO / _MAX. */
+export async function createPreapprovalPlan(input: {
+  reason: string;
+  amount: number;
+  currency: string;
+  backUrl: string;
+}): Promise<PreapprovalPlanSummary> {
+  if (!accessToken) throw new Error("Mercado Pago not configured");
+  const res = await fetch(`${MP_API}/preapproval_plan`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      reason: input.reason,
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: "months",
+        transaction_amount: input.amount,
+        currency_id: input.currency,
+      },
+      back_url: input.backUrl,
+    }),
+  });
+  const data = (await res.json().catch(() => ({}))) as PreapprovalPlanSummary & {
+    message?: string;
+  };
+  if (!res.ok || !data.id) {
+    throw new Error(
+      data.message || `Mercado Pago preapproval_plan failed (HTTP ${res.status})`,
+    );
+  }
+  return data;
+}
+
+/** Lists the account's existing subscription plans — lets the admin setup page
+ *  show already-created plans (and their ids) instead of creating duplicates. */
+export async function listPreapprovalPlans(): Promise<PreapprovalPlanSummary[]> {
+  if (!accessToken) return [];
+  const res = await fetch(`${MP_API}/preapproval_plan/search?limit=50`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!res.ok) return [];
+  const data = (await res.json().catch(() => null)) as {
+    results?: PreapprovalPlanSummary[];
+  } | null;
+  return data?.results ?? [];
+}
+
 /** Reads a preapproval's current state from MP — used by the webhook to
  *  confirm a notification before activating the subscription. Returns the
  *  fields the webhook needs to link + classify the subscription. */
