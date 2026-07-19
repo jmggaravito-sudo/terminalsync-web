@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import type { Locale } from "@/content";
 
@@ -30,14 +30,36 @@ export function CheckoutButton({
 }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [country, setCountry] = useState<string | null>(null);
 
-  // Mercado Pago is a PARALLEL payment rail (LatAm buyers pay with local cards
-  // / account balance). It stays hidden until NEXT_PUBLIC_MERCADOPAGO_ENABLED
-  // is set — the MP plans + currency-per-country config must exist first, and
-  // that pricing call is a product decision, not a code default.
-  const mpEnabled =
+  // Mercado Pago is a PARALLEL payment rail for Colombia: MP charges in local
+  // currency (COP) via local cards / PSE / account balance, which Stripe (USD)
+  // doesn't cover well for Colombian buyers. Two gates, both required:
+  //   1. NEXT_PUBLIC_MERCADOPAGO_ENABLED === "1" — global kill switch, so the
+  //      button can't appear until the MP plans + token are configured.
+  //   2. the visitor is in Colombia (x-vercel-ip-country === "CO"), resolved
+  //      server-side via /api/geo. Everyone else only sees Stripe.
+  const mpConfigured =
     process.env.NEXT_PUBLIC_MERCADOPAGO_ENABLED === "1" &&
     (plan === "pro" || plan === "max");
+
+  useEffect(() => {
+    if (!mpConfigured) return;
+    let alive = true;
+    fetch("/api/geo")
+      .then((r) => r.json())
+      .then((d: { country?: string | null }) => {
+        if (alive) setCountry(d.country ?? null);
+      })
+      .catch(() => {
+        // On any failure, leave country null → MP button stays hidden (safe).
+      });
+    return () => {
+      alive = false;
+    };
+  }, [mpConfigured]);
+
+  const mpEnabled = mpConfigured && country === "CO";
 
   async function startCheckout(endpoint: string) {
     setLoading(true);
