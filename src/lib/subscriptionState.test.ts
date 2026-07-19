@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Capture every upsert the neutral writer performs.
 let upsertCalls: Array<{ table: string; row: Record<string, unknown> }>;
+// Queue of errors to return from successive upsert calls (null = success).
+let upsertErrorQueue: Array<{ code?: string; message?: string } | null>;
 
 vi.mock("./supabaseAdmin", () => ({
   getSupabaseAdmin: () => ({
@@ -9,7 +11,8 @@ vi.mock("./supabaseAdmin", () => ({
       return {
         async upsert(row: Record<string, unknown>) {
           upsertCalls.push({ table, row });
-          return { error: null };
+          const err = upsertErrorQueue.length ? upsertErrorQueue.shift() : null;
+          return { error: err ?? null };
         },
       };
     },
@@ -26,6 +29,7 @@ import {
 
 beforeEach(() => {
   upsertCalls = [];
+  upsertErrorQueue = [];
   vi.spyOn(console, "log").mockImplementation(() => {});
   vi.spyOn(console, "warn").mockImplementation(() => {});
   vi.spyOn(console, "error").mockImplementation(() => {});
@@ -71,6 +75,42 @@ describe("upsertSubscription — provider-neutral write", () => {
     expect(row.stripe_customer_id).toBe("cus_9");
     expect(row.stripe_subscription_id).toBe("sub_9");
     expect(row.provider_subscription_id).toBe("sub_9");
+  });
+
+  it("degrades gracefully for Stripe when provider columns are missing (pre-migration)", async () => {
+    // First upsert fails with a missing-column error, retry (legacy shape) ok.
+    upsertErrorQueue = [{ code: "PGRST204", message: "column provider does not exist" }, null];
+    const ok = await upsertSubscription({
+      userId: "user-stripe",
+      provider: "stripe",
+      plan: "pro",
+      status: "active",
+      providerCustomerId: "cus_1",
+      providerSubscriptionId: "sub_1",
+    });
+    expect(ok).toBe(true);
+    expect(upsertCalls).toHaveLength(2);
+    // Retry row drops provider* but keeps the legacy Stripe columns → Stripe
+    // keeps syncing even before migration 0024.
+    const retryRow = upsertCalls[1].row;
+    expect("provider" in retryRow).toBe(false);
+    expect("provider_subscription_id" in retryRow).toBe(false);
+    expect(retryRow.stripe_subscription_id).toBe("sub_1");
+  });
+
+  it("does NOT half-write a Mercado Pago row when provider columns are missing", async () => {
+    upsertErrorQueue = [{ code: "42703", message: "column provider does not exist" }];
+    const ok = await upsertSubscription({
+      userId: "user-mp",
+      provider: "mercadopago",
+      plan: "pro",
+      status: "active",
+      providerSubscriptionId: "mp_1",
+    });
+    // MP has no legacy columns to fall back on → skip rather than write a row
+    // with no rail linkage.
+    expect(ok).toBe(false);
+    expect(upsertCalls).toHaveLength(1);
   });
 
   it("does not write period fields left undefined (partial cancel update)", async () => {

@@ -92,12 +92,46 @@ export async function upsertSubscription(
     .upsert(row, { onConflict: "user_id" });
 
   if (error) {
-    console.error("[subscriptions] upsert failed", {
-      provider: params.provider,
-      userId: params.userId,
-      error: error.message,
-    });
-    return false;
+    // Migration-safety net: the provider* columns (migration 0024) may not
+    // exist yet if the code deploys before the migration runs. Rather than
+    // break the LIVE Stripe path, detect the missing-column error, strip the
+    // new columns, and retry with the legacy shape (the Stripe stripe_*
+    // columns are still written, so Stripe keeps working). MP writes just
+    // lose the provider tag until the migration lands.
+    if (isMissingProviderColumn(error)) {
+      console.warn(
+        "[subscriptions] provider columns missing — retrying without them. APPLY migration 0024 (supabase db push).",
+      );
+      delete row.provider;
+      delete row.provider_customer_id;
+      delete row.provider_subscription_id;
+      // A pure Mercado Pago row has no legacy columns to fall back on; skip
+      // rather than write a Stripe-less row that can't be linked to a rail.
+      if (params.provider !== "stripe") {
+        console.error(
+          "[subscriptions] cannot record Mercado Pago subscription until migration 0024 is applied",
+          { userId: params.userId },
+        );
+        return false;
+      }
+      const retry = await sb
+        .from("subscriptions")
+        .upsert(row, { onConflict: "user_id" });
+      if (retry.error) {
+        console.error("[subscriptions] upsert failed (legacy retry)", {
+          userId: params.userId,
+          error: retry.error.message,
+        });
+        return false;
+      }
+    } else {
+      console.error("[subscriptions] upsert failed", {
+        provider: params.provider,
+        userId: params.userId,
+        error: error.message,
+      });
+      return false;
+    }
   }
   console.log("[subscriptions] synced", {
     provider: params.provider,
@@ -106,6 +140,24 @@ export async function upsertSubscription(
     status: params.status,
   });
   return true;
+}
+
+/** True when a PostgREST error signals one of the migration-0024 columns is
+ *  absent (deployed before the migration ran). Codes: PGRST204 (schema cache
+ *  miss) or Postgres 42703 (undefined_column); message names the column. */
+function isMissingProviderColumn(error: {
+  code?: string;
+  message?: string;
+}): boolean {
+  const code = error.code ?? "";
+  if (code === "PGRST204" || code === "42703") return true;
+  const msg = (error.message ?? "").toLowerCase();
+  return (
+    msg.includes("column") &&
+    (msg.includes("provider") ||
+      msg.includes("provider_customer_id") ||
+      msg.includes("provider_subscription_id"))
+  );
 }
 
 /** Downgrade a user to Free (subscription cancelled / revoked). Keeps the
