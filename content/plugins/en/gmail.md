@@ -12,18 +12,18 @@ skillSlugs: ["internal-comms"]
 ---
 ## When to use
 
-- You want your AI to draft and send emails (follow-ups, reminders, client updates) from your Gmail, without hopping between a draft and the app.
-- You handle client email yourself and want the repetitive writing off your plate.
+- You want your AI to draft and send emails — follow-ups, reminders, client updates — from your Gmail, without hopping between a draft and the app.
+- You handle client email yourself and want the repetitive from-scratch writing off your plate.
 - You want the AI to propose the message but **you approve before it sends**.
 
 ## What it does
 
 Bundles two pieces that reinforce each other, in one install:
 
-- **Gmail (the connector)** reads, searches, and sends mail in your account.
+- **Gmail (the connector)** reads, searches, and sends mail in your account — so the AI can see the prior thread with a client before writing the reply.
 - **Internal Comms (the skill)** drafts the message in the right tone — follow-up, reminder, update — and states its limits (sensitive topics like HR or legal go through human review, never automatic).
 
-Installed separately, the draft lives in one place and the send in another. Together: *"write Acme the follow-up on the proposal"* → drafted and ready to send.
+**A real example:** you sent a client a proposal a week ago and they didn't reply. You say *"write Acme a friendly follow-up on the proposal"*. Gmail finds the original thread, Internal Comms drafts a courteous reminder that references what you sent, and shows it to you. You read it, tweak a line if you want, approve, and it goes. What used to take ten minutes and a bit of awkwardness is now thirty seconds.
 
 ## How to use
 
@@ -31,6 +31,12 @@ Installed separately, the draft lives in one place and the send in another. Toge
 2. Ask: *"draft a friendly follow-up for the client Acme about the proposal I sent last week"*.
 3. Review the draft — **you approve** — and send it via Gmail.
 
-## Best for
+## Why the bundle works
 
-Business owners and professionals who handle their own client email and want the AI to draft and send with no friction, while they approve before sending. Requires connecting your Gmail account.
+A drafting skill alone leaves you the text, but then you have to copy it, open Gmail, find the thread, and send. The connector alone gives you the tools, but doesn't know *how* to write a good follow-up. Together they close the loop: the AI reads your email context, drafts with judgment, and sends — all in one action, with your OK in the middle.
+
+## Limits
+
+- **It never sends without your approval** — it drafts and shows you; you decide what goes out.
+- Sensitive topics (layoffs, legal, delicate complaints) get flagged for human review, not automated.
+- Requires connecting your Gmail account; it only sees and acts on what that account allows.

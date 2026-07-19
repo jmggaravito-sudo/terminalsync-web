@@ -13,17 +13,17 @@ skillSlugs: ["code-reviewer"]
 ## When to use
 
 - You want your AI to review a Pull Request or a change in your GitHub repos, without pasting the diff by hand.
-- You want a review with findings ranked by severity and backed by evidence, not a generic "looks good".
+- You want a review with findings ranked by severity and backed by evidence — not a generic "looks good".
 - You work with Claude Code or Codex and want a second look before merging.
 
 ## What it does
 
 Bundles two pieces that reinforce each other, in one install:
 
-- **GitHub (the connector)** accesses your repos, PRs, issues, and files.
+- **GitHub (the connector)** accesses your repos, PRs, issues, and files — so the skill can read the full diff and the files around the change, not just the snippet.
 - **Code Reviewer (the skill)** reviews the diff or PR and returns findings ranked by severity, with evidence and its limit (it reviews what it sees; it doesn't replace tests or a CI pipeline).
 
-Together: *"review PR #42 in my repo"* → the connector brings the diff, the skill audits it.
+**A real example:** a contributor opened PR #42 and you're unsure about merging it. You say *"review PR #42 in my-org/my-repo"*. GitHub brings the diff and the files it touches, Code Reviewer spots a missing error handler on a new route, a potential race condition, and two minor style issues, each with the exact line and why it matters. You know what to ask them to fix before merging — without reading the 300 lines by hand.
 
 ## How to use
 
@@ -31,6 +31,12 @@ Together: *"review PR #42 in my repo"* → the connector brings the diff, the sk
 2. Ask: *"review the changes in PR #42 of my-org/my-repo"*.
 3. You get prioritized findings with evidence, ready to act on before merging.
 
-## Best for
+## Why the bundle works
 
-Developers and technical teams who want an evidence-backed code review on their GitHub PRs. Requires connecting your GitHub account.
+The review skill alone needs you to paste the code; give it little context and it reviews little. The connector alone brings you the code, but doesn't evaluate it. Together: the connector gives the skill the full diff and neighboring files, and the skill audits it with judgment — a review with real context, in one action.
+
+## Limits
+
+- It reviews what it sees in the diff and the files it can read — it doesn't replace tests, CI, or the final judgment of whoever merges.
+- It doesn't guarantee there are no bugs; it's an evidence-backed second look, not a proof of correctness.
+- Requires connecting your GitHub account; it only sees the repos that access allows.
