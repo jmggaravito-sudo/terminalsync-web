@@ -11,9 +11,13 @@
  * target (LatAm business owners) pays with Mercado Pago (local cards, account
  * balance, Rapipago/Pago Fácil, etc.). Offering both widens who can subscribe.
  *
- * STATUS: prototype. Needs a live `MERCADOPAGO_ACCESS_TOKEN` + preapproval
- * plans created in the MP dashboard to run end-to-end. Field names follow MP's
- * documented /preapproval shape but should be verified against the live API.
+ * STATUS: code-complete rail. Checkout (this file) + subscription activation
+ * (src/app/api/webhooks/mercadopago via the provider-neutral upsert in
+ * subscriptionState.ts) are wired end-to-end. To GO LIVE it needs a real
+ * `MERCADOPAGO_ACCESS_TOKEN`, the preapproval plans created in the MP
+ * dashboard (MERCADOPAGO_PLAN_PRO / _MAX), x-signature verification on the
+ * webhook, and NEXT_PUBLIC_MERCADOPAGO_ENABLED=1 to surface the button. Field
+ * names follow MP's documented /preapproval shape; verify against the live API.
  */
 
 import { type PlanId, siteUrl } from "./stripe";
@@ -34,6 +38,40 @@ export function mpPreapprovalPlanFor(plan: PlanId): string | null {
   if (plan === "pro") return process.env.MERCADOPAGO_PLAN_PRO ?? null;
   if (plan === "max") return process.env.MERCADOPAGO_PLAN_MAX ?? null;
   return null;
+}
+
+/** Reverse of `mpPreapprovalPlanFor`: given the `preapproval_plan_id` MP
+ *  reports on a subscription, resolve which Terminal Sync plan it is. Used by
+ *  the webhook to know whether an activated MP subscription is Pro or Max. */
+export function mpPlanFromPreapprovalPlanId(
+  preapprovalPlanId: string | undefined | null,
+): "pro" | "max" | null {
+  if (!preapprovalPlanId) return null;
+  if (preapprovalPlanId === process.env.MERCADOPAGO_PLAN_PRO) return "pro";
+  if (preapprovalPlanId === process.env.MERCADOPAGO_PLAN_MAX) return "max";
+  return null;
+}
+
+/** MP preapproval status → our provider-neutral subscription status.
+ *  MP statuses: pending | authorized | paused | cancelled. */
+export function mpStatusToSubscriptionStatus(
+  status: string | undefined,
+):
+  | "active"
+  | "past_due"
+  | "canceled"
+  | "incomplete" {
+  switch (status) {
+    case "authorized":
+      return "active";
+    case "paused":
+      return "past_due";
+    case "cancelled":
+      return "canceled";
+    default:
+      // "pending" and anything unexpected: no active access yet.
+      return "incomplete";
+  }
 }
 
 export interface CreatePreapprovalInput {
@@ -91,21 +129,26 @@ export async function createPreapproval(
   return { id: data.id, initPoint: data.init_point };
 }
 
+export interface PreapprovalState {
+  id: string;
+  status: string;
+  external_reference?: string;
+  preapproval_plan_id?: string;
+  payer_email?: string;
+}
+
 /** Reads a preapproval's current state from MP — used by the webhook to
- *  confirm a notification before activating the subscription. */
+ *  confirm a notification before activating the subscription. Returns the
+ *  fields the webhook needs to link + classify the subscription. */
 export async function getPreapproval(
   id: string,
-): Promise<{ id: string; status: string; external_reference?: string } | null> {
+): Promise<PreapprovalState | null> {
   if (!accessToken) return null;
   const res = await fetch(`${MP_API}/preapproval/${encodeURIComponent(id)}`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   if (!res.ok) return null;
-  return (await res.json().catch(() => null)) as {
-    id: string;
-    status: string;
-    external_reference?: string;
-  } | null;
+  return (await res.json().catch(() => null)) as PreapprovalState | null;
 }
 
 export { siteUrl };

@@ -31,18 +31,15 @@ export function CheckoutButton({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleClick(e: React.MouseEvent) {
-    if (plan === "starter") return; // let the anchor just do its thing
-    if (plan === "agency") {
-      // Lead-gen route: open email with a pre-filled subject.
-      e.preventDefault();
-      window.location.href =
-        "mailto:ventas@terminalsync.ai?subject=" +
-        encodeURIComponent("TerminalSync Agency — cotización");
-      return;
-    }
+  // Mercado Pago is a PARALLEL payment rail (LatAm buyers pay with local cards
+  // / account balance). It stays hidden until NEXT_PUBLIC_MERCADOPAGO_ENABLED
+  // is set — the MP plans + currency-per-country config must exist first, and
+  // that pricing call is a product decision, not a code default.
+  const mpEnabled =
+    process.env.NEXT_PUBLIC_MERCADOPAGO_ENABLED === "1" &&
+    (plan === "pro" || plan === "max");
 
-    e.preventDefault();
+  async function startCheckout(endpoint: string) {
     setLoading(true);
     setError(null);
     try {
@@ -54,7 +51,7 @@ export function CheckoutButton({
           ? (window as unknown as { Rewardful?: { referral?: string } })
               .Rewardful?.referral
           : undefined;
-      const res = await fetch("/api/checkout", {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan, lang, referral }),
@@ -68,6 +65,26 @@ export function CheckoutButton({
       setLoading(false);
       setError(err instanceof Error ? err.message : "Unknown error");
     }
+  }
+
+  async function handleClick(e: React.MouseEvent) {
+    if (plan === "starter") return; // let the anchor just do its thing
+    if (plan === "agency") {
+      // Lead-gen route: open email with a pre-filled subject.
+      e.preventDefault();
+      window.location.href =
+        "mailto:ventas@terminalsync.ai?subject=" +
+        encodeURIComponent("TerminalSync Agency — cotización");
+      return;
+    }
+
+    e.preventDefault();
+    await startCheckout("/api/checkout");
+  }
+
+  function handleMercadoPago(e: React.MouseEvent) {
+    e.preventDefault();
+    void startCheckout("/api/checkout/mercadopago");
   }
 
   // starter (Free) → direct DMG download via the /api/download route
@@ -98,6 +115,18 @@ export function CheckoutButton({
           label
         )}
       </a>
+      {mpEnabled && (
+        <a
+          href="#pricing"
+          onClick={handleMercadoPago}
+          aria-busy={loading}
+          className={`mt-2 w-full inline-flex items-center justify-center gap-2 rounded-xl py-2.5 text-[13px] font-semibold transition-all bg-[var(--color-panel-2)] hover:bg-[var(--color-bg)] text-[var(--color-fg)] border border-[var(--color-border)] ${
+            loading ? "opacity-75 cursor-wait" : ""
+          }`}
+        >
+          {lang === "es" ? "Pagar con Mercado Pago" : "Pay with Mercado Pago"}
+        </a>
+      )}
       {error && (
         <div className="mt-2 rounded-md border border-[var(--color-err)]/30 bg-[var(--color-err)]/5 px-3 py-2 text-[11.5px] text-[var(--color-err)]">
           <div className="font-semibold">{errorTitle}</div>

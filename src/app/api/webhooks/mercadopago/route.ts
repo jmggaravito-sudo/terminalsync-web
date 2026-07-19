@@ -1,5 +1,15 @@
 import { NextResponse } from "next/server";
-import { getPreapproval, mercadoPagoConfigured } from "@/lib/mercadopago";
+import {
+  getPreapproval,
+  mercadoPagoConfigured,
+  mpPlanFromPreapprovalPlanId,
+  mpStatusToSubscriptionStatus,
+} from "@/lib/mercadopago";
+import {
+  downgradeToFree,
+  findUserIdByEmail,
+  upsertSubscription,
+} from "@/lib/subscriptionState";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -7,25 +17,16 @@ export const dynamic = "force-dynamic";
 /**
  * Mercado Pago subscription webhook — the MP analogue of
  * /api/webhooks/stripe. MP notifies on preapproval (subscription) state
- * changes; we confirm the state with MP and then activate/revoke the Terminal
- * Sync subscription.
+ * changes; we confirm the state with MP, resolve the Terminal Sync account,
+ * and write it through the SAME provider-neutral upsert the Stripe webhook
+ * uses (src/lib/subscriptionState.ts). The `subscriptions` table carries a
+ * `provider` column (migration 0024) so one row can describe either rail.
  *
- * ── STATUS: prototype skeleton ──────────────────────────────────────────
- * The CHECKOUT side (create a preapproval, redirect to init_point) is done in
- * /api/checkout/mercadopago. The remaining piece is subscription STATE:
- * `syncSubscriptionToSupabase` in src/lib/subscriptionsSync.ts takes a
- * `Stripe.Subscription` — it is Stripe-shaped, so an MP preapproval can't reuse
- * it directly. To ship MP in parallel, the `subscriptions` model needs to
- * become provider-agnostic:
- *   1. add a `provider` column ('stripe' | 'mercadopago') to `subscriptions`;
- *   2. extract a small provider-neutral upsert (userId, plan, status,
- *      providerCustomerId, providerSubscriptionId, provider) that BOTH the
- *      Stripe webhook and this one call.
- * Until that lands, this handler confirms the MP event and logs it, but does
- * NOT write subscription state — flagged below so nobody assumes it activates.
- *
- * MP also expects a fast 200 to stop retries, and a secret-based signature
- * check (x-signature) that must be wired before go-live.
+ * Go-live checklist still open:
+ *   - x-signature verification against MERCADOPAGO_WEBHOOK_SECRET (TODO below);
+ *   - live MERCADOPAGO_ACCESS_TOKEN + MP preapproval plans
+ *     (MERCADOPAGO_PLAN_PRO / _MAX) so plan resolution succeeds;
+ *   - the currency/price-per-country decision lives ON the MP plans, not here.
  */
 
 interface MpNotification {
@@ -68,18 +69,60 @@ export async function POST(req: Request) {
     return NextResponse.json({ received: true, found: false }, { status: 200 });
   }
 
-  // pre.status: "authorized" (active) | "paused" | "cancelled" | "pending".
-  // pre.external_reference: the Supabase user id we set at checkout.
-  //
-  // ── ACTIVATION NOT WIRED YET ──
-  // When `subscriptions` is provider-agnostic (see file header), do:
-  //   if (pre.status === "authorized") upsertSubscription({
-  //     userId: pre.external_reference, plan, status: 'active',
-  //     provider: 'mercadopago', providerSubscriptionId: pre.id });
-  //   else if (pre.status === "cancelled") revoke(...)
-  // For now we only acknowledge, so state is never silently half-written.
+  // Resolve the Terminal Sync account: external_reference (the supabase user
+  // id we stamped at checkout) is primary; fall back to matching the payer's
+  // email against profiles for checkouts that carried no user id.
+  let userId = pre.external_reference ?? null;
+  if (!userId && pre.payer_email) {
+    userId = await findUserIdByEmail(pre.payer_email);
+  }
+  if (!userId) {
+    console.warn(
+      "[mercadopago→supabase] could not resolve account (no external_reference AND no matching profile by email) — subscription NOT linked",
+      { preapprovalId: pre.id },
+    );
+    return NextResponse.json(
+      { received: true, linked: false },
+      { status: 200 },
+    );
+  }
+
+  // Cancelled → downgrade to free. Everything else → upsert with the mapped
+  // status/plan (authorized=active, pending=incomplete, paused=past_due).
+  if (pre.status === "cancelled") {
+    await downgradeToFree({
+      userId,
+      provider: "mercadopago",
+      providerSubscriptionId: pre.id,
+    });
+    return NextResponse.json(
+      { received: true, status: pre.status, action: "downgraded" },
+      { status: 200 },
+    );
+  }
+
+  const plan = mpPlanFromPreapprovalPlanId(pre.preapproval_plan_id);
+  if (!plan) {
+    console.warn(
+      "[mercadopago→supabase] unknown preapproval_plan_id — can't classify plan",
+      { preapprovalId: pre.id, preapprovalPlanId: pre.preapproval_plan_id },
+    );
+    return NextResponse.json(
+      { received: true, status: pre.status, plan: null, linked: false },
+      { status: 200 },
+    );
+  }
+
+  const ok = await upsertSubscription({
+    userId,
+    provider: "mercadopago",
+    plan,
+    status: mpStatusToSubscriptionStatus(pre.status),
+    providerSubscriptionId: pre.id,
+  });
+
   return NextResponse.json(
-    { received: true, status: pre.status, activation: "pending-provider-agnostic-subscriptions" },
+    { received: true, status: pre.status, plan, written: ok },
     { status: 200 },
   );
 }
