@@ -20,10 +20,53 @@
  * names follow MP's documented /preapproval shape; verify against the live API.
  */
 
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { type PlanId, siteUrl } from "./stripe";
 
 const MP_API = "https://api.mercadopago.com";
 const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+
+/** True when the webhook signing secret is configured — when it is, the
+ *  webhook MUST reject unsigned/invalid requests. */
+export const mercadoPagoWebhookSecretSet = Boolean(
+  process.env.MERCADOPAGO_WEBHOOK_SECRET,
+);
+
+/**
+ * Verify Mercado Pago's `x-signature` header (official scheme).
+ *
+ * MP sends `x-signature: ts=<unix>,v1=<hmac>` and `x-request-id`. The signed
+ * manifest is `id:<data.id>;request-id:<x-request-id>;ts:<ts>;` (data.id
+ * lowercased), HMAC-SHA256'd with the webhook secret from the MP dashboard.
+ * Returns false when the secret is unset (caller decides whether to enforce).
+ */
+export function verifyMpWebhookSignature(input: {
+  xSignature: string | null;
+  xRequestId: string | null;
+  dataId: string | undefined;
+}): boolean {
+  const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+  if (!secret || !input.xSignature) return false;
+
+  const parts: Record<string, string> = {};
+  for (const kv of input.xSignature.split(",")) {
+    const idx = kv.indexOf("=");
+    if (idx === -1) continue;
+    parts[kv.slice(0, idx).trim()] = kv.slice(idx + 1).trim();
+  }
+  const ts = parts.ts;
+  const v1 = parts.v1;
+  if (!ts || !v1) return false;
+
+  const id = input.dataId ? input.dataId.toLowerCase() : "";
+  const manifest = `id:${id};request-id:${input.xRequestId ?? ""};ts:${ts};`;
+  const expected = createHmac("sha256", secret).update(manifest).digest("hex");
+
+  const a = Buffer.from(expected, "hex");
+  const b = Buffer.from(v1, "hex");
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
 
 /** True when Mercado Pago is configured. Mirrors the `stripe` null-guard so a
  *  route can 503 cleanly instead of throwing when MP isn't set up. */

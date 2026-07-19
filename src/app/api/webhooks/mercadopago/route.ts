@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import {
   getPreapproval,
   mercadoPagoConfigured,
+  mercadoPagoWebhookSecretSet,
   mpPlanFromPreapprovalPlanId,
   mpStatusToSubscriptionStatus,
+  verifyMpWebhookSignature,
 } from "@/lib/mercadopago";
 import {
   downgradeToFree,
@@ -22,8 +24,13 @@ export const dynamic = "force-dynamic";
  * uses (src/lib/subscriptionState.ts). The `subscriptions` table carries a
  * `provider` column (migration 0024) so one row can describe either rail.
  *
+ * Security: when MERCADOPAGO_WEBHOOK_SECRET is set, every request must carry a
+ * valid `x-signature` (HMAC-SHA256, verified below) or it's rejected 401 — this
+ * closes the spoofing window (a forged "authorized" notification can't activate
+ * a subscription without paying). Until the secret is set (pre-go-live) the
+ * handler processes but warns, so nothing breaks while it's being wired.
+ *
  * Go-live checklist still open:
- *   - x-signature verification against MERCADOPAGO_WEBHOOK_SECRET (TODO below);
  *   - live MERCADOPAGO_ACCESS_TOKEN + MP preapproval plans
  *     (MERCADOPAGO_PLAN_PRO / _MAX) so plan resolution succeeds;
  *   - the currency/price-per-country decision lives ON the MP plans, not here.
@@ -41,9 +48,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ received: true, configured: false }, { status: 200 });
   }
 
-  // TODO(go-live): verify the `x-signature` header against
-  // MERCADOPAGO_WEBHOOK_SECRET before trusting the payload.
-
   let body: MpNotification = {};
   try {
     body = (await req.json()) as MpNotification;
@@ -58,6 +62,23 @@ export async function POST(req: Request) {
   const isPreapproval =
     body.type === "subscription_preapproval" || body.type === "preapproval";
   const id = body.data?.id;
+
+  // Signature gate. The signed manifest includes data.id, so verify after we
+  // know it. Enforce only once the secret exists; warn (don't break) before.
+  if (mercadoPagoWebhookSecretSet) {
+    const ok = verifyMpWebhookSignature({
+      xSignature: req.headers.get("x-signature"),
+      xRequestId: req.headers.get("x-request-id"),
+      dataId: id,
+    });
+    if (!ok) {
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
+  } else {
+    console.warn(
+      "[mercadopago] MERCADOPAGO_WEBHOOK_SECRET not set — processing webhook WITHOUT signature verification (set the secret before going live)",
+    );
+  }
 
   if (!isPreapproval || !id) {
     // Not a subscription event we handle — ack and move on.

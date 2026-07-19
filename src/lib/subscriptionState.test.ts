@@ -16,10 +16,12 @@ vi.mock("./supabaseAdmin", () => ({
   }),
 }));
 
+import { createHmac } from "node:crypto";
 import { downgradeToFree, upsertSubscription } from "./subscriptionState";
 import {
   mpPlanFromPreapprovalPlanId,
   mpStatusToSubscriptionStatus,
+  verifyMpWebhookSignature,
 } from "./mercadopago";
 
 beforeEach(() => {
@@ -101,5 +103,58 @@ describe("Mercado Pago mapping helpers", () => {
     expect(mpPlanFromPreapprovalPlanId("plan_max_ars")).toBe("max");
     expect(mpPlanFromPreapprovalPlanId("plan_unknown")).toBeNull();
     expect(mpPlanFromPreapprovalPlanId(undefined)).toBeNull();
+  });
+});
+
+describe("verifyMpWebhookSignature", () => {
+  const secret = "mp_webhook_secret";
+  const dataId = "PREAPP123";
+  const requestId = "req-abc";
+
+  function sign(id: string, reqId: string, ts: string) {
+    const manifest = `id:${id.toLowerCase()};request-id:${reqId};ts:${ts};`;
+    return createHmac("sha256", secret).update(manifest).digest("hex");
+  }
+
+  beforeEach(() => {
+    process.env.MERCADOPAGO_WEBHOOK_SECRET = secret;
+  });
+  afterEach(() => {
+    delete process.env.MERCADOPAGO_WEBHOOK_SECRET;
+  });
+
+  it("accepts a correctly signed request (data.id lowercased)", () => {
+    const ts = "1700000000";
+    const v1 = sign(dataId, requestId, ts);
+    expect(
+      verifyMpWebhookSignature({
+        xSignature: `ts=${ts},v1=${v1}`,
+        xRequestId: requestId,
+        dataId,
+      }),
+    ).toBe(true);
+  });
+
+  it("rejects a tampered signature", () => {
+    const ts = "1700000000";
+    const v1 = sign("different-id", requestId, ts);
+    expect(
+      verifyMpWebhookSignature({
+        xSignature: `ts=${ts},v1=${v1}`,
+        xRequestId: requestId,
+        dataId,
+      }),
+    ).toBe(false);
+  });
+
+  it("rejects when the secret is unset or the header is missing", () => {
+    delete process.env.MERCADOPAGO_WEBHOOK_SECRET;
+    expect(
+      verifyMpWebhookSignature({ xSignature: "ts=1,v1=abc", xRequestId: requestId, dataId }),
+    ).toBe(false);
+    process.env.MERCADOPAGO_WEBHOOK_SECRET = secret;
+    expect(
+      verifyMpWebhookSignature({ xSignature: null, xRequestId: requestId, dataId }),
+    ).toBe(false);
   });
 });
