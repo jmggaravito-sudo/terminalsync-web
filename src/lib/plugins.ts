@@ -177,3 +177,23 @@ export async function listPluginSlugs(): Promise<string[]> {
   const plugins = await listPlugins("en");
   return plugins.map((p) => p.slug);
 }
+
+/** Public plugins that bundle a given connector — for cross-linking from the
+ *  connector's own page ("part of the X Plugin"), so the pieces surface the
+ *  product they belong to. */
+export async function pluginsUsingConnector(
+  lang: string,
+  connectorSlug: string,
+): Promise<PluginMeta[]> {
+  const all = await listPlugins(lang);
+  return all.filter((p) => p.connectorSlug === connectorSlug);
+}
+
+/** Public plugins that bundle a given skill. */
+export async function pluginsUsingSkill(
+  lang: string,
+  skillSlug: string,
+): Promise<PluginMeta[]> {
+  const all = await listPlugins(lang);
+  return all.filter((p) => p.skillSlugs.includes(skillSlug));
+}

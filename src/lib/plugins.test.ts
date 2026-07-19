@@ -6,6 +6,8 @@ import {
   listPlugins,
   listPluginSlugs,
   normalizeMeta,
+  pluginsUsingConnector,
+  pluginsUsingSkill,
   type PluginMeta,
 } from "./plugins";
 
@@ -102,6 +104,16 @@ describe("plugins — catalog (Fase 1: first pilot)", () => {
 
   it("returns null for a slug that does not exist", async () => {
     await expect(getPlugin("es", "nope-not-real")).resolves.toBeNull();
+  });
+
+  it("finds the plugins that bundle a given connector or skill (cross-linking)", async () => {
+    expect((await pluginsUsingConnector("es", "gmail")).map((p) => p.slug)).toContain("gmail");
+    expect((await pluginsUsingConnector("es", "firecrawl")).map((p) => p.slug)).toContain("seo-audit");
+    // internal-comms powers several product packs.
+    const bySkill = (await pluginsUsingSkill("es", "internal-comms")).map((p) => p.slug).sort();
+    expect(bySkill).toEqual(expect.arrayContaining(["gmail", "slack", "stripe"]));
+    // No match → empty, never throws.
+    await expect(pluginsUsingConnector("es", "nonexistent-xyz")).resolves.toEqual([]);
   });
 
   it("packages existing official connectors with evaluated skills (gmail, gdrive)", async () => {

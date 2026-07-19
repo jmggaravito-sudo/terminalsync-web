@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Check, Download, Share2 } from "lucide-react";
+import { ArrowLeft, Check, Download, Share2, Boxes } from "lucide-react";
 import { getSkill, listSkillSlugs } from "@/lib/skills";
+import { pluginsUsingSkill } from "@/lib/plugins";
 import { SkillLogo } from "../Logo";
 
 export const revalidate = 3600;
@@ -37,6 +38,9 @@ export default async function SkillDetail({ params }: Props) {
   const isEs = lang === "es";
   const skill = await getSkill(lang, slug);
   if (!skill) notFound();
+
+  // Plugins that bundle this skill — surface the product it's part of.
+  const inPlugins = await pluginsUsingSkill(lang, slug);
 
   // Deep-link the desktop client will resolve when the install handshake is
   // wired (see the brief for the other terminal session — terminalsync://
@@ -137,6 +141,22 @@ export default async function SkillDetail({ params }: Props) {
             {isEs ? "Compartir" : "Share"}
           </button>
         </div>
+
+        {inPlugins.length > 0 && (
+          <div className="mt-6 flex flex-wrap items-center gap-2 text-[13px] text-[var(--color-fg-muted)]">
+            <Boxes size={14} className="text-[var(--color-accent)]" />
+            <span>{isEs ? "Parte del Plugin" : "Part of the Plugin"}</span>
+            {inPlugins.map((p) => (
+              <Link
+                key={p.slug}
+                href={`/${lang}/plugins/${p.slug}`}
+                className="font-medium text-[var(--color-accent)] hover:underline"
+              >
+                {p.name}
+              </Link>
+            ))}
+          </div>
+        )}
 
         <article
           className="prose prose-invert mt-12 max-w-none text-[14.5px] leading-[1.7]
