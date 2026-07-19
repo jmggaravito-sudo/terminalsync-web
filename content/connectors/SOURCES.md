@@ -79,6 +79,7 @@ Este filtro aplica igual a **kits** (`content/kits/RULES.md`) y **skills** (`con
 | **box / sonarqube** | SKIP 2026-07-18 | Aparecen en el directorio, pero el paquete npm con server MCP es **comunitario**, no del vendor: `box-mcp-server` (author `jake@heimark.org`, repo `hmk/…`) y `sonarqube-mcp-server` (author `sapientpants`). Falla el gate de publisher oficial (regla #3). El plugin oficial del directorio apunta a otra cosa (skills/remoto). |
 | **convex** | SKIP 2026-07-18 | En el directorio como `convex-backend-**skill**`; el MCP de Convex es un **subcomando del CLI** (`npx convex mcp`), no un server instalable independiente (regla #2). |
 | **linear / datadog** | SKIP 2026-07-18 | Del directorio, pero son **remotos/hospedados** (Linear: `mcp.linear.app` OAuth; Datadog: plugin `datadog-labs`, no server npm stdio). Candidatos para la extensión de scope remoto, no para el gate npm actual. |
+| **shopify** | FIRST-PARTY 2026-07-19 | **NO pasa por el Loop npm** (Shopify no publica un server MCP operador para el dueño; `@shopify/dev-mcp` es solo docs/schema y los que operan la tienda son de terceros). Se resolvió con un **build propio**: el server `terminalsync-shopify-mcp` (repo `terminal-sync`, sidecar Tauri) sobre la Admin GraphQL API oficial, conectado desde Ajustes → Integraciones (no por manifest npm). Catálogo: `content/connectors/{es,en}/shopify.md` (`source: first-party`, sin manifest). **Un futuro run del Loop NO debe re-SKIPpearlo como npm** — ya está resuelto fuera del scope npm. Logo: **oficial** (simple-icons `shopify`, `#7AB55C`). |
 
 ## Logos pendientes (deuda del Loop)
 
@@ -89,6 +90,7 @@ Este filtro aplica igual a **kits** (`content/kits/RULES.md`) y **skills** (`con
 | ~~**firecrawl**~~ | **CERRADO 2026-07-17** | Logo **oficial** de Firecrawl bajado del repo oficial (`mendableai/firecrawl`, `img/firecrawl_logo.png`, 512×512) vía `raw.githubusercontent.com` y embebido en `public/connectors/firecrawl.svg`. Deuda saldada. | — |
 | **pinecone** | fallback TS (`public/connectors/pinecone.svg`) | Logo oficial de Pinecone. No está en simple-icons (2026-07-18) y los repos raw de `pinecone-io` no exponen un SVG de logo; el sitio del vendor está bloqueado por el proxy. Bajar de pinecone.io o su brand kit. | 2026-07-18 |
 | **exa** | fallback TS (`public/connectors/exa.svg`) | Logo oficial de Exa. **Re-chequeado 2026-07-17:** no está en simple-icons; `exa.ai` sigue bloqueado por el proxy; `api.github.com` está scopeada (403) así que no se puede listar el repo, y las rutas raw típicas (`exa-labs/exa-mcp-server` `assets/logo.svg`, etc.) dan 404. **Pendiente JM (1 min):** guardar el SVG/PNG oficial de exa.ai o su brand kit a `public/connectors/exa.svg`. | 2026-07-14 (re-check 2026-07-17) |
+| ~~**shopify**~~ | **CERRADO 2026-07-19** | Logo **oficial** de Shopify: la marca `shopify` de simple-icons (path oficial, `fill="#7AB55C"`) bajada vía `npm pack simple-icons` y embebida en `public/connectors/shopify.svg`. Deuda saldada. | — |
 
 ## Estructura del molde de oro (verificada en estos 8)
 
