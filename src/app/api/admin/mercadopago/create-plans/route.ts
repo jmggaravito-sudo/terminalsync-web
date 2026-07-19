@@ -38,13 +38,16 @@ async function requireAdmin(req: Request) {
 export async function GET(req: Request) {
   const denied = await requireAdmin(req);
   if (denied) return denied;
-  if (!mercadoPagoConfigured) {
+  // Optional ?token=TEST-... override (admin-only) to list a test account's
+  // plans without swapping the production env var.
+  const tokenOverride = new URL(req.url).searchParams.get("token") ?? undefined;
+  if (!mercadoPagoConfigured && !tokenOverride) {
     return NextResponse.json(
       { error: "MERCADOPAGO_ACCESS_TOKEN not set on the server." },
       { status: 503 },
     );
   }
-  const plans = await listPreapprovalPlans();
+  const plans = await listPreapprovalPlans(tokenOverride);
   return NextResponse.json({
     plans: plans.map((p) => ({
       id: p.id,
@@ -60,24 +63,30 @@ interface Body {
   proAmount?: number;
   maxAmount?: number;
   currency?: string;
+  /** Optional TEST-... token to create plans on a test account without
+   *  swapping the production env var. Admin-only. Never logged. */
+  token?: string;
 }
 
 export async function POST(req: Request) {
   const denied = await requireAdmin(req);
   if (denied) return denied;
 
-  if (!mercadoPagoConfigured) {
-    return NextResponse.json(
-      { error: "MERCADOPAGO_ACCESS_TOKEN not set on the server." },
-      { status: 503 },
-    );
-  }
-
   let body: Body = {};
   try {
     body = (await req.json()) as Body;
   } catch {
     // Empty body is fine — fall back to the agreed defaults.
+  }
+
+  const tokenOverride =
+    typeof body.token === "string" && body.token.trim() ? body.token.trim() : undefined;
+
+  if (!mercadoPagoConfigured && !tokenOverride) {
+    return NextResponse.json(
+      { error: "MERCADOPAGO_ACCESS_TOKEN not set on the server." },
+      { status: 503 },
+    );
   }
 
   const proAmount = Number.isFinite(body.proAmount) ? Number(body.proAmount) : DEFAULT_PRO_COP;
@@ -93,20 +102,17 @@ export async function POST(req: Request) {
   const backUrl = `${siteUrl()}/es/checkout/success`;
 
   try {
-    const pro = await createPreapprovalPlan({
-      reason: "Terminal Sync Pro",
-      amount: proAmount,
-      currency,
-      backUrl,
-    });
-    const max = await createPreapprovalPlan({
-      reason: "Terminal Sync Max",
-      amount: maxAmount,
-      currency,
-      backUrl,
-    });
+    const pro = await createPreapprovalPlan(
+      { reason: "Terminal Sync Pro", amount: proAmount, currency, backUrl },
+      tokenOverride,
+    );
+    const max = await createPreapprovalPlan(
+      { reason: "Terminal Sync Max", amount: maxAmount, currency, backUrl },
+      tokenOverride,
+    );
     return NextResponse.json({
       created: true,
+      test: Boolean(tokenOverride),
       pro: { id: pro.id, amount: proAmount, currency },
       max: { id: max.id, amount: maxAmount, currency },
       envVars: {

@@ -196,17 +196,21 @@ export interface PreapprovalPlanSummary {
  *  analogue of a Stripe Price. The amount + currency live on the plan, so the
  *  currency-per-country decision (COP for Colombia) is captured here. Returns
  *  the created plan id, which is what goes in MERCADOPAGO_PLAN_PRO / _MAX. */
-export async function createPreapprovalPlan(input: {
-  reason: string;
-  amount: number;
-  currency: string;
-  backUrl: string;
-}): Promise<PreapprovalPlanSummary> {
-  if (!accessToken) throw new Error("Mercado Pago not configured");
+export async function createPreapprovalPlan(
+  input: {
+    reason: string;
+    amount: number;
+    currency: string;
+    backUrl: string;
+  },
+  tokenOverride?: string,
+): Promise<PreapprovalPlanSummary> {
+  const token = tokenOverride || accessToken;
+  if (!token) throw new Error("Mercado Pago not configured");
   const res = await fetch(`${MP_API}/preapproval_plan`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -233,10 +237,13 @@ export async function createPreapprovalPlan(input: {
 
 /** Lists the account's existing subscription plans — lets the admin setup page
  *  show already-created plans (and their ids) instead of creating duplicates. */
-export async function listPreapprovalPlans(): Promise<PreapprovalPlanSummary[]> {
-  if (!accessToken) return [];
+export async function listPreapprovalPlans(
+  tokenOverride?: string,
+): Promise<PreapprovalPlanSummary[]> {
+  const token = tokenOverride || accessToken;
+  if (!token) return [];
   const res = await fetch(`${MP_API}/preapproval_plan/search?limit=50`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) return [];
   const data = (await res.json().catch(() => null)) as {
