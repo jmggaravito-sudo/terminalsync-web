@@ -77,6 +77,8 @@ export const TOOLS: Record<string, VsTool> = {
       multiCloudSync: "no",
       stuckNotifications: "no",
       noVendorLockIn: "no",
+      parallelWindows: "partial",
+      aiCouncil: "no",
     },
   },
   cline: {
@@ -121,6 +123,8 @@ export const TOOLS: Record<string, VsTool> = {
       multiCloudSync: "no",
       stuckNotifications: "no",
       noVendorLockIn: "yes",
+      parallelWindows: "no",
+      aiCouncil: "no",
     },
   },
   aider: {
@@ -165,6 +169,8 @@ export const TOOLS: Record<string, VsTool> = {
       multiCloudSync: "no",
       stuckNotifications: "no",
       noVendorLockIn: "yes",
+      parallelWindows: "no",
+      aiCouncil: "no",
     },
   },
   chatgpt: {
@@ -209,6 +215,8 @@ export const TOOLS: Record<string, VsTool> = {
       multiCloudSync: "no",
       stuckNotifications: "no",
       noVendorLockIn: "no",
+      parallelWindows: "no",
+      aiCouncil: "no",
     },
   },
   copilot: {
@@ -253,6 +261,8 @@ export const TOOLS: Record<string, VsTool> = {
       multiCloudSync: "no",
       stuckNotifications: "no",
       noVendorLockIn: "no",
+      parallelWindows: "no",
+      aiCouncil: "no",
     },
   },
   gemini: {
@@ -297,6 +307,8 @@ export const TOOLS: Record<string, VsTool> = {
       multiCloudSync: "no",
       stuckNotifications: "no",
       noVendorLockIn: "no",
+      parallelWindows: "no",
+      aiCouncil: "no",
     },
   },
   "notion-ai": {
@@ -341,6 +353,8 @@ export const TOOLS: Record<string, VsTool> = {
       multiCloudSync: "no",
       stuckNotifications: "no",
       noVendorLockIn: "no",
+      parallelWindows: "no",
+      aiCouncil: "no",
     },
   },
 };
