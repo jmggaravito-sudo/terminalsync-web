@@ -25,6 +25,33 @@ const WELCOME_WF_ID = "9sMs1ExYtue9ay1n";
 const REPLIES_WF_ID = "jINNqL72z9yNcKx6";
 const OUTREACH_TARGET = 50;
 
+/**
+ * Turn an unknown thrown value into a readable warning string.
+ *
+ * `String(e)` on a plain object yields `[object Object]` — which is exactly
+ * what a Supabase/PostgREST error is (a plain `{ message, details, hint, code }`,
+ * NOT an `Error` instance). So `e instanceof Error ? e.message : String(e)`
+ * silently swallowed the real reason. Handle the Postgrest shape explicitly,
+ * then fall back to JSON before the useless `String()` last resort.
+ */
+function errMsg(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  if (e && typeof e === "object") {
+    const o = e as { message?: unknown; details?: unknown; hint?: unknown; code?: unknown };
+    if (typeof o.message === "string" && o.message) {
+      const extra = [o.details, o.hint].filter((x) => typeof x === "string" && x).join(" — ");
+      const code = typeof o.code === "string" && o.code ? ` (${o.code})` : "";
+      return extra ? `${o.message}${code} — ${extra}` : `${o.message}${code}`;
+    }
+    try {
+      return JSON.stringify(e);
+    } catch {
+      /* fall through */
+    }
+  }
+  return String(e);
+}
+
 interface MetricsPayload {
   generatedAt: string;
   outreach: {
@@ -150,9 +177,7 @@ async function fetchSupabase(warnings: string[]) {
         ? +((active.length / totalTrialing) * 100).toFixed(1)
         : null;
     } catch (e) {
-      warnings.push(
-        `subscriptions table unavailable: ${e instanceof Error ? e.message : String(e)}`,
-      );
+      warnings.push(`subscriptions table unavailable: ${errMsg(e)}`);
     }
 
     return {
@@ -160,7 +185,7 @@ async function fetchSupabase(warnings: string[]) {
       revenue: { activeSubscriptions, mrr, trialConversionPct },
     };
   } catch (e) {
-    warnings.push(`supabase: ${e instanceof Error ? e.message : String(e)}`);
+    warnings.push(`supabase: ${errMsg(e)}`);
     return null;
   }
 }
@@ -193,18 +218,18 @@ async function fetchN8n(warnings: string[]) {
 
     const [welcome, replies] = await Promise.all([
       countExecutions(WELCOME_WF_ID).catch((e) => {
-        warnings.push(`welcome flow: ${e.message}`);
+        warnings.push(`welcome flow: ${errMsg(e)}`);
         return { fired: 0, failed: 0 };
       }),
       countExecutions(REPLIES_WF_ID).catch((e) => {
-        warnings.push(`replies flow: ${e.message}`);
+        warnings.push(`replies flow: ${errMsg(e)}`);
         return { fired: 0, failed: 0 };
       }),
     ]);
 
     return { welcome, replies: replies.fired };
   } catch (e) {
-    warnings.push(`n8n: ${e instanceof Error ? e.message : String(e)}`);
+    warnings.push(`n8n: ${errMsg(e)}`);
     return null;
   }
 }
