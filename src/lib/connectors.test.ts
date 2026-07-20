@@ -32,7 +32,10 @@ describe("listConnectors / requiresEnvSecrets", () => {
     // desktop's "necesita clave" badge would disagree with the install
     // modal — this test forces that change to be explicit.
     const items = await listConnectors("en");
-    for (const slug of ["google-sheets", "google-calendar", "xero", "hubspot", "ahrefs"]) {
+    for (const slug of [
+      "google-sheets", "google-calendar", "xero", "hubspot", "ahrefs",
+      "todoist", "monday", "clickup", "twitter", "wordpress",
+    ]) {
       const c = items.find((x) => x.slug === slug);
       expect(c, `${slug} missing from catalog`).toBeDefined();
       expect(c?.hasManifest, `${slug} should ship a manifest`).toBe(true);

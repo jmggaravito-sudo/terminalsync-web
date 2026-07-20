@@ -101,6 +101,29 @@ Algunos conectores no tienen server MCP en npm y se shipean como **build propio*
 
 - **google-business** (2026-07-20) — Google **no publica** server MCP de Business Profile en npm (solo librerías crudas `@googleapis/mybusiness*`). Sidecar propio `terminalsync-google-business-mcp` sobre las REST APIs oficiales (Account Management v1 + Business Information v1 + `mybusiness` v4 para reseñas). Cubre los 14 loops de Reseñas/Google Business. Tools: `gbp_list_accounts`/`gbp_list_locations`/`gbp_list_reviews`/`gbp_review_summary` (lectura) + `gbp_reply_review` (escritura con confirmación de dos pasos). Auth OAuth2 `business.manage` (token en keychain; refresh flow completo = follow-up). Requiere aprobación de acceso de Google a la Business Profile API. **Logo:** marca oficial de **Google** (simple-icons `google`, `#4285F4`) — Business Profile no tiene icono propio en simple-icons; se usa la marca del vendor padre.
 
+### Paridad Accio — conectores npx (2026-07-20)
+
+Del inventario exacto de Accio (lista ✅ CONSTRUIR), los que tienen server MCP real en npm. Verificados desde el README del tarball.
+
+| Conector | Fuente | Notas |
+|---|---|---|
+| **todoist** | npm `@doist/todoist-mcp` v12.0.0 | **Publisher oficial Doist** (scope `@doist`, repo `Doist/todoist-mcp`); `npx -y @doist/todoist-mcp`; auth `TODOIST_API_KEY`; tareas/proyectos/secciones/etiquetas/comentarios (R/W); MIT. Logo: oficial (simple-icons `todoist`, `#E44332`). |
+| **monday** | npm `@mondaydotcomorg/monday-api-mcp` v3.3.0 | **Publisher oficial monday.com** (scope `@mondaydotcomorg`, repo `mondaycom/monday-ai`); `npx -y @mondaydotcomorg/monday-api-mcp -m atp`; auth env `monday_token` (`${SECRET:MONDAY_TOKEN}`) + `NODE_OPTIONS=--no-node-snapshot` (literal, config oficial); boards/items/columnas/updates; MIT. **Logo: FALLBACK TS** — monday no está en simple-icons; ver Logos pendientes. |
+| **clickup** | npm `clickup-mcp-server` v1.12.0 | David Whatley (`nsxdavid`), MIT; `npx -y clickup-mcp-server`; auth `CLICKUP_API_TOKEN` (`pk_…`); tools verbatim `get_workspaces`/`get_spaces`/`get_lists`/`get_tasks`/`get_docs_from_workspace`/`create_folder`/`create_list`/`create_task`/`update_task`. Logo: oficial (simple-icons `clickup`, `#7B68EE`). |
+| **twitter** (X) | npm `@enescinar/twitter-mcp` v0.2.0 | Enes Cinar, MIT; **X API v2 oficial** (OAuth 1.0a); `npx -y @enescinar/twitter-mcp`; env `API_KEY`/`API_SECRET_KEY`/`ACCESS_TOKEN`/`ACCESS_TOKEN_SECRET` (mapeados de `TWITTER_*`); tools `post_tweet`/`search_tweets`. **Escritura pública** → gate de confirmación. Logo: oficial (simple-icons `x`, `#000000`). |
+| **wordpress** | npm `wordpress-mcp` v1.0.2 | Utsav Ladani, ISC; `npx -y wordpress-mcp`; env `WORDPRESS_HOST_URL`/`WORDPRESS_API_USERNAME`/`WORDPRESS_API_PASSWORD` (**application password**, no la del login, revocable)/`WORDPRESS_POST_AUTHOR_ID`; posts/páginas sobre la REST API. Logo: oficial (simple-icons `wordpress`, `#21759B`). |
+
+**SKIP de esta corrida (documentados):**
+
+| Conector | SKIP | Motivo |
+|---|---|---|
+| **linkedin** | 2026-07-20 | Los paquetes npm (`linkedin-mcp`, `mcp-linkedin`) son comunitarios y **el README no documenta la auth**; LinkedIn no tiene API oficial para esto y los servers comunitarios suelen **scrapear con cookies de sesión** (contra los ToS + frágil). No se ship sin una fuente/auth confiable. |
+| **metabase** | 2026-07-20 | `metabase-mcp` (gobenpark) existe pero **el tarball no trae README** y no se pudo extraer la config de env de la fuente (regla #1: no redactar de memoria). Recuperable leyendo el repo. |
+| **similarweb** | 2026-07-20 | No hay server MCP en npm (E404). |
+| **dropbox** | 2026-07-20 | `dropbox-mcp-server` existe pero **sin author ni license** en el registro npm → no se pueden completar los campos del molde. |
+| **intercom** | 2026-07-20 | No hay server MCP en npm; el slot CRM lo cubre **HubSpot** (oficial). |
+| **zapier** | 2026-07-20 | `zapier-mcp` existe pero es **UNLICENSED** en npm → no se ship sin licencia. (Make ya está en el catálogo para automatización.) |
+
 ## Logos pendientes (deuda del Loop)
 
 > El Loop **tiene que conseguir el logo oficial** de cada conector (regla #9). Cuando un conector se publica con el fallback TS porque el logo oficial no se pudo obtener en esa corrida, queda anotado acá y la **próxima corrida del Loop debe cerrarlo** (bajar el oficial a `public/connectors/<slug>.svg` y borrar la fila). No es un estado terminal.
@@ -111,6 +134,7 @@ Algunos conectores no tienen server MCP en npm y se shipean como **build propio*
 | **pinecone** | fallback TS (`public/connectors/pinecone.svg`) | Logo oficial de Pinecone. No está en simple-icons (2026-07-18) y los repos raw de `pinecone-io` no exponen un SVG de logo; el sitio del vendor está bloqueado por el proxy. Bajar de pinecone.io o su brand kit. | 2026-07-18 |
 | **exa** | fallback TS (`public/connectors/exa.svg`) | Logo oficial de Exa. **Re-chequeado 2026-07-17:** no está en simple-icons; `exa.ai` sigue bloqueado por el proxy; `api.github.com` está scopeada (403) así que no se puede listar el repo, y las rutas raw típicas (`exa-labs/exa-mcp-server` `assets/logo.svg`, etc.) dan 404. **Pendiente JM (1 min):** guardar el SVG/PNG oficial de exa.ai o su brand kit a `public/connectors/exa.svg`. | 2026-07-14 (re-check 2026-07-17) |
 | **ahrefs** | fallback TS (`public/connectors/ahrefs.svg`) | Logo oficial de Ahrefs. No está en simple-icons (v16.27.0 ni latest); el sitio del vendor está bloqueado por el proxy en este entorno. **Pendiente JM (1 min):** guardar el SVG/PNG oficial de ahrefs.com o su brand kit a `public/connectors/ahrefs.svg`. | 2026-07-20 |
+| **monday** | fallback TS (`public/connectors/monday.svg`) | Logo oficial de monday.com. No está en simple-icons (v16.27.0). **Pendiente JM (1 min):** guardar el SVG/PNG oficial de monday.com o su brand kit a `public/connectors/monday.svg`. | 2026-07-20 |
 
 ## Estructura del molde de oro (verificada en estos 8)
 
