@@ -95,6 +95,12 @@ Los dos conectores de Google de arriba **no pasan el gate #3 "publisher oficial"
 
 Cuando exista un server MCP **oficial de Google** para Sheets/Calendar, migrar a ese y despromover estos. La decisión de negocio (cobertura del catálogo de Loops) le gana hoy a la pureza del gate.
 
+### Conectores first-party (fuera del scope npm del Loop)
+
+Algunos conectores no tienen server MCP en npm y se shipean como **build propio** (sidecar de TerminalSync sobre la API oficial del vendor), igual que Shopify (#702/#177) y Meta Ads (#705/#178). Van con `source: first-party`, **sin `manifest`** (`hasManifest:false`) porque se conectan **desde la app**, no por npx.
+
+- **google-business** (2026-07-20) — Google **no publica** server MCP de Business Profile en npm (solo librerías crudas `@googleapis/mybusiness*`). Sidecar propio `terminalsync-google-business-mcp` sobre las REST APIs oficiales (Account Management v1 + Business Information v1 + `mybusiness` v4 para reseñas). Cubre los 14 loops de Reseñas/Google Business. Tools: `gbp_list_accounts`/`gbp_list_locations`/`gbp_list_reviews`/`gbp_review_summary` (lectura) + `gbp_reply_review` (escritura con confirmación de dos pasos). Auth OAuth2 `business.manage` (token en keychain; refresh flow completo = follow-up). Requiere aprobación de acceso de Google a la Business Profile API. **Logo:** marca oficial de **Google** (simple-icons `google`, `#4285F4`) — Business Profile no tiene icono propio en simple-icons; se usa la marca del vendor padre.
+
 ## Logos pendientes (deuda del Loop)
 
 > El Loop **tiene que conseguir el logo oficial** de cada conector (regla #9). Cuando un conector se publica con el fallback TS porque el logo oficial no se pudo obtener en esa corrida, queda anotado acá y la **próxima corrida del Loop debe cerrarlo** (bajar el oficial a `public/connectors/<slug>.svg` y borrar la fila). No es un estado terminal.
