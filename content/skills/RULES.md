@@ -216,6 +216,35 @@ The AI that generates the skill cannot approve its own work. It is judge and par
 The PR must include eval results, but the decision that the skill beats the baseline
 belongs to JM / human review.
 
+## Delivery gate (el skill tiene que LLEGAR al disco)
+
+Una skill no está "lista" porque su contenido y sus evals existan — está lista
+cuando la app la puede **poner en el disco del usuario**. El camino de entrega es:
+
+```
+tile del catálogo → desktop ensure_skill_installed(slug) → GET /api/marketplace/skills/<slug>/raw → SKILL.md
+```
+
+Si `/raw` no puede servir una skill publicada, el install de un usuario nuevo
+falla en silencio ("la skill no está en Drive"). Por eso el loop tiene un **gate
+de entrega** además del gate de evals:
+
+- `src/lib/marketplace/rawSkill.ts::buildRawSkillPayload` es la **única** fuente
+  del payload de `/raw` (la ruta lo llama; el gate lo verifica — no pueden
+  driftear).
+- `src/lib/marketplace/rawSkill.test.ts` recorre **todas** las skills
+  catalog-ready y asserta que `/raw` sirve un payload válido (SKILL.md no vacío,
+  checksum = sha256(skill_md), vendors ⊆ {claude, codex}, extras sin traversal).
+  **Ninguna skill se publica (`catalogReady` sin `false`) si no pasa este gate.**
+- Las skills staged (`catalogReady: false`) **no** son servibles por `/raw` a
+  propósito (404) — no se pueden entregar hasta que se publiquen. Cuando se
+  flipea `catalogReady`, el gate empieza a cubrirlas automáticamente.
+
+El **primitivo de entrega** vive en el app (`terminal-sync`,
+`skills_sync::ensure::ensure_skill_installed`): consume este `/raw`, escribe
+SKILL.md + extras atómico a cada vendor dir declarado, no-op por checksum, nunca
+tira. El gate del loop cuida el contrato web que ese primitivo consume.
+
 ## Prohibitions
 
 Do not publish a skill that:
