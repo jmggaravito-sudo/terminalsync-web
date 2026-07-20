@@ -9,7 +9,25 @@ interface Metrics {
   signups: { total: number | null; last7d: number | null; last30d: number | null; daily: { day: string; count: number }[] | null };
   revenue: { activeSubscriptions: number | null; mrr: number | null; trialConversionPct: number | null };
   welcomeFlow: { fired: number | null; failed: number | null };
+  aiSelection: AiSelection | null;
   warnings: string[];
+}
+
+interface AiSelection {
+  total: number;
+  resolved: number;
+  bySystem: { byok: number; courtesy: number; none: number; other: number };
+  byProvider: { claude: number; codex: number; gemini: number; other: number };
+  arrivedWithAi: number;
+  arrivedWithoutAi: number;
+  noAiRate: number;
+  byokRate: number;
+  courtesyRate: number;
+  noneRate: number;
+  last7: number;
+  last30: number;
+  latestMs: number | null;
+  daysSinceLatest: number | null;
 }
 
 export function LaunchMetricsClient({ lang }: { lang: string }) {
@@ -138,6 +156,8 @@ export function LaunchMetricsClient({ lang }: { lang: string }) {
                 <SparkBars data={data.signups.daily} />
               </section>
             ) : null}
+
+            <AiSelectionSection ai={data.aiSelection} isEs={isEs} />
           </>
         ) : null}
       </section>
@@ -168,6 +188,121 @@ function Card({ title, value, sub, accent, tone }: {
           ? "text-amber-400"
           : "text-[var(--color-fg-muted)]"}`}>{sub}</p>
       ) : null}
+    </div>
+  );
+}
+
+function AiSelectionSection({ ai, isEs }: { ai: AiSelection | null; isEs: boolean }) {
+  const pct = (n: number) => `${(n * 100).toFixed(1)}%`;
+
+  return (
+    <section className="mt-12">
+      <div className="flex items-baseline justify-between mb-4">
+        <h2 className="text-[14px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-muted)]">
+          {isEs ? "Selección de IA" : "AI selection"}
+        </h2>
+        {ai ? (
+          <span className="text-[11px] text-[var(--color-fg-muted)]">
+            {ai.latestMs
+              ? `${isEs ? "último evento" : "last event"} ${new Date(ai.latestMs)
+                  .toISOString()
+                  .slice(0, 10)}`
+              : isEs
+                ? "sin eventos aún"
+                : "no events yet"}
+          </span>
+        ) : null}
+      </div>
+
+      {!ai ? (
+        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)]/60 p-5 text-[13px] text-[var(--color-fg-muted)]">
+          {isEs
+            ? "Sin datos — configurá GOOGLE_SHEETS_SA_KEY + AI_SELECTION_SHEET_ID y esperá el primer evento del beacon."
+            : "No data — set GOOGLE_SHEETS_SA_KEY + AI_SELECTION_SHEET_ID and wait for the first beacon event."}
+        </div>
+      ) : ai.resolved === 0 ? (
+        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)]/60 p-5 text-[13px] text-[var(--color-fg-muted)]">
+          {isEs
+            ? "El Sheet está conectado, pero todavía no llegó ningún evento de selección de IA."
+            : "The Sheet is connected, but no AI-selection event has arrived yet."}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card
+              title={isEs ? "% llega SIN ninguna IA" : "% arriving with NO AI"}
+              value={pct(ai.noAiRate)}
+              sub={isEs ? "decide el trial de 3h" : "drives the 3h-trial call"}
+              accent
+            />
+            <Card
+              title={isEs ? "Resolvieron su IA" : "Resolved their AI"}
+              value={ai.resolved}
+              sub={`${ai.arrivedWithAi} ${isEs ? "con IA" : "with AI"} · ${ai.arrivedWithoutAi} ${
+                isEs ? "sin IA" : "without"
+              }`}
+            />
+            <Card
+              title={isEs ? "BYOK (su propia IA)" : "BYOK (own AI)"}
+              value={ai.bySystem.byok}
+              sub={`${pct(ai.byokRate)} ${isEs ? "del total" : "of resolved"}`}
+            />
+            <Card
+              title={isEs ? "Volumen 7 / 30d" : "Volume 7 / 30d"}
+              value={`${ai.last7} / ${ai.last30}`}
+              sub={isEs ? "eventos" : "events"}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <MiniBreakdown
+              title={isEs ? "Qué sistema usan" : "Which system"}
+              rows={[
+                [isEs ? "BYOK" : "BYOK", ai.bySystem.byok],
+                [isEs ? "Cortesía (trial)" : "Courtesy (trial)", ai.bySystem.courtesy],
+                [isEs ? "Ninguna" : "None", ai.bySystem.none],
+                ...(ai.bySystem.other ? ([[isEs ? "otro" : "other", ai.bySystem.other]] as [string, number][]) : []),
+              ]}
+            />
+            <MiniBreakdown
+              title={isEs ? "Qué IA conecta el BYOK" : "Which AI the BYOK crowd connects"}
+              rows={[
+                ["Claude", ai.byProvider.claude],
+                ["Codex", ai.byProvider.codex],
+                ["Gemini", ai.byProvider.gemini],
+                ...(ai.byProvider.other ? ([[isEs ? "otro" : "other", ai.byProvider.other]] as [string, number][]) : []),
+              ]}
+            />
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
+function MiniBreakdown({ title, rows }: { title: string; rows: [string, number][] }) {
+  const total = rows.reduce((s, [, v]) => s + v, 0);
+  return (
+    <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)]/60 p-5">
+      <p className="text-[11px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-muted)] mb-3">
+        {title}
+      </p>
+      <div className="space-y-2">
+        {rows.map(([label, v]) => (
+          <div key={label} className="flex items-center gap-3">
+            <span className="text-[13px] text-[var(--color-fg)] w-40 shrink-0">{label}</span>
+            <div className="flex-1 h-2 rounded-full bg-[var(--color-border)]/40 overflow-hidden">
+              <div
+                className="h-full bg-[var(--color-accent)] rounded-full"
+                style={{ width: `${total > 0 ? (v / total) * 100 : 0}%` }}
+              />
+            </div>
+            <span className="text-[13px] font-semibold text-[var(--color-fg-strong)] w-8 text-right tabular-nums">
+              {v}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
