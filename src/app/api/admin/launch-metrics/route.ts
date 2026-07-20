@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { authenticate, isAdmin } from "@/lib/marketplace/auth";
+import { fetchAiSelectionMetrics, type AiSelectionMetrics } from "@/lib/aiSelection";
 
 /**
  * GET /api/admin/launch-metrics
@@ -47,6 +48,7 @@ interface MetricsPayload {
     fired: number | null;
     failed: number | null;
   };
+  aiSelection: AiSelectionMetrics | null;
   warnings: string[];
 }
 
@@ -63,15 +65,21 @@ export async function GET(req: Request) {
     signups: { total: null, last7d: null, last30d: null, daily: null },
     revenue: { activeSubscriptions: null, mrr: null, trialConversionPct: null },
     welcomeFlow: { fired: null, failed: null },
+    aiSelection: null,
     warnings,
   };
 
-  const [supa, n8n] = await Promise.all([fetchSupabase(warnings), fetchN8n(warnings)]);
+  const [supa, n8n, aiSelection] = await Promise.all([
+    fetchSupabase(warnings),
+    fetchN8n(warnings),
+    fetchAiSelectionMetrics(warnings),
+  ]);
   if (supa) Object.assign(out, supa);
   if (n8n) {
     out.outreach.replied = n8n.replies;
     out.welcomeFlow = n8n.welcome;
   }
+  out.aiSelection = aiSelection;
 
   // Outreach sent — for now fold in the welcome-email-fired count as a
   // proxy until we instrument the actual outbound. The dashboard banner
