@@ -121,7 +121,7 @@ Del inventario exacto de Accio (lista ✅ CONSTRUIR), los que tienen server MCP 
 | **linkedin** | 2026-07-20 | Los paquetes npm (`linkedin-mcp`, `mcp-linkedin`) son comunitarios y **el README no documenta la auth**; LinkedIn no tiene API oficial para esto y los servers comunitarios suelen **scrapear con cookies de sesión** (contra los ToS + frágil). No se ship sin una fuente/auth confiable. |
 | **metabase** | 2026-07-20 | `metabase-mcp` (gobenpark) existe pero **el tarball no trae README** y no se pudo extraer la config de env de la fuente (regla #1: no redactar de memoria). Recuperable leyendo el repo. |
 | **similarweb** | 2026-07-20 | No hay server MCP en npm (E404). |
-| **dropbox** | 2026-07-20 | `dropbox-mcp-server` existe pero **sin author ni license** en el registro npm → no se pueden completar los campos del molde. |
+| **dropbox** | ~~SKIP~~ → **FIRST-PARTY 2026-07-20** | El único `dropbox-mcp-server` de npm no tiene author ni license → no pasa el gate. Resuelto con **build propio** (sidecar `terminalsync-dropbox-mcp`) sobre la Dropbox API v2 oficial; endpoints sacados del **SDK oficial `dropbox` de npm (v10.37.1)**: `users/get_current_account`, `files/list_folder`, `files/search_v2`, `files/get_temporary_link`, `sharing/create_shared_link_with_settings`. Se conecta desde la app (`source: first-party`, sin manifest). Tools read (account/list/search/get_link) + write gated (`dropbox_share_link`, link público con confirmación). Logo oficial (simple-icons `dropbox`, `#0061FF`). |
 | **intercom** | 2026-07-20 | No hay server MCP en npm; el slot CRM lo cubre **HubSpot** (oficial). |
 | **zapier** | 2026-07-20 | `zapier-mcp` existe pero es **UNLICENSED** en npm → no se ship sin licencia. (Make ya está en el catálogo para automatización.) |
 
