@@ -34,7 +34,7 @@ export interface RawSkillPayload {
 
 export type RawSkillResult =
   | { ok: true; payload: RawSkillPayload }
-  | { ok: false; status: number; error: string };
+  | { ok: false; status: number; error: string; included?: boolean };
 
 /**
  * Build the raw payload for a slug, or an error with the HTTP status the route
@@ -60,6 +60,20 @@ export async function buildRawSkillPayload(
 
   const raw = fs.readFileSync(file, "utf8");
   const { data } = matter(raw);
+
+  // Native/"included" skills (docx, pdf, pptx, xlsx) ship WITH Claude Code —
+  // their .md here is a marketing card, not a real SKILL.md. Delivering it
+  // would drop a fake SKILL.md next to the native skill. `/raw` refuses them,
+  // mirroring `getSkillInstallPayload` returning null for included skills.
+  if (data.included === true) {
+    return {
+      ok: false,
+      status: 409,
+      error: "skill ships natively with Claude Code — not installable via /raw",
+      included: true,
+    };
+  }
+
   const vendorsRaw = Array.isArray(data.vendors) ? data.vendors : ["claude"];
   const vendors = vendorsRaw.filter(
     (v: unknown): v is "claude" | "codex" => v === "claude" || v === "codex",

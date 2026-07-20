@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import crypto from "node:crypto";
 import { buildRawSkillPayload } from "./rawSkill";
-import { listSkillSlugs } from "@/lib/skills";
+import { listSkillSlugs, listSkills } from "@/lib/skills";
 
 /**
  * Skills-loop DELIVERY GATE.
@@ -16,11 +16,15 @@ import { listSkillSlugs } from "@/lib/skills";
  * route uses — so endpoint and gate never drift.
  */
 describe("skills delivery gate — every catalog-ready skill is servable via /raw", () => {
-  it("serves a valid, checksum-consistent payload for each public skill", async () => {
-    const slugs = await listSkillSlugs();
-    expect(slugs.length).toBeGreaterThan(0);
+  it("serves a valid, checksum-consistent payload for each deliverable skill", async () => {
+    const metas = await listSkills("en");
+    expect(metas.length).toBeGreaterThan(0);
+    // Native/included skills (docx/pdf/pptx/xlsx) are NOT deliverable via /raw —
+    // asserted separately below.
+    const deliverable = metas.filter((m) => !m.included).map((m) => m.slug);
+    expect(deliverable.length).toBeGreaterThan(0);
 
-    for (const slug of slugs) {
+    for (const slug of deliverable) {
       const result = await buildRawSkillPayload(slug);
       expect(result.ok, `${slug} must be servable via /raw`).toBe(true);
       if (!result.ok) continue;
@@ -52,6 +56,20 @@ describe("skills delivery gate — every catalog-ready skill is servable via /ra
           () => Buffer.from(extra.content_b64, "base64"),
           `${slug} extra ${extra.path} valid base64`,
         ).not.toThrow();
+      }
+    }
+  });
+
+  it("refuses native/included skills — they ship with Claude Code, not via /raw", async () => {
+    // The doc skills are marketing cards here, not real SKILL.md files.
+    // Serving them would let the desktop drop a fake SKILL.md next to the
+    // native skill (the very thing getSkillInstallPayload guards against).
+    for (const slug of ["pdf", "docx", "pptx", "xlsx"]) {
+      const result = await buildRawSkillPayload(slug);
+      expect(result.ok, `${slug} must not be servable via /raw`).toBe(false);
+      if (!result.ok) {
+        expect(result.status).toBe(409);
+        expect(result.included).toBe(true);
       }
     }
   });

@@ -35,7 +35,9 @@ export async function GET(_req: Request, { params }: Props) {
 
   if (!result.ok) {
     return NextResponse.json(
-      { error: result.error },
+      // `included` tells the desktop primitive this skill is native (ships with
+      // Claude Code), so it reports "already present" instead of "failed".
+      { error: result.error, ...(result.included ? { included: true } : {}) },
       { status: result.status, headers: CORS_HEADERS },
     );
   }
