@@ -1,6 +1,6 @@
 import type Stripe from "stripe";
 import { getSupabaseAdmin } from "./supabaseAdmin";
-import { stripe } from "./stripe";
+import { stripe, envId } from "./stripe";
 import {
   downgradeToFree,
   upsertSubscription,
@@ -103,14 +103,14 @@ async function resolveUserId(
 // Legacy STRIPE_PRICE_DEV_* env vars are still read as a fallback during
 // the Dev→Max rename rollout — same prices, different env names.
 function planFromPriceId(priceId: string): "pro" | "max" | null {
-  const pmM = process.env.STRIPE_PRICE_PRO_MONTHLY;
-  const pmY = process.env.STRIPE_PRICE_PRO_YEARLY;
-  const mxM = process.env.STRIPE_PRICE_MAX_MONTHLY ?? process.env.STRIPE_PRICE_DEV_MONTHLY;
-  const mxY = process.env.STRIPE_PRICE_MAX_YEARLY ?? process.env.STRIPE_PRICE_DEV_YEARLY;
-  const pmMt = process.env.STRIPE_PRICE_PRO_MONTHLY_TEST;
-  const pmYt = process.env.STRIPE_PRICE_PRO_YEARLY_TEST;
-  const mxMt = process.env.STRIPE_PRICE_MAX_MONTHLY_TEST ?? process.env.STRIPE_PRICE_DEV_MONTHLY_TEST;
-  const mxYt = process.env.STRIPE_PRICE_MAX_YEARLY_TEST ?? process.env.STRIPE_PRICE_DEV_YEARLY_TEST;
+  const pmM = envId("STRIPE_PRICE_PRO_MONTHLY");
+  const pmY = envId("STRIPE_PRICE_PRO_YEARLY");
+  const mxM = envId("STRIPE_PRICE_MAX_MONTHLY", "STRIPE_PRICE_DEV_MONTHLY");
+  const mxY = envId("STRIPE_PRICE_MAX_YEARLY", "STRIPE_PRICE_DEV_YEARLY");
+  const pmMt = envId("STRIPE_PRICE_PRO_MONTHLY_TEST");
+  const pmYt = envId("STRIPE_PRICE_PRO_YEARLY_TEST");
+  const mxMt = envId("STRIPE_PRICE_MAX_MONTHLY_TEST", "STRIPE_PRICE_DEV_MONTHLY_TEST");
+  const mxYt = envId("STRIPE_PRICE_MAX_YEARLY_TEST", "STRIPE_PRICE_DEV_YEARLY_TEST");
   if (priceId === pmM || priceId === pmY || priceId === pmMt || priceId === pmYt) {
     return "pro";
   }

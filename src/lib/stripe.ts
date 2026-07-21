@@ -2,7 +2,7 @@ import Stripe from "stripe";
 
 // Single Stripe client shared across server routes. Using the latest API
 // version pins behavior so dashboard changes don't silently shift responses.
-const secret = process.env.STRIPE_SECRET_KEY;
+const secret = process.env.STRIPE_SECRET_KEY?.trim();
 
 export const stripe: Stripe | null = secret
   ? new Stripe(secret, {
@@ -13,6 +13,23 @@ export const stripe: Stripe | null = secret
   : null;
 
 export type PlanId = "pro" | "max" | "agency";
+
+/**
+ * Read an env var and strip surrounding whitespace/newlines. Pasting a
+ * Stripe price id (or key) into a hosting dashboard commonly drags a
+ * trailing "\n" along, which then reaches Stripe verbatim and fails with
+ * `No such price: 'price_...\n'`. Trimming here makes the config robust to
+ * that. Returns null for missing OR blank-after-trim values so callers can
+ * fail loud with a clear "missing price" message instead of an opaque
+ * Stripe 400.
+ */
+export function envId(...names: string[]): string | null {
+  for (const name of names) {
+    const trimmed = process.env[name]?.trim();
+    if (trimmed) return trimmed;
+  }
+  return null;
+}
 
 /**
  * Billing cycle type, kept para que el webhook handler pueda seguir
@@ -26,20 +43,16 @@ export type BillingCycle = "monthly" | "yearly";
 
 export function priceIdFor(plan: PlanId): string | null {
   if (plan === "pro") {
-    return process.env.STRIPE_PRICE_PRO_MONTHLY ?? null;
+    return envId("STRIPE_PRICE_PRO_MONTHLY");
   }
   if (plan === "max") {
     // STRIPE_PRICE_MAX_MONTHLY es el nombre canónico. STRIPE_PRICE_DEV_MONTHLY
     // queda como fallback en Vercel del rename Dev→Max (2026-05-20) para que
     // un deploy mid-rollout no 503ee. Pueden borrarse cuando ningún ambiente
     // dependa más del nombre viejo.
-    return (
-      process.env.STRIPE_PRICE_MAX_MONTHLY ??
-      process.env.STRIPE_PRICE_DEV_MONTHLY ??
-      null
-    );
+    return envId("STRIPE_PRICE_MAX_MONTHLY", "STRIPE_PRICE_DEV_MONTHLY");
   }
-  if (plan === "agency") return process.env.STRIPE_PRICE_AGENCY ?? null;
+  if (plan === "agency") return envId("STRIPE_PRICE_AGENCY");
   return null;
 }
 
