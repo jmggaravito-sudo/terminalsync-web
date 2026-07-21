@@ -91,7 +91,7 @@ const config: NextConfig = {
       // primary del producto.
       {
         source: "/marketplace",
-        destination: "/es/admin",
+        destination: "/es/stacks",
         permanent: true,
       },
     ];
