@@ -87,10 +87,15 @@ export async function POST(req: Request) {
   const backUrl = body.successUrl ?? `${base}/${lang}/checkout/success`;
 
   try {
+    // Stamp the account key into external_reference (MP echoes it back verbatim,
+    // so linking is immune to whatever email MP attaches from the payer's own
+    // account). Prefer the Supabase user id when we have it (app / logged-in web);
+    // fall back to the email the buyer typed so the webhook can resolve it.
+    const externalReference = body.supabaseUserId ?? body.email;
     const { initPoint } = await createPreapproval({
       preapprovalPlanId,
       payerEmail: body.email,
-      externalReference: body.supabaseUserId,
+      externalReference,
       reason: `Terminal Sync ${plan === "max" ? "Max" : "Pro"}`,
       backUrl,
     });
