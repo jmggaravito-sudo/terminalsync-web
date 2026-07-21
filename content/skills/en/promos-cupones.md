@@ -1,7 +1,7 @@
 ---
 name: Promos & Coupons
 logo: /skills/promos-cupones.svg
-category: crm
+category: marketing
 vendors: ["claude", "codex"]
 author: "TerminalSync"
 status: available

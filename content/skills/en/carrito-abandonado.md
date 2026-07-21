@@ -1,7 +1,7 @@
 ---
 name: Abandoned Cart Recovery
 logo: /skills/carrito-abandonado.svg
-category: crm
+category: marketing
 vendors: ["claude", "codex"]
 author: "TerminalSync"
 status: available

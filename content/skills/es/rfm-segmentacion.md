@@ -1,7 +1,7 @@
 ---
 name: Segmentación RFM
 logo: /skills/rfm-segmentacion.svg
-category: crm
+category: marketing
 vendors: ["claude", "codex"]
 author: "TerminalSync"
 status: available

@@ -1,7 +1,7 @@
 ---
 name: Recuperar Clientes Dormidos
 logo: /skills/winback-dormidos.svg
-category: crm
+category: marketing
 vendors: ["claude", "codex"]
 author: "TerminalSync"
 status: available
