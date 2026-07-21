@@ -31,6 +31,12 @@ export function CheckoutButton({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [country, setCountry] = useState<string | null>(null);
+  // Mercado Pago linking: we MUST capture the buyer's Terminal Sync email before
+  // redirecting to MP, or the webhook can't link the payment to their account and
+  // they'd "pay but stay Free" (MP attaches the payer's MP-account email, which
+  // may differ from their signup email). Two-step: click → email field → pay.
+  const [mpAsking, setMpAsking] = useState(false);
+  const [mpEmail, setMpEmail] = useState("");
 
   // Mercado Pago is a PARALLEL payment rail for Colombia: MP charges in local
   // currency (COP) via local cards / PSE / account balance, which Stripe (USD)
@@ -61,7 +67,10 @@ export function CheckoutButton({
 
   const mpEnabled = mpConfigured && country === "CO";
 
-  async function startCheckout(endpoint: string) {
+  async function startCheckout(
+    endpoint: string,
+    extra?: { email?: string },
+  ) {
     setLoading(true);
     setError(null);
     try {
@@ -76,7 +85,7 @@ export function CheckoutButton({
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, lang, referral }),
+        body: JSON.stringify({ plan, lang, referral, ...extra }),
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !data.url) {
@@ -106,7 +115,24 @@ export function CheckoutButton({
 
   function handleMercadoPago(e: React.MouseEvent) {
     e.preventDefault();
-    void startCheckout("/api/checkout/mercadopago");
+    // Step 1: reveal the email field so we can link the payment to their account.
+    if (!mpAsking) {
+      setMpAsking(true);
+      setError(null);
+      return;
+    }
+    // Step 2: validate and pay. The email becomes the MP external_reference so
+    // the webhook links the plan to their Terminal Sync account.
+    const email = mpEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError(
+        lang === "es"
+          ? "Ingresá un email válido (el de tu cuenta de Terminal Sync)."
+          : "Enter a valid email (your Terminal Sync account email).",
+      );
+      return;
+    }
+    void startCheckout("/api/checkout/mercadopago", { email });
   }
 
   // starter (Free) → direct DMG download via the /api/download route
@@ -138,16 +164,59 @@ export function CheckoutButton({
         )}
       </a>
       {mpEnabled && (
-        <a
-          href="#pricing"
-          onClick={handleMercadoPago}
-          aria-busy={loading}
-          className={`mt-2 w-full inline-flex items-center justify-center gap-2 rounded-xl py-2.5 text-[13px] font-semibold transition-all bg-[var(--color-panel-2)] hover:bg-[var(--color-bg)] text-[var(--color-fg)] border border-[var(--color-border)] ${
-            loading ? "opacity-75 cursor-wait" : ""
-          }`}
-        >
-          {lang === "es" ? "Pagar con Mercado Pago" : "Pay with Mercado Pago"}
-        </a>
+        <>
+          {mpAsking && (
+            <div className="mt-2">
+              <input
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                value={mpEmail}
+                onChange={(e) => setMpEmail(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleMercadoPago(e as unknown as React.MouseEvent);
+                }}
+                placeholder={
+                  lang === "es"
+                    ? "Email de tu cuenta de Terminal Sync"
+                    : "Your Terminal Sync account email"
+                }
+                autoFocus
+                className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-panel-2)] px-3 py-2.5 text-[13px] text-[var(--color-fg)] focus:outline-none focus:border-[var(--color-accent)]"
+              />
+              <p className="mt-1 text-[10.5px] text-[var(--color-fg-muted)] leading-relaxed">
+                {lang === "es"
+                  ? "Usá el mismo email con el que entrás a Terminal Sync — así el pago queda vinculado a tu cuenta."
+                  : "Use the same email you sign into Terminal Sync with — so the payment links to your account."}
+              </p>
+            </div>
+          )}
+          <a
+            href="#pricing"
+            onClick={handleMercadoPago}
+            aria-busy={loading}
+            className={`mt-2 w-full inline-flex items-center justify-center gap-2 rounded-xl py-2.5 text-[13px] font-semibold transition-all bg-[var(--color-panel-2)] hover:bg-[var(--color-bg)] text-[var(--color-fg)] border border-[var(--color-border)] ${
+              loading ? "opacity-75 cursor-wait" : ""
+            }`}
+          >
+            {loading ? (
+              <>
+                <Loader2 size={13} className="sync-spin" strokeWidth={2.2} />
+                {loadingLabel}
+              </>
+            ) : mpAsking ? (
+              lang === "es" ? (
+                "Continuar con Mercado Pago"
+              ) : (
+                "Continue with Mercado Pago"
+              )
+            ) : lang === "es" ? (
+              "Pagar con Mercado Pago"
+            ) : (
+              "Pay with Mercado Pago"
+            )}
+          </a>
+        </>
       )}
       {error && (
         <div className="mt-2 rounded-md border border-[var(--color-err)]/30 bg-[var(--color-err)]/5 px-3 py-2 text-[11.5px] text-[var(--color-err)]">

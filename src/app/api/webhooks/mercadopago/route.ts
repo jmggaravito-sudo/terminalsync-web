@@ -90,10 +90,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ received: true, found: false }, { status: 200 });
   }
 
-  // Resolve the Terminal Sync account: external_reference (the supabase user
-  // id we stamped at checkout) is primary; fall back to matching the payer's
-  // email against profiles for checkouts that carried no user id.
-  let userId = pre.external_reference ?? null;
+  // Resolve the Terminal Sync account. `external_reference` is what WE stamped
+  // at checkout and MP echoes it back verbatim, so it's the reliable link key —
+  // immune to the payer's MercadoPago-account email differing from their Terminal
+  // Sync email (which is exactly what would otherwise make a Colombian client
+  // "pay but stay Free"). It carries EITHER a Supabase user id (app / logged-in
+  // web) OR the email the buyer typed on the site (anonymous landing). As a last
+  // resort, fall back to the payer's MP-account email.
+  let userId: string | null = null;
+  const ref = pre.external_reference?.trim() ?? "";
+  if (ref) {
+    userId = ref.includes("@") ? await findUserIdByEmail(ref) : ref;
+  }
   if (!userId && pre.payer_email) {
     userId = await findUserIdByEmail(pre.payer_email);
   }
