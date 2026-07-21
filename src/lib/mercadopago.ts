@@ -24,12 +24,23 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { type PlanId, siteUrl } from "./stripe";
 
 const MP_API = "https://api.mercadopago.com";
-const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+
+/** Read an env var, stripping surrounding whitespace/newlines. Pasting an
+ *  access token or plan id into a hosting dashboard commonly drags a
+ *  trailing "\n" along, which then fails matching (or reaches MP verbatim).
+ *  Returns undefined for missing OR blank-after-trim. Mirrors `envId` in
+ *  stripe.ts. */
+function mpEnv(name: string): string | undefined {
+  const trimmed = process.env[name]?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+const accessToken = mpEnv("MERCADOPAGO_ACCESS_TOKEN");
 
 /** True when the webhook signing secret is configured — when it is, the
  *  webhook MUST reject unsigned/invalid requests. */
 export const mercadoPagoWebhookSecretSet = Boolean(
-  process.env.MERCADOPAGO_WEBHOOK_SECRET,
+  mpEnv("MERCADOPAGO_WEBHOOK_SECRET"),
 );
 
 /**
@@ -45,7 +56,7 @@ export function verifyMpWebhookSignature(input: {
   xRequestId: string | null;
   dataId: string | undefined;
 }): boolean {
-  const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+  const secret = mpEnv("MERCADOPAGO_WEBHOOK_SECRET");
   if (!secret || !input.xSignature) return false;
 
   const parts: Record<string, string> = {};
@@ -78,8 +89,8 @@ export const mercadoPagoConfigured = Boolean(accessToken);
  *  stays in MP config, not in code (ARS, BRL, MXN, …). Agency stays lead-gen
  *  (no self-serve subscription), same as Stripe. */
 export function mpPreapprovalPlanFor(plan: PlanId): string | null {
-  if (plan === "pro") return process.env.MERCADOPAGO_PLAN_PRO ?? null;
-  if (plan === "max") return process.env.MERCADOPAGO_PLAN_MAX ?? null;
+  if (plan === "pro") return mpEnv("MERCADOPAGO_PLAN_PRO") ?? null;
+  if (plan === "max") return mpEnv("MERCADOPAGO_PLAN_MAX") ?? null;
   return null;
 }
 
@@ -90,8 +101,8 @@ export function mpPlanFromPreapprovalPlanId(
   preapprovalPlanId: string | undefined | null,
 ): "pro" | "max" | null {
   if (!preapprovalPlanId) return null;
-  if (preapprovalPlanId === process.env.MERCADOPAGO_PLAN_PRO) return "pro";
-  if (preapprovalPlanId === process.env.MERCADOPAGO_PLAN_MAX) return "max";
+  if (preapprovalPlanId === mpEnv("MERCADOPAGO_PLAN_PRO")) return "pro";
+  if (preapprovalPlanId === mpEnv("MERCADOPAGO_PLAN_MAX")) return "max";
   return null;
 }
 
