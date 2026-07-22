@@ -3,7 +3,7 @@ import {
   getPreapproval,
   mercadoPagoConfigured,
   mercadoPagoWebhookSecretSet,
-  mpPlanFromPreapprovalPlanId,
+  mpPlanFromPreapproval,
   mpStatusToSubscriptionStatus,
   verifyMpWebhookSignature,
 } from "@/lib/mercadopago";
@@ -130,11 +130,15 @@ export async function POST(req: Request) {
     );
   }
 
-  const plan = mpPlanFromPreapprovalPlanId(pre.preapproval_plan_id);
+  const plan = mpPlanFromPreapproval(pre);
   if (!plan) {
     console.warn(
-      "[mercadopago→supabase] unknown preapproval_plan_id — can't classify plan",
-      { preapprovalId: pre.id, preapprovalPlanId: pre.preapproval_plan_id },
+      "[mercadopago→supabase] could not classify plan (no matching amount / reason / plan_id)",
+      {
+        preapprovalId: pre.id,
+        amount: pre.auto_recurring?.transaction_amount,
+        reason: pre.reason,
+      },
     );
     return NextResponse.json(
       { received: true, status: pre.status, plan: null, linked: false },
