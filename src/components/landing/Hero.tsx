@@ -3,6 +3,7 @@
 import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import { ArrowRight, Download, PlayCircle } from "lucide-react";
 import type { Dict, Locale } from "@/content";
+import { IntegrationsMarquee } from "./IntegrationsMarquee";
 
 const VIDEO_SRC: Record<Locale, string> = {
   es: "/assets/terminalsync.mp4",
@@ -143,7 +144,6 @@ const COPY = {
     trust: ["Sin programar", "Memoria permanente", "Continúa aunque cambie la IA"],
     prefixLabel: "CON TERMINALSYNC:",
     shotTitle: "Desde acá manejas tu empresa con IA",
-    trustCount: "Más de 2,000 empresas ya confían en TerminalSync",
   },
   en: {
     resultsStrong:
@@ -156,7 +156,6 @@ const COPY = {
     trust: ["No coding", "Persistent memory", "Continues even if the AI changes"],
     prefixLabel: "WITH TERMINALSYNC:",
     shotTitle: "This is where your business runs from.",
-    trustCount: "Over 2,000 companies already trust TerminalSync",
   },
 } as const;
 
@@ -283,20 +282,8 @@ export function Hero({ dict }: { dict: Dict }) {
           </button>
         </div>
 
-        {/* Trust bar */}
-        <div className="mt-12 md:mt-16 text-center">
-          <p className="text-[14px] text-[var(--color-fg-muted)] mb-5 md:mb-6">
-            {t.trustCount}
-          </p>
-          <div className="flex items-center justify-center gap-6 md:gap-8 lg:gap-12 flex-wrap">
-            <TrustLogo name="Google" />
-            <TrustLogo name="Notion" />
-            <TrustLogo name="Slack" />
-            <TrustLogo name="OpenAI" />
-            <TrustLogo name="AWS" />
-            <TrustLogo name="Miro" />
-          </div>
-        </div>
+        {/* Integrations marquee (reemplaza la vieja trust bar) */}
+        <IntegrationsMarquee lang={dict.locale} />
       </div>
 
       {/* Modal de video */}
@@ -345,36 +332,6 @@ export function Hero({ dict }: { dict: Dict }) {
         </div>
       )}
     </section>
-  );
-}
-
-function TrustLogo({ name }: { name: string }) {
-  const logoMap: Record<string, string> = {
-    Google: "google",
-    Notion: "notion",
-    Slack: "slack",
-    OpenAI: "openai",
-    AWS: "amazonaws",
-    Miro: "miro",
-  };
-  const icon = logoMap[name];
-  const cdnUrl = `https://cdn.simpleicons.org/${icon}/9aa0aa`;
-
-  return (
-    <img
-      src={cdnUrl}
-      alt={name}
-      onError={(e) => {
-        const img = e.target as HTMLImageElement;
-        img.style.display = "none";
-        const span = document.createElement("span");
-        span.textContent = name;
-        span.className = "text-[13px] font-medium text-[var(--color-fg-muted)]";
-        img.parentElement?.appendChild(span);
-      }}
-      className="h-6 w-auto opacity-70 hover:opacity-100 transition-opacity"
-      loading="lazy"
-    />
   );
 }
 
