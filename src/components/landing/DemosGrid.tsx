@@ -185,60 +185,26 @@ export function DemosGrid({ lang }: { lang: Locale }) {
           {demos.map((demo) => (
             <article
               key={demo.id}
-              className="group flex flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] overflow-hidden"
+              className="flex flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4 md:p-5 text-center"
               style={{ boxShadow: "var(--shadow-floating)" }}
             >
-              {/* Card header */}
-              <div className="p-4 md:p-5 pb-3 text-center">
-                <span className="flex justify-center text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--color-accent)] font-semibold">
-                  {demo.eyebrow}
-                </span>
-                <h3 className="mt-2 text-[14px] md:text-[15px] font-semibold tracking-tight text-[var(--color-fg-strong)] leading-tight">
-                  {demo.title}
-                </h3>
-                <p className="mt-2 text-[12px] text-[var(--color-fg-muted)] leading-relaxed">
-                  {demo.body}
-                </p>
-              </div>
-
-              {/* Demo iframe container */}
-              <div className="relative flex-1 bg-[var(--color-panel-2)] overflow-hidden">
-                {/* Blurred preview - static, no pointer events */}
-                <iframe
-                  src={`${demo.src}?lang=${lang}&embed=1`}
-                  title={demo.title}
-                  sandbox=""
-                  className="w-full h-[180px] md:h-[250px] border-0 block"
-                  style={{
-                    filter: "blur(9px)",
-                    transform: "scale(1.1)",
-                    pointerEvents: "none",
-                  }}
-                />
-
-                {/* Frosted overlay — always visible, click anywhere to expand */}
+              <span className="flex justify-center text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--color-accent)] font-semibold">
+                {demo.eyebrow}
+              </span>
+              <h3 className="mt-2 text-[14px] md:text-[15px] font-semibold tracking-tight text-[var(--color-fg-strong)] leading-tight">
+                {demo.title}
+              </h3>
+              <p className="mt-2 text-[12px] text-[var(--color-fg-muted)] leading-relaxed">
+                {demo.body}
+              </p>
+              <div className="mt-auto pt-4">
                 <button
                   type="button"
                   onClick={() => setOpenId(demo.id)}
-                  className="absolute inset-0 z-10 flex items-center justify-center cursor-zoom-in"
-                  style={{
-                    background: "color-mix(in srgb, var(--color-bg) 78%, transparent)",
-                    backdropFilter: "blur(5px)",
-                    transition: "background 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.background =
-                      "color-mix(in srgb, var(--color-bg) 68%, transparent)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.background =
-                      "color-mix(in srgb, var(--color-bg) 78%, transparent)";
-                  }}
+                  className="inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white px-4 py-2 text-[13px] font-medium shadow-sm transition-colors"
                   aria-label={lang === "es" ? "Ver Demo" : "Watch Demo"}
                 >
-                  <span className="inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] text-white px-4 py-2 text-[13px] font-medium shadow-sm">
-                    {lang === "es" ? "Ver Demo" : "Watch Demo"}
-                  </span>
+                  {lang === "es" ? "Ver Demo" : "Watch Demo"}
                 </button>
               </div>
             </article>
