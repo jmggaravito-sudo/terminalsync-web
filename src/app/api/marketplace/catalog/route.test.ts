@@ -135,7 +135,8 @@ describe("GET /api/marketplace/catalog", () => {
   });
 
   it("returns exactly the launch-ready skills in the public catalog response", async () => {
-    // 7 molded skills + the 4 native document skills (included: true).
+    // 13 molded skills (7 general + 6 CRM/retention, published live with no
+    // catalogReady:false) + the 4 native document skills (included: true).
     const publicSlugs = [
       "code-reviewer",
       "doc-coauthoring",
@@ -144,6 +145,13 @@ describe("GET /api/marketplace/catalog", () => {
       "meta-ads-creator",
       "seo-auditor",
       "skill-creator",
+      // CRM / retention skills — live in the public catalog.
+      "carrito-abandonado",
+      "ltv-cohortes",
+      "pedir-resenas",
+      "promos-cupones",
+      "rfm-segmentacion",
+      "winback-dormidos",
       "docx",
       "pdf",
       "pptx",
