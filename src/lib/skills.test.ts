@@ -135,6 +135,69 @@ describe("skills content mold", () => {
     }
   });
 
+  it("parks the CRM & retention skills as catalogReady:false — authored, pending eval run", async () => {
+    // First wave of business (CRM & Retention) skills. Authored + eval fixtures
+    // written, but the eval harness has not been run and JM has not given the
+    // human verdict yet (RULES.md → "Evidence is not the verdict"). Staged
+    // behind catalogReady:false; flip per skill once evals run + review passes.
+    const crmSlugs = [
+      "rfm-segmentation",
+      "customer-winback",
+      "review-requests",
+      "cart-recovery",
+      "lifecycle-email",
+      "ltv-cohorts",
+      "referral-program",
+      "targeted-promos",
+    ] as const;
+
+    for (const lang of ["en", "es"] as const) {
+      const skills = await listSkills(lang);
+
+      for (const slug of crmSlugs) {
+        // Not publicly listed while pending evaluation.
+        expect(
+          skills.find((skill) => skill.slug === slug),
+          `${lang}/${slug} should not be publicly listed while pending evaluation`,
+        ).toBeUndefined();
+        await expect(getSkill(lang, slug)).resolves.toBeNull();
+
+        const raw = readRawSkill(lang, slug);
+        // Staged, not retired.
+        expect(
+          raw,
+          `${lang}/${slug} should carry the catalogReady:false marker`,
+        ).toContain("catalogReady: false");
+        expect(
+          raw,
+          `${lang}/${slug} is pending evaluation, NOT retired — no hidden flag`,
+        ).not.toContain("hidden: true");
+        // ES/EN parity: both files carry the localized mold.
+        const heads =
+          lang === "es"
+            ? ["Cuándo usarlo", "Qué hace", "Cómo usarlo", "Ideal para"]
+            : ["When to use", "What it does", "How to use", "Best for"];
+        for (const head of heads) {
+          expect(raw, `${lang}/${slug} keeps the ${head} section`).toContain(head);
+        }
+      }
+    }
+
+    // Logo + eval fixture must ship with each staged skill.
+    for (const slug of crmSlugs) {
+      expect(
+        fs.existsSync(path.join(process.cwd(), "public", "skills", `${slug}.svg`)),
+        `${slug} logo must exist`,
+      ).toBe(true);
+      expect(
+        fs.existsSync(
+          path.join(process.cwd(), "scripts", "skills-eval", "fixtures", `${slug}.json`),
+        ),
+        `${slug} eval fixture must exist`,
+      ).toBe(true);
+    }
+  });
+
   it("molded Spanish skill pages use localized RULES.md headings", async () => {
     for (const { slug } of MOLDED_PUBLIC_SKILLS) {
       const doc = await getSkill("es", slug);

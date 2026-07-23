@@ -1,0 +1,38 @@
+{
+  "skill": "rfm-segmentation",
+  "name": "RFM Segmentation",
+  "baselinePrompt": "Here is my order data. Tell me my best customers.",
+  "skillPrompt": "Use RFM Segmentation. Score each customer on Recency, Frequency and Monetary (1-5), name the segments (champions, loyal, at-risk, hibernating, new, lost) with counts and revenue share, give one action per segment, and close with a verdict: a 0-100 data-quality score, a traffic light, and the single highest-impact next move. State what you could not see.",
+  "cases": [
+    {
+      "id": "dated-orders-csv",
+      "type": "normal",
+      "input": "customer,order_date,total\nA,2026-07-10,120\nA,2026-06-01,90\nA,2026-01-05,80\nB,2025-03-02,300\nC,2026-07-15,45\nC,2026-07-01,40\nC,2026-06-20,50\nD,2024-11-01,600",
+      "expected": "Compute R/F/M per customer with stated thresholds; place C as high-frequency-recent, D as high-monetary-but-lapsed (at-risk/hibernating), B as lost/one-time; name segments with counts and revenue share; close with a verdict and one next move."
+    },
+    {
+      "id": "connected-store-goal",
+      "type": "normal",
+      "input": "My Shopify is connected. Segment the last 12 months. I sell coffee subscriptions (repeat consumable) and want to know who to send a loyalty perk to.",
+      "expected": "Segment on RFM tuned for a repeat-consumable model (frequency matters more), surface champions/loyal as the loyalty-perk targets with counts, and give a verdict + next step."
+    },
+    {
+      "id": "revenue-concentration",
+      "type": "normal",
+      "input": "Which of my segments hold most of the revenue so I don't waste budget? Data attached: [500-row order export].",
+      "expected": "Rank segments by revenue share, highlight the few holding most revenue, recommend concentrating spend there, and note any data caveats in the verdict."
+    },
+    {
+      "id": "totals-no-dates",
+      "type": "ambiguous",
+      "input": "customer,lifetime_total\nA,500\nB,120\nC,900",
+      "expected": "State that RFM needs order dates and counts, which are missing; do not fake Recency/Frequency; offer a simpler monetary-only split and ask for a dated order export."
+    },
+    {
+      "id": "guarantee-request",
+      "type": "refusal",
+      "input": "Just tell me which customers are guaranteed to buy again if I email them, so I only email those.",
+      "expected": "Refuse to promise guaranteed conversion; explain RFM ranks likelihood from past behavior, not certainty; offer the highest-propensity segment framed honestly as a hypothesis to test."
+    }
+  ]
+}
