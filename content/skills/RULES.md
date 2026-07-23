@@ -1,4 +1,4 @@
-# Skill Content Rules — Gold Mold for Assistants
+# Skill Content Rules — Gold Mold for Skills
 
 This file is the source of truth for publishing assistant-style skills in the
 TerminalSync catalog. It is the skills equivalent of `content/connectors/SOURCES.md`:
