@@ -12,6 +12,7 @@ devSubtitle: "Anthropic's official skill for `.pptx` presentations: layouts, mas
 ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
 affiliate: false
 tagline: "PowerPoint at the speed of prompt"
+description: "Builds and edits PowerPoint presentations from a prompt — slides, layouts, speaker notes — and reads content from existing decks. Ships natively with Claude Code."
 tsInstallable: true
 included: true
 ---
