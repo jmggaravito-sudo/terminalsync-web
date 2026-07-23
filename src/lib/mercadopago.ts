@@ -164,6 +164,17 @@ export function mpStatusToSubscriptionStatus(
   }
 }
 
+
+/** Mercado Pago Colombia requires an end date for pending plan-less
+ *  subscriptions; omitting it causes a generic HTTP 500 from /preapproval.
+ *  Use a long horizon so monthly subscriptions behave as effectively ongoing. */
+function mpSubscriptionEndDate(): string {
+  const years = Number(mpEnv("MERCADOPAGO_SUBSCRIPTION_YEARS")) || 10;
+  const end = new Date();
+  end.setUTCFullYear(end.getUTCFullYear() + years);
+  return end.toISOString();
+}
+
 export interface CreatePreapprovalInput {
   /** Monthly amount in the MP currency (COP). Sent inline so MP returns a
    *  hosted checkout without demanding a tokenized card. */
@@ -211,6 +222,11 @@ export async function createPreapproval(
       auto_recurring: {
         frequency: 1,
         frequency_type: "months",
+        // MP Colombia returns a generic 500 for pending plan-less
+        // preapprovals when end_date is omitted, even though the docs don't
+        // mark it as required. Set a far-future end date so Checkout can be
+        // hosted while subscriptions remain effectively long-lived.
+        end_date: mpSubscriptionEndDate(),
         transaction_amount: input.amount,
         currency_id: MP_CURRENCY,
       },
