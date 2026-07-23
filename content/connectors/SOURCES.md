@@ -16,6 +16,44 @@ Por cada candidato del Loop (conector, kit o skill), etiquetá la **audiencia** 
 
 Este filtro aplica igual a **kits** (`content/kits/RULES.md`) y **skills** (`content/skills/RULES.md`).
 
+## Conectores remote-hosted (MCP remoto) — scope del Loop (decisión JM 2026-07-23 = opción A)
+
+**Contexto.** La corrida 2026-07-23 encontró que la veta **npm-stdio** de conectores oficiales empresario-first está agotada: los targets que faltan (Klaviyo, Asana, Zoom, Canva, Atlassian, QuickBooks…) ya no publican un server MCP local en npm — publican un **server MCP oficial remote-hosted** (endpoint gestionado por el vendor, auth por OAuth o Bearer). JM decidió **extender el scope del Loop a MCP remoto** en vez de dejarlos afuera. `posthog` (shipeado 2026-07-18) fue el primer conector remoto y ya probó el patrón; esta sección lo generaliza para que cualquier corrida (incluida la automatizada) sepa vetear y shipear un conector remoto.
+
+**Qué califica.** Un server MCP **remote-hosted oficial del vendor**: el endpoint vive en un dominio del vendor (`mcp.<vendor>.com/...` o equivalente documentado en su sitio oficial), y el vendor lo documenta como su server MCP soportado. Sigue mandando el gate de **publisher oficial** (regla #3): el endpoint tiene que ser del vendor, no de un tercero que hostea un proxy.
+
+**Sourcing (regla #1 sigue intacta).** El endpoint + el método de auth se sacan de la **página/README oficial del vendor**, verbatim — NO de memoria, NO de agregadores tipo `remote-mcp.com`/`pulsemcp` (sirven como pista de descubrimiento, no como fuente para redactar). Si en la corrida no se puede leer la fuente oficial (p. ej. el dev-portal del vendor bloquea el fetcher con 403 en el contenedor del Loop), el conector **queda en cola** (ver "Remote candidates — en cola") y se shipea en una corrida con acceso a docs. No se inventa el endpoint.
+
+**Dos moldes de manifest** (elegir según cómo el vendor documente la auth):
+
+- **A) Bearer con secret** (como `posthog`) — cuando el server toma una API key personal en el header `Authorization`:
+  ```yaml
+  manifest:
+    mcpServers:
+      <slug>:
+        command: npx
+        args: ["-y", "mcp-remote@latest", "https://mcp.<vendor>.com/mcp", "--header", "Authorization:${<SLUG>_AUTH_HEADER}"]
+        env:
+          <SLUG>_AUTH_HEADER: "Bearer ${SECRET:<SLUG>_API_KEY}"
+  ```
+  El `tokenHelpUrl` apunta al form oficial de creación de la API key. La sección "Qué token necesitás" explica cómo sacarla.
+
+- **B) OAuth interactivo** (Asana, Canva, Zoom, etc.) — cuando el server usa OAuth y `mcp-remote` abre el navegador para el login:
+  ```yaml
+  manifest:
+    mcpServers:
+      <slug>:
+        command: npx
+        args: ["-y", "mcp-remote@latest", "https://mcp.<vendor>.com/mcp"]
+  ```
+  **Sin `env`, sin `${SECRET:…}`** — no hay API key que pegar; el usuario se loguea con su cuenta del vendor en una ventana del navegador (esto es exactamente el desbloqueo "Conectá con un botón" que la regla #14 prioriza para el empresario). La sección "Qué token necesitás" se reemplaza por "Cómo conectás": describe el login por navegador y que los permisos quedan acotados por lo que apruebe el OAuth. El `TokenSection` de la app (gated por `hasManifest && requiresEnvSecrets`) simplemente no se muestra — correcto para OAuth.
+
+**Divulgación obligatoria** (igual que `posthog`): el cuerpo del conector debe decir, con fuente oficial, que es un **server hospedado/remoto** (no local), qué rutea/accede, qué NO almacena, y que el alcance del agente queda **acotado por el token/scope del OAuth**. Sin humo: si el vendor dice que cachea estado de sesión o rutea por región, se cita.
+
+**Logo:** igual que siempre (regla #9) — oficial vendorizado en `public/connectors/<slug>.svg`, o fallback TS declarado.
+
+**Lo que NO cambia:** persona filter (≥1 `business` por corrida), paridad es/en estricta, tono por sección, `affiliate:false`. Un conector remoto empresario-first cuenta como item `business`.
+
 ## Fuentes principales
 
 | Capa | URL | Para qué |
@@ -135,7 +173,24 @@ Del inventario exacto de Accio (lista ✅ CONSTRUIR), los que tienen server MCP 
 | **mailchimp** | 2026-07-23 | Marketing email (empresario-first), pero el MCP **oficial de Mailchimp cubre solo Transactional (Mandrill)**, remoto y dev-focused — **no** la plataforma de marketing. `@mailchimp/mcp` no existe en npm (E404); los servers de la plataforma de marketing son todos comunitarios. Falla el gate. |
 | **calendly** | 2026-07-23 | Agendas/reuniones (empresario-first), pero **no hay server MCP oficial** (`@calendly/mcp` E404); solo paquetes comunitarios. Falla el gate de publisher. |
 
-**Resultado de la corrida 2026-07-23 (manual, "Correlo tu esta vez"):** **0 conectores nuevos shippeados.** El catálogo npm-stdio de conectores oficiales empresario-first está esencialmente **agotado en su veta actual**: los targets empresario que faltan (Klaviyo, Asana, Zoom, Canva, QuickBooks, Atlassian, Linear, Datadog, Cloudflare) migraron todos a **MCP remote-hosted** (fuera del scope npm-stdio del Loop) o solo tienen paquetes **comunitarios/alpha/unlicensed** en npm. No es sesgo dev — es que la frontera oficial se movió a remoto. **Decisión pendiente de JM (no la toma el Loop):** (a) **extender el scope del Loop a MCP remoto** (patrón `mcp-remote` como ya se hizo con `posthog`) para desbloquear Klaviyo/Asana/Zoom/Canva oficiales; o (b) **autorizar builds first-party** (sidecar en `terminal-sync`, como dropbox/intercom/shopify) para los top targets empresario. Hasta esa decisión, el Loop npm-stdio seguirá devolviendo 0 en cada corrida.
+**Resultado de la corrida 2026-07-23 (manual, "Correlo tu esta vez"):** **0 conectores npm-stdio nuevos.** El catálogo npm-stdio de conectores oficiales empresario-first está **agotado en su veta actual**: los targets que faltan (Klaviyo, Asana, Zoom, Canva, QuickBooks, Atlassian…) migraron todos a **MCP remote-hosted** o solo tienen paquetes **comunitarios/alpha/unlicensed** en npm. No es sesgo dev — la frontera oficial se movió a remoto.
+
+**Decisión de JM (2026-07-23) = opción (a): extender el scope del Loop a MCP remoto.** Lo shipeado en esta corrida es la **extensión de scope** (arriba: "Conectores remote-hosted (MCP remoto)") — los dos moldes de manifest (Bearer / OAuth), el requisito de sourcing oficial, y la divulgación obligatoria. Con eso, los conectores remotos oficiales pasan a ser **shipeables**, no diferidos. `posthog` ya probó el patrón; ahora está generalizado.
+
+**Nota de entorno:** en el contenedor de esta corrida los dev-portals de los vendors (developers.asana.com, developers.klaviyo.com, www.canva.dev) **bloquean el fetcher con 403**, así que NO se pudo leer la fuente oficial verbatim para redactar cada conector remoto sin violar la regla #1. Por eso quedan **en cola** (abajo) con el lead de endpoint ya identificado; se redactan y shipean en una corrida con acceso a esos docs (Mac/entorno sin ese bloqueo). No se inventó ningún endpoint.
+
+**Remote candidates — en cola (in-scope, pendiente de sourcing oficial):**
+
+| Candidato | Lead de endpoint (a verificar verbatim en la fuente oficial) | Auth | Persona |
+|---|---|---|---|
+| **Asana** | `https://mcp.asana.com/mcp` (V2, streamable HTTP, GA; V1 `/sse` deprecado 2026-11-05) — docs `developers.asana.com/docs/using-asanas-mcp-server` | OAuth (molde B) | business |
+| **Klaviyo** | endpoint remoto oficial — docs `developers.klaviyo.com` (MCP server) | por confirmar (Bearer/OAuth) | business |
+| **Canva** | server MCP oficial — docs `www.canva.dev/docs/apps/mcp-server` | OAuth (molde B) | business |
+| **Zoom** | server MCP oficial — Zoom App Marketplace / developer docs | OAuth (molde B) | business |
+
+Los leads salen de WebSearch de páginas oficiales; **NO alcanzan para redactar** (regla #1 exige leer la fuente). Cada uno se cierra cuando una corrida pueda fetchear el dev-portal del vendor. Prioridad: **Asana** (endpoint V2 confirmado + GA) y **Klaviyo** (empresario-first más fuerte para ecommerce).
+
+**SKIP firme (no remoto oficial, siguen afuera):** `quickbooks` (solo comunitario en npm, Intuit sin oficial), `calendly` (sin server oficial), `mailchimp` (el oficial cubre solo Transactional/Mandrill, no marketing), `twilio` (solo `@twilio-alpha`, pre-release sin repo/README).
 
 ## Logos pendientes (deuda del Loop)
 
