@@ -39,6 +39,15 @@ vi.mock("./supabaseAdmin", () => ({
 }));
 
 vi.mock("./stripe", () => ({
+  // Mirror the real envId (trim + blank→null) so planFromPriceId resolves
+  // price ids from process.env in tests.
+  envId: (...names: string[]) => {
+    for (const name of names) {
+      const trimmed = process.env[name]?.trim();
+      if (trimmed) return trimmed;
+    }
+    return null;
+  },
   stripe: {
     customers: {
       async retrieve() {

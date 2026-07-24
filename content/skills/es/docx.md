@@ -1,8 +1,9 @@
 ---
 name: DOCX
 vendor: anthropic
+author: "Anthropic"
 logo: /skills/docx.svg
-category: documents
+category: productivity
 status: available
 simpleTitle: "Documentos Word en piloto automático"
 simpleSubtitle: "Borradores, propuestas, reportes — Claude los escribe en tu tono y exporta un .docx limpio."
@@ -12,7 +13,7 @@ ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
 affiliate: false
 tagline: "Docs Word sin pelea"
 tsInstallable: true
-hidden: true
+included: true
 ---
 Decile a Claude qué necesitás: *"Armá una propuesta para Acme basada en los wins del trimestre pasado, formato nuestro de 4 páginas"*. Claude escribe, formatea y exporta el .docx — vos lo abrís en Pages o Word y lo mandás.
 

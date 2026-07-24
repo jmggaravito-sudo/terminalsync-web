@@ -1,8 +1,9 @@
 ---
 name: PDF
 vendor: anthropic
+author: "Anthropic"
 logo: /skills/pdf.svg
-category: documents
+category: productivity
 status: available
 simpleTitle: "Editá, llená y generá PDFs sin copiar y pegar"
 simpleSubtitle: "Dile a Claude qué necesitás — facturas, contratos, formularios — y arma el PDF por vos."
@@ -12,7 +13,7 @@ ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
 affiliate: false
 tagline: "PDFs editables directo desde un prompt"
 tsInstallable: true
-hidden: true
+included: true
 ---
 Dejá de pelear con los PDFs. Decile a Claude *"llename este contrato con los datos del cliente del CRM y mandalo por mail"* — listo. Generá cotizaciones, facturas, acuerdos en tu tono, firmados y listos.
 

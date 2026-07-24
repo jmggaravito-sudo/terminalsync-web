@@ -24,14 +24,34 @@ describe("listConnectors / requiresEnvSecrets", () => {
     expect(airtable?.requiresEnvSecrets).toBe(true);
   });
 
-  it("flags affiliate-only connectors (no manifest) as requiresEnvSecrets=false", async () => {
+  it("ships loop-catalog connectors as installable manifests requiring OAuth secrets", async () => {
+    // High-demand loop-catalog connectors that install via npx templates and
+    // authenticate with an OAuth client id / API secret. gmail is the
+    // automation catalog's #1 need (email = 47 loops). If any loses its
+    // manifest or secret placeholder, the desktop's "necesita clave" badge
+    // would disagree with the install modal — this test forces the change to
+    // be explicit.
     const items = await listConnectors("en");
-    // Gmail is an affiliate-only entry — opens gmail.com, no MCP
-    // manifest, so nothing to require.
-    const gmail = items.find((c) => c.slug === "gmail");
-    expect(gmail, "gmail missing from catalog").toBeDefined();
-    expect(gmail?.hasManifest).toBe(false);
-    expect(gmail?.requiresEnvSecrets).toBe(false);
+    for (const slug of [
+      "google-sheets", "google-calendar", "xero", "hubspot", "ahrefs",
+      "todoist", "monday", "clickup", "twitter", "wordpress", "gmail",
+    ]) {
+      const c = items.find((x) => x.slug === slug);
+      expect(c, `${slug} missing from catalog`).toBeDefined();
+      expect(c?.hasManifest, `${slug} should ship a manifest`).toBe(true);
+      expect(c?.requiresEnvSecrets, `${slug} should require env secrets`).toBe(true);
+      expect(c?.installMethod, `${slug} should derive an installMethod`).toBe("npm");
+    }
+  });
+
+  it("flags no-manifest connectors as requiresEnvSecrets=false", async () => {
+    const items = await listConnectors("en");
+    // Shopify is a first-party connector that connects in-app — no MCP
+    // manifest in the catalog, so nothing to require here.
+    const shopify = items.find((c) => c.slug === "shopify");
+    expect(shopify, "shopify missing from catalog").toBeDefined();
+    expect(shopify?.hasManifest).toBe(false);
+    expect(shopify?.requiresEnvSecrets).toBe(false);
   });
 
   it("every returned item has a boolean requiresEnvSecrets (no undefined leaks)", async () => {

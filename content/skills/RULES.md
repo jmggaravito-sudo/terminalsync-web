@@ -18,6 +18,30 @@ pero están `hidden` por no pasar el molde (categoría inválida `documents`, si
 paridad ES, sin evals). Destaparlas —moldearlas + evals— es el win no-dev más
 barato disponible; tiene prioridad sobre skills nuevas de nicho dev.
 
+## El veredicto — decisión, no ensayo (skills de decisión)
+
+Las skills que producen una **recomendación sobre la que el dueño actúa**
+(marketing, ventas, operaciones) deben **cerrar su salida con un "Veredicto"**:
+una decisión clara, no un choclo de texto que obliga al dueño a interpretar.
+Es cómo cierra un buen asesor ("hacelo / todavía no"), pero **sin traicionar la
+honestidad** — el puntaje es la lectura del modelo sobre lo que pudo ver, NO una
+garantía de mercado.
+
+El Veredicto cierra con:
+
+- **Un puntaje 0–100** de "qué tan listo/fuerte está esto", según SOLO los datos
+  que el usuario dio o el modelo pudo inspeccionar.
+- **Un semáforo con umbral explícito**: 🟢 80+ = listo para actuar/probar;
+  🟡 50–79 = actuá, pero cerrá primero estos gaps; 🔴 <50 = falta contexto o hay
+  bloqueantes, todavía no.
+- **La única próxima acción de mayor impacto** (una sola, no una lista).
+- **El caveat de honestidad**: el puntaje refleja lo que el modelo pudo ver, no
+  una promesa de resultados; los números reales (cuenta, ranking, ventas) mandan.
+
+No pongas un puntaje donde no aplica: una skill que solo redacta un texto
+(comunicación, documentos) informa, no puntúa una decisión de negocio. El
+Veredicto es para skills de **decisión**.
+
 ## File structure
 
 Every published skill must ship in both languages with strict ES/EN parity:
@@ -191,6 +215,35 @@ The evals produce evidence, not the final verdict.
 The AI that generates the skill cannot approve its own work. It is judge and party.
 The PR must include eval results, but the decision that the skill beats the baseline
 belongs to JM / human review.
+
+## Delivery gate (el skill tiene que LLEGAR al disco)
+
+Una skill no está "lista" porque su contenido y sus evals existan — está lista
+cuando la app la puede **poner en el disco del usuario**. El camino de entrega es:
+
+```
+tile del catálogo → desktop ensure_skill_installed(slug) → GET /api/marketplace/skills/<slug>/raw → SKILL.md
+```
+
+Si `/raw` no puede servir una skill publicada, el install de un usuario nuevo
+falla en silencio ("la skill no está en Drive"). Por eso el loop tiene un **gate
+de entrega** además del gate de evals:
+
+- `src/lib/marketplace/rawSkill.ts::buildRawSkillPayload` es la **única** fuente
+  del payload de `/raw` (la ruta lo llama; el gate lo verifica — no pueden
+  driftear).
+- `src/lib/marketplace/rawSkill.test.ts` recorre **todas** las skills
+  catalog-ready y asserta que `/raw` sirve un payload válido (SKILL.md no vacío,
+  checksum = sha256(skill_md), vendors ⊆ {claude, codex}, extras sin traversal).
+  **Ninguna skill se publica (`catalogReady` sin `false`) si no pasa este gate.**
+- Las skills staged (`catalogReady: false`) **no** son servibles por `/raw` a
+  propósito (404) — no se pueden entregar hasta que se publiquen. Cuando se
+  flipea `catalogReady`, el gate empieza a cubrirlas automáticamente.
+
+El **primitivo de entrega** vive en el app (`terminal-sync`,
+`skills_sync::ensure::ensure_skill_installed`): consume este `/raw`, escribe
+SKILL.md + extras atómico a cada vendor dir declarado, no-op por checksum, nunca
+tira. El gate del loop cuida el contrato web que ese primitivo consume.
 
 ## Prohibitions
 

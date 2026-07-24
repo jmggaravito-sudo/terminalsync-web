@@ -16,6 +16,44 @@ Por cada candidato del Loop (conector, kit o skill), etiquetá la **audiencia** 
 
 Este filtro aplica igual a **kits** (`content/kits/RULES.md`) y **skills** (`content/skills/RULES.md`).
 
+## Conectores remote-hosted (MCP remoto) — scope del Loop (decisión JM 2026-07-23 = opción A)
+
+**Contexto.** La corrida 2026-07-23 encontró que la veta **npm-stdio** de conectores oficiales empresario-first está agotada: los targets que faltan (Klaviyo, Asana, Zoom, Canva, Atlassian, QuickBooks…) ya no publican un server MCP local en npm — publican un **server MCP oficial remote-hosted** (endpoint gestionado por el vendor, auth por OAuth o Bearer). JM decidió **extender el scope del Loop a MCP remoto** en vez de dejarlos afuera. `posthog` (shipeado 2026-07-18) fue el primer conector remoto y ya probó el patrón; esta sección lo generaliza para que cualquier corrida (incluida la automatizada) sepa vetear y shipear un conector remoto.
+
+**Qué califica.** Un server MCP **remote-hosted oficial del vendor**: el endpoint vive en un dominio del vendor (`mcp.<vendor>.com/...` o equivalente documentado en su sitio oficial), y el vendor lo documenta como su server MCP soportado. Sigue mandando el gate de **publisher oficial** (regla #3): el endpoint tiene que ser del vendor, no de un tercero que hostea un proxy.
+
+**Sourcing (regla #1 sigue intacta).** El endpoint + el método de auth se sacan de la **página/README oficial del vendor**, verbatim — NO de memoria, NO de agregadores tipo `remote-mcp.com`/`pulsemcp` (sirven como pista de descubrimiento, no como fuente para redactar). Si en la corrida no se puede leer la fuente oficial (p. ej. el dev-portal del vendor bloquea el fetcher con 403 en el contenedor del Loop), el conector **queda en cola** (ver "Remote candidates — en cola") y se shipea en una corrida con acceso a docs. No se inventa el endpoint.
+
+**Dos moldes de manifest** (elegir según cómo el vendor documente la auth):
+
+- **A) Bearer con secret** (como `posthog`) — cuando el server toma una API key personal en el header `Authorization`:
+  ```yaml
+  manifest:
+    mcpServers:
+      <slug>:
+        command: npx
+        args: ["-y", "mcp-remote@latest", "https://mcp.<vendor>.com/mcp", "--header", "Authorization:${<SLUG>_AUTH_HEADER}"]
+        env:
+          <SLUG>_AUTH_HEADER: "Bearer ${SECRET:<SLUG>_API_KEY}"
+  ```
+  El `tokenHelpUrl` apunta al form oficial de creación de la API key. La sección "Qué token necesitás" explica cómo sacarla.
+
+- **B) OAuth interactivo** (Asana, Canva, Zoom, etc.) — cuando el server usa OAuth y `mcp-remote` abre el navegador para el login:
+  ```yaml
+  manifest:
+    mcpServers:
+      <slug>:
+        command: npx
+        args: ["-y", "mcp-remote@latest", "https://mcp.<vendor>.com/mcp"]
+  ```
+  **Sin `env`, sin `${SECRET:…}`** — no hay API key que pegar; el usuario se loguea con su cuenta del vendor en una ventana del navegador (esto es exactamente el desbloqueo "Conectá con un botón" que la regla #14 prioriza para el empresario). La sección "Qué token necesitás" se reemplaza por "Cómo conectás": describe el login por navegador y que los permisos quedan acotados por lo que apruebe el OAuth. El `TokenSection` de la app (gated por `hasManifest && requiresEnvSecrets`) simplemente no se muestra — correcto para OAuth.
+
+**Divulgación obligatoria** (igual que `posthog`): el cuerpo del conector debe decir, con fuente oficial, que es un **server hospedado/remoto** (no local), qué rutea/accede, qué NO almacena, y que el alcance del agente queda **acotado por el token/scope del OAuth**. Sin humo: si el vendor dice que cachea estado de sesión o rutea por región, se cita.
+
+**Logo:** igual que siempre (regla #9) — oficial vendorizado en `public/connectors/<slug>.svg`, o fallback TS declarado.
+
+**Lo que NO cambia:** persona filter (≥1 `business` por corrida), paridad es/en estricta, tono por sección, `affiliate:false`. Un conector remoto empresario-first cuenta como item `business`.
+
 ## Fuentes principales
 
 | Capa | URL | Para qué |
@@ -52,7 +90,7 @@ Este filtro aplica igual a **kits** (`content/kits/RULES.md`) y **skills** (`con
 | **time** | SKIP 2026-06-25 | Gate duro falló: `@modelcontextprotocol/server-time` no existe en npm (E404), por lo tanto no cumple paquete npm + manifest instalable. |
 | **sqlite** | SKIP 2026-06-25 | Gate duro falló: `@modelcontextprotocol/server-sqlite` no existe en npm (E404), por lo tanto no cumple paquete npm + manifest instalable. |
 | **vercel** | SKIP 2026-06-25 | Gate duro falló: no se encontró servidor MCP oficial de Vercel en npm; `@vercel/mcp-adapter` es un adapter/framework, y `vercel-mcp`/similares son third-party. |
-| **gmail** | SKIP 2026-06-25 | Gate duro falló: no se encontró servidor MCP oficial de Google/Gmail en npm; los paquetes encontrados son comunitarios, no publisher oficial. |
+| **gmail** (SHIPPED 2026-07-20, antes SKIP 2026-06-25) | npm `gmail-mcp` README oficial (v2.3.1, tarball) | **Adam Jones / @domdomegg** — el **mismo autor de nuestros conectores de Google Sheets y Airtable** (mismo patrón OAuth-proxy `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`, así un solo proyecto de Google respalda Sheets+Calendar+Gmail); repo `github.com/domdomegg/gmail-mcp`; `npx -y gmail-mcp`; tools lectura `gmail_get_profile`/`gmail_messages_list`/`gmail_message_get`/`gmail_threads_list` + escritura `gmail_message_send`/`_forward`/`_modify`/`_archive`/`_trash`/`_delete`; MIT. **Envíos con gate de confirmación**; lectura/búsqueda libre. Logo: oficial (simple-icons `gmail`). **Es la palanca #1 del catálogo de automatizaciones** (need `email` = 47 loops). Excepción de gate igual que sheets/calendar: Google no publica server oficial, se mitiga con el autor de nuestro Airtable/Sheets ya validado. **Reemplaza** el puntero roto anterior de `install.rs` (`@modelcontextprotocol/server-gmail`, que nunca existió en npm). |
 | **whatsapp** | SKIP 2026-06-25 | Gate duro falló: no se encontró servidor MCP oficial de Meta/WhatsApp en npm; los paquetes encontrados son comunitarios o wrappers de terceros. |
 | **kit** | SKIP 2026-06-25 | Gate duro falló: no se encontró servidor MCP oficial de Kit/ConvertKit en npm; `kit-mcp-server` es comunitario. |
 | **everything** | SKIP 2026-06-26 | Gate de catálogo falló: `@modelcontextprotocol/server-everything` existe en npm y publisher/maintainers son confiables, pero el README/metadata lo define como servidor de prueba que “exercises all the features of the MCP protocol”, no como conector útil para usuarios finales. |
@@ -80,6 +118,80 @@ Este filtro aplica igual a **kits** (`content/kits/RULES.md`) y **skills** (`con
 | **convex** | SKIP 2026-07-18 | En el directorio como `convex-backend-**skill**`; el MCP de Convex es un **subcomando del CLI** (`npx convex mcp`), no un server instalable independiente (regla #2). |
 | **linear / datadog** | SKIP 2026-07-18 | Del directorio, pero son **remotos/hospedados** (Linear: `mcp.linear.app` OAuth; Datadog: plugin `datadog-labs`, no server npm stdio). Candidatos para la extensión de scope remoto, no para el gate npm actual. |
 | **meta-social** (2026-07-18) | Meta Graph API — Content Publishing docs oficiales (`developers.facebook.com/docs/instagram-platform/content-publishing`) + Facebook Pages `/photos`/`/feed` | **Vendor oficial (Meta Platforms)**, no npm-stdio: es la Graph API oficial de Meta (misma familia que el conector **whatsapp**, `status: soon`), alcanzada por la app Tauri vía OAuth (Facebook Login for Business), NO por un server MCP de terceros. Publicación organic-only: IG en 2 pasos (`/{ig-user-id}/media` → `/media_publish`) + FB Page directo. Scopes mínimos: `pages_show_list`, `pages_read_engagement`, `pages_manage_posts`, `instagram_basic`, `instagram_content_publish`, `business_management`. Requiere IG Business/Creator vinculado a una Página FB (el conector lo detecta y lo explica). Gate de aprobación obligatorio (postear es irreversible) reusando `safety/`. `status: soon` hasta que el cableado en `terminal-sync` salga de beta. Logo: oficial de **Meta** (simple-icons `meta`, brand `#0467DF`) vendorizado en `public/connectors/meta-social.svg`. Paridad ES/EN estricta. |
+| **shopify** | FIRST-PARTY 2026-07-19 | **NO pasa por el Loop npm** (Shopify no publica un server MCP operador para el dueño; `@shopify/dev-mcp` es solo docs/schema y los que operan la tienda son de terceros). Se resolvió con un **build propio**: el server `terminalsync-shopify-mcp` (repo `terminal-sync`, sidecar Tauri) sobre la Admin GraphQL API oficial, conectado desde Ajustes → Integraciones (no por manifest npm). Catálogo: `content/connectors/{es,en}/shopify.md` (`source: first-party`, sin manifest). **Un futuro run del Loop NO debe re-SKIPpearlo como npm** — ya está resuelto fuera del scope npm. Logo: **oficial** (simple-icons `shopify`, `#7AB55C`). |
+| **google-sheets** (2026-07-19) | npm `google-sheets-mcp` README oficial (v1.2.1, tarball) | npm package metadata + README — **Adam Jones / @domdomegg**, el **mismo autor de nuestro conector de Airtable** ya publicado; repo `github.com/domdomegg/google-sheets-mcp`; `npx -y google-sheets-mcp`; OAuth `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` (scope `spreadsheets`, redirect `http://localhost:3000/callback`); tools `sheets_spreadsheet_get`/`_create`, `sheets_values_get`/`_batch_get`/`_update`/`_batch_update`, `sheets_sheets_list`; MIT. Logo: oficial (simple-icons `googlesheets`, `#0F9D58`). **Excepción de gate documentada** (abajo). |
+| **google-calendar** (2026-07-19) | npm `google-calendar-mcp` README oficial (v1.0.9, tarball) | npm package metadata + README — **Yevhen Romanov** (comunitario, individuo); el paquete npm **no declara `repository`** → fuente = npm README + metadata, `originalAuthorUrl` apunta a la página npm (regla #4: no inventar el repo); `npx -y google-calendar-mcp`; OAuth `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` + `GOOGLE_REDIRECT_URI=http://localhost:3000/auth/callback` (`AUTH_METHOD=google_cloud`); capacidades: listar calendarios/eventos, próximos eventos, crear/editar/borrar eventos, detalle, chequeo de disponibilidad; MIT. Logo: oficial (simple-icons `googlecalendar`, `#4285F4`). **Excepción de gate documentada** (abajo). |
+
+| **xero** (2026-07-19) | npm `@xeroapi/xero-mcp-server` README oficial (v0.0.17, tarball) | npm package metadata + README — **publisher oficial "Xero"** (`author: "Xero"`, repo `github.com/XeroAPI/xero-mcp-server`); `npx -y @xeroapi/xero-mcp-server`; OAuth2 **Custom Connections** (M2M, una organización por conexión): `XERO_CLIENT_ID` + `XERO_CLIENT_SECRET`, opcional `XERO_SCOPES`, alternativa `XERO_CLIENT_BEARER_TOKEN`; tools read `list-invoices`/`list-aged-receivables-by-contact`/`list-payments`/`list-profit-and-loss`/`list-report-balance-sheet`/`list-trial-balance`/`list-contacts`/`list-accounts`/`list-bank-transactions`/… + write `create-invoice`/`create-payment`/`create-quote`/`create-credit-note`/`update-*`; MIT. Logo: oficial (simple-icons `xero`, `#13B5EA`). **Pasa el gate de publisher limpio.** Cubre los 21 loops de Facturación/Contabilidad. **Nota LATAM:** Alegra/Siigo (dominantes en Colombia) **no tienen server MCP en npm** (E404); Xero es la única opción de contabilidad con publisher oficial. Muchos loops de facturación también corren sobre el conector de Google Sheets (fallback del brief). |
+
+| **hubspot** (2026-07-20) | npm `@hubspot/mcp-server` README oficial (v0.4.0, tarball) | npm package metadata + README — **publisher oficial HubSpot** (scope `@hubspot`; README: *"HubSpot's MCP server is now available as a beta release"*, docs `developers.hubspot.com/mcp`); `npx -y @hubspot/mcp-server`; auth `PRIVATE_APP_ACCESS_TOKEN` (private app, scopes elegidos al crear, read-only recomendado por el README); tools `hubspot-list-objects`/`-search-objects`/`-batch-create-objects`/`-batch-update-objects`/`-batch-read-objects`/`-get-schemas`, properties `-list/get/create/update-property`, associations `-batch-create/list-associations`/`-get-association-definitions`, engagements `-create-engagement` (Notes/Tasks), `hubspot-get-user-details`; MIT. Logo: oficial (simple-icons `hubspot`, `#FF7A59`). **Pasa el gate de publisher limpio.** Cubre CRM #7 (8 loops). |
+| **ahrefs** (2026-07-20) | npm `@ahrefs/mcp` README oficial (v0.0.11, tarball) | npm package metadata + README — **publisher oficial "Ahrefs"** (`author: "Ahrefs"`); `npx -y @ahrefs/mcp`; auth `API_KEY` (mapeado desde `${SECRET:AHREFS_API_KEY}`); el README es install-focused y **no enumera tools** → el conector describe la superficie de la Ahrefs API (keywords orgánicas/posiciones, backlinks/referring domains, domain rating, métricas e ideas de keywords, rank tracking) sin inventar nombres exactos (regla #1); MIT. **Pasa el gate de publisher limpio.** Cubre SEO #8 (4 loops). **Divulgación:** la Ahrefs API es un adicional pago a la suscripción. **Logo: FALLBACK TS** — Ahrefs no está en simple-icons (v16.27.0 ni latest); ver "Logos pendientes". |
+
+### Excepción de gate — conectores del catálogo de Loops (2026-07-19)
+
+Los dos conectores de Google de arriba **no pasan el gate #3 "publisher oficial"** tal como está escrito (Google no publica servers MCP de Sheets/Calendar en npm — igual que `gmail`/`whatsapp`, que están SKIP por eso). Se shipean igual por instrucción directa de JM: el **brief "Conectores para el catálogo de Automatizaciones (Loops)"** los prioriza como #1 y #2 (13 + 11 loops del catálogo `loopUseCases.ts` dependen de ellos). Mitigación del riesgo de publisher:
+- **google-sheets** lo mantiene **@domdomegg**, el mismo autor comunitario cuyo `airtable-mcp-server` ya shippeamos y validamos — precedente directo, no un desconocido.
+- **google-calendar** es de un individuo; se documenta como comunitario y la auth corre por el OAuth de Google (el usuario aprueba en su propio navegador, nada se delega a un tercero).
+
+Cuando exista un server MCP **oficial de Google** para Sheets/Calendar, migrar a ese y despromover estos. La decisión de negocio (cobertura del catálogo de Loops) le gana hoy a la pureza del gate.
+
+### Conectores first-party (fuera del scope npm del Loop)
+
+Algunos conectores no tienen server MCP en npm y se shipean como **build propio** (sidecar de TerminalSync sobre la API oficial del vendor), igual que Shopify (#702/#177) y Meta Ads (#705/#178). Van con `source: first-party`, **sin `manifest`** (`hasManifest:false`) porque se conectan **desde la app**, no por npx.
+
+- **google-business** (2026-07-20) — Google **no publica** server MCP de Business Profile en npm (solo librerías crudas `@googleapis/mybusiness*`). Sidecar propio `terminalsync-google-business-mcp` sobre las REST APIs oficiales (Account Management v1 + Business Information v1 + `mybusiness` v4 para reseñas). Cubre los 14 loops de Reseñas/Google Business. Tools: `gbp_list_accounts`/`gbp_list_locations`/`gbp_list_reviews`/`gbp_review_summary` (lectura) + `gbp_reply_review` (escritura con confirmación de dos pasos). Auth OAuth2 `business.manage` (token en keychain; refresh flow completo = follow-up). Requiere aprobación de acceso de Google a la Business Profile API. **Logo:** marca oficial de **Google** (simple-icons `google`, `#4285F4`) — Business Profile no tiene icono propio en simple-icons; se usa la marca del vendor padre.
+
+- **dropbox** (2026-07-20) — ver la fila en la tabla de SKIP→FIRST-PARTY más abajo. Sidecar `terminalsync-dropbox-mcp` sobre la Dropbox API v2.
+
+- **intercom** (2026-07-20) — el único server MCP de Intercom en npm es comunitario y no pasa el gate; el vendor no publica uno operador. Sidecar propio `terminalsync-intercom-mcp` sobre la Intercom REST API oficial (base `api.intercom.io`, header `Intercom-Version: 2.11`); endpoints sacados del **SDK oficial `intercom-client` de npm (v7.x)**: `/me`, `/conversations`, `/conversations/{id}`, `/contacts/search`, `/conversations/{id}/reply`. Cubre los loops de bandeja de soporte / atención al cliente. Tools: `intercom_me`/`intercom_list_conversations`/`intercom_get_conversation`/`intercom_find_contact` (lectura) + `intercom_reply` (escritura con confirmación de dos pasos — resuelve `admin_id` vía `/me` y postea con `message_type: comment`). Los bodies HTML se limpian a texto plano en el sidecar. Auth: Access Token de Intercom (token en keychain, env `INTERCOM_ACCESS_TOKEN` para override; refresh OAuth completo = follow-up). **Logo:** oficial (simple-icons `intercom`, `#1F8DED`). Categoría nueva `support` (agregada al union de `connectors.ts`).
+
+### Paridad Accio — conectores npx (2026-07-20)
+
+Del inventario exacto de Accio (lista ✅ CONSTRUIR), los que tienen server MCP real en npm. Verificados desde el README del tarball.
+
+| Conector | Fuente | Notas |
+|---|---|---|
+| **todoist** | npm `@doist/todoist-mcp` v12.0.0 | **Publisher oficial Doist** (scope `@doist`, repo `Doist/todoist-mcp`); `npx -y @doist/todoist-mcp`; auth `TODOIST_API_KEY`; tareas/proyectos/secciones/etiquetas/comentarios (R/W); MIT. Logo: oficial (simple-icons `todoist`, `#E44332`). |
+| **monday** | npm `@mondaydotcomorg/monday-api-mcp` v3.3.0 | **Publisher oficial monday.com** (scope `@mondaydotcomorg`, repo `mondaycom/monday-ai`); `npx -y @mondaydotcomorg/monday-api-mcp -m atp`; auth env `monday_token` (`${SECRET:MONDAY_TOKEN}`) + `NODE_OPTIONS=--no-node-snapshot` (literal, config oficial); boards/items/columnas/updates; MIT. **Logo: FALLBACK TS** — monday no está en simple-icons; ver Logos pendientes. |
+| **clickup** | npm `clickup-mcp-server` v1.12.0 | David Whatley (`nsxdavid`), MIT; `npx -y clickup-mcp-server`; auth `CLICKUP_API_TOKEN` (`pk_…`); tools verbatim `get_workspaces`/`get_spaces`/`get_lists`/`get_tasks`/`get_docs_from_workspace`/`create_folder`/`create_list`/`create_task`/`update_task`. Logo: oficial (simple-icons `clickup`, `#7B68EE`). |
+| **twitter** (X) | npm `@enescinar/twitter-mcp` v0.2.0 | Enes Cinar, MIT; **X API v2 oficial** (OAuth 1.0a); `npx -y @enescinar/twitter-mcp`; env `API_KEY`/`API_SECRET_KEY`/`ACCESS_TOKEN`/`ACCESS_TOKEN_SECRET` (mapeados de `TWITTER_*`); tools `post_tweet`/`search_tweets`. **Escritura pública** → gate de confirmación. Logo: oficial (simple-icons `x`, `#000000`). |
+| **wordpress** | npm `wordpress-mcp` v1.0.2 | Utsav Ladani, ISC; `npx -y wordpress-mcp`; env `WORDPRESS_HOST_URL`/`WORDPRESS_API_USERNAME`/`WORDPRESS_API_PASSWORD` (**application password**, no la del login, revocable)/`WORDPRESS_POST_AUTHOR_ID`; posts/páginas sobre la REST API. Logo: oficial (simple-icons `wordpress`, `#21759B`). |
+
+**SKIP de esta corrida (documentados):**
+
+| Conector | SKIP | Motivo |
+|---|---|---|
+| **linkedin** | 2026-07-20 | Los paquetes npm (`linkedin-mcp`, `mcp-linkedin`) son comunitarios y **el README no documenta la auth**; LinkedIn no tiene API oficial para esto y los servers comunitarios suelen **scrapear con cookies de sesión** (contra los ToS + frágil). No se ship sin una fuente/auth confiable. |
+| **metabase** | 2026-07-20 | `metabase-mcp` (gobenpark) existe pero **el tarball no trae README** y no se pudo extraer la config de env de la fuente (regla #1: no redactar de memoria). Recuperable leyendo el repo. |
+| **similarweb** | 2026-07-20 | No hay server MCP en npm (E404). |
+| **dropbox** | ~~SKIP~~ → **FIRST-PARTY 2026-07-20** | El único `dropbox-mcp-server` de npm no tiene author ni license → no pasa el gate. Resuelto con **build propio** (sidecar `terminalsync-dropbox-mcp`) sobre la Dropbox API v2 oficial; endpoints sacados del **SDK oficial `dropbox` de npm (v10.37.1)**: `users/get_current_account`, `files/list_folder`, `files/search_v2`, `files/get_temporary_link`, `sharing/create_shared_link_with_settings`. Se conecta desde la app (`source: first-party`, sin manifest). Tools read (account/list/search/get_link) + write gated (`dropbox_share_link`, link público con confirmación). Logo oficial (simple-icons `dropbox`, `#0061FF`). |
+| **intercom** | ~~SKIP~~ → **FIRST-PARTY 2026-07-20** | El SKIP inicial fue por no haber server npm operador (el slot CRM lo cubre HubSpot). Se reevaluó bajo la lente "el catálogo sirve al CLIENTE, no a JM": un dueño de negocio con soporte en Intercom sí lo usa. Resuelto con **build propio** (sidecar `terminalsync-intercom-mcp`) sobre la Intercom REST API oficial; endpoints del **SDK oficial `intercom-client` de npm (v7.x)**. Ver detalle en "Conectores first-party" arriba. Se conecta desde la app (`source: first-party`, sin manifest). Read (me/list/get/find_contact) + write gated (`intercom_reply`). Logo oficial (simple-icons `intercom`, `#1F8DED`). |
+| **zapier** | 2026-07-20 | `zapier-mcp` existe pero es **UNLICENSED** en npm → no se ship sin licencia. (Make ya está en el catálogo para automatización.) |
+| **klaviyo** | 2026-07-23 | Klaviyo (email/SMS ecommerce, **empresario-first fuerte**) publica un MCP **oficial pero remote-hosted** (endpoint gestionado, no server npm-stdio). El único paquete npm (`klaviyo-mcp`) es **comunitario** (author Lars Mueller, repo `doinglean/…`) → falla el gate de publisher (regla #3). Candidato para la extensión de scope remoto. |
+| **asana** | 2026-07-23 | El MCP **oficial de Asana es remoto** (`mcp.asana.com`, OAuth). En npm solo hay `asana-mcp` **comunitario** (author "Optimize Overseas", repo `optimize-overseas/…`) → falla el gate de publisher. `@asana/mcp` no existe en npm (E404). Candidato para la extensión de scope remoto. |
+| **quickbooks** | 2026-07-23 | Contabilidad (empresario-first), pero en npm solo hay `quickbooks-mcp` **comunitario** (author `laf-rge`); Intuit no publica server oficial en npm (`@intuit/mcp` E404). Falla el gate de publisher. |
+| **twilio** | 2026-07-23 | Existe `@twilio-alpha/mcp` (maintainer `secure-supply-chain@twilio.com` = **Twilio oficial**), pero está en el scope **`-alpha` (pre-release)**, **sin `repository`** y con **README vacío** en el registro → no se puede completar el molde de oro (source/license doc) sin adivinar (regla #1/#5). Además es comms-API (dev-adjacent), no empresario-first puro. `@twilio/mcp` estable no existe (E404). Reconsiderar cuando salga del alpha con repo + README. |
+| **mailchimp** | 2026-07-23 | Marketing email (empresario-first), pero el MCP **oficial de Mailchimp cubre solo Transactional (Mandrill)**, remoto y dev-focused — **no** la plataforma de marketing. `@mailchimp/mcp` no existe en npm (E404); los servers de la plataforma de marketing son todos comunitarios. Falla el gate. |
+| **calendly** | 2026-07-23 | Agendas/reuniones (empresario-first), pero **no hay server MCP oficial** (`@calendly/mcp` E404); solo paquetes comunitarios. Falla el gate de publisher. |
+
+**Resultado de la corrida 2026-07-23 (manual, "Correlo tu esta vez"):** **0 conectores npm-stdio nuevos.** El catálogo npm-stdio de conectores oficiales empresario-first está **agotado en su veta actual**: los targets que faltan (Klaviyo, Asana, Zoom, Canva, QuickBooks, Atlassian…) migraron todos a **MCP remote-hosted** o solo tienen paquetes **comunitarios/alpha/unlicensed** en npm. No es sesgo dev — la frontera oficial se movió a remoto.
+
+**Decisión de JM (2026-07-23) = opción (a): extender el scope del Loop a MCP remoto.** Lo shipeado en esta corrida es la **extensión de scope** (arriba: "Conectores remote-hosted (MCP remoto)") — los dos moldes de manifest (Bearer / OAuth), el requisito de sourcing oficial, y la divulgación obligatoria. Con eso, los conectores remotos oficiales pasan a ser **shipeables**, no diferidos. `posthog` ya probó el patrón; ahora está generalizado.
+
+**Nota de entorno:** en el contenedor de esta corrida los dev-portals de los vendors (developers.asana.com, developers.klaviyo.com, www.canva.dev) **bloquean el fetcher con 403**, así que NO se pudo leer la fuente oficial verbatim para redactar cada conector remoto sin violar la regla #1. Por eso quedan **en cola** (abajo) con el lead de endpoint ya identificado; se redactan y shipean en una corrida con acceso a esos docs (Mac/entorno sin ese bloqueo). No se inventó ningún endpoint.
+
+**Remote candidates — en cola (in-scope, pendiente de sourcing oficial):**
+
+| Candidato | Lead de endpoint (a verificar verbatim en la fuente oficial) | Auth | Persona |
+|---|---|---|---|
+| **Asana** | `https://mcp.asana.com/mcp` (V2, streamable HTTP, GA; V1 `/sse` deprecado 2026-11-05) — docs `developers.asana.com/docs/using-asanas-mcp-server` | OAuth (molde B) | business |
+| **Klaviyo** | endpoint remoto oficial — docs `developers.klaviyo.com` (MCP server) | por confirmar (Bearer/OAuth) | business |
+| **Canva** | server MCP oficial — docs `www.canva.dev/docs/apps/mcp-server` | OAuth (molde B) | business |
+| **Zoom** | server MCP oficial — Zoom App Marketplace / developer docs | OAuth (molde B) | business |
+
+Los leads salen de WebSearch de páginas oficiales; **NO alcanzan para redactar** (regla #1 exige leer la fuente). Cada uno se cierra cuando una corrida pueda fetchear el dev-portal del vendor. Prioridad: **Asana** (endpoint V2 confirmado + GA) y **Klaviyo** (empresario-first más fuerte para ecommerce).
+
+**SKIP firme (no remoto oficial, siguen afuera):** `quickbooks` (solo comunitario en npm, Intuit sin oficial), `calendly` (sin server oficial), `mailchimp` (el oficial cubre solo Transactional/Mandrill, no marketing), `twilio` (solo `@twilio-alpha`, pre-release sin repo/README).
 
 ## Logos pendientes (deuda del Loop)
 
@@ -90,6 +202,9 @@ Este filtro aplica igual a **kits** (`content/kits/RULES.md`) y **skills** (`con
 | ~~**firecrawl**~~ | **CERRADO 2026-07-17** | Logo **oficial** de Firecrawl bajado del repo oficial (`mendableai/firecrawl`, `img/firecrawl_logo.png`, 512×512) vía `raw.githubusercontent.com` y embebido en `public/connectors/firecrawl.svg`. Deuda saldada. | — |
 | **pinecone** | fallback TS (`public/connectors/pinecone.svg`) | Logo oficial de Pinecone. No está en simple-icons (2026-07-18) y los repos raw de `pinecone-io` no exponen un SVG de logo; el sitio del vendor está bloqueado por el proxy. Bajar de pinecone.io o su brand kit. | 2026-07-18 |
 | **exa** | fallback TS (`public/connectors/exa.svg`) | Logo oficial de Exa. **Re-chequeado 2026-07-17:** no está en simple-icons; `exa.ai` sigue bloqueado por el proxy; `api.github.com` está scopeada (403) así que no se puede listar el repo, y las rutas raw típicas (`exa-labs/exa-mcp-server` `assets/logo.svg`, etc.) dan 404. **Pendiente JM (1 min):** guardar el SVG/PNG oficial de exa.ai o su brand kit a `public/connectors/exa.svg`. | 2026-07-14 (re-check 2026-07-17) |
+| ~~**shopify**~~ | **CERRADO 2026-07-19** | Logo **oficial** de Shopify: la marca `shopify` de simple-icons (path oficial, `fill="#7AB55C"`) bajada vía `npm pack simple-icons` y embebida en `public/connectors/shopify.svg`. Deuda saldada. | — |
+| **ahrefs** | fallback TS (`public/connectors/ahrefs.svg`) | Logo oficial de Ahrefs. No está en simple-icons (v16.27.0 ni latest); el sitio del vendor está bloqueado por el proxy en este entorno. **Pendiente JM (1 min):** guardar el SVG/PNG oficial de ahrefs.com o su brand kit a `public/connectors/ahrefs.svg`. | 2026-07-20 |
+| **monday** | fallback TS (`public/connectors/monday.svg`) | Logo oficial de monday.com. No está en simple-icons (v16.27.0). **Pendiente JM (1 min):** guardar el SVG/PNG oficial de monday.com o su brand kit a `public/connectors/monday.svg`. | 2026-07-20 |
 
 ## Estructura del molde de oro (verificada en estos 8)
 

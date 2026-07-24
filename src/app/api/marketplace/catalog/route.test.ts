@@ -65,6 +65,20 @@ describe("GET /api/marketplace/catalog", () => {
     expect(body.cliTools.length).toBeGreaterThan(0);
   });
 
+  it("serves plugins with the derived requiresEnvSecrets contract", async () => {
+    const { body } = await callCatalog("es");
+    expect(Array.isArray(body.plugins), "plugins").toBe(true);
+
+    const seo = body.plugins.find((p) => p.slug === "seo-audit");
+    expect(seo, "seo-audit plugin should be served").toBeDefined();
+    // The contract Carril B reads: a boolean derived from the plugin's
+    // connector, so the Capability Check can decide auto-install vs. ask
+    // the owner to connect. SEO Audit bundles Firecrawl (needs a key).
+    expect(typeof seo?.requiresEnvSecrets).toBe("boolean");
+    expect(seo?.requiresEnvSecrets).toBe(true);
+    expect(seo?.connectorSlug).toBe("firecrawl");
+  });
+
   it("returns the file-based Marketing kit in ES and EN", async () => {
     for (const lang of ["es", "en"] as const) {
       const { body } = await callCatalog(lang);
@@ -120,7 +134,9 @@ describe("GET /api/marketplace/catalog", () => {
     expect(body.skills.every((s) => !s.hidden)).toBe(true);
   });
 
-  it("returns exactly the seven launch-ready skills in the public catalog response", async () => {
+  it("returns exactly the launch-ready skills in the public catalog response", async () => {
+    // 13 molded skills (7 general + 6 CRM/retention, published live with no
+    // catalogReady:false) + the 4 native document skills (included: true).
     const publicSlugs = [
       "code-reviewer",
       "doc-coauthoring",
@@ -129,13 +145,26 @@ describe("GET /api/marketplace/catalog", () => {
       "meta-ads-creator",
       "seo-auditor",
       "skill-creator",
+      // CRM / retention skills — live in the public catalog.
+      "carrito-abandonado",
+      "ltv-cohortes",
+      "pedir-resenas",
+      "promos-cupones",
+      "rfm-segmentacion",
+      "winback-dormidos",
+      "docx",
+      "pdf",
+      "pptx",
+      "xlsx",
     ] as const;
+    const sorted = [...publicSlugs].sort();
 
     for (const lang of ["en", "es"] as const) {
       const { body } = await callCatalog(lang);
 
-      expect(body.skills).toHaveLength(7);
-      expect(body.skills.map((skill) => skill.slug)).toEqual([...publicSlugs]);
+      expect(body.skills).toHaveLength(publicSlugs.length);
+      // Set-based — robust to display-name sort order.
+      expect(body.skills.map((skill) => skill.slug).sort()).toEqual(sorted);
     }
   });
 

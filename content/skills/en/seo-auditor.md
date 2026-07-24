@@ -30,6 +30,7 @@ Produces a prioritized SEO audit with:
 - **Lower-priority improvements**: alt text, meta description polish, sitemap hygiene, small content gaps.
 - **Evidence per issue**: observed symptom, likely user/search impact, exact fix, owner, and rough effort.
 - **Claim limits**: distinguishes verified findings from hypotheses and avoids ranking guarantees.
+- **The verdict (always close with this)**: a **0–100 score** for the page's SEO health based on what could be inspected; a traffic light with a threshold (🟢 80+ solid base, polish it; 🟡 50–79 fix the high-impact items first; 🔴 <50 there are blockers stopping everything else); **the single highest-impact fix to start with**; and the reminder that the score reflects what could be seen, not a ranking guarantee.
 
 It can inspect only what the model or connected tools can access. If JavaScript rendering, authenticated pages, Search Console, server logs, or Lighthouse data are unavailable, it must say so.
 

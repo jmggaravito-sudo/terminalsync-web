@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, Boxes } from "lucide-react";
 import { getConnector, listSlugs } from "@/lib/connectors";
+import { pluginsUsingConnector } from "@/lib/plugins";
 import { ConnectorDualView } from "./DualView";
 import { ConnectorLogo } from "../Logo";
 
@@ -43,6 +44,9 @@ export default async function ConnectorDetail({ params }: Props) {
   const { lang, slug } = await params;
   const doc = await getConnector(lang, slug);
   if (!doc) notFound();
+
+  // Plugins that bundle this connector — surface the product it's part of.
+  const inPlugins = await pluginsUsingConnector(lang, slug);
 
   const t = {
     back: lang === "es" ? "Conectores" : "Connectors",
@@ -137,6 +141,22 @@ export default async function ConnectorDetail({ params }: Props) {
             </p>
           </div>
         </header>
+
+        {inPlugins.length > 0 && (
+          <div className="mt-6 flex flex-wrap items-center gap-2 text-[13px] text-[var(--color-fg-muted)]">
+            <Boxes size={14} className="text-[var(--color-accent)]" />
+            <span>{lang === "es" ? "Parte del Plugin" : "Part of the Plugin"}</span>
+            {inPlugins.map((p) => (
+              <Link
+                key={p.slug}
+                href={`/${lang}/plugins/${p.slug}`}
+                className="font-medium text-[var(--color-accent)] hover:underline"
+              >
+                {p.name}
+              </Link>
+            ))}
+          </div>
+        )}
 
         <ConnectorDualView
           labels={{ simple: t.simple, dev: t.dev }}

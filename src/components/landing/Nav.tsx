@@ -32,6 +32,7 @@ export function Nav({ dict, lang }: Props) {
   // Una sola fuente de items para desktop y móvil.
   const items: NavItem[] = marketplace
     ? [
+        { href: `/${lang}/plugins`, label: "Plugins", external: true },
         { href: `/${lang}/connectors`, label: "Connectors", external: true },
         { href: `/${lang}/skills`, label: "Skills", external: true },
         { href: `/${lang}/cli-tools`, label: "CLI", external: true },

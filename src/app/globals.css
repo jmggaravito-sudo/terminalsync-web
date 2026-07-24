@@ -315,3 +315,69 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hero-rotate { animation: none; }
 }
+
+/* ─── Integrations marquee (hero) ─────────────────────────────────── */
+.ts-marquee { display: block; }
+
+.ts-marquee-row {
+  overflow: hidden;
+  position: relative;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, black 6%, black 94%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, black 6%, black 94%, transparent 100%);
+}
+
+.ts-marquee-track {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  will-change: transform;
+  padding-block: 4px;
+}
+
+.ts-marquee-left  { animation: ts-marquee-left  60s linear infinite; }
+.ts-marquee-right { animation: ts-marquee-right 60s linear infinite; }
+
+@keyframes ts-marquee-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes ts-marquee-right {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+.ts-marquee-row:hover .ts-marquee-track { animation-play-state: paused; }
+
+.ts-integration-tile {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 12px 18px;
+  min-width: 62px;
+  height: 56px;
+  transition: border-color 0.15s ease;
+}
+.ts-integration-tile:hover {
+  border-color: var(--color-border-strong);
+}
+.ts-integration-tile img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Marcas con logo oscuro: en modo oscuro necesitan un fondo claro
+   para seguir siendo legibles. En modo claro no cambia nada. */
+[data-theme="dark"] .ts-integration-tile--dark-logo {
+  background: #e8eaee;
+  border-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ts-marquee-left, .ts-marquee-right { animation: none; }
+}

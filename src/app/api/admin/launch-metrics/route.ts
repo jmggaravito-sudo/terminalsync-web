@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { authenticate, isAdmin } from "@/lib/marketplace/auth";
+import { fetchAiSelectionMetrics, type AiSelectionMetrics } from "@/lib/aiSelection";
 
 /**
  * GET /api/admin/launch-metrics
@@ -23,6 +24,33 @@ const N8N_URL = "https://n8n.nexflowai.net";
 const WELCOME_WF_ID = "9sMs1ExYtue9ay1n";
 const REPLIES_WF_ID = "jINNqL72z9yNcKx6";
 const OUTREACH_TARGET = 50;
+
+/**
+ * Turn an unknown thrown value into a readable warning string.
+ *
+ * `String(e)` on a plain object yields `[object Object]` — which is exactly
+ * what a Supabase/PostgREST error is (a plain `{ message, details, hint, code }`,
+ * NOT an `Error` instance). So `e instanceof Error ? e.message : String(e)`
+ * silently swallowed the real reason. Handle the Postgrest shape explicitly,
+ * then fall back to JSON before the useless `String()` last resort.
+ */
+function errMsg(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  if (e && typeof e === "object") {
+    const o = e as { message?: unknown; details?: unknown; hint?: unknown; code?: unknown };
+    if (typeof o.message === "string" && o.message) {
+      const extra = [o.details, o.hint].filter((x) => typeof x === "string" && x).join(" — ");
+      const code = typeof o.code === "string" && o.code ? ` (${o.code})` : "";
+      return extra ? `${o.message}${code} — ${extra}` : `${o.message}${code}`;
+    }
+    try {
+      return JSON.stringify(e);
+    } catch {
+      /* fall through */
+    }
+  }
+  return String(e);
+}
 
 interface MetricsPayload {
   generatedAt: string;
@@ -47,6 +75,7 @@ interface MetricsPayload {
     fired: number | null;
     failed: number | null;
   };
+  aiSelection: AiSelectionMetrics | null;
   warnings: string[];
 }
 
@@ -63,15 +92,21 @@ export async function GET(req: Request) {
     signups: { total: null, last7d: null, last30d: null, daily: null },
     revenue: { activeSubscriptions: null, mrr: null, trialConversionPct: null },
     welcomeFlow: { fired: null, failed: null },
+    aiSelection: null,
     warnings,
   };
 
-  const [supa, n8n] = await Promise.all([fetchSupabase(warnings), fetchN8n(warnings)]);
+  const [supa, n8n, aiSelection] = await Promise.all([
+    fetchSupabase(warnings),
+    fetchN8n(warnings),
+    fetchAiSelectionMetrics(warnings),
+  ]);
   if (supa) Object.assign(out, supa);
   if (n8n) {
     out.outreach.replied = n8n.replies;
     out.welcomeFlow = n8n.welcome;
   }
+  out.aiSelection = aiSelection;
 
   // Outreach sent — for now fold in the welcome-email-fired count as a
   // proxy until we instrument the actual outbound. The dashboard banner
@@ -142,9 +177,7 @@ async function fetchSupabase(warnings: string[]) {
         ? +((active.length / totalTrialing) * 100).toFixed(1)
         : null;
     } catch (e) {
-      warnings.push(
-        `subscriptions table unavailable: ${e instanceof Error ? e.message : String(e)}`,
-      );
+      warnings.push(`subscriptions table unavailable: ${errMsg(e)}`);
     }
 
     return {
@@ -152,7 +185,7 @@ async function fetchSupabase(warnings: string[]) {
       revenue: { activeSubscriptions, mrr, trialConversionPct },
     };
   } catch (e) {
-    warnings.push(`supabase: ${e instanceof Error ? e.message : String(e)}`);
+    warnings.push(`supabase: ${errMsg(e)}`);
     return null;
   }
 }
@@ -185,18 +218,18 @@ async function fetchN8n(warnings: string[]) {
 
     const [welcome, replies] = await Promise.all([
       countExecutions(WELCOME_WF_ID).catch((e) => {
-        warnings.push(`welcome flow: ${e.message}`);
+        warnings.push(`welcome flow: ${errMsg(e)}`);
         return { fired: 0, failed: 0 };
       }),
       countExecutions(REPLIES_WF_ID).catch((e) => {
-        warnings.push(`replies flow: ${e.message}`);
+        warnings.push(`replies flow: ${errMsg(e)}`);
         return { fired: 0, failed: 0 };
       }),
     ]);
 
     return { welcome, replies: replies.fired };
   } catch (e) {
-    warnings.push(`n8n: ${e instanceof Error ? e.message : String(e)}`);
+    warnings.push(`n8n: ${errMsg(e)}`);
     return null;
   }
 }

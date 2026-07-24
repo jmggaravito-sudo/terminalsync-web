@@ -2,10 +2,10 @@ import type { Locale } from "@/content";
 
 const T = {
   es: {
-    eyebrow: "No es otro chat",
-    title: "Otra categoría: el sistema operativo del trabajo con IA.",
+    eyebrow: "Del chat al sistema",
+    title: "Un chat responde preguntas. Un sistema termina trabajo.",
     subtitle:
-      "Cada una de estas herramientas es buena en lo suyo. TerminalSync juega otro partido.",
+      "Cada una de estas herramientas es buena en lo suyo. TerminalSync juega otro partido: el trabajo de tu empresa fluye, se recuerda y se termina.",
     cards: [
       {
         name: "ChatGPT",
@@ -35,10 +35,10 @@ const T = {
     ],
   },
   en: {
-    eyebrow: "Not another chat",
-    title: "A different category: the operating system for AI work.",
+    eyebrow: "From chat to system",
+    title: "A chat answers questions. A system gets work done.",
     subtitle:
-      "Each of these tools is great at its own thing. TerminalSync plays a different game.",
+      "Each of these tools is great at its own thing. TerminalSync plays a different game: your company's work flows, is remembered, and gets finished.",
     cards: [
       {
         name: "ChatGPT",

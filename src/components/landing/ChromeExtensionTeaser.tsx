@@ -99,7 +99,7 @@ export function ChromeExtensionTeaser({ dict }: { dict: Dict }) {
               <a
                 href={c.primaryHref}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-accent)] text-white px-4 py-2 text-[13px] font-semibold shadow-[0_6px_18px_-6px_var(--color-accent-glow)] hover:bg-[var(--color-accent-soft)] transition-colors"
               >
                 <Chrome size={13} strokeWidth={2.4} />

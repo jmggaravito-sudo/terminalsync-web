@@ -58,6 +58,7 @@ export function Footer({ dict }: { dict: Dict }) {
           href: `/${lang}/ai-terminal`,
         },
         { key: "marketplace", label: dict.footer.links.marketplace, href: `/${lang}/marketplace` },
+        { key: "plugins", label: "Plugins", href: `/${lang}/plugins` },
         { key: "connectors", label: dict.footer.links.connectors, href: `/${lang}/connectors` },
         { key: "skills", label: dict.footer.links.skills, href: `/${lang}/skills` },
         {

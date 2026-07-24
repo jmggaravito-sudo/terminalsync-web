@@ -36,8 +36,11 @@ describe("resolveBundleItem — connector (markdown)", () => {
   });
 
   it("connector without manifest → hasManifest false + requiresEnvSecrets false", async () => {
-    // `content/connectors/en/gmail.md` is affiliate-only; no manifest.
-    const item = await resolveBundleItem("connector", "gmail", "en");
+    // `content/connectors/en/gdrive.md` is a CTA-only Anthropic listing with no
+    // manifest. (gmail was the fixture here until it gained an MCP manifest —
+    // picking a still-manifest-less connector keeps this asserting the
+    // no-manifest branch.)
+    const item = await resolveBundleItem("connector", "gdrive", "en");
     expect(item).not.toBeNull();
     expect(item!.kind).toBe("connector");
     expect(item!.hasManifest).toBe(false);
