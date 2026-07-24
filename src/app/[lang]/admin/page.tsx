@@ -31,16 +31,6 @@ export default async function AdminHome({ params }: Props) {
       desc: isEs ? "Tendencias y señales para contenido y pauta." : "Trends and signals for content and ads.",
     },
     {
-      slug: "discovery",
-      title: "Discovery",
-      desc: isEs ? "Creators capturados, revisión y cola de outreach." : "Captured creators, review and outreach queue.",
-    },
-    {
-      slug: "marketplace",
-      title: "Marketplace",
-      desc: isEs ? "Conectores del catálogo y su estado." : "Catalog connectors and their status.",
-    },
-    {
       slug: "comp",
       title: "Comp",
       desc: isEs ? "Cuentas Pro/Max de cortesía para influencers." : "Comp Pro/Max accounts for influencers.",
