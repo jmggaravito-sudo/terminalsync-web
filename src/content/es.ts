@@ -455,7 +455,8 @@ const es: Dict = {
   },
   pricing: {
     title: "Simple, como debe ser",
-    subtitle: "Empieza gratis. Paga solo cuando tu flujo lo pida.",
+    subtitle:
+      "Empieza gratis. Paga solo cuando tu flujo lo pida. Las IAs se usan con tu propia suscripción (o sus planes gratuitos).",
     perMonth: "/mes",
     free: "Gratis",
     trial: {
@@ -515,7 +516,7 @@ const es: Dict = {
         priceNote: "para siempre",
         features: [
           "3 terminales activas con persistencia real",
-          "Claude Code, Codex, Gemini CLI o Sin IA",
+          "Usa 1, 2 o las 3 IAs — con tu propia suscripción",
           "Tu código sigue en Git; metadata en .terminalsync/",
           "AES-256 en secretos y conversaciones · tus archivos en TU nube",
           "Sync con Google Drive (tu cuenta)",
@@ -577,9 +578,9 @@ const es: Dict = {
       "Picker de modelo por IA + cost meter en vivo",
       "Markdown completo + copy con un click",
     ],
-    status: "Próximamente en Chrome Web Store · MVP funcional en early access",
-    primaryCta: "Instalar extensión",
-    primaryHref: "https://github.com/jmggaravito-sudo/terminalsync-chrome",
+    status: "En revisión — disponible muy pronto",
+    primaryCta: "Instalar en Chrome",
+    primaryHref: "https://chromewebstore.google.com/detail/fbbeeghjdjopcadipcjiabcjefbpihpb",
     secondaryCta: "Comparar con la app de escritorio",
     secondaryHref: "#pricing",
   },

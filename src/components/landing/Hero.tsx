@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
-import { ArrowRight, Download, PlayCircle } from "lucide-react";
+import { Download } from "lucide-react";
 import type { Dict, Locale } from "@/content";
 import { IntegrationsMarquee } from "./IntegrationsMarquee";
 
@@ -15,86 +15,46 @@ const VIDEO_SRC: Record<Locale, string> = {
 const ROTATE_DATA: Record<Locale, Array<{ h: string; s: string }>> = {
   es: [
     {
-      h: 'Tu empresa trabaja con IA, <span class="grad">incluso cuando tú no estás.</span>',
-      s: "Supervisa el trabajo desde cualquier dispositivo.",
-    },
-    {
-      h: 'La IA trabaja <span class="grad">donde ya viven tus archivos.</span>',
-      s: "No lleves tus archivos a la IA. Lleva la IA hasta ellos.",
-    },
-    {
-      h: 'Deja de subir documentos. <span class="grad">Conecta la IA a tus carpetas.</span>',
-      s: "Trabaja siempre con la versión más reciente de tus archivos.",
-    },
-    {
-      h: 'Cada cliente, proyecto o área tiene <span class="grad">su propia memoria.</span>',
-      s: "La IA nunca pierde el contexto de tu trabajo.",
+      h: 'Tu trabajo continúa, <span class="grad">aunque cierres el computador.</span>',
+      s: "TerminalSync sigue trabajando mientras tú haces otras cosas.",
     },
     {
       h: 'No es otro chat. <span class="grad">Es tu oficina digital con IA.</span>',
       s: "Porque trabajar es mucho más que conversar.",
     },
     {
-      h: 'Convierte cada proceso de tu empresa en <span class="grad">un trabajador digital.</span>',
-      s: "Cada área puede tener su propio equipo de IA.",
+      h: 'La IA trabaja <span class="grad">donde ya están tus archivos.</span>',
+      s: "No lleves tus archivos a la IA. Lleva la IA hasta ellos.",
     },
     {
-      h: 'Tu trabajo continúa <span class="grad">aunque cierres el computador.</span>',
-      s: "TerminalSync puede seguir trabajando mientras tú haces otras cosas.",
-    },
-    {
-      h: 'Usa Claude, Codex y Gemini <span class="grad">sin perder el contexto.</span>',
-      s: "Siempre podrás continuar con la IA más conveniente.",
-    },
-    {
-      h: 'Tu empresa <span class="grad">recuerda, organiza y ejecuta.</span>',
-      s: "TerminalSync: tu equipo digital organizado.",
+      h: 'Cada cliente, proyecto o área conserva <span class="grad">su propio contexto.</span>',
+      s: "La IA nunca pierde el contexto de ese trabajo.",
     },
     {
       h: 'La IA cambia cada pocos meses. <span class="grad">El trabajo de tu empresa permanece.</span>',
-      s: "TerminalSync une los dos mundos.",
+      s: "Diseñado para que tu empresa evolucione con cualquier IA.",
     },
   ],
   en: [
     {
-      h: 'Your business works with AI, <span class="grad">even when you\'re away.</span>',
-      s: "Monitor the work from any device.",
+      h: 'Your work keeps going, <span class="grad">even after you close your laptop.</span>',
+      s: "TerminalSync keeps working while you do other things.",
+    },
+    {
+      h: "It's not another chat. <span class=\"grad\">It's your digital office with AI.</span>",
+      s: "Because work is much more than a conversation.",
     },
     {
       h: 'AI works <span class="grad">where your files already live.</span>',
       s: "Don't bring your files to the AI. Bring the AI to them.",
     },
     {
-      h: 'Stop uploading documents. <span class="grad">Connect AI to your folders.</span>',
-      s: "Always work with the latest version of your files.",
+      h: 'Every client, project, or team keeps <span class="grad">its own context.</span>',
+      s: "AI never loses the context of that work.",
     },
     {
-      h: 'Every client, project or team has <span class="grad">its own memory.</span>',
-      s: "The AI never loses the context of your work.",
-    },
-    {
-      h: 'It\'s not another chat. <span class="grad">It\'s your digital office with AI.</span>',
-      s: "Because work is much more than a conversation.",
-    },
-    {
-      h: 'Turn every process in your business into <span class="grad">a digital worker.</span>',
-      s: "Each team can have its own AI crew.",
-    },
-    {
-      h: 'Your work keeps going <span class="grad">even after you close your laptop.</span>',
-      s: "TerminalSync keeps working while you do other things.",
-    },
-    {
-      h: 'Use Claude, Codex and Gemini <span class="grad">without losing context.</span>',
-      s: "Always pick up with whichever AI suits you best.",
-    },
-    {
-      h: 'Your business <span class="grad">remembers, organizes and executes.</span>',
-      s: "TerminalSync: your digital team, organized.",
-    },
-    {
-      h: 'AI changes every few months. <span class="grad">Your company\'s work stays.</span>',
-      s: "TerminalSync bridges both worlds.",
+      h: "AI changes every few months. <span class=\"grad\">Your company's work stays.</span>",
+      s: "Built so your business evolves with any AI.",
     },
   ],
 };
@@ -137,11 +97,7 @@ const COPY = {
     resultsStrong:
       "Crea en minutos: CRM · Portales · Dashboards · Inventarios · Propuestas · Automatizaciones · Reportes · Cotizadores",
     ctaPrimary: "Empieza gratis",
-    ctaSecondary: "Mira cómo funciona",
     os: "macOS · Linux · Windows",
-    intelNote: "¿Tu Mac es de 2020 o anterior (procesador Intel)?",
-    intelLink: "Descarga la versión para Mac Intel",
-    trust: ["Sin programar", "Memoria permanente", "Continúa aunque cambie la IA"],
     prefixLabel: "CON TERMINALSYNC:",
     shotTitle: "Desde acá manejas tu empresa con IA",
   },
@@ -149,11 +105,7 @@ const COPY = {
     resultsStrong:
       "Build in minutes: CRM · Portals · Dashboards · Inventory · Proposals · Automations · Reports · Quotes",
     ctaPrimary: "Start free",
-    ctaSecondary: "See how it works",
     os: "macOS · Linux · Windows",
-    intelNote: "Is your Mac from 2020 or earlier (Intel processor)?",
-    intelLink: "Download the Intel Mac version",
-    trust: ["No coding", "Persistent memory", "Continues even if the AI changes"],
     prefixLabel: "WITH TERMINALSYNC:",
     shotTitle: "This is where your business runs from.",
   },
@@ -202,8 +154,8 @@ export function Hero({ dict }: { dict: Dict }) {
           </strong>
         </p>
 
-        {/* CTAs */}
-        <div className="mt-8 flex items-center justify-center gap-3 flex-wrap">
+        {/* CTA único — el video se abre solo con el ▶ del cover del dashboard */}
+        <div className="mt-8 flex items-center justify-center">
           <a
             href="/api/download"
             data-cta="hero-primary"
@@ -213,41 +165,16 @@ export function Hero({ dict }: { dict: Dict }) {
             <Download size={16} strokeWidth={2.4} />
             {t.ctaPrimary}
           </a>
-          <button
-            type="button"
-            onClick={openVideo}
-            className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold text-[var(--color-fg)] bg-[var(--color-panel)] border border-[var(--color-border-strong)] hover:border-[var(--color-accent)]/40 transition-colors"
-          >
-            <PlayCircle size={16} strokeWidth={2} />
-            {t.ctaSecondary}
-            <ArrowRight size={14} strokeWidth={2.4} />
-          </button>
         </div>
 
         <p className="mt-3 text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-dim)]">
           {t.os}
         </p>
 
-        {/* Macs Intel (2020 y anteriores) descargan su propio DMG — el
-            navegador no puede detectar el chip (Safari en ARM se reporta
-            como Intel), así que se le pregunta al visitante en simple. */}
-        <p className="mt-1.5 text-[12px] text-[var(--color-fg-muted)]">
-          {t.intelNote}{" "}
-          <a
-            href="/api/download?arch=x86_64"
-            data-cta="hero-intel"
-            className="underline underline-offset-2 hover:text-[var(--color-fg)] transition-colors"
-          >
-            {t.intelLink}
-          </a>
-        </p>
-
-        {/* Trust line */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-[12px] font-mono text-[var(--color-fg-muted)]">
-          {t.trust.map((item) => (
-            <span key={item}>{item}</span>
-          ))}
-        </div>
+        {/* El aviso "Mac Intel (2020 o anterior)" NO va en el hero: se muestra
+            solo dentro del flujo de descarga (link secundario en el modal /
+            página de descarga). Ver src/app/api/download y componentes de
+            descarga si hay que reagregar el toggle x86_64. */}
       </div>
 
       {/* Dashboard */}

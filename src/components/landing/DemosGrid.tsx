@@ -170,8 +170,8 @@ export function DemosGrid({ lang }: { lang: Locale }) {
             style={{ fontSize: "clamp(1.75rem, 4.4vw, 2.75rem)" }}
           >
             {lang === "es"
-              ? "Momentos en los que dices: \"¡Guau!\""
-              : "Moments that make you say: \"Wow!\""}
+              ? "Así trabajan las empresas con TerminalSync."
+              : "This is how businesses work with TerminalSync."}
           </h2>
           <p className="mt-3 text-[15px] text-[var(--color-fg-muted)]">
             {lang === "es"

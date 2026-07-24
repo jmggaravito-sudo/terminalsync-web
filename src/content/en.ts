@@ -455,7 +455,8 @@ const en: Dict = {
   },
   pricing: {
     title: "Simple, as it should be",
-    subtitle: "Start free. Pay only when your workflow asks for it.",
+    subtitle:
+      "Start free. Pay only when your workflow asks for it. AIs run on your own subscription (or their free plans).",
     perMonth: "/mo",
     free: "Free",
     trial: {
@@ -515,7 +516,7 @@ const en: Dict = {
         priceNote: "forever",
         features: [
           "3 active terminals with real persistence",
-          "Claude Code, Codex, Gemini CLI or No AI",
+          "Use 1, 2 or all 3 AIs — on your own subscription",
           "Your code stays in Git; metadata in .terminalsync/",
           "AES-256 on secrets & conversations · your files in YOUR cloud",
           "Google Drive sync (your account)",
@@ -577,9 +578,9 @@ const en: Dict = {
       "Per-AI model picker + live cost meter",
       "Full markdown + one-click copy",
     ],
-    status: "Coming soon to the Chrome Web Store · Functional MVP in early access",
-    primaryCta: "Install extension",
-    primaryHref: "https://github.com/jmggaravito-sudo/terminalsync-chrome",
+    status: "In review — available very soon",
+    primaryCta: "Add to Chrome",
+    primaryHref: "https://chromewebstore.google.com/detail/fbbeeghjdjopcadipcjiabcjefbpihpb",
     secondaryCta: "Compare with the desktop app",
     secondaryHref: "#pricing",
   },
