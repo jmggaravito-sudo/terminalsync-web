@@ -84,6 +84,14 @@ const ROW_LABELS: Record<string, { es: string; en: string }> = {
     es: "Sin vendor lock-in",
     en: "No vendor lock-in",
   },
+  parallelWindows: {
+    es: "Varios proyectos en ventanas, abiertos a la vez",
+    en: "Multiple projects in windows, open at once",
+  },
+  aiCouncil: {
+    es: "Preguntá a las 3 IAs a la vez y compará",
+    en: "Ask all 3 AIs at once and compare",
+  },
 };
 
 function CellIcon({ value }: { value: "yes" | "no" | "partial" | "soon" }) {
