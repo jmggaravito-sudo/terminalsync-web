@@ -1,16 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/cron/promote-cli",
-      "schedule": "15 6 * * *"
-    },
-    {
       "path": "/api/cron/ops-error-review",
       "schedule": "0 7 * * *"
-    },
-    {
-      "path": "/api/cron/run-curator",
-      "schedule": "0 7 * * 0"
     },
     {
       "path": "/api/cron/purge-deleted-accounts",
