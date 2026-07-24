@@ -71,10 +71,10 @@ const es: Dict = {
     },
   },
   memory: {
-    eyebrow: "Memoria persistente",
+    eyebrow: "Memoria persistente · incluida",
     badge: "Incluida",
-    title: "Tu IA aprende de ti. Y no se olvida nunca.",
-    subtitle: "Cada sesión la hace más útil.",
+    title: "Tu empresa recuerda. Cada decisión, cada cliente, cada proceso.",
+    subtitle: "No es memoria de IA: es el conocimiento de tu empresa, y no se pierde nunca.",
     recallsLead: "Recuerda:",
     recalls: [
       "cómo trabajas",
@@ -125,10 +125,10 @@ const es: Dict = {
     },
   },
   multiAI: {
-    eyebrow: "Tu equipo de IAs",
-    title: "Pasa de una IA a un equipo de IAs",
+    eyebrow: "Tu equipo digital",
+    title: "Tu empresa, dirigida por ti. Ejecutada por tu equipo digital.",
     subtitle:
-      "No es una sola IA que tienes que vigilar. Es un equipo que trabaja en paralelo: tú apruebas, ellas ejecutan. Y cuando una se detiene, otra continúa.",
+      "Por primera vez puedes aumentar la capacidad de tu empresa sin contratar más personas. Tú decides y apruebas; tu equipo digital ejecuta en paralelo. Y si un especialista se detiene, otro continúa.",
     problem: {
       title: "Sin TerminalSync",
       items: [
@@ -241,15 +241,14 @@ const es: Dict = {
   },
   beforeAfter: {
     eyebrow: "El cambio real",
-    title: "Cómo se siente trabajar con tu IA",
+    title: "Cómo cambia tu empresa",
     subtitle:
-      "Antes: medias mañanas perdidas y conversaciones que arrancan de cero. Después: tu IA sigue donde la dejaste, hagas lo que hagas.",
+      "Antes: mañanas perdidas y conversaciones que arrancan de cero. Después: el trabajo de tu empresa sigue donde lo dejaste, hagas lo que hagas.",
     before: {
       heading: "Sin Terminal Sync",
       items: [
-        "Cierras la app y pierdes la conversación con tu IA",
-        "Se cae el internet y tu IA se detiene",
-        "Quieres seguir desde el celular y no puedes",
+        "Cierras la aplicación y el trabajo se pierde",
+        "Cada conversación arranca explicando tu negocio de cero",
         "Tus claves quedan en archivos sueltos en tu computadora",
         "Cambias de computadora y empiezas todo de cero",
         "Te quedas mirando la pantalla esperando que la IA responda",
@@ -258,10 +257,9 @@ const es: Dict = {
     after: {
       heading: "Con Terminal Sync",
       items: [
-        "Cierras todo, abres de nuevo y tu IA sigue trabajando",
-        "Se cae el internet — tu IA sigue igual, sin conexión",
-        "Generas un enlace y abres la sesión en tu celular",
-        "Bóveda cifrada con tus claves y secretos",
+        "Cierras todo, abres de nuevo y el trabajo sigue donde iba",
+        "Cada área conserva su contexto: nunca explicas de cero",
+        "Tus claves viven en una bóveda cifrada",
         "Tu cuenta y ajustes te siguen a cualquier dispositivo",
         "Te avisa por WhatsApp, correo o Telegram cuando termina o necesita algo",
       ],
@@ -335,7 +333,7 @@ const es: Dict = {
       responsiveNotifications: "Te avisa por correo y Telegram",
       webMobileMirror: "La misma sesión en el navegador o el celular",
       offlineLocal: "Funciona sin internet",
-      aes256: "Secretos y conversaciones cifrados · tus archivos en TU nube",
+      aes256: "Cifrado fuerte · ni nosotros podemos leer tu contenido",
       secretsVault: "Bóveda de claves integrada",
       internetImmunity: "Sigue andando si se cae el internet",
       aiConversationSync: "Conversaciones sincronizadas entre computadoras",
@@ -456,7 +454,7 @@ const es: Dict = {
   pricing: {
     title: "Simple, como debe ser",
     subtitle:
-      "Empieza gratis. Paga solo cuando tu flujo lo pida. Las IAs se usan con tu propia suscripción (o sus planes gratuitos).",
+      "Empieza gratis. 7 días con todas las funciones de Max — cancelas antes del día 7 y no se cobra nada. Las IAs se usan con tu propia suscripción (o sus planes gratuitos): TerminalSync no te revende tokens.",
     perMonth: "/mes",
     free: "Gratis",
     trial: {
@@ -511,18 +509,16 @@ const es: Dict = {
     plans: {
       starter: {
         name: "Free",
-        badge: "7 días gratis",
+        badge: "",
         price: "$0",
         priceNote: "para siempre",
+        tagline: "Para quien empieza a organizar su empresa con IA.",
         features: [
           "3 terminales activas con persistencia real",
           "Usa 1, 2 o las 3 IAs — con tu propia suscripción",
-          "Tu código sigue en Git; metadata en .terminalsync/",
-          "AES-256 en secretos y conversaciones · tus archivos en TU nube",
+          "AES-256 · ni nosotros lo leemos",
           "Sync con Google Drive (tu cuenta)",
-          "Notificaciones de silencio en el agente",
-          "2 dispositivos vinculados (laptop + escritorio)",
-          "Pruebas Max 7 días gratis al instalar",
+          "2 dispositivos vinculados",
         ],
         cta: "Descargar gratis",
       },
@@ -531,21 +527,16 @@ const es: Dict = {
         badge: "7 días gratis",
         price: "$19",
         priceNote: "/mes",
+        tagline: "Para quien ya delega trabajo real cada semana.",
         features: [
           "10 terminales con persistencia + resurrección",
           "Claude + Codex + Gemini en un espacio de trabajo",
-          "Tu IA recuerda tu empresa — no explicas dos veces",
-          "Vault de secretos por carpeta de proyecto",
-          "Sync nativo de Git para carpetas de proyecto y snapshots",
-          "Tu entorno está listo al abrir cualquier proyecto",
-          "Tus terminales IA viajan con la carpeta de proyecto",
-          "Tu sesión en cualquier dispositivo (móvil + navegador)",
+          "Tu empresa recuerda todo — no explicas dos veces",
+          "Bóveda de claves por proyecto",
+          "Sesión en cualquier dispositivo (móvil + navegador)",
           "Continúa el trabajo desde WhatsApp y Telegram",
-          "Conectores, skills y herramientas de terminal sincronizados",
-          "Notificaciones por Email / WhatsApp / Telegram",
-          "Historial 90 días",
-          "Hasta 5 dispositivos",
-          "Extensión Chrome Pro incluida (3 IAs en paralelo, BYOK)",
+          "Avisos por correo / Telegram",
+          "Extensión Chrome Pro incluida",
         ],
         cta: "Probar 7 días gratis",
       },
@@ -554,14 +545,14 @@ const es: Dict = {
         badge: "7 días gratis",
         price: "$39",
         priceNote: "/mes",
+        tagline: "Para empresas que escalan sin contratar más personas.",
         features: [
           "Todo lo de Pro, más:",
           "Terminales ilimitadas",
           "Hasta 10 dispositivos",
-          ".terminalsync/ portable para terminales de la carpeta de proyecto",
           "Herramientas y comandos compartidos por equipo",
-          "Pair programming read-only",
-          "Soporte prioritario por email",
+          "Programación en pareja (solo lectura)",
+          "Soporte prioritario por correo",
         ],
         cta: "Probar 7 días gratis",
       },

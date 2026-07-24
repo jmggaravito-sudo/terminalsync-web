@@ -98,6 +98,7 @@ export function Pricing({ dict }: { dict: Dict }) {
           badge={dict.pricing.plans.starter.badge}
           price={dict.pricing.plans.starter.price}
           priceNote={dict.pricing.plans.starter.priceNote}
+          tagline={dict.pricing.plans.starter.tagline}
           features={dict.pricing.plans.starter.features}
           cta={dict.pricing.plans.starter.cta}
           checkoutPlan="starter"
@@ -183,9 +184,13 @@ function PaidCard({
         <span className="text-[12px] text-[var(--color-fg-muted)]">{note}</span>
       </div>
 
-      <div className="text-[11.5px] text-[var(--color-fg-dim)] -mt-1">
-        &nbsp;
-      </div>
+      {copy.tagline ? (
+        <p className="text-[12.5px] text-[var(--color-fg-muted)] mt-1 leading-snug">
+          {copy.tagline}
+        </p>
+      ) : (
+        <div className="text-[11.5px] text-[var(--color-fg-dim)] -mt-1">&nbsp;</div>
+      )}
 
       <ul className="mt-5 space-y-2 flex-1">
         {copy.features.map((feat) => (
@@ -224,6 +229,7 @@ function PlanCard({
   badge,
   price,
   priceNote,
+  tagline,
   features,
   cta,
   checkoutPlan,
@@ -238,6 +244,7 @@ function PlanCard({
   badge?: string;
   price: string;
   priceNote: string;
+  tagline?: string;
   features: string[];
   cta: string;
   checkoutPlan: "starter" | "agency";
@@ -272,9 +279,13 @@ function PlanCard({
           {priceNote}
         </span>
       </div>
-      <div className="text-[11.5px] text-[var(--color-fg-dim)] -mt-1">
-        &nbsp;
-      </div>
+      {tagline ? (
+        <p className="text-[12.5px] text-[var(--color-fg-muted)] mt-1 leading-snug">
+          {tagline}
+        </p>
+      ) : (
+        <div className="text-[11.5px] text-[var(--color-fg-dim)] -mt-1">&nbsp;</div>
+      )}
 
       <ul className="mt-5 space-y-2 flex-1">
         {features.map((feat) => (

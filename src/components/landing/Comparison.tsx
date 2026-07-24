@@ -130,29 +130,49 @@ function CellIcon({
 
 export function Comparison({ dict }: { dict: Dict }) {
   const c = dict.comparison;
+  const isEs = dict.locale === "es";
+
+  // Copy del summary de la <details> — sacado del prototipo:
+  //   eyebrow "El comparativo honesto" + resumen "¿Vienes comparando…?"
+  const collapseEyebrow = isEs ? "El comparativo honesto" : "The honest comparison";
+  const collapseSummary = isEs
+    ? "¿Vienes comparando herramientas? Mira la tabla completa"
+    : "Comparing tools? See the full table";
 
   return (
     <section
       id="comparison"
-      className="scroll-mt-20 mx-auto max-w-6xl px-5 md:px-6 py-20 md:py-24"
+      className="scroll-mt-20 mx-auto max-w-6xl px-5 md:px-6 py-16 md:py-20"
     >
-      <div className="text-center max-w-2xl mx-auto">
-        <span className="inline-flex items-center text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent)] border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 px-3 py-1 rounded-full">
-          {c.eyebrow}
-        </span>
-        <h2
-          className="mt-4 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.08]"
-          style={{ fontSize: "clamp(1.625rem, 4vw, 2.5rem)" }}
-        >
-          {c.title}
-        </h2>
-        <p className="mt-3 text-[15px] text-[var(--color-fg-muted)] leading-relaxed">
-          {c.subtitle}
-        </p>
-      </div>
+      {/* Tabla colapsada — para no imponer la comparativa a quien ya
+          decidió; el que quiere validar la abre y ve todo. */}
+      <details className="group rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5 md:p-7">
+        <summary className="flex items-center gap-3 cursor-pointer list-none">
+          <span className="text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent)] border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 px-2.5 py-1 rounded-full">
+            {collapseEyebrow}
+          </span>
+          <span className="flex-1 text-[15px] md:text-[16px] font-medium text-[var(--color-fg-strong)]">
+            {collapseSummary}
+          </span>
+          <span className="text-[var(--color-fg-muted)] text-[18px] transition-transform group-open:rotate-180" aria-hidden="true">
+            ▾
+          </span>
+        </summary>
 
-      {/* Desktop / tablet: 5-column table. Mobile: stacked cards (below). */}
-      <div className="mt-10 hidden md:block">
+        <div className="mt-6 text-center max-w-2xl mx-auto">
+          <h2
+            className="font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.08]"
+            style={{ fontSize: "clamp(1.5rem, 3.6vw, 2.25rem)" }}
+          >
+            {c.title}
+          </h2>
+          <p className="mt-3 text-[15px] text-[var(--color-fg-muted)] leading-relaxed">
+            {c.subtitle}
+          </p>
+        </div>
+
+        {/* Desktop / tablet: 5-column table. Mobile: stacked cards (below). */}
+        <div className="mt-8 hidden md:block">
         <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] overflow-hidden">
           <table className="w-full text-left">
             <thead>
@@ -236,17 +256,18 @@ export function Comparison({ dict }: { dict: Dict }) {
         ))}
       </div>
 
-      <p className="mt-6 text-center text-[12px] text-[var(--color-fg-dim)] max-w-xl mx-auto leading-relaxed">
-        {c.footnote}
-      </p>
+        <p className="mt-6 text-center text-[12px] text-[var(--color-fg-dim)] max-w-xl mx-auto leading-relaxed">
+          {c.footnote}
+        </p>
 
-      {/* Inline legend so users decode the icons without scroll-hunting. */}
-      <div className="mt-5 flex flex-wrap items-center justify-center gap-4 text-[11.5px] text-[var(--color-fg-muted)]">
-        <LegendItem icon={<Check size={11} strokeWidth={3} />} color="ok" label={c.legend.yes} />
-        <LegendItem icon={<MinusCircle size={11} strokeWidth={2.4} />} color="warn" label={c.legend.partial} />
-        <LegendItem icon={<Clock size={11} strokeWidth={2.4} />} color="info" label={c.legend.soon} />
-        <LegendItem icon={<X size={11} strokeWidth={2.4} />} color="dim" label={c.legend.no} />
-      </div>
+        {/* Inline legend so users decode the icons without scroll-hunting. */}
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-4 text-[11.5px] text-[var(--color-fg-muted)]">
+          <LegendItem icon={<Check size={11} strokeWidth={3} />} color="ok" label={c.legend.yes} />
+          <LegendItem icon={<MinusCircle size={11} strokeWidth={2.4} />} color="warn" label={c.legend.partial} />
+          <LegendItem icon={<Clock size={11} strokeWidth={2.4} />} color="info" label={c.legend.soon} />
+          <LegendItem icon={<X size={11} strokeWidth={2.4} />} color="dim" label={c.legend.no} />
+        </div>
+      </details>
     </section>
   );
 }

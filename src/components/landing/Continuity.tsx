@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowRight, ShieldCheck, X } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import type { Locale } from "@/content";
 
 const T = {
@@ -77,7 +76,6 @@ const T = {
 
 export function Continuity({ lang }: { lang: Locale }) {
   const t = T[lang];
-  const [demoOpen, setDemoOpen] = useState(false);
 
   return (
     <section id="continuity" className="mx-auto max-w-5xl px-5 md:px-6 py-20 md:py-24">
@@ -169,62 +167,19 @@ export function Continuity({ lang }: { lang: Locale }) {
             </ul>
           </div>
 
-          {/* Columna derecha: demo iframe con overlay borroso */}
-          <div className="relative bg-[var(--color-panel-2)] min-h-[280px] md:min-h-0 border-t md:border-t-0 md:border-l border-[var(--color-border)]">
-            {/* Preview borrosa */}
+          {/* Columna derecha: demo iframe EN VIVO — sin overlay ni botón muerto.
+              El demo se auto-reproduce con ?embed=1 y da preview funcional
+              del handoff a WhatsApp/Telegram. */}
+          <div className="relative bg-[var(--color-panel-2)] min-h-[380px] md:min-h-[420px] border-t md:border-t-0 md:border-l border-[var(--color-border)]">
             <iframe
               src={`/demos/demo-mensajeria.html?lang=${lang}&embed=1`}
               title={t.whatsapp.title}
               className="absolute inset-0 w-full h-full border-0"
-              style={{ filter: "blur(8px)", transform: "scale(1.05)", pointerEvents: "none" }}
               loading="lazy"
             />
-            {/* Overlay + botón */}
-            <button
-              type="button"
-              onClick={() => setDemoOpen(true)}
-              className="absolute inset-0 z-10 flex items-center justify-center cursor-zoom-in"
-              style={{
-                background: "color-mix(in srgb, var(--color-bg) 75%, transparent)",
-                backdropFilter: "blur(4px)",
-              }}
-            >
-              <span className="inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] text-white px-5 py-2.5 text-[13px] font-medium shadow-sm">
-                {t.whatsapp.watchDemo}
-              </span>
-            </button>
           </div>
         </div>
       </div>
-
-      {/* Lightbox del demo mensajería */}
-      {demoOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={(e) => { if (e.target === e.currentTarget) setDemoOpen(false); }}
-        >
-          <div className="relative w-full max-w-4xl bg-[var(--color-panel)] rounded-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--color-border)]">
-              <span className="text-[17px] font-semibold text-[var(--color-fg-strong)]">
-                {t.whatsapp.title}
-              </span>
-              <button
-                type="button"
-                onClick={() => setDemoOpen(false)}
-                className="inline-flex items-center justify-center h-9 w-9 rounded-lg text-[var(--color-fg)] hover:bg-[var(--color-panel-2)] transition-colors"
-                aria-label={t.whatsapp.closeDemo}
-              >
-                <X size={20} strokeWidth={2} />
-              </button>
-            </div>
-            <iframe
-              src={`/demos/demo-mensajeria.html?lang=${lang}&embed=1`}
-              title={t.whatsapp.title}
-              className="w-full h-[80vh] border-0 block"
-            />
-          </div>
-        </div>
-      )}
     </section>
   );
 }

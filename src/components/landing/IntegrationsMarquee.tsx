@@ -9,22 +9,24 @@ import type { Locale } from "@/content";
 const ROW_1 = [
   "gmail",
   "gdrive",
+  "google-sheets",
+  "google-calendar",
   "notion",
   "whatsapp",
+  "telegram",
+  "shopify",
   "stripe",
-  "slack",
-  "supabase",
-  "vercel",
 ];
 const ROW_2 = [
+  "hubspot",
   "airtable",
+  "monday",
+  "clickup",
   "github",
+  "dropbox",
+  "intercom",
   "google-maps",
   "postgres",
-  "sentry",
-  "gitlab",
-  "webflow",
-  "framer",
 ];
 
 // Marcas con logo negro/oscuro: en tema oscuro les damos un fondo claro para
