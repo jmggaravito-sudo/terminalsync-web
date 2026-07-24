@@ -618,6 +618,7 @@ const es: Dict = {
       privacy: "Privacidad",
       terms: "Términos",
       security: "Seguridad",
+      dataDeletion: "Eliminar mis datos",
     },
     tagline: "Separa tu trabajo de tu máquina.",
     copyright: "© {{year}} TerminalSync. Todos los derechos reservados.",

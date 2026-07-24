@@ -331,7 +331,8 @@ export interface Dict {
       | "affiliateTerms"
       | "privacy"
       | "terms"
-      | "security",
+      | "security"
+      | "dataDeletion",
       string
     >;
     tagline: string;

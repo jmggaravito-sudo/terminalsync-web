@@ -618,6 +618,7 @@ const en: Dict = {
       privacy: "Privacy",
       terms: "Terms",
       security: "Security",
+      dataDeletion: "Delete my data",
     },
     tagline: "Separate your work from your machine.",
     copyright: "© {{year}} TerminalSync. All rights reserved.",
