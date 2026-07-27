@@ -198,3 +198,68 @@ export async function findUserIdByEmail(email: string): Promise<string | null> {
   }
   return (data?.id as string | undefined) ?? null;
 }
+
+export async function grantIncludedAi(input: {
+  userId: string;
+  stripeCustomerId?: string | null;
+}): Promise<boolean> {
+  const sb = getSupabaseAdmin();
+  if (!sb) return false;
+  const row: Record<string, unknown> = {
+    user_id: input.userId,
+    tier: "included_ai",
+    updated_at: new Date().toISOString(),
+  };
+  if (input.stripeCustomerId) row.stripe_customer_id = input.stripeCustomerId;
+  const { error } = await sb
+    .from("courtesy_entitlement")
+    .upsert(row, { onConflict: "user_id" });
+  if (error) {
+    console.error("[included-ai] grant failed", {
+      userId: input.userId,
+      error: error.message,
+    });
+    return false;
+  }
+  return true;
+}
+
+export async function revokeIncludedAiForStripeCustomer(
+  stripeCustomerId: string | null | undefined,
+): Promise<boolean> {
+  if (!stripeCustomerId) return false;
+  const sb = getSupabaseAdmin();
+  if (!sb) return false;
+  const { error } = await sb
+    .from("courtesy_entitlement")
+    .delete()
+    .eq("stripe_customer_id", stripeCustomerId);
+  if (error) {
+    console.error("[included-ai] Stripe revoke failed", {
+      stripeCustomerId,
+      error: error.message,
+    });
+    return false;
+  }
+  return true;
+}
+
+export async function revokeIncludedAiForMercadoPagoUser(
+  userId: string,
+): Promise<boolean> {
+  const sb = getSupabaseAdmin();
+  if (!sb) return false;
+  const { error } = await sb
+    .from("courtesy_entitlement")
+    .delete()
+    .eq("user_id", userId)
+    .is("stripe_customer_id", null);
+  if (error) {
+    console.error("[included-ai] Mercado Pago revoke failed", {
+      userId,
+      error: error.message,
+    });
+    return false;
+  }
+  return true;
+}

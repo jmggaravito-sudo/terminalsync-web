@@ -16,10 +16,16 @@ interface Body {
   supabaseUserId?: string;
   /** Deep-link the desktop app passes; defaults to the marketing routes. */
   successUrl?: string;
+  includedAi?: boolean;
+  addOns?: string[];
 }
 
 // Same CORS posture as the Stripe checkout route: allow the Tauri desktop app
 // and the marketing site.
+function wantsIncludedAi(body: Body): boolean {
+  return body.includedAi === true || body.addOns?.includes("included_ai") === true;
+}
+
 function corsHeaders(origin: string | null): Record<string, string> {
   const allowed =
     origin &&
@@ -70,7 +76,8 @@ export async function POST(req: Request) {
 
   // Plan-less subscription: the amount lives in code/env, not on a dashboard
   // plan (the associated-plan flow needs a tokenized card). Agency is lead-gen.
-  const amount = mpAmountFor(plan);
+  const includedAi = wantsIncludedAi(body);
+  const amount = mpAmountFor(plan, includedAi);
   if (amount === null) {
     return NextResponse.json(
       {
@@ -97,7 +104,7 @@ export async function POST(req: Request) {
       amount,
       payerEmail: body.email,
       externalReference,
-      reason: `Terminal Sync ${plan === "max" ? "Max" : "Pro"}`,
+      reason: `Terminal Sync ${plan === "max" ? "Max" : "Pro"}${includedAi ? " + IA" : ""}`,
       backUrl,
     });
     // Same response shape as the Stripe route: { url } for the client to

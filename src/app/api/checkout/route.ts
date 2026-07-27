@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   TRIAL_DAYS,
+  includedAiPriceId,
   normalizePlanId,
   priceIdFor,
   siteUrl,
@@ -33,12 +34,19 @@ interface Body {
    *  `terminalsync://billing/success`. */
   successUrl?: string;
   cancelUrl?: string;
+  /** TerminalSync AI included in the same subscription (+$15/mo). */
+  includedAi?: boolean;
+  addOns?: string[];
 }
 
 // CORS for the Tauri desktop app. Tauri v2 sends requests with a
 // `tauri://` scheme origin on macOS/Linux; browsers use the literal origin.
 // We allow-list both terminalsync.ai and all tauri origins since the anon
 // endpoint below doesn't expose any secrets beyond publishable info.
+function wantsIncludedAi(body: Body): boolean {
+  return body.includedAi === true || body.addOns?.includes("included_ai") === true;
+}
+
 function corsHeaders(origin: string | null): Record<string, string> {
   const allowed =
     origin &&
@@ -91,6 +99,8 @@ export async function POST(req: Request) {
     );
   }
   const price = priceIdFor(plan);
+  const includedAi = wantsIncludedAi(body);
+  const includedAiPrice = includedAi ? includedAiPriceId() : null;
   if (!price) {
     const envVar =
       plan === "max"
@@ -102,6 +112,12 @@ export async function POST(req: Request) {
       {
         error: `Missing Stripe price for plan "${plan}". Set ${envVar} in the environment.`,
       },
+      { status: 503, headers: cors },
+    );
+  }
+  if (includedAi && !includedAiPrice) {
+    return NextResponse.json(
+      { error: 'Missing Stripe price for TerminalSync AI. Set STRIPE_INCLUDED_AI_PRICE_ID in the environment.' },
       { status: 503, headers: cors },
     );
   }
@@ -119,6 +135,10 @@ export async function POST(req: Request) {
     cycle: "monthly",
     source: body.supabaseUserId ? "app.terminalsync/upsell" : "terminalsync.ai/pricing",
   };
+  if (includedAi) {
+    sharedMetadata.included_ai = "1";
+    sharedMetadata.add_ons = "included_ai";
+  }
   if (body.supabaseUserId) {
     sharedMetadata.supabase_user_id = body.supabaseUserId;
   }
@@ -126,7 +146,10 @@ export async function POST(req: Request) {
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
-      line_items: [{ price, quantity: 1 }],
+      line_items: [
+        { price, quantity: 1 },
+        ...(includedAiPrice ? [{ price: includedAiPrice, quantity: 1 }] : []),
+      ],
       allow_promotion_codes: true,
       customer_email: body.email,
       client_reference_id: body.referral,

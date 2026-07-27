@@ -3,6 +3,7 @@ import {
   getPreapproval,
   mercadoPagoConfigured,
   mercadoPagoWebhookSecretSet,
+  mpIncludesAi,
   mpPlanFromPreapproval,
   mpStatusToSubscriptionStatus,
   verifyMpWebhookSignature,
@@ -10,6 +11,8 @@ import {
 import {
   downgradeToFree,
   findUserIdByEmail,
+  grantIncludedAi,
+  revokeIncludedAiForMercadoPagoUser,
   upsertSubscription,
 } from "@/lib/subscriptionState";
 
@@ -124,8 +127,11 @@ export async function POST(req: Request) {
       provider: "mercadopago",
       providerSubscriptionId: pre.id,
     });
+    const includedAi = mpIncludesAi(pre);
+    let includedAiWritten = false;
+    if (includedAi) includedAiWritten = await revokeIncludedAiForMercadoPagoUser(userId);
     return NextResponse.json(
-      { received: true, status: pre.status, action: "downgraded" },
+      { received: true, status: pre.status, action: "downgraded", includedAi, includedAiWritten },
       { status: 200 },
     );
   }
@@ -146,16 +152,24 @@ export async function POST(req: Request) {
     );
   }
 
+  const status = mpStatusToSubscriptionStatus(pre.status);
   const ok = await upsertSubscription({
     userId,
     provider: "mercadopago",
     plan,
-    status: mpStatusToSubscriptionStatus(pre.status),
+    status,
     providerSubscriptionId: pre.id,
   });
+  const includedAi = mpIncludesAi(pre);
+  let includedAiWritten = false;
+  if (includedAi && status === "active") {
+    includedAiWritten = await grantIncludedAi({ userId });
+  } else if (includedAi && status === "canceled") {
+    includedAiWritten = await revokeIncludedAiForMercadoPagoUser(userId);
+  }
 
   return NextResponse.json(
-    { received: true, status: pre.status, plan, written: ok },
+    { received: true, status: pre.status, plan, includedAi, written: ok, includedAiWritten },
     { status: 200 },
   );
 }

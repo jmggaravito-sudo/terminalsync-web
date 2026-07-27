@@ -91,14 +91,31 @@ export const mercadoPagoConfigured = Boolean(accessToken);
 // linking. So the amount/currency live here, not on a dashboard plan.
 const DEFAULT_PRO_COP = 79000;
 const DEFAULT_MAX_COP = 159000;
+const DEFAULT_INCLUDED_AI_COP = 60000;
 const MP_CURRENCY = mpEnv("MERCADOPAGO_CURRENCY") ?? "COP";
 
 /** Monthly amount for a plan in the MP currency. Env overrides
  *  MERCADOPAGO_PRO_COP / MERCADOPAGO_MAX_COP; defaults are the agreed COP
  *  prices. Agency is lead-gen → no self-serve subscription (null). */
-export function mpAmountFor(plan: PlanId): number | null {
-  if (plan === "pro") return Number(mpEnv("MERCADOPAGO_PRO_COP")) || DEFAULT_PRO_COP;
-  if (plan === "max") return Number(mpEnv("MERCADOPAGO_MAX_COP")) || DEFAULT_MAX_COP;
+export function mpAmountFor(plan: PlanId, includedAi = false): number | null {
+  if (plan === "pro") {
+    if (includedAi) {
+      return (
+        Number(mpEnv("MERCADOPAGO_PRO_AI_COP")) ||
+        (Number(mpEnv("MERCADOPAGO_PRO_COP")) || DEFAULT_PRO_COP) + DEFAULT_INCLUDED_AI_COP
+      );
+    }
+    return Number(mpEnv("MERCADOPAGO_PRO_COP")) || DEFAULT_PRO_COP;
+  }
+  if (plan === "max") {
+    if (includedAi) {
+      return (
+        Number(mpEnv("MERCADOPAGO_MAX_AI_COP")) ||
+        (Number(mpEnv("MERCADOPAGO_MAX_COP")) || DEFAULT_MAX_COP) + DEFAULT_INCLUDED_AI_COP
+      );
+    }
+    return Number(mpEnv("MERCADOPAGO_MAX_COP")) || DEFAULT_MAX_COP;
+  }
   return null;
 }
 
@@ -132,8 +149,8 @@ export function mpPlanFromPreapproval(pre: PreapprovalState): "pro" | "max" | nu
 
   const amount = pre.auto_recurring?.transaction_amount;
   if (typeof amount === "number") {
-    if (amount === mpAmountFor("max")) return "max";
-    if (amount === mpAmountFor("pro")) return "pro";
+    if (amount === mpAmountFor("max", true) || amount === mpAmountFor("max")) return "max";
+    if (amount === mpAmountFor("pro", true) || amount === mpAmountFor("pro")) return "pro";
   }
 
   const reason = (pre.reason ?? "").toLowerCase();
@@ -144,6 +161,14 @@ export function mpPlanFromPreapproval(pre: PreapprovalState): "pro" | "max" | nu
 
 /** MP preapproval status → our provider-neutral subscription status.
  *  MP statuses: pending | authorized | paused | cancelled. */
+export function mpIncludesAi(pre: PreapprovalState): boolean {
+  const amount = pre.auto_recurring?.transaction_amount;
+  if (typeof amount === "number") {
+    return amount === mpAmountFor("pro", true) || amount === mpAmountFor("max", true);
+  }
+  return /\+\s*ia|ia incluida|terminalsync ai/i.test(pre.reason ?? "");
+}
+
 export function mpStatusToSubscriptionStatus(
   status: string | undefined,
 ):
