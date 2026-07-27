@@ -21,7 +21,7 @@ export function CallbackClient({ params }: { params: Params }) {
   const [dispatched, setDispatched] = useState(false);
 
   const isError = !!params.error;
-  const isMissing = !params.code || !params.state;
+  const isMissing = !params.state || (!params.code && !params.error);
 
   // Build the deep link URL exactly once per render. The helper picks
   // terminalsync-lab:// vs terminalsync:// from the state's prefix and
@@ -29,7 +29,7 @@ export function CallbackClient({ params }: { params: Params }) {
   // byte-exact CSRF check passes. See buildDeepLink.ts for the contract.
   const deepLink = useMemo(
     () => buildDeepLink(params),
-    [params.code, params.state, params.scope],
+    [params.code, params.error, params.error_description, params.state, params.scope],
   );
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export function CallbackClient({ params }: { params: Params }) {
           {params.error_description ? ` — ${params.error_description}` : null}
         </p>
         <p className="mt-3 text-[13px] text-[var(--color-fg-muted)]">
-          Cierra esta pestaña y reintenta el inicio de sesión desde la app.
+          Te llevamos de vuelta a la app para que puedas intentarlo de nuevo.
         </p>
       </Layout>
     );
