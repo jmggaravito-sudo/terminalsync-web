@@ -55,7 +55,7 @@ export default async function ExtensionPrivacyPage({ params }: Props) {
         lang="es"
         title="Política de Privacidad — Extensión Chrome"
         subtitle="Cómo la extensión Chrome de Terminal Sync trata tu información. Dos modos: hosted trial y BYOK."
-        lastUpdated="Última actualización: 17 de julio de 2026"
+        lastUpdated="Última actualización: 27 de julio de 2026"
       >
         <h2>Resumen rápido (TL;DR)</h2>
         <p>
@@ -82,6 +82,32 @@ export default async function ExtensionPrivacyPage({ params }: Props) {
           páginas web que visitás. Todos tus settings y el historial de conversación se guardan
           <strong> localmente</strong> en <code>chrome.storage.local</code> de este dispositivo solamente.
         </p>
+
+        <h2>Resumen para Chrome Web Store: recolección, uso, almacenamiento y transferencia</h2>
+        <ul>
+          <li>
+            <strong>Qué recolecta o procesa la extensión:</strong> UUID de instalación, modo de uso,
+            proveedor/modelo elegido, API keys que guardás localmente para BYOK, historial local de
+            conversación, contador/status del trial y, en modo hosted, el prompt e historia de
+            conversación necesarios para reenviar tu request al proveedor de IA que elegiste.
+          </li>
+          <li>
+            <strong>Cómo se usa:</strong> para enviar tus prompts a Anthropic, OpenAI o Google Gemini,
+            recordar tus preferencias, mantener el trial/upgrade Pro y mostrar tus conversaciones
+            dentro del popup de la extensión.
+          </li>
+          <li>
+            <strong>Dónde se guarda:</strong> settings, API keys e historial se guardan en
+            <code>chrome.storage.local</code> de tu perfil de Chrome. En modo hosted, nuestro servidor
+            guarda solo metadata operacional del trial/Pro; no guarda texto de prompts ni respuestas.
+          </li>
+          <li>
+            <strong>Con quién se comparte:</strong> en modo hosted, el contenido del prompt se envía al
+            proveedor de IA seleccionado para generar la respuesta. En modo BYOK, tu navegador lo envía
+            directamente al proveedor. No vendemos datos, no usamos datos para publicidad y no usamos
+            prompts/respuestas para entrenar modelos.
+          </li>
+        </ul>
 
         <h2>Qué hace la extensión</h2>
         <p>
@@ -261,7 +287,7 @@ export default async function ExtensionPrivacyPage({ params }: Props) {
         <p>
           Si usaste el modo hosted, la fila del <strong>server</strong> que trackea tu contador de
           trial (indexada por el UUID de instalación) va a quedar. Escribinos a{" "}
-          <a href="mailto:jmggaravito@gmail.com">jmggaravito@gmail.com</a> con tu UUID de instalación
+          <a href="mailto:privacy@terminalsync.ai">privacy@terminalsync.ai</a> con tu UUID de instalación
           (visible en Opciones → "Tu install UUID" — próximamente) y la borramos dentro de 30 días.
         </p>
         <p>
@@ -284,8 +310,7 @@ export default async function ExtensionPrivacyPage({ params }: Props) {
         <h2>Contacto</h2>
         <p>
           Preguntas sobre esta política:{" "}
-          <a href="mailto:jmggaravito@gmail.com">jmggaravito@gmail.com</a> (Juan Manuel Garavito,
-          sole maintainer).
+          <a href="mailto:privacy@terminalsync.ai">privacy@terminalsync.ai</a>.
         </p>
         <p>
           Código fuente:{" "}
@@ -302,7 +327,7 @@ export default async function ExtensionPrivacyPage({ params }: Props) {
       lang="en"
       title="Privacy Policy — Chrome Extension"
       subtitle="How the Terminal Sync Chrome extension handles your information. Two modes: hosted trial and BYOK."
-      lastUpdated="Last updated: July 17, 2026"
+      lastUpdated="Last updated: July 27, 2026"
     >
       <h2>TL;DR</h2>
       <p>The Extension has <strong>two modes</strong> you can switch between in Options:</p>
@@ -326,6 +351,32 @@ export default async function ExtensionPrivacyPage({ params }: Props) {
         web pages you visit. All your settings and conversation history are stored{" "}
         <strong>locally</strong> in <code>chrome.storage.local</code> on this device only.
       </p>
+
+      <h2>Chrome Web Store summary: collection, use, storage, and transfer</h2>
+      <ul>
+        <li>
+          <strong>What the extension collects or processes:</strong> install UUID, use mode,
+          selected provider/model, API keys you store locally for BYOK, local conversation history,
+          trial/status counters, and, in hosted mode, the prompt and conversation history needed to
+          forward your request to the AI provider you selected.
+        </li>
+        <li>
+          <strong>How it is used:</strong> to send your prompts to Anthropic, OpenAI, or Google Gemini,
+          remember your preferences, maintain trial/Pro upgrade state, and display conversations in
+          the extension popup.
+        </li>
+        <li>
+          <strong>Where it is stored:</strong> settings, API keys, and conversation history are stored
+          in <code>chrome.storage.local</code> in your Chrome profile. In hosted mode, our server stores
+          only operational trial/Pro metadata; it does not store prompt or response text.
+        </li>
+        <li>
+          <strong>Who it is shared with:</strong> in hosted mode, prompt content is sent to the selected
+          AI provider to generate the response. In BYOK mode, your browser sends it directly to the
+          provider. We do not sell data, use data for advertising, or use prompts/responses to train
+          models.
+        </li>
+      </ul>
 
       <h2>What the Extension does</h2>
       <p>
@@ -498,7 +549,7 @@ export default async function ExtensionPrivacyPage({ params }: Props) {
       <p>
         If you used hosted mode, the <strong>server-side</strong> row that tracks your trial
         counter (keyed by the install UUID) will remain. Email{" "}
-        <a href="mailto:jmggaravito@gmail.com">jmggaravito@gmail.com</a> with your install UUID
+        <a href="mailto:privacy@terminalsync.ai">privacy@terminalsync.ai</a> with your install UUID
         (visible under Options → "Your install UUID" — coming soon) and we will delete it within 30
         days.
       </p>
@@ -522,8 +573,7 @@ export default async function ExtensionPrivacyPage({ params }: Props) {
       <h2>Contact</h2>
       <p>
         Questions about this policy:{" "}
-        <a href="mailto:jmggaravito@gmail.com">jmggaravito@gmail.com</a> (Juan Manuel Garavito, sole
-        maintainer).
+        <a href="mailto:privacy@terminalsync.ai">privacy@terminalsync.ai</a>.
       </p>
       <p>
         Source code:{" "}
