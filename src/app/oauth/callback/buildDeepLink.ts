@@ -46,6 +46,16 @@ export interface CallbackQueryParams {
   error_description?: string;
 }
 
+export interface BuildDeepLinkOptions {
+  /**
+   * Native deep-link path. Defaults to the historical Google OAuth callback.
+   *
+   * Example: "/oauth/meta/callback" becomes
+   * "terminalsync://oauth/meta/callback?...".
+   */
+  nativePath?: string;
+}
+
 /**
  * Build the `<scheme>://oauth/callback?...` deep link for the native app
  * to pick up. Success requires `code + state`; provider failure requires
@@ -59,7 +69,10 @@ export interface CallbackQueryParams {
  * the same code path covers both schemes so a future-prod state with `:`
  * inside would round-trip safely too.
  */
-export function buildDeepLink(params: CallbackQueryParams): string | null {
+export function buildDeepLink(
+  params: CallbackQueryParams,
+  options: BuildDeepLinkOptions = {},
+): string | null {
   if (!params.state) return null;
   const hasSuccessPayload = !!params.code;
   const hasErrorPayload = !!params.error;
@@ -81,7 +94,8 @@ export function buildDeepLink(params: CallbackQueryParams): string | null {
   parts.push(`state=${stateLiteral}`);
   if (params.scope) parts.push(`scope=${encodeURIComponent(params.scope)}`);
 
-  return `${scheme}://oauth/callback?${parts.join("&")}`;
+  const nativePath = normalizeNativePath(options.nativePath ?? "/oauth/callback");
+  return `${scheme}://${nativePath}?${parts.join("&")}`;
 }
 
 /**
@@ -95,4 +109,8 @@ export function buildDeepLink(params: CallbackQueryParams): string | null {
  */
 export function encodeStateWithLiteralColon(state: string): string {
   return encodeURIComponent(state).replace(/%3A/g, ":");
+}
+
+function normalizeNativePath(path: string): string {
+  return path.replace(/^\/+/, "").replace(/\?.*$/, "");
 }

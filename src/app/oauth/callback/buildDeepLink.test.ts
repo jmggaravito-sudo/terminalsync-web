@@ -140,6 +140,22 @@ describe("buildDeepLink — code and scope encoding", () => {
     const url = buildDeepLink({ code: "c", state: "abc" });
     expect(url!).not.toContain("scope=");
   });
+
+  it("can target the native Meta OAuth callback path", () => {
+    const url = buildDeepLink(
+      { code: "AQ123", state: "abc" },
+      { nativePath: "/oauth/meta/callback" },
+    );
+    expect(url).toBe("terminalsync://oauth/meta/callback?code=AQ123&state=abc");
+  });
+
+  it("Meta callback preserves Lab scheme selection", () => {
+    const url = buildDeepLink(
+      { code: "AQ123", state: "tslab:abc" },
+      { nativePath: "/oauth/meta/callback" },
+    );
+    expect(url).toBe("terminalsync-lab://oauth/meta/callback?code=AQ123&state=tslab:abc");
+  });
 });
 
 describe("encodeStateWithLiteralColon — direct contract", () => {
