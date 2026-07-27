@@ -41,6 +41,10 @@ export function envId(...names: string[]): string | null {
  */
 export type BillingCycle = "monthly" | "yearly";
 
+export function includedAiPriceId(): string | null {
+  return envId("STRIPE_INCLUDED_AI_PRICE_ID", "STRIPE_PRICE_INCLUDED_AI_MONTHLY");
+}
+
 export function priceIdFor(plan: PlanId): string | null {
   if (plan === "pro") {
     return envId("STRIPE_PRICE_PRO_MONTHLY");

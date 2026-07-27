@@ -1,8 +1,10 @@
 import type Stripe from "stripe";
 import { getSupabaseAdmin } from "./supabaseAdmin";
-import { stripe, envId } from "./stripe";
+import { stripe, envId, includedAiPriceId } from "./stripe";
 import {
   downgradeToFree,
+  grantIncludedAi,
+  revokeIncludedAiForStripeCustomer,
   upsertSubscription,
   type SubscriptionStatus,
 } from "./subscriptionState";
@@ -19,8 +21,7 @@ async function customerEmail(sub: Stripe.Subscription): Promise<string | null> {
     if (expanded) return expanded;
   }
   if (!stripe) return null;
-  const customerId =
-    typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+  const customerId = customerIdOf(sub);
   try {
     const c = await stripe.customers.retrieve(customerId);
     if (c.deleted) return null;
@@ -123,6 +124,18 @@ function planFromPriceId(priceId: string): "pro" | "max" | null {
 /** Stripe's status strings map 1:1 to our enum except `incomplete_expired`
  *  which we fold into `incomplete` since the state machine treats them the
  *  same downstream (no active access). */
+function subscriptionHasIncludedAi(sub: Stripe.Subscription): boolean {
+  if (sub.metadata?.included_ai === "1" || sub.metadata?.add_ons?.includes("included_ai")) {
+    return true;
+  }
+  const addOnPrice = includedAiPriceId();
+  return sub.items.data.some((item) => item.price?.id === addOnPrice);
+}
+
+function customerIdOf(sub: Stripe.Subscription): string {
+  return typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+}
+
 function mapStatus(s: Stripe.Subscription.Status): SubscriptionStatus {
   if (s === "incomplete_expired") return "incomplete";
   if (
@@ -176,8 +189,7 @@ export async function syncSubscriptionToSupabase(
     // row stale.
   }
 
-  const customerId =
-    typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+  const customerId = customerIdOf(sub);
 
   // Stripe moved period boundaries onto individual line items (one
   // subscription can now have multiple items with different cycles).
@@ -188,7 +200,7 @@ export async function syncSubscriptionToSupabase(
 
   // Adapt the Stripe object into the provider-neutral shape and hand off the
   // actual DB write to upsertSubscription (shared with the Mercado Pago rail).
-  return upsertSubscription({
+  const written = await upsertSubscription({
     userId,
     provider: "stripe",
     plan: plan ?? "free",
@@ -206,6 +218,15 @@ export async function syncSubscriptionToSupabase(
       ? new Date(sub.trial_end * 1000).toISOString()
       : null,
   });
+
+  if (subscriptionHasIncludedAi(sub)) {
+    if (sub.status === "active" || sub.status === "trialing") {
+      await grantIncludedAi({ userId, stripeCustomerId: customerId });
+    } else if (["canceled", "unpaid", "incomplete_expired"].includes(sub.status)) {
+      await revokeIncludedAiForStripeCustomer(customerId);
+    }
+  }
+  return written;
 }
 
 /** When a subscription gets deleted (cancellation completed), flip the
@@ -225,9 +246,13 @@ export async function revokeSubscription(sub: Stripe.Subscription): Promise<bool
     return false;
   }
 
-  return downgradeToFree({
+  const written = await downgradeToFree({
     userId,
     provider: "stripe",
     providerSubscriptionId: sub.id,
   });
+  if (subscriptionHasIncludedAi(sub)) {
+    await revokeIncludedAiForStripeCustomer(customerIdOf(sub));
+  }
+  return written;
 }
