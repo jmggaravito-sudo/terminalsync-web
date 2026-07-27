@@ -39,6 +39,7 @@ vi.mock("./supabaseAdmin", () => ({
 }));
 
 vi.mock("./stripe", () => ({
+  includedAiPriceId: () => null,
   // Mirror the real envId (trim + blank→null) so planFromPriceId resolves
   // price ids from process.env in tests.
   envId: (...names: string[]) => {
