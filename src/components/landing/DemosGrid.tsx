@@ -50,13 +50,6 @@ const DEMOS: Record<Locale, Demo[]> = {
       body: "Cierras todo y cambias de computadora — tu sesión, tu contexto y tu memoria te siguen, intactos.",
     },
     {
-      id: "integraciones",
-      src: "/demos/demo-conectores.html",
-      eyebrow: "Integraciones",
-      title: "Dale nuevas habilidades a tu equipo de IAs.",
-      body: "Arrastra Gmail, Drive, Notion y más a tu sesión. Sin claves, sin configurar nada. Listo para trabajar.",
-    },
-    {
       id: "mensajeria",
       src: "/demos/demo-mensajeria.html",
       eyebrow: "Tu trabajo te sigue hasta el chat",
@@ -106,13 +99,6 @@ const DEMOS: Record<Locale, Demo[]> = {
       eyebrow: "Continuity across devices",
       title: "Start on the laptop. Continue at the office.",
       body: "Close everything and switch computers — your session, context and memory follow you, intact.",
-    },
-    {
-      id: "integraciones",
-      src: "/demos/demo-conectores.html",
-      eyebrow: "Integrations",
-      title: "Give your AI team new skills.",
-      body: "Drag Gmail, Drive, Notion and more into your session. No keys, nothing to set up. Ready to work.",
     },
     {
       id: "mensajeria",

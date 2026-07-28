@@ -6,7 +6,6 @@ import { MemoryPersistent } from "@/components/landing/MemoryPersistent";
 import { MultiAI } from "@/components/landing/MultiAI";
 import { ChromeExtensionTeaser } from "@/components/landing/ChromeExtensionTeaser";
 import { DemosGrid } from "@/components/landing/DemosGrid";
-import { IntegrationsDiscovery } from "@/components/landing/IntegrationsDiscovery";
 import { Comparison } from "@/components/landing/Comparison";
 import { CapacityCalculator } from "@/components/landing/CapacityCalculator";
 import { WhatYouCanBuild } from "@/components/landing/WhatYouCanBuild";
@@ -66,7 +65,6 @@ export default async function Landing({ params }: Props) {
       <Hero dict={d} />
       <WhatYouCanBuild lang={lang} />
       <DemosGrid lang={lang} />
-      <IntegrationsDiscovery lang={lang} />
       <HowItWorks lang={lang} />
       <RealFolders lang={lang} />
       <UseCases lang={lang} />
