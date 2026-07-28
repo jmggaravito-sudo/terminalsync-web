@@ -97,7 +97,7 @@ jobs:
             8. Run the relevant validation before opening the PR: npm test at minimum; if only markdown/content changed and the full suite is unexpectedly blocked by unrelated environment issues, run the marketplace/content tests you can and document the blocker in the PR body.
             9. Open exactly one draft PR. Never merge it.
             10. After the draft PR exists and this is not a dry run, register the run history using scripts/record_loop_run.mjs with the actual counts:
-                LOOP_RUNS_ENDPOINT="$LOOP_RUNS_ENDPOINT" LOOP_RUNS_WRITE_TOKEN="$LOOP_RUNS_WRITE_TOKEN" node scripts/record_loop_run.mjs --found <connectors_added> --skipped <candidates_skipped_or_deferred> --pr <draft_pr_url>
+                LOOP_RUNS_ENDPOINT="$LOOP_RUNS_ENDPOINT" LOOP_RUNS_WRITE_TOKEN="$LOOP_RUNS_WRITE_TOKEN" node scripts/record_loop_run.mjs --kind connectors --found <connectors_added> --skipped <candidates_skipped_or_deferred> --pr <draft_pr_url>
 
             Expected final answer in the workflow log:
             - PR URL

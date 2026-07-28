@@ -4,7 +4,13 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const LOOP_KINDS = ["connectors", "plugins", "kits", "skills"] as const;
+type LoopKind = (typeof LOOP_KINDS)[number];
+
 interface LoopRunsPayload {
+  kind?: unknown;
+  itemsFound?: unknown;
+  itemsSkipped?: unknown;
   connectorsFound?: unknown;
   connectorsSkipped?: unknown;
   prUrl?: unknown;
@@ -16,9 +22,33 @@ function bearerToken(req: Request): string | null {
   return auth.slice("Bearer ".length).trim();
 }
 
-function nonNegativeInteger(value: unknown, field: string): number | NextResponse {
+function parseLoopKind(value: unknown): LoopKind | NextResponse {
+  if (value == null) return "connectors";
+  if (typeof value !== "string") {
+    return NextResponse.json(
+      { error: "kind must be a string when provided" },
+      { status: 400 },
+    );
+  }
+  const kind = value.trim().toLowerCase();
+  if (!LOOP_KINDS.includes(kind as LoopKind)) {
+    return NextResponse.json(
+      { error: "kind must be one of: connectors, plugins, kits, skills" },
+      { status: 400 },
+    );
+  }
+  return kind as LoopKind;
+}
+
+function nonNegativeInteger(
+  value: unknown,
+  field: string,
+): number | NextResponse {
   if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
-    return NextResponse.json({ error: `${field} must be a non-negative integer` }, { status: 400 });
+    return NextResponse.json(
+      { error: `${field} must be a non-negative integer` },
+      { status: 400 },
+    );
   }
   return value;
 }
@@ -50,15 +80,23 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const connectorsFound = nonNegativeInteger(body.connectorsFound, "connectorsFound");
-  if (connectorsFound instanceof NextResponse) return connectorsFound;
-  const connectorsSkipped = nonNegativeInteger(body.connectorsSkipped, "connectorsSkipped");
-  if (connectorsSkipped instanceof NextResponse) return connectorsSkipped;
+  const kind = parseLoopKind(body.kind);
+  if (kind instanceof NextResponse) return kind;
+
+  const foundValue = body.itemsFound ?? body.connectorsFound;
+  const skippedValue = body.itemsSkipped ?? body.connectorsSkipped;
+  const itemsFound = nonNegativeInteger(foundValue, "itemsFound");
+  if (itemsFound instanceof NextResponse) return itemsFound;
+  const itemsSkipped = nonNegativeInteger(skippedValue, "itemsSkipped");
+  if (itemsSkipped instanceof NextResponse) return itemsSkipped;
 
   let prUrl: string | null = null;
   if (body.prUrl != null) {
     if (typeof body.prUrl !== "string") {
-      return NextResponse.json({ error: "prUrl must be a string when provided" }, { status: 400 });
+      return NextResponse.json(
+        { error: "prUrl must be a string when provided" },
+        { status: 400 },
+      );
     }
     const trimmed = body.prUrl.trim();
     if (trimmed.length > 0) {
@@ -67,24 +105,33 @@ export async function POST(req: Request) {
         if (url.protocol !== "https:") throw new Error("not https");
         prUrl = trimmed;
       } catch {
-        return NextResponse.json({ error: "prUrl must be a valid https URL" }, { status: 400 });
+        return NextResponse.json(
+          { error: "prUrl must be a valid https URL" },
+          { status: 400 },
+        );
       }
     }
   }
 
   const sb = getSupabaseAdmin();
-  if (!sb) return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
+  if (!sb)
+    return NextResponse.json(
+      { error: "Supabase not configured" },
+      { status: 503 },
+    );
 
   const { data, error } = await sb
     .from("loop_runs")
     .insert({
-      connectors_found: connectorsFound,
-      connectors_skipped: connectorsSkipped,
+      kind,
+      connectors_found: itemsFound,
+      connectors_skipped: itemsSkipped,
       pr_url: prUrl,
     })
-    .select("id, ran_at, connectors_found, connectors_skipped, pr_url")
+    .select("id, ran_at, kind, connectors_found, connectors_skipped, pr_url")
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ run: data }, { status: 201 });
 }

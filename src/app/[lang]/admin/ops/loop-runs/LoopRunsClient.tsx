@@ -5,9 +5,12 @@ import { authedFetch, getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type AuthState = "checking" | "anon" | "ready" | "forbidden";
 
+type LoopKind = "connectors" | "plugins" | "kits" | "skills";
+
 interface LoopRun {
   id: string;
   ran_at: string;
+  kind?: LoopKind | null;
   connectors_found: number;
   connectors_skipped: number;
   pr_url: string | null;
@@ -83,10 +86,11 @@ export function LoopRunsClient() {
               Admin
             </p>
             <h1 className="mt-2 text-[26px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-              Connector Loop runs
+              Marketplace Loop runs
             </h1>
             <p className="mt-1 text-[13px] text-[var(--color-fg-muted)]">
-              Historial operacional mínimo: fecha, encontrados, SKIP y PR abierto.
+              Historial operacional mínimo: tipo, fecha, encontrados, SKIP y PR
+              abierto.
             </p>
           </div>
           {auth === "ready" ? (
@@ -100,19 +104,26 @@ export function LoopRunsClient() {
           ) : null}
         </header>
 
-        {auth === "checking" ? <Banner tone="muted">Verificando sesión…</Banner> : null}
+        {auth === "checking" ? (
+          <Banner tone="muted">Verificando sesión…</Banner>
+        ) : null}
 
         {auth === "anon" ? (
           <Banner tone="warn">
             Tenés que estar logueado para ver este historial.{" "}
-            <a className="underline" href={`/es/login?next=${encodeURIComponent("/es/admin/ops/loop-runs")}`}>
+            <a
+              className="underline"
+              href={`/es/login?next=${encodeURIComponent("/es/admin/ops/loop-runs")}`}
+            >
               Entrar →
             </a>
           </Banner>
         ) : null}
 
         {auth === "forbidden" ? (
-          <Banner tone="warn">Tu cuenta está logueada, pero no está en ADMIN_EMAILS.</Banner>
+          <Banner tone="warn">
+            Tu cuenta está logueada, pero no está en ADMIN_EMAILS.
+          </Banner>
         ) : null}
 
         {error ? <Banner tone="error">{error}</Banner> : null}
@@ -124,14 +135,17 @@ export function LoopRunsClient() {
 }
 
 function RunsTable({ runs, loading }: { runs: LoopRun[]; loading: boolean }) {
-  if (loading && runs.length === 0) return <Banner tone="muted">Cargando corridas…</Banner>;
-  if (runs.length === 0) return <Banner tone="muted">Todavía no hay corridas registradas.</Banner>;
+  if (loading && runs.length === 0)
+    return <Banner tone="muted">Cargando corridas…</Banner>;
+  if (runs.length === 0)
+    return <Banner tone="muted">Todavía no hay corridas registradas.</Banner>;
 
   return (
     <div className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)]/60">
       <table className="w-full border-collapse text-left text-[13px]">
         <thead className="border-b border-[var(--color-border)] text-[11px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-muted)]">
           <tr>
+            <th className="px-4 py-3 font-medium">Tipo</th>
             <th className="px-4 py-3 font-medium">Fecha/hora</th>
             <th className="px-4 py-3 font-medium text-right">Encontró</th>
             <th className="px-4 py-3 font-medium text-right">SKIP</th>
@@ -140,7 +154,13 @@ function RunsTable({ runs, loading }: { runs: LoopRun[]; loading: boolean }) {
         </thead>
         <tbody>
           {runs.map((run) => (
-            <tr key={run.id} className="border-b border-[var(--color-border)]/70 last:border-0">
+            <tr
+              key={run.id}
+              className="border-b border-[var(--color-border)]/70 last:border-0"
+            >
+              <td className="px-4 py-3">
+                <KindBadge kind={run.kind ?? "connectors"} />
+              </td>
               <td className="px-4 py-3 text-[var(--color-fg)]">
                 {new Date(run.ran_at).toLocaleString("es-CO", {
                   dateStyle: "medium",
@@ -175,12 +195,36 @@ function RunsTable({ runs, loading }: { runs: LoopRun[]; loading: boolean }) {
   );
 }
 
-function Banner({ tone, children }: { tone: "muted" | "warn" | "error"; children: ReactNode }) {
+function KindBadge({ kind }: { kind: LoopKind }) {
+  const labels: Record<LoopKind, string> = {
+    connectors: "Conectores",
+    plugins: "Plugins",
+    kits: "Kits",
+    skills: "Skills",
+  };
+  return (
+    <span className="inline-flex rounded-full border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-1 text-[11px] font-medium text-[var(--color-fg-strong)]">
+      {labels[kind] ?? labels.connectors}
+    </span>
+  );
+}
+
+function Banner({
+  tone,
+  children,
+}: {
+  tone: "muted" | "warn" | "error";
+  children: ReactNode;
+}) {
   const cls =
     tone === "error"
       ? "border-red-500/40 bg-red-500/10 text-red-800 dark:text-red-200"
       : tone === "warn"
         ? "border-amber-500/40 bg-amber-500/10 text-amber-900 dark:text-amber-200"
         : "border-[var(--color-border)] bg-[var(--color-panel)]/60 text-[var(--color-fg-muted)]";
-  return <div className={`rounded-2xl border p-5 text-[14px] ${cls}`}>{children}</div>;
+  return (
+    <div className={`rounded-2xl border p-5 text-[14px] ${cls}`}>
+      {children}
+    </div>
+  );
 }
