@@ -33,13 +33,20 @@ Its gate is `content/plugins/RULES.md`.
 
 ## Run-history registration
 
-Plugin runs reuse the same `/admin/loop-runs` panel as the Connector Loop. The
-current `loop_runs` table is connector-shaped (`connectors_found` /
-`connectors_skipped`, no loop-kind column), so **typed recording of plugin runs
-is a pending piece**: it needs a small Supabase migration adding a `kind`
-column (`'connectors' | 'plugins' | …`, default `'connectors'` for
-back-compat) plus the matching `--kind` flag in `scripts/record_loop_run.mjs`
-and the `/api/internal/loop-runs` route. Until that lands, note the plugin
-run's numbers (plugins added / candidates skipped) in the PR body. Do **not**
-record plugin runs as `connectors_found` — that would pollute the connector
-metric.
+Plugin runs reuse the same `/admin/loop-runs` panel as the Connector Loop. After
+the draft PR exists, record the completed run with `--kind plugins`:
+
+```bash
+LOOP_RUNS_ENDPOINT="https://terminalsync.ai/api/internal/loop-runs" \
+LOOP_RUNS_WRITE_TOKEN="$LOOP_RUNS_WRITE_TOKEN" \
+node scripts/record_loop_run.mjs \
+  --kind plugins \
+  --found 1 \
+  --skipped 2 \
+  --pr "https://github.com/jmggaravito-sudo/terminalsync-web/pull/123"
+```
+
+Number semantics:
+
+- `--found`: plugins added/promoted in this run.
+- `--skipped`: candidate plugins documented as SKIP/deferred in this run.

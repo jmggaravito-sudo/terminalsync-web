@@ -30,6 +30,7 @@ After the draft PR exists, the agent must record the completed run with
 LOOP_RUNS_ENDPOINT="https://terminalsync.ai/api/internal/loop-runs" \
 LOOP_RUNS_WRITE_TOKEN="$LOOP_RUNS_WRITE_TOKEN" \
 node scripts/record_loop_run.mjs \
+  --kind connectors \
   --found 3 \
   --skipped 2 \
   --pr "https://github.com/jmggaravito-sudo/terminalsync-web/pull/115"
@@ -40,6 +41,7 @@ node scripts/record_loop_run.mjs \
 
 Number semantics:
 
+- `--kind connectors`: identifies this as a connector Loop run in the shared ops panel.
 - `--found`: connectors added to the catalog in this run.
 - `--skipped`: candidate connectors documented as SKIP in this run.
 

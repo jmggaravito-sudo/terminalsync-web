@@ -13,18 +13,25 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(req: Request) {
   const user = await authenticate(req);
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!isAdmin(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isAdmin(user))
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const sb = getSupabaseAdmin();
-  if (!sb) return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
+  if (!sb)
+    return NextResponse.json(
+      { error: "Supabase not configured" },
+      { status: 503 },
+    );
 
   const { data, error } = await sb
     .from("loop_runs")
-    .select("id, ran_at, connectors_found, connectors_skipped, pr_url")
+    .select("id, ran_at, kind, connectors_found, connectors_skipped, pr_url")
     .order("ran_at", { ascending: false })
     .limit(100);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ runs: data ?? [] });
 }

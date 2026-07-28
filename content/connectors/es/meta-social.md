@@ -2,7 +2,7 @@
 name: Meta Social
 logo: /connectors/meta-social.svg
 category: messaging
-status: soon
+status: available
 simpleTitle: "Posteá en Instagram y Facebook sin abrir ninguna de las dos apps"
 simpleSubtitle: "Escribí el texto, elegí la foto — Claude lo publica en tus redes. Vos aprobás, él postea."
 devTitle: "Publicación en Instagram + Facebook (via Meta Graph API)"
@@ -34,7 +34,7 @@ Iniciás sesión una vez con Facebook y le das permiso para postear — sin clav
 
 La conexión pide los permisos **mínimos**: publicar en tu Página y en el Instagram vinculado, y listar tus cuentas. Nada de pauta, mensajes ni de leer tu audiencia.
 
-*Disponible en beta próxima — la vinculación de cuentas y el gate de aprobación se están cableando ahora.*
+*Disponible para publicación orgánica en Página de Facebook e Instagram, con aprobación obligatoria antes de cada posteo.*
 
 --- dev ---
 
@@ -53,4 +53,4 @@ Bridges to Meta's **Graph API** for organic publishing. Two surfaces:
 
 **Out of scope for v1**: scheduling, replying to comments, reading metrics, deleting posts, and anything that spends money (paid ads live behind their own gate).
 
-**Status**: schema locked, OAuth + publish flow in private beta.
+**Status**: organic publishing flow available behind the required Meta connection and approval gate.
