@@ -17,7 +17,7 @@ export default async function AdminOps({ params }: Props) {
   const { lang } = await params;
   const isEs = lang === "es";
   return (
-    <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
+    <main className="admin-ops-readable-buttons min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
       <section className="mx-auto max-w-5xl px-4 sm:px-6 pt-12 sm:pt-16 pb-16">
         <h1 className="text-[26px] sm:text-[32px] font-semibold tracking-tight">
           {isEs ? "Dashboard de flujos" : "Flows dashboard"}
@@ -30,19 +30,19 @@ export default async function AdminOps({ params }: Props) {
         <nav className="mt-4 flex flex-wrap gap-2">
           <a
             href={`/${lang}/admin/ops/outreach`}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-[var(--color-panel)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--color-fg)] hover:bg-[var(--color-panel-2)] transition-colors"
+            className="admin-ops-nav-button inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors"
           >
             📇 {isEs ? "Cola de outreach" : "Outreach queue"}
           </a>
           <a
             href={`/${lang}/admin/ops/loop-runs`}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-[var(--color-panel)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--color-fg)] hover:bg-[var(--color-panel-2)] transition-colors"
+            className="admin-ops-nav-button inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors"
           >
             🔁 {isEs ? "Corridas del Loop" : "Loop runs"}
           </a>
           <a
             href={`/${lang}/admin/ops/reports`}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-[var(--color-panel)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--color-fg)] hover:bg-[var(--color-panel-2)] transition-colors"
+            className="admin-ops-nav-button inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors"
           >
             📊 {isEs ? "Reportes" : "Reports"}
           </a>

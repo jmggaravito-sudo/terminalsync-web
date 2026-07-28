@@ -399,8 +399,10 @@ const WORKFLOW_META: Record<
   "2gbpZFPPlYMo6k3f": {
     project: "TerminalSync",
     description:
-      "Trends Radar — todas las mañanas a las 6am COL captura GitHub trending + HackerNews top + Reddit top de 7 subreddits + universidades enseñando IA en YouTube.",
-    cadence: "diario 6am COL",
+      "Business + Agency Opportunity Radar — captura señales de empresarios, agencias, automatización, IA para negocios, pain points, competidores y hooks de contenido. Antes era tech/dev genérico; ahora debe servir para ventas y marketing de TerminalSync.",
+    cadence: "diario",
+    resultUrl: "/admin/trends",
+    resultLabel: "Ver radar",
   },
   "7ooGFm2XvT8SLdde": {
     project: "TerminalSync",
@@ -503,6 +505,66 @@ const WORKFLOW_META: Record<
     description:
       "Bundle Curator — Claude analiza el catálogo y propone nuevos Stack Packs (bundles) por persona/pain point. Resultado en bundle_proposals para aprobar.",
     cadence: "diario",
+  },
+  bIQyZUPQOvmVXwj5: {
+    project: "TerminalSync",
+    description:
+      "Discovery · Error Alert — red de seguridad: avisa cuando los flujos de discovery/ops fallan para que no pasen días rotos sin enterarnos.",
+    cadence: "cuando algo falla",
+  },
+  kpEnCfr9Jn6U51QT: {
+    project: "TerminalSync",
+    description:
+      "Sync-AI · Capture AI vs Human Diff — mide diferencias entre respuestas/decisiones de IA y humanos para mejorar calidad del soporte y detectar automatizaciones que necesitan revisión.",
+    cadence: "programado / diagnóstico",
+  },
+  DyimJH7PWG6SNyFH: {
+    project: "TerminalSync",
+    description:
+      "Sync-AI · Event Beacon — recibe eventos internos de Sync-AI para dejar trazabilidad de lo que pasó antes de que otro flujo responda o actúe.",
+    cadence: "cuando llega un evento",
+  },
+  "5vn2BvCsyXkp44ii": {
+    project: "TerminalSync",
+    description:
+      "Sync-AI · Image Generation — endpoint/flujo auxiliar para generar imágenes desde el sistema Sync-AI cuando una experiencia necesita visuales.",
+    cadence: "cuando se pide una imagen",
+  },
+  xsM52tJs7osyMoDv: {
+    project: "TerminalSync",
+    description:
+      "Sync-AI · Ticket Reply Action — toma una respuesta aprobada/lista y ejecuta la acción final de responder el ticket o actualizar el estado.",
+    cadence: "cuando hay respuesta lista",
+  },
+  fBb4i7UXDHSiK8ux: {
+    project: "TerminalSync",
+    description:
+      "Sync-AI · Ticket Reply Assistant — genera borradores/respuestas de soporte para tickets de TerminalSync usando el contexto disponible.",
+    cadence: "cuando entra un ticket",
+  },
+  FWEqbhqJ8Lxh13HX: {
+    project: "TerminalSync",
+    description:
+      "Sync-AI · Ticket Reply Cron — revisa periódicamente tickets pendientes y dispara el assistant cuando hay algo que responder.",
+    cadence: "cada 30 minutos",
+  },
+  "7ICunvtMag5cFoEh": {
+    project: "TerminalSync",
+    description:
+      "Sync-AI · Ticket Status Webhook — recibe cambios de estado de tickets para mantener Sync-AI y el panel sincronizados.",
+    cadence: "cuando cambia un ticket",
+  },
+  aF8Kcjkth2rQ9luN: {
+    project: "TerminalSync",
+    description:
+      "TSync Bridge · Inbound — recibe mensajes desde Kapso WhatsApp/Telegram y los guarda en Supabase para que los agentes de TerminalSync puedan procesarlos.",
+    cadence: "cuando llega un mensaje",
+  },
+  k3E4DdeKfItT9gqZ: {
+    project: "TerminalSync",
+    description:
+      "TSync Bridge · Outbound — envía respuestas/notificaciones desde TerminalSync hacia Kapso WhatsApp o Telegram. WhatsApp requiere template si la ventana de 24h está cerrada.",
+    cadence: "cuando hay mensaje saliente",
   },
 
   // ─────────────── Printify ───────────────

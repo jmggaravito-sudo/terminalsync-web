@@ -28,7 +28,9 @@ export default async function AdminHome({ params }: Props) {
     {
       slug: "trends",
       title: "Trends",
-      desc: isEs ? "Tendencias y señales para contenido y pauta." : "Trends and signals for content and ads.",
+      desc: isEs
+        ? "Radar de oportunidades para empresarios y agencias: pains, competidores, hooks de contenido y señales accionables."
+        : "Opportunity radar for business owners and agencies: pains, competitors, content hooks and actionable signals.",
     },
     {
       slug: "comp",
@@ -43,7 +45,9 @@ export default async function AdminHome({ params }: Props) {
     {
       slug: "ops",
       title: "Ops",
-      desc: isEs ? "Loops, ejecuciones y acciones automáticas." : "Loops, executions and automated actions.",
+      desc: isEs
+        ? "Landing operativa con cada flujo, para qué sirve, salud, últimos resultados y links a n8n."
+        : "Operational landing with each flow, what it does, health, latest results and n8n links.",
     },
   ];
 
