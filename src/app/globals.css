@@ -381,3 +381,31 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .ts-marquee-left, .ts-marquee-right { animation: none; }
 }
+
+/* Admin Ops readability override: all button-like controls on /admin/ops use
+   black backgrounds with white text so the internal dashboard remains readable
+   in the light theme. Scoped to the Ops page only. */
+.admin-ops-readable-buttons button,
+.admin-ops-readable-buttons .admin-ops-nav-button {
+  background: #050505 !important;
+  color: #ffffff !important;
+  border-color: #262626 !important;
+}
+
+.admin-ops-readable-buttons button:hover,
+.admin-ops-readable-buttons .admin-ops-nav-button:hover {
+  background: #171717 !important;
+  color: #ffffff !important;
+  border-color: #404040 !important;
+}
+
+.admin-ops-readable-buttons button:disabled {
+  background: #2f2f2f !important;
+  color: rgba(255, 255, 255, 0.72) !important;
+  border-color: #404040 !important;
+}
+
+.admin-ops-readable-buttons button svg,
+.admin-ops-readable-buttons .admin-ops-nav-button svg {
+  color: currentColor !important;
+}
