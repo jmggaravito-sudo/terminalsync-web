@@ -44,7 +44,16 @@ interface Body {
 // We allow-list both terminalsync.ai and all tauri origins since the anon
 // endpoint below doesn't expose any secrets beyond publishable info.
 function wantsIncludedAi(body: Body): boolean {
-  return body.includedAi === true || body.addOns?.includes("included_ai") === true;
+  return (
+    body.includedAi === true || body.addOns?.includes("included_ai") === true
+  );
+}
+
+export function shouldApplyCheckoutTrial(
+  plan: PlanId,
+  supabaseUserId?: string | null,
+): boolean {
+  return !supabaseUserId && (plan === "pro" || plan === "max");
 }
 
 function corsHeaders(origin: string | null): Record<string, string> {
@@ -117,7 +126,10 @@ export async function POST(req: Request) {
   }
   if (includedAi && !includedAiPrice) {
     return NextResponse.json(
-      { error: 'Missing Stripe price for TerminalSync AI. Set STRIPE_INCLUDED_AI_PRICE_ID in the environment.' },
+      {
+        error:
+          "Missing Stripe price for TerminalSync AI. Set STRIPE_INCLUDED_AI_PRICE_ID in the environment.",
+      },
       { status: 503, headers: cors },
     );
   }
@@ -125,15 +137,19 @@ export async function POST(req: Request) {
   const lang: "es" | "en" = body.lang === "en" ? "en" : "es";
   const base = siteUrl();
 
-  // Trial-eligible tiers (Pro + Max). Agency is lead-gen, no trial.
-  const trialEligible = plan === "pro" || plan === "max";
+  // Public website signups get the 7-day trial. Existing app users already
+  // had their welcome period, so plan changes or adding TerminalSync AI should
+  // not restart a free trial or show “7 días gratis” again in Stripe.
+  const trialEligible = shouldApplyCheckoutTrial(plan, body.supabaseUserId);
 
   // Shared metadata so the webhook can identify the user + plan without
   // hitting Stripe's API again.
   const sharedMetadata: Record<string, string> = {
     plan,
     cycle: "monthly",
-    source: body.supabaseUserId ? "app.terminalsync/upsell" : "terminalsync.ai/pricing",
+    source: body.supabaseUserId
+      ? "app.terminalsync/upsell"
+      : "terminalsync.ai/pricing",
   };
   if (includedAi) {
     sharedMetadata.included_ai = "1";
@@ -171,7 +187,7 @@ export async function POST(req: Request) {
           },
       // Always collect payment method up front so features can activate
       // immediately after checkout.session.completed.
-      payment_method_collection: trialEligible ? "always" : undefined,
+      payment_method_collection: "always",
       success_url:
         body.successUrl ??
         `${base}/${lang}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
