@@ -1,0 +1,43 @@
+name: Marketplace gate
+
+# Runs the repo's vitest suite on every PR and push to main.
+#
+# WHY THIS EXISTS: the marketplace delivery gates — the skills /raw delivery
+# gate (src/lib/marketplace/rawSkill.test.ts) and the plugin referential
+# integrity gate (src/lib/plugins.integrity.test.ts) — are written as vitest
+# specs, but until now NO workflow ran them in CI. A plugin that references a
+# missing/staged connector or an undeliverable skill, or a skill that /raw
+# can't serve, could merge unnoticed and only surface as a broken install on a
+# customer's desktop. This workflow makes those gates enforcing.
+#
+# It runs the FULL suite (not just the two gates) so every marketplace check
+# already in the repo (faq matcher, ticket ledger, support pipelines, etc.)
+# runs too. The tests are dependency-free of live services: the Supabase admin
+# client returns null without env, so loaders fall back to first-party content
+# — no secrets needed here.
+
+on:
+  push:
+    branches:
+      - main
+  pull_request: {}
+
+jobs:
+  test:
+    name: Marketplace tests (vitest)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run vitest
+        run: npm test

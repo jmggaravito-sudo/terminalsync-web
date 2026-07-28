@@ -40,6 +40,12 @@ export default async function AdminOps({ params }: Props) {
           >
             🔁 {isEs ? "Corridas del Loop" : "Loop runs"}
           </a>
+          <a
+            href={`/${lang}/admin/ops/reports`}
+            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] bg-[var(--color-panel)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--color-fg)] hover:bg-[var(--color-panel-2)] transition-colors"
+          >
+            📊 {isEs ? "Reportes" : "Reports"}
+          </a>
         </nav>
         <div className="mt-6">
           <OpsDashboard lang={lang} />

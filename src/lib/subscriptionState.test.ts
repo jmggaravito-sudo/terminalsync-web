@@ -23,6 +23,7 @@ import { createHmac } from "node:crypto";
 import { downgradeToFree, upsertSubscription } from "./subscriptionState";
 import {
   mpPlanFromPreapprovalPlanId,
+  mpPlanFromPreapproval,
   mpStatusToSubscriptionStatus,
   verifyMpWebhookSignature,
 } from "./mercadopago";
@@ -143,6 +144,32 @@ describe("Mercado Pago mapping helpers", () => {
     expect(mpPlanFromPreapprovalPlanId("plan_max_ars")).toBe("max");
     expect(mpPlanFromPreapprovalPlanId("plan_unknown")).toBeNull();
     expect(mpPlanFromPreapprovalPlanId(undefined)).toBeNull();
+  });
+
+  it("classifies a plan-less preapproval by recurring amount (COP defaults)", () => {
+    const base = { id: "p1", status: "authorized" };
+    expect(
+      mpPlanFromPreapproval({ ...base, auto_recurring: { transaction_amount: 159000 } }),
+    ).toBe("max");
+    expect(
+      mpPlanFromPreapproval({ ...base, auto_recurring: { transaction_amount: 79000 } }),
+    ).toBe("pro");
+  });
+
+  it("falls back to the reason text when the amount doesn't match", () => {
+    const base = { id: "p1", status: "authorized" };
+    expect(
+      mpPlanFromPreapproval({ ...base, reason: "Terminal Sync Max", auto_recurring: { transaction_amount: 1 } }),
+    ).toBe("max");
+    expect(mpPlanFromPreapproval({ ...base, reason: "Terminal Sync Pro" })).toBe("pro");
+    expect(mpPlanFromPreapproval({ ...base })).toBeNull();
+  });
+
+  it("still classifies a legacy associated-plan subscription by plan_id", () => {
+    process.env.MERCADOPAGO_PLAN_MAX = "plan_max_legacy";
+    expect(
+      mpPlanFromPreapproval({ id: "p1", status: "authorized", preapproval_plan_id: "plan_max_legacy" }),
+    ).toBe("max");
   });
 });
 

@@ -24,12 +24,23 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { type PlanId, siteUrl } from "./stripe";
 
 const MP_API = "https://api.mercadopago.com";
-const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+
+/** Read an env var, stripping surrounding whitespace/newlines. Pasting an
+ *  access token or plan id into a hosting dashboard commonly drags a
+ *  trailing "\n" along, which then fails matching (or reaches MP verbatim).
+ *  Returns undefined for missing OR blank-after-trim. Mirrors `envId` in
+ *  stripe.ts. */
+function mpEnv(name: string): string | undefined {
+  const trimmed = process.env[name]?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+const accessToken = mpEnv("MERCADOPAGO_ACCESS_TOKEN");
 
 /** True when the webhook signing secret is configured — when it is, the
  *  webhook MUST reject unsigned/invalid requests. */
 export const mercadoPagoWebhookSecretSet = Boolean(
-  process.env.MERCADOPAGO_WEBHOOK_SECRET,
+  mpEnv("MERCADOPAGO_WEBHOOK_SECRET"),
 );
 
 /**
@@ -45,7 +56,7 @@ export function verifyMpWebhookSignature(input: {
   xRequestId: string | null;
   dataId: string | undefined;
 }): boolean {
-  const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+  const secret = mpEnv("MERCADOPAGO_WEBHOOK_SECRET");
   if (!secret || !input.xSignature) return false;
 
   const parts: Record<string, string> = {};
@@ -72,31 +83,92 @@ export function verifyMpWebhookSignature(input: {
  *  route can 503 cleanly instead of throwing when MP isn't set up. */
 export const mercadoPagoConfigured = Boolean(accessToken);
 
-/** Maps a plan to its Mercado Pago `preapproval_plan_id` — a recurring plan
- *  created in the MP dashboard, the MP analogue of a Stripe price id. The
- *  amount + currency live ON the MP plan, so the currency-per-country decision
- *  stays in MP config, not in code (ARS, BRL, MXN, …). Agency stays lead-gen
- *  (no self-serve subscription), same as Stripe. */
-export function mpPreapprovalPlanFor(plan: PlanId): string | null {
-  if (plan === "pro") return process.env.MERCADOPAGO_PLAN_PRO ?? null;
-  if (plan === "max") return process.env.MERCADOPAGO_PLAN_MAX ?? null;
+// Monthly amount per plan, in the MP currency. We create the subscription
+// WITHOUT an associated plan (see createPreapproval) — the associated-plan
+// flow demands a tokenized card (`card_token_id is required`) and gives no
+// hosted checkout URL. A plan-less preapproval with the amount inline returns
+// an `init_point` (MP captures the card) AND keeps our `external_reference`
+// linking. So the amount/currency live here, not on a dashboard plan.
+const DEFAULT_PRO_COP = 79000;
+const DEFAULT_MAX_COP = 159000;
+const DEFAULT_INCLUDED_AI_COP = 60000;
+const MP_CURRENCY = mpEnv("MERCADOPAGO_CURRENCY") ?? "COP";
+
+/** Monthly amount for a plan in the MP currency. Env overrides
+ *  MERCADOPAGO_PRO_COP / MERCADOPAGO_MAX_COP; defaults are the agreed COP
+ *  prices. Agency is lead-gen → no self-serve subscription (null). */
+export function mpAmountFor(plan: PlanId, includedAi = false): number | null {
+  if (plan === "pro") {
+    if (includedAi) {
+      return (
+        Number(mpEnv("MERCADOPAGO_PRO_AI_COP")) ||
+        (Number(mpEnv("MERCADOPAGO_PRO_COP")) || DEFAULT_PRO_COP) + DEFAULT_INCLUDED_AI_COP
+      );
+    }
+    return Number(mpEnv("MERCADOPAGO_PRO_COP")) || DEFAULT_PRO_COP;
+  }
+  if (plan === "max") {
+    if (includedAi) {
+      return (
+        Number(mpEnv("MERCADOPAGO_MAX_AI_COP")) ||
+        (Number(mpEnv("MERCADOPAGO_MAX_COP")) || DEFAULT_MAX_COP) + DEFAULT_INCLUDED_AI_COP
+      );
+    }
+    return Number(mpEnv("MERCADOPAGO_MAX_COP")) || DEFAULT_MAX_COP;
+  }
   return null;
 }
 
-/** Reverse of `mpPreapprovalPlanFor`: given the `preapproval_plan_id` MP
- *  reports on a subscription, resolve which Terminal Sync plan it is. Used by
- *  the webhook to know whether an activated MP subscription is Pro or Max. */
+/** Legacy: maps a plan to a pre-created `preapproval_plan_id` (associated-plan
+ *  flow). No longer used for NEW checkouts — kept so the webhook can still
+ *  classify subscriptions created under the old flow (see mpPlanFromPreapproval). */
+export function mpPreapprovalPlanFor(plan: PlanId): string | null {
+  if (plan === "pro") return mpEnv("MERCADOPAGO_PLAN_PRO") ?? null;
+  if (plan === "max") return mpEnv("MERCADOPAGO_PLAN_MAX") ?? null;
+  return null;
+}
+
+/** Legacy reverse lookup by `preapproval_plan_id` (associated-plan flow). Kept
+ *  for back-compat + reused by mpPlanFromPreapproval. */
 export function mpPlanFromPreapprovalPlanId(
   preapprovalPlanId: string | undefined | null,
 ): "pro" | "max" | null {
   if (!preapprovalPlanId) return null;
-  if (preapprovalPlanId === process.env.MERCADOPAGO_PLAN_PRO) return "pro";
-  if (preapprovalPlanId === process.env.MERCADOPAGO_PLAN_MAX) return "max";
+  if (preapprovalPlanId === mpEnv("MERCADOPAGO_PLAN_PRO")) return "pro";
+  if (preapprovalPlanId === mpEnv("MERCADOPAGO_PLAN_MAX")) return "max";
+  return null;
+}
+
+/** Resolve which Terminal Sync plan an MP subscription is. Plan-less
+ *  subscriptions (the current flow) carry no plan_id, so classify by the
+ *  recurring amount first, then by the reason text ("... Max"/"... Pro"); fall
+ *  back to the legacy plan_id for subscriptions created under the old flow. */
+export function mpPlanFromPreapproval(pre: PreapprovalState): "pro" | "max" | null {
+  const byLegacyPlan = mpPlanFromPreapprovalPlanId(pre.preapproval_plan_id);
+  if (byLegacyPlan) return byLegacyPlan;
+
+  const amount = pre.auto_recurring?.transaction_amount;
+  if (typeof amount === "number") {
+    if (amount === mpAmountFor("max", true) || amount === mpAmountFor("max")) return "max";
+    if (amount === mpAmountFor("pro", true) || amount === mpAmountFor("pro")) return "pro";
+  }
+
+  const reason = (pre.reason ?? "").toLowerCase();
+  if (reason.includes("max")) return "max";
+  if (reason.includes("pro")) return "pro";
   return null;
 }
 
 /** MP preapproval status → our provider-neutral subscription status.
  *  MP statuses: pending | authorized | paused | cancelled. */
+export function mpIncludesAi(pre: PreapprovalState): boolean {
+  const amount = pre.auto_recurring?.transaction_amount;
+  if (typeof amount === "number") {
+    return amount === mpAmountFor("pro", true) || amount === mpAmountFor("max", true);
+  }
+  return /\+\s*ia|ia incluida|terminalsync ai/i.test(pre.reason ?? "");
+}
+
 export function mpStatusToSubscriptionStatus(
   status: string | undefined,
 ):
@@ -117,13 +189,28 @@ export function mpStatusToSubscriptionStatus(
   }
 }
 
+
+/** Mercado Pago Colombia requires an end date for pending plan-less
+ *  subscriptions; omitting it causes a generic HTTP 500 from /preapproval.
+ *  Use a long horizon so monthly subscriptions behave as effectively ongoing. */
+function mpSubscriptionEndDate(): string {
+  const years = Number(mpEnv("MERCADOPAGO_SUBSCRIPTION_YEARS")) || 10;
+  const end = new Date();
+  end.setUTCFullYear(end.getUTCFullYear() + years);
+  return end.toISOString();
+}
+
 export interface CreatePreapprovalInput {
-  preapprovalPlanId: string;
+  /** Monthly amount in the MP currency (COP). Sent inline so MP returns a
+   *  hosted checkout without demanding a tokenized card. */
+  amount: number;
   payerEmail?: string;
-  /** Supabase auth user id — the MP `external_reference`, mirrors the
-   *  `supabase_user_id` we put in Stripe metadata so the webhook can link an
-   *  MP subscription to a Terminal Sync account. */
+  /** Supabase auth user id (or the buyer's email) — the MP `external_reference`,
+   *  mirrors the `supabase_user_id` we put in Stripe metadata so the webhook can
+   *  link an MP subscription to a Terminal Sync account. */
   externalReference?: string;
+  /** Human-readable subscription name, e.g. "Terminal Sync Max". Also used by
+   *  the webhook as a fallback plan classifier, so keep "Pro"/"Max" in it. */
   reason: string;
   backUrl: string;
 }
@@ -142,6 +229,10 @@ export async function createPreapproval(
 ): Promise<PreapprovalResult> {
   if (!accessToken) throw new Error("Mercado Pago not configured");
 
+  // Plan-less preapproval: the amount/frequency go inline (NOT a
+  // preapproval_plan_id). With `status: "pending"` and no card token, MP
+  // returns an `init_point` checkout page where the buyer enters their card —
+  // the associated-plan flow instead fails with "card_token_id is required".
   const res = await fetch(`${MP_API}/preapproval`, {
     method: "POST",
     headers: {
@@ -149,11 +240,21 @@ export async function createPreapproval(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      preapproval_plan_id: input.preapprovalPlanId,
-      payer_email: input.payerEmail,
-      external_reference: input.externalReference,
       reason: input.reason,
+      external_reference: input.externalReference,
+      payer_email: input.payerEmail,
       back_url: input.backUrl,
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: "months",
+        // MP Colombia returns a generic 500 for pending plan-less
+        // preapprovals when end_date is omitted, even though the docs don't
+        // mark it as required. Set a far-future end date so Checkout can be
+        // hosted while subscriptions remain effectively long-lived.
+        end_date: mpSubscriptionEndDate(),
+        transaction_amount: input.amount,
+        currency_id: MP_CURRENCY,
+      },
       status: "pending",
     }),
   });
@@ -178,6 +279,13 @@ export interface PreapprovalState {
   external_reference?: string;
   preapproval_plan_id?: string;
   payer_email?: string;
+  /** Present on plan-less subscriptions — the webhook classifies Pro/Max from
+   *  the recurring amount (and `reason` as a fallback). */
+  reason?: string;
+  auto_recurring?: {
+    transaction_amount?: number;
+    currency_id?: string;
+  };
 }
 
 export interface PreapprovalPlanSummary {

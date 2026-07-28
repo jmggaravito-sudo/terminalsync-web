@@ -34,6 +34,7 @@ export interface ConnectorMeta {
     | "automation"
     | "storage"
     | "messaging"
+    | "support"
     | "dev";
   status: "available" | "soon";
   simpleTitle: string;

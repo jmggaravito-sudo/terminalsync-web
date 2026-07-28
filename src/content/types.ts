@@ -331,7 +331,8 @@ export interface Dict {
       | "affiliateTerms"
       | "privacy"
       | "terms"
-      | "security",
+      | "security"
+      | "dataDeletion",
       string
     >;
     tagline: string;
@@ -470,6 +471,8 @@ interface Plan {
   badge?: string;
   price: string;
   priceNote: string;
+  /** Micro-subtitulo bajo el precio ("Para quien empieza a organizar…"). */
+  tagline?: string;
   features: string[];
   cta: string;
 }
@@ -481,6 +484,8 @@ interface PaidPlan {
   badge: string;
   price: string;
   priceNote: string;
+  /** Micro-subtitulo bajo el precio. */
+  tagline?: string;
   features: string[];
   cta: string;
 }

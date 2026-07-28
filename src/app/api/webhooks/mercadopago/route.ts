@@ -3,13 +3,16 @@ import {
   getPreapproval,
   mercadoPagoConfigured,
   mercadoPagoWebhookSecretSet,
-  mpPlanFromPreapprovalPlanId,
+  mpIncludesAi,
+  mpPlanFromPreapproval,
   mpStatusToSubscriptionStatus,
   verifyMpWebhookSignature,
 } from "@/lib/mercadopago";
 import {
   downgradeToFree,
   findUserIdByEmail,
+  grantIncludedAi,
+  revokeIncludedAiForMercadoPagoUser,
   upsertSubscription,
 } from "@/lib/subscriptionState";
 
@@ -90,10 +93,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ received: true, found: false }, { status: 200 });
   }
 
-  // Resolve the Terminal Sync account: external_reference (the supabase user
-  // id we stamped at checkout) is primary; fall back to matching the payer's
-  // email against profiles for checkouts that carried no user id.
-  let userId = pre.external_reference ?? null;
+  // Resolve the Terminal Sync account. `external_reference` is what WE stamped
+  // at checkout and MP echoes it back verbatim, so it's the reliable link key —
+  // immune to the payer's MercadoPago-account email differing from their Terminal
+  // Sync email (which is exactly what would otherwise make a Colombian client
+  // "pay but stay Free"). It carries EITHER a Supabase user id (app / logged-in
+  // web) OR the email the buyer typed on the site (anonymous landing). As a last
+  // resort, fall back to the payer's MP-account email.
+  let userId: string | null = null;
+  const ref = pre.external_reference?.trim() ?? "";
+  if (ref) {
+    userId = ref.includes("@") ? await findUserIdByEmail(ref) : ref;
+  }
   if (!userId && pre.payer_email) {
     userId = await findUserIdByEmail(pre.payer_email);
   }
@@ -116,17 +127,24 @@ export async function POST(req: Request) {
       provider: "mercadopago",
       providerSubscriptionId: pre.id,
     });
+    const includedAi = mpIncludesAi(pre);
+    let includedAiWritten = false;
+    if (includedAi) includedAiWritten = await revokeIncludedAiForMercadoPagoUser(userId);
     return NextResponse.json(
-      { received: true, status: pre.status, action: "downgraded" },
+      { received: true, status: pre.status, action: "downgraded", includedAi, includedAiWritten },
       { status: 200 },
     );
   }
 
-  const plan = mpPlanFromPreapprovalPlanId(pre.preapproval_plan_id);
+  const plan = mpPlanFromPreapproval(pre);
   if (!plan) {
     console.warn(
-      "[mercadopago→supabase] unknown preapproval_plan_id — can't classify plan",
-      { preapprovalId: pre.id, preapprovalPlanId: pre.preapproval_plan_id },
+      "[mercadopago→supabase] could not classify plan (no matching amount / reason / plan_id)",
+      {
+        preapprovalId: pre.id,
+        amount: pre.auto_recurring?.transaction_amount,
+        reason: pre.reason,
+      },
     );
     return NextResponse.json(
       { received: true, status: pre.status, plan: null, linked: false },
@@ -134,16 +152,24 @@ export async function POST(req: Request) {
     );
   }
 
+  const status = mpStatusToSubscriptionStatus(pre.status);
   const ok = await upsertSubscription({
     userId,
     provider: "mercadopago",
     plan,
-    status: mpStatusToSubscriptionStatus(pre.status),
+    status,
     providerSubscriptionId: pre.id,
   });
+  const includedAi = mpIncludesAi(pre);
+  let includedAiWritten = false;
+  if (includedAi && status === "active") {
+    includedAiWritten = await grantIncludedAi({ userId });
+  } else if (includedAi && status === "canceled") {
+    includedAiWritten = await revokeIncludedAiForMercadoPagoUser(userId);
+  }
 
   return NextResponse.json(
-    { received: true, status: pre.status, plan, written: ok },
+    { received: true, status: pre.status, plan, includedAi, written: ok, includedAiWritten },
     { status: 200 },
   );
 }

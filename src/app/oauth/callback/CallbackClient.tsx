@@ -17,19 +17,29 @@ interface Params {
 //  1. idle      → show branded card + auto-redirect countdown
 //  2. dispatched → asked the browser to open terminalsync:// or terminalsync-lab:// (may prompt user)
 //  3. error     → Google returned ?error=... or params are malformed
-export function CallbackClient({ params }: { params: Params }) {
+export function CallbackClient({
+  params,
+  providerName = "Google",
+  successMessage = "Tu Google Drive está conectado a Terminal Sync. Te llevamos de vuelta a la app.",
+  nativePath,
+}: {
+  params: Params;
+  providerName?: string;
+  successMessage?: string;
+  nativePath?: string;
+}) {
   const [dispatched, setDispatched] = useState(false);
 
   const isError = !!params.error;
-  const isMissing = !params.code || !params.state;
+  const isMissing = !params.state || (!params.code && !params.error);
 
   // Build the deep link URL exactly once per render. The helper picks
   // terminalsync-lab:// vs terminalsync:// from the state's prefix and
   // serializes `state` with a literal `:` (NOT %3A) so the native app's
   // byte-exact CSRF check passes. See buildDeepLink.ts for the contract.
   const deepLink = useMemo(
-    () => buildDeepLink(params),
-    [params.code, params.state, params.scope],
+    () => buildDeepLink(params, { nativePath }),
+    [params.code, params.error, params.error_description, params.state, params.scope, nativePath],
   );
 
   useEffect(() => {
@@ -50,14 +60,14 @@ export function CallbackClient({ params }: { params: Params }) {
           No pudimos completar el inicio de sesión
         </h1>
         <p className="mt-3 text-[14px] text-[var(--color-fg-muted)] leading-relaxed">
-          Google respondió:{" "}
+          {providerName} respondió:{" "}
           <code className="font-mono text-[12.5px] bg-[var(--color-panel-2)] px-1.5 py-0.5 rounded">
             {params.error}
           </code>
           {params.error_description ? ` — ${params.error_description}` : null}
         </p>
         <p className="mt-3 text-[13px] text-[var(--color-fg-muted)]">
-          Cierra esta pestaña y reintenta el inicio de sesión desde la app.
+          Te llevamos de vuelta a la app para que puedas intentarlo de nuevo.
         </p>
       </Layout>
     );
@@ -93,8 +103,7 @@ export function CallbackClient({ params }: { params: Params }) {
         ¡Listo!
       </h1>
       <p className="mt-3 text-[14px] text-[var(--color-fg-muted)] leading-relaxed">
-        Tu Google Drive está conectado a Terminal Sync. Te llevamos de vuelta a
-        la app.
+        {successMessage}
       </p>
       <a
         href={deepLink ?? "#"}

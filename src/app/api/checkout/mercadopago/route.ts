@@ -3,7 +3,7 @@ import { normalizePlanId, siteUrl } from "@/lib/stripe";
 import {
   createPreapproval,
   mercadoPagoConfigured,
-  mpPreapprovalPlanFor,
+  mpAmountFor,
 } from "@/lib/mercadopago";
 
 export const runtime = "nodejs";
@@ -16,10 +16,16 @@ interface Body {
   supabaseUserId?: string;
   /** Deep-link the desktop app passes; defaults to the marketing routes. */
   successUrl?: string;
+  includedAi?: boolean;
+  addOns?: string[];
 }
 
 // Same CORS posture as the Stripe checkout route: allow the Tauri desktop app
 // and the marketing site.
+function wantsIncludedAi(body: Body): boolean {
+  return body.includedAi === true || body.addOns?.includes("included_ai") === true;
+}
+
 function corsHeaders(origin: string | null): Record<string, string> {
   const allowed =
     origin &&
@@ -68,15 +74,17 @@ export async function POST(req: Request) {
     );
   }
 
-  const preapprovalPlanId = mpPreapprovalPlanFor(plan);
-  if (!preapprovalPlanId) {
-    const envVar = plan === "pro" ? "MERCADOPAGO_PLAN_PRO" : "MERCADOPAGO_PLAN_MAX";
+  // Plan-less subscription: the amount lives in code/env, not on a dashboard
+  // plan (the associated-plan flow needs a tokenized card). Agency is lead-gen.
+  const includedAi = wantsIncludedAi(body);
+  const amount = mpAmountFor(plan, includedAi);
+  if (amount === null) {
     return NextResponse.json(
       {
         error:
           plan === "agency"
             ? "Agency is lead-gen — no self-serve Mercado Pago subscription."
-            : `Missing Mercado Pago plan for "${plan}". Set ${envVar}.`,
+            : `No Mercado Pago amount configured for "${plan}".`,
       },
       { status: 503, headers: cors },
     );
@@ -87,11 +95,16 @@ export async function POST(req: Request) {
   const backUrl = body.successUrl ?? `${base}/${lang}/checkout/success`;
 
   try {
+    // Stamp the account key into external_reference (MP echoes it back verbatim,
+    // so linking is immune to whatever email MP attaches from the payer's own
+    // account). Prefer the Supabase user id when we have it (app / logged-in web);
+    // fall back to the email the buyer typed so the webhook can resolve it.
+    const externalReference = body.supabaseUserId ?? body.email;
     const { initPoint } = await createPreapproval({
-      preapprovalPlanId,
+      amount,
       payerEmail: body.email,
-      externalReference: body.supabaseUserId,
-      reason: `Terminal Sync ${plan === "max" ? "Max" : "Pro"}`,
+      externalReference,
+      reason: `Terminal Sync ${plan === "max" ? "Max" : "Pro"}${includedAi ? " + IA" : ""}`,
       backUrl,
     });
     // Same response shape as the Stripe route: { url } for the client to

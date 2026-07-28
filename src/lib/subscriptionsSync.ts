@@ -1,8 +1,10 @@
 import type Stripe from "stripe";
 import { getSupabaseAdmin } from "./supabaseAdmin";
-import { stripe } from "./stripe";
+import { stripe, envId, includedAiPriceId } from "./stripe";
 import {
   downgradeToFree,
+  grantIncludedAi,
+  revokeIncludedAiForStripeCustomer,
   upsertSubscription,
   type SubscriptionStatus,
 } from "./subscriptionState";
@@ -19,8 +21,7 @@ async function customerEmail(sub: Stripe.Subscription): Promise<string | null> {
     if (expanded) return expanded;
   }
   if (!stripe) return null;
-  const customerId =
-    typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+  const customerId = customerIdOf(sub);
   try {
     const c = await stripe.customers.retrieve(customerId);
     if (c.deleted) return null;
@@ -103,14 +104,14 @@ async function resolveUserId(
 // Legacy STRIPE_PRICE_DEV_* env vars are still read as a fallback during
 // the Dev→Max rename rollout — same prices, different env names.
 function planFromPriceId(priceId: string): "pro" | "max" | null {
-  const pmM = process.env.STRIPE_PRICE_PRO_MONTHLY;
-  const pmY = process.env.STRIPE_PRICE_PRO_YEARLY;
-  const mxM = process.env.STRIPE_PRICE_MAX_MONTHLY ?? process.env.STRIPE_PRICE_DEV_MONTHLY;
-  const mxY = process.env.STRIPE_PRICE_MAX_YEARLY ?? process.env.STRIPE_PRICE_DEV_YEARLY;
-  const pmMt = process.env.STRIPE_PRICE_PRO_MONTHLY_TEST;
-  const pmYt = process.env.STRIPE_PRICE_PRO_YEARLY_TEST;
-  const mxMt = process.env.STRIPE_PRICE_MAX_MONTHLY_TEST ?? process.env.STRIPE_PRICE_DEV_MONTHLY_TEST;
-  const mxYt = process.env.STRIPE_PRICE_MAX_YEARLY_TEST ?? process.env.STRIPE_PRICE_DEV_YEARLY_TEST;
+  const pmM = envId("STRIPE_PRICE_PRO_MONTHLY");
+  const pmY = envId("STRIPE_PRICE_PRO_YEARLY");
+  const mxM = envId("STRIPE_PRICE_MAX_MONTHLY", "STRIPE_PRICE_DEV_MONTHLY");
+  const mxY = envId("STRIPE_PRICE_MAX_YEARLY", "STRIPE_PRICE_DEV_YEARLY");
+  const pmMt = envId("STRIPE_PRICE_PRO_MONTHLY_TEST");
+  const pmYt = envId("STRIPE_PRICE_PRO_YEARLY_TEST");
+  const mxMt = envId("STRIPE_PRICE_MAX_MONTHLY_TEST", "STRIPE_PRICE_DEV_MONTHLY_TEST");
+  const mxYt = envId("STRIPE_PRICE_MAX_YEARLY_TEST", "STRIPE_PRICE_DEV_YEARLY_TEST");
   if (priceId === pmM || priceId === pmY || priceId === pmMt || priceId === pmYt) {
     return "pro";
   }
@@ -123,6 +124,18 @@ function planFromPriceId(priceId: string): "pro" | "max" | null {
 /** Stripe's status strings map 1:1 to our enum except `incomplete_expired`
  *  which we fold into `incomplete` since the state machine treats them the
  *  same downstream (no active access). */
+function subscriptionHasIncludedAi(sub: Stripe.Subscription): boolean {
+  if (sub.metadata?.included_ai === "1" || sub.metadata?.add_ons?.includes("included_ai")) {
+    return true;
+  }
+  const addOnPrice = includedAiPriceId();
+  return sub.items.data.some((item) => item.price?.id === addOnPrice);
+}
+
+function customerIdOf(sub: Stripe.Subscription): string {
+  return typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+}
+
 function mapStatus(s: Stripe.Subscription.Status): SubscriptionStatus {
   if (s === "incomplete_expired") return "incomplete";
   if (
@@ -176,8 +189,7 @@ export async function syncSubscriptionToSupabase(
     // row stale.
   }
 
-  const customerId =
-    typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+  const customerId = customerIdOf(sub);
 
   // Stripe moved period boundaries onto individual line items (one
   // subscription can now have multiple items with different cycles).
@@ -188,7 +200,7 @@ export async function syncSubscriptionToSupabase(
 
   // Adapt the Stripe object into the provider-neutral shape and hand off the
   // actual DB write to upsertSubscription (shared with the Mercado Pago rail).
-  return upsertSubscription({
+  const written = await upsertSubscription({
     userId,
     provider: "stripe",
     plan: plan ?? "free",
@@ -206,6 +218,15 @@ export async function syncSubscriptionToSupabase(
       ? new Date(sub.trial_end * 1000).toISOString()
       : null,
   });
+
+  if (subscriptionHasIncludedAi(sub)) {
+    if (sub.status === "active" || sub.status === "trialing") {
+      await grantIncludedAi({ userId, stripeCustomerId: customerId });
+    } else if (["canceled", "unpaid", "incomplete_expired"].includes(sub.status)) {
+      await revokeIncludedAiForStripeCustomer(customerId);
+    }
+  }
+  return written;
 }
 
 /** When a subscription gets deleted (cancellation completed), flip the
@@ -225,9 +246,13 @@ export async function revokeSubscription(sub: Stripe.Subscription): Promise<bool
     return false;
   }
 
-  return downgradeToFree({
+  const written = await downgradeToFree({
     userId,
     provider: "stripe",
     providerSubscriptionId: sub.id,
   });
+  if (subscriptionHasIncludedAi(sub)) {
+    await revokeIncludedAiForStripeCustomer(customerIdOf(sub));
+  }
+  return written;
 }

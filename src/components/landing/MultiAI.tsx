@@ -146,6 +146,29 @@ export function MultiAI({ dict }: { dict: Dict }) {
             ))}
           </div>
         )}
+
+        {/* Chips "propia suscripción" — dejan claro que TerminalSync no
+            reempaca las IAs: el usuario paga (o usa el free plan) directo
+            con cada provider y las conecta acá. Sin lock-in de facturación. */}
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12.5px] text-[var(--color-fg-muted)]">
+          {(dict.locale === "es"
+            ? [
+                "Funciona igual con 1, 2 o las 3 IAs",
+                "Usas tu propia suscripción de cada IA",
+                "Empieza con la que ya tienes — agrega otras cuando quieras",
+              ]
+            : [
+                "Works the same with 1, 2 or all 3 AIs",
+                "You use your own subscription for each AI",
+                "Start with the one you already have — add others anytime",
+              ]
+          ).map((chip) => (
+            <span key={chip} className="inline-flex items-center gap-1.5">
+              <Check size={12} className="text-[var(--color-ok)] shrink-0" strokeWidth={2.8} />
+              <span>{chip}</span>
+            </span>
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -8,7 +8,7 @@ import { ChromeExtensionTeaser } from "@/components/landing/ChromeExtensionTease
 import { DemosGrid } from "@/components/landing/DemosGrid";
 import { IntegrationsDiscovery } from "@/components/landing/IntegrationsDiscovery";
 import { Comparison } from "@/components/landing/Comparison";
-import { SavingsCalculator } from "@/components/landing/SavingsCalculator";
+import { CapacityCalculator } from "@/components/landing/CapacityCalculator";
 import { WhatYouCanBuild } from "@/components/landing/WhatYouCanBuild";
 import { Continuity } from "@/components/landing/Continuity";
 import { UseCases } from "@/components/landing/UseCases";
@@ -57,26 +57,28 @@ export default async function Landing({ params }: Props) {
   return (
     <>
       <StructuredData dict={d} lang={lang} />
-      {/* Orden del handoff (compactado y aprobado): Hero → Demos → Cómo
-          funciona → Lo que puedes resolver → Casos → Tu equipo + relay →
-          Calculadora → El cambio real → Comparativo → Chrome → Precios →
-          Seguridad → FAQ → Afiliados → CTA final → Footer. */}
+      {/* Orden del prototipo aprobado (2026-07-24):
+          Hero → Qué puedes construir → Demos → Integraciones discovery →
+          Cómo funciona → Carpetas reales → Casos → Tu equipo digital →
+          Memoria → Calculadora (capacidad) → El cambio real →
+          Categoría + tabla (colapsada) → Reseñas → Extensión Chrome →
+          Precios → Seguridad → FAQ → Afiliados → Footer. */}
       <Hero dict={d} />
+      <WhatYouCanBuild lang={lang} />
       <DemosGrid lang={lang} />
       <IntegrationsDiscovery lang={lang} />
       <HowItWorks lang={lang} />
       <RealFolders lang={lang} />
-      <WhatYouCanBuild lang={lang} />
       <UseCases lang={lang} />
       <MultiAI dict={d} />
       <Continuity lang={lang} />
       <MemoryPersistent dict={d} />
-      <SavingsCalculator dict={d} />
+      <CapacityCalculator lang={lang} />
       <BeforeAfter dict={d} />
       <CategoryBlock lang={lang} />
       <Comparison dict={d} />
-      <ChromeExtensionTeaser dict={d} />
       <Testimonials lang={lang} />
+      <ChromeExtensionTeaser dict={d} />
       <Pricing dict={d} />
       <Trust dict={d} />
       <FAQ dict={d} />

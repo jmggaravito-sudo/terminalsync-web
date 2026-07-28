@@ -142,6 +142,21 @@ function Page({ lang, variant }: { lang: Locale; variant: "dev" | "consumer" }) 
             {tCommon.retryDownload}
           </a>
         </p>
+
+        {/* Aviso Intel — se muestra SOLO acá (dentro del flujo de descarga),
+            nunca en el hero. Safari en ARM se reporta como Intel, así que no
+            podemos autodetectar; le preguntamos al visitante y damos el link
+            al DMG x86_64 (Macs 2020 y anteriores). */}
+        <p className="mt-2 text-[11px] text-[var(--color-fg-dim)]">
+          {tCommon.intelNote}{" "}
+          <a
+            className="underline underline-offset-2 hover:text-[var(--color-fg)]"
+            href="/api/download?arch=x86_64"
+            data-cta="gracias-intel"
+          >
+            {tCommon.intelLink}
+          </a>
+        </p>
       </section>
     </main>
   );
@@ -155,6 +170,8 @@ const COPY = {
       viewPricing: "Ver planes",
       exploreMarketplace: "Explorar el marketplace",
       retryDownload: "reintentar descarga",
+      intelNote: "¿Tu Mac es de 2020 o anterior (procesador Intel)?",
+      intelLink: "Descarga la versión para Mac Intel",
     },
     consumer: {
       eyebrow: "Descarga iniciada",
@@ -210,6 +227,8 @@ const COPY = {
       viewPricing: "See pricing",
       exploreMarketplace: "Explore marketplace",
       retryDownload: "retry download",
+      intelNote: "Is your Mac from 2020 or earlier (Intel processor)?",
+      intelLink: "Download the Intel Mac version",
     },
     consumer: {
       eyebrow: "Download started",
