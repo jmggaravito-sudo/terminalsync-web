@@ -26,6 +26,21 @@ function wantsIncludedAi(body: Body): boolean {
   return body.includedAi === true || body.addOns?.includes("included_ai") === true;
 }
 
+
+function publicBackUrl(raw: string | undefined, base: string, lang: "es" | "en"): string {
+  const fallback = `${base.replace(/\/+$/, "")}/${lang}/checkout/success`;
+  if (!raw) return fallback;
+  try {
+    const parsed = new URL(raw);
+    // Mercado Pago rejects app deep links like terminalsync://billing/success.
+    // Always send a public web URL; the app/account refresh handles the final state.
+    if (parsed.protocol === "https:" || parsed.protocol === "http:") return parsed.toString();
+  } catch {
+    // Invalid URL: fall back to the public success page.
+  }
+  return fallback;
+}
+
 function corsHeaders(origin: string | null): Record<string, string> {
   const allowed =
     origin &&
@@ -92,7 +107,7 @@ export async function POST(req: Request) {
 
   const lang: "es" | "en" = body.lang === "en" ? "en" : "es";
   const base = siteUrl();
-  const backUrl = body.successUrl ?? `${base}/${lang}/checkout/success`;
+  const backUrl = publicBackUrl(body.successUrl, base, lang);
 
   try {
     // Stamp the account key into external_reference (MP echoes it back verbatim,
