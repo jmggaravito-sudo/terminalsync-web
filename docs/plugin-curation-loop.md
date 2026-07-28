@@ -33,13 +33,21 @@ Its gate is `content/plugins/RULES.md`.
 
 ## Run-history registration
 
-Plugin runs reuse the same `/admin/loop-runs` panel as the Connector Loop. The
-current `loop_runs` table is connector-shaped (`connectors_found` /
-`connectors_skipped`, no loop-kind column), so **typed recording of plugin runs
-is a pending piece**: it needs a small Supabase migration adding a `kind`
-column (`'connectors' | 'plugins' | …`, default `'connectors'` for
-back-compat) plus the matching `--kind` flag in `scripts/record_loop_run.mjs`
-and the `/api/internal/loop-runs` route. Until that lands, note the plugin
-run's numbers (plugins added / candidates skipped) in the PR body. Do **not**
-record plugin runs as `connectors_found` — that would pollute the connector
-metric.
+Plugin runs reuse the same `/admin/loop-runs` panel as the Connector Loop.
+Record a completed run with the `--kind plugins` flag:
+
+```bash
+LOOP_RUNS_ENDPOINT="https://terminalsync.ai/api/internal/loop-runs" \
+LOOP_RUNS_WRITE_TOKEN="$LOOP_RUNS_WRITE_TOKEN" \
+node scripts/record_loop_run.mjs \
+  --found 2 \
+  --skipped 1 \
+  --pr "https://github.com/jmggaravito-sudo/terminalsync-web/pull/NNN" \
+  --kind plugins
+```
+
+`--kind` defaults to `connectors` when omitted (back-compat with the Connector
+Loop). Numbers: `--found` = Plugins added this run; `--skipped` = candidate
+products documented as SKIP (e.g. no official MCP yet). The `kind` column ships
+in migration `0023_loop_runs_kind.sql` — **that migration must be applied
+before the route change deploys**, or the write fails on a missing column.

@@ -8,7 +8,13 @@ interface LoopRunsPayload {
   connectorsFound?: unknown;
   connectorsSkipped?: unknown;
   prUrl?: unknown;
+  kind?: unknown;
 }
+
+/** Which Loop produced the run. Defaults to 'connectors' for back-compat with
+ *  the Connector Curation Loop, which never sent a `kind`. */
+const LOOP_KINDS = ["connectors", "plugins", "skills", "kits"] as const;
+type LoopKind = (typeof LOOP_KINDS)[number];
 
 function bearerToken(req: Request): string | null {
   const auth = req.headers.get("authorization");
@@ -72,6 +78,17 @@ export async function POST(req: Request) {
     }
   }
 
+  let kind: LoopKind = "connectors";
+  if (body.kind != null) {
+    if (typeof body.kind !== "string" || !LOOP_KINDS.includes(body.kind as LoopKind)) {
+      return NextResponse.json(
+        { error: `kind must be one of: ${LOOP_KINDS.join(", ")}` },
+        { status: 400 },
+      );
+    }
+    kind = body.kind as LoopKind;
+  }
+
   const sb = getSupabaseAdmin();
   if (!sb) return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
 
@@ -81,8 +98,9 @@ export async function POST(req: Request) {
       connectors_found: connectorsFound,
       connectors_skipped: connectorsSkipped,
       pr_url: prUrl,
+      kind,
     })
-    .select("id, ran_at, connectors_found, connectors_skipped, pr_url")
+    .select("id, ran_at, connectors_found, connectors_skipped, pr_url, kind")
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

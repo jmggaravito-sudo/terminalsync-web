@@ -21,7 +21,7 @@ const args = process.argv.slice(2);
 
 function usage(exitCode = 1) {
   const stream = exitCode === 0 ? process.stdout : process.stderr;
-  stream.write(`Usage: node scripts/record_loop_run.mjs --found N --skipped N --pr https://...\n`);
+  stream.write(`Usage: node scripts/record_loop_run.mjs --found N --skipped N --pr https://... [--kind connectors|plugins|skills|kits]\n`);
   process.exit(exitCode);
 }
 
@@ -57,13 +57,22 @@ function parsePrUrl() {
 
 if (args.includes("--help") || args.includes("-h")) usage(0);
 
+const LOOP_KINDS = ["connectors", "plugins", "skills", "kits"];
+
 let connectorsFound;
 let connectorsSkipped;
 let prUrl;
+let kind;
 try {
   connectorsFound = parseNonNegativeInteger("--found");
   connectorsSkipped = parseNonNegativeInteger("--skipped");
   prUrl = parsePrUrl();
+  // Which Loop this run belongs to. Defaults to 'connectors' for back-compat.
+  const rawKind = (readFlag("--kind") || "connectors").trim();
+  if (!LOOP_KINDS.includes(rawKind)) {
+    throw new Error(`--kind must be one of: ${LOOP_KINDS.join(", ")}`);
+  }
+  kind = rawKind;
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
   usage(1);
@@ -95,6 +104,7 @@ const res = await fetch(endpoint, {
     connectorsFound,
     connectorsSkipped,
     prUrl,
+    kind,
   }),
 });
 
