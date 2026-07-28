@@ -13,7 +13,7 @@ const CATS = [
   { key: "plugins", es: "Plugins", en: "Plugins" },
   { key: "stacks", es: "Kits", en: "Kits" },
   { key: "connectors", es: "Conectores", en: "Connectors" },
-  { key: "skills", es: "Asistentes", en: "Assistants" },
+  { key: "skills", es: "Skills", en: "Skills" },
   { key: "cli-tools", es: "Herramientas CLI", en: "CLI tools" },
 ] as const;
 
