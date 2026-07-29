@@ -428,14 +428,14 @@ const WORKFLOW_META: Record<
   "6LuNDI8Hs90WyiUO": {
     project: "TerminalSync",
     description:
-      "Connectors & Skills Discovery — scrapea YouTube + X buscando productos nuevos para listar en el marketplace.",
-    cadence: "diario",
+      "Connectors & Skills Discovery — NO es prioridad para el nicho actual. Era para descubrir herramientas/listings del marketplace; mantener archivado salvo que volvamos a crecer catálogo de conectores.",
+    cadence: "archivado / no usar para outreach",
   },
   kOrTycM21z6YxsmG: {
     project: "TerminalSync",
     description:
-      "Thunderbit Discovery (multi-source) — scraper alterno con Thunderbit + fallback gracioso si falla la API.",
-    cadence: "diario",
+      "Thunderbit Discovery (multi-source) — NO es prioridad para empresarios/agencias. Es scraper alterno de discovery técnico; mantener archivado para no meter ruido.",
+    cadence: "archivado / backup",
   },
   lmbQv6R17dqY8pvO: {
     project: "TerminalSync",
@@ -511,8 +511,10 @@ const WORKFLOW_META: Record<
   KpqQvgr6H1C2O4Oa: {
     project: "TerminalSync",
     description:
-      "Bundle Curator — Claude analiza el catálogo y propone nuevos Stack Packs (bundles) por persona/pain point. Resultado en bundle_proposals para aprobar.",
+      "Bundle Curator — SÍ puede servir, pero como research de oferta: propone paquetes por persona/dolor para vender mejor a empresarios/agencias. No es lead gen ni seguimiento.",
     cadence: "diario",
+    resultUrl: "/admin-bypass/bundles/proposals",
+    resultLabel: "Ver ideas",
   },
   bIQyZUPQOvmVXwj5: {
     project: "TerminalSync",
