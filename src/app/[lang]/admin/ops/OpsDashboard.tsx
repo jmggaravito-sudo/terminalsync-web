@@ -578,7 +578,7 @@ function WorkflowCard({
               href={resultHref}
               target={resultIsExternal ? "_blank" : undefined}
               rel={resultIsExternal ? "noopener noreferrer" : undefined}
-              className="inline-flex items-center gap-1 rounded-lg bg-[var(--color-accent)]/15 hover:bg-[var(--color-accent)]/25 border border-[var(--color-accent)]/40 px-2.5 py-1.5 text-[11px] font-medium text-[var(--color-accent)] transition-colors"
+              className="admin-ops-action-button inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition-colors"
               title={isEs ? "Ver resultados acumulados" : "View accumulated results"}
             >
               <ExternalLink size={11} />
@@ -589,7 +589,7 @@ function WorkflowCard({
             href={editorUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel-2)]/60 hover:bg-[var(--color-panel-2)] px-2.5 py-1.5 text-[11px] font-medium text-[var(--color-fg-muted)] transition-colors"
+            className="admin-ops-action-button inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition-colors"
             title={isEs ? "Abrir en n8n" : "Open in n8n"}
           >
             <ExternalLink size={11} />
