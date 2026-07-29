@@ -564,6 +564,12 @@ function WorkflowCard({
           {!compact && isInfluencerCrmWorkflow(wf.id) && (
             <InfluencerCrmBlueprint isEs={isEs} />
           )}
+          {!compact && isReplyTrackerWorkflow(wf.id) && (
+            <ReplyTrackerBlueprint isEs={isEs} />
+          )}
+          {!compact && isSenderWorkflow(wf.id) && (
+            <SenderBlueprint isEs={isEs} />
+          )}
           {!compact && wf.results && (
             <ResultsPanel results={wf.results} workflowId={wf.id} isEs={isEs} />
           )}
@@ -780,6 +786,77 @@ function ResultsPanel({
 
 function isInfluencerCrmWorkflow(workflowId: string) {
   return workflowId === "7ooGFm2XvT8SLdde";
+}
+
+function isReplyTrackerWorkflow(workflowId: string) {
+  return workflowId === "jINNqL72z9yNcKx6";
+}
+
+function isSenderWorkflow(workflowId: string) {
+  return workflowId === "21DqwyeruJlFNqgW";
+}
+
+function ReplyTrackerBlueprint({ isEs }: { isEs: boolean }) {
+  const rows = isEs
+    ? [
+        ["Para qué sirve", "Que ninguna respuesta de influencer se pierda: clasifica interés, te avisa y manda el lead al pipeline."],
+        ["Dónde debe terminar", "GHL como pipeline comercial + Telegram como alerta rápida + IA como ayuda para responder."],
+        ["Estado real", "La web ya manda el evento cuando marcás Respondió; si falta OUTREACH_REPLY_WEBHOOK_URL, GHL/Telegram queda pendiente."],
+      ]
+    : [
+        ["What it does", "Prevents influencer replies from getting lost: classifies interest, alerts you, and pushes the lead to pipeline."],
+        ["Where it should land", "GHL as the sales pipeline + Telegram as the quick alert + AI as response helper."],
+        ["Real status", "The web emits the Responded event; if OUTREACH_REPLY_WEBHOOK_URL is missing, GHL/Telegram is still pending."],
+      ];
+  return (
+    <div className="mt-3 rounded-lg border border-purple-500/35 bg-purple-500/10 p-3">
+      <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-purple-300">
+        {isEs ? "Pieza clave de seguimiento" : "Key follow-up piece"}
+      </p>
+      <div className="mt-2 grid gap-2 md:grid-cols-3">
+        {rows.map(([title, body]) => (
+          <div key={title} className="rounded-md border border-[var(--color-border)] bg-[var(--color-panel)] px-2.5 py-2">
+            <p className="text-[12px] font-semibold text-[var(--color-fg-strong)]">{title}</p>
+            <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">{body}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-2 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">
+        {isEs
+          ? "Mi recomendación: mantenerlo. Es el que convierte una respuesta en una oportunidad real; sin este, el CRM captura leads pero vos seguís haciendo seguimiento a mano."
+          : "Recommendation: keep it. It turns a reply into a real opportunity; without it the CRM captures leads but follow-up stays manual."}
+      </p>
+    </div>
+  );
+}
+
+function SenderBlueprint({ isEs }: { isEs: boolean }) {
+  const rows = isEs
+    ? [
+        ["Para qué sirve", "Enviar emails/DMs desde los leads aprobados, usando plantillas editables."],
+        ["Por qué está pausado", "Para no disparar outreach antes de revisar mensajes, nicho y canales."],
+        ["Cuándo activarlo", "Cuando la cola tenga leads priorizados y confirmemos templates de agencia/empresario."],
+      ]
+    : [
+        ["What it does", "Sends emails/DMs from approved leads using editable templates."],
+        ["Why paused", "So outreach does not launch before messages, niche, and channels are reviewed."],
+        ["When to enable", "When the queue has prioritized leads and agency/business-owner templates are approved."],
+      ];
+  return (
+    <div className="mt-3 rounded-lg border border-amber-500/35 bg-amber-500/10 p-3">
+      <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-amber-300">
+        {isEs ? "Sender separado, no mezclar con captura" : "Separate sender, do not mix with capture"}
+      </p>
+      <div className="mt-2 grid gap-2 md:grid-cols-3">
+        {rows.map(([title, body]) => (
+          <div key={title} className="rounded-md border border-[var(--color-border)] bg-[var(--color-panel)] px-2.5 py-2">
+            <p className="text-[12px] font-semibold text-[var(--color-fg-strong)]">{title}</p>
+            <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">{body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function InfluencerCrmBlueprint({ isEs }: { isEs: boolean }) {

@@ -19,6 +19,7 @@ export const revalidate = 0;
 
 const N8N_URL = process.env.N8N_URL ?? "https://n8n.nexflowai.net";
 const N8N_API_KEY = process.env.N8N_API_KEY ?? "";
+const OUTREACH_REPLY_WEBHOOK_URL = process.env.OUTREACH_REPLY_WEBHOOK_URL ?? "";
 
 /**
  * Curated metadata per workflow ID. Lives here (not in Supabase) because
@@ -472,9 +473,12 @@ const WORKFLOW_META: Record<
   },
   jINNqL72z9yNcKx6: {
     project: "TerminalSync",
-    description:
-      "Tracker · Replies — pieza de respuestas: cuando alguien contesta al outreach, debe clasificar la respuesta, crear/actualizar el contacto en GHL, moverlo en el pipeline y avisarte por Telegram para que la IA te ayude a decidir qué responder.",
+    description: OUTREACH_REPLY_WEBHOOK_URL
+      ? "Tracker · Replies — SÍ lo necesitamos: es el puente cuando alguien responde. Debe clasificar la respuesta, crear/actualizar contacto en GHL, mover pipeline, avisarte por Telegram y preparar análisis IA para que sepas qué contestar."
+      : "Tracker · Replies — SÍ lo necesitamos, pero todavía falta conectar el webhook OUTREACH_REPLY_WEBHOOK_URL. Sin eso, marcar 'Respondió' queda en Supabase/local y NO empuja todavía a GHL/Telegram/IA.",
     cadence: "cuando llega una respuesta",
+    resultUrl: "/admin/ops/outreach",
+    resultLabel: "Ver cola",
   },
   FVj4SmRqgDwlAAZ8: {
     project: "TerminalSync",
@@ -485,8 +489,10 @@ const WORKFLOW_META: Record<
   "21DqwyeruJlFNqgW": {
     project: "TerminalSync",
     description:
-      "Sender · Influencer Emails/DMs (PAUSED) — pieza separada de envío. Debe tomar influencers aprobados del CRM, usar las plantillas y registrar contacto. Pausado hasta que decidamos lanzar outreach.",
+      "Sender · Influencer Emails/DMs (PAUSED) — SÍ lo necesitamos, pero pausado a propósito. Es la pieza que enviará emails/DMs usando plantillas editables y registrará contacto; no debe mezclarse con la captura ni con replies.",
     cadence: "pausado hasta launch",
+    resultUrl: "/admin/ops/outreach",
+    resultLabel: "Ver cola",
   },
   vN2iycD5AI2xRXqF: {
     project: "TerminalSync",
