@@ -893,21 +893,41 @@ const WORKFLOW_RESULTS_SOURCE: Record<
       badge: r.review_status ? String(r.review_status) : undefined,
     }),
   },
-  // Re-enrich Influencers DB → uses updated_at to surface fresh enrichments
+  // Re-enrich Influencers DB → agency_influencers
+  // This flow refreshes the same CRM table used by Captura diaria. It
+  // should NOT read discovery_connectors; that old mapping made the card
+  // show marketplace/connector rows instead of influencer contacts.
   "5JJPordwuTwaPPPK": {
-    table: "discovery_connectors",
+    table: "agency_influencers",
     timeField: "updated_at",
     select:
-      "product_name,creator_name,creator_handle,creator_email,source_platform,source_url,review_status,updated_at",
-    label: "Filas re-enriquecidas",
-    unit: "filas",
-    mapItem: (r) => ({
-      title: String(r.creator_name ?? r.creator_handle ?? r.product_name ?? "(sin nombre)"),
-      subtitle: [r.creator_email, r.source_platform].filter(Boolean).join(" · ") || undefined,
-      url: r.source_url ? String(r.source_url) : undefined,
-      timestamp: String(r.updated_at ?? ""),
-      badge: r.review_status ? String(r.review_status) : undefined,
-    }),
+      "name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,bio_link_url,website_url,subscribers,target_audience,language,classification_score,status,updated_at",
+    label: "Influencers refrescados",
+    unit: "influencers",
+    itemsLimit: 10,
+    mapItem: (r) => {
+      const score =
+        typeof r.classification_score === "number"
+          ? `${Math.round((r.classification_score as number) * 100)}%`
+          : null;
+      const langTag = r.language ? `🌐 ${String(r.language).toUpperCase()}` : null;
+      return {
+        title: String(r.name ?? r.handle ?? "(sin nombre)"),
+        subtitle: [
+          r.target_audience,
+          langTag,
+          score ? `score ${score}` : null,
+          r.subscribers ? `${(r.subscribers as number).toLocaleString()} subs` : null,
+          r.platform,
+        ]
+          .filter(Boolean)
+          .join(" · ") || undefined,
+        url: r.source_url ? String(r.source_url) : undefined,
+        timestamp: String(r.updated_at ?? ""),
+        badge: r.status ? String(r.status) : undefined,
+        contacts: buildContacts(r),
+      };
+    },
   },
   // No-Dev Prospects → prospects_no_dev
   lmbQv6R17dqY8pvO: {
