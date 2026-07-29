@@ -44,7 +44,7 @@ const fmtSubs = (n: number | null) => {
 type Counts = Record<OpStatus, number>;
 const EMPTY_COUNTS: Counts = { pendiente: 0, enviado: 0, respondio: 0, descartado: 0 };
 
-export default function OutreachQueue({ lang: _lang }: { lang: string }) {
+export default function OutreachQueue({ lang }: { lang: string }) {
   const [auth, setAuth] = useState<AuthState>("checking");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [counts, setCounts] = useState<Counts>(EMPTY_COUNTS);
@@ -205,7 +205,7 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
       <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "#e6edf3" }}>
         <p>Iniciá sesión con tu cuenta admin.</p>
         <p style={{ marginTop: 8, color: "#8b98a8", fontSize: 13 }}>
-          Ir a <a href="/es/login" style={{ color: "#3fb950" }}>/es/login</a> → magic link → volvé acá.
+          Ir a <a href={`/${lang}/login?next=${encodeURIComponent(`/${lang}/admin/ops/outreach`)}`} style={{ color: "#3fb950" }}>{`/${lang}/login`}</a> → Google/magic link → volvés acá.
         </p>
       </div>
     );
