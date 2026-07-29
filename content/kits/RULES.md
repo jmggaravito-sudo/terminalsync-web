@@ -58,6 +58,10 @@ A kit must answer these questions clearly:
 
 If the answer is only "these are good tools", it is not a kit.
 
+## Two-PR app mirror gate
+
+Every kit Loop run that publishes or changes marketplace-visible content must produce the two PRs described in `docs/integration-loop-two-pr-policy.md`: one landing/web PR and one app mirror PR. The app PR proves the desktop `Integraciones`/marketplace surface renders, installs, or explains the item correctly. If automation cannot create the app PR, the web PR must mark the app mirror as blocked and the item is not fully ready.
+
 ## File structure
 
 Every published kit must ship in both languages with strict ES/EN parity:

@@ -11,6 +11,7 @@ name: Connector Curation Loop
 # Required repo secrets:
 #   ANTHROPIC_API_KEY        Direct Claude API key for anthropics/claude-code-action@v1.
 #   LOOP_RUNS_WRITE_TOKEN    Shared bearer token accepted by /api/internal/loop-runs.
+#   TS_CROSS_REPO_TOKEN      Optional PAT/app token that can create the required app mirror PR in jmggaravito-sudo/terminal-sync.
 
 on:
   schedule:
@@ -68,6 +69,9 @@ jobs:
           LOOP_RUNS_WRITE_TOKEN: ${{ secrets.LOOP_RUNS_WRITE_TOKEN }}
           LOOP_FOCUS: ${{ inputs.focus }}
           LOOP_DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          TERMINALSYNC_APP_REPO: jmggaravito-sudo/terminal-sync
+          TERMINALSYNC_APP_BASE_BRANCH: release/v0.2.18-lab
+          TS_CROSS_REPO_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           base_branch: main
@@ -95,13 +99,16 @@ jobs:
             5. Do not ship PayPal unless the 8h-token + license/repo blockers are resolved. Do not ship Wix unless the toolset is no longer dev-docs-only.
             6. If you ship a connector, create strict EN/ES parity content, official logo or documented fallback, and update SOURCES.md.
             7. If nothing is shippable, still update SOURCES.md with a dated run note explaining what official sources were checked and why candidates were skipped/deferred. That gives the run a reviewable PR and makes the result visible.
-            8. Run the relevant validation before opening the PR: npm test at minimum; if only markdown/content changed and the full suite is unexpectedly blocked by unrelated environment issues, run the marketplace/content tests you can and document the blocker in the PR body.
-            9. Open exactly one draft PR. Never merge it.
-            10. After the draft PR exists and this is not a dry run, register the run history using scripts/record_loop_run.mjs with the actual counts:
-                LOOP_RUNS_ENDPOINT="$LOOP_RUNS_ENDPOINT" LOOP_RUNS_WRITE_TOKEN="$LOOP_RUNS_WRITE_TOKEN" node scripts/record_loop_run.mjs --kind connectors --found <connectors_added> --skipped <candidates_skipped_or_deferred> --pr <draft_pr_url>
+            8. Run the relevant validation before opening PRs: npm test at minimum; if only markdown/content changed and the full suite is unexpectedly blocked by unrelated environment issues, run the marketplace/content tests you can and document the blocker in the PR bodies.
+            9. Open exactly one landing/web draft PR in this repo. Never merge it.
+            10. Open exactly one app mirror draft PR in $TERMINALSYNC_APP_REPO against $TERMINALSYNC_APP_BASE_BRANCH, following docs/integration-loop-two-pr-policy.md. Use TS_CROSS_REPO_TOKEN for the app repo if present; if it is missing or unauthorized, mark the web PR body as `App mirror PR: blocked — missing cross-repo token` and do not report the integration as fully ready.
+            11. Link both PRs in their bodies when both exist. The app PR body must include `## Lo que el bot de soporte debe saber`.
+            12. After the landing/web draft PR exists and this is not a dry run, register the run history using scripts/record_loop_run.mjs with the actual counts and include the app PR URL or blocker in the log:
+                LOOP_RUNS_ENDPOINT="$LOOP_RUNS_ENDPOINT" LOOP_RUNS_WRITE_TOKEN="$LOOP_RUNS_WRITE_TOKEN" node scripts/record_loop_run.mjs --kind connectors --found <connectors_added> --skipped <candidates_skipped_or_deferred> --pr <landing_web_draft_pr_url>
 
             Expected final answer in the workflow log:
-            - PR URL
+            - Landing/web PR URL
+            - App mirror PR URL or blocker
             - connectors added count
             - skipped/deferred count
             - where results are visible: /admin/ops/loop-runs

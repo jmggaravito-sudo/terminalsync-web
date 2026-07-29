@@ -18,8 +18,14 @@ auto-promotion pipeline and must not be used as the Loop entrypoint.
 6. Source the **official vendor logo** for each new connector (SOURCES.md rule #9) and vendorize it under `public/connectors/`. When the official logo can't be obtained in the run's environment, ship the TS fallback, record it in the "Logos pendientes" backlog of `content/connectors/SOURCES.md`, and flag it in the PR — a fallback logo is a debt the **next** Loop run must close, not a finished state.
 7. Document SKIPs in `content/connectors/SOURCES.md`.
 8. Before finishing, clear any items in the "Logos pendientes" backlog whose official logo is now obtainable — replacing a fallback counts toward the run.
-9. Validate the change and open one draft PR.
-10. Stop. Do not merge and do not push to `main`.
+9. Validate the change.
+10. Open the **landing/web draft PR** in `terminalsync-web`.
+11. Open the **app mirror draft PR** in `terminal-sync` following `docs/integration-loop-two-pr-policy.md`. This is required even when the app consumes the remote catalog automatically; prove or adjust the Integraciones behavior.
+12. Stop. Do not merge and do not push to `main`.
+
+## Two-PR app mirror gate
+
+Connector runs must follow `docs/integration-loop-two-pr-policy.md`: every shipped connector needs a landing/web PR **and** an app mirror PR. The web PR changes the catalog/report; the app PR verifies or adjusts the desktop Integraciones surface. Do not call a connector loop fully ready until both PRs exist, or the web PR explicitly marks the app PR as blocked by missing cross-repo automation credentials.
 
 ## Required run-history registration
 
