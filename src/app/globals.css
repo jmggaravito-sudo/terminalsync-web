@@ -386,14 +386,16 @@ body {
    black backgrounds with white text so the internal dashboard remains readable
    in the light theme. Scoped to the Ops page only. */
 .admin-ops-readable-buttons button,
-.admin-ops-readable-buttons .admin-ops-nav-button {
+.admin-ops-readable-buttons .admin-ops-nav-button,
+.admin-ops-readable-buttons .admin-ops-action-button {
   background: #050505 !important;
   color: #ffffff !important;
   border-color: #262626 !important;
 }
 
 .admin-ops-readable-buttons button:hover,
-.admin-ops-readable-buttons .admin-ops-nav-button:hover {
+.admin-ops-readable-buttons .admin-ops-nav-button:hover,
+.admin-ops-readable-buttons .admin-ops-action-button:hover {
   background: #171717 !important;
   color: #ffffff !important;
   border-color: #404040 !important;
@@ -406,7 +408,8 @@ body {
 }
 
 .admin-ops-readable-buttons button svg,
-.admin-ops-readable-buttons .admin-ops-nav-button svg {
+.admin-ops-readable-buttons .admin-ops-nav-button svg,
+.admin-ops-readable-buttons .admin-ops-action-button svg {
   color: currentColor !important;
 }
 
@@ -446,6 +449,12 @@ body {
 .admin-ops-readable-buttons a:hover {
   color: #002f7a !important;
   text-decoration: underline;
+}
+
+.admin-ops-readable-buttons a.admin-ops-action-button,
+.admin-ops-readable-buttons a.admin-ops-action-button:hover {
+  color: #ffffff !important;
+  text-decoration: none !important;
 }
 
 .admin-ops-readable-buttons .admin-ops-error-count {
