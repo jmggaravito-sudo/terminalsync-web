@@ -83,8 +83,15 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
   }, []);
 
   useEffect(() => {
-    void fetchLeads(filter);
+    const watchdog = window.setTimeout(() => {
+      setAuth((current) => (current === "checking" ? "anon" : current));
+      setLoading(false);
+    }, 10_000);
+
+    void fetchLeads(filter).finally(() => window.clearTimeout(watchdog));
     setActiveId(null);
+
+    return () => window.clearTimeout(watchdog);
   }, [filter, fetchLeads]);
 
   // ── Derived: filtered list (client-side track/lang filter on top of server-fetched status) ──
