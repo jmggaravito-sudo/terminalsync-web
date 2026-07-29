@@ -440,7 +440,7 @@ const WORKFLOW_META: Record<
   lmbQv6R17dqY8pvO: {
     project: "TerminalSync",
     description:
-      "No-Dev Prospects — busca usuarios potenciales que NO son devs en Reddit, Indie Hackers y forums. Te ayuda a entender el mercado del lado consumidor.",
+      "No-Dev Prospects — research, no flujo ganador de outreach. Busca empresarios/no-devs en Reddit, Indie Hackers y forums para entender dolores y lenguaje; si no produce prospects, se mantiene solo como radar de mensajes/ideas.",
     cadence: "diario",
   },
   Gifqx1Fjbtp6z1Ud: {
