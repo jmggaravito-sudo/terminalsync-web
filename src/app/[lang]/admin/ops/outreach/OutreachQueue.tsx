@@ -11,7 +11,7 @@ type AuthState = "checking" | "anon" | "forbidden" | "ready";
 // OUTREACH QUEUE — cola de contacto manual para TerminalSync
 // Lee de Supabase (agency_influencers) vía /api/outreach/queue.
 // Estado operativo local: pendiente / enviado / respondió / descartado.
-// "respondió" = handoff a GHL (estado comercial vive allá).
+// "respondió" is only the local operating state until the GHL reply bridge is wired.
 // ─────────────────────────────────────────────────────────────
 
 const STATUS_META: Record<OpStatus, { label: string }> = {
@@ -155,10 +155,17 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
           body: JSON.stringify(body),
         });
         const json = await res.json();
-        if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+        if (!res.ok) throw new Error(json.error || json.replyBridge?.error || `HTTP ${res.status}`);
 
         // Refetch the current filter to reflect new counts and remove the moved item.
         await fetchLeads(filter);
+        if (status === "respondio" && json.replyBridge?.status !== "sent") {
+          setError(
+            json.replyBridge?.status === "not_configured"
+              ? "Marcado como respondió en Supabase. GHL/Telegram sigue pendiente: falta configurar OUTREACH_REPLY_WEBHOOK_URL."
+              : "Marcado como respondió, pero no pude confirmar el puente GHL/Telegram.",
+          );
+        }
         setActiveId(next ? next.id : null);
       } catch (e) {
         const msg = e instanceof Error ? e.message : "unknown error";
@@ -422,7 +429,7 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
                   disabled={saving}
                   onClick={() => setStatus(active.id, "respondio")}
                 >
-                  Respondió → GHL
+                  Respondió (GHL pendiente)
                 </button>
                 <button
                   className="btn disc"

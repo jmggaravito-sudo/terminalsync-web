@@ -407,7 +407,7 @@ const WORKFLOW_META: Record<
   "7ooGFm2XvT8SLdde": {
     project: "TerminalSync",
     description:
-      "Captura diaria Influencers (YT + X) — busca creators que hablan a dueños de agencias (marketing, SaaS, growth). Un Gemini classifier dentro del flow filtra y solo guarda los agency-targeted en la tabla agency_influencers. NO manda emails — pausado hasta 'launch'.",
+      "CRM/Radar de Influencers YT+X para agencias — busca creators que hablan a dueños de agencias, los filtra con IA y guarda los buenos en Supabase (agency_influencers). Este flujo NO envía correos ni DMs: su trabajo es capturar, priorizar y alimentar el seguimiento.",
     cadence: "diario 9am COL",
   },
   "3ad53aIJo6QA1vI0": {
@@ -419,7 +419,7 @@ const WORKFLOW_META: Record<
   "5JJPordwuTwaPPPK": {
     project: "TerminalSync",
     description:
-      "Re-enrich Influencers DB — refresca emails y datos de contacto de los creators ya capturados. Mantiene la DB actualizada para cuando lances outreach.",
+      "Re-enrich Influencers DB — segunda pieza del seguimiento: vuelve sobre los influencers capturados y refresca emails, perfiles y datos de contacto para que el CRM no se quede viejo.",
     cadence: "cada 6 horas",
   },
   "6LuNDI8Hs90WyiUO": {
@@ -473,7 +473,7 @@ const WORKFLOW_META: Record<
   jINNqL72z9yNcKx6: {
     project: "TerminalSync",
     description:
-      "Tracker · Replies — escucha respuestas a los emails de outreach (cuando lo lances) y las clasifica.",
+      "Tracker · Replies — pieza de respuestas: cuando alguien contesta al outreach, debe clasificar la respuesta, crear/actualizar el contacto en GHL, moverlo en el pipeline y avisarte por Telegram para que la IA te ayude a decidir qué responder.",
     cadence: "cuando llega una respuesta",
   },
   FVj4SmRqgDwlAAZ8: {
@@ -485,8 +485,8 @@ const WORKFLOW_META: Record<
   "21DqwyeruJlFNqgW": {
     project: "TerminalSync",
     description:
-      "Sender · Influencer Emails (PAUSED) — el envío real de emails a creators. PAUSADO hasta el launch.",
-    cadence: "deprecated (pausado)",
+      "Sender · Influencer Emails/DMs (PAUSED) — pieza separada de envío. Debe tomar influencers aprobados del CRM, usar las plantillas y registrar contacto. Pausado hasta que decidamos lanzar outreach.",
+    cadence: "pausado hasta launch",
   },
   vN2iycD5AI2xRXqF: {
     project: "TerminalSync",
@@ -845,7 +845,7 @@ const WORKFLOW_RESULTS_SOURCE: Record<
       "name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,bio_link_url,subscribers,target_audience,language,classification_score,classification_reason,status,discovered_at",
     label: "Influencers agency-targeted",
     unit: "influencers",
-    itemsLimit: 10,
+    itemsLimit: 25,
     mapItem: (r) => {
       const score =
         typeof r.classification_score === "number"
