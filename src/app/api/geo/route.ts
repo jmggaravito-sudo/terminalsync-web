@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { corsHeaders, preflight } from "@/lib/cors";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,6 +12,10 @@ export const dynamic = "force-dynamic";
  * "unknown" and default to their safe branch (e.g. hide a country-specific
  * payment button rather than show it everywhere).
  */
+export function OPTIONS(req: Request) {
+  return preflight(req, "GET, OPTIONS");
+}
+
 export function GET(req: Request) {
   const country =
     req.headers.get("x-vercel-ip-country") ??
@@ -18,6 +23,11 @@ export function GET(req: Request) {
     null;
   return NextResponse.json(
     { country: country ? country.toUpperCase() : null },
-    { headers: { "Cache-Control": "no-store" } },
+    {
+      headers: {
+        ...corsHeaders(req.headers.get("origin"), "GET, OPTIONS"),
+        "Cache-Control": "no-store",
+      },
+    },
   );
 }
