@@ -407,11 +407,14 @@ function WorkflowCard({
     : null;
   const resultIsExternal = !!wf.resultUrl && !wf.resultUrl.startsWith("/");
 
-  // Decide overall mood: red if errors today, amber if paused, green if active.
+  // Decide overall mood from the latest run, not from any older error in
+  // the last 24h. If a workflow failed earlier but recovered later, the card
+  // should read as working and only mention the old error in the run history.
+  const latestFailed = wf.lastExec?.status === "error";
   const mood: "ok" | "warn" | "err" | "off" =
     !wf.active
       ? "off"
-      : wf.todayError > 0
+      : latestFailed
       ? "err"
       : wf.todayCount > 0
       ? "ok"
@@ -528,7 +531,12 @@ function WorkflowCard({
                   {wf.todayError > 0 && (
                     <>
                       {" "}
-                      · <span className="text-red-400">✗ {wf.todayError}</span>
+                      · <span className="admin-ops-error-count text-red-400">✗ {wf.todayError}</span>
+                      {!latestFailed && (
+                        <span className="admin-ops-recovered-note ml-1">
+                          {isEs ? "(recuperado)" : "(recovered)"}
+                        </span>
+                      )}
                     </>
                   )}
                 </>
