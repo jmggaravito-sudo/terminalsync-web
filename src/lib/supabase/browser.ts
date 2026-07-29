@@ -39,8 +39,19 @@ export function getSupabaseBrowser(): SupabaseClient | null {
 export async function getAccessToken(): Promise<string | null> {
   const sb = getSupabaseBrowser();
   if (!sb) return null;
-  const { data } = await sb.auth.getSession();
-  return data.session?.access_token ?? null;
+
+  // Supabase auth can occasionally hang in browser storage/session recovery.
+  // Admin pages should fail open to a normal 401/login state instead of
+  // staying forever on "Verificando sesión…".
+  const timeout = new Promise<null>((resolve) => {
+    window.setTimeout(() => resolve(null), 8_000);
+  });
+  const session = sb.auth
+    .getSession()
+    .then(({ data }) => data.session?.access_token ?? null)
+    .catch(() => null);
+
+  return Promise.race([session, timeout]);
 }
 
 export async function authedFetch(
