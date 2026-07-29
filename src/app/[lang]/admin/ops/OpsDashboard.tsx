@@ -561,8 +561,11 @@ function WorkflowCard({
           {wf.lastError && <ErrorBanner err={wf.lastError} isEs={isEs} />}
           {/* Live business results — only on the detailed (TerminalSync)
               view. Non-TS projects collapse to a health-only card. */}
+          {!compact && isInfluencerCrmWorkflow(wf.id) && (
+            <InfluencerCrmBlueprint isEs={isEs} />
+          )}
           {!compact && wf.results && (
-            <ResultsPanel results={wf.results} isEs={isEs} />
+            <ResultsPanel results={wf.results} workflowId={wf.id} isEs={isEs} />
           )}
           {!compact && wf.recent.length > 0 && (
             <RecentRunsPanel runs={wf.recent} n8nUrl={n8nUrl} isEs={isEs} />
@@ -650,12 +653,17 @@ function ErrorBanner({
  */
 function ResultsPanel({
   results,
+  workflowId,
   isEs,
 }: {
   results: OpsResults;
+  workflowId: string;
   isEs: boolean;
 }) {
   const hasItems = results.items.length > 0;
+  const contactCounts = countVisibleContacts(results.items);
+  const contactTotal = Object.values(contactCounts).reduce((sum, n) => sum + n, 0);
+  const isInfluencerOutreach = isInfluencerCrmWorkflow(workflowId);
   return (
     <div className="mt-3 rounded-lg border border-[var(--color-accent)]/25 bg-[var(--color-accent)]/5 p-3">
       <header className="flex items-baseline justify-between gap-3 flex-wrap">
@@ -679,6 +687,36 @@ function ResultsPanel({
           </span>
         </div>
       </header>
+
+      {isInfluencerOutreach && hasItems && (
+        <div className="mt-2.5 space-y-2 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-2.5">
+          <div>
+            <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-emerald-300">
+              {isEs ? "Contactos listos para outreach" : "Contacts ready for outreach"}
+            </p>
+            <div className="mt-1.5 flex flex-wrap gap-1.5 text-[11px] font-mono">
+              <ContactCount label="Email" value={contactCounts.email ?? 0} />
+              <ContactCount label="IG" value={contactCounts.instagram ?? 0} />
+              <ContactCount label="X" value={contactCounts.twitter ?? 0} />
+              <ContactCount label="LinkedIn" value={contactCounts.linkedin ?? 0} />
+              <ContactCount label="TikTok" value={contactCounts.tiktok ?? 0} />
+              <ContactCount label="Bio link" value={contactCounts.biolink ?? 0} />
+            </div>
+            <p className="mt-1.5 text-[11.5px] text-[var(--color-fg-muted)]">
+              {isEs
+                ? `Mostrando ${results.items.length} leads accionables de ${results.total.toLocaleString("es-CO")}. Estrategia: DM-first; los emails son una parte, no todo el outreach.`
+                : `Showing ${results.items.length} actionable leads out of ${results.total.toLocaleString("en-US")}. Strategy: DM-first; emails are only one part of outreach.`}
+              {contactTotal > 0 ? ` ${isEs ? "Contactos visibles:" : "Visible contacts:"} ${contactTotal}.` : ""}
+            </p>
+          </div>
+          <div className="rounded-md border border-amber-500/35 bg-amber-500/10 px-2.5 py-2 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">
+            <strong className="text-amber-300">{isEs ? "Importante:" : "Important:"}</strong>{" "}
+            {isEs
+              ? "esta tarjeta es la base de seguimiento. El envío vive en el Sender pausado; las respuestas deben entrar por el Tracker de replies hacia GHL + Telegram + IA."
+              : "this card is the tracking base. Sending lives in the paused Sender; replies should flow through the Replies tracker into GHL + Telegram + AI."}
+          </div>
+        </div>
+      )}
 
       {hasItems ? (
         <ul className="mt-2.5 space-y-1.5">
@@ -737,6 +775,63 @@ function ResultsPanel({
         </p>
       )}
     </div>
+  );
+}
+
+function isInfluencerCrmWorkflow(workflowId: string) {
+  return workflowId === "7ooGFm2XvT8SLdde";
+}
+
+function InfluencerCrmBlueprint({ isEs }: { isEs: boolean }) {
+  const steps = isEs
+    ? [
+        ["1. Captura", "YT+X → IA filtra → Supabase/agency_influencers"],
+        ["2. Envío", "Sender separado para emails/DMs, hoy pausado"],
+        ["3. Respuestas", "Replies tracker → GHL pipeline + Telegram + análisis IA"],
+      ]
+    : [
+        ["1. Capture", "YT+X → AI filter → Supabase/agency_influencers"],
+        ["2. Sending", "Separate email/DM sender, currently paused"],
+        ["3. Replies", "Replies tracker → GHL pipeline + Telegram + AI analysis"],
+      ];
+
+  return (
+    <div className="mt-3 rounded-lg border border-sky-500/35 bg-sky-500/10 p-3">
+      <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-sky-300">
+        {isEs ? "Diseño correcto del flujo ganador" : "Winning-flow architecture"}
+      </p>
+      <div className="mt-2 grid gap-2 md:grid-cols-3">
+        {steps.map(([title, body]) => (
+          <div key={title} className="rounded-md border border-[var(--color-border)] bg-[var(--color-panel)] px-2.5 py-2">
+            <p className="text-[12px] font-semibold text-[var(--color-fg-strong)]">{title}</p>
+            <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">{body}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-2 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">
+        {isEs
+          ? "Meta: que esta tarjeta sea tu mano derecha para decidir a quién contactar, por dónde, con qué mensaje y qué pasó después; GHL queda como pipeline comercial."
+          : "Goal: make this card your right hand for who to contact, where, with what message, and what happened next; GHL remains the sales pipeline."}
+      </p>
+    </div>
+  );
+}
+
+function countVisibleContacts(items: OpsResultItem[]): Partial<Record<OpsContactKind, number>> {
+  const counts: Partial<Record<OpsContactKind, number>> = {};
+  for (const item of items) {
+    for (const c of item.contacts ?? []) {
+      counts[c.kind] = (counts[c.kind] ?? 0) + 1;
+    }
+  }
+  return counts;
+}
+
+function ContactCount({ label, value }: { label: string; value: number }) {
+  return (
+    <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-panel)] px-2 py-0.5 text-[var(--color-fg-strong)]">
+      {label}: <strong>{value}</strong>
+    </span>
   );
 }
 

@@ -67,7 +67,7 @@ export function EmailTemplatesPanel({
   }, [open, items, workflowId]);
 
   // Mount-time prefetch of just the count, so the toggle can show a
-  // badge "(2)" without waiting for the user to click.
+  // template badge without waiting for the user to click.
   const [count, setCount] = useState<number | null>(null);
   useEffect(() => {
     fetch(`/api/admin/email-templates?workflow_id=${workflowId}`)
@@ -87,7 +87,7 @@ export function EmailTemplatesPanel({
         {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         <Mail size={12} />
         <span>
-          {isEs ? "Emails" : "Emails"}{" "}
+          {isEs ? "Plantillas de outreach" : "Outreach templates"}{" "}
           {count !== null && (
             <span className="text-[var(--color-fg-dim)]">({count})</span>
           )}

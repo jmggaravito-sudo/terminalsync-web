@@ -11,7 +11,7 @@ type AuthState = "checking" | "anon" | "forbidden" | "ready";
 // OUTREACH QUEUE — cola de contacto manual para TerminalSync
 // Lee de Supabase (agency_influencers) vía /api/outreach/queue.
 // Estado operativo local: pendiente / enviado / respondió / descartado.
-// "respondió" = handoff a GHL (estado comercial vive allá).
+// "respondió" is only the local operating state until the GHL reply bridge is wired.
 // ─────────────────────────────────────────────────────────────
 
 const STATUS_META: Record<OpStatus, { label: string }> = {
@@ -422,7 +422,7 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
                   disabled={saving}
                   onClick={() => setStatus(active.id, "respondio")}
                 >
-                  Respondió → GHL
+                  Respondió (GHL pendiente)
                 </button>
                 <button
                   className="btn disc"
