@@ -155,10 +155,17 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
           body: JSON.stringify(body),
         });
         const json = await res.json();
-        if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+        if (!res.ok) throw new Error(json.error || json.replyBridge?.error || `HTTP ${res.status}`);
 
         // Refetch the current filter to reflect new counts and remove the moved item.
         await fetchLeads(filter);
+        if (status === "respondio" && json.replyBridge?.status !== "sent") {
+          setError(
+            json.replyBridge?.status === "not_configured"
+              ? "Marcado como respondió en Supabase. GHL/Telegram sigue pendiente: falta configurar OUTREACH_REPLY_WEBHOOK_URL."
+              : "Marcado como respondió, pero no pude confirmar el puente GHL/Telegram.",
+          );
+        }
         setActiveId(next ? next.id : null);
       } catch (e) {
         const msg = e instanceof Error ? e.message : "unknown error";
