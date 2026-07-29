@@ -15,7 +15,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * `tsync_landing` from cookies to choose the dev vs consumer email variant.
  *
  * Failures are silent on purpose: a flaky n8n shouldn't block the user from
- * entering the marketplace. We log to console for visibility.
+ * entering the app. We log to console for visibility.
  */
 async function fireWelcomeIfFresh(sb: SupabaseClient, lang: "es" | "en") {
   try {
@@ -47,12 +47,12 @@ async function fireWelcomeIfFresh(sb: SupabaseClient, lang: "es" | "en") {
  *
  *   - Mobile / no-app user: supabase-js's `detectSessionInUrl: true`
  *     parses the hash on mount and creates the browser session, then
- *     we redirect into the marketplace. JM 2026-05-05 the email was
+ *     we redirect into the requested web page. JM 2026-05-05 the email was
  *     pointing straight at `terminalsync://` (Supabase site_url) which
  *     iOS Safari rejected as "no app installed for this scheme".
  *
  * Reads `?next=` and `?lang=` (if LoginForm forwarded them) so EN users
- * land on /en/marketplace, not /es/marketplace. The previous behaviour
+ * land on the requested page, not a hardcoded ES destination. The previous behaviour
  * hardcoded /es and dropped the next param entirely — high-friction for
  * the English creator audience we're about to start outreach to.
  */
@@ -256,7 +256,7 @@ function CallbackInner() {
 
         <p className="mt-3 text-[14px] text-[var(--color-fg-muted)] leading-relaxed">
           {stage === "session" &&
-            (lang === "en" ? "Session started. Taking you to the marketplace." : "Sesión iniciada. Te llevamos al marketplace.")}
+            (lang === "en" ? "Session started. Taking you where you were going." : "Sesión iniciada. Te llevamos a donde ibas.")}
           {stage === "detecting" &&
             (lang === "en" ? "Processing your magic link…" : "Procesando tu enlace mágico…")}
           {stage === "error" && (error || (lang === "en" ? "Try again from the login page." : "Reintentá desde el login."))}
