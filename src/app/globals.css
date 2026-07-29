@@ -409,3 +409,89 @@ body {
 .admin-ops-readable-buttons .admin-ops-nav-button svg {
   color: currentColor !important;
 }
+
+
+/* Admin Ops high-contrast audit view. JM uses this page operationally, so avoid
+   low-contrast pastel text/chips. Keep it scoped to /admin/ops only. */
+.admin-ops-readable-buttons {
+  --ops-fg: #050505;
+  --ops-muted: #1f2937;
+  --ops-dim: #374151;
+  --ops-panel: #ffffff;
+  --ops-panel-soft: #f3f4f6;
+  --ops-border: #111827;
+}
+
+.admin-ops-readable-buttons :is(h1, h2, h3, p, span, li, summary) {
+  color: var(--ops-fg) !important;
+}
+
+.admin-ops-readable-buttons :is(section, li, .rounded-2xl, .rounded-xl) {
+  border-color: #9ca3af !important;
+}
+
+.admin-ops-readable-buttons :is(.bg-\[var\(--color-panel\)\], .bg-\[var\(--color-panel\)\]\/80) {
+  background: var(--ops-panel) !important;
+}
+
+.admin-ops-readable-buttons :is(.bg-\[var\(--color-panel-2\)\]\/40, .bg-\[var\(--color-panel-2\)\]\/60, .bg-\[var\(--color-panel-2\)\]\/80) {
+  background: var(--ops-panel-soft) !important;
+}
+
+.admin-ops-readable-buttons a {
+  color: #0645ad !important;
+  text-decoration-color: currentColor;
+}
+
+.admin-ops-readable-buttons a:hover {
+  color: #002f7a !important;
+  text-decoration: underline;
+}
+
+.admin-ops-readable-buttons .admin-ops-error-count {
+  color: #b91c1c !important;
+  font-weight: 800 !important;
+}
+
+.admin-ops-readable-buttons .admin-ops-recovered-note {
+  color: #166534 !important;
+  font-weight: 800 !important;
+}
+
+.admin-ops-readable-buttons .text-red-400 {
+  color: #b91c1c !important;
+}
+
+.admin-ops-readable-buttons .text-emerald-400,
+.admin-ops-readable-buttons .text-emerald-300 {
+  color: #166534 !important;
+}
+
+.admin-ops-readable-buttons .text-amber-400,
+.admin-ops-readable-buttons .text-amber-300 {
+  color: #92400e !important;
+}
+
+.admin-ops-readable-buttons .text-sky-400 {
+  color: #075985 !important;
+}
+
+.admin-ops-readable-buttons :is(.bg-red-500\/15, .bg-red-500\/20, .bg-red-500\/12, .bg-red-500\/10) {
+  background: #fee2e2 !important;
+  border-color: #b91c1c !important;
+}
+
+.admin-ops-readable-buttons :is(.bg-emerald-500\/15, .bg-emerald-500\/20, .bg-emerald-500\/10, .bg-emerald-500\/8) {
+  background: #dcfce7 !important;
+  border-color: #166534 !important;
+}
+
+.admin-ops-readable-buttons :is(.bg-amber-500\/15, .bg-amber-500\/20, .bg-amber-500\/10, .bg-amber-500\/8) {
+  background: #fef3c7 !important;
+  border-color: #92400e !important;
+}
+
+.admin-ops-readable-buttons :is(.bg-sky-500\/15, .bg-sky-500\/20, .bg-sky-500\/10, .bg-sky-500\/8) {
+  background: #dbeafe !important;
+  border-color: #075985 !important;
+}
