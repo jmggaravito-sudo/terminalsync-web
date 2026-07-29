@@ -422,6 +422,8 @@ const WORKFLOW_META: Record<
     description:
       "Re-enrich Influencers DB — segunda pieza del seguimiento: vuelve sobre los influencers capturados y refresca emails, perfiles y datos de contacto para que el CRM no se quede viejo.",
     cadence: "cada 6 horas",
+    resultUrl: "/admin/ops/outreach",
+    resultLabel: "Ver CRM",
   },
   "6LuNDI8Hs90WyiUO": {
     project: "TerminalSync",
