@@ -22,8 +22,9 @@ Its gate is `content/plugins/RULES.md`.
 6. Source/create the Plugin logo under `public/plugins/<slug>.svg`.
 7. Keep ES/EN strict parity. Status `soon` if any referenced piece is `soon`.
 8. Validate: `vitest run src/lib/plugins.test.ts` (composition resolves the real pieces) + `tsc`. Add a loader/catalog test for the new Plugin when it exercises a new shape.
-9. Open one draft PR.
-10. Stop. Do not merge and do not push to `main` (this repo merges web via the owner/coordinator).
+9. Open the **landing/web draft PR**.
+10. Open the **app mirror draft PR** in `jmggaravito-sudo/terminal-sync` following `docs/integration-loop-two-pr-policy.md` so the desktop Integraciones surface mirrors the Plugin correctly.
+11. Stop. Do not merge and do not push to `main` (this repo merges web via the owner/coordinator).
 
 ## What makes a good Plugin (vs a Kit)
 
@@ -50,3 +51,7 @@ Number semantics:
 
 - `--found`: plugins added/promoted in this run.
 - `--skipped`: candidate plugins documented as SKIP/deferred in this run.
+
+## Two-PR app mirror gate
+
+Plugin runs must follow `docs/integration-loop-two-pr-policy.md`: a Plugin is not fully ready with only a web catalog PR. The app mirror PR must verify install/render behavior in the desktop app, especially where a Plugin bundles connectors with OAuth, secrets, or first-party flows.

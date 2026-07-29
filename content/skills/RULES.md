@@ -42,6 +42,10 @@ No pongas un puntaje donde no aplica: una skill que solo redacta un texto
 (comunicación, documentos) informa, no puntúa una decisión de negocio. El
 Veredicto es para skills de **decisión**.
 
+## Two-PR app mirror gate
+
+Every skill Loop run that publishes or changes marketplace-visible content must produce the two PRs described in `docs/integration-loop-two-pr-policy.md`: one landing/web PR and one app mirror PR. The app PR proves the desktop `Integraciones`/marketplace surface renders, installs, or explains the item correctly. If automation cannot create the app PR, the web PR must mark the app mirror as blocked and the item is not fully ready.
+
 ## File structure
 
 Every published skill must ship in both languages with strict ES/EN parity:
