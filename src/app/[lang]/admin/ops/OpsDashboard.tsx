@@ -573,6 +573,9 @@ function WorkflowCard({
           {!compact && isNoDevProspectsWorkflow(wf.id) && (
             <NoDevProspectsBlueprint isEs={isEs} />
           )}
+          {!compact && isTrendSignalsWorkflow(wf.id) && (
+            <TrendSignalsBlueprint isEs={isEs} />
+          )}
           {!compact && wf.results && (
             <ResultsPanel results={wf.results} workflowId={wf.id} isEs={isEs} />
           )}
@@ -801,6 +804,44 @@ function isSenderWorkflow(workflowId: string) {
 
 function isNoDevProspectsWorkflow(workflowId: string) {
   return workflowId === "lmbQv6R17dqY8pvO";
+}
+
+function isTrendSignalsWorkflow(workflowId: string) {
+  return workflowId === "2gbpZFPPlYMo6k3f";
+}
+
+function TrendSignalsBlueprint({ isEs }: { isEs: boolean }) {
+  const rows = isEs
+    ? [
+        ["Para qué sirve", "Encontrar temas calientes de agencias, IA, automatización y empresarios para vender mejor."],
+        ["Qué hacer con esto", "Convertir señales en hooks de contenido, emails, ángulos de venta y mejoras de oferta."],
+        ["Qué NO es", "No es la cola de influencers ni el CRM; es radar de mercado y mensajes."],
+      ]
+    : [
+        ["What it does", "Finds hot topics around agencies, AI, automation and business owners to improve selling."],
+        ["What to do", "Turn signals into content hooks, emails, sales angles and offer improvements."],
+        ["What it is not", "Not the influencer queue or CRM; it is market/message radar."],
+      ];
+  return (
+    <div className="mt-3 rounded-lg border border-cyan-500/35 bg-cyan-500/10 p-3">
+      <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-cyan-300">
+        {isEs ? "Radar de mensajes y oportunidades" : "Message + opportunity radar"}
+      </p>
+      <div className="mt-2 grid gap-2 md:grid-cols-3">
+        {rows.map(([title, body]) => (
+          <div key={title} className="rounded-md border border-[var(--color-border)] bg-[var(--color-panel)] px-2.5 py-2">
+            <p className="text-[12px] font-semibold text-[var(--color-fg-strong)]">{title}</p>
+            <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">{body}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-2 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">
+        {isEs
+          ? "Mi recomendación: mantenerlo. Úsalo para saber qué está comprando/preguntando el mercado y para alimentar mejores mensajes de outreach."
+          : "Recommendation: keep it. Use it to see what the market is buying/asking and to feed better outreach messages."}
+      </p>
+    </div>
+  );
 }
 
 function NoDevProspectsBlueprint({ isEs }: { isEs: boolean }) {
