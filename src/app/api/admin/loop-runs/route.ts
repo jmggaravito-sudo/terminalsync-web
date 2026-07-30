@@ -79,12 +79,13 @@ function isMissingColumn(
   error: { message?: string; code?: string },
   column: string,
 ) {
+  const message = error.message ?? "";
   return (
-    error.code === "42703" &&
     new RegExp(
-      `(?:loop_runs\\.)?${column} does not exist|column .*${column}.* does not exist`,
+      `(?:loop_runs\\.)?${column} does not exist|column .*${column}.* does not exist|could not find (?:the )?['\"]?${column}['\"]? column`,
       "i",
-    ).test(error.message ?? "")
+    ).test(message) ||
+    (error.code === "42703" && message.toLowerCase().includes(column))
   );
 }
 
