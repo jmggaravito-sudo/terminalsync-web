@@ -10,12 +10,13 @@
  * Usage:
  *   LOOP_RUNS_ENDPOINT=https://terminalsync.ai/api/internal/loop-runs \
  *   LOOP_RUNS_WRITE_TOKEN=... \
- *   node scripts/record_loop_run.mjs --kind connectors --found 3 --skipped 2 --pr https://github.com/owner/repo/pull/123
+ *   node scripts/record_loop_run.mjs --kind connectors --found 3 --skipped 2 --items mongodb,posthog,pinecone --pr https://github.com/owner/repo/pull/123
  *
  * Semantics:
  *   --kind     loop family: connectors, plugins, kits, or skills (default: connectors)
  *   --found    items added/promoted in this run
  *   --skipped  candidates documented as SKIP/deferred in this run
+ *   --items    comma-separated landing slugs added/promoted in this run
  */
 
 const args = process.argv.slice(2);
@@ -23,7 +24,7 @@ const args = process.argv.slice(2);
 function usage(exitCode = 1) {
   const stream = exitCode === 0 ? process.stdout : process.stderr;
   stream.write(
-    `Usage: node scripts/record_loop_run.mjs [--kind connectors|plugins|kits|skills] --found N --skipped N --pr https://...\n`,
+    `Usage: node scripts/record_loop_run.mjs [--kind connectors|plugins|kits|skills] --found N --skipped N [--items slug,slug] --pr https://...\n`,
   );
   process.exit(exitCode);
 }
@@ -57,6 +58,19 @@ function parseKind() {
   return kind;
 }
 
+function parseItemSlugs() {
+  const raw = readFlag("--items") ?? readFlag("--item-slugs");
+  if (raw == null || raw.trim() === "") return [];
+  const slugs = raw
+    .split(",")
+    .map((slug) => slug.trim().toLowerCase())
+    .filter(Boolean);
+  if (slugs.some((slug) => !/^[a-z0-9][a-z0-9-]*$/.test(slug))) {
+    throw new Error("--items must be comma-separated landing slugs");
+  }
+  return [...new Set(slugs)];
+}
+
 function parsePrUrl() {
   const raw = readFlag("--pr");
   if (raw == null) throw new Error("--pr is required");
@@ -76,10 +90,12 @@ let kind;
 let itemsFound;
 let itemsSkipped;
 let prUrl;
+let itemSlugs;
 try {
   kind = parseKind();
   itemsFound = parseNonNegativeInteger("--found");
   itemsSkipped = parseNonNegativeInteger("--skipped");
+  itemSlugs = parseItemSlugs();
   prUrl = parsePrUrl();
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
@@ -116,6 +132,8 @@ const res = await fetch(endpoint, {
     connectorsFound: itemsFound,
     connectorsSkipped: itemsSkipped,
     prUrl,
+    itemSlugs,
+    items: itemSlugs,
   }),
 });
 
@@ -134,5 +152,5 @@ if (!res.ok) {
 
 const run = json?.run;
 console.log(
-  `loop run history: recorded kind=${run?.kind ?? kind}${run?.id ? ` id=${run.id}` : ""}${run?.ran_at ? ` ran_at=${run.ran_at}` : ""}`,
+  `loop run history: recorded kind=${run?.kind ?? kind} items=${(run?.item_slugs ?? itemSlugs).join(",") || "-"}${run?.id ? ` id=${run.id}` : ""}${run?.ran_at ? ` ran_at=${run.ran_at}` : ""}`,
 );
