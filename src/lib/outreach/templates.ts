@@ -1,11 +1,11 @@
 export const TEMPLATES = {
   affiliate: {
-    en: `Hey {name} — {hook}most AI tools forget what you're doing the second you switch apps or models. TerminalSync keeps your work alive across Claude, Gemini & Codex. Other tools help you start; this one helps you continue. Open to a free account to try it? (Affiliate program too if it clicks.)`,
-    es: `Hola {name} — {hook}la mayoría de las herramientas de IA olvidan lo que hacías apenas cambias de app o de modelo. TerminalSync mantiene tu trabajo vivo entre Claude, Gemini y Codex. Otras te ayudan a empezar; esta te ayuda a continuar. ¿Te abro una cuenta gratis para probar? (Hay programa de afiliados si te cuadra.)`,
+    en: `Hey {name} — {hook}quick idea: your audience already sells services, retainers, or consulting. We help businesses turn their messy follow-up, content, CRM, and repetitive admin into AI-assisted workflows they can actually use every day. If this fits your audience, I can set you up with a free demo account and an affiliate angle so you can show a real business use case, not another generic AI tool.`,
+    es: `Hola {name} — {hook}idea rápida: tu audiencia ya vende servicios, consultorías o trabaja con clientes. Nosotros ayudamos a empresas/agencias a convertir seguimiento, contenido, CRM y tareas repetitivas en flujos con IA que sí se usan en el día a día. Si le sirve a tu audiencia, te abro una cuenta demo gratis y vemos un ángulo de afiliado para mostrar un caso real, no “otra herramienta de IA”.`,
   },
   user: {
-    en: `Hey {name} — {hook}most AI tools forget what you're doing the second you switch apps or models. TerminalSync keeps your context, files & history alive across Claude, Gemini & Codex. Other tools help you start; this one helps you continue. Free to try → terminalsync.ai`,
-    es: `Hola {name} — {hook}la mayoría de las herramientas de IA olvidan lo que hacías apenas cambias de app o de modelo. TerminalSync mantiene tu contexto, archivos e historial entre Claude, Gemini y Codex. Otras te ayudan a empezar; esta te ayuda a continuar. Gratis para probar → terminalsync.ai`,
+    en: `Hey {name} — {hook}I think this could be useful for your business: TerminalSync helps teams use AI as an operating layer for follow-up, content, CRM notes, client work, and repetitive tasks — without needing a developer in the middle. If you want, I can show you one practical workflow you could use this week.`,
+    es: `Hola {name} — {hook}creo que esto puede servir para tu negocio: TerminalSync ayuda a equipos a usar IA como una capa operativa para seguimiento, contenido, notas de CRM, trabajo con clientes y tareas repetitivas, sin depender de un dev para todo. Si querés, te muestro un flujo práctico que podrías usar esta semana.`,
   },
 } as const;
 

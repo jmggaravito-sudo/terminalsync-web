@@ -80,7 +80,7 @@ export default function OutreachQueue({ lang }: { lang: string }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await authedFetch(`/api/outreach/queue?status=${status}`, { cache: "no-store" } as RequestInit);
+      const res = await authedFetch(`/api/outreach/queue?status=${status}&limit=50`, { cache: "no-store" } as RequestInit);
       if (res.status === 401) { setAuth("anon"); setLoading(false); return; }
       if (res.status === 403) { setAuth("forbidden"); setLoading(false); return; }
       const json = await res.json();
@@ -350,7 +350,7 @@ export default function OutreachQueue({ lang }: { lang: string }) {
         <div className="hd">
           <h1>Cola de contacto</h1>
           <div className="sub">
-            agency_influencers · {totalLeads} leads{loading ? " · cargando…" : ""}
+            agency_influencers · {totalLeads} leads totales · mostrando máximo 50{loading ? " · cargando…" : ""}
           </div>
         </div>
         <div className="tabs">
