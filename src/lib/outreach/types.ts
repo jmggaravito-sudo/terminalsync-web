@@ -1,8 +1,15 @@
 export const OP_STATUSES = ["pendiente", "enviado", "respondio", "descartado"] as const;
 export type OpStatus = (typeof OP_STATUSES)[number];
 
+export const REVIEW_STATUSES = ["pending", "qualified", "rejected"] as const;
+export type ReviewStatus = (typeof REVIEW_STATUSES)[number];
+
 export function isOpStatus(v: unknown): v is OpStatus {
   return typeof v === "string" && (OP_STATUSES as readonly string[]).includes(v);
+}
+
+export function isReviewStatus(v: unknown): v is ReviewStatus {
+  return typeof v === "string" && (REVIEW_STATUSES as readonly string[]).includes(v);
 }
 
 export type Lead = {
@@ -17,6 +24,9 @@ export type Lead = {
   source_keyword: string | null;
   profile_url: string | null;
   discovered_at: string | null;
+  status: ReviewStatus | null;
+  review_notes: string | null;
+  reviewed_at: string | null;
   op_status: OpStatus;
   op_hook: string | null;
   op_notes: string | null;

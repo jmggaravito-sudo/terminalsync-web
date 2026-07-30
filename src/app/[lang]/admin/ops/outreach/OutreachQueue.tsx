@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { OP_STATUSES, type OpStatus, type Lead } from "@/lib/outreach/types";
+import { OP_STATUSES, type OpStatus, type Lead, type ReviewStatus } from "@/lib/outreach/types";
 import { TEMPLATES, templateTrack, templateLang } from "@/lib/outreach/templates";
 import { authedFetch } from "@/lib/supabase/browser";
 
@@ -19,6 +19,21 @@ const STATUS_META: Record<OpStatus, { label: string }> = {
   enviado: { label: "Enviado" },
   respondio: { label: "Respondió" },
   descartado: { label: "Descartado" },
+};
+
+const REVIEW_META: Record<ReviewStatus, { label: string; help: string }> = {
+  pending: {
+    label: "Falta aprobación",
+    help: "Capturado por el radar, pero todavía no aprobado por JM para contactar.",
+  },
+  qualified: {
+    label: "Aprobado",
+    help: "Listo para copiar mensaje, contactar y marcar como enviado.",
+  },
+  rejected: {
+    label: "Rechazado",
+    help: "No es buen fit para este nicho/campaña.",
+  },
 };
 
 const PLATFORM_LABEL: Record<string, string> = {
@@ -141,6 +156,42 @@ export default function OutreachQueue({ lang }: { lang: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hook]);
 
+  // ── Persist human review decision ──
+  const setReviewStatus = useCallback(
+    async (id: Lead["id"], reviewStatus: ReviewStatus) => {
+      if (saving) return;
+      setSaving(true);
+      setError(null);
+
+      try {
+        const res = await authedFetch("/api/outreach/review", {
+          method: "POST",
+          body: JSON.stringify({ id, status: reviewStatus }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+
+        setLeads((current) =>
+          current.map((lead) =>
+            lead.id === id
+              ? {
+                  ...lead,
+                  status: reviewStatus,
+                  reviewed_at: reviewStatus === "pending" ? null : new Date().toISOString(),
+                }
+              : lead,
+          ),
+        );
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "unknown error";
+        setError(`No se pudo guardar aprobación: ${msg}`);
+      } finally {
+        setSaving(false);
+      }
+    },
+    [saving],
+  );
+
   // ── Persist status change ──
   const setStatus = useCallback(
     async (id: Lead["id"], status: OpStatus) => {
@@ -251,6 +302,9 @@ export default function OutreachQueue({ lang }: { lang: string }) {
         .row .meta{color:var(--ink3);font-family:var(--mono);font-size:11.5px;margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;}
         .pill{font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:5px;border:1px solid var(--line);color:var(--ink2);}
         .pill.aff{color:var(--acc);border-color:#1f5e2e;}
+        .pill.review{color:#ffd166;border-color:#7a5d17;background:#271f0b;}
+        .pill.review.ok{color:#9ff0b2;border-color:#1f7a34;background:#0d2a16;}
+        .pill.review.no{color:#ffb4b4;border-color:#7a2b2b;background:#2b1212;}
         .subs{font-family:var(--mono);font-size:12px;color:var(--ink2);text-align:right;}
         .empty{padding:60px 24px;text-align:center;color:var(--ink3);font-family:var(--mono);font-size:13px;}
         .errbar{padding:10px 18px;background:#3a1c1c;color:#f0b3b3;font-family:var(--mono);font-size:12px;border-bottom:1px solid #5a2a2a;}
@@ -269,6 +323,11 @@ export default function OutreachQueue({ lang }: { lang: string }) {
         .msg{width:100%;min-height:150px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);
           font-family:var(--sans);font-size:13.5px;line-height:1.55;padding:14px;resize:vertical;}
         .msg:focus{outline:2px solid var(--acc);outline-offset:1px;}
+        .review-box{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:13px 14px;margin-bottom:18px;}
+        .review-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px;}
+        .review-title{font-weight:700;font-size:13px;}
+        .review-help{color:var(--ink2);font-size:12.5px;line-height:1.45;}
+        .review-actions{display:flex;gap:9px;margin-top:12px;}
         .acts{padding:16px 24px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px;}
         .act-row{display:flex;gap:9px;}
         .btn{flex:1;font-family:var(--sans);font-size:13px;font-weight:600;padding:11px;border-radius:8px;
@@ -278,6 +337,8 @@ export default function OutreachQueue({ lang }: { lang: string }) {
         .btn:disabled{opacity:.5;cursor:not-allowed;}
         .btn.primary{background:var(--acc);color:var(--acc-ink);border-color:var(--acc);}
         .btn.primary:hover:not(:disabled){filter:brightness(1.08);}
+        .btn.approve{background:#fff;color:#000;border-color:#fff;}
+        .btn.reject{background:#000;color:#fff;border-color:#6b7280;}
         .btn.ghost{background:none;}
         .btn.sent{background:var(--s-sent);border-color:var(--s-sent);color:#fff;}
         .btn.resp{background:none;border-color:var(--s-resp);color:var(--s-resp);}
@@ -352,6 +413,11 @@ export default function OutreachQueue({ lang }: { lang: string }) {
                   </span>
                   {l.niche && <span className="pill">{l.niche}</span>}
                   {l.language && <span className="pill">{l.language}</span>}
+                  <span
+                    className={`pill review ${l.status === "qualified" ? "ok" : l.status === "rejected" ? "no" : ""}`}
+                  >
+                    {REVIEW_META[l.status || "pending"].label}
+                  </span>
                 </div>
               </div>
               <div className="subs">
@@ -392,6 +458,36 @@ export default function OutreachQueue({ lang }: { lang: string }) {
               </div>
             </div>
             <div className="dt-body">
+              <div className="review-box">
+                <div className="review-top">
+                  <div className="review-title">Revisión humana</div>
+                  <span
+                    className={`pill review ${active.status === "qualified" ? "ok" : active.status === "rejected" ? "no" : ""}`}
+                  >
+                    {REVIEW_META[active.status || "pending"].label}
+                  </span>
+                </div>
+                <div className="review-help">
+                  {REVIEW_META[active.status || "pending"].help}
+                  {active.status !== "qualified" && " Primero aprobalo; después sí lo contactás."}
+                </div>
+                <div className="review-actions">
+                  <button
+                    className="btn approve"
+                    disabled={saving || active.status === "qualified"}
+                    onClick={() => setReviewStatus(active.id, "qualified")}
+                  >
+                    Aprobar para outreach
+                  </button>
+                  <button
+                    className="btn reject"
+                    disabled={saving || active.status === "rejected"}
+                    onClick={() => setReviewStatus(active.id, "rejected")}
+                  >
+                    Rechazar fit
+                  </button>
+                </div>
+              </div>
               <div className="lbl">Gancho personal (opcional)</div>
               <input
                 className="hookin"
@@ -426,7 +522,8 @@ export default function OutreachQueue({ lang }: { lang: string }) {
               <div className="act-row">
                 <button
                   className="btn sent"
-                  disabled={saving}
+                  disabled={saving || active.status !== "qualified"}
+                  title={active.status === "qualified" ? "" : "Primero aprobá el lead para outreach"}
                   onClick={() => setStatus(active.id, "enviado")}
                 >
                   Marcar enviado
