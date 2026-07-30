@@ -39,6 +39,7 @@ node scripts/record_loop_run.mjs \
   --kind connectors \
   --found 3 \
   --skipped 2 \
+  --items "pdf,map,threejs" \
   --pr "https://github.com/jmggaravito-sudo/terminalsync-web/pull/115"
 ```
 
@@ -50,6 +51,7 @@ Number semantics:
 - `--kind connectors`: identifies this as a connector Loop run in the shared ops panel.
 - `--found`: connectors added to the catalog in this run.
 - `--skipped`: candidate connectors documented as SKIP in this run.
+- `--items`: landing slugs for the connectors added/promoted, so `/admin/ops/loop-runs` can show direct `/es/connectors/<slug>` links.
 
 Example: PR #115 added `pdf`, `map`, and `threejs`, and documented SKIPs for
 `everything` and `server-sdk`, so the registration numbers are `--found 3` and

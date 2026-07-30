@@ -35,6 +35,7 @@ The landing/web PR body must include:
 - `App mirror PR: <url or pending>`
 - loop kind (`connectors`, `plugins`, `kits`, or `skills`)
 - found/skipped counts
+- shipped/promoted landing slugs (`--items`) so the ops report links to `/es/connectors`, `/es/plugins`, `/es/stacks`, or `/es/skills`
 - where the run appears: `/admin/ops/loop-runs`
 
 The app PR body must include:
@@ -52,3 +53,7 @@ Automated loops should attempt both PRs. If the automation cannot push to the ap
 2. mark the landing/web PR body with `App mirror PR: blocked — missing cross-repo token`;
 3. record the blocker in the loop log and `/admin/ops/loop-runs` note when available;
 4. never report the integration as fully ready until the app mirror PR exists.
+
+## Loop report menu
+
+`/admin/ops/loop-runs` is the shared menu for all four loops: Connectors, Plugins, Kits, and Skills. Each run should record `--kind` and `--items` so the admin report can link directly to the public landing pages that the desktop app must mirror.

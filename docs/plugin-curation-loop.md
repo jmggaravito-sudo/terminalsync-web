@@ -44,6 +44,7 @@ node scripts/record_loop_run.mjs \
   --kind plugins \
   --found 1 \
   --skipped 2 \
+  --items "gmail" \
   --pr "https://github.com/jmggaravito-sudo/terminalsync-web/pull/123"
 ```
 
@@ -51,6 +52,7 @@ Number semantics:
 
 - `--found`: plugins added/promoted in this run.
 - `--skipped`: candidate plugins documented as SKIP/deferred in this run.
+- `--items`: landing slugs for the plugins added/promoted, so `/admin/ops/loop-runs` can show direct `/es/plugins/<slug>` links.
 
 ## Two-PR app mirror gate
 

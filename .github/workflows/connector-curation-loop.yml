@@ -104,13 +104,14 @@ jobs:
             10. Open exactly one app mirror draft PR in $TERMINALSYNC_APP_REPO against $TERMINALSYNC_APP_BASE_BRANCH, following docs/integration-loop-two-pr-policy.md. Use TS_CROSS_REPO_TOKEN for the app repo if present; if it is missing or unauthorized, mark the web PR body as `App mirror PR: blocked — missing cross-repo token` and do not report the integration as fully ready.
             11. Link both PRs in their bodies when both exist. The app PR body must include `## Lo que el bot de soporte debe saber`.
             12. After the landing/web draft PR exists and this is not a dry run, register the run history using scripts/record_loop_run.mjs with the actual counts and include the app PR URL or blocker in the log:
-                LOOP_RUNS_ENDPOINT="$LOOP_RUNS_ENDPOINT" LOOP_RUNS_WRITE_TOKEN="$LOOP_RUNS_WRITE_TOKEN" node scripts/record_loop_run.mjs --kind connectors --found <connectors_added> --skipped <candidates_skipped_or_deferred> --pr <landing_web_draft_pr_url>
+                LOOP_RUNS_ENDPOINT="$LOOP_RUNS_ENDPOINT" LOOP_RUNS_WRITE_TOKEN="$LOOP_RUNS_WRITE_TOKEN" node scripts/record_loop_run.mjs --kind connectors --found <connectors_added> --skipped <candidates_skipped_or_deferred> --items <connector_slugs_csv> --pr <landing_web_draft_pr_url>
 
             Expected final answer in the workflow log:
             - Landing/web PR URL
             - App mirror PR URL or blocker
             - connectors added count
             - skipped/deferred count
+            - landing connector links visible in /admin/ops/loop-runs
             - where results are visible: /admin/ops/loop-runs
           claude_args: |
             --model claude-sonnet-5
