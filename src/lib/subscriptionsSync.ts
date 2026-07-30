@@ -103,7 +103,7 @@ async function resolveUserId(
 //
 // Legacy STRIPE_PRICE_DEV_* env vars are still read as a fallback during
 // the Dev→Max rename rollout — same prices, different env names.
-function planFromPriceId(priceId: string): "pro" | "max" | null {
+export function planFromPriceId(priceId: string): "pro" | "max" | null {
   const pmM = envId("STRIPE_PRICE_PRO_MONTHLY");
   const pmY = envId("STRIPE_PRICE_PRO_YEARLY");
   const mxM = envId("STRIPE_PRICE_MAX_MONTHLY", "STRIPE_PRICE_DEV_MONTHLY");
@@ -177,7 +177,10 @@ export async function syncSubscriptionToSupabase(
     return false;
   }
 
-  const priceId = sub.items.data[0]?.price?.id;
+  const planItem = sub.items.data.find((item) =>
+    item.price?.id ? planFromPriceId(item.price.id) : false,
+  );
+  const priceId = planItem?.price?.id;
   const plan = priceId ? planFromPriceId(priceId) : null;
   if (!plan) {
     console.warn("[stripe→supabase] unknown priceId, defaulting to free", {
@@ -194,7 +197,7 @@ export async function syncSubscriptionToSupabase(
   // Stripe moved period boundaries onto individual line items (one
   // subscription can now have multiple items with different cycles).
   // For single-item subscriptions ours, read from the first item.
-  const firstItem = sub.items.data[0];
+  const firstItem = planItem ?? sub.items.data[0];
   const periodStart = firstItem?.current_period_start ?? null;
   const periodEnd = firstItem?.current_period_end ?? null;
 

@@ -273,6 +273,48 @@ export async function createPreapproval(
   return { id: data.id, initPoint: data.init_point };
 }
 
+
+export interface UpdatePreapprovalInput {
+  id: string;
+  amount: number;
+  reason: string;
+}
+
+/** Updates an existing Mercado Pago preapproval instead of creating a second
+ * subscription. Used for app plan changes/downgrades where the account already
+ * has an active MP rail subscription. */
+export async function updatePreapproval(
+  input: UpdatePreapprovalInput,
+): Promise<PreapprovalState> {
+  if (!accessToken) throw new Error("Mercado Pago not configured");
+  const res = await fetch(`${MP_API}/preapproval/${encodeURIComponent(input.id)}`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      reason: input.reason,
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: "months",
+        end_date: mpSubscriptionEndDate(),
+        transaction_amount: input.amount,
+        currency_id: MP_CURRENCY,
+      },
+    }),
+  });
+  const data = (await res.json().catch(() => ({}))) as PreapprovalState & {
+    message?: string;
+  };
+  if (!res.ok || !data.id) {
+    throw new Error(
+      data.message || `Mercado Pago preapproval update failed (HTTP ${res.status})`,
+    );
+  }
+  return data;
+}
+
 export interface PreapprovalState {
   id: string;
   status: string;

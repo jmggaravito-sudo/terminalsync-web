@@ -8,6 +8,13 @@ import {
   stripe,
   type PlanId,
 } from "@/lib/stripe";
+import {
+  ExistingSubscriptionOnOtherRailError,
+  assertSameRailForChange,
+  changeStripeSubscription,
+  getCurrentSubscriptionForUser,
+  isChangeableSubscription,
+} from "@/lib/planChange";
 
 export const runtime = "nodejs";
 
@@ -160,6 +167,27 @@ export async function POST(req: Request) {
   }
 
   try {
+    const current = await getCurrentSubscriptionForUser(body.supabaseUserId);
+    if (isChangeableSubscription(current)) {
+      assertSameRailForChange(current, "stripe");
+      await changeStripeSubscription({
+        userId: body.supabaseUserId!,
+        current: current!,
+        plan,
+        includedAi,
+      });
+      return NextResponse.json(
+        {
+          url:
+            body.successUrl ??
+            `${base}/${lang}/checkout/success?changed=subscription`,
+          changed: true,
+          provider: "stripe",
+        },
+        { headers: cors },
+      );
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       line_items: [
@@ -201,9 +229,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: session.url }, { headers: cors });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
+    const status = err instanceof ExistingSubscriptionOnOtherRailError ? 409 : 500;
     return NextResponse.json(
       { error: message },
-      { status: 500, headers: cors },
+      { status, headers: cors },
     );
   }
 }

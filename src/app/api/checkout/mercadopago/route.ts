@@ -5,6 +5,13 @@ import {
   mercadoPagoConfigured,
   mpAmountFor,
 } from "@/lib/mercadopago";
+import {
+  ExistingSubscriptionOnOtherRailError,
+  assertSameRailForChange,
+  changeMercadoPagoSubscription,
+  getCurrentSubscriptionForUser,
+  isChangeableSubscription,
+} from "@/lib/planChange";
 
 export const runtime = "nodejs";
 
@@ -110,6 +117,25 @@ export async function POST(req: Request) {
   const backUrl = publicBackUrl(body.successUrl, base, lang);
 
   try {
+    const current = await getCurrentSubscriptionForUser(body.supabaseUserId);
+    if (isChangeableSubscription(current)) {
+      assertSameRailForChange(current, "mercadopago");
+      await changeMercadoPagoSubscription({
+        userId: body.supabaseUserId!,
+        current: current!,
+        plan,
+        includedAi,
+      });
+      return NextResponse.json(
+        {
+          url: backUrl,
+          changed: true,
+          provider: "mercadopago",
+        },
+        { headers: cors },
+      );
+    }
+
     // Stamp the account key into external_reference (MP echoes it back verbatim,
     // so linking is immune to whatever email MP attaches from the payer's own
     // account). Prefer the Supabase user id when we have it (app / logged-in web);
@@ -127,6 +153,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: initPoint }, { headers: cors });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500, headers: cors });
+    const status = err instanceof ExistingSubscriptionOnOtherRailError ? 409 : 500;
+    return NextResponse.json({ error: message }, { status, headers: cors });
   }
 }
