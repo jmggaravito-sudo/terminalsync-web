@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Chrome, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Sparkles } from "lucide-react";
 import type { Dict } from "@/content";
 
 /**
@@ -13,9 +13,9 @@ import type { Dict } from "@/content";
  * 3 columnas con dots Claude/Codex/Gemini. Derecha = copy + CTAs.
  * Mismo lenguaje que MultiAI (lift, border tokens, rounded-2xl).
  *
- * Mientras la extension NO esté en el Chrome Web Store, el CTA primario
- * apunta al repo público para users early adopters. El secundario manda
- * a #pricing para visitors que ya leyeron y prefieren la app completa.
+ * La extensión ya está publicada en Chrome Web Store; el CTA primario
+ * apunta directo al listing público. El secundario manda a #pricing para
+ * visitors que ya leyeron y prefieren la app completa.
  */
 export function ChromeExtensionTeaser({ dict }: { dict: Dict }) {
   const c = dict.chromeExtension;
@@ -62,7 +62,7 @@ export function ChromeExtensionTeaser({ dict }: { dict: Dict }) {
           {/* ── Copy + CTAs ────────────────────────────────────────── */}
           <div className="p-6 md:p-9 flex flex-col justify-center">
             <span className="inline-flex self-start items-center gap-1.5 text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent)] border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 px-2.5 py-1 rounded-full">
-              <Chrome size={11} strokeWidth={2.4} />
+              <ChromeLogo size={11} />
               {c.eyebrow}
             </span>
             <h2
@@ -102,7 +102,7 @@ export function ChromeExtensionTeaser({ dict }: { dict: Dict }) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-accent)] text-white px-4 py-2 text-[13px] font-semibold shadow-[0_6px_18px_-6px_var(--color-accent-glow)] hover:bg-[var(--color-accent-soft)] transition-colors"
               >
-                <Chrome size={13} strokeWidth={2.4} />
+                <ChromeLogo size={13} />
                 {c.primaryCta}
                 <ArrowRight size={13} strokeWidth={2.4} />
               </a>
@@ -123,6 +123,18 @@ export function ChromeExtensionTeaser({ dict }: { dict: Dict }) {
         </div>
       </article>
     </section>
+  );
+}
+
+function ChromeLogo({ size = 13 }: { size?: number }) {
+  return (
+    <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" focusable="false" className="shrink-0">
+      <path fill="#EA4335" d="M12 2a10 10 0 0 1 8.66 5H12a5 5 0 0 0-4.33 2.5L4.2 3.5A9.96 9.96 0 0 1 12 2Z" />
+      <path fill="#FBBC04" d="M3.34 5A10 10 0 0 0 12 22l4.33-7.5A5 5 0 0 1 7.67 9.5L3.34 5Z" />
+      <path fill="#34A853" d="M12 22a10 10 0 0 0 8.66-15H12a5 5 0 0 1 4.33 7.5L12 22Z" />
+      <circle cx="12" cy="12" r="4" fill="#4285F4" />
+      <circle cx="12" cy="12" r="2.15" fill="white" opacity="0.92" />
+    </svg>
   );
 }
 
