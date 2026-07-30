@@ -23,45 +23,45 @@ const OUTREACH_TEMPLATE_SEEDS: TemplateSeed[] = [
     workflow_id: INFLUENCER_WORKFLOW_ID,
     workflow_name: INFLUENCER_WORKFLOW_NAME,
     slug: "dm-affiliate-short",
-    label: "DM corto — Afiliado",
+    label: "DM corto — Afiliado agencias",
     audience: "creator",
     locale: "es",
     subject: "DM afiliado ES",
     body:
-      "Hola {name} — {hook}la mayoría de las herramientas de IA olvidan lo que hacías apenas cambias de app o de modelo. TerminalSync mantiene tu trabajo vivo entre Claude, Gemini y Codex. Otras te ayudan a empezar; esta te ayuda a continuar. ¿Te abro una cuenta gratis para probar? Hay programa de afiliados si te cuadra.",
+      "Hola {name} — {hook}idea rápida: tu audiencia ya vende servicios, consultorías o trabaja con clientes. Nosotros ayudamos a empresas/agencias a convertir seguimiento, contenido, CRM y tareas repetitivas en flujos con IA que sí se usan en el día a día. Si le sirve a tu audiencia, te abro una cuenta demo gratis y vemos un ángulo de afiliado para mostrar un caso real, no otra herramienta de IA.",
   },
   {
     workflow_id: INFLUENCER_WORKFLOW_ID,
     workflow_name: INFLUENCER_WORKFLOW_NAME,
     slug: "dm-affiliate-short",
-    label: "Short DM — Affiliate",
+    label: "Short DM — Agency affiliate",
     audience: "creator",
     locale: "en",
     subject: "Affiliate DM EN",
     body:
-      "Hey {name} — {hook}most AI tools forget what you're doing the second you switch apps or models. TerminalSync keeps your work alive across Claude, Gemini & Codex. Other tools help you start; this one helps you continue. Open to a free account to try it? Affiliate program too if it clicks.",
+      "Hey {name} — {hook}quick idea: your audience already sells services, retainers, or consulting. We help businesses turn messy follow-up, content, CRM, and repetitive admin into AI-assisted workflows they can actually use every day. If this fits your audience, I can set you up with a free demo account and an affiliate angle so you can show a real business use case, not another generic AI tool.",
   },
   {
     workflow_id: INFLUENCER_WORKFLOW_ID,
     workflow_name: INFLUENCER_WORKFLOW_NAME,
     slug: "dm-user-short",
-    label: "DM corto — Usuario/Creator",
+    label: "DM corto — Dueño/agencia",
     audience: "creator",
     locale: "es",
-    subject: "DM usuario ES",
+    subject: "DM negocio ES",
     body:
-      "Hola {name} — {hook}la mayoría de las herramientas de IA olvidan lo que hacías apenas cambias de app o de modelo. TerminalSync mantiene tu contexto, archivos e historial entre Claude, Gemini y Codex. Otras te ayudan a empezar; esta te ayuda a continuar. Gratis para probar → terminalsync.ai",
+      "Hola {name} — {hook}creo que esto puede servir para tu negocio: TerminalSync ayuda a equipos a usar IA como una capa operativa para seguimiento, contenido, notas de CRM, trabajo con clientes y tareas repetitivas, sin depender de un dev para todo. Si querés, te muestro un flujo práctico que podrías usar esta semana.",
   },
   {
     workflow_id: INFLUENCER_WORKFLOW_ID,
     workflow_name: INFLUENCER_WORKFLOW_NAME,
     slug: "dm-user-short",
-    label: "Short DM — User/Creator",
+    label: "Short DM — Business/agency",
     audience: "creator",
     locale: "en",
-    subject: "User DM EN",
+    subject: "Business DM EN",
     body:
-      "Hey {name} — {hook}most AI tools forget what you're doing the second you switch apps or models. TerminalSync keeps your context, files & history alive across Claude, Gemini & Codex. Other tools help you start; this one helps you continue. Free to try → terminalsync.ai",
+      "Hey {name} — {hook}I think this could be useful for your business: TerminalSync helps teams use AI as an operating layer for follow-up, content, CRM notes, client work, and repetitive tasks — without needing a developer in the middle. If you want, I can show you one practical workflow you could use this week.",
   },
 ];
 
@@ -78,7 +78,46 @@ async function ensureTemplateSeeds(
       ignoreDuplicates: true,
     });
 
-  return error;
+  if (error) return error;
+
+  const existing = await sb
+    .from("email_templates")
+    .select("id,slug,locale,body")
+    .eq("workflow_id", INFLUENCER_WORKFLOW_ID);
+
+  if (existing.error) return existing.error;
+
+  const staleNeedles = [
+    "Claude, Gemini",
+    "Claude, Gemini & Codex",
+    "most AI tools forget",
+    "herramientas de IA olvidan",
+    "cambias de app o de modelo",
+  ];
+
+  for (const row of existing.data ?? []) {
+    const body = String(row.body ?? "");
+    const isStale = staleNeedles.some((needle) => body.includes(needle));
+    if (!isStale) continue;
+
+    const seed = OUTREACH_TEMPLATE_SEEDS.find(
+      (tpl) => tpl.slug === row.slug && tpl.locale === row.locale,
+    );
+    if (!seed) continue;
+
+    const update = await sb
+      .from("email_templates")
+      .update({
+        label: seed.label,
+        subject: seed.subject,
+        body: seed.body,
+      })
+      .eq("id", row.id);
+
+    if (update.error) return update.error;
+  }
+
+  return null;
 }
 
 /**
@@ -90,9 +129,9 @@ async function ensureTemplateSeeds(
  * list grouped by workflow.
  *
  * The influencer workflow has a few short DM/social templates that
- * historically lived in code. On read, this admin endpoint seeds any
- * missing rows into Supabase once so JM can edit them in the dashboard
- * like the email templates.
+ * historically lived in code. On read, this admin endpoint seeds missing
+ * rows and upgrades only stale dev-centric copy from the old strategy
+ * (Claude/Gemini/Codex wording). JM edits are preserved afterward.
  *
  * No auth — same reasoning as /api/admin/ops. Server-only DB access,
  * page is robots-noindex, JM is the only audience.

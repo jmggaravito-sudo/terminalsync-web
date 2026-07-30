@@ -777,6 +777,16 @@ interface WorkflowResults {
  * Keep this in sync with WORKFLOW_META — if a TerminalSync workflow
  * starts writing to a new table, both maps want an entry.
  */
+
+function agencyReviewBadgeLabel(status: unknown): string | undefined {
+  const value = String(status ?? "").toLowerCase();
+  if (!value) return undefined;
+  if (value === "pending") return "Falta aprobación";
+  if (value === "qualified") return "Aprobado";
+  if (value === "rejected") return "Rechazado";
+  return String(status);
+}
+
 const WORKFLOW_RESULTS_SOURCE: Record<
   string,
   {
@@ -876,7 +886,7 @@ const WORKFLOW_RESULTS_SOURCE: Record<
         subtitle: sub || (r.classification_reason ? String(r.classification_reason).slice(0, 140) : undefined),
         url: r.source_url ? String(r.source_url) : undefined,
         timestamp: String(r.discovered_at ?? ""),
-        badge: r.status ? String(r.status) : undefined,
+        badge: agencyReviewBadgeLabel(r.status),
         contacts: buildContacts(r),
       };
     },
@@ -928,7 +938,7 @@ const WORKFLOW_RESULTS_SOURCE: Record<
           .join(" · ") || undefined,
         url: r.source_url ? String(r.source_url) : undefined,
         timestamp: String(r.updated_at ?? ""),
-        badge: r.status ? String(r.status) : undefined,
+        badge: agencyReviewBadgeLabel(r.status),
         contacts: buildContacts(r),
       };
     },
@@ -1029,7 +1039,7 @@ async function fetchWorkflowResults(
     // they're audit-only artifacts, not actionable leads.
     const limit = cfg.itemsLimit ?? 5;
     const items = rows
-      .filter((r) => (r.badge ?? "").toLowerCase() !== "rejected")
+      .filter((r) => !["rejected", "rechazado"].includes((r.badge ?? "").toLowerCase()))
       .sort((a, b) => {
         const aHas = (a.contacts?.length ?? 0) > 0 ? 1 : 0;
         const bHas = (b.contacts?.length ?? 0) > 0 ? 1 : 0;
