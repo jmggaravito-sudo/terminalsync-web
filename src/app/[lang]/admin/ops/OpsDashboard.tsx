@@ -200,6 +200,15 @@ export function OpsDashboard({ lang }: { lang: string }) {
         />
       </section>
 
+      <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)]/70 p-4 text-[13px] leading-relaxed text-[var(--color-fg-muted)]">
+        <strong className="text-[var(--color-fg-strong)]">
+          {isEs ? "Vista limpia:" : "Clean view:"}
+        </strong>{" "}
+        {isEs
+          ? "mostrando solo los flujos que sirven para TerminalSync ahora: capturar influencers, enriquecerlos, preparar outreach, replies, radar de oportunidades, ideas de oferta, bienvenida, feedback y alertas. Los flujos viejos, tests y proyectos externos siguen en n8n, pero ya no ensucian esta landing."
+          : "showing only the workflows that matter for TerminalSync now: influencer capture, enrichment, outreach prep, replies, opportunity radar, offer ideas, welcome, feedback, and alerts. Old flows, tests, and external projects still exist in n8n but no longer clutter this landing."}
+      </div>
+
       {/* Project menu — horizontal tabs. TerminalSync first, Auto-
           Repair is its own tab at the end so JM can jump straight to
           pending Claude-proposed fixes. */}
