@@ -382,34 +382,46 @@ body {
   .ts-marquee-left, .ts-marquee-right { animation: none; }
 }
 
-/* Admin Ops readability override: all button-like controls on /admin/ops use
-   black backgrounds with white text so the internal dashboard remains readable
-   in the light theme. Scoped to the Ops page only. */
+/* Admin Ops readability override: JM requested every actionable button on
+   /admin/ops to be white with black text. Scoped to Ops surfaces only. */
 .admin-ops-readable-buttons button,
 .admin-ops-readable-buttons .admin-ops-nav-button,
-.admin-ops-readable-buttons .admin-ops-action-button {
-  background: #050505 !important;
-  color: #ffffff !important;
-  border-color: #262626 !important;
+.admin-ops-readable-buttons .admin-ops-action-button,
+.admin-ops-readable-buttons a[role="button"],
+.oq button,
+.oq .btn {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
+  text-decoration: none !important;
 }
 
 .admin-ops-readable-buttons button:hover,
 .admin-ops-readable-buttons .admin-ops-nav-button:hover,
-.admin-ops-readable-buttons .admin-ops-action-button:hover {
-  background: #171717 !important;
-  color: #ffffff !important;
-  border-color: #404040 !important;
+.admin-ops-readable-buttons .admin-ops-action-button:hover,
+.admin-ops-readable-buttons a[role="button"]:hover,
+.oq button:hover:not(:disabled),
+.oq .btn:hover:not(:disabled) {
+  background: #f3f4f6 !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
+  text-decoration: none !important;
 }
 
-.admin-ops-readable-buttons button:disabled {
-  background: #2f2f2f !important;
-  color: rgba(255, 255, 255, 0.72) !important;
-  border-color: #404040 !important;
+.admin-ops-readable-buttons button:disabled,
+.oq button:disabled,
+.oq .btn:disabled {
+  background: #ffffff !important;
+  color: rgba(0, 0, 0, 0.45) !important;
+  border-color: rgba(0, 0, 0, 0.45) !important;
 }
 
 .admin-ops-readable-buttons button svg,
 .admin-ops-readable-buttons .admin-ops-nav-button svg,
-.admin-ops-readable-buttons .admin-ops-action-button svg {
+.admin-ops-readable-buttons .admin-ops-action-button svg,
+.admin-ops-readable-buttons a[role="button"] svg,
+.oq button svg,
+.oq .btn svg {
   color: currentColor !important;
 }
 
@@ -452,8 +464,12 @@ body {
 }
 
 .admin-ops-readable-buttons a.admin-ops-action-button,
-.admin-ops-readable-buttons a.admin-ops-action-button:hover {
-  color: #ffffff !important;
+.admin-ops-readable-buttons a.admin-ops-action-button:hover,
+.admin-ops-readable-buttons a.admin-ops-nav-button,
+.admin-ops-readable-buttons a.admin-ops-nav-button:hover,
+.admin-ops-readable-buttons a[role="button"],
+.admin-ops-readable-buttons a[role="button"]:hover {
+  color: #000000 !important;
   text-decoration: none !important;
 }
 
