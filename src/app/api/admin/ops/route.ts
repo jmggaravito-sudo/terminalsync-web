@@ -925,7 +925,7 @@ const WORKFLOW_RESULTS_SOURCE: Record<
     table: "agency_influencers",
     timeField: "discovered_at",
     select:
-      "name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,bio_link_url,subscribers,target_audience,language,classification_score,classification_reason,status,discovered_at",
+      "id,name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,bio_link_url,subscribers,target_audience,language,classification_score,classification_reason,status,discovered_at",
     label: "Influencers agency-targeted",
     unit: "influencers",
     itemsLimit: 25,
@@ -945,6 +945,7 @@ const WORKFLOW_RESULTS_SOURCE: Record<
         .filter(Boolean)
         .join(" · ");
       return {
+        id: r.id ? String(r.id) : undefined,
         title: String(r.name ?? r.handle ?? "(sin nombre)"),
         subtitle: sub || (r.classification_reason ? String(r.classification_reason).slice(0, 140) : undefined),
         url: r.source_url ? String(r.source_url) : undefined,
@@ -989,6 +990,7 @@ const WORKFLOW_RESULTS_SOURCE: Record<
           : null;
       const langTag = r.language ? `🌐 ${String(r.language).toUpperCase()}` : null;
       return {
+        id: r.id ? String(r.id) : undefined,
         title: String(r.name ?? r.handle ?? "(sin nombre)"),
         subtitle: [
           r.target_audience,
