@@ -15,8 +15,7 @@ name: Connector Curation Loop
 
 on:
   schedule:
-    # Monday 14:00 UTC. Gives the analytics/report crons room and makes this
-    # a weekly reviewable batch, not a noisy daily PR generator.
+    # Monday 14:00 UTC / 09:00 Bogotá. First of the four weekly marketplace rounds.
     - cron: "0 14 * * 1"
   workflow_dispatch:
     inputs:
@@ -79,14 +78,11 @@ jobs:
           prompt: |
             You are running TerminalSync's Connector Curation Loop automatically.
 
-            Goal: discover and ship marketplace connectors/skills/kits that pass the repo's published Loop rules, then make the result visible in the existing ops panel.
+            Goal: discover and ship marketplace connectors that pass the repo's published Connector Loop rules, then make the result visible in the existing ops panel.
 
             Read these files first and treat them as authoritative:
             - docs/connector-curation-loop.md
             - content/connectors/SOURCES.md
-            - content/skills/RULES.md
-            - content/plugins/RULES.md
-            - content/kits/RULES.md
 
             Current focus from workflow input: "${{ inputs.focus }}".
             Dry run: ${{ inputs.dry_run || 'false' }}.

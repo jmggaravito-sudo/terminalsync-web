@@ -1,0 +1,111 @@
+name: Skill Curation Loop
+
+# Weekly agent-run marketplace loop.
+# Runs after the Connector Loop as part of the four Monday marketplace rounds.
+# Required repo secrets:
+#   ANTHROPIC_API_KEY        Direct Claude API key for anthropics/claude-code-action@v1.
+#   LOOP_RUNS_WRITE_TOKEN    Shared bearer token accepted by /api/internal/loop-runs.
+#   TS_CROSS_REPO_TOKEN      Optional PAT/app token that can create the required app mirror PR in jmggaravito-sudo/terminal-sync.
+
+on:
+  schedule:
+    # Monday 17:00 UTC / 12:00 Bogotá.
+    - cron: "0 17 * * 1"
+  workflow_dispatch:
+    inputs:
+      focus:
+        description: "Optional skill focus, e.g. docx, pdf, pptx, xlsx"
+        required: false
+        type: string
+      dry_run:
+        description: "Investigate and report, but do not push/open PR/register run"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: skill-curation-loop
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  run:
+    name: Run Skill Loop agent
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run marketplace skill curation loop
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LOOP_RUNS_ENDPOINT: https://terminalsync.ai/api/internal/loop-runs
+          LOOP_RUNS_WRITE_TOKEN: ${{ secrets.LOOP_RUNS_WRITE_TOKEN }}
+          LOOP_FOCUS: ${{ inputs.focus }}
+          LOOP_DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          TERMINALSYNC_APP_REPO: jmggaravito-sudo/terminal-sync
+          TERMINALSYNC_APP_BASE_BRANCH: release/v0.2.18-lab
+          TS_CROSS_REPO_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          base_branch: main
+          branch_prefix: loop/skills/
+          prompt: |
+            You are running TerminalSync's Skill Curation Loop automatically.
+
+            Goal: mold, evaluate, and publish assistant Skills that clearly beat a generic prompt, then make the result visible in the existing ops panel.
+
+            Read these files first and treat them as authoritative:
+            - content/skills/RULES.md
+            - docs/integration-loop-two-pr-policy.md
+            - docs/skills-evals
+            - content/connectors/SOURCES.md
+
+            Current focus from workflow input: "${{ inputs.focus }}".
+            Dry run: ${{ inputs.dry_run || 'false' }}.
+
+            Operating rules:
+            1. Start from current main and create exactly one branch for this run.
+            2. Use only official/repo-local evidence for factual content. GitHub/npm/official docs are acceptable where external verification is needed; aggregators are discovery hints only.
+            3. Prioritize the documented non-dev backlog: docx, pdf, pptx, xlsx before niche dev skills unless workflow input says otherwise.
+            4. Every publishable skill needs strict EN/ES parity, valid categories, delivery-compatible vendors, and reproducible eval evidence per content/skills/RULES.md.
+            5. Add or update scripts/skills-eval fixtures and docs/skills-evals/<slug>.md for shipped skills.
+            6. Do not claim Gemini compatibility until the delivery path and provider evals exist.
+            7. If a skill does not clearly beat baseline, keep it hidden/deferred and document the SKIP reason in the PR.
+            8. Run validation before opening PRs: node scripts/skills-eval/run-evals.mjs <slug> for shipped skills, npm test -- --run src/lib/skills.test.ts src/lib/logoAssets.test.ts, plus npm run typecheck when feasible. If a full suite is unexpectedly blocked by unrelated environment issues, run the targeted tests you can and document the blocker in both PR bodies.
+            9. Open exactly one landing/web draft PR in this repo. Never merge it.
+            10. Open exactly one app mirror draft PR in $TERMINALSYNC_APP_REPO against $TERMINALSYNC_APP_BASE_BRANCH, following docs/integration-loop-two-pr-policy.md. Use TS_CROSS_REPO_TOKEN for the app repo if present; if it is missing or unauthorized, mark the web PR body as `App mirror PR: blocked — missing cross-repo token` and do not report the skill as fully ready.
+            11. Link both PRs in their bodies when both exist. The app PR body must include `## Lo que el bot de soporte debe saber`.
+            12. After the landing/web draft PR exists and this is not a dry run, register the run history using scripts/record_loop_run.mjs with the actual counts and landing slugs:
+                LOOP_RUNS_ENDPOINT="$LOOP_RUNS_ENDPOINT" LOOP_RUNS_WRITE_TOKEN="$LOOP_RUNS_WRITE_TOKEN" node scripts/record_loop_run.mjs --kind skills --found <skills_added_or_promoted> --skipped <candidates_skipped_or_deferred> --items <skill_slugs_csv> --pr <landing_web_draft_pr_url>
+
+            Expected final answer in the workflow log:
+            - Landing/web PR URL
+            - App mirror PR URL or blocker
+            - skills added/promoted count
+            - skipped/deferred count
+            - landing skill links visible in /admin/ops/loop-runs
+            - where results are visible: /admin/ops/loop-runs
+          claude_args: |
+            --model claude-sonnet-5
+            --max-turns 80
+            --allowedTools Read,Write,Edit,MultiEdit,Bash,WebFetch,WebSearch,Grep,Glob

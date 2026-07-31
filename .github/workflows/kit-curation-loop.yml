@@ -1,0 +1,112 @@
+name: Kit Curation Loop
+
+# Weekly agent-run marketplace loop.
+# Runs after the Connector Loop as part of the four Monday marketplace rounds.
+# Required repo secrets:
+#   ANTHROPIC_API_KEY        Direct Claude API key for anthropics/claude-code-action@v1.
+#   LOOP_RUNS_WRITE_TOKEN    Shared bearer token accepted by /api/internal/loop-runs.
+#   TS_CROSS_REPO_TOKEN      Optional PAT/app token that can create the required app mirror PR in jmggaravito-sudo/terminal-sync.
+
+on:
+  schedule:
+    # Monday 16:00 UTC / 11:00 Bogotá.
+    - cron: "0 16 * * 1"
+  workflow_dispatch:
+    inputs:
+      focus:
+        description: "Optional role/kit focus, e.g. sales, support, finance"
+        required: false
+        type: string
+      dry_run:
+        description: "Investigate and report, but do not push/open PR/register run"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: kit-curation-loop
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  run:
+    name: Run Kit Loop agent
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run marketplace kit curation loop
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LOOP_RUNS_ENDPOINT: https://terminalsync.ai/api/internal/loop-runs
+          LOOP_RUNS_WRITE_TOKEN: ${{ secrets.LOOP_RUNS_WRITE_TOKEN }}
+          LOOP_FOCUS: ${{ inputs.focus }}
+          LOOP_DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          TERMINALSYNC_APP_REPO: jmggaravito-sudo/terminal-sync
+          TERMINALSYNC_APP_BASE_BRANCH: release/v0.2.18-lab
+          TS_CROSS_REPO_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          base_branch: main
+          branch_prefix: loop/kits/
+          prompt: |
+            You are running TerminalSync's Kit Curation Loop automatically.
+
+            Goal: ship role/workflow-level Kits that combine published pieces coherently for a business job, then make the result visible in the existing ops panel.
+
+            Read these files first and treat them as authoritative:
+            - content/kits/RULES.md
+            - docs/integration-loop-two-pr-policy.md
+            - content/plugins/RULES.md
+            - content/connectors/SOURCES.md
+            - content/skills/RULES.md
+
+            Current focus from workflow input: "${{ inputs.focus }}".
+            Dry run: ${{ inputs.dry_run || 'false' }}.
+
+            Operating rules:
+            1. Start from current main and create exactly one branch for this run.
+            2. Use only official/repo-local evidence for factual content. GitHub/npm/official docs are acceptable where external verification is needed; aggregators are discovery hints only.
+            3. Start from a concrete role or workflow, not from a pile of available tools. Prioritize business-owner roles: sales, support, finance, marketing, operations.
+            4. Include only published, installable catalog pieces allowed by content/kits/RULES.md. If a needed piece is missing or hidden, document it as SKIP/deferred for the proper Loop.
+            5. Write approved kits in content/kits/en and content/kits/es with strict parity and the fixed /logos/ts-kit.svg logo.
+            6. Explain why each piece belongs together; remove generic filler items.
+            7. If nothing is shippable, still update a dated run note / blocker summary so the run is reviewable.
+            8. Run validation before opening PRs: npm test -- --run src/lib/marketplace/kitsIntegrity.test.ts src/app/api/marketplace/catalog/route.test.ts, plus npm run typecheck when feasible. If a full suite is unexpectedly blocked by unrelated environment issues, run the targeted tests you can and document the blocker in both PR bodies.
+            9. Open exactly one landing/web draft PR in this repo. Never merge it.
+            10. Open exactly one app mirror draft PR in $TERMINALSYNC_APP_REPO against $TERMINALSYNC_APP_BASE_BRANCH, following docs/integration-loop-two-pr-policy.md. Use TS_CROSS_REPO_TOKEN for the app repo if present; if it is missing or unauthorized, mark the web PR body as `App mirror PR: blocked — missing cross-repo token` and do not report the kit as fully ready.
+            11. Link both PRs in their bodies when both exist. The app PR body must include `## Lo que el bot de soporte debe saber`.
+            12. After the landing/web draft PR exists and this is not a dry run, register the run history using scripts/record_loop_run.mjs with the actual counts and landing slugs:
+                LOOP_RUNS_ENDPOINT="$LOOP_RUNS_ENDPOINT" LOOP_RUNS_WRITE_TOKEN="$LOOP_RUNS_WRITE_TOKEN" node scripts/record_loop_run.mjs --kind kits --found <kits_added_or_promoted> --skipped <candidates_skipped_or_deferred> --items <kit_slugs_csv> --pr <landing_web_draft_pr_url>
+
+            Expected final answer in the workflow log:
+            - Landing/web PR URL
+            - App mirror PR URL or blocker
+            - kits added/promoted count
+            - skipped/deferred count
+            - landing kit links visible in /admin/ops/loop-runs
+            - where results are visible: /admin/ops/loop-runs
+          claude_args: |
+            --model claude-sonnet-5
+            --max-turns 80
+            --allowedTools Read,Write,Edit,MultiEdit,Bash,WebFetch,WebSearch,Grep,Glob
