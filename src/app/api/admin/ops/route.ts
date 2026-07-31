@@ -50,6 +50,7 @@ const WORKFLOW_META: Record<
     cadence?: string;
     resultUrl?: string;
     resultLabel?: string;
+    operatorActions?: { label: string; href?: string; note?: string }[];
   }
 > = {
   // ─────────────── MueveTuCarro ───────────────
@@ -404,12 +405,25 @@ const WORKFLOW_META: Record<
     cadence: "diario",
     resultUrl: "/admin/trends",
     resultLabel: "Ver radar",
+    operatorActions: [
+      { label: "Elegir señales útiles", href: "/admin/trends", note: "Separar ideas vendibles de ruido." },
+      { label: "Convertir en contenido", note: "Usar las mejores señales como hooks para LinkedIn, emails y demos." },
+      { label: "Actualizar oferta", note: "Si se repite un dolor, convertirlo en paquete o feature." },
+    ],
   },
   "7ooGFm2XvT8SLdde": {
     project: "TerminalSync",
     description:
       "CRM/Radar de Influencers YT+X para agencias — busca creators que hablan a dueños de agencias, los filtra con IA y guarda los buenos en Supabase (agency_influencers). Este flujo NO envía correos ni DMs: su trabajo es capturar, priorizar y alimentar el seguimiento.",
     cadence: "diario 9am COL",
+    resultUrl: "/admin/ops/outreach",
+    resultLabel: "Aprobar leads",
+    operatorActions: [
+      { label: "Aprobar o rechazar leads", href: "/admin/ops/outreach", note: "Los Pending significan falta revisión humana." },
+      { label: "Abrir perfil/canal", note: "Confirmar que sí hablan a agencias o empresarios." },
+      { label: "Escoger contacto", note: "Priorizar DM si hay IG/X/LinkedIn; email si el perfil lo trae." },
+      { label: "Editar mensaje", note: "Personalizar antes de cualquier envío." },
+    ],
   },
   "3ad53aIJo6QA1vI0": {
     project: "TerminalSync",
@@ -424,6 +438,11 @@ const WORKFLOW_META: Record<
     cadence: "cada 6 horas",
     resultUrl: "/admin/ops/outreach",
     resultLabel: "Ver CRM",
+    operatorActions: [
+      { label: "Revisar leads sin contacto", href: "/admin/ops/outreach", note: "Buscar perfiles buenos que todavía no tienen email/DM usable." },
+      { label: "Actualizar canal preferido", note: "Si aparece nuevo IG/X/LinkedIn, usarlo para outreach." },
+      { label: "Re-ejecutar solo si falta data", note: "No es para enviar; solo enriquece información." },
+    ],
   },
   "6LuNDI8Hs90WyiUO": {
     project: "TerminalSync",
@@ -466,12 +485,24 @@ const WORKFLOW_META: Record<
     description:
       "Welcome Flow (consumer + dev) — email de bienvenida después del signup. Distinto copy según sea consumer o dev plan.",
     cadence: "cuando hay signup",
+    resultUrl: "/admin/launch-metrics",
+    resultLabel: "Ver métricas",
+    operatorActions: [
+      { label: "Revisar copy de bienvenida", note: "Debe hablarle a empresarios/agencias, no quedarse en consumer/dev viejo." },
+      { label: "Hacer signup de prueba", href: "/admin/launch-metrics", note: "Validar que llega el email y queda evento/lead." },
+      { label: "Decidir próximo paso", note: "Qué CTA recibe el usuario: demo, onboarding o responder email." },
+    ],
   },
   i5Miq18SAdvaTnbK: {
     project: "TerminalSync",
     description:
       "Feedback (Sugerencias) — recibe sugerencias de los usuarios y las guarda + te notifica.",
     cadence: "cuando hay feedback",
+    operatorActions: [
+      { label: "Crear/ver inbox de feedback", note: "Falta una vista clara en landing/admin para leer sugerencias sin entrar a n8n." },
+      { label: "Clasificar sugerencias", note: "Separar bug, idea vendible, feature y queja." },
+      { label: "Convertir en tarea", note: "Las mejores sugerencias deberían terminar en roadmap/PR." },
+    ],
   },
   jINNqL72z9yNcKx6: {
     project: "TerminalSync",
@@ -481,6 +512,11 @@ const WORKFLOW_META: Record<
     cadence: "cuando llega una respuesta",
     resultUrl: "/admin/ops/outreach",
     resultLabel: "Ver cola",
+    operatorActions: [
+      { label: "Ver respuestas", href: "/admin/ops/outreach", note: "Revisar quién respondió y qué intención tiene." },
+      { label: "Conectar GHL + Telegram", note: "Si falta webhook, la respuesta no entra al pipeline ni alerta completa." },
+      { label: "Usar análisis IA", note: "Preparar siguiente respuesta sin inventar ni perder contexto." },
+    ],
   },
   FVj4SmRqgDwlAAZ8: {
     project: "TerminalSync",
@@ -495,6 +531,12 @@ const WORKFLOW_META: Record<
     cadence: "pausado hasta launch",
     resultUrl: "/admin/ops/outreach",
     resultLabel: "Ver cola",
+    operatorActions: [
+      { label: "Mantener pausado", note: "No enviar masivo hasta aprobar leads, templates y canales." },
+      { label: "Revisar plantillas", href: "/admin/ops/outreach", note: "Mensajes deben ser personalizados por segmento." },
+      { label: "Smoke con 1 lead", note: "Primero prueba controlada; después se activa automatización." },
+      { label: "Registrar enviado", note: "Después del smoke debe quedar historial para seguimiento." },
+    ],
   },
   vN2iycD5AI2xRXqF: {
     project: "TerminalSync",
@@ -521,6 +563,11 @@ const WORKFLOW_META: Record<
     description:
       "Discovery · Error Alert — red de seguridad: avisa cuando los flujos de discovery/ops fallan para que no pasen días rotos sin enterarnos.",
     cadence: "cuando algo falla",
+    operatorActions: [
+      { label: "Revisar error rojo", note: "Ver qué flujo falló y desde qué nodo." },
+      { label: "Abrir Auto-Reparación", note: "Usar el panel inferior de Ops si el error es repetido." },
+      { label: "Decidir si es crítico", note: "Si afecta captura/sender/replies, arreglar antes de seguir." },
+    ],
   },
   kpEnCfr9Jn6U51QT: {
     project: "TerminalSync",
@@ -680,6 +727,7 @@ interface OpsWorkflow {
    */
   resultUrl: string | null;
   resultLabel: string | null;
+  operatorActions: { label: string; href?: string; note?: string }[];
   updatedAt: string | null;
   todayCount: number;
   todaySuccess: number;
@@ -1250,6 +1298,7 @@ export async function GET() {
       cadence: meta?.cadence ?? null,
       resultUrl: meta?.resultUrl ?? null,
       resultLabel: meta?.resultLabel ?? null,
+      operatorActions: meta?.operatorActions ?? [],
       updatedAt: w.updatedAt ?? null,
       todayCount: todayFor.length,
       todaySuccess: todayFor.filter((e) => e.status === "success").length,
