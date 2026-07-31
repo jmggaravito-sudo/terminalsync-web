@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { OP_STATUSES, type OpStatus, type Lead, type ReviewStatus } from "@/lib/outreach/types";
 import {
   OUTREACH_TEMPLATES,
@@ -67,6 +68,8 @@ type Counts = Record<OpStatus, number>;
 const EMPTY_COUNTS: Counts = { pendiente: 0, enviado: 0, respondio: 0, descartado: 0 };
 
 export default function OutreachQueue({ lang }: { lang: string }) {
+  const search = useSearchParams();
+  const requestedLeadId = search.get("lead");
   const [auth, setAuth] = useState<AuthState>("checking");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [counts, setCounts] = useState<Counts>(EMPTY_COUNTS);
@@ -93,7 +96,11 @@ export default function OutreachQueue({ lang }: { lang: string }) {
       if (res.status === 403) { setAuth("forbidden"); setLoading(false); return; }
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
-      setLeads(Array.isArray(json.items) ? (json.items as Lead[]) : []);
+      const nextLeads = Array.isArray(json.items) ? (json.items as Lead[]) : [];
+      setLeads(nextLeads);
+      if (requestedLeadId && nextLeads.some((lead) => lead.id === requestedLeadId)) {
+        setActiveId(requestedLeadId);
+      }
       setCounts({ ...EMPTY_COUNTS, ...(json.counts || {}) });
       setAuth("ready");
     } catch (e) {
@@ -103,7 +110,7 @@ export default function OutreachQueue({ lang }: { lang: string }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [requestedLeadId]);
 
   useEffect(() => {
     const watchdog = window.setTimeout(() => {
@@ -112,10 +119,10 @@ export default function OutreachQueue({ lang }: { lang: string }) {
     }, 10_000);
 
     void fetchLeads(filter).finally(() => window.clearTimeout(watchdog));
-    setActiveId(null);
+    if (!requestedLeadId) setActiveId(null);
 
     return () => window.clearTimeout(watchdog);
-  }, [filter, fetchLeads]);
+  }, [filter, fetchLeads, requestedLeadId]);
 
   // ── Derived: filtered list (client-side track/lang filter on top of server-fetched status) ──
   const visible = useMemo(
