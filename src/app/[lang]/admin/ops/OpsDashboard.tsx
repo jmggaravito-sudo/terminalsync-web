@@ -887,7 +887,8 @@ function ResultsPanel({
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       <a
                         href={outreachLoginHref(item.id)}
-                        className="inline-flex items-center rounded-md bg-black px-2 py-1 text-[11px] font-semibold text-white hover:opacity-85"
+                        role="button"
+                        className="admin-ops-action-button inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-semibold hover:opacity-85"
                         title={isEs ? "Abrir cola para aprobar/editar este lead" : "Open queue to approve/edit this lead"}
                       >
                         {item.badge === "Aprobado" ? (isEs ? "Editar mensaje" : "Edit message") : (isEs ? "Aprobar lead" : "Approve lead")}
@@ -897,7 +898,8 @@ function ResultsPanel({
                           href={item.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center rounded-md border border-[var(--color-border)] bg-[var(--color-panel)] px-2 py-1 text-[11px] font-semibold text-[var(--color-fg-strong)] hover:border-[var(--color-fg-muted)]"
+                          role="button"
+                          className="admin-ops-action-button inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-semibold hover:border-[var(--color-fg-muted)]"
                         >
                           {isEs ? "Abrir perfil" : "Open profile"}
                         </a>
