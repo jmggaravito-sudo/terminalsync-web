@@ -632,6 +632,20 @@ const WORKFLOW_META: Record<
   },
 };
 
+
+const OPS_LANDING_VISIBLE_WORKFLOW_IDS = new Set([
+  // Core growth/outreach operating system for the current empresarios/agencias niche.
+  "7ooGFm2XvT8SLdde", // Captura diaria Influencers YT+X Agencias
+  "5JJPordwuTwaPPPK", // Re-enrich Influencers DB
+  "21DqwyeruJlFNqgW", // Sender · Influencer Emails/DMs
+  "jINNqL72z9yNcKx6", // Tracker · Replies
+  "2gbpZFPPlYMo6k3f", // Trend Signals Daily
+  "KpqQvgr6H1C2O4Oa", // Bundle Curator
+  "9sMs1ExYtue9ay1n", // Welcome Flow
+  "i5Miq18SAdvaTnbK", // Feedback / sugerencias
+  "bIQyZUPQOvmVXwj5", // Discovery/Ops Error Alert
+]);
+
 interface N8nWorkflow {
   id: string;
   name: string;
@@ -1218,7 +1232,7 @@ export async function GET() {
     }
   }
 
-  const items: OpsWorkflow[] = workflows.map((w) => {
+  const allItems: OpsWorkflow[] = workflows.map((w) => {
     const meta = WORKFLOW_META[w.id];
     const project = meta?.project ?? projectFromName(w.name);
     const allFor = byWorkflow.get(w.id) ?? [];
@@ -1262,6 +1276,11 @@ export async function GET() {
       lastError: lastErrorByWf.get(w.id) ?? null,
     };
   });
+
+  // The Ops landing is for JM's current TerminalSync growth/ops system, not
+  // a raw n8n inventory. Hide old client projects, tests, support internals,
+  // and deprecated discovery flows from this view. Nothing is deleted from n8n.
+  const items = allItems.filter((it) => OPS_LANDING_VISIBLE_WORKFLOW_IDS.has(it.id));
 
   // Aggregate per-project totals so the page shows a quick top strip.
   const projects = new Map<string, { total: number; active: number; runs24h: number; errors24h: number }>();
