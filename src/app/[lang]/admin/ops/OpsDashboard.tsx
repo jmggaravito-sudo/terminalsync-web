@@ -116,6 +116,24 @@ export function OpsDashboard({ lang }: { lang: string }) {
   const [renames, setRenames] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("tab") === "repair") {
+      setSelectedProject("_repair");
+    }
+  }, []);
+
+  function selectProject(next: string) {
+    setSelectedProject(next);
+    const url = new URL(window.location.href);
+    if (next === "_repair") {
+      url.searchParams.set("tab", "repair");
+    } else {
+      url.searchParams.delete("tab");
+    }
+    window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+  }
+
+  useEffect(() => {
     fetch("/api/admin/ops")
       .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
       .then(({ ok, d }) => {
@@ -221,7 +239,7 @@ export function OpsDashboard({ lang }: { lang: string }) {
           return (
             <button
               key={proj}
-              onClick={() => setSelectedProject(proj)}
+              onClick={() => selectProject(proj)}
               className={`group inline-flex items-center gap-2 rounded-t-xl rounded-b-none border border-b-0 px-4 py-2.5 text-[13px] font-semibold transition-all ${
                 isActive
                   ? "bg-[var(--color-panel)] border-[var(--color-border)] text-[var(--color-fg-strong)] -mb-px relative z-10"
@@ -250,7 +268,7 @@ export function OpsDashboard({ lang }: { lang: string }) {
           );
         })}
         <button
-          onClick={() => setSelectedProject("_repair")}
+          onClick={() => selectProject("_repair")}
           className={`group inline-flex items-center gap-2 rounded-t-xl rounded-b-none border border-b-0 px-4 py-2.5 text-[13px] font-semibold transition-all ${
             selectedProject === "_repair"
               ? "bg-[var(--color-panel)] border-[var(--color-border)] text-[var(--color-fg-strong)] -mb-px relative z-10"

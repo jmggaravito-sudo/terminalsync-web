@@ -46,6 +46,18 @@ export default async function AdminOps({ params }: Props) {
           >
             📊 {isEs ? "Reportes" : "Reports"}
           </a>
+          <a
+            href={`/${lang}/admin/ops/feedback`}
+            className="admin-ops-nav-button inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors"
+          >
+            💬 {isEs ? "Feedback" : "Feedback"}
+          </a>
+          <a
+            href={`/${lang}/admin/ops?tab=repair`}
+            className="admin-ops-nav-button inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors"
+          >
+            🛠️ {isEs ? "Auto-Reparación" : "Auto-Repair"}
+          </a>
         </nav>
         <div className="mt-6">
           <OpsDashboard lang={lang} />
