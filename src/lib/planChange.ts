@@ -5,14 +5,20 @@ import { mpAmountFor, updatePreapproval } from "./mercadopago";
 import {
   grantIncludedAi,
   revokeIncludedAiForMercadoPagoUser,
-  revokeIncludedAiForStripeCustomer,
+  revokeIncludedAiForUser,
   upsertSubscription,
   type SubscriptionProvider,
   type SubscriptionStatus,
 } from "./subscriptionState";
 import { syncSubscriptionToSupabase } from "./subscriptionsSync";
 
-const ACTIVE_STATUSES = new Set(["active", "trialing", "past_due", "incomplete", "unpaid"]);
+const ACTIVE_STATUSES = new Set([
+  "active",
+  "trialing",
+  "past_due",
+  "incomplete",
+  "unpaid",
+]);
 
 type CurrentSubscription = {
   provider: SubscriptionProvider | null;
@@ -58,13 +64,18 @@ export async function getCurrentSubscriptionForUser(
   return (data as CurrentSubscription | null) ?? null;
 }
 
-export function isChangeableSubscription(sub: CurrentSubscription | null): boolean {
+export function isChangeableSubscription(
+  sub: CurrentSubscription | null,
+): boolean {
   if (!sub?.status) return false;
   return ACTIVE_STATUSES.has(sub.status);
 }
 
-export function subscriptionProvider(sub: CurrentSubscription): SubscriptionProvider {
-  if (sub.provider === "mercadopago" || sub.provider === "stripe") return sub.provider;
+export function subscriptionProvider(
+  sub: CurrentSubscription,
+): SubscriptionProvider {
+  if (sub.provider === "mercadopago" || sub.provider === "stripe")
+    return sub.provider;
   // Legacy rows before provider columns are Stripe when they carry Stripe ids.
   return "stripe";
 }
@@ -81,12 +92,18 @@ function basePriceIds(): string[] {
   return [priceIdFor("pro"), priceIdFor("max")].filter(Boolean) as string[];
 }
 
-function findBaseItem(sub: Stripe.Subscription): Stripe.SubscriptionItem | undefined {
+function findBaseItem(
+  sub: Stripe.Subscription,
+): Stripe.SubscriptionItem | undefined {
   const base = new Set(basePriceIds());
-  return sub.items.data.find((item) => item.price?.id && base.has(item.price.id));
+  return sub.items.data.find(
+    (item) => item.price?.id && base.has(item.price.id),
+  );
 }
 
-function findIncludedAiItem(sub: Stripe.Subscription): Stripe.SubscriptionItem | undefined {
+function findIncludedAiItem(
+  sub: Stripe.Subscription,
+): Stripe.SubscriptionItem | undefined {
   const addOnPrice = includedAiPriceId();
   if (!addOnPrice) return undefined;
   return sub.items.data.find((item) => item.price?.id === addOnPrice);
@@ -100,7 +117,8 @@ export async function changeStripeSubscription(input: {
 }): Promise<Stripe.Subscription> {
   if (!stripe) throw new Error("Stripe not configured");
   const subId = stripeSubscriptionId(input.current);
-  if (!subId) throw new Error("No active Stripe subscription found for this account");
+  if (!subId)
+    throw new Error("No active Stripe subscription found for this account");
 
   const price = priceIdFor(input.plan);
   if (!price) throw new Error(`Missing Stripe price for plan "${input.plan}"`);
@@ -150,9 +168,7 @@ export async function changeStripeSubscription(input: {
   });
   await syncSubscriptionToSupabase(updated);
 
-  const customerId =
-    typeof updated.customer === "string" ? updated.customer : updated.customer.id;
-  if (!input.includedAi) await revokeIncludedAiForStripeCustomer(customerId);
+  if (!input.includedAi) await revokeIncludedAiForUser(input.userId);
   return updated;
 }
 
@@ -164,10 +180,13 @@ export async function changeMercadoPagoSubscription(input: {
 }): Promise<void> {
   const preapprovalId = input.current.provider_subscription_id;
   if (!preapprovalId) {
-    throw new Error("No active Mercado Pago subscription found for this account");
+    throw new Error(
+      "No active Mercado Pago subscription found for this account",
+    );
   }
   const amount = mpAmountFor(input.plan, input.includedAi);
-  if (amount === null) throw new Error(`No Mercado Pago amount configured for "${input.plan}"`);
+  if (amount === null)
+    throw new Error(`No Mercado Pago amount configured for "${input.plan}"`);
   const reason = `Terminal Sync ${input.plan === "max" ? "Max" : "Pro"}${input.includedAi ? " + IA" : ""}`;
 
   await updatePreapproval({ id: preapprovalId, amount, reason });
