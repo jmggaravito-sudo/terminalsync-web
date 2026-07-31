@@ -53,7 +53,40 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Dry-run preflight smoke
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run == true }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LOOP_RUNS_ENDPOINT: https://terminalsync.ai/api/internal/loop-runs
+          LOOP_RUNS_WRITE_TOKEN: ${{ secrets.LOOP_RUNS_WRITE_TOKEN }}
+          TS_CROSS_REPO_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
+          TERMINALSYNC_APP_REPO: jmggaravito-sudo/terminal-sync
+        run: |
+          set -euo pipefail
+          test -n "$ANTHROPIC_API_KEY"
+          test -n "$LOOP_RUNS_WRITE_TOKEN"
+          test -n "$TS_CROSS_REPO_TOKEN"
+
+          anthropic_code=$(curl -sS -o /tmp/anthropic-models.json -w '%{http_code}'             https://api.anthropic.com/v1/models             -H "x-api-key: $ANTHROPIC_API_KEY"             -H "anthropic-version: 2023-06-01")
+          test "$anthropic_code" = "200"
+          python3 - <<'PYCODE'
+          import json
+          from pathlib import Path
+          ids = [m.get('id') for m in json.loads(Path('/tmp/anthropic-models.json').read_text()).get('data', [])]
+          assert 'claude-sonnet-5' in ids, 'claude-sonnet-5 not available to ANTHROPIC_API_KEY'
+          print('Anthropic API: OK')
+          PYCODE
+
+          loop_code=$(curl -sS -o /tmp/loop-runs-smoke.json -w '%{http_code}'             -X POST "$LOOP_RUNS_ENDPOINT"             -H "Authorization: Bearer $LOOP_RUNS_WRITE_TOKEN"             -H "Content-Type: application/json"             --data '{bad json')
+          test "$loop_code" = "400"
+          grep -q 'Invalid JSON' /tmp/loop-runs-smoke.json
+          echo 'Loop run write token: OK'
+
+          GH_TOKEN="$TS_CROSS_REPO_TOKEN" gh repo view "$TERMINALSYNC_APP_REPO" --json nameWithOwner >/tmp/app-repo.json
+          echo 'Cross-repo token: OK'
+
       - name: Run marketplace skill curation loop
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run != true }}
         uses: anthropics/claude-code-action@v1
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
