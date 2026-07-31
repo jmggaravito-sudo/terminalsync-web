@@ -1,0 +1,110 @@
+name: Integration Supervision Loop
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Tuesday 14:00 UTC / 09:00 Bogotá, after the four Monday marketplace loops.
+    - cron: "0 14 * * 2"
+  pull_request:
+    paths:
+      - "content/connectors/**"
+      - "content/plugins/**"
+      - "content/kits/**"
+      - "content/skills/**"
+      - "public/connectors/**"
+      - "public/plugins/**"
+      - "public/skills/**"
+      - "public/logos/**"
+      - "src/app/api/marketplace/catalog/**"
+      - "src/lib/marketplace/**"
+      - "src/lib/plugins*"
+      - "src/lib/skills*"
+      - ".github/workflows/integration-supervision-loop.yml"
+      - "docs/integration-supervision-loop.md"
+
+permissions:
+  contents: read
+  pull-requests: read
+
+env:
+  TERMINALSYNC_APP_REPO: jmggaravito-sudo/terminal-sync
+  TERMINALSYNC_APP_BASE_BRANCH: release/v0.2.18-lab
+
+jobs:
+  supervise:
+    name: Supervise marketplace → app integration UX
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run landing catalog supervision checks
+        run: |
+          npm test -- --run \
+            src/app/api/marketplace/catalog/route.test.ts \
+            src/lib/marketplace/kitsIntegrity.test.ts \
+            src/lib/plugins.integrity.test.ts \
+            src/lib/plugins.test.ts \
+            src/lib/skills.test.ts \
+            src/lib/logoAssets.test.ts
+
+      - name: Resolve matching app PR or release branch
+        id: app_ref
+        env:
+          GH_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "TS_CROSS_REPO_TOKEN is required so the supervision loop can verify the app mirror repo." >&2
+            exit 1
+          fi
+
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            app_pr="$(printf '%s' "${PR_BODY:-}" | grep -Eo 'jmggaravito-sudo/terminal-sync/pull/[0-9]+|terminal-sync/pull/[0-9]+|terminal-sync#[0-9]+|app #[0-9]+' | head -1 | grep -Eo '[0-9]+' || true)"
+            if [ -z "$app_pr" ]; then
+              echo "This marketplace PR must link its app mirror PR (for example: App mirror: jmggaravito-sudo/terminal-sync/pull/1045)." >&2
+              exit 1
+            fi
+            app_ref="$(gh pr view "$app_pr" --repo "$TERMINALSYNC_APP_REPO" --json headRefName --jq .headRefName)"
+            echo "app_pr=$app_pr" >> "$GITHUB_OUTPUT"
+            echo "app_ref=$app_ref" >> "$GITHUB_OUTPUT"
+            echo "Resolved app mirror PR #$app_pr → $app_ref"
+          else
+            echo "app_ref=$TERMINALSYNC_APP_BASE_BRANCH" >> "$GITHUB_OUTPUT"
+            echo "Scheduled/manual run: verifying app base $TERMINALSYNC_APP_BASE_BRANCH"
+          fi
+
+      - name: Checkout app mirror
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TERMINALSYNC_APP_REPO }}
+          ref: ${{ steps.app_ref.outputs.app_ref }}
+          path: terminal-sync-app
+          token: ${{ secrets.TS_CROSS_REPO_TOKEN }}
+
+      - name: Install app dependencies
+        working-directory: terminal-sync-app
+        run: npm ci
+
+      - name: Run app drag/install parity checks
+        working-directory: terminal-sync-app
+        run: |
+          npm test -- --run \
+            src/components/PowerUpItemRow.test.tsx \
+            src/hooks/usePowerUpDropTarget.test.tsx \
+            src/components/PowerUpDetailPanel.test.tsx \
+            src/data/catalogStore.test.ts \
+            src/lib/marketplaceCatalog.test.ts
+          npx tsc --noEmit
