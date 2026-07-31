@@ -25,6 +25,10 @@ For the public `/api/marketplace/catalog` contract:
 - on PRs that touch catalog content, marketplace APIs, integration UI, or this
   workflow.
 
+## Where JM sees it
+
+Every completed supervision run writes a `supervision` row to `/admin/ops/loop-runs`, next to Connectors, Plugins, Kits and Skills. The row links to the GitHub Actions run as evidence, because this loop verifies catalog/app parity instead of publishing new landing item slugs.
+
 ## Human policy
 
 If this loop fails, do not merge the corresponding app/landing pair. Fix the
