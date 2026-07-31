@@ -57,3 +57,16 @@ Automated loops should attempt both PRs. If the automation cannot push to the ap
 ## Loop report menu
 
 `/admin/ops/loop-runs` is the shared menu for all four loops: Connectors, Plugins, Kits, and Skills. Each run should record `--kind` and `--items` so the admin report can link directly to the public landing pages that the desktop app must mirror.
+
+## Weekly marketplace loop schedule
+
+The four marketplace loops run as separate GitHub Actions every Monday, staggered so each can produce its own landing/web PR and app mirror PR:
+
+| Loop       | Workflow                                        |   UTC | Bogotá | `--kind`     | Landing route           |
+| ---------- | ----------------------------------------------- | ----: | -----: | ------------ | ----------------------- |
+| Connectors | `.github/workflows/connector-curation-loop.yml` | 14:00 |  09:00 | `connectors` | `/es/connectors/<slug>` |
+| Plugins    | `.github/workflows/plugin-curation-loop.yml`    | 15:00 |  10:00 | `plugins`    | `/es/plugins/<slug>`    |
+| Kits       | `.github/workflows/kit-curation-loop.yml`       | 16:00 |  11:00 | `kits`       | `/es/stacks/<slug>`     |
+| Skills     | `.github/workflows/skill-curation-loop.yml`     | 17:00 |  12:00 | `skills`     | `/es/skills/<slug>`     |
+
+Each workflow also supports `workflow_dispatch` with `focus` and `dry_run`.
