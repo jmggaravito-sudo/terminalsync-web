@@ -7,9 +7,9 @@ export const revalidate = 0;
 type RawRow = Record<string, unknown>;
 
 const FEEDBACK_TABLE_CANDIDATES = [
+  "product_feedback",
   "feedback",
   "user_feedback",
-  "product_feedback",
   "app_feedback",
   "suggestions",
   "user_suggestions",
