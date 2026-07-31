@@ -11,7 +11,7 @@ import { authedFetch, getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type AuthState = "checking" | "anon" | "ready" | "forbidden";
 
-type LoopKind = "connectors" | "plugins" | "kits" | "skills";
+type LoopKind = "connectors" | "plugins" | "kits" | "skills" | "supervision";
 type LoopFilter = "all" | LoopKind;
 
 interface LoopRun {
@@ -30,6 +30,7 @@ const FILTERS: { value: LoopFilter; label: string }[] = [
   { value: "plugins", label: "Plugins" },
   { value: "kits", label: "Kits" },
   { value: "skills", label: "Skills" },
+  { value: "supervision", label: "Supervisión" },
 ];
 
 export function LoopRunsClient() {
@@ -114,8 +115,8 @@ export function LoopRunsClient() {
               Marketplace Loop runs
             </h1>
             <p className="mt-1 text-[13px] text-[var(--color-fg-muted)]">
-              Historial de los 4 loops: tipo, fecha, encontrados, SKIP y links
-              directos de landing.
+              Historial de los 4 loops de creación más el loop de supervisión: tipo,
+              fecha, encontrados, SKIP, links de landing y evidencia.
             </p>
           </div>
           {auth === "ready" ? (
@@ -212,6 +213,7 @@ function RunsTable({ runs, loading }: { runs: LoopRun[]; loading: boolean }) {
             <th className="px-4 py-3 font-medium text-right">Encontró</th>
             <th className="px-4 py-3 font-medium text-right">SKIP</th>
             <th className="px-4 py-3 font-medium">Landing</th>
+            <th className="px-4 py-3 font-medium">Evidencia</th>
           </tr>
         </thead>
         <tbody>
@@ -240,6 +242,9 @@ function RunsTable({ runs, loading }: { runs: LoopRun[]; loading: boolean }) {
                 <td className="px-4 py-3">
                   <LandingLinks kind={kind} slugs={run.item_slugs ?? []} />
                 </td>
+                <td className="px-4 py-3">
+                  <EvidenceLink url={run.pr_url} kind={kind} />
+                </td>
               </tr>
             );
           })}
@@ -250,6 +255,14 @@ function RunsTable({ runs, loading }: { runs: LoopRun[]; loading: boolean }) {
 }
 
 function LandingLinks({ kind, slugs }: { kind: LoopKind; slugs: string[] }) {
+  if (kind === "supervision") {
+    return (
+      <span className="text-[var(--color-fg-muted)]">
+        Verifica landing ↔ app
+      </span>
+    );
+  }
+
   const safeSlugs = slugs.filter((slug) => /^[a-z0-9][a-z0-9-]*$/.test(slug));
   if (safeSlugs.length === 0) {
     return (
@@ -272,14 +285,30 @@ function LandingLinks({ kind, slugs }: { kind: LoopKind; slugs: string[] }) {
   );
 }
 
-function landingHref(kind: LoopKind, slug: string) {
-  const base: Record<LoopKind, string> = {
+function landingHref(kind: Exclude<LoopKind, "supervision">, slug: string) {
+  const base: Record<Exclude<LoopKind, "supervision">, string> = {
     connectors: "connectors",
     plugins: "plugins",
     kits: "stacks",
     skills: "skills",
   };
   return `/es/${base[kind]}/${slug}`;
+}
+
+function EvidenceLink({ url, kind }: { url: string | null; kind: LoopKind }) {
+  if (!url) {
+    return <span className="text-[var(--color-fg-muted)]">Sin evidencia</span>;
+  }
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+      className="text-[12px] font-medium text-[var(--color-accent)] underline-offset-4 hover:underline"
+    >
+      {kind === "supervision" ? "Ver run" : "Ver PR"}
+    </a>
+  );
 }
 
 function labelFromSlug(slug: string) {
@@ -295,6 +324,7 @@ function KindBadge({ kind }: { kind: LoopKind }) {
     plugins: "Plugins",
     kits: "Kits",
     skills: "Skills",
+    supervision: "Supervisión",
   };
   return (
     <span className="inline-flex rounded-full border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-1 text-[11px] font-medium text-[var(--color-fg-strong)]">

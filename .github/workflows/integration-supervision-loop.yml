@@ -108,3 +108,31 @@ jobs:
             src/data/catalogStore.test.ts \
             src/lib/marketplaceCatalog.test.ts
           npx tsc --noEmit
+
+      - name: Record supervision loop run
+        if: always()
+        continue-on-error: true
+        env:
+          LOOP_RUNS_ENDPOINT: https://terminalsync.ai/api/internal/loop-runs
+          LOOP_RUNS_WRITE_TOKEN: ${{ secrets.LOOP_RUNS_WRITE_TOKEN }}
+          JOB_STATUS: ${{ job.status }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          if [ -z "${LOOP_RUNS_WRITE_TOKEN:-}" ]; then
+            echo "LOOP_RUNS_WRITE_TOKEN not configured; skipping loop-runs record."
+            exit 0
+          fi
+
+          found=1
+          skipped=0
+          if [ "${JOB_STATUS}" != "success" ]; then
+            found=0
+            skipped=1
+          fi
+
+          node scripts/record_loop_run.mjs \
+            --kind supervision \
+            --found "${found}" \
+            --skipped "${skipped}" \
+            --pr "${RUN_URL}"
