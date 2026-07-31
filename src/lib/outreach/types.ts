@@ -22,7 +22,18 @@ export type Lead = {
   track: string | null;
   language: string | null;
   source_keyword: string | null;
+  source_url: string | null;
   profile_url: string | null;
+  description: string | null;
+  target_audience: string | null;
+  classification_score: number | null;
+  classification_reason: string | null;
+  email: string | null;
+  instagram_handle: string | null;
+  twitter_handle: string | null;
+  linkedin_url: string | null;
+  tiktok_handle: string | null;
+  bio_link_url: string | null;
   discovered_at: string | null;
   status: ReviewStatus | null;
   review_notes: string | null;

@@ -2,7 +2,14 @@
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { OP_STATUSES, type OpStatus, type Lead, type ReviewStatus } from "@/lib/outreach/types";
-import { TEMPLATES, templateTrack, templateLang } from "@/lib/outreach/templates";
+import {
+  OUTREACH_TEMPLATES,
+  personalizeLead,
+  recommendedTemplateId,
+  renderOutreachTemplate,
+  templateLang,
+  templateTrack,
+} from "@/lib/outreach/templates";
 import { authedFetch } from "@/lib/supabase/browser";
 
 type AuthState = "checking" | "anon" | "forbidden" | "ready";
@@ -69,6 +76,7 @@ export default function OutreachQueue({ lang }: { lang: string }) {
   const [activeId, setActiveId] = useState<Lead["id"] | null>(null);
   const [draft, setDraft] = useState("");
   const [hook, setHook] = useState("");
+  const [templateId, setTemplateId] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -121,40 +129,41 @@ export default function OutreachQueue({ lang }: { lang: string }) {
   );
 
   const active = leads.find((l) => l.id === activeId) || null;
+  const activePersonalization = active ? personalizeLead(active) : null;
+  const activeTemplates = active
+    ? OUTREACH_TEMPLATES.filter(
+        (tpl) =>
+          tpl.lang === templateLang(active.language) &&
+          (tpl.segment === "any" || tpl.segment === activePersonalization?.segment),
+      )
+    : [];
 
-  // ── Build draft when a lead is opened ──
+  // ── Build personalized draft when a lead is opened ──
   useEffect(() => {
     if (!active) {
       setHook("");
       setDraft("");
+      setTemplateId("");
       return;
     }
-    const lang = templateLang(active.language);
-    const trk = templateTrack(active.track);
-    const tpl = TEMPLATES[trk][lang];
+    const nextTemplateId = recommendedTemplateId(active);
+    const tpl = OUTREACH_TEMPLATES.find((t) => t.id === nextTemplateId) || activeTemplates[0];
     const h = active.op_hook ?? "";
     setHook(h);
-    setDraft(
-      tpl
-        .replace("{name}", active.name || active.handle || "")
-        .replace("{hook}", h ? h.trim() + " — " : "")
-    );
+    setTemplateId(tpl?.id ?? "");
+    setDraft(tpl ? renderOutreachTemplate(tpl, { ...active, op_hook: h }) : "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeId]);
 
-  // ── Recompute draft as hook changes ──
+  // ── Recompute draft as hook/template changes ──
   useEffect(() => {
-    if (!active) return;
-    const lang = templateLang(active.language);
-    const trk = templateTrack(active.track);
-    const tpl = TEMPLATES[trk][lang];
-    setDraft(
-      tpl
-        .replace("{name}", active.name || active.handle || "")
-        .replace("{hook}", hook ? hook.trim() + " — " : "")
-    );
+    if (!active || !templateId) return;
+    const tpl = OUTREACH_TEMPLATES.find((t) => t.id === templateId);
+    if (!tpl) return;
+    const base = renderOutreachTemplate(tpl, active);
+    setDraft(hook.trim() ? `${hook.trim()}\n\n${base}` : base);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hook]);
+  }, [hook, templateId]);
 
   // ── Persist human review decision ──
   const setReviewStatus = useCallback(
@@ -328,6 +337,13 @@ export default function OutreachQueue({ lang }: { lang: string }) {
         .review-title{font-weight:700;font-size:13px;}
         .review-help{color:var(--ink2);font-size:12.5px;line-height:1.45;}
         .review-actions{display:flex;gap:9px;margin-top:12px;}
+        .intel{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:13px 14px;margin-bottom:18px;}
+        .intel-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px;}
+        .intel-card{border:1px solid var(--line);border-radius:8px;background:var(--panel2);padding:9px;}
+        .intel-k{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);}
+        .intel-v{margin-top:4px;font-size:12.5px;line-height:1.35;color:var(--ink);}
+        .tplsel{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:13px;padding:10px 12px;margin-bottom:18px;}
+        .contact-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;}
         .acts{padding:16px 24px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px;}
         .act-row{display:flex;gap:9px;}
         .btn{flex:1;font-family:var(--sans);font-size:13px;font-weight:600;padding:11px;border-radius:8px;
@@ -488,15 +504,61 @@ export default function OutreachQueue({ lang }: { lang: string }) {
                   </button>
                 </div>
               </div>
-              <div className="lbl">Gancho personal (opcional)</div>
+              {activePersonalization && (
+                <div className="intel">
+                  <div className="review-top">
+                    <div className="review-title">Análisis para personalizar</div>
+                    <span className="pill">{activePersonalization.segment}</span>
+                  </div>
+                  <div className="intel-grid">
+                    <div className="intel-card">
+                      <div className="intel-k">Audiencia probable</div>
+                      <div className="intel-v">{activePersonalization.audienceLabel}</div>
+                    </div>
+                    <div className="intel-card">
+                      <div className="intel-k">Dolor a tocar</div>
+                      <div className="intel-v">{activePersonalization.pain}</div>
+                    </div>
+                    <div className="intel-card">
+                      <div className="intel-k">Oferta concreta</div>
+                      <div className="intel-v">{activePersonalization.offer}</div>
+                    </div>
+                    <div className="intel-card">
+                      <div className="intel-k">Por qué entró</div>
+                      <div className="intel-v">{active.classification_reason || active.source_keyword || "Sin razón guardada"}</div>
+                    </div>
+                  </div>
+                  <div className="contact-row">
+                    {active.email && <span className="pill">Email</span>}
+                    {active.instagram_handle && <span className="pill">IG</span>}
+                    {active.twitter_handle && <span className="pill">X</span>}
+                    {active.linkedin_url && <span className="pill">LinkedIn</span>}
+                    {active.tiktok_handle && <span className="pill">TikTok</span>}
+                    {active.bio_link_url && <span className="pill">Bio link</span>}
+                  </div>
+                </div>
+              )}
+              <div className="lbl">Template personalizado</div>
+              <select
+                className="tplsel"
+                value={templateId}
+                onChange={(e) => setTemplateId(e.target.value)}
+              >
+                {activeTemplates.map((tpl) => (
+                  <option key={tpl.id} value={tpl.id}>
+                    {tpl.channel.toUpperCase()} · {tpl.label}
+                  </option>
+                ))}
+              </select>
+              <div className="lbl">Gancho extra manual (opcional)</div>
               <input
                 className="hookin"
-                placeholder="ej: vi tu último video sobre n8n…"
+                placeholder="ej: vi tu último video sobre seguimiento de leads…"
                 value={hook}
                 onChange={(e) => setHook(e.target.value)}
               />
               <div className="lbl">
-                Mensaje sugerido · {templateTrack(active.track)} ·{" "}
+                Mensaje sugerido · {activePersonalization?.segment || templateTrack(active.track)} ·{" "}
                 {templateLang(active.language).toUpperCase()}
               </div>
               <textarea
