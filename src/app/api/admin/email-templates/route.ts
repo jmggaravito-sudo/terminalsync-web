@@ -63,6 +63,90 @@ const OUTREACH_TEMPLATE_SEEDS: TemplateSeed[] = [
     body:
       "Hey {name} — {hook}I think this could be useful for your business: TerminalSync helps teams use AI as an operating layer for follow-up, content, CRM notes, client work, and repetitive tasks — without needing a developer in the middle. If you want, I can show you one practical workflow you could use this week.",
   },
+  {
+    workflow_id: INFLUENCER_WORKFLOW_ID,
+    workflow_name: INFLUENCER_WORKFLOW_NAME,
+    slug: "first-touch",
+    label: "Primer email — Audiencia agencias",
+    audience: "creator",
+    locale: "es",
+    subject: "Idea útil para tu audiencia de agencias",
+    body: `Hola {{name}},
+
+Vi tu contenido sobre {{topicMention}} y creo que hay un ángulo que puede servirle a tu audiencia: cómo usar IA para ordenar seguimiento, CRM, contenido y tareas repetitivas sin depender de un equipo técnico.
+
+TerminalSync ayuda a convertir ese trabajo diario en flujos prácticos para dueños de negocio y agencias: revisar leads, preparar mensajes, resumir respuestas y decidir el próximo paso.
+
+Si te interesa, te puedo mostrar una demo corta con un caso real para agencias y, si hace fit, te abro una cuenta demo/afiliado.
+
+¿Te sirve que te mande un ejemplo concreto?
+
+— {{senderFirstName}}
+TerminalSync`,
+  },
+  {
+    workflow_id: INFLUENCER_WORKFLOW_ID,
+    workflow_name: INFLUENCER_WORKFLOW_NAME,
+    slug: "first-touch",
+    label: "First email — Agency audience",
+    audience: "creator",
+    locale: "en",
+    subject: "Useful idea for your agency audience",
+    body: `Hi {{name}},
+
+I saw your content on {{topicMention}} and thought there may be a useful angle for your audience: using AI to clean up follow-up, CRM notes, content ops, and repetitive client work without needing a developer in the middle.
+
+TerminalSync turns that daily work into practical workflows for business owners and agencies: reviewing leads, preparing outreach, summarizing replies, and deciding the next step.
+
+If it sounds relevant, I can show you a short demo built around an agency use case and set up a free demo/affiliate account if it fits.
+
+Want me to send one concrete example?
+
+— {{senderFirstName}}
+TerminalSync`,
+  },
+  {
+    workflow_id: INFLUENCER_WORKFLOW_ID,
+    workflow_name: INFLUENCER_WORKFLOW_NAME,
+    slug: "education-first-touch",
+    label: "Primer email — Formación agencias",
+    audience: "education",
+    locale: "es",
+    subject: "Caso práctico de IA para agencias",
+    body: `Hola {{contactFirstName}},
+
+Soy {{senderFirstName}}, de TerminalSync. Vi que en {{institutionName}} trabajan contenido sobre {{topicMention}} y creo que podríamos aportar un caso práctico para alumnos, founders o agencias.
+
+La idea no es enseñar otra herramienta de IA, sino mostrar un flujo completo: capturar leads, priorizarlos, preparar seguimiento, registrar respuestas y decidir próximos pasos con ayuda de IA.
+
+Si les interesa, puedo compartir una demo corta o una cuenta de prueba para evaluar si encaja con su comunidad.
+
+¿A quién debería mandarle el ejemplo?
+
+— {{senderFirstName}}
+TerminalSync`,
+  },
+  {
+    workflow_id: INFLUENCER_WORKFLOW_ID,
+    workflow_name: INFLUENCER_WORKFLOW_NAME,
+    slug: "education-first-touch",
+    label: "First email — Agency training",
+    audience: "education",
+    locale: "en",
+    subject: "Practical AI ops case for agencies",
+    body: `Hi {{contactFirstName}},
+
+I'm {{senderFirstName}} from TerminalSync. I noticed {{institutionName}} teaches content around {{topicMention}}, and I think we could contribute a practical case for students, founders, or agencies.
+
+The point is not another generic AI tool. It is a full workflow: capture leads, prioritize them, prepare follow-up, log replies, and decide next steps with AI support.
+
+If useful, I can share a short demo or a trial account so you can see whether it fits your community.
+
+Who should I send the example to?
+
+— {{senderFirstName}}
+TerminalSync`,
+  },
 ];
 
 async function ensureTemplateSeeds(
@@ -90,6 +174,9 @@ async function ensureTemplateSeeds(
   const staleNeedles = [
     "Claude, Gemini",
     "Claude, Gemini & Codex",
+    "Claude Code",
+    "Codex",
+    "Gemini",
     "most AI tools forget",
     "herramientas de IA olvidan",
     "cambias de app o de modelo",
