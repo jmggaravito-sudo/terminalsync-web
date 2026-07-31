@@ -640,7 +640,6 @@ const OPS_LANDING_VISIBLE_WORKFLOW_IDS = new Set([
   "21DqwyeruJlFNqgW", // Sender · Influencer Emails/DMs
   "jINNqL72z9yNcKx6", // Tracker · Replies
   "2gbpZFPPlYMo6k3f", // Trend Signals Daily
-  "KpqQvgr6H1C2O4Oa", // Bundle Curator
   "9sMs1ExYtue9ay1n", // Welcome Flow
   "i5Miq18SAdvaTnbK", // Feedback / sugerencias
   "bIQyZUPQOvmVXwj5", // Discovery/Ops Error Alert
