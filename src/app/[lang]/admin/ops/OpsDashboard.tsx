@@ -427,12 +427,17 @@ function WorkflowCard({
 
   const editorUrl = `${n8nUrl}/workflow/${wf.id}`;
   // Internal admin routes need the [lang] prefix; absolute URLs (Sheets,
-  // GHL, etc.) pass through untouched.
-  const resultHref = wf.resultUrl
-    ? wf.resultUrl.startsWith("/")
-      ? `/${lang}${wf.resultUrl}`
-      : wf.resultUrl
-    : null;
+  // GHL, etc.) pass through untouched. Outreach is auth-gated, so send
+  // JM through login with a `next` deep link instead of landing on a
+  // confusing "Verificando sesión…" screen.
+  const makeHref = (href: string) => {
+    if (href === "/admin/ops/outreach") {
+      const next = `/${lang}${href}`;
+      return `/${lang}/login?next=${encodeURIComponent(next)}`;
+    }
+    return href.startsWith("/") ? `/${lang}${href}` : href;
+  };
+  const resultHref = wf.resultUrl ? makeHref(wf.resultUrl) : null;
   const resultIsExternal = !!wf.resultUrl && !wf.resultUrl.startsWith("/");
 
   // Decide overall mood from the latest run, not from any older error in
@@ -706,8 +711,13 @@ function OperatorActionsPanel({
   lang: string;
   isEs: boolean;
 }) {
-  const toHref = (href: string) =>
-    href.startsWith("/") ? `/${lang}${href}` : href;
+  const toHref = (href: string) => {
+    if (href === "/admin/ops/outreach") {
+      const next = `/${lang}${href}`;
+      return `/${lang}/login?next=${encodeURIComponent(next)}`;
+    }
+    return href.startsWith("/") ? `/${lang}${href}` : href;
+  };
 
   return (
     <div className="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel)] p-3">

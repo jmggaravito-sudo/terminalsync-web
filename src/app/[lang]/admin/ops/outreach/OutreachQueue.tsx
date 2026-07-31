@@ -257,15 +257,30 @@ export default function OutreachQueue({ lang }: { lang: string }) {
     [counts]
   );
 
+  const loginHref = `/${lang}/login?next=${encodeURIComponent(`/${lang}/admin/ops/outreach`)}`;
+
   if (auth === "checking") {
-    return <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "#8b98a8" }}>Verificando sesión…</div>;
+    return (
+      <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "#8b98a8" }}>
+        Verificando sesión admin…
+        <div style={{ marginTop: 10, fontSize: 12 }}>
+          Si no avanza, <a href={loginHref} style={{ color: "#3fb950" }}>iniciá sesión acá</a>.
+        </div>
+      </div>
+    );
   }
   if (auth === "anon") {
     return (
       <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "#e6edf3" }}>
-        <p>Iniciá sesión con tu cuenta admin.</p>
-        <p style={{ marginTop: 8, color: "#8b98a8", fontSize: 13 }}>
-          Ir a <a href={`/${lang}/login?next=${encodeURIComponent(`/${lang}/admin/ops/outreach`)}`} style={{ color: "#3fb950" }}>{`/${lang}/login`}</a> → Google/magic link → volvés acá.
+        <p style={{ fontSize: 16, fontWeight: 700 }}>Esta cola requiere sesión admin.</p>
+        <p style={{ marginTop: 8, color: "#8b98a8", fontSize: 13, maxWidth: 620, lineHeight: 1.5 }}>
+          Existe para aprobar influencers, editar mensajes personalizados y marcar seguimiento.
+          Entrá con Google y volvés automáticamente a esta misma cola.
+        </p>
+        <p style={{ marginTop: 16 }}>
+          <a href={loginHref} style={{ display: "inline-flex", background: "#fff", color: "#000", padding: "10px 14px", borderRadius: 10, fontWeight: 700, textDecoration: "none" }}>
+            Iniciar sesión y abrir cola
+          </a>
         </p>
       </div>
     );
