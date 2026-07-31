@@ -58,6 +58,7 @@ interface OpsWorkflow {
    *  the conversation itself. */
   resultUrl: string | null;
   resultLabel: string | null;
+  operatorActions: { label: string; href?: string; note?: string }[];
   updatedAt: string | null;
   todayCount: number;
   todaySuccess: number;
@@ -568,6 +569,13 @@ function WorkflowCard({
               failed, regardless of compact mode, so JM knows WHY a card
               is red without clicking into n8n. */}
           {wf.lastError && <ErrorBanner err={wf.lastError} isEs={isEs} />}
+          {!compact && wf.operatorActions.length > 0 && (
+            <OperatorActionsPanel
+              actions={wf.operatorActions}
+              lang={lang}
+              isEs={isEs}
+            />
+          )}
           {/* Live business results — only on the detailed (TerminalSync)
               view. Non-TS projects collapse to a health-only card. */}
           {!compact && isInfluencerCrmWorkflow(wf.id) && (
@@ -666,6 +674,71 @@ function ErrorBanner({
             {isEs ? "última corrida falló" : "last run failed"}
           </p>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function OperatorActionsPanel({
+  actions,
+  lang,
+  isEs,
+}: {
+  actions: { label: string; href?: string; note?: string }[];
+  lang: string;
+  isEs: boolean;
+}) {
+  const toHref = (href: string) =>
+    href.startsWith("/") ? `/${lang}${href}` : href;
+
+  return (
+    <div className="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel)] p-3">
+      <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-[var(--color-fg-muted)]">
+        {isEs ? "Acciones manuales / para decidir" : "Manual actions / decisions"}
+      </p>
+      <div className="mt-2 grid gap-2 md:grid-cols-2">
+        {actions.map((action, idx) => {
+          const content = (
+            <>
+              <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-black text-[10px] font-bold text-white">
+                {idx + 1}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[12px] font-semibold text-[var(--color-fg-strong)]">
+                  {action.label}
+                </span>
+                {action.note && (
+                  <span className="mt-0.5 block text-[11px] leading-snug text-[var(--color-fg-muted)]">
+                    {action.note}
+                  </span>
+                )}
+              </span>
+              {action.href && (
+                <ExternalLink
+                  size={12}
+                  className="ml-auto shrink-0 text-[var(--color-fg-muted)]"
+                />
+              )}
+            </>
+          );
+
+          const className =
+            "flex min-h-[52px] items-start gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-2 text-left transition-colors hover:border-[var(--color-fg-muted)]";
+
+          return action.href ? (
+            <a
+              key={`${action.label}-${idx}`}
+              href={toHref(action.href)}
+              className={className}
+            >
+              {content}
+            </a>
+          ) : (
+            <div key={`${action.label}-${idx}`} className={className}>
+              {content}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
