@@ -64,6 +64,8 @@ jobs:
           GH_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
           PR_BODY: ${{ github.event.pull_request.body }}
           EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          LANDING_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           if [ -z "${GH_TOKEN:-}" ]; then
@@ -74,13 +76,20 @@ jobs:
           if [ "$EVENT_NAME" = "pull_request" ]; then
             app_pr="$(printf '%s' "${PR_BODY:-}" | grep -Eo 'jmggaravito-sudo/terminal-sync/pull/[0-9]+|terminal-sync/pull/[0-9]+|terminal-sync#[0-9]+|app #[0-9]+' | head -1 | grep -Eo '[0-9]+' || true)"
             if [ -z "$app_pr" ]; then
-              echo "This marketplace PR must link its app mirror PR (for example: App mirror: jmggaravito-sudo/terminal-sync/pull/1045)." >&2
-              exit 1
+              changed_files="$(gh pr view "$PR_NUMBER" --repo "$LANDING_REPO" --json files --jq '.files[].path')"
+              if printf '%s
+' "$changed_files" | grep -Eq '^(content/(connectors|plugins|kits|skills)/|public/(connectors|plugins|skills|logos)/|src/app/api/marketplace/catalog/|src/lib/(marketplace|plugins|skills))'; then
+                echo "This marketplace PR must link its app mirror PR (for example: App mirror: jmggaravito-sudo/terminal-sync/pull/1045)." >&2
+                exit 1
+              fi
+              echo "app_ref=$TERMINALSYNC_APP_BASE_BRANCH" >> "$GITHUB_OUTPUT"
+              echo "Ops-only supervision PR: no app mirror required; verifying app base $TERMINALSYNC_APP_BASE_BRANCH"
+            else
+              app_ref="$(gh pr view "$app_pr" --repo "$TERMINALSYNC_APP_REPO" --json headRefName --jq .headRefName)"
+              echo "app_pr=$app_pr" >> "$GITHUB_OUTPUT"
+              echo "app_ref=$app_ref" >> "$GITHUB_OUTPUT"
+              echo "Resolved app mirror PR #$app_pr → $app_ref"
             fi
-            app_ref="$(gh pr view "$app_pr" --repo "$TERMINALSYNC_APP_REPO" --json headRefName --jq .headRefName)"
-            echo "app_pr=$app_pr" >> "$GITHUB_OUTPUT"
-            echo "app_ref=$app_ref" >> "$GITHUB_OUTPUT"
-            echo "Resolved app mirror PR #$app_pr → $app_ref"
           else
             echo "app_ref=$TERMINALSYNC_APP_BASE_BRANCH" >> "$GITHUB_OUTPUT"
             echo "Scheduled/manual run: verifying app base $TERMINALSYNC_APP_BASE_BRANCH"
