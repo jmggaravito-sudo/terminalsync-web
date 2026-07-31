@@ -29,3 +29,22 @@ For the public `/api/marketplace/catalog` contract:
 
 If this loop fails, do not merge the corresponding app/landing pair. Fix the
 catalog contract first, then re-smoke the app Integraciones panel.
+
+
+## Landing ↔ app sync gate
+
+For every marketplace PR that touches public integration catalog content, the PR body must link the matching app mirror PR, for example:
+
+```
+App mirror: jmggaravito-sudo/terminal-sync/pull/1045
+```
+
+The supervision workflow resolves that app PR, checks out its head branch, and runs the app-side drag/install contract tests. If the app mirror is missing, unreachable, or its tests fail, the landing PR must not merge. Scheduled/manual runs verify the current app release branch (`release/v0.2.18-lab`) against the landing main branch.
+
+The app-side parity suite covers:
+
+- Explorer rows emit the correct drag ids (`cn-*`, `sk-*`, `cli-*`, `kit-*`, `pl-*`).
+- Plugins dropped from Explore are accepted by the drop target and routed to the plugin installer.
+- Kits keep the TS logo fallback and render long catalog explanations.
+- External-only connectors stay non-draggable.
+- The marketplace catalog wrapper keeps the landing wire shape compatible with the app.
