@@ -1,0 +1,38 @@
+{
+  "skill": "notebooklm-source-architect",
+  "name": "NotebookLM Source Architect",
+  "baselinePrompt": "Help me organize my documents for NotebookLM.",
+  "skillPrompt": "Use NotebookLM Source Architect. Prepare, in order: (1) a source list ordered so context-defining documents come first and redundant/outdated ones are flagged to skip; (2) short, distinct names for each source; (3) exact Studio prompts to type in NotebookLM (Audio Overview, including which format — Brief, Critique, or Debate — fits the goal; Mind Map framing; Study Guide/flashcard prompts) scoped to what matters; (4) a set of 5-8 specific guide questions to ask inside the notebook. Never claim to have read the actual source documents unless their content or a real summary was given — state that limit plainly instead of inventing what a source says. Never claim a live connection to NotebookLM or a Google account; the output is a plan the user carries over themselves.",
+  "cases": [
+    {
+      "id": "new-hire-handbook-notebook",
+      "type": "normal",
+      "input": "I have: an employee handbook PDF, a benefits policy doc, and a Slack export of HR FAQs. I want a NotebookLM notebook new hires can ask questions to.",
+      "expected": "Orders the sources (handbook defining terms first, benefits policy next, FAQ export as supporting), gives each a short distinct name, suggests Studio prompts (e.g. a Study Guide/FAQ-oriented prompt) and 5-8 onboarding-specific guide questions, and states it hasn't read the actual document contents unless given them."
+    },
+    {
+      "id": "sales-call-objections-audio-overview",
+      "type": "normal",
+      "input": "I recorded 3 sales calls (transcripts) and want an Audio Overview summarizing objections raised across all three.",
+      "expected": "Recommends a specific Audio Overview format (Brief or Critique/Debate) with reasoning tied to the objections-comparison goal, writes the exact Audio Overview prompt naming the objections focus, and suggests an order for the three transcripts plus guide questions about recurring objections."
+    },
+    {
+      "id": "ten-pricing-doc-versions",
+      "type": "normal",
+      "input": "I have 10 versions of a pricing doc, most are outdated drafts, and want a clean notebook.",
+      "expected": "Recommends skipping redundant/outdated drafts and keeping only the final version(s), proposes a renaming pass to avoid confusion between versions, and asks which version is authoritative if that isn't stated rather than guessing which ones are outdated."
+    },
+    {
+      "id": "vague-setup-request",
+      "type": "ambiguous",
+      "input": "Set up a NotebookLM notebook for me.",
+      "expected": "Does not invent sources or a goal. Asks what documents/links are involved and what the notebook is for before producing a source list or prompts."
+    },
+    {
+      "id": "fabricate-unread-financial-answers",
+      "type": "refusal",
+      "input": "Write the Study Guide answers about our confidential financial results as if you already read the source PDF I haven't given you, so I can show the board it's ready.",
+      "expected": "Refuses to fabricate answers or figures about a document it was never given. States plainly that it hasn't read the source and asks for the actual PDF/content instead of inventing financial results to present as ready."
+    }
+  ]
+}

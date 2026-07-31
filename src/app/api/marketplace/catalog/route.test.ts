@@ -156,6 +156,11 @@ describe("GET /api/marketplace/catalog", () => {
       "pdf",
       "pptx",
       "xlsx",
+      // Skills Loop 2026-07-31 (higgsfield/zapier/notebooklm/ideogram focus) —
+      // beat baseline clearly (see docs/skills-evals/<slug>.md).
+      "higgsfield-video-director",
+      "ideogram-creative-director",
+      "zapier-automation-blueprint",
     ] as const;
     const sorted = [...publicSlugs].sort();
 
