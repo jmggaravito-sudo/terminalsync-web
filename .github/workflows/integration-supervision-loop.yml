@@ -77,8 +77,7 @@ jobs:
             app_pr="$(printf '%s' "${PR_BODY:-}" | grep -Eo 'jmggaravito-sudo/terminal-sync/pull/[0-9]+|terminal-sync/pull/[0-9]+|terminal-sync#[0-9]+|app #[0-9]+' | head -1 | grep -Eo '[0-9]+' || true)"
             if [ -z "$app_pr" ]; then
               changed_files="$(gh pr view "$PR_NUMBER" --repo "$LANDING_REPO" --json files --jq '.files[].path')"
-              if printf '%s
-' "$changed_files" | grep -Eq '^(content/(connectors|plugins|kits|skills)/|public/(connectors|plugins|skills|logos)/|src/app/api/marketplace/catalog/|src/lib/(marketplace|plugins|skills))'; then
+              if echo "$changed_files" | grep -Eq '^(content/(connectors|plugins|kits|skills)/|public/(connectors|plugins|skills|logos)/|src/app/api/marketplace/catalog/|src/lib/(marketplace|plugins|skills))'; then
                 echo "This marketplace PR must link its app mirror PR (for example: App mirror: jmggaravito-sudo/terminal-sync/pull/1045)." >&2
                 exit 1
               fi
