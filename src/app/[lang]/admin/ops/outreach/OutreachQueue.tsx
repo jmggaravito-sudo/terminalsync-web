@@ -70,6 +70,9 @@ const EMPTY_COUNTS: Counts = { pendiente: 0, enviado: 0, respondio: 0, descartad
 export default function OutreachQueue({ lang }: { lang: string }) {
   const search = useSearchParams();
   const requestedLeadId = search.get("lead");
+  const outreachPath = requestedLeadId
+    ? `/${lang}/admin/ops/outreach?lead=${encodeURIComponent(requestedLeadId)}`
+    : `/${lang}/admin/ops/outreach`;
   const [auth, setAuth] = useState<AuthState>("checking");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [counts, setCounts] = useState<Counts>(EMPTY_COUNTS);
@@ -116,7 +119,7 @@ export default function OutreachQueue({ lang }: { lang: string }) {
     const watchdog = window.setTimeout(() => {
       setAuth((current) => (current === "checking" ? "anon" : current));
       setLoading(false);
-    }, 10_000);
+    }, 3_000);
 
     void fetchLeads(filter).finally(() => window.clearTimeout(watchdog));
     if (!requestedLeadId) setActiveId(null);
@@ -264,28 +267,31 @@ export default function OutreachQueue({ lang }: { lang: string }) {
     [counts]
   );
 
-  const loginHref = `/${lang}/login?next=${encodeURIComponent(`/${lang}/admin/ops/outreach`)}`;
+  const loginHref = `/${lang}/login?next=${encodeURIComponent(outreachPath)}`;
 
   if (auth === "checking") {
     return (
-      <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "#8b98a8" }}>
-        Verificando sesión admin…
-        <div style={{ marginTop: 10, fontSize: 12 }}>
-          Si no avanza, <a href={loginHref} style={{ color: "#3fb950" }}>iniciá sesión acá</a>.
-        </div>
+      <div style={{ padding: "48px 24px", fontFamily: "system-ui, sans-serif", color: "#000", background: "#fff", minHeight: "60vh" }}>
+        <p style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Verificando sesión admin…</p>
+        <p style={{ marginTop: 10, fontSize: 14, maxWidth: 620, lineHeight: 1.5 }}>
+          Si esto no abre en pocos segundos, no te dejo mirando una pantalla vacía: usá este botón y vuelves directo a la cola.
+        </p>
+        <a href={loginHref} style={{ display: "inline-flex", marginTop: 14, background: "#fff", color: "#000", border: "1px solid #000", padding: "10px 14px", borderRadius: 10, fontWeight: 800, textDecoration: "none" }}>
+          Iniciar sesión y abrir cola
+        </a>
       </div>
     );
   }
   if (auth === "anon") {
     return (
-      <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "#e6edf3" }}>
-        <p style={{ fontSize: 16, fontWeight: 700 }}>Esta cola requiere sesión admin.</p>
-        <p style={{ marginTop: 8, color: "#8b98a8", fontSize: 13, maxWidth: 620, lineHeight: 1.5 }}>
+      <div style={{ padding: "48px 24px", fontFamily: "system-ui, sans-serif", color: "#000", background: "#fff", minHeight: "60vh" }}>
+        <p style={{ fontSize: 18, fontWeight: 800 }}>Esta cola requiere sesión admin.</p>
+        <p style={{ marginTop: 8, color: "#000", fontSize: 14, maxWidth: 620, lineHeight: 1.5 }}>
           Existe para aprobar influencers, editar mensajes personalizados y marcar seguimiento.
           Entrá con Google y volvés automáticamente a esta misma cola.
         </p>
         <p style={{ marginTop: 16 }}>
-          <a href={loginHref} style={{ display: "inline-flex", background: "#fff", color: "#000", padding: "10px 14px", borderRadius: 10, fontWeight: 700, textDecoration: "none" }}>
+          <a href={loginHref} style={{ display: "inline-flex", background: "#fff", color: "#000", border: "1px solid #000", padding: "10px 14px", borderRadius: 10, fontWeight: 800, textDecoration: "none" }}>
             Iniciar sesión y abrir cola
           </a>
         </p>
