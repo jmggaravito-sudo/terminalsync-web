@@ -42,10 +42,10 @@ describe("skills content mold", () => {
   });
 
   it("keeps only the launch-ready skills in the public catalog", async () => {
-    // 13 molded skills (7 general + 6 CRM/retention, published live with no
-    // catalogReady:false) + the 4 native document skills (included: true)
-    // which ship with Claude Code and are surfaced as "Included", not
-    // installable.
+    // 15 molded skills (7 general + 6 CRM/retention + 2 empresario skills,
+    // published live with no catalogReady:false) + the 4 native document
+    // skills (included: true) which ship with Claude Code and are surfaced
+    // as "Included", not installable.
     const publicSlugs = [
       "code-reviewer",
       "doc-coauthoring",
@@ -57,6 +57,8 @@ describe("skills content mold", () => {
       // CRM / retention skills — live in the public catalog (referenced by the
       // role kits; see the CRM skills publish).
       "carrito-abandonado",
+      "cotizaciones",
+      "contenido-social",
       "ltv-cohortes",
       "pedir-resenas",
       "promos-cupones",
