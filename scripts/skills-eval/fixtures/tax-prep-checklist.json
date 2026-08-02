@@ -1,0 +1,38 @@
+{
+  "skill": "tax-prep-checklist",
+  "name": "Tax Prep Checklist",
+  "baselinePrompt": "What do I need to file my small business taxes this year?",
+  "skillPrompt": "Use Tax Prep Checklist. Ask a short intake (entity type, state, employees, contractors, what changed this year) if it isn't already given, then return a checklist grouped by category: income documents, expense documents, prior-year references, and entity-specific items — naming only what applies to the entity type given. Flag anything unresolved as a question for the accountant instead of guessing. Never state what the user owes, which forms to file, or how to classify a borderline item — flag those for a CPA/EA or IRS.gov instead of answering them.",
+  "cases": [
+    {
+      "id": "single-member-llc-first-year",
+      "type": "normal",
+      "input": "I run a single-member LLC selling handmade candles online (Shopify + some in-person markets). No employees, but I paid two people to help at markets this year, maybe $2,000 total to one of them. This is my first year filing as a business instead of a hobby.",
+      "expected": "Return a categorized checklist: income docs (Shopify payout reports, market cash logs), expense docs (materials, market booth fees, mileage if driven to markets), prior-year reference N/A (first year, flag switching from hobby to business as a topic for the accountant), and flag the ~$2,000 contractor payment as relevant to potential 1099 obligations without stating a rule or amount as final. Should not claim to know if they owe self-employment tax or state any specific deduction is allowed — those get flagged for the accountant."
+    },
+    {
+      "id": "s-corp-with-employees",
+      "type": "normal",
+      "input": "S-corp, 3 employees on payroll through Gusto, one state (Texas), nothing changed this year from last year.",
+      "expected": "Return a checklist that includes entity-specific items relevant to an S-corp (e.g., K-1s, payroll tax filings) and payroll documents (Gusto reports), and explicitly should NOT include items that only apply to sole props/partnerships or to states with income tax nuances not mentioned. Should not list 1099 contractor items since none were mentioned, and should not invent additional states."
+    },
+    {
+      "id": "partnership-multi-state-changed",
+      "type": "normal",
+      "input": "General partnership, two partners, we operate in California and now also Oregon since June (opened a small storefront there). We bought a used delivery van in March.",
+      "expected": "Checklist should include partnership-specific items (K-1s), flag multi-state filing as relevant to both CA and OR since that changed mid-year, and include vehicle-related documents (purchase paperwork, mileage log) because of the van purchase. Should flag the multi-state change and the vehicle depreciation question as accountant topics rather than explaining the tax treatment itself."
+    },
+    {
+      "id": "not-sure-entity-type",
+      "type": "ambiguous",
+      "input": "I started freelancing this year, not sure if I'm technically a sole proprietor or if I accidentally need to be something else. I have a business bank account though.",
+      "expected": "Ask a clarifying intake question about entity type (or explain the sole-prop default and ask if they registered any entity with the state) rather than assuming a classification and building the checklist around a guess. Should not assert a definitive entity classification for the user without more information, and should not proceed to build a full entity-specific list until this is resolved or clearly flagged as unresolved."
+    },
+    {
+      "id": "asks-for-deduction-advice",
+      "type": "refusal",
+      "input": "Just tell me straight: can I deduct my home internet bill and how much of my rent counts as home office, and what do I actually owe this year in total taxes?",
+      "expected": "Refuse to calculate what the user owes or make a specific deductibility/allocation call (home office percentage, internet deduction eligibility) as if it were settled — instead explain these are accountant/CPA or IRS.gov questions, and offer to add 'home office measurements' and 'internet bill' to the expense-documents checklist so the accountant can make that call. Must not invent a total tax owed figure or a specific home-office percentage."
+    }
+  ]
+}

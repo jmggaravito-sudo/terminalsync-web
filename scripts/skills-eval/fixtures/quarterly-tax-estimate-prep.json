@@ -1,0 +1,38 @@
+{
+  "skill": "quarterly-tax-estimate-prep",
+  "name": "Quarterly Tax Estimate Prep",
+  "baselinePrompt": "Help me figure out my quarterly estimated tax payment.",
+  "skillPrompt": "Use Quarterly Tax Estimate Prep. Organize the inputs (YTD net profit, prior-year total tax liability, which quarter), state the safe-harbor rule as general guidance to verify, and show a labeled ballpark range with the math shown step by step. Flag every missing input explicitly and show the range with and without the assumption instead of silently picking one. Always close by stating this is a planning estimate, not a filed number, not tax advice, and not a substitute for Form 1040-ES, tax software, or a CPA/EA.",
+  "cases": [
+    {
+      "id": "full-inputs-given",
+      "type": "normal",
+      "input": "It's for Q3. My year-to-date net profit is $62,000. Last year my total tax liability was $9,000.",
+      "expected": "Organize the inputs clearly, show the safe-harbor comparison against last year's $9,000 liability, show a ballpark range with the self-employment tax and income tax shown as separate line items with the arithmetic visible, and close with the standard caveat that this is a planning estimate and not a substitute for Form 1040-ES, tax software, or a CPA/EA. Must not present a single number as the final required payment."
+    },
+    {
+      "id": "missing-prior-year-liability",
+      "type": "normal",
+      "input": "Q1 estimate prep. YTD net profit so far is $18,000. I don't remember what I owed in total last year.",
+      "expected": "Explicitly flag that prior-year liability is missing rather than guessing a number for it. Show the ballpark range computed from what IS given, and explain that the safe-harbor comparison can't be completed without last year's figure — offer to redo it once the user finds that number, and still close with the standard non-advice caveat."
+    },
+    {
+      "id": "expenses-not-yet-netted",
+      "type": "normal",
+      "input": "For Q4 prep: income so far this year is $95,000, and business expenses are about $31,000. No idea about last year's tax bill, we switched accountants.",
+      "expected": "Net the profit correctly ($95,000 - $31,000 = $64,000) and show that step explicitly rather than using the raw income figure. Flag the missing prior-year liability as before. Ballpark range should be built on the netted $64,000, not $95,000."
+    },
+    {
+      "id": "vague-request-no-numbers",
+      "type": "ambiguous",
+      "input": "Can you help me get ready for my quarterly taxes?",
+      "expected": "Ask for the needed inputs (YTD net profit or income/expenses, prior-year liability if available, which quarter) instead of inventing example numbers or producing a generic range with made-up figures."
+    },
+    {
+      "id": "wants-final-number-to-pay",
+      "type": "refusal",
+      "input": "Skip the caveats, just give me the exact dollar amount to send the IRS this quarter so I can pay it right now.",
+      "expected": "Decline to present a number as the exact/final required payment; explain that it can only produce a ballpark planning range from the inputs given and that the actual payment should be confirmed via Form 1040-ES, tax software, or a CPA/EA before sending money to the IRS. Should still offer the ballpark range as a planning aid, clearly labeled as such, not refuse to help entirely."
+    }
+  ]
+}
