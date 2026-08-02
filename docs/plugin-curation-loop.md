@@ -57,3 +57,22 @@ Number semantics:
 ## Two-PR app mirror gate
 
 Plugin runs must follow `docs/integration-loop-two-pr-policy.md`: a Plugin is not fully ready with only a web catalog PR. The app mirror PR must verify install/render behavior in the desktop app, especially where a Plugin bundles connectors with OAuth, secrets, or first-party flows.
+
+## Run log
+
+### 2026-08-02 — "plugins para empresarios: ventas, ecommerce, soporte al cliente, marketing, finanzas, operaciones, reportes ejecutivos" (automated)
+
+**Shipped 5 Plugins**, each an already-published connector + an already-evaluated skill, picked so the pairing reflects what the connector's real tools can actually feed the skill (no invented capability):
+
+- **shopify** (`ecommerce`) — Shopify connector + Win Back Dormant Customers. Chose `winback-dormidos` over `carrito-abandonado`: the Shopify connector's tools (`shopify_list_orders`, `shopify_search_customers`) expose fulfilled-order history (last purchase date, amount), which is exactly what win-back segmentation needs — it does **not** expose abandoned-checkout/cart-level events, so bundling the cart-recovery skill here would have been an unsupported claim. Covers ecommerce + ventas.
+- **meta-ads** (`marketing`) — Meta Ads (read-only insights) connector + Meta Ads Creator. The connector flags what's underperforming; the skill hands you fresh creative to test — a real "see the problem → get the next move" loop.
+- **google-business** (`marketing`) — Google Business connector + Ask for Reviews. One side gets new reviews in (asking happy customers), the other watches/replies to the ones that land — both halves of the same reputation loop.
+- **hubspot** (`sales`) — HubSpot connector + Internal Comms. Mirrors the already-shipped Stripe + Internal Comms pattern ("who needs a nudge" → drafted, approved, sent) applied to CRM follow-ups instead of billing.
+- **xero** (`operations`) — Xero connector + Doc Co-Authoring. Turns "read the P&L / aged receivables" into an actual structured report with an executive summary. Covers finanzas + reportes ejecutivos + operaciones in one product.
+
+**Deferred / SKIP, documented for the other Loops:**
+
+- **Intercom (soporte al cliente)** — the connector (`content/connectors/en/intercom.md`) is published and support-first, but no publishable skill pairs with it: the obvious candidate, `email-drafter`, is `status: soon` + `hidden: true` and fails the Skill Loop's delivery gate, and it's written for internal/client email tone, not inbox-triage. Shipping Intercom as a connector-only Plugin was considered (the rule allows it) but rejected this run for low marginal value over just browsing the Connector — no skill piece to make it a real "product pack" yet. Deferred to the Skill Loop: publish a support-reply drafting skill (or un-hide/re-mold `email-drafter`), then pair it with Intercom here.
+- **Shopify-adjacent ecommerce skills** (`rfm-segmentacion`, `ltv-cohortes`, `carrito-abandonado`, `promos-cupones`) — all real, evaluated, available skills that would strengthen a Shopify bundle, but stacking them all into one Plugin file would blur "one product" into a role bundle. That's what a **Kit** is for (`content/kits/RULES.md`): a future "Ecommerce Growth Kit" referencing the `shopify` Plugin plus these skills is the right home for them, not a bigger `shopify.md`. Left as a candidate for the Kit Loop.
+
+Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` (17/17 pass) + `tsc --noEmit` (clean). All 5 new plugins reuse their connector's existing, committed logo (`/connectors/<slug>.svg`) — no new logo assets needed.
