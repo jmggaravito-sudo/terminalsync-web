@@ -13,6 +13,11 @@ import {
 } from "@/lib/subscriptionsSync";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { resolveUserLang } from "@/lib/userLang";
+import {
+  CREDIT_CHECKOUT_SOURCE,
+  grantPurchasedCredits,
+  parseCreditPaymentMetadata,
+} from "@/lib/aiCredits";
 
 /** Friendly plan + cycle label from Stripe metadata. Falls back to a
  *  generic name if metadata wasn't propagated (older subs). */
@@ -99,7 +104,16 @@ export async function POST(req: Request) {
     await handle(event);
   } catch (err) {
     console.error("[stripe] handler error", err);
-    // 200 anyway so Stripe doesn't retry-storm; the error is logged.
+    // Credit grants are money. A transient DB/migration failure must make
+    // Stripe retry the signed event instead of acknowledging a paid checkout
+    // whose balance was never credited. Preserve the legacy 200 behavior for
+    // subscription/email side effects to avoid changing their retry posture.
+    if (isCreditPaymentEvent(event)) {
+      return NextResponse.json(
+        { received: false, error: "Credit fulfillment failed; retry required" },
+        { status: 500 },
+      );
+    }
   }
 
   return NextResponse.json({ received: true });
@@ -112,6 +126,15 @@ async function handle(event: Stripe.Event) {
       // first charge because of the 7-day trial — perfect moment to activate
       // Power-Ups + send the welcome email.
       const session = event.data.object as Stripe.Checkout.Session;
+
+      if (session.metadata?.source === CREDIT_CHECKOUT_SOURCE) {
+        // Delayed payment methods can emit completed while still unpaid; their
+        // later async_payment_succeeded event is the one that grants balance.
+        if (session.payment_status === "paid") {
+          await handleCreditCheckout(session);
+        }
+        break;
+      }
 
       // Marketplace one-time charges arrive here with mode='payment' and
       // a metadata.source flag — route them to the connector install flow
@@ -172,6 +195,14 @@ async function handle(event: Stripe.Event) {
       // next session. Suggested payload:
       //   { customerId, subscriptionId, plan, cycle, trialEnd }
       // See PROVISIONING in comments below.
+      break;
+    }
+
+    case "checkout.session.async_payment_succeeded": {
+      const session = event.data.object as Stripe.Checkout.Session;
+      if (session.metadata?.source === CREDIT_CHECKOUT_SOURCE) {
+        await handleCreditCheckout(session);
+      }
       break;
     }
 
@@ -509,6 +540,53 @@ async function handleMarketplaceCheckout(session: Stripe.Checkout.Session) {
     console.error("[marketplace] payout row insert failed", payout.error.message);
   }
   console.log("[marketplace] install + pending payout", { buyerUserId, listingId, grossCents });
+}
+
+function isCreditPaymentEvent(event: Stripe.Event): boolean {
+  if (
+    event.type !== "checkout.session.completed" &&
+    event.type !== "checkout.session.async_payment_succeeded"
+  ) {
+    return false;
+  }
+  const session = event.data.object as Stripe.Checkout.Session;
+  return session.metadata?.source === CREDIT_CHECKOUT_SOURCE;
+}
+
+async function handleCreditCheckout(session: Stripe.Checkout.Session) {
+  const parsed = parseCreditPaymentMetadata(session.metadata);
+  if (!parsed) throw new Error(`Credit checkout ${session.id} has invalid metadata`);
+  if (session.payment_status !== "paid") {
+    throw new Error(`Credit checkout ${session.id} is not paid`);
+  }
+  if (
+    session.currency?.toLowerCase() !== "usd" ||
+    session.amount_total !== parsed.creditPackage.amountCents
+  ) {
+    throw new Error(`Credit checkout ${session.id} amount/currency mismatch`);
+  }
+  const paymentIntent =
+    typeof session.payment_intent === "string"
+      ? session.payment_intent
+      : session.payment_intent?.id ?? null;
+  await grantPurchasedCredits({
+    userId: parsed.userId,
+    amountMicros: parsed.creditPackage.amountMicros,
+    rail: "stripe",
+    providerPaymentId: paymentIntent,
+    checkoutId: session.id,
+    idempotencyKey: `stripe:${session.id}`,
+    metadata: {
+      amount_total: session.amount_total,
+      currency: session.currency,
+      payment_status: session.payment_status,
+    },
+  });
+  console.log("[credits] Stripe top-up granted", {
+    userId: parsed.userId,
+    sessionId: session.id,
+    amountMicros: parsed.creditPackage.amountMicros,
+  });
 }
 
 async function handleBundleCheckout(session: Stripe.Checkout.Session) {
