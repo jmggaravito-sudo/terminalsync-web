@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import {
+  getPayment,
   getPreapproval,
   mercadoPagoConfigured,
   mercadoPagoWebhookSecretSet,
@@ -15,6 +16,11 @@ import {
   revokeIncludedAiForMercadoPagoUser,
   upsertSubscription,
 } from "@/lib/subscriptionState";
+import {
+  copAmountForCreditPackage,
+  grantPurchasedCredits,
+  parseCreditPaymentMetadata,
+} from "@/lib/aiCredits";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -42,7 +48,7 @@ export const dynamic = "force-dynamic";
 interface MpNotification {
   type?: string;
   action?: string;
-  data?: { id?: string };
+  data?: { id?: string | number };
 }
 
 export async function POST(req: Request) {
@@ -51,20 +57,32 @@ export async function POST(req: Request) {
     return NextResponse.json({ received: true, configured: false }, { status: 200 });
   }
 
+  const requestUrl = new URL(req.url);
   let body: MpNotification = {};
   try {
     body = (await req.json()) as MpNotification;
   } catch {
     // MP sometimes notifies via query string (?topic=&id=) — tolerate both.
-    const url = new URL(req.url);
-    const id = url.searchParams.get("id") ?? undefined;
-    const type = url.searchParams.get("topic") ?? undefined;
+    const id = requestUrl.searchParams.get("id") ?? undefined;
+    const type =
+      requestUrl.searchParams.get("type") ??
+      requestUrl.searchParams.get("topic") ??
+      undefined;
     body = { type, data: { id } };
   }
 
+  const type =
+    body.type ??
+    requestUrl.searchParams.get("type") ??
+    requestUrl.searchParams.get("topic") ??
+    undefined;
   const isPreapproval =
-    body.type === "subscription_preapproval" || body.type === "preapproval";
-  const id = body.data?.id;
+    type === "subscription_preapproval" ||
+    type === "preapproval" ||
+    body.action?.startsWith("preapproval.") === true;
+  const isPayment = type === "payment" || body.action?.startsWith("payment.") === true;
+  const rawId = body.data?.id ?? requestUrl.searchParams.get("id") ?? undefined;
+  const id = rawId === undefined || rawId === null ? undefined : String(rawId);
 
   // Signature gate. The signed manifest includes data.id, so verify after we
   // know it. Enforce only once the secret exists; warn (don't break) before.
@@ -78,8 +96,84 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
   } else {
+    if (isPayment) {
+      // One-time credit grants are money. Do not process them before the MP
+      // webhook secret is configured; 503 asks MP to retry after go-live
+      // configuration instead of trusting a spoofable notification.
+      return NextResponse.json(
+        { error: "Mercado Pago webhook verification is not configured" },
+        { status: 503 },
+      );
+    }
     console.warn(
       "[mercadopago] MERCADOPAGO_WEBHOOK_SECRET not set — processing webhook WITHOUT signature verification (set the secret before going live)",
+    );
+  }
+
+  if (isPayment && id) {
+    const payment = await getPayment(id);
+    if (!payment) {
+      return NextResponse.json(
+        { received: false, error: "Payment lookup failed; retry required" },
+        { status: 503 },
+      );
+    }
+    const rawMetadata = Object.fromEntries(
+      Object.entries(payment.metadata ?? {})
+        .filter(([, value]) => value !== null && value !== undefined)
+        .map(([key, value]) => [key, String(value)]),
+    );
+    const parsed = parseCreditPaymentMetadata(rawMetadata);
+    if (!parsed) {
+      return NextResponse.json({ received: true, handled: false }, { status: 200 });
+    }
+    if (payment.status !== "approved") {
+      return NextResponse.json(
+        { received: true, handled: true, granted: false, status: payment.status },
+        { status: 200 },
+      );
+    }
+    const expectedCop = copAmountForCreditPackage(parsed.creditPackage);
+    if (
+      parsed.rail !== "mercadopago" ||
+      payment.external_reference !== parsed.userId ||
+      payment.currency_id !== "COP" ||
+      payment.transaction_amount !== expectedCop
+    ) {
+      console.error("[credits] Mercado Pago payment mismatch", {
+        paymentId: String(payment.id),
+        expectedUserId: parsed.userId,
+        actualReference: payment.external_reference,
+        expectedCop,
+        actualAmount: payment.transaction_amount,
+        currency: payment.currency_id,
+      });
+      return NextResponse.json(
+        { received: false, error: "Credit payment verification failed" },
+        { status: 409 },
+      );
+    }
+    await grantPurchasedCredits({
+      userId: parsed.userId,
+      amountMicros: parsed.creditPackage.amountMicros,
+      rail: "mercadopago",
+      providerPaymentId: String(payment.id),
+      checkoutId: `mercadopago:${payment.id}`,
+      idempotencyKey: `mercadopago:${payment.id}`,
+      metadata: {
+        transaction_amount: payment.transaction_amount,
+        currency: payment.currency_id,
+        status: payment.status,
+      },
+    });
+    console.log("[credits] Mercado Pago top-up granted", {
+      userId: parsed.userId,
+      paymentId: String(payment.id),
+      amountMicros: parsed.creditPackage.amountMicros,
+    });
+    return NextResponse.json(
+      { received: true, handled: true, granted: true },
+      { status: 200 },
     );
   }
 
