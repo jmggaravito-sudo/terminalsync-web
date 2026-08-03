@@ -79,6 +79,29 @@ describe("GET /api/marketplace/catalog", () => {
     expect(seo?.connectorSlug).toBe("firecrawl");
   });
 
+  it("serves the meta-ads and google-business Plugins with hasManifest derived from their first-party connector", async () => {
+    // Both bundle a first-party connector with no npx manifest — it
+    // connects via Settings → Integrations in the app, not drag&drop. The
+    // desktop's Plugin detail view (terminal-sync) reads `hasManifest` to
+    // avoid implying a manifest-based one-click install exists for the
+    // connector half of the bundle.
+    const { body } = await callCatalog("es");
+
+    const metaAds = body.plugins.find((p) => p.slug === "meta-ads");
+    expect(metaAds, "meta-ads plugin should be served").toBeDefined();
+    expect(metaAds?.connectorSlug).toBe("meta-ads");
+    expect(metaAds?.skillSlugs).toEqual(["meta-ads-creator"]);
+    expect(metaAds?.hasManifest).toBe(false);
+    expect(metaAds?.requiresEnvSecrets).toBe(false);
+
+    const googleBusiness = body.plugins.find((p) => p.slug === "google-business");
+    expect(googleBusiness, "google-business plugin should be served").toBeDefined();
+    expect(googleBusiness?.connectorSlug).toBe("google-business");
+    expect(googleBusiness?.skillSlugs).toEqual(["pedir-resenas"]);
+    expect(googleBusiness?.hasManifest).toBe(false);
+    expect(googleBusiness?.requiresEnvSecrets).toBe(false);
+  });
+
   it("returns the file-based Marketing kit in ES and EN", async () => {
     for (const lang of ["es", "en"] as const) {
       const { body } = await callCatalog(lang);
