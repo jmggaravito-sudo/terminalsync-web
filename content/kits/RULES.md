@@ -321,3 +321,25 @@ A kit PR must include:
 - Human-review note that the evidence does not self-approve publication.
 
 Until these are present, keep the kit out of the published marketplace catalog.
+
+## Loop run log
+
+### 2026-08-03 — SEO Content Kit; overlap check against in-flight kit PRs
+
+**Shipped (1 kit, EN/ES parity):**
+
+- `seo-content` (category: marketing) — `ahrefs` + `seo-auditor` + `doc-coauthoring` + `wordpress`. Scoped to the organic-content pipeline: find what to write from real keyword/backlink data (Ahrefs), draft it (Doc Co-authoring), audit it with evidence and a scored verdict before it goes live (SEO Auditor), and publish it (WordPress). Neither `ahrefs` nor `wordpress` was used by any prior kit, and this is the first kit that can actually publish a post — the two existing marketing kits stop at drafting/auditing/ads.
+
+**Overlap check against parallel, not-yet-merged Kit Curation Loop runs:** before starting, this run found three open PRs that already ship kits for the exact business-priority roles this focus would otherwise target:
+
+- PR `kits-loop/empresario-2026-08-02` (#258) — `b2b-sales-pipeline` (sales: `hubspot` + `doc-coauthoring` + `internal-comms`), `small-business-finance` (finance: `xero` + `stripe` + `doc-coauthoring`), `ecommerce-storefront`, `team-operations`.
+- PR `kits-loop/bookkeeping-tax-handoff-2026-08-02` (#262) — `bookkeeping-tax-handoff` (finance: `xero` + `google-sheets` + `doc-coauthoring` + `internal-comms`).
+- PR `kits-loop/creative-content-studio-20260731` (#245) — a marketing kit built on `ideogram` + `higgsfield` + `meta-ads-creator`.
+
+This run's original plan was a Sales Kit (`hubspot`) and a Finance Kit (`xero` + `stripe`) — reading those branches showed both already exist, nearly item-for-item, in PR #258. Shipping them again from this run would have produced duplicate/conflicting marketplace content once both PRs reach review. Rather than re-author the same kits, this run pivoted to the SEO Content Kit above, which no open branch or merged kit covers.
+
+**Still blocked — Support / Customer Service kit:** the natural anchor connector is `intercom`, which is `category: support` but has no `manifest:` block (first-party, app-side connection) — it fails this file's literal "Allowed connectors" gate, same conclusion two prior runs already reached (see PR #258's run-log entry in its branch). This run additionally checked whether `gmail` — which does carry a `manifest:` block and is genuinely installable — could anchor a support kit instead (a small business handling support through its inbox is a real workflow). It does not, honestly: none of the 7 allowed skills fits customer-facing reply drafting without stretching its declared scope past what its own content promises — `internal-comms` states its own audience is internal/team-facing (employees, HR-sensitive topics), and `doc-coauthoring` is a long-document co-authoring process, not a quick support-reply skill. Forcing either in would violate this file's own coherence rule ("if the justification is generic enough to fit any kit, remove the item"). Deferred until either a support-specific skill passes the mold, or a real ticketing/helpdesk connector ships with a manifest.
+
+**Still blocked — Local Marketing kit:** same gate failure as before, `google-business` has no `manifest:` block. No new information this run; not re-researched.
+
+**Note for whoever reviews #258, #262, and this run's PR together:** `small-business-finance` (#258) and `bookkeeping-tax-handoff` (#262) both anchor on `xero` and both category `finance` — #262's own run-log already flags this and argues the audience/artifact differ (monthly summary for the owner vs. accountant handoff packet). Not this run's call to resolve; flagging again so it isn't missed if all three PRs land close together.
