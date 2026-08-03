@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/marketplace/auth";
 import { corsHeaders, preflight } from "@/lib/cors";
 import {
+  canCreateCreditCheckout,
   copAmountForCreditPackage,
   creditMetadata,
   creditPackageFor,
@@ -53,6 +54,24 @@ export async function POST(req: Request) {
     return json({ error: "Invalid request.", code: "invalid_request" }, 400);
   }
 
+  const lang = normalizeCreditLang(body.lang);
+  const flavor = normalizeCreditFlavor(body.flavor);
+  if (!canCreateCreditCheckout({
+    userId: user.id,
+    flavor,
+    enabled: process.env.AI_CREDITS_CHECKOUT_ENABLED,
+    stableEnabled: process.env.AI_CREDITS_CHECKOUT_STABLE_ENABLED,
+    labUserIds: process.env.AI_CREDITS_CHECKOUT_LAB_USER_IDS,
+  })) {
+    return json(
+      {
+        error: "Credit top-ups are not available for this account yet.",
+        code: "checkout_disabled",
+      },
+      503,
+    );
+  }
+
   if (body.product !== "credits") {
     return json({ error: "Unsupported product.", code: "invalid_request" }, 400);
   }
@@ -71,8 +90,6 @@ export async function POST(req: Request) {
     );
   }
 
-  const lang = normalizeCreditLang(body.lang);
-  const flavor = normalizeCreditFlavor(body.flavor);
   const base = siteUrl();
   const successUrl = creditReturnUrl({
     base,

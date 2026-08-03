@@ -560,6 +560,7 @@ async function handleCreditCheckout(session: Stripe.Checkout.Session) {
     throw new Error(`Credit checkout ${session.id} is not paid`);
   }
   if (
+    parsed.rail !== "stripe" ||
     session.currency?.toLowerCase() !== "usd" ||
     session.amount_total !== parsed.creditPackage.amountCents
   ) {

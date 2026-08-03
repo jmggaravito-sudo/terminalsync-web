@@ -42,6 +42,31 @@ export function normalizeCreditLang(value: unknown): CreditLang {
   return value === "en" ? "en" : "es";
 }
 
+function enabledFlag(value: string | undefined): boolean {
+  return ["1", "true", "yes"].includes(value?.trim().toLowerCase() ?? "");
+}
+
+/** Server-side launch gate. The client-provided flavor is never sufficient:
+ * Lab also requires the authenticated Supabase user id to be explicitly
+ * allowlisted. Stable remains closed until a separate server flag is enabled. */
+export function canCreateCreditCheckout(input: {
+  userId: string;
+  flavor: CreditFlavor;
+  enabled?: string;
+  stableEnabled?: string;
+  labUserIds?: string;
+}): boolean {
+  if (!enabledFlag(input.enabled)) return false;
+  if (input.flavor === "stable") return enabledFlag(input.stableEnabled);
+  const allowedLabUsers = new Set(
+    (input.labUserIds ?? "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean),
+  );
+  return allowedLabUsers.has(input.userId);
+}
+
 export function creditReturnUrl(input: {
   base: string;
   lang: CreditLang;

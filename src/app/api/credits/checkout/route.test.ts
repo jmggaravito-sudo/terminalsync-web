@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   authenticate: vi.fn(),
@@ -32,6 +32,9 @@ function request(body: Record<string, unknown>) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  process.env.AI_CREDITS_CHECKOUT_ENABLED = "1";
+  process.env.AI_CREDITS_CHECKOUT_LAB_USER_IDS = "user-verified";
+  delete process.env.AI_CREDITS_CHECKOUT_STABLE_ENABLED;
   mocks.authenticate.mockResolvedValue({ id: "user-verified", email: "buyer@example.com" });
   mocks.stripeCreate.mockResolvedValue({
     id: "cs_test_123",
@@ -41,6 +44,12 @@ beforeEach(() => {
     id: "mp-pref-123",
     initPoint: "https://www.mercadopago.com.co/checkout/v1/redirect",
   });
+});
+
+afterEach(() => {
+  delete process.env.AI_CREDITS_CHECKOUT_ENABLED;
+  delete process.env.AI_CREDITS_CHECKOUT_LAB_USER_IDS;
+  delete process.env.AI_CREDITS_CHECKOUT_STABLE_ENABLED;
 });
 
 describe("POST /api/credits/checkout", () => {
@@ -66,7 +75,50 @@ describe("POST /api/credits/checkout", () => {
     expect(mocks.stripeCreate).not.toHaveBeenCalled();
   });
 
-  it("creates a fixed-price Stripe payment for the verified user", async () => {
+  it("fails closed when the server launch gate is not configured", async () => {
+    delete process.env.AI_CREDITS_CHECKOUT_ENABLED;
+
+    const res = await POST(request({
+      product: "credits",
+      amountCents: 1000,
+      rail: "stripe",
+      flavor: "lab",
+    }));
+
+    expect(res.status).toBe(503);
+    expect(await res.json()).toMatchObject({ code: "checkout_disabled" });
+    expect(mocks.stripeCreate).not.toHaveBeenCalled();
+  });
+
+  it("does not trust a Lab flavor claim from a non-allowlisted user", async () => {
+    mocks.authenticate.mockResolvedValue({ id: "user-not-allowed", email: "other@example.com" });
+
+    const res = await POST(request({
+      product: "credits",
+      amountCents: 1000,
+      rail: "stripe",
+      flavor: "lab",
+    }));
+
+    expect(res.status).toBe(503);
+    expect(await res.json()).toMatchObject({ code: "checkout_disabled" });
+    expect(mocks.stripeCreate).not.toHaveBeenCalled();
+  });
+
+  it("keeps stable checkout disabled until its separate server gate is enabled", async () => {
+    const res = await POST(request({
+      product: "credits",
+      amountCents: 1000,
+      rail: "stripe",
+      flavor: "stable",
+    }));
+
+    expect(res.status).toBe(503);
+    expect(await res.json()).toMatchObject({ code: "checkout_disabled" });
+    expect(mocks.stripeCreate).not.toHaveBeenCalled();
+  });
+
+  it("creates a fixed-price Stripe payment for an allowlisted Lab user", async () => {
     const res = await POST(request({
       product: "credits",
       amountCents: 1000,
@@ -120,6 +172,7 @@ describe("POST /api/credits/checkout", () => {
       product: "credits",
       amountCents: 1,
       rail: "stripe",
+      flavor: "lab",
     }));
     expect(res.status).toBe(400);
     expect(await res.json()).toMatchObject({ code: "invalid_amount" });

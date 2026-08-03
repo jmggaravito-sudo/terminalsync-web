@@ -11,19 +11,29 @@
 
 ## Safe rollout order
 
-1. Apply `supabase/migrations/0027_ai_credits.sql`.
+1. Migration history in production is currently behind local history. Apply
+   **only** `supabase/migrations/0027_ai_credits.sql` in a controlled change and
+   register that migration in remote history. Do **not** run
+   `supabase db push --include-all`.
 2. Confirm existing server variables are present in the deployment environment:
    `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`,
    `STRIPE_WEBHOOK_SECRET`, `MERCADOPAGO_ACCESS_TOKEN`, and
    `MERCADOPAGO_WEBHOOK_SECRET`. Confirm `NEXT_PUBLIC_SITE_URL` resolves to the
    canonical HTTPS site. Do not put secret values in Git.
-3. Deploy `terminalsync-web` and verify:
+3. Keep `AI_CREDITS_CHECKOUT_ENABLED=0` for the first deploy. For the controlled
+   Lab smoke only, set it to `1`, put the verified Supabase UUID(s) in
+   `AI_CREDITS_CHECKOUT_LAB_USER_IDS`, and keep
+   `AI_CREDITS_CHECKOUT_STABLE_ENABLED=0`. The request's `flavor` value alone
+   never grants access.
+4. Deploy `terminalsync-web` and verify:
    - `OPTIONS /api/credits/checkout` returns 204 with Tauri CORS headers;
    - unauthenticated `POST /api/credits/checkout` returns 401 JSON;
+   - authenticated users outside the Lab allowlist receive 503 JSON;
+   - requests declaring stable receive 503 while its gate is disabled;
    - Stripe sends `checkout.session.completed` and
      `checkout.session.async_payment_succeeded` to the signed webhook;
    - signed Stripe/MP webhook replays are idempotent in `ai_credit_ledger`.
-4. Only then ship the desktop build that points to this endpoint.
+5. Only then ship the desktop build that points to this endpoint.
 
 The checkout route trusts the verified Supabase Bearer token, not email or user
 IDs supplied by the desktop body. Only the published $10/$20 packages are
@@ -49,3 +59,14 @@ free promise merely because checkout is available. The current desktop wallet
 is still local, so **do not enable a live customer launch** until a follow-up
 makes the cloud balance authoritative for desktop status, debit, and refund.
 The post-build smoke for this recovery must stop before payment.
+
+## Launch gate behavior
+
+| Server state | Result |
+| --- | --- |
+| Gate absent/off | All authenticated checkout attempts return 503; no provider session exists. |
+| Gate on + verified user in Lab allowlist + `flavor=lab` | Hosted checkout may open for the controlled pre-payment smoke. |
+| Gate on + user not in allowlist | 503; body claims do not override verified identity. |
+| `flavor=stable` while stable gate is off | 503, including for Lab-allowlisted identities. |
+
+The 503 contract is intentional and means no checkout session and no charge.

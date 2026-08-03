@@ -101,4 +101,15 @@ describe("Stripe credit payment webhook", () => {
     expect(res.status).toBe(500);
     expect(await res.json()).toMatchObject({ received: false });
   });
+
+  it("rejects metadata that names the Mercado Pago rail", async () => {
+    const event = creditEvent();
+    event.data.object.metadata.rail = "mercadopago";
+    mocks.constructEvent.mockReturnValue(event);
+
+    const res = await POST(signedRequest());
+
+    expect(res.status).toBe(500);
+    expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+  });
 });

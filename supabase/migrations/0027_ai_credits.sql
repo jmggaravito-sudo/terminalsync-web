@@ -37,6 +37,14 @@ create unique index ai_credit_ledger_provider_payment_idx
 alter table public.ai_credit_accounts enable row level security;
 alter table public.ai_credit_ledger enable row level security;
 
+-- Supabase may inherit broad default table grants. Make the money boundary
+-- explicit: signed-in users can only read their RLS-filtered rows; only the
+-- service-role RPC below writes balances or ledger entries.
+revoke all on table public.ai_credit_accounts from public, anon, authenticated;
+revoke all on table public.ai_credit_ledger from public, anon, authenticated;
+grant select on table public.ai_credit_accounts to authenticated;
+grant select on table public.ai_credit_ledger to authenticated;
+
 create policy ai_credit_accounts_self_read on public.ai_credit_accounts
   for select using (auth.uid() = user_id);
 create policy ai_credit_ledger_self_read on public.ai_credit_ledger
