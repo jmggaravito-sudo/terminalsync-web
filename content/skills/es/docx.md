@@ -1,31 +1,42 @@
 ---
 name: DOCX
-vendor: anthropic
-author: "Anthropic"
 logo: /skills/docx.svg
 category: productivity
+vendors: ["claude"]
+author: "Anthropic"
 status: available
-simpleTitle: "Documentos Word en piloto automático"
-simpleSubtitle: "Borradores, propuestas, reportes — Claude los escribe en tu tono y exporta un .docx limpio."
-devTitle: "DOCX Skill"
-devSubtitle: "Skill oficial de Anthropic para generación, edición y styling de archivos `.docx`."
-ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
-affiliate: false
 tagline: "Docs Word sin pelea"
-tsInstallable: true
+description: "Crea, edita y lee documentos Word (.docx/.dotx) con formato real — headings, tabla de contenidos, números de página, tablas, control de cambios — en vez de texto plano disfrazado de documento. Viene nativo con Claude; no hay nada que instalar."
+license: "proprietary"
+licenseUrl: "https://github.com/anthropics/skills/blob/main/skills/docx/LICENSE.txt"
+marketplaceSource: "anthropic"
+compatibleWith: ["claude"]
 included: true
 ---
-Decile a Claude qué necesitás: *"Armá una propuesta para Acme basada en los wins del trimestre pasado, formato nuestro de 4 páginas"*. Claude escribe, formatea y exporta el .docx — vos lo abrís en Pages o Word y lo mandás.
+## Cuándo usarlo
 
-Combinala con Notion o Drive para que el contenido fuente venga automático.
+- Necesitás un archivo Word de verdad — una propuesta, reporte, carta, memo, borrador de contrato o template — no solo texto formateado en el chat.
+- Querés estructura que una respuesta simple no puede dar: tabla de contenidos que funciona de verdad, headings reales, números de página, membrete, tablas o imágenes embebidas.
+- Tenés un `.docx` existente (o un `.doc` viejo que primero hay que convertir) y querés editarlo, reorganizarlo o hacer un buscar-y-reemplazar sin perder su formato, comentarios o control de cambios.
+- Necesitás sacar contenido de un archivo Word para reusarlo en otro lado.
 
---- dev ---
+No la uses para PDFs, planillas, presentaciones o Google Docs — para eso están las skills PDF, XLSX o PPTX, o un conector de Docs.
 
-La skill oficial DOCX expone operaciones tipo `python-docx` vía toolset de Claude:
+## Qué hace
 
-- Generar documentos desde templates con placeholders
-- Aplicar styling a párrafos y runs (headings, listas, tablas)
-- Workflows de track changes / aceptar-rechazar
-- Embed de imágenes, footnotes, headers/footers
+- **Genera documentos nuevos** con estructuras reales de Word: estilos de heading nativos (necesarios para que una tabla de contenidos se llene sola), listas numeradas/con viñetas, tablas con anchos de columna y celda correctamente calculados, imágenes embebidas, saltos de página y alineación con líder de puntos — no markdown disfrazado de Word.
+- **Edita documentos existentes** abriendo la estructura real del archivo, cambiando solo lo que se pidió y dejando todo lo demás intacto — formato, comentarios, control de cambios. Los `.doc` viejos se convierten primero.
+- **Lee y extrae** texto y estructura de archivos `.docx`/`.dotx` para reusar el contenido en otro lado.
+- **Control de cambios y comentarios**: las ediciones se pueden atribuir a un revisor con nombre en vez de quedar como cambios anónimos.
+- **Revisa su propio resultado**: después de generar un archivo, la skill lo renderiza a imágenes y mira el resultado antes de entregarlo, para agarrar roturas de formato silenciosas (una celda con sombreado que se renderiza negro sólido, un salto de página faltante) antes de que el usuario lo abra.
 
-Después de instalar con Terminal Sync, la skill vive en `~/.claude/skills/docx/` en cada máquina — incluso una Mac que conectes mañana.
+## Cómo usarlo
+
+1. Pedí el entregable directamente: *"Armá una propuesta de una página para Acme basada en los wins del trimestre pasado, formato nuestro de 4 páginas."*
+2. Compartí el contenido fuente — notas, un export del CRM, un doc existente — para que Claude trabaje con contenido real en vez de inventar números o afirmaciones.
+3. Para editar un archivo que ya tenés, compartilo y decí exactamente qué debe cambiar: un buscar-y-reemplazar, la reescritura de una sección, o qué cambios controlados aceptar o rechazar.
+4. Abrí el archivo exportado en Word, Pages o Google Docs para una última lectura. Claude revisa su propio render por roturas de formato, pero el tono y las decisiones de negocio siguen siendo tuyas.
+
+## Ideal para
+
+Dueños de negocio y equipos no técnicos que necesitan un archivo Word real y bien formateado — propuestas, contratos, reportes, cartas — sin abrir Word ellos mismos ni pelear con estilos de template.

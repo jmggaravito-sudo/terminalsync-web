@@ -13,10 +13,14 @@ Aplica el filtro de persona del Loop (definido en `content/connectors/SOURCES.md
 → "Filtro de persona"): el norte es el **dueño de negocio no técnico**. Priorizá
 skills que un empresario entiende y usa esta semana — documentos de un clic
 (Word/Excel/PPT/PDF), ventas, marketing, comunicación, memoria del negocio.
-**Nota de backlog:** las skills `docx`/`pdf`/`pptx`/`xlsx` (documentos) ya existen
-pero están `hidden` por no pasar el molde (categoría inválida `documents`, sin
-paridad ES, sin evals). Destaparlas —moldearlas + evals— es el win no-dev más
-barato disponible; tiene prioridad sobre skills nuevas de nicho dev.
+**Backlog cerrado (2026-08-03):** las skills `docx`/`pdf`/`pptx`/`xlsx` ya
+pasan el molde — frontmatter completo (`vendors`, `description`,
+`compatibleWith: ["claude"]` porque son nativas de Claude y no tienen entrega
+en Codex, `marketplaceSource: "anthropic"`), paridad ES/EN estricta con las
+secciones requeridas, y evals reales corridas con `run-evals.mjs` (ver
+`docs/skills-evals/{docx,pdf,pptx,xlsx}.md`) — las 4 baten su baseline
+genérico. Siguen `included: true` (no instalables vía Terminal Sync; ya vienen
+con Claude).
 
 ## El veredicto — decisión, no ensayo (skills de decisión)
 
