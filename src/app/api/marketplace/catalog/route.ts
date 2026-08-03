@@ -197,13 +197,26 @@ export interface BundleSummary {
   isExclusiveTS?: boolean;
 }
 
-/** A plugin as served to the desktop, plus the one derived signal the
- *  Capability Check (Carril B / auto-provision) needs: whether installing it
- *  will require the owner to provide a key/secret. True when its connector
- *  declares env secrets; a skill-only plugin — or one whose connector needs
- *  no secrets — is auto-installable without asking the owner for anything. */
+/** A plugin as served to the desktop, plus the two derived signals joined
+ *  from its connector:
+ *  - `requiresEnvSecrets`: whether installing it will require the owner to
+ *    provide a key/secret. True when its connector declares env secrets; a
+ *    skill-only plugin — or one whose connector needs no secrets — is
+ *    auto-installable without asking the owner for anything (Capability
+ *    Check / Carril B).
+ *  - `hasManifest`: whether the bundled connector has an installable MCP
+ *    manifest at all. False for a first-party connector that connects via
+ *    Settings → Integrations instead of npx (e.g. `meta-ads`,
+ *    `google-business`) — the desktop's Plugin detail view uses this to
+ *    avoid implying a manifest-based one-click install exists for the
+ *    connector half of the bundle. Dropping the Plugin card always installs
+ *    its skills regardless of this flag; only the connector's own
+ *    secret-wiring path is affected. A skill-only plugin (no
+ *    `connectorSlug`) reads `false` — there's no connector manifest to have.
+ */
 export interface PluginSummary extends PluginMeta {
   requiresEnvSecrets: boolean;
+  hasManifest: boolean;
 }
 
 export interface CatalogResponse {
@@ -230,17 +243,27 @@ export async function GET(req: Request) {
     listPlugins(lang),
   ]);
 
-  // Derive each plugin's "needs a key?" signal by joining its connector slug
-  // against the connectors we already loaded — no extra IO. This is the
-  // contract the desktop Capability Check reads to decide auto-install vs.
-  // pause-and-ask-the-owner-to-connect.
+  // Derive each plugin's "needs a key?" and "connector has a manifest?"
+  // signals by joining its connector slug against the connectors we already
+  // loaded — no extra IO. `requiresEnvSecrets` is the contract the desktop
+  // Capability Check reads to decide auto-install vs. pause-and-ask-the-owner
+  // -to-connect. `hasManifest` tells the desktop's Plugin detail view whether
+  // the bundled connector installs via a manifest (npx) or needs its own
+  // Settings → Integrations flow (first-party connectors like `meta-ads`,
+  // `google-business`, `shopify`).
   const secretByConnector = new Map(
     connectors.map((c) => [c.slug, c.requiresEnvSecrets] as const),
+  );
+  const manifestByConnector = new Map(
+    connectors.map((c) => [c.slug, c.hasManifest] as const),
   );
   const plugins: PluginSummary[] = pluginsRaw.map((p) => ({
     ...p,
     requiresEnvSecrets: p.connectorSlug
       ? (secretByConnector.get(p.connectorSlug) ?? false)
+      : false,
+    hasManifest: p.connectorSlug
+      ? (manifestByConnector.get(p.connectorSlug) ?? false)
       : false,
   }));
 

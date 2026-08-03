@@ -57,3 +57,23 @@ Number semantics:
 ## Two-PR app mirror gate
 
 Plugin runs must follow `docs/integration-loop-two-pr-policy.md`: a Plugin is not fully ready with only a web catalog PR. The app mirror PR must verify install/render behavior in the desktop app, especially where a Plugin bundles connectors with OAuth, secrets, or first-party flows.
+
+## Run log
+
+### 2026-08-03 (automated) — 2 shipped, several deferred
+
+**Shipped:**
+
+- **meta-ads**: `connectorSlug: meta-ads` (first-party, read-only `ads_read` insights) + `skillSlugs: ["meta-ads-creator"]`. The connector watches what's already spending/working; the skill drafts the next batch of ad ideas informed by that — a create-then-watch loop for a business owner running their own Meta ads.
+- **google-business**: `connectorSlug: google-business` (first-party, reads reviews + gated replies) + `skillSlugs: ["pedir-resenas"]`. The connector reacts to reviews that already exist; the skill proactively asks happy customers for new ones — closes the reputation loop instead of only reacting to what shows up.
+
+Both pieces already existed and pass their respective Loop gates (`content/connectors/SOURCES.md`, `content/skills/RULES.md`); this run only composed them by slug per `content/plugins/RULES.md` (no new connector/skill content written). Plugin logos sourced/created at `public/plugins/meta-ads.svg` and `public/plugins/google-business.svg` (brand-colored, matching each connector's official color).
+
+**Skipped / deferred (documented, not this run's scope):**
+
+- **Shopify + ecommerce marketing skills** (`carrito-abandonado`, `rfm-segmentacion`, `winback-dormidos`, `ltv-cohortes`, `promos-cupones`) — all five skills work well off Shopify's order/customer data, but bundling a single connector with five skills at once reads closer to a whole growth workflow than one product pack. Deferred to a future Plugin run (picking the single highest-leverage skill first, e.g. abandoned-cart recovery) or to the Kit Loop (`content/kits/RULES.md`) if the intent is a bundled "ecommerce growth" role kit instead.
+- **hubspot / xero / todoist / clickup / monday connectors** — no published, evaluated skill in `content/skills/{en,es}` yet teaches CRM, accounting, or task-management usage well enough to bundle. Deferred to the Skill Loop to produce the matching skill first.
+- **docx / pptx / xlsx / pdf skills** — still `hidden` per the skills backlog note in `content/skills/RULES.md` (invalid category, no ES parity, no evals), so not publishable pieces yet; not eligible for a Plugin until the Skill Loop un-hides them.
+- **ahrefs / wordpress / twitter connectors** — no existing skill in the catalog specifically teaches their syntax/quirks (the general-purpose `seo-auditor` and `copywriter` skills are already used elsewhere and aren't a tight enough product-specific pairing); left for a future run once a matching skill exists.
+
+No new connector or skill packages were sourced in this run (out of scope per the Plugin Loop's packaging-only mandate).
