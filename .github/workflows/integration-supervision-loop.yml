@@ -11,6 +11,7 @@ on:
       - "content/plugins/**"
       - "content/kits/**"
       - "content/skills/**"
+      - "content/cli-tools/**"
       - "public/connectors/**"
       - "public/plugins/**"
       - "public/skills/**"
@@ -19,6 +20,8 @@ on:
       - "src/lib/marketplace/**"
       - "src/lib/plugins*"
       - "src/lib/skills*"
+      - "src/lib/cliTools*"
+      - "scripts/supervise_physical_catalog_parity.mjs"
       - ".github/workflows/integration-supervision-loop.yml"
       - "docs/integration-supervision-loop.md"
 
@@ -38,6 +41,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -77,8 +82,8 @@ jobs:
             app_pr="$(printf '%s' "${PR_BODY:-}" | grep -Eo 'jmggaravito-sudo/terminal-sync/pull/[0-9]+|terminal-sync/pull/[0-9]+|terminal-sync#[0-9]+|app #[0-9]+' | head -1 | grep -Eo '[0-9]+' || true)"
             if [ -z "$app_pr" ]; then
               changed_files="$(gh pr view "$PR_NUMBER" --repo "$LANDING_REPO" --json files --jq '.files[].path')"
-              if echo "$changed_files" | grep -Eq '^(content/(connectors|plugins|kits|skills)/|public/(connectors|plugins|skills|logos)/|src/app/api/marketplace/catalog/|src/lib/(marketplace|plugins|skills))'; then
-                echo "This marketplace PR must link its app mirror PR (for example: App mirror: jmggaravito-sudo/terminal-sync/pull/1045)." >&2
+              if echo "$changed_files" | grep -Eq '^(content/(connectors|plugins|kits|skills|cli-tools)/|public/(connectors|plugins|skills|logos)/)'; then
+                echo "This marketplace content PR must link its app mirror PR (for example: App mirror: jmggaravito-sudo/terminal-sync/pull/1045)." >&2
                 exit 1
               fi
               echo "app_ref=$TERMINALSYNC_APP_BASE_BRANCH" >> "$GITHUB_OUTPUT"
@@ -116,6 +121,30 @@ jobs:
             src/data/catalogStore.test.ts \
             src/lib/marketplaceCatalog.test.ts
           npx tsc --noEmit
+
+      - name: Build changed-files and PR body inputs
+        shell: bash
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          if [ "${EVENT_NAME}" = "pull_request" ]; then
+            git diff --name-only "${BASE_SHA}...${HEAD_SHA}" > /tmp/supervision_changed_files.txt
+          else
+            : > /tmp/supervision_changed_files.txt
+          fi
+          printf '%s' "${PR_BODY:-}" > /tmp/supervision_pr_body.md
+
+      - name: Verify physical landing/app catalog parity evidence
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          CHANGED_FILES_PATH: /tmp/supervision_changed_files.txt
+          PR_BODY_PATH: /tmp/supervision_pr_body.md
+          APP_DIR: terminal-sync-app
+        run: node scripts/supervise_physical_catalog_parity.mjs --app-dir terminal-sync-app --changed-files /tmp/supervision_changed_files.txt --pr-body /tmp/supervision_pr_body.md
 
       - name: Record supervision loop run
         if: always()

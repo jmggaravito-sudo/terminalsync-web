@@ -52,3 +52,42 @@ The app-side parity suite covers:
 - Kits keep the TS logo fallback and render long catalog explanations.
 - External-only connectors stay non-draggable.
 - The marketplace catalog wrapper keeps the landing wire shape compatible with the app.
+
+## Physical landing/app parity gate
+
+When a marketplace PR changes public catalog content, the supervision loop now
+requires a physical smoke evidence block in the PR body. The goal is to avoid a
+false “merged = visible” report.
+
+Required format:
+
+```md
+## Physical smoke evidence
+- Landing visible: yes
+- App visible: yes
+- Landing counts: connectors=54 plugins=7 kits=8 skills=21 cliTools=5 total=95
+- App counts: connectors=54 plugins=7 kits=8 skills=21 cliTools=5 total=95
+```
+
+The check validates three things:
+
+1. the landing routes and catalog loaders can physically expose the changed
+   category (including file-based kits on `/stacks` and `/stacks/[slug]`);
+2. the desktop app checkout still has all Explore sections (`bundles`,
+   `plugins`, `connectors`, `skills`, `cliTools`) and the catalog wrapper can
+   point to a landing preview via `VITE_MARKETPLACE_URL`;
+3. the counts declared from the physical app smoke match the counts declared
+   from the physical landing smoke and match the landing catalog inventory.
+
+If a slug appears on the landing but not in the app, the loop must stay red. The
+coordinator should then check whether the app was pointed at the correct landing
+preview/production endpoint, whether the matching app PR was merged, and whether
+the installed Lab build includes that app SHA.
+
+For items like Xero/Gusto/Bookkeeping/1099, the correct manual smoke is always:
+
+1. open **Integraciones → Explorar** in the installed Lab app, not Instalados;
+2. search the public label and any expected business keywords;
+3. open the detail panel and confirm description/link are present;
+4. compare the category counts shown by the app against the landing catalog
+   counts in the workflow summary.
