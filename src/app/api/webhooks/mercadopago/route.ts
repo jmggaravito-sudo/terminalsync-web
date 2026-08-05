@@ -133,7 +133,13 @@ export async function POST(req: Request) {
         { status: 200 },
       );
     }
-    const expectedCop = copAmountForCreditPackage(parsed.creditPackage);
+    // Verify against the amount agreed at checkout. Recomputing it here would
+    // reject a genuine payment whenever the TRM moved between the checkout and
+    // the confirmation — the customer pays and never gets the credits.
+    // Payments started before the amount was recorded fall back to the old
+    // fixed-rate figure so they still settle.
+    const expectedCop =
+      parsed.copAmount ?? copAmountForCreditPackage(parsed.creditPackage);
     if (
       parsed.rail !== "mercadopago" ||
       payment.external_reference !== parsed.userId ||

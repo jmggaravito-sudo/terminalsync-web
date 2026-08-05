@@ -3,7 +3,7 @@ import { authenticate } from "@/lib/marketplace/auth";
 import { corsHeaders, preflight } from "@/lib/cors";
 import {
   canCreateCreditCheckout,
-  copAmountForCreditPackage,
+  copAmountForCreditPackageToday,
   creditMetadata,
   creditPackageFor,
   creditReturnUrl,
@@ -100,7 +100,17 @@ export async function POST(req: Request) {
   });
   const cancelUrl = creditReturnUrl({ base, lang, flavor, status: "cancel" });
   const pendingUrl = creditReturnUrl({ base, lang, flavor, status: "pending" });
-  const metadata = creditMetadata({ userId: user.id, creditPackage, rail });
+  // One rate lookup per checkout: the amount charged and the amount recorded
+  // in the metadata must be the same number, or the webhook rejects the payment.
+  const copAmount = await copAmountForCreditPackageToday(creditPackage);
+  const metadata = creditMetadata({
+    userId: user.id,
+    creditPackage,
+    rail,
+    // Only a peso charge records a peso amount: a Stripe payment settles in
+    // USD, and a COP figure in its metadata would only invite a wrong check.
+    copAmount: rail === "mercadopago" ? copAmount : undefined,
+  });
 
   try {
     if (rail === "stripe") {
@@ -144,7 +154,7 @@ export async function POST(req: Request) {
       );
     }
     const preference = await createPaymentPreference({
-      amount: copAmountForCreditPackage(creditPackage),
+      amount: copAmount,
       currency: "COP",
       payerEmail: user.email ?? undefined,
       externalReference: user.id,
