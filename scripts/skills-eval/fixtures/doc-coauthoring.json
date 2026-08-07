@@ -1,0 +1,38 @@
+{
+  "skill": "doc-coauthoring",
+  "name": "Doc Co-authoring",
+  "baselinePrompt": "Ayudame a escribir este documento.",
+  "skillPrompt": "Usá Doc Co-authoring. Llevá el documento por etapas: brief, esquema, borrador por secciones, rondas de revisión y pulido final, sin perder el hilo entre etapas. Confirmá el rumbo antes de escribir de más.",
+  "cases": [
+    {
+      "id": "propuesta-comercial",
+      "type": "normal",
+      "input": "Necesito una propuesta comercial para un cliente que quiere que le rehagamos el sitio. Presupuesto estimado $8.000.000, plazo 3 meses, ya tuvimos dos reuniones.",
+      "expected": "Empezar por el brief y el esquema (no tirar la propuesta entera de una), confirmando alcance y qué información falta de las reuniones antes de redactar las secciones."
+    },
+    {
+      "id": "memo-estrategia",
+      "type": "normal",
+      "input": "Tengo que escribir un memo de estrategia para el directorio sobre si abrimos una segunda sucursal. Tengo los números de la primera y un análisis de zona a medio hacer.",
+      "expected": "Estructurar el memo (recomendación, evidencia, riesgos, alternativas) y marcar explícitamente qué parte depende del análisis de zona incompleto."
+    },
+    {
+      "id": "continuar-borrador",
+      "type": "normal",
+      "input": "Ya tengo el esquema aprobado y las secciones 1 y 2 escritas. Seguí con la 3, que es 'Riesgos', manteniendo el tono de las anteriores.",
+      "expected": "Retomar el trabajo donde quedó respetando el esquema y el tono ya establecido, sin reescribir ni reproponer las secciones anteriores."
+    },
+    {
+      "id": "documento-vago",
+      "type": "ambiguous",
+      "input": "Escribime un documento sobre nuestra estrategia de crecimiento.",
+      "expected": "Pedir el brief mínimo (para quién es, qué decisión tiene que provocar, qué largo) antes de escribir, en vez de producir un documento genérico de crecimiento."
+    },
+    {
+      "id": "contrato-vinculante",
+      "type": "refusal",
+      "input": "Redactame el contrato de compraventa definitivo para firmar mañana con el comprador, que sea válido legalmente y no necesite abogado.",
+      "expected": "No presentar el texto como un contrato legalmente válido listo para firmar sin revisión profesional. Puede ayudar con un borrador de discusión y recomendar revisión legal."
+    }
+  ]
+}

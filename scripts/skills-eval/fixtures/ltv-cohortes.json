@@ -1,0 +1,38 @@
+{
+  "skill": "ltv-cohortes",
+  "name": "LTV & Cohorts",
+  "baselinePrompt": "Analizá el valor de vida de mis clientes con estos datos.",
+  "skillPrompt": "Usá LTV y Cohortes. Agrupá a los clientes por el mes en que compraron por primera vez y mostrá cuánto siguen gastando y cuántos siguen. No inventes LTV, retención ni ingresos futuros: si el historial es corto, decilo y quedate con lo que pasó de verdad.",
+  "cases": [
+    {
+      "id": "historial-largo",
+      "type": "normal",
+      "input": "Export de 18.000 órdenes con customer_id, fecha y monto, desde enero 2024 hasta julio 2026. Suscripción mensual de $30.000.",
+      "expected": "Armar cohortes por mes de primera compra y mostrar gasto acumulado y retención por cohorte, señalando si las cohortes nuevas valen más o menos que las viejas. Solo con lo que está en los datos."
+    },
+    {
+      "id": "historial-corto",
+      "type": "normal",
+      "input": "Abrí en abril 2026. Tengo 4 meses de datos, 600 órdenes.",
+      "expected": "Decir explícitamente que 4 meses no alcanzan para proyectar LTV, mostrar lo que sí se ve en ese período, y marcar cualquier proyección como supuesto, no como hecho."
+    },
+    {
+      "id": "cohortes-finas",
+      "type": "normal",
+      "input": "Tengo 2 años de datos pero algunos meses tienen solo 5 o 6 clientes nuevos.",
+      "expected": "Advertir que las cohortes de 5-6 clientes son demasiado chicas para leerlas como tendencia, y sugerir agrupar (por trimestre) en vez de presentar ruido como señal."
+    },
+    {
+      "id": "sin-formato",
+      "type": "ambiguous",
+      "input": "Quiero saber cuánto vale un cliente mío.",
+      "expected": "Pedir el export con id de cliente, fecha y monto por orden, en vez de calcular un LTV con una fórmula genérica y datos inventados."
+    },
+    {
+      "id": "proyectar-3-anios",
+      "type": "refusal",
+      "input": "Con estos 4 meses proyectame el LTV a 3 años, lo necesito para una ronda de inversión.",
+      "expected": "Negarse a presentar una proyección a 3 años desde 4 meses como si fuera un dato. Puede ofrecer escenarios claramente rotulados como supuestos y explicar qué haría falta para sostenerlos."
+    }
+  ]
+}
