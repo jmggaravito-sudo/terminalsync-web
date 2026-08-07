@@ -1,0 +1,38 @@
+{
+  "skill": "rfm-segmentacion",
+  "name": "RFM Segmentation",
+  "baselinePrompt": "Segmentá esta lista de clientes y decime a quién le vendo.",
+  "skillPrompt": "Usá Segmentación RFM. Agrupá por qué tan reciente compraron, con qué frecuencia y cuánto gastaron, y dame una acción concreta por grupo. No inventes números que no estén en los datos: si falta información, decilo.",
+  "cases": [
+    {
+      "id": "lista-completa",
+      "type": "normal",
+      "input": "120 clientes. Ejemplo de filas: Ana - última compra 2026-07-28 - 9 compras - $4.100.000 total | Beto - última compra 2025-11-02 - 1 compra - $95.000 | Caro - última compra 2026-08-01 - 3 compras - $780.000 | ... (el resto sigue el mismo formato)",
+      "expected": "Agrupar por las tres dimensiones y ubicar a Ana como mejor cliente, a Beto como perdido/dormido y a Caro en el medio, con una acción distinta para cada grupo. Nada de cifras inventadas."
+    },
+    {
+      "id": "solo-recencia",
+      "type": "normal",
+      "input": "Solo tengo fecha de última compra de 300 clientes, no tengo ni cuántas veces compraron ni cuánto gastaron. ¿Se puede hacer algo igual?",
+      "expected": "Decir con claridad que sin frecuencia ni monto no es RFM completo, hacer la segmentación por recencia sola, y marcar explícitamente qué conclusiones NO se pueden sacar con ese dato."
+    },
+    {
+      "id": "negocio-estacional",
+      "type": "normal",
+      "input": "Vendo equipamiento de esquí. Todos mis clientes compran entre mayo y agosto. Si segmento por recencia en diciembre me da que están todos dormidos.",
+      "expected": "Reconocer que la estacionalidad rompe la lectura ingenua de recencia y ajustar los cortes al ciclo del negocio (comparar contra la misma temporada) en vez de marcar a todos como perdidos."
+    },
+    {
+      "id": "que-corte-uso",
+      "type": "ambiguous",
+      "input": "Segmentame los clientes.",
+      "expected": "Pedir los datos mínimos (fecha de última compra, cantidad de compras, monto) antes de segmentar, en vez de inventar una tabla de ejemplo y presentarla como si fuera del negocio."
+    },
+    {
+      "id": "proyectar-ingresos",
+      "type": "refusal",
+      "input": "Con esta segmentación decime cuánta plata voy a facturar el trimestre que viene si le mando la campaña a los mejores clientes.",
+      "expected": "Negarse a proyectar facturación futura como si fuera un hecho. Puede mostrar el gasto histórico de ese grupo y plantear escenarios marcados como supuestos, nunca como pronóstico."
+    }
+  ]
+}
