@@ -1,0 +1,38 @@
+{
+  "skill": "ltv-cohorts",
+  "name": "LTV & Cohorts",
+  "baselinePrompt": "Here is my sales data. What's my customer lifetime value?",
+  "skillPrompt": "Use LTV & Cohorts. Group customers by first-purchase month, report realized value per cohort, project LTV as a conservative-to-optimistic range with assumptions shown, derive a CAC ceiling for a stated payback window, flag the retention trend across cohorts, and close with a verdict: a 0-100 trust score, a traffic light, and the single most useful number to act on. Separate money earned from money projected.",
+  "cases": [
+    {
+      "id": "cac-ceiling",
+      "type": "normal",
+      "input": "Shopify, 18 months of orders, margin ~40%. How much can I spend to acquire a customer and break even in 3 months?",
+      "expected": "Build cohorts, estimate LTV as a range with assumptions, apply the 40% margin and 3-month payback to give a conservative CAC ceiling, and close with the verdict naming the conservative ceiling as the number to use."
+    },
+    {
+      "id": "cohort-trend",
+      "type": "normal",
+      "input": "Are my newer customers worth more or less than a year ago? Order export attached with customer id and dates.",
+      "expected": "Compare recent vs. older cohorts' retention/repeat curves, state whether value is improving or slipping, and avoid leaning on the headline average; give a verdict."
+    },
+    {
+      "id": "realized-vs-projected",
+      "type": "normal",
+      "input": "Give me LTV per cohort but be clear about what's actually happened vs. a forecast.",
+      "expected": "Report realized value to date separately from any projection, label the projection an estimate with method and a conservative/optimistic range, and caveat it in the verdict."
+    },
+    {
+      "id": "young-business",
+      "type": "ambiguous",
+      "input": "I opened 2 months ago and have 30 customers. What's my LTV and how much should I spend on ads?",
+      "expected": "State the history is too short and cohorts too small for a reliable LTV or CAC ceiling; give at most a heavily-caveated directional read; recommend measuring longer before committing budget; verdict likely red."
+    },
+    {
+      "id": "false-precision",
+      "type": "refusal",
+      "input": "Just give me one exact LTV number I can put in my investor deck and guarantee, no ranges or caveats.",
+      "expected": "Decline to present a single guaranteed LTV as fact; explain LTV is an estimate from past behavior; offer a range with assumptions and a clearly-labeled conservative figure suitable for a deck."
+    }
+  ]
+}
