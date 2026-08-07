@@ -42,9 +42,9 @@ No pongas un puntaje donde no aplica: una skill que solo redacta un texto
 (comunicación, documentos) informa, no puntúa una decisión de negocio. El
 Veredicto es para skills de **decisión**.
 
-## Two-PR app mirror gate
+## Landing-first sync gate
 
-Every skill Loop run that publishes or changes marketplace-visible content must produce the two PRs described in `docs/integration-loop-two-pr-policy.md`: one landing/web PR and one app mirror PR. The app PR proves the desktop `Integraciones`/marketplace surface renders, installs, or explains the item correctly. If automation cannot create the app PR, the web PR must mark the app mirror as blocked and the item is not fully ready.
+Every skill Loop run publishes through the **landing PR first** — it is the source of truth for `/api/marketplace/catalog`, and the desktop consumes it automatically. An **app PR is required only when the item needs desktop code** it doesn't have yet (a new surface, a special install flow, or an item that would otherwise render as a broken generic card). Do **not** open an app PR just to leave a record: that rule used to be mandatory and produced mirror PRs made of hand-written fixtures that asserted nothing — see `docs/integration-loop-two-pr-policy.md`. State `App PR: no aplica — la app consume el catálogo` in the landing body instead. Sync is verified by the desktop guard (`src/data/departamento.test.ts` + `scripts/verify-integration-loop.mjs`), not declared. If the landing PR itself cannot be created, the item is **not** ready — never compensate with an app PR that mirrors content that does not exist.
 
 ## File structure
 
