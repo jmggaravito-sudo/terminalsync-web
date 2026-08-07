@@ -46,6 +46,23 @@ Veredicto es para skills de **decisión**.
 
 Every skill Loop run publishes through the **landing PR first** — it is the source of truth for `/api/marketplace/catalog`, and the desktop consumes it automatically. An **app PR is required only when the item needs desktop code** it doesn't have yet (a new surface, a special install flow, or an item that would otherwise render as a broken generic card). Do **not** open an app PR just to leave a record: that rule used to be mandatory and produced mirror PRs made of hand-written fixtures that asserted nothing — see `docs/integration-loop-two-pr-policy.md`. State `App PR: no aplica — la app consume el catálogo` in the landing body instead. Sync is verified by the desktop guard (`src/data/departamento.test.ts` + `scripts/verify-integration-loop.mjs`), not declared. If the landing PR itself cannot be created, the item is **not** ready — never compensate with an app PR that mirrors content that does not exist.
 
+#### Cómo declarar que no hace falta app mirror
+
+Cuando el desktop ya consume el catálogo y no hay código de app que escribir,
+poné en el cuerpo del PR de landing, tal cual:
+
+    App mirror PR: no aplica — la app consume el catálogo
+
+El check del supervisor lo acepta y no pide el enlace. Si en cambio SÍ hay un
+PR de app, enlazalo detrás de la misma etiqueta:
+
+    App mirror PR: https://github.com/jmggaravito-sudo/terminal-sync/pull/1286
+
+**Solo se lee lo que esté detrás de `App mirror PR:`.** Citar un PR de la app
+en cualquier otra parte del texto —por ejemplo como antecedente histórico— no
+cuenta, y así debe ser: antes se buscaba el patrón en todo el cuerpo y una
+cita hacía que el check compilara una rama vieja y fallara por errores ajenos.
+
 ## File structure
 
 Every published skill must ship in both languages with strict ES/EN parity:
