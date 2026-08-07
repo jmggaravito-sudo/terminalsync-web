@@ -55,6 +55,48 @@ const DEFAULT_GEMINI_MODEL = process.env.SKILLS_EVAL_GEMINI_MODEL || "gemini-2.5
 export const SUBJECT_PROVIDERS = ["claude", "codex", "gemini"];
 
 /**
+ * Techo de tokens del SUJETO.
+ *
+ * Estaba en 2000 y producía falsos negativos: la respuesta con la skill es más
+ * larga que la genérica (explica el criterio Y entrega el mensaje), así que se
+ * cortaba justo antes de la parte entregable. El juez lo veía como "no cumple"
+ * y la skill perdía contra un baseline más corto que sí llegaba al final. La
+ * skill era buena; la estábamos midiendo cortada.
+ *
+ * Gemini 2.5 además gasta parte del presupuesto en tokens de razonamiento, así
+ * que el techo efectivo es más bajo que el nominal. 8000 da margen de sobra.
+ */
+const SUBJECT_MAX_TOKENS = Number(process.env.SKILLS_EVAL_MAX_TOKENS || 8000);
+
+/**
+ * Reintento para fallas TRANSITORIAS de la API (503/429/5xx y errores de red).
+ *
+ * Sin esto un 503 pasajero contaba como caso con error, y como un caso con
+ * error bloquea la aprobación, una skill buena quedaba rechazada por un hipo
+ * del proveedor. Pasó en la primera corrida real.
+ *
+ * No reintenta 4xx que no sea 429: un 400 o un 401 no mejoran esperando.
+ */
+async function withRetry(fn, { attempts = 4, baseMs = 800 } = {}) {
+  let lastErr;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const r = await fn();
+      if (r.ok || (r.status < 500 && r.status !== 429)) return r;
+      lastErr = new Error(`HTTP ${r.status}`);
+    } catch (e) {
+      lastErr = e;
+    }
+    if (i < attempts - 1) {
+      // backoff exponencial con jitter, para no sincronizar reintentos
+      const wait = baseMs * 2 ** i + Math.floor(Math.random() * 250);
+      await new Promise((res) => setTimeout(res, wait));
+    }
+  }
+  throw lastErr;
+}
+
+/**
  * Umbral de aprobación automática.
  *
  * Decisión JM 2026-08-07: **el loop aprueba, no un humano.** Eso cambia una
@@ -378,16 +420,18 @@ export function listFixtures() {
  * "juez y parte" es una objeción válida; con sujeto y juez distintos, deja de
  * serlo.
  */
-async function callGemini(prompt, { apiKey, model, maxTokens = 2000 }) {
+async function callGemini(prompt, { apiKey, model, maxTokens = SUBJECT_MAX_TOKENS }) {
   const url = `${GEMINI_URL_BASE}/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
-  const r = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: maxTokens },
+  const r = await withRetry(() =>
+    fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: maxTokens },
+      }),
     }),
-  });
+  );
   if (!r.ok) {
     const body = await r.text();
     throw new Error(`Gemini HTTP ${r.status}: ${body.slice(0, 200)}`);
@@ -415,8 +459,8 @@ async function callSubject(provider, prompt, opts) {
   return callClaude(prompt, { apiKey: opts.apiKey, model: opts.model, maxTokens: opts.maxTokens });
 }
 
-async function callClaude(prompt, { apiKey, model, maxTokens = 2000 }) {
-  const r = await fetch(ANTHROPIC_URL, {
+async function callClaude(prompt, { apiKey, model, maxTokens = SUBJECT_MAX_TOKENS }) {
+  const r = await withRetry(() => fetch(ANTHROPIC_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -428,7 +472,7 @@ async function callClaude(prompt, { apiKey, model, maxTokens = 2000 }) {
       max_tokens: maxTokens,
       messages: [{ role: "user", content: prompt }],
     }),
-  });
+  }));
   if (!r.ok) {
     const body = await r.text();
     throw new Error(`Anthropic HTTP ${r.status}: ${body.slice(0, 200)}`);
