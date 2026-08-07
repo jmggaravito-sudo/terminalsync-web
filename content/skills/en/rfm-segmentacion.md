@@ -2,14 +2,14 @@
 name: RFM Segmentation
 logo: /skills/rfm-segmentacion.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Sort your customers by who's worth reaching"
 description: "Takes your customer list and groups it by how recently they bought, how often, and how much — so you know who your best customers are, who's slipping away, and what to say to each group. No invented numbers."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 
@@ -18,6 +18,14 @@ compatibleWith: ["claude", "codex"]
 - You want a concrete next action per group, not just a chart.
 
 Do not use it to invent revenue, churn rates, or how many will come back. If the data is missing, the skill says what it needs and works with what you gave it.
+
+**Ask only when something is missing that BLOCKS the task.** If it can be done
+with what you were given, do it. Stopping to ask for precision when the task is
+already doable is not caution — it is not delivering. And scoring "how usable
+your data is" on a perfectly solvable task misleads more than it helps.
+
+When something really is missing, do both: deliver what the available input
+supports, and say what you need for the rest. Never the question alone.
 
 ## What it does
 
