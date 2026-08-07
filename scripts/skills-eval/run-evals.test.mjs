@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
   decideVerdict,
+  resolveSkillPrompt,
+  skillBody,
   parsePositional,
   validateFixture,
   buildSubjectPrompt,
@@ -54,8 +56,16 @@ describe("validateFixture", () => {
 
   it("rejects an empty required string field", () => {
     const f = loadCodeReviewer();
-    f.skillPrompt = "   ";
-    expect(() => validateFixture(f)).toThrow(/skillPrompt/);
+    f.baselinePrompt = "   ";
+    expect(() => validateFixture(f)).toThrow(/baselinePrompt/);
+  });
+
+  it("acepta un fixture SIN skillPrompt — el default es el SKILL.md del catálogo", () => {
+    // Dejó de ser obligatorio a propósito: la paráfrasis escrita a mano era
+    // justamente lo que hacía que el harness midiera el resumen y no la skill.
+    const f = loadCodeReviewer();
+    delete f.skillPrompt;
+    expect(() => validateFixture(f)).not.toThrow();
   });
 });
 
@@ -317,5 +327,40 @@ describe("parsePositional", () => {
 
   it("sin flags devuelve todos los nombres", () => {
     expect(parsePositional(["a", "b"])).toEqual(["a", "b"]);
+  });
+});
+
+describe("resolveSkillPrompt / skillBody", () => {
+  const md = `---
+name: Ask for Reviews
+vendors: ["claude", "codex"]
+---
+## When to use
+
+Pedile la reseña a quien tuvo una buena experiencia.`;
+
+  it("saca el frontmatter y deja el cuerpo", () => {
+    expect(skillBody(md)).toMatch(/^## When to use/);
+    expect(skillBody(md)).not.toMatch(/vendors/);
+  });
+
+  it("un md sin frontmatter pasa entero", () => {
+    expect(skillBody("solo cuerpo")).toBe("solo cuerpo");
+  });
+
+  it("prefiere el SKILL.md real sobre la paráfrasis del fixture", () => {
+    // Este es el arreglo de fondo: el harness medía la paráfrasis, no la skill.
+    const fx = { skill: "s", skillPrompt: "mi paráfrasis" };
+    expect(resolveSkillPrompt(fx, md)).toMatch(/^## When to use/);
+  });
+
+  it("cae al override del fixture si el catálogo no la sirve", () => {
+    const fx = { skill: "s", skillPrompt: "mi paráfrasis" };
+    expect(resolveSkillPrompt(fx, null)).toBe("mi paráfrasis");
+  });
+
+  it("falla claro si no hay ni SKILL.md ni override — nunca evalúa con prompt vacío", () => {
+    expect(() => resolveSkillPrompt({ skill: "s" }, null)).toThrow(/no se pudo obtener/);
+    expect(() => resolveSkillPrompt({ skill: "s", skillPrompt: "  " }, "   ")).toThrow();
   });
 });
