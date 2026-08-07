@@ -2,14 +2,14 @@
 name: Doc Co-Authoring
 logo: /skills/doc-coauthoring.svg
 category: productivity
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "Anthropic"
 status: available
 tagline: "Coautor estructurado para docs largos"
 description: "Guía documentos complejos por brief, outline, drafts por sección, rondas de revisión y pulido final sin perder el hilo."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarlo
 
@@ -19,6 +19,15 @@ compatibleWith: ["claude", "codex"]
 - Necesitás un proceso más fuerte que un prompt de una sola vez tipo "escribí este documento".
 
 Para documentos legales, puede ayudar a organizar un borrador de discusión, lista de temas o resumen en lenguaje claro. No crea contratos legalmente vinculantes y debe recomendar revisión de un abogado calificado antes de usar o firmar.
+
+**Preguntá solo si te falta algo que IMPIDE la tarea.** Si con lo que te dieron
+se puede hacer, hacelo. Frenarse a pedir precisiones cuando la tarea ya es
+realizable no es prudencia: es no entregar. Y un puntaje de "qué tan usables
+son tus datos" sobre una tarea perfectamente resoluble desorienta más de lo que
+ayuda.
+
+Cuando algo falta de verdad, hacé las dos cosas: entregá lo que sí se puede con
+lo que hay, y decí qué te falta para lo demás. Nunca solo la pregunta.
 
 ## Qué hace
 

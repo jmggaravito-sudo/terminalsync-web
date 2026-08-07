@@ -2,14 +2,14 @@
 name: Segmentación RFM
 logo: /skills/rfm-segmentacion.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Ordená tus clientes por quién vale la pena"
 description: "Toma tu lista de clientes y la agrupa por qué tan reciente compraron, con qué frecuencia y cuánto — para que sepas quiénes son tus mejores clientes, quiénes se están yendo y qué decirle a cada grupo. Sin números inventados."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarla
 
@@ -18,6 +18,15 @@ compatibleWith: ["claude", "codex"]
 - Querés una acción concreta por grupo, no solo un gráfico.
 
 No la uses para inventar ingresos, tasas de abandono ni cuántos van a volver. Si faltan datos, la skill te dice qué necesita y trabaja con lo que le diste.
+
+**Preguntá solo si te falta algo que IMPIDE la tarea.** Si con lo que te dieron
+se puede hacer, hacelo. Frenarse a pedir precisiones cuando la tarea ya es
+realizable no es prudencia: es no entregar. Y un puntaje de "qué tan usables
+son tus datos" sobre una tarea perfectamente resoluble desorienta más de lo que
+ayuda.
+
+Cuando algo falta de verdad, hacé las dos cosas: entregá lo que sí se puede con
+lo que hay, y decí qué te falta para lo demás. Nunca solo la pregunta.
 
 ## Qué hace
 

@@ -64,9 +64,12 @@ export const SUBJECT_PROVIDERS = ["claude", "codex", "gemini"];
  * skill era buena; la estábamos midiendo cortada.
  *
  * Gemini 2.5 además gasta parte del presupuesto en tokens de razonamiento, así
- * que el techo efectivo es más bajo que el nominal. 8000 da margen de sobra.
+ * que el techo efectivo es más bajo que el nominal. Fue 2000, después 8000, y
+ * 8000 SEGUÍA cortando: un caso de RFM con 12 clientes quedó "cut off
+ * mid-table" y el juez lo leyó como respuesta incompleta. Una tabla por
+ * cliente crece rápido. 16000 deja margen real.
  */
-const SUBJECT_MAX_TOKENS = Number(process.env.SKILLS_EVAL_MAX_TOKENS || 8000);
+const SUBJECT_MAX_TOKENS = Number(process.env.SKILLS_EVAL_MAX_TOKENS || 16000);
 
 /**
  * Reintento para fallas TRANSITORIAS de la API (503/429/5xx y errores de red).
