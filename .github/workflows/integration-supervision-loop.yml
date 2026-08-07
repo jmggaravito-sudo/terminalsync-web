@@ -74,15 +74,29 @@ jobs:
           fi
 
           if [ "$EVENT_NAME" = "pull_request" ]; then
-            app_pr="$(printf '%s' "${PR_BODY:-}" | grep -Eo 'jmggaravito-sudo/terminal-sync/pull/[0-9]+|terminal-sync/pull/[0-9]+|terminal-sync#[0-9]+|app #[0-9]+' | head -1 | grep -Eo '[0-9]+' || true)"
-            if [ -z "$app_pr" ]; then
+            # El link al app mirror se lee SOLO detrás de "App mirror PR:".
+            # Antes se buscaba el patrón en todo el cuerpo, así que una cita
+            # histórica ("esto pasó en terminal-sync#1139") se tomaba como el
+            # mirror y el check terminaba compilando una rama vieja, fallando
+            # por errores ajenos al PR. Pasó de verdad y costó un rato
+            # entenderlo.
+            app_pr="$(printf '%s' "${PR_BODY:-}" | grep -iEo 'app mirror( pr)?:[^\n]*' | grep -Eo 'jmggaravito-sudo/terminal-sync/pull/[0-9]+|terminal-sync/pull/[0-9]+|terminal-sync#[0-9]+|#[0-9]+' | head -1 | grep -Eo '[0-9]+' || true)"
+
+            # "no aplica" declarado explícitamente: la política dejó de exigir
+            # un PR de app cuando el desktop ya consume el catálogo. Ver
+            # docs/integration-loop-two-pr-policy.md — el PR espejo obligatorio
+            # producía mirrors de fixtures escritas a mano que no verificaban
+            # nada (5 de 7 PRs de loops no tocaron código de producto).
+            mirror_na="$(printf '%s' "${PR_BODY:-}" | grep -icE 'app (mirror )?pr:[[:space:]]*(no aplica|n/?a|not needed)' || true)"
+
+            if [ -z "$app_pr" ] && [ "$mirror_na" = "0" ]; then
               changed_files="$(gh pr view "$PR_NUMBER" --repo "$LANDING_REPO" --json files --jq '.files[].path')"
               if echo "$changed_files" | grep -Eq '^(content/(connectors|plugins|kits|skills)/|public/(connectors|plugins|skills|logos)/|src/app/api/marketplace/catalog/|src/lib/(marketplace|plugins|skills))'; then
-                echo "This marketplace PR must link its app mirror PR (for example: App mirror: jmggaravito-sudo/terminal-sync/pull/1045)." >&2
+                echo "Este PR toca el catálogo: enlazá su app mirror con 'App mirror PR: <url>', o declará 'App mirror PR: no aplica — la app consume el catálogo' si no hace falta código en la app." >&2
                 exit 1
               fi
               echo "app_ref=$TERMINALSYNC_APP_BASE_BRANCH" >> "$GITHUB_OUTPUT"
-              echo "Ops-only supervision PR: no app mirror required; verifying app base $TERMINALSYNC_APP_BASE_BRANCH"
+              echo "Sin app mirror (ops-only o declarado no-aplica); se verifica la base $TERMINALSYNC_APP_BASE_BRANCH"
             else
               app_ref="$(gh pr view "$app_pr" --repo "$TERMINALSYNC_APP_REPO" --json headRefName --jq .headRefName)"
               echo "app_pr=$app_pr" >> "$GITHUB_OUTPUT"
