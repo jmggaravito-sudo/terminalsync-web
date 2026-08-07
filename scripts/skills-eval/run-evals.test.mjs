@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
+  decideVerdict,
+  parsePositional,
   validateFixture,
   buildSubjectPrompt,
   buildJudgePrompt,
@@ -215,5 +217,105 @@ describe("runFixture (DRY_RUN, offline)", () => {
     const s = aggregate(results);
     expect(s.scored).toBe(0);
     expect(s.errors).toBe(fixture.cases.length);
+  });
+});
+
+// ── Veredicto automático (decisión JM 2026-08-07: aprueba el loop) ──────────
+
+describe("decideVerdict", () => {
+  const ok = {
+    total: 5,
+    scored: 5,
+    errors: 0,
+    avgBaseline: 5,
+    avgSkill: 8.4,
+    meetsExpected: 5,
+    beatsBaseline: 4,
+  };
+
+  it("aprueba cuando cumple todo el umbral", () => {
+    expect(decideVerdict(ok)).toEqual({ approved: true, reasons: [] });
+  });
+
+  it("rechaza si algún caso no pudo evaluarse", () => {
+    // Un error no es "neutro": es un caso sin evidencia, y sin evidencia no
+    // se aprueba.
+    const v = decideVerdict({ ...ok, errors: 1 });
+    expect(v.approved).toBe(false);
+    expect(v.reasons.join(" ")).toMatch(/error/i);
+  });
+
+  it("rechaza si un solo caso no cumple lo esperado", () => {
+    const v = decideVerdict({ ...ok, meetsExpected: 4 });
+    expect(v.approved).toBe(false);
+    expect(v.reasons.join(" ")).toMatch(/4\/5/);
+  });
+
+  it("rechaza si no le gana al baseline en la mayoría", () => {
+    const v = decideVerdict({ ...ok, beatsBaseline: 2 });
+    expect(v.approved).toBe(false);
+    expect(v.reasons.join(" ")).toMatch(/baseline/i);
+  });
+
+  it("rechaza si cumple pero con respuestas mediocres", () => {
+    // "Cumple lo esperado" no puede tapar un 6/10 — por eso el piso de score
+    // es un criterio aparte.
+    const v = decideVerdict({ ...ok, avgSkill: 6.2 });
+    expect(v.approved).toBe(false);
+    expect(v.reasons.join(" ")).toMatch(/promedio/i);
+  });
+
+  it("rechaza con menos casos que el mínimo", () => {
+    const v = decideVerdict({ ...ok, total: 3, scored: 3, meetsExpected: 3, beatsBaseline: 3 });
+    expect(v.approved).toBe(false);
+    expect(v.reasons.join(" ")).toMatch(/casos/i);
+  });
+
+  it("rechaza cuando nada llegó a calificarse", () => {
+    const v = decideVerdict({ total: 5, scored: 0, errors: 5, avgBaseline: null, avgSkill: null, meetsExpected: 0, beatsBaseline: 0 });
+    expect(v.approved).toBe(false);
+  });
+
+  it("acumula todos los motivos, no solo el primero", () => {
+    const v = decideVerdict({ ...ok, meetsExpected: 3, beatsBaseline: 1, avgSkill: 4 });
+    expect(v.reasons.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it("consume la salida REAL de aggregate — un rename no puede desactivar el umbral en silencio", () => {
+    // El umbral de score lee `summary.avgSkill`. Si aggregate lo renombra,
+    // `undefined < 7` es false y la comprobación se apaga sola: el harness
+    // empezaría a aprobar de más sin que falle nada. Este test ata las dos
+    // funciones para que eso no pueda pasar sin ponerse rojo.
+    const mediocre = Array.from({ length: 5 }, (_, i) => ({
+      id: `c${i}`,
+      verdict: { baselineScore: 5, skillScore: 5, skillMeetsExpected: true, beatsBaseline: true },
+    }));
+    const summary = aggregate(mediocre);
+    expect(summary.avgSkill).toBe(5);
+    const v = decideVerdict(summary);
+    expect(v.approved, "un promedio de 5/10 no puede aprobar").toBe(false);
+    expect(v.reasons.join(" ")).toMatch(/promedio/i);
+  });
+});
+
+describe("parsePositional", () => {
+  it("no toma el valor de --provider como nombre de fixture", () => {
+    // Bug real: con la versión previa, `--provider gemini` hacía que el
+    // harness buscara `fixtures/gemini.json` y muriera.
+    expect(parsePositional(["code-reviewer", "--provider", "gemini"])).toEqual(["code-reviewer"]);
+  });
+
+  it("sigue salteando el valor de --out", () => {
+    expect(parsePositional(["code-reviewer", "--out", "r.md"])).toEqual(["code-reviewer"]);
+  });
+
+  it("saltea ambos a la vez", () => {
+    expect(
+      parsePositional(["a", "--provider", "gemini", "b", "--out", "r.md"]),
+    ).toEqual(["a", "b"]);
+  });
+
+  it("sin flags devuelve todos los nombres", () => {
+    expect(parsePositional(["a", "b"])).toEqual(["a", "b"]);
   });
 });
