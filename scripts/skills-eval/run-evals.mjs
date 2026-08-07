@@ -127,6 +127,53 @@ export const APPROVAL_THRESHOLDS = {
  * Devuelve el porqué de cada rechazo para que el loop lo pueda loguear en vez
  * de decir solo "no pasó".
  */
+/**
+ * Saca el frontmatter YAML de un SKILL.md y devuelve el cuerpo.
+ *
+ * El frontmatter es metadata del catálogo (logo, license, vendors); lo que
+ * gobierna el comportamiento es el cuerpo. Pasarle el YAML al modelo solo
+ * agrega ruido.
+ */
+export function skillBody(md) {
+  const s = String(md ?? "");
+  const m = s.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/);
+  return (m ? s.slice(m[0].length) : s).trim();
+}
+
+/**
+ * El prompt con el que se evalúa la skill.
+ *
+ * **Por defecto, el SKILL.md REAL del catálogo.** Antes se usaba el
+ * `skillPrompt` del fixture, que era una paráfrasis escrita a mano — así que
+ * el harness medía el resumen de la skill, no la skill. La primera corrida
+ * real lo dejó a la vista: 83% de los casos ambiguos fallaban, y los 8
+ * fixtures cuya paráfrasis NO decía "preguntá si falta info" fallaron 8 de 8,
+ * porque el prompt les ordenaba entregar y después el caso los penalizaba por
+ * entregar. Las skills reales sí traen esa regla; la paráfrasis se la comía.
+ *
+ * `skillPrompt` en el fixture queda como override explícito, para una skill
+ * que todavía no esté publicada.
+ */
+export function resolveSkillPrompt(fixture, fetchedMd) {
+  if (fetchedMd && fetchedMd.trim()) {
+    const body = skillBody(fetchedMd);
+    if (body) return body;
+  }
+  if (fixture.skillPrompt && fixture.skillPrompt.trim()) return fixture.skillPrompt;
+  throw new Error(
+    `${fixture.skill}: no se pudo obtener el SKILL.md del catálogo y el fixture no trae skillPrompt de override`,
+  );
+}
+
+/** Baja el SKILL.md publicado. Devuelve null si la skill no está en el catálogo. */
+async function fetchSkillMd(slug) {
+  const base = process.env.MARKETPLACE_BASE || "https://terminalsync.ai";
+  const r = await withRetry(() => fetch(`${base}/api/marketplace/skills/${slug}/raw`));
+  if (!r.ok) return null;
+  const j = await r.json();
+  return typeof j.skill_md === "string" ? j.skill_md : null;
+}
+
 /** Flags que llevan un valor aparte — su valor NO es un nombre de fixture. */
 const VALUE_FLAGS = new Set(["--out", "--provider"]);
 
@@ -189,7 +236,10 @@ export function validateFixture(fixture, source = "fixture") {
   if (!fixture || typeof fixture !== "object") {
     throw new Error(`${source}: not an object`);
   }
-  for (const field of ["skill", "name", "baselinePrompt", "skillPrompt"]) {
+  // `skillPrompt` ya NO es obligatorio: por defecto el harness usa el SKILL.md
+  // real del catálogo (ver `resolveSkillPrompt`). Sigue aceptándose como
+  // override para casos donde no haya skill publicada todavía.
+  for (const field of ["skill", "name", "baselinePrompt"]) {
     if (typeof fixture[field] !== "string" || !fixture[field].trim()) {
       throw new Error(`${source}: missing/empty string field "${field}"`);
     }
@@ -342,6 +392,7 @@ export function renderMarkdown(fixture, results, summary, meta = {}) {
   lines.push("");
   lines.push(`- Skill: \`${fixture.skill}\``);
   if (meta.subjectProvider) lines.push(`- Proveedor evaluado (sujeto): \`${meta.subjectProvider}\``);
+  if (meta.promptSource) lines.push(`- Prompt de la skill: ${meta.promptSource}`);
   if (meta.model) lines.push(`- Judge model: \`${meta.model}\``);
   if (meta.mode) lines.push(`- Run mode: ${meta.mode}`);
   lines.push(`- Cases: ${summary.total} (scored ${summary.scored}, errors ${summary.errors})`);
@@ -520,7 +571,7 @@ export async function runFixture(fixture, opts) {
         );
         skillAnswer = await callSubject(
           subjectProvider,
-          buildSubjectPrompt(fixture.skillPrompt, c.input),
+          buildSubjectPrompt(opts.skillPrompt ?? fixture.skillPrompt, c.input),
           opts,
         );
       }
@@ -604,6 +655,17 @@ async function main() {
   for (const name of names) {
     const fixture = loadFixture(name);
     process.stderr.write(`\n[skills-eval] ${fixture.skill}: ${fixture.cases.length} cases${dryRun ? " (DRY_RUN)" : ""}\n`);
+
+    // El prompt de la skill sale del SKILL.md publicado, no de la paráfrasis
+    // del fixture. Ver `resolveSkillPrompt` para por qué.
+    let skillPrompt = fixture.skillPrompt;
+    let promptSource = "fixture (override)";
+    if (!dryRun) {
+      const md = await fetchSkillMd(fixture.skill).catch(() => null);
+      skillPrompt = resolveSkillPrompt(fixture, md);
+      promptSource = md ? "SKILL.md del catálogo" : "fixture (el catálogo no la sirve)";
+      process.stderr.write(`[skills-eval] ${fixture.skill}: prompt = ${promptSource}\n`);
+    }
     const results = await runFixture(fixture, {
       dryRun,
       answers,
@@ -613,6 +675,7 @@ async function main() {
       subjectProvider,
       geminiApiKey,
       geminiModel,
+      skillPrompt,
     });
     const summary = aggregate(results);
     const verdict = decideVerdict(summary);
@@ -620,6 +683,7 @@ async function main() {
       model: dryRun ? null : model,
       mode: dryRun ? "DRY_RUN (offline fixtures)" : "live",
       subjectProvider,
+      promptSource,
       verdict,
     });
 
