@@ -18,6 +18,10 @@ on:
       - "src/app/api/marketplace/catalog/**"
       - "src/lib/marketplace/**"
       - "src/lib/plugins*"
+      # El propio workflow: sin esto, un cambio a estas reglas no re-corre el
+      # check en su propio PR y hay que dispararlo a mano para saber si el
+      # arreglo funciona.
+      - ".github/workflows/integration-supervision-loop.yml"
       - "src/lib/skills*"
       - ".github/workflows/integration-supervision-loop.yml"
       - "docs/integration-supervision-loop.md"
