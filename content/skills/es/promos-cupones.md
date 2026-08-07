@@ -2,14 +2,14 @@
 name: Promos y Cupones
 logo: /skills/promos-cupones.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Diseñá una promo que no te funda el margen"
 description: "Te ayuda a diseñar una promoción o cupón dirigido — quién lo recibe, qué tipo de descuento, los límites (vencimiento, un solo uso, mínimo) y el mensaje — pensado para proteger tu margen. Sin prometer cuánto vas a vender de más."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarla
 
