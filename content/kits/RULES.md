@@ -338,3 +338,25 @@ A kit PR must include:
 - Human-review note that the evidence does not self-approve publication.
 
 Until these are present, keep the kit out of the published marketplace catalog.
+
+## Loop run log
+
+### 2026-08-02 — empresario-first batch (dueño, ecommerce, B2B, soporte, finanzas, marketing local, operaciones)
+
+**Shipped (4 kits, EN/ES parity):**
+
+- `b2b-sales-pipeline` (category: sales) — `hubspot` + `doc-coauthoring` + `internal-comms`.
+- `small-business-finance` (category: finance) — `xero` + `stripe` + `doc-coauthoring`.
+- `ecommerce-storefront` (category: ecommerce) — `square` + `doc-coauthoring` + `internal-comms`.
+- `team-operations` (category: operations) — `clickup` + `slack` + `internal-comms`.
+
+All items use only `kind: connector`/`kind: skill` (the two kinds `bundleItems.ts`/`isBundleItemKind` actually resolves, along with `cli`), only manifest-bearing connectors and the 7 allowed skills, and carry the fixed `/logos/ts-kit.svg` logo.
+
+**Deferred — Customer Service kit (servicio al cliente):** the natural core connector is `intercom`, but `content/connectors/en/intercom.md` has no `manifest:` block (first-party, app-side connection) — it fails this file's literal "Allowed connectors" test (`manifest:` block required). Building a support kit instead from `notion` + `slack` + `doc-coauthoring` + `internal-comms` would duplicate 3 of the 4 items already in `docs-and-team-comms` with no distinct connector to anchor a genuinely different workflow — that reads as a relabeled kit, not a coherent new one (see "Duplicates another kit's purpose" prohibition). Deferred until either (a) the Connector Loop ships a manifest-eligible support/ticketing connector, or (b) this file gets an explicit first-party exception (see next item).
+
+**Deferred — Local Marketing kit (marketing local):** the natural core connector is `google-business` (reviews/local listings), also first-party with no `manifest:` block, same gate failure as above. A version built from `google-maps` + `seo-auditor` + `meta-ads-creator` would overlap 2 of 3 items with the existing `marketing-campaign-seo` kit without a connector strong enough to justify a distinct local-business audience — same duplicate-purpose risk. Deferred for the same reason as Customer Service.
+
+**Open question for a future run (not resolved here):** this file's "Allowed connectors" section defines installable as "has a `manifest:` block", which pre-dates first-party connectors (`shopify`, `meta-ads`, `meta-social`, `google-business`, `intercom`, `dropbox`) that install via the app's Settings → Integrations flow instead of an npx manifest — they are not "card-only" dead-end CTAs in the sense the "Card-only today" list means (`gmail`, `gdrive`, `kit`, `sqlite`, `vercel`, `whatsapp`), but they also don't satisfy the literal manifest test. This run treated the literal text as authoritative and excluded them rather than reinterpret the rule. If JM confirms first-party app-connected connectors should count as kit-eligible, `ecommerce-storefront` could gain `shopify` and a real Customer Service / Local Marketing kit becomes buildable — but that is a rule change, not a call for an automated run to make unilaterally.
+
+**Separate drift note:** `content/plugins/RULES.md` ("Relationship to Kits") says a Kit's `items:` may reference `kind: plugin`. The actual resolver (`isBundleItemKind` in `src/lib/marketplace/bundleItems.ts`) only accepts `connector` / `skill` / `cli` — `plugin` is not a valid `BundleItemKind` and would be dropped/fail the `kitsIntegrity.test.ts` gate. No kit in this run uses `kind: plugin`; flagging so a future run doesn't try it and hit a silent-drop or test failure.
+
