@@ -165,6 +165,22 @@ export function resolveSkillPrompt(fixture, fetchedMd) {
   );
 }
 
+/**
+ * Lee el SKILL.md del repo en vez del catálogo.
+ *
+ * Sin esto solo se puede evaluar lo YA publicado, que es tarde: para saber si
+ * un arreglo a una skill funciona habría que publicarlo primero y medir
+ * después. Con `--local` se mide el cambio antes de shipearlo, que es el orden
+ * correcto — y es lo que necesita un loop para no publicar a ciegas.
+ */
+function readLocalSkillMd(slug) {
+  for (const lang of ["en", "es"]) {
+    const f = path.join(process.cwd(), "content", "skills", lang, `${slug}.md`);
+    if (fs.existsSync(f)) return fs.readFileSync(f, "utf8");
+  }
+  return null;
+}
+
 /** Baja el SKILL.md publicado. Devuelve null si la skill no está en el catálogo. */
 async function fetchSkillMd(slug) {
   const base = process.env.MARKETPLACE_BASE || "https://terminalsync.ai";
@@ -175,7 +191,7 @@ async function fetchSkillMd(slug) {
 }
 
 /** Flags que llevan un valor aparte — su valor NO es un nombre de fixture. */
-const VALUE_FLAGS = new Set(["--out", "--provider"]);
+const VALUE_FLAGS = new Set(["--out", "--provider", "--runs"]);
 
 /**
  * Nombres de fixture del argv, salteando flags y sus valores.
@@ -187,6 +203,57 @@ const VALUE_FLAGS = new Set(["--out", "--provider"]);
  */
 export function parsePositional(argv) {
   return argv.filter((a, i) => !a.startsWith("--") && !VALUE_FLAGS.has(argv[i - 1]));
+}
+
+/**
+ * Cuántas veces se corre cada fixture antes de decidir.
+ *
+ * Medido el 2026-08-07: la MISMA skill con el MISMO prompt, tres corridas
+ * seguidas contra Gemini, dio 5/5, 4/5 y 5/5 — o sea aprobaba, no aprobaba y
+ * aprobaba. El veredicto de una sola corrida es, en el margen, un sorteo.
+ *
+ * Con 3 corridas y decisión por mediana, una respuesta floja aislada deja de
+ * voltear el resultado. No elimina la varianza; la vuelve manejable.
+ */
+const DEFAULT_RUNS = Number(process.env.SKILLS_EVAL_RUNS || 3);
+
+/**
+ * Combina varias corridas del mismo fixture en un resumen por mediana.
+ *
+ * Mediana y no promedio a propósito: una corrida en la que la API se degradó
+ * arrastra el promedio, pero no mueve la mediana.
+ */
+export function medianSummary(summaries) {
+  if (!summaries.length) throw new Error("medianSummary: sin corridas");
+  const med = (vals) => {
+    const v = vals.filter((x) => typeof x === "number").sort((a, b) => a - b);
+    if (!v.length) return null;
+    const m = Math.floor(v.length / 2);
+    return v.length % 2 ? v[m] : Math.round(((v[m - 1] + v[m]) / 2) * 100) / 100;
+  };
+  const pick = (k) => med(summaries.map((s) => s[k]));
+  return {
+    total: summaries[0].total,
+    scored: pick("scored"),
+    // Los errores van por el PEOR caso, no por la mediana: si una corrida no
+    // pudo evaluar algo, eso es una señal que no conviene promediar.
+    errors: Math.max(...summaries.map((s) => s.errors)),
+    avgBaseline: pick("avgBaseline"),
+    avgSkill: pick("avgSkill"),
+    meetsExpected: pick("meetsExpected"),
+    beatsBaseline: pick("beatsBaseline"),
+    runs: summaries.length,
+    spread: {
+      meetsExpected: [
+        Math.min(...summaries.map((s) => s.meetsExpected)),
+        Math.max(...summaries.map((s) => s.meetsExpected)),
+      ],
+      avgSkill: [
+        Math.min(...summaries.map((s) => s.avgSkill ?? 0)),
+        Math.max(...summaries.map((s) => s.avgSkill ?? 0)),
+      ],
+    },
+  };
 }
 
 export function decideVerdict(summary, thresholds = APPROVAL_THRESHOLDS) {
@@ -621,6 +688,8 @@ async function main() {
     process.exit(1);
   }
   const geminiModel = DEFAULT_GEMINI_MODEL;
+  // `--local`: medir el SKILL.md del repo antes de publicarlo.
+  const useLocal = argv.includes("--local");
 
   let answers = null;
   let judged = null;
@@ -661,23 +730,43 @@ async function main() {
     let skillPrompt = fixture.skillPrompt;
     let promptSource = "fixture (override)";
     if (!dryRun) {
-      const md = await fetchSkillMd(fixture.skill).catch(() => null);
+      const md = useLocal
+        ? readLocalSkillMd(fixture.skill)
+        : await fetchSkillMd(fixture.skill).catch(() => null);
       skillPrompt = resolveSkillPrompt(fixture, md);
-      promptSource = md ? "SKILL.md del catálogo" : "fixture (el catálogo no la sirve)";
+      promptSource = md
+        ? useLocal
+          ? "SKILL.md LOCAL del repo (sin publicar)"
+          : "SKILL.md del catálogo"
+        : "fixture (no se encontró el SKILL.md)";
       process.stderr.write(`[skills-eval] ${fixture.skill}: prompt = ${promptSource}\n`);
     }
-    const results = await runFixture(fixture, {
-      dryRun,
-      answers,
-      judged,
-      apiKey,
-      model,
-      subjectProvider,
-      geminiApiKey,
-      geminiModel,
-      skillPrompt,
-    });
-    const summary = aggregate(results);
+    // Varias corridas y decisión por mediana: una sola es un sorteo en el
+    // margen (ver DEFAULT_RUNS). En DRY_RUN una alcanza — no hay varianza.
+    const runs = dryRun ? 1 : Number(process.argv[process.argv.indexOf("--runs") + 1]) || DEFAULT_RUNS;
+    const perRun = [];
+    let results = [];
+    for (let i = 0; i < runs; i++) {
+      results = await runFixture(fixture, {
+        dryRun,
+        answers,
+        judged,
+        apiKey,
+        model,
+        subjectProvider,
+        geminiApiKey,
+        geminiModel,
+        skillPrompt,
+      });
+      perRun.push(aggregate(results));
+      if (runs > 1) {
+        const r = perRun[i];
+        process.stderr.write(
+          `[skills-eval] ${fixture.skill}: corrida ${i + 1}/${runs} — meets ${r.meetsExpected}/${r.scored} · skill ${fmt(r.avgSkill)}\n`,
+        );
+      }
+    }
+    const summary = runs > 1 ? medianSummary(perRun) : perRun[0];
     const verdict = decideVerdict(summary);
     const md = renderMarkdown(fixture, results, summary, {
       model: dryRun ? null : model,

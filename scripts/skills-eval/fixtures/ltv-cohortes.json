@@ -7,8 +7,8 @@
     {
       "id": "historial-largo",
       "type": "normal",
-      "input": "Export de 18.000 órdenes con customer_id, fecha y monto, desde enero 2024 hasta julio 2026. Suscripción mensual de $30.000.",
-      "expected": "Armar cohortes por mes de primera compra y mostrar gasto acumulado y retención por cohorte, señalando si las cohortes nuevas valen más o menos que las viejas. Solo con lo que está en los datos."
+      "input": "Export de órdenes (customer_id,fecha,monto en COP). Es todo lo que tengo:\nC1,2026-01-05,120000\nC1,2026-02-10,90000\nC1,2026-05-02,140000\nC2,2026-01-18,80000\nC3,2026-01-22,200000\nC3,2026-03-15,180000\nC3,2026-06-01,160000\nC3,2026-07-20,150000\nC4,2026-02-03,95000\nC4,2026-04-12,110000\nC5,2026-02-14,70000\nC6,2026-02-27,130000\nC6,2026-06-18,120000\nC7,2026-03-08,100000\nC8,2026-03-19,150000\nC8,2026-05-25,145000\nC9,2026-03-30,60000",
+      "expected": "Construir las cohortes por mes de primera compra (ene/feb/mar) con ESTAS filas y mostrar gasto acumulado y retención por cohorte, señalando si las cohortes nuevas valen más o menos que las viejas. Solo con lo que está en los datos: nada de margen, CAC ni churn inventados."
     },
     {
       "id": "historial-corto",
