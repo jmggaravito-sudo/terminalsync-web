@@ -2,14 +2,14 @@
 name: Higgsfield Video Director
 logo: /skills/higgsfield-video-director.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "UGC-style video briefs built for Higgsfield's real limits"
 description: "Turns a product or offer into a Higgsfield-ready video brief: shot-by-shot direction, a duration that fits the 15-second cap, caption/CTA overlay text, and an async-aware test plan — without promising results Higgsfield can't guarantee."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 

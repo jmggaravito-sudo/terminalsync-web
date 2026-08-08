@@ -2,14 +2,14 @@
 name: Zapier Automation Blueprint
 logo: /skills/zapier-automation-blueprint.svg
 category: productivity
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "La configuración de Zapier más acotada y segura para un proceso real"
 description: "Convierte un proceso de negocio en una lista concreta de acciones de Zapier MCP: las herramientas exactas para activar, cuáles son de solo lectura y cuáles escriben, un punto de aprobación obligatorio antes de que algo envíe o cambie un sistema real, y un plan de prueba con un solo registro antes de soltarlo."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarlo
 

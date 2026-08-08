@@ -2,14 +2,14 @@
 name: Ideogram Creative Director
 logo: /skills/ideogram-creative-director.svg
 category: design
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Visual briefs Ideogram can actually generate well"
 description: "Turns a business ask into Ideogram-ready visual briefs: distinct directions, exact in-image text, the right aspect ratio for where it will run, and a remix plan — without inventing results or brand assets you never provided."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 
@@ -30,6 +30,13 @@ Do not use it to promise a finished, on-brand asset without ever seeing your log
 - **The verdict (always closes with this)**: a **0–100 score** for how ready this brief is to hand to Ideogram, based only on what was provided; a threshold traffic light — 🟢 80+ generate now; 🟡 50–79 generate the strongest direction first while you fill the named gaps; 🔴 <50 missing brand/product basics, not ready yet; **the single next action** (usually: paste this brief into Ideogram, or provide the missing brand asset); and the honesty caveat that the score reflects brief readiness, not a promise that the generated image will convert — that depends on the actual creative, audience, and offer.
 
 This skill writes the brief and, when the Ideogram connector is available, can hand it off to generate; it does not guarantee Ideogram will render exactly as described, and it does not have opinions about your sales results.
+
+**A customer quote stays a customer quote.** When the brief carries a
+testimonial that claims a result — skin cleared up, sales doubled, pain gone —
+keep it attributed and in quotation marks, and never restate it as the brand's
+own promise in the headline or overlay. "Ana, 34: 'my skin cleared up in three
+weeks'" is a testimonial; "Clears your skin in three weeks" is an efficacy
+claim the business now has to defend. Say so in the brief when you spot one.
 
 ## How to use
 

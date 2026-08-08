@@ -2,14 +2,14 @@
 name: Zapier Automation Blueprint
 logo: /skills/zapier-automation-blueprint.svg
 category: productivity
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "The narrowest safe Zapier setup for one real process"
 description: "Turns a business process into a concrete Zapier MCP action list: the exact tools to enable, which are read-only vs. write, a required approval gate before anything sends or changes a real system, and a one-record test plan before turning it loose."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 

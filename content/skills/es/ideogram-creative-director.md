@@ -2,14 +2,14 @@
 name: Ideogram Creative Director
 logo: /skills/ideogram-creative-director.svg
 category: design
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Briefs visuales que Ideogram puede generar de verdad"
 description: "Convierte un pedido de negocio en briefs listos para Ideogram: direcciones distintas, el texto exacto dentro de la imagen, la proporción correcta según dónde se va a mostrar, y un plan de remix — sin inventar resultados ni assets de marca que nunca diste."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarlo
 
@@ -38,6 +38,14 @@ Este skill redacta el brief y, cuando el conector de Ideogram está disponible, 
 3. Pedí el brief: *"Dame un brief de Ideogram para [asset], para [plataforma/ubicación], con este texto exacto de título."*
 4. Revisá el veredicto y los huecos marcados antes de generar. Completá lo señalado, o aceptá la lectura 🟡/🔴 y generá igual sabiendo qué falta.
 5. Usá el plan de remix para iterar con Ideogram en vez de escribir un brief nuevo desde cero cada vez.
+
+**Una frase del cliente sigue siendo del cliente.** Cuando el brief trae un
+testimonio que promete un resultado — se me limpió la piel, dupliqué ventas, se
+me fue el dolor — mantenelo atribuido y entre comillas, y nunca lo repitas como
+promesa propia de la marca en el título ni en el texto sobre la imagen. "Ana,
+34: 'se me limpió la piel en tres semanas'" es un testimonio; "Limpia tu piel
+en tres semanas" es una promesa de eficacia que el negocio va a tener que
+defender. Si detectás una, decilo en el brief.
 
 ## Ideal para
 
