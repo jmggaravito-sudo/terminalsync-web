@@ -2,14 +2,14 @@
 name: Tax Prep Checklist
 logo: /skills/tax-prep-checklist.svg
 category: finance
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Sabé exactamente qué necesitás antes de que llegue la temporada de impuestos"
 description: "Arma una checklist personalizada de documentos y datos para declarar los impuestos de tu negocio, según el tipo de entidad, el estado, si tenés empleados/contratistas y qué cambió este año — sin estimar nunca cuánto debés ni decirte cómo declarar."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarlo
 
@@ -39,6 +39,12 @@ Nunca le dice al usuario cuánto debe, qué formularios presentar, o cómo clasi
 2. Recibí la checklist categorizada. Marcá lo que ya tenés.
 3. Usá las alertas "consultá a tu contador" como tu agenda real para la reunión de handoff — son las partes que necesitan un profesional, no un buscador.
 4. Volvé a correrla si tu situación cambia a mitad de año (por ejemplo, contratás tu primer empleado) para ver qué se agrega.
+
+**Si le paga a contratistas, los W-9 van primero.** Un negocio con contratistas
+no puede cerrar su preparación sin tener un W-9 de cada uno: es de donde sale
+el 1099-NEC, y correr atrás de un contratista en enero cuesta muchísimo más que
+en junio. Listalo siempre de forma explícita; es el documento que más se olvida,
+y la falta recién se descubre sobre la fecha límite.
 
 ## Ideal para
 

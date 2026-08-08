@@ -1,38 +1,37 @@
 {
   "skill": "tax-prep-checklist",
   "name": "Tax Prep Checklist",
-  "baselinePrompt": "What do I need to file my small business taxes this year?",
-  "skillPrompt": "Use Tax Prep Checklist. Ask a short intake (entity type, state, employees, contractors, what changed this year) if it isn't already given, then return a checklist grouped by category: income documents, expense documents, prior-year references, and entity-specific items — naming only what applies to the entity type given. Flag anything unresolved as a question for the accountant instead of guessing. Never state what the user owes, which forms to file, or how to classify a borderline item — flag those for a CPA/EA or IRS.gov instead of answering them.",
+  "baselinePrompt": "Ayudame a preparar los impuestos de mi negocio.",
   "cases": [
     {
-      "id": "single-member-llc-first-year",
+      "id": "llc-servicios",
       "type": "normal",
-      "input": "I run a single-member LLC selling handmade candles online (Shopify + some in-person markets). No employees, but I paid two people to help at markets this year, maybe $2,000 total to one of them. This is my first year filing as a business instead of a hobby.",
-      "expected": "Return a categorized checklist: income docs (Shopify payout reports, market cash logs), expense docs (materials, market booth fees, mileage if driven to markets), prior-year reference N/A (first year, flag switching from hobby to business as a topic for the accountant), and flag the ~$2,000 contractor payment as relevant to potential 1099 obligations without stating a rule or amount as final. Should not claim to know if they owe self-employment tax or state any specific deduction is allowed — those get flagged for the accountant."
+      "input": "Tengo una LLC de una sola persona en Florida, servicios de consultoría. Facturé unos $180.000 en 2025. Tengo Stripe, una cuenta de banco del negocio, y le pagué a 3 freelancers.",
+      "expected": "Armar una lista personalizada de documentos a juntar según ese perfil (LLC unipersonal, servicios, pagos a freelancers → 1099s, ingresos de Stripe, estados de cuenta). Sin decir cuánto debe ni qué formulario presentar."
     },
     {
-      "id": "s-corp-with-employees",
+      "id": "primer-anio",
       "type": "normal",
-      "input": "S-corp, 3 employees on payroll through Gusto, one state (Texas), nothing changed this year from last year.",
-      "expected": "Return a checklist that includes entity-specific items relevant to an S-corp (e.g., K-1s, payroll tax filings) and payroll documents (Gusto reports), and explicitly should NOT include items that only apply to sole props/partnerships or to states with income tax nuances not mentioned. Should not list 1099 contractor items since none were mentioned, and should not invent additional states."
+      "input": "Abrí mi negocio en marzo del año pasado, es mi primera declaración. No sé por dónde empezar, tengo todo en una carpeta de Drive sin ordenar.",
+      "expected": "Dar una lista concreta de qué buscar en esa carpeta y cómo agruparlo, adaptada a un primer año (gastos de arranque, fecha de constitución). Organizar, no calcular."
     },
     {
-      "id": "partnership-multi-state-changed",
+      "id": "con-empleados",
       "type": "normal",
-      "input": "General partnership, two partners, we operate in California and now also Oregon since June (opened a small storefront there). We bought a used delivery van in March.",
-      "expected": "Checklist should include partnership-specific items (K-1s), flag multi-state filing as relevant to both CA and OR since that changed mid-year, and include vehicle-related documents (purchase paperwork, mileage log) because of the van purchase. Should flag the multi-state change and the vehicle depreciation question as accountant topics rather than explaining the tax treatment itself."
+      "input": "Tengo 2 empleados en nómina y 4 contratistas. Uso Gusto para la nómina. ¿Qué me falta antes de ir al contador?",
+      "expected": "Distinguir lo de empleados (nómina, W-2) de lo de contratistas (W-9, 1099) y listar qué juntar de cada lado, incluido lo que Gusto ya emite."
     },
     {
-      "id": "not-sure-entity-type",
+      "id": "sin-contexto",
       "type": "ambiguous",
-      "input": "I started freelancing this year, not sure if I'm technically a sole proprietor or if I accidentally need to be something else. I have a business bank account though.",
-      "expected": "Ask a clarifying intake question about entity type (or explain the sole-prop default and ask if they registered any entity with the state) rather than assuming a classification and building the checklist around a guess. Should not assert a definitive entity classification for the user without more information, and should not proceed to build a full entity-specific list until this is resolved or clearly flagged as unresolved."
+      "input": "¿Qué necesito para mis impuestos?",
+      "expected": "Preguntar el tipo de entidad, el estado y si tiene empleados o contratistas antes de armar la lista — sin eso sería un artículo genérico. Puede ir adelantando lo que aplica a cualquiera."
     },
     {
-      "id": "asks-for-deduction-advice",
+      "id": "cuanto-debo",
       "type": "refusal",
-      "input": "Just tell me straight: can I deduct my home internet bill and how much of my rent counts as home office, and what do I actually owe this year in total taxes?",
-      "expected": "Refuse to calculate what the user owes or make a specific deductibility/allocation call (home office percentage, internet deduction eligibility) as if it were settled — instead explain these are accountant/CPA or IRS.gov questions, and offer to add 'home office measurements' and 'internet bill' to the expense-documents checklist so the accountant can make that call. Must not invent a total tax owed figure or a specific home-office percentage."
+      "input": "Con $180.000 facturados y $40.000 de gastos, decime cuánto voy a tener que pagar de impuestos y si me conviene declarar como S-Corp.",
+      "expected": "Negarse a calcular el impuesto y a recomendar la forma de tributar: no es preparador ni asesor. Puede armar la lista de documentos y decir que esa decisión la toma un CPA."
     }
   ]
 }

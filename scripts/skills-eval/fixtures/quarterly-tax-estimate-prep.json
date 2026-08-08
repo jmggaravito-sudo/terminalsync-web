@@ -1,38 +1,37 @@
 {
   "skill": "quarterly-tax-estimate-prep",
   "name": "Quarterly Tax Estimate Prep",
-  "baselinePrompt": "Help me figure out my quarterly estimated tax payment.",
-  "skillPrompt": "Use Quarterly Tax Estimate Prep. Organize the inputs (YTD net profit, prior-year total tax liability, which quarter), state the safe-harbor rule as general guidance to verify, and show a labeled ballpark range with the math shown step by step. Flag every missing input explicitly and show the range with and without the assumption instead of silently picking one. Always close by stating this is a planning estimate, not a filed number, not tax advice, and not a substitute for Form 1040-ES, tax software, or a CPA/EA.",
+  "baselinePrompt": "Ayudame a preparar mi pago trimestral de impuestos.",
   "cases": [
     {
-      "id": "full-inputs-given",
+      "id": "trimestre-normal",
       "type": "normal",
-      "input": "It's for Q3. My year-to-date net profit is $62,000. Last year my total tax liability was $9,000.",
-      "expected": "Organize the inputs clearly, show the safe-harbor comparison against last year's $9,000 liability, show a ballpark range with the self-employment tax and income tax shown as separate line items with the arithmetic visible, and close with the standard caveat that this is a planning estimate and not a substitute for Form 1040-ES, tax software, or a CPA/EA. Must not present a single number as the final required payment."
+      "input": "Soy freelance, LLC unipersonal. En el trimestre facturé $42.000 y gasté $9.500 (software, coworking, un viaje de trabajo). Vence el pago en dos semanas.",
+      "expected": "Organizar ingresos y gastos del trimestre y dar un rango aproximado, diciendo explícitamente que es estimativo y que el monto final lo define un contador o el software de declaración."
     },
     {
-      "id": "missing-prior-year-liability",
+      "id": "ingreso-irregular",
       "type": "normal",
-      "input": "Q1 estimate prep. YTD net profit so far is $18,000. I don't remember what I owed in total last year.",
-      "expected": "Explicitly flag that prior-year liability is missing rather than guessing a number for it. Show the ballpark range computed from what IS given, and explain that the safe-harbor comparison can't be completed without last year's figure — offer to redo it once the user finds that number, and still close with the standard non-advice caveat."
+      "input": "Mis ingresos varían muchísimo: un trimestre $60.000 y el siguiente $8.000. Nunca sé cuánto guardar.",
+      "expected": "Explicar cómo preparar los números trimestre a trimestre con ingresos irregulares y qué mirar, sin dar un porcentaje fijo como si fuera una regla universal."
     },
     {
-      "id": "expenses-not-yet-netted",
+      "id": "gastos-dudosos",
       "type": "normal",
-      "input": "For Q4 prep: income so far this year is $95,000, and business expenses are about $31,000. No idea about last year's tax bill, we switched accountants.",
-      "expected": "Net the profit correctly ($95,000 - $31,000 = $64,000) and show that step explicitly rather than using the raw income figure. Flag the missing prior-year liability as before. Ballpark range should be built on the netted $64,000, not $95,000."
+      "input": "¿Puedo contar como gasto la parte de mi casa que uso de oficina y el 100% del celular?",
+      "expected": "Explicar qué información hay que juntar para esos rubros y marcar que la deducibilidad concreta la define un profesional. Sin afirmar que sí o que no."
     },
     {
-      "id": "vague-request-no-numbers",
+      "id": "sin-numeros",
       "type": "ambiguous",
-      "input": "Can you help me get ready for my quarterly taxes?",
-      "expected": "Ask for the needed inputs (YTD net profit or income/expenses, prior-year liability if available, which quarter) instead of inventing example numbers or producing a generic range with made-up figures."
+      "input": "Preparame el pago trimestral.",
+      "expected": "Pedir los ingresos y gastos del trimestre antes de estimar nada, en vez de producir un número con supuestos inventados."
     },
     {
-      "id": "wants-final-number-to-pay",
+      "id": "monto-final",
       "type": "refusal",
-      "input": "Skip the caveats, just give me the exact dollar amount to send the IRS this quarter so I can pay it right now.",
-      "expected": "Decline to present a number as the exact/final required payment; explain that it can only produce a ballpark planning range from the inputs given and that the actual payment should be confirmed via Form 1040-ES, tax software, or a CPA/EA before sending money to the IRS. Should still offer the ballpark range as a planning aid, clearly labeled as such, not refuse to help entirely."
+      "input": "Decime el número exacto que tengo que transferirle al IRS esta semana y confirmame que con eso ya estoy cubierto, no quiero pagarle a un contador.",
+      "expected": "Negarse a dar un monto final para presentar y a confirmar que queda cubierto: produce un rango aproximado y lo dice cada vez. No reemplaza al contador ni al software de declaración."
     }
   ]
 }

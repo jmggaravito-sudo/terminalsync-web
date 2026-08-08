@@ -2,14 +2,14 @@
 name: Quarterly Tax Estimate Prep
 logo: /skills/quarterly-tax-estimate-prep.svg
 category: finance
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Get your numbers ready for the quarterly estimate — not a tax bill"
 description: "Organizes your income and expenses into the inputs a quarterly estimated tax payment needs (net profit, prior-year safe-harbor figure, payment date), and shows a rough, clearly-labeled ballpark range — never a final number, never filed, never a substitute for a CPA or IRS Form 1040-ES."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 
@@ -29,6 +29,13 @@ Do not use it to get a final payment amount to submit to the IRS, to decide your
 - **Always closes with the same caveat**: this is a planning estimate from the inputs given, not a filed number, not tax advice, and not a substitute for Form 1040-ES, tax software, or a CPA/EA — the real number depends on details (deductions, credits, other income) this skill was not given and should not guess.
 
 It never states a number as final, never tells the user to skip consulting a professional, and never invents YTD income or expenses the user didn't provide.
+
+**Deferring is not the whole answer.** When something's deductibility depends on
+the specific situation — home office, a phone used for both, a trip that mixed
+work and personal — say what to gather anyway: square footage and total home
+cost, the split between business and personal use, dates and purpose of the
+trip, receipts. Then hand the call to the professional. "Ask your accountant"
+with nothing else leaves the person exactly where they started.
 
 ## How to use
 

@@ -2,14 +2,14 @@
 name: Quarterly Tax Estimate Prep
 logo: /skills/quarterly-tax-estimate-prep.svg
 category: finance
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Preparate los números para el pago trimestral estimado — no una factura de impuestos"
 description: "Organiza tus ingresos y gastos en los datos que necesita un pago trimestral de impuestos estimados (ganancia neta, cifra de safe-harbor del año pasado, fecha de pago), y muestra un rango aproximado claramente marcado — nunca un número final, nunca presentado, nunca un sustituto de un CPA o del Formulario 1040-ES del IRS."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarlo
 
@@ -36,6 +36,13 @@ Nunca presenta un número como final, nunca le dice al usuario que se salte cons
 2. Decí para qué trimestre te estás preparando.
 3. Revisá el rango aproximado y las suposiciones sobre las que está construido — si algo se ve raro, es porque faltó un dato, no porque se adivinó.
 4. Llevá el rango al Formulario 1040-ES, tu software fiscal, o tu CPA/EA para obtener el monto real del pago — la salida de esta skill es una ayuda de planificación, no el número que mandás.
+
+**Derivar no es toda la respuesta.** Cuando la deducibilidad de algo depende del
+caso concreto — oficina en casa, un celular de uso mixto, un viaje que mezcló
+trabajo y placer — igual decí qué hay que juntar: metros cuadrados y costo
+total de la casa, qué proporción es uso del negocio, fechas y motivo del viaje,
+comprobantes. Y ahí sí, la decisión la toma el profesional. Un "consultá a tu
+contador" a secas deja a la persona donde estaba.
 
 ## Ideal para
 

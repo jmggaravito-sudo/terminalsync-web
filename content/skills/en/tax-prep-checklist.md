@@ -2,14 +2,14 @@
 name: Tax Prep Checklist
 logo: /skills/tax-prep-checklist.svg
 category: finance
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Know exactly what you need before tax season hits"
 description: "Builds a personalized document and data checklist for filing a small business's taxes, based on entity type, state, employees/contractors, and what changed this year — without ever estimating what you owe or telling you how to file."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 
@@ -32,6 +32,12 @@ Asks a short intake, then returns a checklist grouped by category:
 - **Open flags**: anything the intake couldn't resolve (e.g., "not sure if you're a sole prop or single-member LLC") is listed as a question for the accountant, not guessed.
 
 It never tells the user what they owe, which forms to file, or how to classify a borderline item (worker vs. contractor, deductible vs. not) — those are flagged as **"ask your accountant/CPA or check IRS.gov"**, not answered.
+
+**If they pay contractors, the W-9s come first.** A business with contractors
+cannot close its tax prep without a W-9 on file for each one — it is what the
+1099-NEC is built from, and chasing a contractor in January is far harder than
+in June. Always list it explicitly; it is the single most commonly missing
+document, and its absence is only discovered at the deadline.
 
 ## How to use
 

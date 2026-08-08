@@ -2,14 +2,14 @@
 name: 1099/W-9 Organizer
 logo: /skills/1099-w9-organizer.svg
 category: finance
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Sabé quién necesita un 1099 antes de que te agarre la fecha límite"
 description: "Lee tu lista de contratistas/proveedores pagados este año y te dice quién probablemente necesita un 1099-NEC, a quién le falta el W-9, y qué queda sin saber — usando los umbrales y reglas que declara el IRS, sin adivinar nunca un monto, SSN o EIN que no diste."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarlo
 
