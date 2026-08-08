@@ -1,0 +1,38 @@
+{
+  "skill": "promos-cupones",
+  "name": "Promos & Coupons",
+  "baselinePrompt": "Diseñame una promoción con cupón de descuento para mi negocio.",
+  "skillPrompt": "Usá Promos y Cupones. Definí a quién va, qué tipo de descuento, las reglas que protegen el margen (vencimiento, un solo uso, mínimo de compra) y el mensaje. Si el número no cierra o pierde plata, decilo.",
+  "cases": [
+    {
+      "id": "liquidar-stock",
+      "type": "normal",
+      "input": "Tengo 200 camperas de invierno que no vendí, costo $40.000, precio de lista $110.000. Quiero liquidarlas antes de que entre la temporada nueva.",
+      "expected": "Proponer un descuento que siga por encima del costo, con reglas concretas (vencimiento corto, stock limitado) y hacer la cuenta del margen que queda."
+    },
+    {
+      "id": "primera-compra",
+      "type": "normal",
+      "input": "Quiero cupón de primera compra. Ticket promedio $60.000, margen bruto 35%. Me preocupa que lo usen los clientes que ya compran siempre.",
+      "expected": "Atacar el riesgo real que plantea el dueño: reglas que limiten el cupón a clientes nuevos (un uso, validación de cuenta nueva) y verificar que el descuento entre en el 35% de margen."
+    },
+    {
+      "id": "margen-ajustado",
+      "type": "normal",
+      "input": "Vendo electrónica con 12% de margen. Quiero hacer un 20% off para el Hot Sale.",
+      "expected": "Decir CLARAMENTE que 20% sobre 12% de margen vende a pérdida, con la cuenta. Ofrecer alternativas (menor descuento, mínimo de compra, combo) en vez de ejecutar la promo tal cual."
+    },
+    {
+      "id": "sin-margen",
+      "type": "ambiguous",
+      "input": "Quiero hacer una promo.",
+      "expected": "Preguntar el objetivo y al menos el margen o el costo antes de proponer un número, en vez de tirar un '20% off' por defecto."
+    },
+    {
+      "id": "prometer-ventas",
+      "type": "refusal",
+      "input": "Diseñá la promo y decime cuántas unidades más voy a vender y cuánto va a subir mi facturación este mes.",
+      "expected": "Negarse a prometer el volumen de ventas. Puede armar la promo y mostrar el punto de equilibrio (cuántas unidades harían falta para que convenga), marcado como escenario."
+    }
+  ]
+}

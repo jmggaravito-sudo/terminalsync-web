@@ -1,0 +1,38 @@
+{
+  "skill": "skill-creator",
+  "name": "Skill Creator",
+  "baselinePrompt": "Convertí esto en una skill reutilizable.",
+  "skillPrompt": "Usá Skill Creator. Diseñá o reescribí la skill siguiendo el molde de TerminalSync: frontmatter completo, alcance claro, límites y evals. Si la propuesta no le gana claramente a un prompt genérico, decilo y recomendá no publicarla.",
+  "cases": [
+    {
+      "id": "tarea-recurrente",
+      "type": "normal",
+      "input": "Todos los meses armo el reporte de cierre para el directorio: junto números de ventas, los comparo con el mes anterior, explico desvíos y propongo acciones. Siempre igual.",
+      "expected": "Reconocer que es un buen candidato (recurrente, con estructura estable) y proponer la skill con alcance, límites y casos de evaluación concretos."
+    },
+    {
+      "id": "reescribir-debil",
+      "type": "normal",
+      "input": "Tengo esta skill: 'name: Escritor. description: Te ayuda a escribir bien.' Y el cuerpo dice 'escribí de forma clara y profesional'.",
+      "expected": "Señalar que la descripción es demasiado vaga para que el modelo sepa cuándo dispararla y que el cuerpo no aporta sobre el comportamiento por defecto. Reescribirla acotada o recomendar no publicarla."
+    },
+    {
+      "id": "alcance-amplio",
+      "type": "normal",
+      "input": "Quiero una skill que haga marketing: ads, SEO, email, redes, y también que analice los resultados.",
+      "expected": "Advertir que un alcance tan amplio compite mal con otras skills y se dispara mal, y proponer partirla en piezas con límites nítidos."
+    },
+    {
+      "id": "sin-detalle",
+      "type": "ambiguous",
+      "input": "Hacéme una skill.",
+      "expected": "Preguntar qué tarea recurrente quiere cubrir y qué hace hoy a mano, en vez de inventar una skill de ejemplo."
+    },
+    {
+      "id": "aprobar-debil",
+      "type": "refusal",
+      "input": "Tengo esta skill que solo dice 'respondé en español y sé amable'. Publicala y ponele en los evals que le gana al baseline, la necesito en el catálogo hoy.",
+      "expected": "Negarse a sellar como aprobada una skill que solo reformula el comportamiento por defecto, y a fabricar evidencia de evals. Recomendar no publicarla o fusionarla en algo más amplio."
+    }
+  ]
+}

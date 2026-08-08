@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, ShieldCheck, Download, Package } from "lucide-react";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { loadFileKit } from "@/lib/marketplace/fileKits";
 import {
   isBundleItemKind,
   resolveBundleItems,
@@ -40,6 +41,24 @@ async function fetchBundle(
   slug: string,
   lang: string,
 ): Promise<BundleDetail | null> {
+  const fileKit = await loadFileKit(slug, lang);
+  if (fileKit) {
+    return {
+      id: fileKit.id,
+      slug: fileKit.slug,
+      name: fileKit.name,
+      tagline: fileKit.tagline ?? "",
+      description_md: fileKit.descriptionMd ?? "",
+      hero_subtitle: fileKit.tagline,
+      hero_image_url: fileKit.heroImageUrl,
+      price_cents: fileKit.priceCents,
+      currency: fileKit.currency,
+      purchase_count: fileKit.purchaseCount,
+      sample_prompts: [],
+      items: fileKit.items,
+    };
+  }
+
   const sb = getSupabaseAdmin();
   if (!sb) return null;
   const bundleRes = await sb
@@ -62,15 +81,20 @@ async function fetchBundle(
   for (const raw of linksRes.data ?? []) {
     const row = raw as Row;
     if (!isBundleItemKind(row.kind)) continue;
-    refs.push({ kind: row.kind, slug: row.item_slug, sortOrder: row.sort_order });
+    refs.push({
+      kind: row.kind,
+      slug: row.item_slug,
+      sortOrder: row.sort_order,
+    });
   }
   const items = await resolveBundleItems(refs, lang);
 
   const samplePrompts = Array.isArray(
     (bundleRes.data as { sample_prompts?: unknown }).sample_prompts,
   )
-    ? ((bundleRes.data as { sample_prompts: unknown[] })
-        .sample_prompts.filter((p): p is string => typeof p === "string"))
+    ? (bundleRes.data as { sample_prompts: unknown[] }).sample_prompts.filter(
+        (p): p is string => typeof p === "string",
+      )
     : [];
 
   return { ...bundleRes.data, sample_prompts: samplePrompts, items };
@@ -89,7 +113,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       images: bundle.hero_image_url
-        ? [{ url: bundle.hero_image_url, width: 1200, height: 630, alt: bundle.name }]
+        ? [
+            {
+              url: bundle.hero_image_url,
+              width: 1200,
+              height: 630,
+              alt: bundle.name,
+            },
+          ]
         : undefined,
     },
     alternates: {
@@ -121,8 +152,14 @@ function kindLabel(kind: BundleItemKind, isEs: boolean): string {
   }
 }
 
-function countsByKind(items: ResolvedBundleItem[]): Record<BundleItemKind, number> {
-  const out: Record<BundleItemKind, number> = { connector: 0, skill: 0, cli: 0 };
+function countsByKind(
+  items: ResolvedBundleItem[],
+): Record<BundleItemKind, number> {
+  const out: Record<BundleItemKind, number> = {
+    connector: 0,
+    skill: 0,
+    cli: 0,
+  };
   for (const it of items) out[it.kind]++;
   return out;
 }
@@ -132,10 +169,8 @@ function inclusionSummary(items: ResolvedBundleItem[], isEs: boolean): string {
   const parts: string[] = [];
   if (c.connector > 0)
     parts.push(`${c.connector} ${isEs ? "integraciones" : "integrations"}`);
-  if (c.skill > 0)
-    parts.push(`${c.skill} ${isEs ? "recetas" : "recipes"}`);
-  if (c.cli > 0)
-    parts.push(`${c.cli} ${isEs ? "herramientas" : "tools"}`);
+  if (c.skill > 0) parts.push(`${c.skill} ${isEs ? "recetas" : "recipes"}`);
+  if (c.cli > 0) parts.push(`${c.cli} ${isEs ? "herramientas" : "tools"}`);
   return parts.join(" · ");
 }
 
@@ -174,7 +209,9 @@ export default async function BundleDetailPage({ params }: Props) {
             {bundle.purchase_count > 0 && (
               <p className="mt-3 text-[12px] font-mono text-[var(--color-fg-dim)]">
                 {bundle.purchase_count}{" "}
-                {isEs ? "personas ya tienen este pack" : "people already own this pack"}
+                {isEs
+                  ? "personas ya tienen este pack"
+                  : "people already own this pack"}
               </p>
             )}
           </div>
@@ -206,17 +243,39 @@ export default async function BundleDetailPage({ params }: Props) {
             </div>
             <ul className="mt-5 space-y-2 text-[12.5px] text-[var(--color-fg-muted)]">
               <li className="flex gap-2 items-start">
-                <CheckCircle2 size={13} className="mt-0.5 text-[var(--color-ok)] shrink-0" strokeWidth={2.4} />
-                <span>{isEs ? "Instalación automática en TerminalSync" : "Automatic install in TerminalSync"}</span>
-              </li>
-              <li className="flex gap-2 items-start">
-                <CheckCircle2 size={13} className="mt-0.5 text-[var(--color-ok)] shrink-0" strokeWidth={2.4} />
-                <span>{isEs ? "Garantía 14 días, devolución total" : "14-day guarantee, full refund"}</span>
-              </li>
-              <li className="flex gap-2 items-start">
-                <ShieldCheck size={13} className="mt-0.5 text-[var(--color-ok)] shrink-0" strokeWidth={2.4} />
+                <CheckCircle2
+                  size={13}
+                  className="mt-0.5 text-[var(--color-ok)] shrink-0"
+                  strokeWidth={2.4}
+                />
                 <span>
-                  {isEs ? "Pago seguro vía Stripe" : "Secure payment via Stripe"}
+                  {isEs
+                    ? "Instalación automática en TerminalSync"
+                    : "Automatic install in TerminalSync"}
+                </span>
+              </li>
+              <li className="flex gap-2 items-start">
+                <CheckCircle2
+                  size={13}
+                  className="mt-0.5 text-[var(--color-ok)] shrink-0"
+                  strokeWidth={2.4}
+                />
+                <span>
+                  {isEs
+                    ? "Garantía 14 días, devolución total"
+                    : "14-day guarantee, full refund"}
+                </span>
+              </li>
+              <li className="flex gap-2 items-start">
+                <ShieldCheck
+                  size={13}
+                  className="mt-0.5 text-[var(--color-ok)] shrink-0"
+                  strokeWidth={2.4}
+                />
+                <span>
+                  {isEs
+                    ? "Pago seguro vía Stripe"
+                    : "Secure payment via Stripe"}
                 </span>
               </li>
             </ul>
@@ -261,10 +320,16 @@ export default async function BundleDetailPage({ params }: Props) {
       <section className="mx-auto max-w-3xl px-6 pb-24">
         <div className="rounded-3xl border border-[var(--color-accent)]/20 bg-[var(--color-accent)]/5 p-7">
           <div className="flex items-start gap-3">
-            <Download size={20} className="text-[var(--color-accent)] shrink-0 mt-1" strokeWidth={2.2} />
+            <Download
+              size={20}
+              className="text-[var(--color-accent)] shrink-0 mt-1"
+              strokeWidth={2.2}
+            />
             <div>
               <h3 className="text-[15px] font-semibold tracking-tight">
-                {isEs ? "Necesitás TerminalSync para usarlo" : "You need TerminalSync to use it"}
+                {isEs
+                  ? "Necesitás TerminalSync para usarlo"
+                  : "You need TerminalSync to use it"}
               </h3>
               <p className="mt-2 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
                 {isEs

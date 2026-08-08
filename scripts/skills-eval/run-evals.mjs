@@ -48,6 +48,248 @@ const FIXTURES_DIR = path.join(__dirname, "fixtures");
 
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const DEFAULT_MODEL = process.env.SKILLS_EVAL_MODEL || "claude-opus-4-8";
+const GEMINI_URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
+const DEFAULT_GEMINI_MODEL = process.env.SKILLS_EVAL_GEMINI_MODEL || "gemini-2.5-flash";
+
+/** Proveedores que este harness sabe evaluar como sujeto. */
+export const SUBJECT_PROVIDERS = ["claude", "codex", "gemini"];
+
+/**
+ * Techo de tokens del SUJETO.
+ *
+ * Estaba en 2000 y producía falsos negativos: la respuesta con la skill es más
+ * larga que la genérica (explica el criterio Y entrega el mensaje), así que se
+ * cortaba justo antes de la parte entregable. El juez lo veía como "no cumple"
+ * y la skill perdía contra un baseline más corto que sí llegaba al final. La
+ * skill era buena; la estábamos midiendo cortada.
+ *
+ * Gemini 2.5 además gasta parte del presupuesto en tokens de razonamiento, así
+ * que el techo efectivo es más bajo que el nominal. Fue 2000, después 8000, y
+ * 8000 SEGUÍA cortando: un caso de RFM con 12 clientes quedó "cut off
+ * mid-table" y el juez lo leyó como respuesta incompleta. Una tabla por
+ * cliente crece rápido. 16000 deja margen real.
+ */
+const SUBJECT_MAX_TOKENS = Number(process.env.SKILLS_EVAL_MAX_TOKENS || 16000);
+
+/**
+ * Reintento para fallas TRANSITORIAS de la API (503/429/5xx y errores de red).
+ *
+ * Sin esto un 503 pasajero contaba como caso con error, y como un caso con
+ * error bloquea la aprobación, una skill buena quedaba rechazada por un hipo
+ * del proveedor. Pasó en la primera corrida real.
+ *
+ * No reintenta 4xx que no sea 429: un 400 o un 401 no mejoran esperando.
+ */
+async function withRetry(fn, { attempts = 4, baseMs = 800 } = {}) {
+  let lastErr;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const r = await fn();
+      if (r.ok || (r.status < 500 && r.status !== 429)) return r;
+      lastErr = new Error(`HTTP ${r.status}`);
+    } catch (e) {
+      lastErr = e;
+    }
+    if (i < attempts - 1) {
+      // backoff exponencial con jitter, para no sincronizar reintentos
+      const wait = baseMs * 2 ** i + Math.floor(Math.random() * 250);
+      await new Promise((res) => setTimeout(res, wait));
+    }
+  }
+  throw lastErr;
+}
+
+/**
+ * Umbral de aprobación automática.
+ *
+ * Decisión JM 2026-08-07: **el loop aprueba, no un humano.** Eso cambia una
+ * política deliberada del harness — hasta hoy generaba evidencia y el veredicto
+ * era humano, porque la IA que genera es juez y parte. Lo que hace defendible
+ * automatizarlo es que el sujeto y el juez ahora son modelos DISTINTOS (ver
+ * `runFixture`): Gemini responde, Claude califica.
+ *
+ * Deliberadamente exigente — un umbral blando reintroduce el problema que todo
+ * esto vino a cerrar: declarar compatibilidad sin evidencia real.
+ *
+ *   - CERO errores: un caso que no pudo evaluarse no cuenta como aprobado.
+ *   - TODOS los casos cumplen lo esperado. Con 5 casos, uno que falla es 20%.
+ *   - Le gana al baseline en la MAYORÍA. No se exige en todos: en un caso fácil
+ *     el baseline genérico puede empatar sin que eso sea culpa de la skill.
+ *   - Promedio mínimo de 7/10, para que "cumple" no tape respuestas mediocres.
+ */
+export const APPROVAL_THRESHOLDS = {
+  minCases: 5,
+  maxErrors: 0,
+  requireAllMeetExpected: true,
+  minBeatsBaselineRatio: 0.5,
+  minAvgSkillScore: 7,
+};
+
+/**
+ * Veredicto automático a partir de los agregados. Pura — sin red, sin fs.
+ * Devuelve el porqué de cada rechazo para que el loop lo pueda loguear en vez
+ * de decir solo "no pasó".
+ */
+/**
+ * Saca el frontmatter YAML de un SKILL.md y devuelve el cuerpo.
+ *
+ * El frontmatter es metadata del catálogo (logo, license, vendors); lo que
+ * gobierna el comportamiento es el cuerpo. Pasarle el YAML al modelo solo
+ * agrega ruido.
+ */
+export function skillBody(md) {
+  const s = String(md ?? "");
+  const m = s.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/);
+  return (m ? s.slice(m[0].length) : s).trim();
+}
+
+/**
+ * El prompt con el que se evalúa la skill.
+ *
+ * **Por defecto, el SKILL.md REAL del catálogo.** Antes se usaba el
+ * `skillPrompt` del fixture, que era una paráfrasis escrita a mano — así que
+ * el harness medía el resumen de la skill, no la skill. La primera corrida
+ * real lo dejó a la vista: 83% de los casos ambiguos fallaban, y los 8
+ * fixtures cuya paráfrasis NO decía "preguntá si falta info" fallaron 8 de 8,
+ * porque el prompt les ordenaba entregar y después el caso los penalizaba por
+ * entregar. Las skills reales sí traen esa regla; la paráfrasis se la comía.
+ *
+ * `skillPrompt` en el fixture queda como override explícito, para una skill
+ * que todavía no esté publicada.
+ */
+export function resolveSkillPrompt(fixture, fetchedMd) {
+  if (fetchedMd && fetchedMd.trim()) {
+    const body = skillBody(fetchedMd);
+    if (body) return body;
+  }
+  if (fixture.skillPrompt && fixture.skillPrompt.trim()) return fixture.skillPrompt;
+  throw new Error(
+    `${fixture.skill}: no se pudo obtener el SKILL.md del catálogo y el fixture no trae skillPrompt de override`,
+  );
+}
+
+/**
+ * Lee el SKILL.md del repo en vez del catálogo.
+ *
+ * Sin esto solo se puede evaluar lo YA publicado, que es tarde: para saber si
+ * un arreglo a una skill funciona habría que publicarlo primero y medir
+ * después. Con `--local` se mide el cambio antes de shipearlo, que es el orden
+ * correcto — y es lo que necesita un loop para no publicar a ciegas.
+ */
+function readLocalSkillMd(slug) {
+  for (const lang of ["en", "es"]) {
+    const f = path.join(process.cwd(), "content", "skills", lang, `${slug}.md`);
+    if (fs.existsSync(f)) return fs.readFileSync(f, "utf8");
+  }
+  return null;
+}
+
+/** Baja el SKILL.md publicado. Devuelve null si la skill no está en el catálogo. */
+async function fetchSkillMd(slug) {
+  const base = process.env.MARKETPLACE_BASE || "https://terminalsync.ai";
+  const r = await withRetry(() => fetch(`${base}/api/marketplace/skills/${slug}/raw`));
+  if (!r.ok) return null;
+  const j = await r.json();
+  return typeof j.skill_md === "string" ? j.skill_md : null;
+}
+
+/** Flags que llevan un valor aparte — su valor NO es un nombre de fixture. */
+const VALUE_FLAGS = new Set(["--out", "--provider", "--runs"]);
+
+/**
+ * Nombres de fixture del argv, salteando flags y sus valores.
+ *
+ * La versión previa solo salteaba el valor de `--out`, así que
+ * `--provider gemini` hacía que "gemini" se tomara como fixture y el harness
+ * moría con `fixtures/gemini.json` no encontrado. Cualquier flag con valor que
+ * se agregue tiene que ir en `VALUE_FLAGS`.
+ */
+export function parsePositional(argv) {
+  return argv.filter((a, i) => !a.startsWith("--") && !VALUE_FLAGS.has(argv[i - 1]));
+}
+
+/**
+ * Cuántas veces se corre cada fixture antes de decidir.
+ *
+ * Medido el 2026-08-07: la MISMA skill con el MISMO prompt, tres corridas
+ * seguidas contra Gemini, dio 5/5, 4/5 y 5/5 — o sea aprobaba, no aprobaba y
+ * aprobaba. El veredicto de una sola corrida es, en el margen, un sorteo.
+ *
+ * Con 3 corridas y decisión por mediana, una respuesta floja aislada deja de
+ * voltear el resultado. No elimina la varianza; la vuelve manejable.
+ */
+const DEFAULT_RUNS = Number(process.env.SKILLS_EVAL_RUNS || 3);
+
+/**
+ * Combina varias corridas del mismo fixture en un resumen por mediana.
+ *
+ * Mediana y no promedio a propósito: una corrida en la que la API se degradó
+ * arrastra el promedio, pero no mueve la mediana.
+ */
+export function medianSummary(summaries) {
+  if (!summaries.length) throw new Error("medianSummary: sin corridas");
+  const med = (vals) => {
+    const v = vals.filter((x) => typeof x === "number").sort((a, b) => a - b);
+    if (!v.length) return null;
+    const m = Math.floor(v.length / 2);
+    return v.length % 2 ? v[m] : Math.round(((v[m - 1] + v[m]) / 2) * 100) / 100;
+  };
+  const pick = (k) => med(summaries.map((s) => s[k]));
+  return {
+    total: summaries[0].total,
+    scored: pick("scored"),
+    // Los errores van por el PEOR caso, no por la mediana: si una corrida no
+    // pudo evaluar algo, eso es una señal que no conviene promediar.
+    errors: Math.max(...summaries.map((s) => s.errors)),
+    avgBaseline: pick("avgBaseline"),
+    avgSkill: pick("avgSkill"),
+    meetsExpected: pick("meetsExpected"),
+    beatsBaseline: pick("beatsBaseline"),
+    runs: summaries.length,
+    spread: {
+      meetsExpected: [
+        Math.min(...summaries.map((s) => s.meetsExpected)),
+        Math.max(...summaries.map((s) => s.meetsExpected)),
+      ],
+      avgSkill: [
+        Math.min(...summaries.map((s) => s.avgSkill ?? 0)),
+        Math.max(...summaries.map((s) => s.avgSkill ?? 0)),
+      ],
+    },
+  };
+}
+
+export function decideVerdict(summary, thresholds = APPROVAL_THRESHOLDS) {
+  const reasons = [];
+  if (summary.total < thresholds.minCases) {
+    reasons.push(`solo ${summary.total} casos; el mínimo es ${thresholds.minCases}`);
+  }
+  if (summary.errors > thresholds.maxErrors) {
+    reasons.push(`${summary.errors} caso(s) con error — un caso que no se pudo evaluar no aprueba`);
+  }
+  if (thresholds.requireAllMeetExpected && summary.scored > 0 && summary.meetsExpected < summary.scored) {
+    reasons.push(`${summary.meetsExpected}/${summary.scored} casos cumplen lo esperado; se exigen todos`);
+  }
+  if (summary.scored === 0) {
+    reasons.push("ningún caso llegó a calificarse");
+  } else {
+    const ratio = summary.beatsBaseline / summary.scored;
+    if (ratio < thresholds.minBeatsBaselineRatio) {
+      reasons.push(
+        `le gana al baseline en ${summary.beatsBaseline}/${summary.scored} (${Math.round(ratio * 100)}%); el mínimo es ${Math.round(thresholds.minBeatsBaselineRatio * 100)}%`,
+      );
+    }
+    // `aggregate` lo llama `avgSkill` — no `avgSkillScore`. Si esto se
+    // desalinea, el umbral de score deja de aplicarse EN SILENCIO (undefined
+    // nunca es menor que el mínimo) y el harness aprueba de más. Hay un test
+    // que corre decideVerdict sobre la salida real de aggregate, justamente
+    // para que un rename no pueda romper esto sin que nadie se entere.
+    if (summary.avgSkill != null && summary.avgSkill < thresholds.minAvgSkillScore) {
+      reasons.push(`promedio ${summary.avgSkill}/10; el mínimo es ${thresholds.minAvgSkillScore}`);
+    }
+  }
+  return { approved: reasons.length === 0, reasons };
+}
 const ANTHROPIC_VERSION = "2023-06-01";
 
 // ---------------------------------------------------------------------------
@@ -64,7 +306,10 @@ export function validateFixture(fixture, source = "fixture") {
   if (!fixture || typeof fixture !== "object") {
     throw new Error(`${source}: not an object`);
   }
-  for (const field of ["skill", "name", "baselinePrompt", "skillPrompt"]) {
+  // `skillPrompt` ya NO es obligatorio: por defecto el harness usa el SKILL.md
+  // real del catálogo (ver `resolveSkillPrompt`). Sigue aceptándose como
+  // override para casos donde no haya skill publicada todavía.
+  for (const field of ["skill", "name", "baselinePrompt"]) {
     if (typeof fixture[field] !== "string" || !fixture[field].trim()) {
       throw new Error(`${source}: missing/empty string field "${field}"`);
     }
@@ -199,12 +444,26 @@ export function renderMarkdown(fixture, results, summary, meta = {}) {
   const lines = [];
   lines.push(`# ${fixture.name} — skill eval evidence`);
   lines.push("");
-  lines.push(
-    "> **Evidence, not a verdict.** This report is generated by an automated harness. The AI that generates a skill cannot approve its own work — it is judge and party. JM / human review decides whether the skill beats the baseline and may publish. (See `content/skills/RULES.md`.)",
-  );
+  if (meta.verdict) {
+    lines.push(
+      meta.verdict.approved
+        ? "> ✅ **APROBADA por el loop.** Cumplió el umbral automático — no requiere firma humana."
+        : `> ❌ **NO aprobada por el loop.** Motivo: ${meta.verdict.reasons.join("; ")}.`,
+    );
+    lines.push("");
+    lines.push(
+      "> El veredicto lo decide el loop (decisión JM 2026-08-07). Lo que lo hace defendible es que **el sujeto y el juez son modelos distintos**: el proveedor evaluado responde y Claude califica, así que el que produce no es el que aprueba. Umbral en `APPROVAL_THRESHOLDS`.",
+    );
+  } else {
+    lines.push(
+      "> **Evidence, not a verdict.** This report is generated by an automated harness. (See `content/skills/RULES.md`.)",
+    );
+  }
   lines.push("");
   lines.push(`- Skill: \`${fixture.skill}\``);
-  if (meta.model) lines.push(`- Subject + judge model: \`${meta.model}\``);
+  if (meta.subjectProvider) lines.push(`- Proveedor evaluado (sujeto): \`${meta.subjectProvider}\``);
+  if (meta.promptSource) lines.push(`- Prompt de la skill: ${meta.promptSource}`);
+  if (meta.model) lines.push(`- Judge model: \`${meta.model}\``);
   if (meta.mode) lines.push(`- Run mode: ${meta.mode}`);
   lines.push(`- Cases: ${summary.total} (scored ${summary.scored}, errors ${summary.errors})`);
   lines.push(
@@ -273,8 +532,56 @@ export function listFixtures() {
     .sort();
 }
 
-async function callClaude(prompt, { apiKey, model, maxTokens = 2000 }) {
-  const r = await fetch(ANTHROPIC_URL, {
+/**
+ * Llamar a Gemini como SUJETO de la evaluación.
+ *
+ * El juez sigue siendo Claude a propósito, incluso cuando el sujeto es Gemini
+ * — ver `runFixture`. Esa separación es lo que permite que el loop apruebe sin
+ * un humano: mientras el que produce y el que califica sean el mismo modelo,
+ * "juez y parte" es una objeción válida; con sujeto y juez distintos, deja de
+ * serlo.
+ */
+async function callGemini(prompt, { apiKey, model, maxTokens = SUBJECT_MAX_TOKENS }) {
+  const url = `${GEMINI_URL_BASE}/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const r = await withRetry(() =>
+    fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: maxTokens },
+      }),
+    }),
+  );
+  if (!r.ok) {
+    const body = await r.text();
+    throw new Error(`Gemini HTTP ${r.status}: ${body.slice(0, 200)}`);
+  }
+  const j = await r.json();
+  const text = j?.candidates?.[0]?.content?.parts
+    ?.map((p) => p?.text)
+    .filter((t) => typeof t === "string")
+    .join("");
+  if (!text) throw new Error("Gemini reply had no text part");
+  return text;
+}
+
+/** Despacha al proveedor que se está evaluando. */
+async function callSubject(provider, prompt, opts) {
+  if (provider === "gemini") {
+    return callGemini(prompt, {
+      apiKey: opts.geminiApiKey,
+      model: opts.geminiModel,
+      maxTokens: opts.maxTokens,
+    });
+  }
+  // claude y codex comparten el runtime de Claude para efectos de esta
+  // evaluación: codex entrega el mismo SKILL.md por el mismo mecanismo.
+  return callClaude(prompt, { apiKey: opts.apiKey, model: opts.model, maxTokens: opts.maxTokens });
+}
+
+async function callClaude(prompt, { apiKey, model, maxTokens = SUBJECT_MAX_TOKENS }) {
+  const r = await withRetry(() => fetch(ANTHROPIC_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -286,7 +593,7 @@ async function callClaude(prompt, { apiKey, model, maxTokens = 2000 }) {
       max_tokens: maxTokens,
       messages: [{ role: "user", content: prompt }],
     }),
-  });
+  }));
   if (!r.ok) {
     const body = await r.text();
     throw new Error(`Anthropic HTTP ${r.status}: ${body.slice(0, 200)}`);
@@ -312,6 +619,8 @@ function readJsonFile(p) {
  */
 export async function runFixture(fixture, opts) {
   const { dryRun, answers, judged, apiKey, model } = opts;
+  // Qué modelo RESPONDE. El que JUZGA es siempre Claude — ver callSubject.
+  const subjectProvider = opts.subjectProvider || "claude";
   const results = [];
   for (const c of fixture.cases) {
     try {
@@ -325,14 +634,16 @@ export async function runFixture(fixture, opts) {
         baselineAnswer = a.baseline;
         skillAnswer = a.skill;
       } else {
-        baselineAnswer = await callClaude(buildSubjectPrompt(fixture.baselinePrompt, c.input), {
-          apiKey,
-          model,
-        });
-        skillAnswer = await callClaude(buildSubjectPrompt(fixture.skillPrompt, c.input), {
-          apiKey,
-          model,
-        });
+        baselineAnswer = await callSubject(
+          subjectProvider,
+          buildSubjectPrompt(fixture.baselinePrompt, c.input),
+          opts,
+        );
+        skillAnswer = await callSubject(
+          subjectProvider,
+          buildSubjectPrompt(opts.skillPrompt ?? fixture.skillPrompt, c.input),
+          opts,
+        );
       }
 
       let verdict;
@@ -364,22 +675,45 @@ async function main() {
   const argv = process.argv.slice(2);
   const outIdx = argv.indexOf("--out");
   const outPath = outIdx !== -1 ? argv[outIdx + 1] : null;
-  const positional = argv.filter((a, i) => !a.startsWith("--") && argv[i - 1] !== "--out");
+  const positional = parsePositional(argv);
 
   const dryRun = process.env.DRY_RUN === "1" || process.env.DRY_RUN === "true";
   const model = DEFAULT_MODEL;
 
+  // Qué modelo RESPONDE. El juez es siempre Claude, incluso acá.
+  const provIdx = argv.indexOf("--provider");
+  const subjectProvider =
+    (provIdx !== -1 ? argv[provIdx + 1] : process.env.SKILLS_EVAL_PROVIDER) || "claude";
+  if (!SUBJECT_PROVIDERS.includes(subjectProvider)) {
+    process.stderr.write(
+      `--provider inválido: "${subjectProvider}". Opciones: ${SUBJECT_PROVIDERS.join(", ")}\n`,
+    );
+    process.exit(1);
+  }
+  const geminiModel = DEFAULT_GEMINI_MODEL;
+  // `--local`: medir el SKILL.md del repo antes de publicarlo.
+  const useLocal = argv.includes("--local");
+
   let answers = null;
   let judged = null;
   let apiKey = null;
+  let geminiApiKey = null;
   if (dryRun) {
     if (process.env.DRY_RUN_ANSWERS_FILE) answers = readJsonFile(process.env.DRY_RUN_ANSWERS_FILE);
     if (process.env.DRY_RUN_JUDGE_FILE) judged = readJsonFile(process.env.DRY_RUN_JUDGE_FILE);
   } else {
+    // Siempre hace falta: el juez es Claude para cualquier sujeto.
     apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
       process.stderr.write("ANTHROPIC_API_KEY is required (or set DRY_RUN=1 with fixture files)\n");
       process.exit(1);
+    }
+    if (subjectProvider === "gemini") {
+      geminiApiKey = process.env.GEMINI_API_KEY;
+      if (!geminiApiKey) {
+        process.stderr.write("GEMINI_API_KEY is required when --provider gemini\n");
+        process.exit(1);
+      }
     }
   }
 
@@ -393,11 +727,56 @@ async function main() {
   for (const name of names) {
     const fixture = loadFixture(name);
     process.stderr.write(`\n[skills-eval] ${fixture.skill}: ${fixture.cases.length} cases${dryRun ? " (DRY_RUN)" : ""}\n`);
-    const results = await runFixture(fixture, { dryRun, answers, judged, apiKey, model });
-    const summary = aggregate(results);
+
+    // El prompt de la skill sale del SKILL.md publicado, no de la paráfrasis
+    // del fixture. Ver `resolveSkillPrompt` para por qué.
+    let skillPrompt = fixture.skillPrompt;
+    let promptSource = "fixture (override)";
+    if (!dryRun) {
+      const md = useLocal
+        ? readLocalSkillMd(fixture.skill)
+        : await fetchSkillMd(fixture.skill).catch(() => null);
+      skillPrompt = resolveSkillPrompt(fixture, md);
+      promptSource = md
+        ? useLocal
+          ? "SKILL.md LOCAL del repo (sin publicar)"
+          : "SKILL.md del catálogo"
+        : "fixture (no se encontró el SKILL.md)";
+      process.stderr.write(`[skills-eval] ${fixture.skill}: prompt = ${promptSource}\n`);
+    }
+    // Varias corridas y decisión por mediana: una sola es un sorteo en el
+    // margen (ver DEFAULT_RUNS). En DRY_RUN una alcanza — no hay varianza.
+    const runs = dryRun ? 1 : Number(process.argv[process.argv.indexOf("--runs") + 1]) || DEFAULT_RUNS;
+    const perRun = [];
+    let results = [];
+    for (let i = 0; i < runs; i++) {
+      results = await runFixture(fixture, {
+        dryRun,
+        answers,
+        judged,
+        apiKey,
+        model,
+        subjectProvider,
+        geminiApiKey,
+        geminiModel,
+        skillPrompt,
+      });
+      perRun.push(aggregate(results));
+      if (runs > 1) {
+        const r = perRun[i];
+        process.stderr.write(
+          `[skills-eval] ${fixture.skill}: corrida ${i + 1}/${runs} — meets ${r.meetsExpected}/${r.scored} · skill ${fmt(r.avgSkill)}\n`,
+        );
+      }
+    }
+    const summary = runs > 1 ? medianSummary(perRun) : perRun[0];
+    const verdict = decideVerdict(summary);
     const md = renderMarkdown(fixture, results, summary, {
       model: dryRun ? null : model,
       mode: dryRun ? "DRY_RUN (offline fixtures)" : "live",
+      subjectProvider,
+      promptSource,
+      verdict,
     });
 
     const target =
@@ -410,6 +789,11 @@ async function main() {
       `[skills-eval] ${fixture.skill}: baseline ${fmt(summary.avgBaseline)} vs skill ${fmt(
         summary.avgSkill,
       )} · meets ${summary.meetsExpected}/${summary.scored} · beats ${summary.beatsBaseline}/${summary.scored} → ${target}\n`,
+    );
+    process.stderr.write(
+      `[skills-eval] ${fixture.skill} en ${subjectProvider}: ${
+        verdict.approved ? "APROBADA" : `NO aprobada — ${verdict.reasons.join("; ")}`
+      }\n`,
     );
     if (summary.errors > 0) anyFailure = true;
   }

@@ -7,6 +7,7 @@ import { MultiAI } from "@/components/landing/MultiAI";
 import { ChromeExtensionTeaser } from "@/components/landing/ChromeExtensionTeaser";
 import { DemosGrid } from "@/components/landing/DemosGrid";
 import { IntegrationsDiscovery } from "@/components/landing/IntegrationsDiscovery";
+import { MetaBusiness } from "@/components/landing/MetaBusiness";
 import { Comparison } from "@/components/landing/Comparison";
 import { CapacityCalculator } from "@/components/landing/CapacityCalculator";
 import { WhatYouCanBuild } from "@/components/landing/WhatYouCanBuild";
@@ -67,6 +68,7 @@ export default async function Landing({ params }: Props) {
       <WhatYouCanBuild lang={lang} />
       <DemosGrid lang={lang} />
       <IntegrationsDiscovery lang={lang} />
+      <MetaBusiness lang={lang} />
       <HowItWorks lang={lang} />
       <RealFolders lang={lang} />
       <UseCases lang={lang} />

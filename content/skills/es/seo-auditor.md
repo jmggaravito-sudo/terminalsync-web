@@ -2,14 +2,14 @@
 name: SEO Auditor
 logo: /skills/seo-auditor.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Auditoría SEO con evidencia y límites"
 description: "Audita una URL o datos de página provistos, prioriza problemas SEO por impacto probable y declara evidencia, límites de acceso e incertidumbre antes de hacer claims de ranking."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarlo
 
