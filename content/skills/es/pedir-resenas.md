@@ -2,14 +2,14 @@
 name: Pedir Reseñas
 logo: /skills/pedir-resenas.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Convertí clientes contentos en reseñas públicas"
 description: "Detecta a los clientes con más chance de dejar una buena reseña y escribe el pedido — el mensaje justo, en el momento justo, con el link directo — más un recordatorio amable. Nunca inventa reseñas ni ofrece pagar por ellas."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarla
 

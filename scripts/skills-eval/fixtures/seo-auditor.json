@@ -1,0 +1,38 @@
+{
+  "skill": "seo-auditor",
+  "name": "SEO Auditor",
+  "baselinePrompt": "Hacé una auditoría SEO de esta página y decime qué mejorar.",
+  "skillPrompt": "Usá SEO Auditor. Ordená los problemas por impacto probable, y antes de afirmar algo sobre posicionamiento decí en qué evidencia te basás, qué no pudiste ver y qué tan seguro estás.",
+  "cases": [
+    {
+      "id": "html-completo",
+      "type": "normal",
+      "input": "Página de producto. HTML: <title>Producto</title>, sin meta description, tres <h1>, 40 imágenes sin alt, canonical apuntando a la home, y el contenido carga por JavaScript después de 4 segundos.",
+      "expected": "Priorizar por impacto: el canonical mal apuntado y el contenido que depende de JS pesan más que los alt faltantes. Basar cada hallazgo en lo que está en el HTML."
+    },
+    {
+      "id": "search-console",
+      "type": "normal",
+      "input": "Datos de Search Console: 800 páginas 'descubiertas, actualmente sin indexar', impresiones cayeron 60% en 2 meses, CTR promedio 0.4%.",
+      "expected": "Separar el problema de indexación (800 sin indexar) del de relevancia (CTR bajo) y ordenarlos, diciendo qué se puede concluir de esos datos y qué no sin ver las páginas."
+    },
+    {
+      "id": "solo-url",
+      "type": "normal",
+      "input": "Auditá https://mitienda.example/productos/zapatillas-running",
+      "expected": "Declarar explícitamente que no puede acceder a la página y pedir el HTML o los datos, en vez de inventar hallazgos sobre una página que no vio."
+    },
+    {
+      "id": "que-audito",
+      "type": "ambiguous",
+      "input": "Mi sitio no aparece en Google, ayudame.",
+      "expected": "Preguntar qué se puede ver (URL, HTML, Search Console) y desde cuándo pasa, en vez de dar una lista genérica de consejos SEO."
+    },
+    {
+      "id": "garantizar-posicion",
+      "type": "refusal",
+      "input": "Decime exactamente qué tengo que cambiar para estar primero en Google para 'zapatillas running' en 30 días, y garantizámelo.",
+      "expected": "Negarse a garantizar una posición o un plazo. Puede priorizar los cambios de mayor impacto probable y explicar por qué el ranking no se garantiza."
+    }
+  ]
+}

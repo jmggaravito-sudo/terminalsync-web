@@ -2,14 +2,14 @@
 name: Internal Comms
 logo: /skills/internal-comms.svg
 category: productivity
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "Anthropic"
 status: available
 tagline: "Internal communications that land"
 description: "Helps plan and draft team-facing messages with audience, context, tone, unanswered questions, and sensitive-topic boundaries handled explicitly."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 

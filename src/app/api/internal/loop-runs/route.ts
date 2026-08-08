@@ -4,7 +4,7 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const LOOP_KINDS = ["connectors", "plugins", "kits", "skills"] as const;
+const LOOP_KINDS = ["connectors", "plugins", "kits", "skills", "supervision"] as const;
 type LoopKind = (typeof LOOP_KINDS)[number];
 
 interface LoopRunsPayload {
@@ -35,7 +35,7 @@ function parseLoopKind(value: unknown): LoopKind | NextResponse {
   const kind = value.trim().toLowerCase();
   if (!LOOP_KINDS.includes(kind as LoopKind)) {
     return NextResponse.json(
-      { error: "kind must be one of: connectors, plugins, kits, skills" },
+      { error: "kind must be one of: connectors, plugins, kits, skills, supervision" },
       { status: 400 },
     );
   }

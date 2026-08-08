@@ -19,12 +19,7 @@ import { getSupabaseAdmin } from "./supabaseAdmin";
 export type SubscriptionProvider = "stripe" | "mercadopago";
 
 export type SubscriptionStatus =
-  | "active"
-  | "trialing"
-  | "past_due"
-  | "canceled"
-  | "incomplete"
-  | "unpaid";
+  "active" | "trialing" | "past_due" | "canceled" | "incomplete" | "unpaid";
 
 export type SubscriptionPlan = "free" | "pro" | "max";
 
@@ -54,7 +49,9 @@ export async function upsertSubscription(
 ): Promise<boolean> {
   const sb = getSupabaseAdmin();
   if (!sb) {
-    console.warn("[subscriptions] admin client not configured — skipping upsert");
+    console.warn(
+      "[subscriptions] admin client not configured — skipping upsert",
+    );
     return false;
   }
 
@@ -199,6 +196,18 @@ export async function findUserIdByEmail(email: string): Promise<string | null> {
   return (data?.id as string | undefined) ?? null;
 }
 
+function isMissingStripeCustomerColumn(error: {
+  message?: string;
+  code?: string;
+}): boolean {
+  const message = error.message ?? "";
+  return (
+    error.code === "PGRST204" ||
+    message.includes("stripe_customer_id") ||
+    message.includes("Could not find")
+  );
+}
+
 export async function grantIncludedAi(input: {
   userId: string;
   stripeCustomerId?: string | null;
@@ -214,9 +223,44 @@ export async function grantIncludedAi(input: {
   const { error } = await sb
     .from("courtesy_entitlement")
     .upsert(row, { onConflict: "user_id" });
-  if (error) {
-    console.error("[included-ai] grant failed", {
+  if (!error) return true;
+
+  // Production may lag migration 0016 and still have courtesy_entitlement
+  // without stripe_customer_id. In that schema, user_id is already enough for
+  // app/proxy gating, so retry without the optional Stripe linkage column.
+  if (input.stripeCustomerId && isMissingStripeCustomerColumn(error)) {
+    delete row.stripe_customer_id;
+    const retry = await sb
+      .from("courtesy_entitlement")
+      .upsert(row, { onConflict: "user_id" });
+    if (!retry.error) return true;
+    console.error("[included-ai] grant retry failed", {
       userId: input.userId,
+      error: retry.error.message,
+    });
+    return false;
+  }
+
+  console.error("[included-ai] grant failed", {
+    userId: input.userId,
+    error: error.message,
+  });
+  return false;
+}
+
+export async function revokeIncludedAiForUser(
+  userId: string,
+): Promise<boolean> {
+  const sb = getSupabaseAdmin();
+  if (!sb) return false;
+  const { error } = await sb
+    .from("courtesy_entitlement")
+    .delete()
+    .eq("user_id", userId)
+    .eq("tier", "included_ai");
+  if (error) {
+    console.error("[included-ai] user revoke failed", {
+      userId,
       error: error.message,
     });
     return false;
@@ -235,6 +279,7 @@ export async function revokeIncludedAiForStripeCustomer(
     .delete()
     .eq("stripe_customer_id", stripeCustomerId);
   if (error) {
+    if (isMissingStripeCustomerColumn(error)) return false;
     console.error("[included-ai] Stripe revoke failed", {
       stripeCustomerId,
       error: error.message,
@@ -247,19 +292,5 @@ export async function revokeIncludedAiForStripeCustomer(
 export async function revokeIncludedAiForMercadoPagoUser(
   userId: string,
 ): Promise<boolean> {
-  const sb = getSupabaseAdmin();
-  if (!sb) return false;
-  const { error } = await sb
-    .from("courtesy_entitlement")
-    .delete()
-    .eq("user_id", userId)
-    .is("stripe_customer_id", null);
-  if (error) {
-    console.error("[included-ai] Mercado Pago revoke failed", {
-      userId,
-      error: error.message,
-    });
-    return false;
-  }
-  return true;
+  return revokeIncludedAiForUser(userId);
 }

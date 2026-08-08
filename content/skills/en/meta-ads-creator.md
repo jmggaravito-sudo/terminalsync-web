@@ -2,14 +2,14 @@
 name: Meta Ads Creator
 logo: /skills/meta-ads-creator.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Ads for your business, ready to test"
 description: "Turns what you sell into Facebook and Instagram ads: five distinct ideas with copy, the button, how the image looks, and a simple plan to test which one works — without inventing results."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 

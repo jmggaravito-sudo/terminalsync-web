@@ -27,6 +27,7 @@ interface OpsContact {
 }
 
 interface OpsResultItem {
+  id?: string;
   title: string;
   subtitle?: string;
   url?: string;
@@ -114,6 +115,24 @@ export function OpsDashboard({ lang }: { lang: string }) {
    *  next page reload — the server is the source of truth, the rename
    *  endpoint just confirms the write. */
   const [renames, setRenames] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("tab") === "repair") {
+      setSelectedProject("_repair");
+    }
+  }, []);
+
+  function selectProject(next: string) {
+    setSelectedProject(next);
+    const url = new URL(window.location.href);
+    if (next === "_repair") {
+      url.searchParams.set("tab", "repair");
+    } else {
+      url.searchParams.delete("tab");
+    }
+    window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+  }
 
   useEffect(() => {
     fetch("/api/admin/ops")
@@ -221,7 +240,7 @@ export function OpsDashboard({ lang }: { lang: string }) {
           return (
             <button
               key={proj}
-              onClick={() => setSelectedProject(proj)}
+              onClick={() => selectProject(proj)}
               className={`group inline-flex items-center gap-2 rounded-t-xl rounded-b-none border border-b-0 px-4 py-2.5 text-[13px] font-semibold transition-all ${
                 isActive
                   ? "bg-[var(--color-panel)] border-[var(--color-border)] text-[var(--color-fg-strong)] -mb-px relative z-10"
@@ -250,7 +269,7 @@ export function OpsDashboard({ lang }: { lang: string }) {
           );
         })}
         <button
-          onClick={() => setSelectedProject("_repair")}
+          onClick={() => selectProject("_repair")}
           className={`group inline-flex items-center gap-2 rounded-t-xl rounded-b-none border border-b-0 px-4 py-2.5 text-[13px] font-semibold transition-all ${
             selectedProject === "_repair"
               ? "bg-[var(--color-panel)] border-[var(--color-border)] text-[var(--color-fg-strong)] -mb-px relative z-10"
@@ -409,12 +428,17 @@ function WorkflowCard({
 
   const editorUrl = `${n8nUrl}/workflow/${wf.id}`;
   // Internal admin routes need the [lang] prefix; absolute URLs (Sheets,
-  // GHL, etc.) pass through untouched.
-  const resultHref = wf.resultUrl
-    ? wf.resultUrl.startsWith("/")
-      ? `/${lang}${wf.resultUrl}`
-      : wf.resultUrl
-    : null;
+  // GHL, etc.) pass through untouched. Outreach is auth-gated, so send
+  // JM through login with a `next` deep link instead of landing on a
+  // confusing "Verificando sesión…" screen.
+  const makeHref = (href: string) => {
+    if (href === "/admin/ops/outreach") {
+      const next = `/${lang}${href}`;
+      return `/${lang}/login?next=${encodeURIComponent(next)}`;
+    }
+    return href.startsWith("/") ? `/${lang}${href}` : href;
+  };
+  const resultHref = wf.resultUrl ? makeHref(wf.resultUrl) : null;
   const resultIsExternal = !!wf.resultUrl && !wf.resultUrl.startsWith("/");
 
   // Decide overall mood from the latest run, not from any older error in
@@ -688,8 +712,13 @@ function OperatorActionsPanel({
   lang: string;
   isEs: boolean;
 }) {
-  const toHref = (href: string) =>
-    href.startsWith("/") ? `/${lang}${href}` : href;
+  const toHref = (href: string) => {
+    if (href === "/admin/ops/outreach") {
+      const next = `/${lang}${href}`;
+      return `/${lang}/login?next=${encodeURIComponent(next)}`;
+    }
+    return href.startsWith("/") ? `/${lang}${href}` : href;
+  };
 
   return (
     <div className="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel)] p-3">
@@ -760,6 +789,11 @@ function ResultsPanel({
   workflowId: string;
   isEs: boolean;
 }) {
+  const lang = isEs ? "es" : "en";
+  const outreachLoginHref = (leadId?: string) => {
+    const next = `/${lang}/admin/ops/outreach${leadId ? `?lead=${encodeURIComponent(leadId)}` : ""}`;
+    return `/${lang}/login?next=${encodeURIComponent(next)}`;
+  };
   const hasItems = results.items.length > 0;
   const contactCounts = countVisibleContacts(results.items);
   const contactTotal = Object.values(contactCounts).reduce((sum, n) => sum + n, 0);
@@ -848,6 +882,29 @@ function ResultsPanel({
                   )}
                   {item.contacts && item.contacts.length > 0 && (
                     <ContactChips contacts={item.contacts} />
+                  )}
+                  {isInfluencerOutreach && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      <a
+                        href={outreachLoginHref(item.id)}
+                        role="button"
+                        className="admin-ops-action-button inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-semibold hover:opacity-85"
+                        title={isEs ? "Abrir cola para aprobar/editar este lead" : "Open queue to approve/edit this lead"}
+                      >
+                        {item.badge === "Aprobado" ? (isEs ? "Editar mensaje" : "Edit message") : (isEs ? "Aprobar lead" : "Approve lead")}
+                      </a>
+                      {item.url && (
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          role="button"
+                          className="admin-ops-action-button inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-semibold hover:border-[var(--color-fg-muted)]"
+                        >
+                          {isEs ? "Abrir perfil" : "Open profile"}
+                        </a>
+                      )}
+                    </div>
                   )}
                 </div>
                 <div className="shrink-0 flex items-center gap-1.5">
