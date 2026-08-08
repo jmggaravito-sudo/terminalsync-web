@@ -58,9 +58,26 @@ A kit must answer these questions clearly:
 
 If the answer is only "these are good tools", it is not a kit.
 
-## Two-PR app mirror gate
+## Landing-first sync gate
 
-Every kit Loop run that publishes or changes marketplace-visible content must produce the two PRs described in `docs/integration-loop-two-pr-policy.md`: one landing/web PR and one app mirror PR. The app PR proves the desktop `Integraciones`/marketplace surface renders, installs, or explains the item correctly. If automation cannot create the app PR, the web PR must mark the app mirror as blocked and the item is not fully ready.
+Every kit Loop run publishes through the **landing PR first** — it is the source of truth for `/api/marketplace/catalog`, and the desktop consumes it automatically. An **app PR is required only when the item needs desktop code** it doesn't have yet (a new surface, a special install flow, or an item that would otherwise render as a broken generic card). Do **not** open an app PR just to leave a record: that rule used to be mandatory and produced mirror PRs made of hand-written fixtures that asserted nothing — see `docs/integration-loop-two-pr-policy.md`. State `App PR: no aplica — la app consume el catálogo` in the landing body instead. Sync is verified by the desktop guard (`src/data/departamento.test.ts` + `scripts/verify-integration-loop.mjs`), not declared. If the landing PR itself cannot be created, the item is **not** ready — never compensate with an app PR that mirrors content that does not exist.
+
+#### Cómo declarar que no hace falta app mirror
+
+Cuando el desktop ya consume el catálogo y no hay código de app que escribir,
+poné en el cuerpo del PR de landing, tal cual:
+
+    App mirror PR: no aplica — la app consume el catálogo
+
+El check del supervisor lo acepta y no pide el enlace. Si en cambio SÍ hay un
+PR de app, enlazalo detrás de la misma etiqueta:
+
+    App mirror PR: https://github.com/jmggaravito-sudo/terminal-sync/pull/1286
+
+**Solo se lee lo que esté detrás de `App mirror PR:`.** Citar un PR de la app
+en cualquier otra parte del texto —por ejemplo como antecedente histórico— no
+cuenta, y así debe ser: antes se buscaba el patrón en todo el cuerpo y una
+cita hacía que el check compilara una rama vieja y fallara por errores ajenos.
 
 ## File structure
 
@@ -321,6 +338,24 @@ A kit PR must include:
 - Human-review note that the evidence does not self-approve publication.
 
 Until these are present, keep the kit out of the published marketplace catalog.
+
+## Loop run log
+
+### 2026-08-02 — tax kits for entrepreneurs (tax prep, bookkeeping cleanup, 1099, payroll tax forms, accountant handoff, SMB finance ops)
+
+**Shipped (1 kit, EN/ES parity):**
+
+- `bookkeeping-tax-handoff` (category: finance) — `xero` + `google-sheets` + `doc-coauthoring` + `internal-comms`. Scoped to the run-up to the accountant: read the real books (Xero, or a spreadsheet for the very common owner without accounting software), organize them into a structured handoff packet, and draft the cover note that goes with it. Not a general finance/summary kit — see the differentiation note below.
+
+**Overlap check against a parallel, not-yet-merged Kit Curation Loop run:** a separate open PR (branch `kits-loop/empresario-2026-08-02`, not merged at the time of this run) proposes `content/kits/en/small-business-finance.md` — also category `finance`, also anchored on the `xero` connector. This run's kit deliberately targets a different audience and artifact so the two don't duplicate purpose: that kit reads Xero + Stripe and writes a **monthly financial summary for the owner** to read; this kit reads Xero (or Google Sheets, for owners without Xero) and writes an **accountant handoff packet + cover note** for an outside professional at tax time or quarter-end. Both kits' own "Why these pieces belong together" sections cross-reference this distinction. If both are ever reviewed together, JM should confirm the distinction holds; if not, they should be merged into one kit rather than published as two overlapping ones.
+
+**Deferred / SKIP — no catalog piece exists for these parts of the focus, documented for the proper Loop instead of forced into this kit:**
+
+- **1099 contractor compliance** (e.g. generating/e-filing 1099-NEC forms) — no connector or skill in the catalog does tax-form generation or e-filing. Candidates like Track1099/Tax1099/Avalara 1099 have no known official npm-stdio or documented remote MCP server as of this run. Candidate for a future **Connector Loop** run, not this one.
+- **Payroll tax forms** (e.g. 941, state withholding filings) — no payroll-provider connector (Gusto, ADP, Rippling, QuickBooks Payroll) exists in the catalog; Xero's own payroll tools are read-oriented and scoped to orgs with Xero Payroll enabled, not a general payroll-tax-forms solution. Candidate for a future **Connector Loop** run.
+- **Tax prep / filing itself** — no tax-prep or e-filing connector exists (and none of the 7 allowed skills covers tax law). This kit explicitly documents in its Limits that it organizes numbers for the accountant, it does not prepare or file returns.
+
+None of the 7 allowed skills (`code-reviewer`, `doc-coauthoring`, `internal-comms`, `mcp-builder`, `meta-ads-creator`, `seo-auditor`, `skill-creator`) covers bookkeeping/tax/finance directly — `doc-coauthoring` and `internal-comms` are used here for their generic structuring/messaging behavior, applied to the accountant-handoff artifact, the same pattern already used for client proposals (Business Owner Kit) and team announcements (Docs & Team Comms Kit).
 
 ## Loop run notes
 

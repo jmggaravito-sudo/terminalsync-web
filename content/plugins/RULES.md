@@ -14,7 +14,14 @@ The word is deliberate. "Plugin" is the term used by both the market (Accio) and
 by **Claude Code itself** — a native Claude Code plugin already bundles `skills/`
 + `.mcp.json` (MCP connectors). So a TerminalSync Plugin is **not an invented
 format**: it maps onto the native Claude Code plugin standard, which the desktop
-installs (and mirrors to Codex/Gemini via `skills_sync`).
+installs (and mirrors to Codex via `skills_sync`).
+
+> **Gemini todavía no.** Esta línea decía "Codex/Gemini" y era falso para
+> Gemini: `ensure_skill_installed` descarta ese vendor, y `SkillVendor` en
+> `src/lib/skills.ts` solo admite `claude | codex`. Contradecía además la
+> propia sección "Cross-provider coverage" de `content/skills/RULES.md`, que
+> dice que Gemini no tiene delivery path. Las **integraciones** sí llegan a
+> Gemini desde terminal-sync#1262; las **skills** todavía no.
 
 Vocabulary, from the raw piece to the role bundle:
 
@@ -34,9 +41,26 @@ duplicates their content**. The loader resolves the pieces by slug at read time.
 A Plugin is glue, not a copy. If a referenced piece changes, the Plugin reflects
 it automatically.
 
-## Two-PR app mirror gate
+## Landing-first sync gate
 
-Every plugin Loop run that publishes or changes marketplace-visible content must produce the two PRs described in `docs/integration-loop-two-pr-policy.md`: one landing/web PR and one app mirror PR. The app PR proves the desktop `Integraciones`/marketplace surface renders, installs, or explains the item correctly. If automation cannot create the app PR, the web PR must mark the app mirror as blocked and the item is not fully ready.
+Every plugin Loop run publishes through the **landing PR first** — it is the source of truth for `/api/marketplace/catalog`, and the desktop consumes it automatically. An **app PR is required only when the item needs desktop code** it doesn't have yet (a new surface, a special install flow, or an item that would otherwise render as a broken generic card). Do **not** open an app PR just to leave a record: that rule used to be mandatory and produced mirror PRs made of hand-written fixtures that asserted nothing — see `docs/integration-loop-two-pr-policy.md`. State `App PR: no aplica — la app consume el catálogo` in the landing body instead. Sync is verified by the desktop guard (`src/data/departamento.test.ts` + `scripts/verify-integration-loop.mjs`), not declared. If the landing PR itself cannot be created, the item is **not** ready — never compensate with an app PR that mirrors content that does not exist.
+
+#### Cómo declarar que no hace falta app mirror
+
+Cuando el desktop ya consume el catálogo y no hay código de app que escribir,
+poné en el cuerpo del PR de landing, tal cual:
+
+    App mirror PR: no aplica — la app consume el catálogo
+
+El check del supervisor lo acepta y no pide el enlace. Si en cambio SÍ hay un
+PR de app, enlazalo detrás de la misma etiqueta:
+
+    App mirror PR: https://github.com/jmggaravito-sudo/terminal-sync/pull/1286
+
+**Solo se lee lo que esté detrás de `App mirror PR:`.** Citar un PR de la app
+en cualquier otra parte del texto —por ejemplo como antecedente histórico— no
+cuenta, y así debe ser: antes se buscaba el patrón en todo el cuerpo y una
+cita hacía que el check compilara una rama vieja y fallara por errores ajenos.
 
 ## Required frontmatter
 

@@ -2,14 +2,14 @@
 name: MCP Builder
 logo: /skills/mcp-builder.svg
 category: dev
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "Anthropic"
 status: available
 tagline: "Design and harden MCP servers"
 description: "Guides the design, implementation, testing, and hardening of an MCP server, with explicit checks before calling it production-ready."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 

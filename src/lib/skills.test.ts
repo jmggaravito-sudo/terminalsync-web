@@ -31,13 +31,20 @@ describe("skills content mold", () => {
     for (const { slug, source } of MOLDED_PUBLIC_SKILLS) {
       const skill = skills.find((item) => item.slug === slug);
       expect(skill, `${slug} should be listed`).toBeDefined();
-      expect(skill).toMatchObject({
-        marketplaceSource: source,
-        // Only providers with a real delivery path + eval. Gemini has no
-        // skills delivery yet, so it is NOT claimed (see RULES.md →
-        // "Cross-provider coverage").
-        compatibleWith: ["claude", "codex"],
-      });
+      expect(skill).toMatchObject({ marketplaceSource: source });
+
+      // Claude y Codex son la base de toda skill moldeada. Gemini es
+      // por-skill: solo lo declara la que aprobó sus evals ahí
+      // (docs/skills-evals/<slug>.md). Ver RULES.md → "Cross-provider
+      // coverage": la promesa exige entrega real Y evidencia, y la evidencia
+      // es por skill, no global. Que una skill declare gemini sin su reporte
+      // lo caza `skills.gemini-evidence.test.ts`.
+      expect(skill?.compatibleWith, `${slug} base providers`).toEqual(
+        expect.arrayContaining(["claude", "codex"]),
+      );
+      for (const v of skill?.compatibleWith ?? []) {
+        expect(["claude", "codex", "gemini"], `${slug} declara ${v}`).toContain(v);
+      }
     }
   });
 
@@ -66,6 +73,11 @@ describe("skills content mold", () => {
       "pdf",
       "pptx",
       "xlsx",
+      // Tax skills for entrepreneurs — finance category, eval evidence in
+      // docs/skills-evals/<slug>.md (see the Skills Loop tax-entrepreneurs run).
+      "tax-prep-checklist",
+      "1099-w9-organizer",
+      "quarterly-tax-estimate-prep",
     ] as const;
     const sorted = [...publicSlugs].sort();
 

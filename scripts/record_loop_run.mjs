@@ -13,7 +13,7 @@
  *   node scripts/record_loop_run.mjs --kind connectors --found 3 --skipped 2 --items mongodb,posthog,pinecone --pr https://github.com/owner/repo/pull/123
  *
  * Semantics:
- *   --kind     loop family: connectors, plugins, kits, or skills (default: connectors)
+ *   --kind     loop family: connectors, plugins, kits, skills, or supervision (default: connectors)
  *   --found    items added/promoted in this run
  *   --skipped  candidates documented as SKIP/deferred in this run
  *   --items    comma-separated landing slugs added/promoted in this run
@@ -24,7 +24,7 @@ const args = process.argv.slice(2);
 function usage(exitCode = 1) {
   const stream = exitCode === 0 ? process.stdout : process.stderr;
   stream.write(
-    `Usage: node scripts/record_loop_run.mjs [--kind connectors|plugins|kits|skills] --found N --skipped N [--items slug,slug] --pr https://...\n`,
+    `Usage: node scripts/record_loop_run.mjs [--kind connectors|plugins|kits|skills|supervision] --found N --skipped N [--items slug,slug] --pr https://...\n`,
   );
   process.exit(exitCode);
 }
@@ -47,13 +47,13 @@ function parseNonNegativeInteger(flag) {
   return Number(raw);
 }
 
-const ALLOWED_KINDS = new Set(["connectors", "plugins", "kits", "skills"]);
+const ALLOWED_KINDS = new Set(["connectors", "plugins", "kits", "skills", "supervision"]);
 
 function parseKind() {
   const raw = readFlag("--kind") ?? "connectors";
   const kind = raw.trim().toLowerCase();
   if (!ALLOWED_KINDS.has(kind)) {
-    throw new Error("--kind must be one of: connectors, plugins, kits, skills");
+    throw new Error("--kind must be one of: connectors, plugins, kits, skills, supervision");
   }
   return kind;
 }

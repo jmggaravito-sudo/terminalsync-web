@@ -77,3 +77,46 @@ describe("listConnectors / requiresEnvSecrets", () => {
     }
   });
 });
+
+/**
+ * Hasta 2026-08-07 el desktop solo escribía la config de Claude: Codex y
+ * Gemini devolvían "writer not implemented yet". Un connector se presentaba
+ * como universal y llegaba a UNA IA, sin que nada en el catálogo lo dijera —
+ * el cliente lo instalaba y su IA no lo veía nunca (terminal-sync#1262).
+ *
+ * `deliveredTo` es ese dato, ahora explícito y servido.
+ */
+describe("listConnectors / deliveredTo (a qué IAs llega)", () => {
+  it("todo connector declara a qué IAs llega", async () => {
+    const items = await listConnectors("en");
+    expect(items.length).toBeGreaterThan(0);
+    for (const c of items) {
+      expect(c.deliveredTo, `${c.slug} sin deliveredTo`).toBeDefined();
+      expect(c.deliveredTo.length, `${c.slug} con deliveredTo vacío`).toBeGreaterThan(0);
+    }
+  });
+
+  it("llega a las tres IAs con escritor: claude, codex y gemini", async () => {
+    const items = await listConnectors("en");
+    const notion = items.find((c) => c.slug === "notion");
+    expect(notion).toBeDefined();
+    expect([...notion!.deliveredTo].sort()).toEqual(["claude", "codex", "gemini"]);
+  });
+
+  it("no lista TerminalSync/GLM aparte — corre sobre el CLI de Claude y hereda su config", async () => {
+    // Listarlo daría a entender que hay una cuarta escritura, y no la hay.
+    const items = await listConnectors("en");
+    for (const c of items) {
+      expect(c.deliveredTo, `${c.slug} lista glm por separado`).not.toContain("glm");
+    }
+  });
+
+  it("es igual para todos: la entrega es del sistema, no del connector", async () => {
+    // Si esto empieza a fallar es porque alguien introdujo variación por
+    // connector. No está mal — pero exige un override explícito y documentado,
+    // no que se cuele silenciosamente.
+    const items = await listConnectors("en");
+    const shapes = new Set(items.map((c) => [...c.deliveredTo].sort().join(",")));
+    expect([...shapes]).toEqual(["claude,codex,gemini"]);
+  });
+});
