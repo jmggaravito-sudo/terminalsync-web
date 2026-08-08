@@ -73,6 +73,11 @@ describe("skills content mold", () => {
       "pdf",
       "pptx",
       "xlsx",
+      // Tax skills for entrepreneurs — finance category, eval evidence in
+      // docs/skills-evals/<slug>.md (see the Skills Loop tax-entrepreneurs run).
+      "tax-prep-checklist",
+      "1099-w9-organizer",
+      "quarterly-tax-estimate-prep",
     ] as const;
     const sorted = [...publicSlugs].sort();
 

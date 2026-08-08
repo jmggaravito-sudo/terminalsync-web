@@ -185,6 +185,10 @@ describe("GET /api/marketplace/catalog", () => {
       "pdf",
       "pptx",
       "xlsx",
+      // Tax skills for entrepreneurs — finance category.
+      "tax-prep-checklist",
+      "1099-w9-organizer",
+      "quarterly-tax-estimate-prep",
     ] as const;
     const sorted = [...publicSlugs].sort();
 
