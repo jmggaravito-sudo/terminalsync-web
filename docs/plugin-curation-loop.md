@@ -57,3 +57,17 @@ Number semantics:
 ## Landing-first sync gate
 
 Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first, always.** An app PR is required only when the Plugin needs desktop code it doesn't have — which for Plugins is more common than for plain connectors, since bundling OAuth, secrets or first-party flows often does need a real surface change. When the generic renderer already handles it, no app PR: state `App PR: no aplica — la app consume el catálogo`. What must never happen is an app PR made of hand-written fixtures asserting a file that doesn't exist — that is what the old mandatory-mirror rule produced.
+
+## Run log
+
+### 2026-08-02 — focus: tax plugins for small business owners
+
+Focus input: "TaxBandits, QuickBooks, Odoo, Xero, 1099, W-9, W-2, payroll tax filing, bookkeeping reports."
+
+- **Shipped:** `xero` Plugin (`content/plugins/{en,es}/xero.md`) — bundles the existing `xero` connector (invoices, aged receivables, payments, P&L/balance sheet, already `status: available`) with the existing `internal-comms` skill (drafts the payment-reminder follow-up), mirroring the already-shipped `stripe` Plugin's collections pattern. Xero is the only piece in this focus area with both a publishable connector and a skill that genuinely reinforces it.
+- **Skipped/deferred (no connector to bundle — Connector Loop tasks, not this loop's):**
+  - **QuickBooks** — already SKIP in `content/connectors/SOURCES.md` (2026-07-23): only a community `quickbooks-mcp` package exists, Intuit does not publish an official npm server. Reconfirmed still SKIP on 2026-08-02.
+  - **Odoo** — new SKIP, documented in `content/connectors/SOURCES.md`: `odoo-mcp` on npm is community-maintained (not the Odoo org), fails the official-publisher gate. `@odoo/mcp` does not exist.
+  - **TaxBandits** — new SKIP, documented in `content/connectors/SOURCES.md`: no npm package exists at all (`taxbandits-mcp` / `@taxbandits/mcp` both 404). No official or community MCP server to evaluate.
+  - **1099 / W-9 / W-2 e-filing, payroll tax filing** — these are the actual jobs TaxBandits/QuickBooks would cover; with neither connector available, no Plugin can honestly claim this capability. The shipped `xero` Plugin's body explicitly discloses this gap rather than overclaiming.
+- **Not pursued:** pairing Xero with a document skill (e.g. `xlsx`) for "bookkeeping reports" was considered, but `xlsx` is a generic spreadsheet skill with no Xero- or bookkeeping-specific behavior to demonstrate — internal-comms + Xero's own follow-up use case was the stronger, more honest bundle.
