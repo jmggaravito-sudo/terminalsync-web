@@ -71,3 +71,16 @@ Focus input: "TaxBandits, QuickBooks, Odoo, Xero, 1099, W-9, W-2, payroll tax fi
   - **TaxBandits** — new SKIP, documented in `content/connectors/SOURCES.md`: no npm package exists at all (`taxbandits-mcp` / `@taxbandits/mcp` both 404). No official or community MCP server to evaluate.
   - **1099 / W-9 / W-2 e-filing, payroll tax filing** — these are the actual jobs TaxBandits/QuickBooks would cover; with neither connector available, no Plugin can honestly claim this capability. The shipped `xero` Plugin's body explicitly discloses this gap rather than overclaiming.
 - **Not pursued:** pairing Xero with a document skill (e.g. `xlsx`) for "bookkeeping reports" was considered, but `xlsx` is a generic spreadsheet skill with no Xero- or bookkeeping-specific behavior to demonstrate — internal-comms + Xero's own follow-up use case was the stronger, more honest bundle.
+
+## Run log
+
+### 2026-07-31 — focus "higgsfield, zapier, notebooklm, ideogram"
+
+- **Shipped (2):**
+  - `higgsfield` — bundles the `higgsfield` connector (image/15s video generation, remote/OAuth) with the `meta-ads-creator` skill. The skill's mobile/home-video ad angle needed an actual UGC-style video generator; Higgsfield is the natural pairing.
+  - `ideogram` — bundles the `ideogram` connector (image generation/remix, remote/OAuth) with the `meta-ads-creator` skill. The skill writes five ad concepts with an image direction per concept; Ideogram renders the actual visual instead of leaving the owner to prompt an image tool by hand.
+- **Skipped/deferred (2):**
+  - `zapier` — the connector exists and is `available`, but it is a many-to-many automation hub (9,000+ apps), not a single product with one usage pattern. No skill in `content/skills/{en,es}` teaches a specific Zapier workflow, and forcing a generic skill (e.g. Internal Comms) onto it would misrepresent a broad automation hub as a one-product Plugin. Deferred: a future Skill Loop candidate could target one concrete Zapier workflow (e.g. "capture a lead into a sheet + task"); until then this is not a Plugin.
+  - `notebooklm` — no connector for NotebookLM exists in `content/connectors/{en,es}` or `content/connectors/SOURCES.md`. This is a Connector Loop task first (source the official NotebookLM MCP/API surface, if one exists) — the Plugin Loop does not source new connectors.
+- Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` + `tsc --noEmit`.
+- Landing/web PR and app mirror PR opened per `docs/integration-loop-two-pr-policy.md`; see `/admin/ops/loop-runs` for the recorded run.
