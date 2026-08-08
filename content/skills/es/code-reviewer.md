@@ -2,20 +2,29 @@
 name: Code Reviewer
 logo: /skills/code-reviewer.svg
 category: dev
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Review honesto antes de mergear"
 description: "Revisa diffs reales para detectar bugs, riesgos de seguridad, performance, tests faltantes y edge cases bloqueantes antes de publicar."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarlo
 
 - Pediste "revisá este PR", "qué le falta a este diff" u "ojos críticos antes de mergear".
 - Tenés un diff, archivo o URL de PR real y querés encontrar riesgos antes de que los capture CI o un teammate.
 - El cambio toca autenticación, pagos, escrituras de datos, concurrencia, migraciones, permisos u otro código donde una review superficial sale cara.
+
+**Preguntá solo si te falta algo que IMPIDE la tarea.** Si con lo que te dieron
+se puede hacer, hacelo. Frenarse a pedir precisiones cuando la tarea ya es
+realizable no es prudencia: es no entregar. Y un puntaje de "qué tan usables
+son tus datos" sobre una tarea perfectamente resoluble desorienta más de lo que
+ayuda.
+
+Cuando algo falta de verdad, hacé las dos cosas: entregá lo que sí se puede con
+lo que hay, y decí qué te falta para lo demás. Nunca solo la pregunta.
 
 ## Qué hace
 
@@ -35,6 +44,16 @@ Evita feedback de lint, consejos vagos tipo "agregá comentarios" y reescrituras
 2. Agregá contexto de riesgo si importa: *"esto maneja pagos; mirá concurrencia e idempotencia"*.
 3. Decí si querés solo bloqueantes o una revisión completa.
 4. Leé el output; los puntos clave se marcan como 🔴 bloqueante, 🟡 revisar o 🟢 OK, con archivo/línea cuando el diff los trae.
+
+**Dos cosas que a los revisores se les pasan, así que revisalas siempre:**
+
+- **Cleanup.** Un efecto, suscripción, listener, intervalo o watcher que se
+  registra y nunca se desarma deja fugas y dispara sobre componentes ya
+  desmontados. Si el diff agrega uno y no retorna nada, decilo: es un bug real,
+  no una minucia.
+- **Cuando no hay diff**, no te limites a pedirlo. Decí qué vas a revisar
+  cuando llegue — los riesgos concretos de ese tipo de cambio — para que la
+  espera sirva de algo en vez de ser tiempo muerto.
 
 ## Ideal para
 

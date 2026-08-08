@@ -273,6 +273,93 @@ export async function createPreapproval(
   return { id: data.id, initPoint: data.init_point };
 }
 
+export interface CreatePaymentPreferenceInput {
+  amount: number;
+  currency: string;
+  payerEmail?: string;
+  externalReference: string;
+  title: string;
+  successUrl: string;
+  cancelUrl: string;
+  pendingUrl: string;
+  notificationUrl: string;
+  metadata: Record<string, string>;
+}
+
+export interface PaymentPreferenceResult {
+  id: string;
+  initPoint: string;
+}
+
+/** Create a hosted one-time Mercado Pago Checkout Pro preference.
+ * Credits are a prepaid balance, never a subscription, so this intentionally
+ * uses `/checkout/preferences` rather than the `/preapproval` rail above. */
+export async function createPaymentPreference(
+  input: CreatePaymentPreferenceInput,
+): Promise<PaymentPreferenceResult> {
+  if (!accessToken) throw new Error("Mercado Pago not configured");
+  const res = await fetch(`${MP_API}/checkout/preferences`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      items: [
+        {
+          id: `terminalsync-credits-${input.metadata.credit_amount_cents ?? "topup"}`,
+          title: input.title,
+          quantity: 1,
+          currency_id: input.currency,
+          unit_price: input.amount,
+        },
+      ],
+      payer: input.payerEmail ? { email: input.payerEmail } : undefined,
+      external_reference: input.externalReference,
+      metadata: input.metadata,
+      back_urls: {
+        success: input.successUrl,
+        failure: input.cancelUrl,
+        pending: input.pendingUrl,
+      },
+      auto_return: "approved",
+      notification_url: input.notificationUrl,
+      statement_descriptor: "TERMINALSYNC",
+    }),
+  });
+  const data = (await res.json().catch(() => ({}))) as {
+    id?: string;
+    init_point?: string;
+    message?: string;
+  };
+  if (!res.ok || !data.id || !data.init_point) {
+    throw new Error(
+      data.message || `Mercado Pago preference failed (HTTP ${res.status})`,
+    );
+  }
+  return { id: data.id, initPoint: data.init_point };
+}
+
+export interface MercadoPagoPayment {
+  id: number | string;
+  status?: string;
+  external_reference?: string;
+  transaction_amount?: number;
+  currency_id?: string;
+  metadata?: Record<string, string | number | null>;
+}
+
+/** Read an MP payment after a signed webhook notification. We never trust the
+ * webhook body for amount/status; Mercado Pago's API is the source of truth. */
+export async function getPayment(id: string): Promise<MercadoPagoPayment | null> {
+  if (!accessToken) return null;
+  const res = await fetch(`${MP_API}/v1/payments/${encodeURIComponent(id)}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!res.ok) return null;
+  return (await res.json().catch(() => null)) as MercadoPagoPayment | null;
+}
+
 
 export interface UpdatePreapprovalInput {
   id: string;

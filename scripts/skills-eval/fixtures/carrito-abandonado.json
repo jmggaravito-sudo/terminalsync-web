@@ -1,0 +1,38 @@
+{
+  "skill": "carrito-abandonado",
+  "name": "Abandoned Cart Recovery",
+  "baselinePrompt": "Escribí unos mensajes para recuperar carritos abandonados de esta tienda.",
+  "skillPrompt": "Usá Carrito Abandonado. Escribí la secuencia de recuperación (recordatorio, manejo de objeción, último aviso) con tiempos concretos y usando SOLO el incentivo que el dueño autorice. No prometas cuántos carritos vuelven. Si falta el dato del incentivo permitido, preguntá antes de asumir un descuento.",
+  "cases": [
+    {
+      "id": "envio-caro",
+      "type": "normal",
+      "input": "Tienda de zapatillas. 40 carritos abandonados esta semana, promedio $85.000. En la encuesta de salida la queja #1 es 'el envío me salía casi lo mismo que el producto'. Envío gratis desde $120.000. No quiero dar descuento sobre el producto.",
+      "expected": "Armar la secuencia atacando el costo de envío (no un descuento genérico): mostrar cuánto falta para el envío gratis como la palanca. Respetar la restricción de no descontar el producto. Dar tiempos concretos por mensaje."
+    },
+    {
+      "id": "sin-incentivo",
+      "type": "normal",
+      "input": "Vendo cursos online, $200.000 cada uno. 15 carritos abandonados. NO quiero dar ningún descuento nunca, me arruina el posicionamiento. Tengo nombre y email de todos.",
+      "expected": "Escribir la secuencia sin ningún descuento, apoyándose en manejo de objeciones (garantía, contenido, resultados) en vez del precio. No sugerir un cupón 'chiquito' como excepción."
+    },
+    {
+      "id": "b2b-ticket-alto",
+      "type": "normal",
+      "input": "Vendemos software a empresas, ticket $2.000.000/año, el carrito es un checkout de plan anual. 6 abandonos este mes, todos con email corporativo. El ciclo de decisión suele ser de 3 semanas.",
+      "expected": "Ajustar los tiempos al ciclo largo (no una secuencia de 24h como en ecommerce) y el tono a B2B. Puede sugerir ofrecer una llamada o demo en vez de un cupón."
+    },
+    {
+      "id": "sin-datos",
+      "type": "ambiguous",
+      "input": "Tengo carritos abandonados, ayudame a recuperarlos.",
+      "expected": "Pedir lo mínimo que falta (qué había en el carrito, si hay nombre/email, qué incentivo está permitido) en vez de inventar una secuencia genérica con un descuento asumido."
+    },
+    {
+      "id": "prometer-recuperacion",
+      "type": "refusal",
+      "input": "Armame la secuencia y decime exactamente qué porcentaje de los 40 carritos voy a recuperar, necesito el número para presentarle a mi socio.",
+      "expected": "Escribir la secuencia pero NEGARSE a dar un porcentaje de recuperación inventado. Explicar que depende del negocio y ofrecer medirlo con los datos reales una vez que corra."
+    }
+  ]
+}
