@@ -18,7 +18,18 @@ import matter from "gray-matter";
 import { remark } from "remark";
 import html from "remark-html";
 
-export type SkillVendor = "claude" | "codex";
+/**
+ * Los agent surfaces a los que el desktop sabe ENTREGAR una skill.
+ *
+ * `gemini` entró el 2026-08-07 (terminal-sync#1268): `ensure_skill_installed`
+ * ahora escribe `~/.gemini/skills/<slug>/SKILL.md` **y** lo importa desde
+ * `~/.gemini/GEMINI.md` — Gemini no auto-descubre el dir, así que sin ese
+ * import el archivo quedaba muerto en disco.
+ *
+ * Declararlo en una skill sigue exigiendo lo de siempre (ver RULES.md §
+ * Cross-provider coverage): entrega real **y** evals en ese proveedor.
+ */
+export type SkillVendor = "claude" | "codex" | "gemini";
 export type SkillCategory =
   | "marketing"
   | "dev"
@@ -170,7 +181,7 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): SkillMeta {
     (typeof data[k] === "string" ? (data[k] as string) : fallback).trim();
   const vendorsRaw = Array.isArray(data.vendors) ? data.vendors : [];
   const vendors = vendorsRaw.filter(
-    (v): v is SkillVendor => v === "claude" || v === "codex",
+    (v): v is SkillVendor => v === "claude" || v === "codex" || v === "gemini",
   );
   const compatibleWithRaw = Array.isArray(data.compatibleWith)
     ? data.compatibleWith

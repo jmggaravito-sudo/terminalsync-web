@@ -23,9 +23,9 @@ auto-promotion pipeline and must not be used as the Loop entrypoint.
 11. Open the **app mirror draft PR** in `terminal-sync` following `docs/integration-loop-two-pr-policy.md`. This is required even when the app consumes the remote catalog automatically; prove or adjust the Integraciones behavior.
 12. Stop. Do not merge and do not push to `main`.
 
-## Two-PR app mirror gate
+## Landing-first sync gate
 
-Connector runs must follow `docs/integration-loop-two-pr-policy.md`: every shipped connector needs a landing/web PR **and** an app mirror PR. The web PR changes the catalog/report; the app PR verifies or adjusts the desktop Integraciones surface. Do not call a connector loop fully ready until both PRs exist, or the web PR explicitly marks the app PR as blocked by missing cross-repo automation credentials.
+Connector runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first, always** — it is what `/api/marketplace/catalog` serves and the desktop consumes it automatically. An app PR is required **only** when the connector needs desktop code it doesn't have (a special install flow, or an item that would render as a broken generic card). A connector with a normal manifest needs none: state `App PR: no aplica — la app consume el catálogo`. Sync is verified by the desktop guard, not declared. If the landing PR can't be created, the connector is **not** ready — never compensate with an app PR mirroring content that doesn't exist.
 
 ## Required run-history registration
 

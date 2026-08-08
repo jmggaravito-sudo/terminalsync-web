@@ -498,8 +498,10 @@ const WORKFLOW_META: Record<
     description:
       "Feedback (Sugerencias) — recibe sugerencias de los usuarios y las guarda + te notifica.",
     cadence: "cuando hay feedback",
+    resultUrl: "/admin/ops/feedback",
+    resultLabel: "Ver inbox",
     operatorActions: [
-      { label: "Crear/ver inbox de feedback", note: "Falta una vista clara en landing/admin para leer sugerencias sin entrar a n8n." },
+      { label: "Ver inbox de feedback", href: "/admin/ops/feedback", note: "Leer sugerencias sin entrar a n8n." },
       { label: "Clasificar sugerencias", note: "Separar bug, idea vendible, feature y queja." },
       { label: "Convertir en tarea", note: "Las mejores sugerencias deberían terminar en roadmap/PR." },
     ],
@@ -565,7 +567,7 @@ const WORKFLOW_META: Record<
     cadence: "cuando algo falla",
     operatorActions: [
       { label: "Revisar error rojo", note: "Ver qué flujo falló y desde qué nodo." },
-      { label: "Abrir Auto-Reparación", note: "Usar el panel inferior de Ops si el error es repetido." },
+      { label: "Abrir Auto-Reparación", href: "/admin/ops?tab=repair", note: "Usar el panel inferior de Ops si el error es repetido." },
       { label: "Decidir si es crítico", note: "Si afecta captura/sender/replies, arreglar antes de seguir." },
     ],
   },
@@ -923,7 +925,7 @@ const WORKFLOW_RESULTS_SOURCE: Record<
     table: "agency_influencers",
     timeField: "discovered_at",
     select:
-      "name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,bio_link_url,subscribers,target_audience,language,classification_score,classification_reason,status,discovered_at",
+      "id,name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,bio_link_url,subscribers,target_audience,language,classification_score,classification_reason,status,discovered_at",
     label: "Influencers agency-targeted",
     unit: "influencers",
     itemsLimit: 25,
@@ -943,6 +945,7 @@ const WORKFLOW_RESULTS_SOURCE: Record<
         .filter(Boolean)
         .join(" · ");
       return {
+        id: r.id ? String(r.id) : undefined,
         title: String(r.name ?? r.handle ?? "(sin nombre)"),
         subtitle: sub || (r.classification_reason ? String(r.classification_reason).slice(0, 140) : undefined),
         url: r.source_url ? String(r.source_url) : undefined,
@@ -987,6 +990,7 @@ const WORKFLOW_RESULTS_SOURCE: Record<
           : null;
       const langTag = r.language ? `🌐 ${String(r.language).toUpperCase()}` : null;
       return {
+        id: r.id ? String(r.id) : undefined,
         title: String(r.name ?? r.handle ?? "(sin nombre)"),
         subtitle: [
           r.target_audience,

@@ -41,11 +41,14 @@ describe("skills delivery gate — every catalog-ready skill is servable via /ra
         crypto.createHash("sha256").update(p.skill_md, "utf8").digest("hex");
       expect(p.checksum, `${slug} checksum matches skill_md`).toBe(expected);
 
-      // At least one deliverable vendor, all within {claude, codex} (the only
-      // two the desktop writes to).
+      // At least one deliverable vendor, all within {claude, codex, gemini}.
+      // `gemini` se sumó el 2026-08-07 (terminal-sync#1268): el desktop ahora
+      // escribe ~/.gemini/skills/<slug>/ Y lo importa desde GEMINI.md — sin
+      // ese import el archivo quedaba muerto en disco, por eso antes no
+      // contaba como entregable.
       expect(p.vendors.length, `${slug} declares a deliverable vendor`).toBeGreaterThan(0);
       for (const v of p.vendors) {
-        expect(["claude", "codex"], `${slug} vendor ${v} is deliverable`).toContain(v);
+        expect(["claude", "codex", "gemini"], `${slug} vendor ${v} is deliverable`).toContain(v);
       }
 
       // Extras must be safe relative paths (no traversal) and valid base64.

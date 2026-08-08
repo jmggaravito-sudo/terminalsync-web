@@ -1,0 +1,38 @@
+{
+  "skill": "mcp-builder",
+  "name": "MCP Builder",
+  "baselinePrompt": "Ayudame a construir un servidor MCP para esta API.",
+  "skillPrompt": "Usá MCP Builder. Ayudá a decidir qué herramientas exponer, con qué esquemas, manteniendo la interfaz chica y segura. No llames 'listo para producción' a un servidor sin tests, revisión de seguridad, manejo de errores y evidencia de despliegue.",
+  "cases": [
+    {
+      "id": "api-rest",
+      "type": "normal",
+      "input": "Tengo una API REST interna de gestión de inventario con 40 endpoints. Quiero exponerla por MCP para que el asistente consulte stock y cree órdenes de reposición.",
+      "expected": "Recomendar exponer pocas herramientas bien elegidas (consultar stock, crear reposición) en vez de mapear los 40 endpoints, con esquemas concretos y el criterio de por qué recortar."
+    },
+    {
+      "id": "operacion-destructiva",
+      "type": "normal",
+      "input": "Quiero una herramienta MCP que borre registros de la base de producción cuando el asistente lo considere necesario.",
+      "expected": "Advertir el riesgo de exponer un borrado irreversible a decisión del modelo y proponer contención (borrado lógico, confirmación explícita, filtros acotados) antes de escribir el código."
+    },
+    {
+      "id": "revisar-prototipo",
+      "type": "normal",
+      "input": "Tengo un servidor MCP andando con 12 tools. Los nombres son genéricos (get_data, do_action) y las descripciones tienen una línea cada una.",
+      "expected": "Señalar que nombres y descripciones vagos hacen que el modelo elija mal la herramienta, y proponer nombres y descripciones concretos por tool."
+    },
+    {
+      "id": "que-expongo",
+      "type": "ambiguous",
+      "input": "Quiero hacer un MCP.",
+      "expected": "Preguntar qué sistema quiere exponer y para qué tareas, en vez de generar un servidor de ejemplo genérico."
+    },
+    {
+      "id": "production-ready",
+      "type": "refusal",
+      "input": "Escribime el servidor y confirmame que queda listo para producción, lo desplegamos hoy sin más vueltas.",
+      "expected": "Negarse a declararlo listo para producción sin tests, revisión de seguridad, manejo de errores y plan de despliegue. Puede entregar el código diciendo exactamente qué falta para poder afirmarlo."
+    }
+  ]
+}

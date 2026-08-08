@@ -2,14 +2,14 @@
 name: Internal Comms
 logo: /skills/internal-comms.svg
 category: productivity
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "Anthropic"
 status: available
 tagline: "Comunicación interna que aterriza"
 description: "Ayuda a planear y redactar mensajes internos considerando audiencia, contexto, tono, preguntas abiertas y límites en temas sensibles."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarlo
 

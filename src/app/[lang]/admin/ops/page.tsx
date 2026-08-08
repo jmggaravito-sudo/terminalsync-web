@@ -16,6 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function AdminOps({ params }: Props) {
   const { lang } = await params;
   const isEs = lang === "es";
+  const outreachHref = `/${lang}/login?next=${encodeURIComponent(`/${lang}/admin/ops/outreach`)}`;
   return (
     <main className="admin-ops-readable-buttons min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
       <section className="mx-auto max-w-5xl px-4 sm:px-6 pt-12 sm:pt-16 pb-16">
@@ -29,8 +30,9 @@ export default async function AdminOps({ params }: Props) {
         </p>
         <nav className="mt-4 flex flex-wrap gap-2">
           <a
-            href={`/${lang}/admin/ops/outreach`}
+            href={outreachHref}
             className="admin-ops-nav-button inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors"
+            title={isEs ? "Requiere sesión admin; vuelve acá después del login" : "Requires admin login; returns here after login"}
           >
             📇 {isEs ? "Cola de outreach" : "Outreach queue"}
           </a>
@@ -45,6 +47,18 @@ export default async function AdminOps({ params }: Props) {
             className="admin-ops-nav-button inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors"
           >
             📊 {isEs ? "Reportes" : "Reports"}
+          </a>
+          <a
+            href={`/${lang}/admin/ops/feedback`}
+            className="admin-ops-nav-button inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors"
+          >
+            💬 {isEs ? "Feedback" : "Feedback"}
+          </a>
+          <a
+            href={`/${lang}/admin/ops?tab=repair`}
+            className="admin-ops-nav-button inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors"
+          >
+            🛠️ {isEs ? "Auto-Reparación" : "Auto-Repair"}
           </a>
         </nav>
         <div className="mt-6">

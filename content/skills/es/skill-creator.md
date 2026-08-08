@@ -2,14 +2,14 @@
 name: Skill Creator
 logo: /skills/skill-creator.svg
 category: productivity
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "Anthropic"
 status: available
 tagline: "Creá skills que superen baseline"
 description: "Guía una skill desde caso recurrente hasta contenido que cumple el molde, evals, comparación contra baseline, límites y plan de iteración."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarlo
 
