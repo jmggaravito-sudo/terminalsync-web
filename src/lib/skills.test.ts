@@ -73,6 +73,11 @@ describe("skills content mold", () => {
       "pdf",
       "pptx",
       "xlsx",
+      // Skills Loop 2026-07-31 (higgsfield/zapier/notebooklm/ideogram focus) —
+      // beat baseline clearly (see docs/skills-evals/<slug>.md).
+      "higgsfield-video-director",
+      "ideogram-creative-director",
+      "zapier-automation-blueprint",
       // Tax skills for entrepreneurs — finance category, eval evidence in
       // docs/skills-evals/<slug>.md (see the Skills Loop tax-entrepreneurs run).
       "tax-prep-checklist",
@@ -121,7 +126,13 @@ describe("skills content mold", () => {
   });
 
   it("parks brand skills as catalogReady:false — pending evaluation, distinct from hidden", async () => {
-    const pendingSlugs = ["brand-guidelines", "brand-voice"] as const;
+    const pendingSlugs = [
+      "brand-guidelines",
+      "brand-voice",
+      // Skills Loop 2026-07-31 — deferred: only 2/5 cases clearly beat the
+      // generic baseline (docs/skills-evals/notebooklm-source-architect.md).
+      "notebooklm-source-architect",
+    ] as const;
 
     for (const lang of ["en", "es"] as const) {
       const skills = await listSkills(lang);
