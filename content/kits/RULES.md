@@ -356,3 +356,37 @@ Until these are present, keep the kit out of the published marketplace catalog.
 - **Tax prep / filing itself** — no tax-prep or e-filing connector exists (and none of the 7 allowed skills covers tax law). This kit explicitly documents in its Limits that it organizes numbers for the accountant, it does not prepare or file returns.
 
 None of the 7 allowed skills (`code-reviewer`, `doc-coauthoring`, `internal-comms`, `mcp-builder`, `meta-ads-creator`, `seo-auditor`, `skill-creator`) covers bookkeeping/tax/finance directly — `doc-coauthoring` and `internal-comms` are used here for their generic structuring/messaging behavior, applied to the accountant-handoff artifact, the same pattern already used for client proposals (Business Owner Kit) and team announcements (Docs & Team Comms Kit).
+
+## Loop run notes
+
+### 2026-07-31 — focus "higgsfield, zapier, notebooklm, ideogram"
+
+**Shipped:** `social-ad-creative-studio` (marketing) — `meta-ads-creator` (skill) +
+`ideogram` (connector) + `higgsfield` (connector). Both connectors are official,
+OAuth-connected, and already `status: available` with a `manifest:` block
+(`content/connectors/{en,es}/{ideogram,higgsfield}.md`), so they pass the
+"only published, installable pieces" gate. Coherence: Meta Ads Creator supplies
+the creative brief (copy + image description + format); Ideogram turns it into
+the still image; Higgsfield turns it into the video for Stories/Reels formats a
+still image can't serve.
+
+**SKIP/deferred — `zapier`:** shipped as a connector (`status: available`,
+2026-07-29) but its `content/connectors/{en,es}/zapier.md` has **no `manifest:`
+block** — it is a user-managed MCP where the URL/tools are configured entirely
+in the user's own Zapier dashboard (`docs/integration-loop-two-pr-policy.md`
+explicitly calls this out: "must not look one-click installable"). Kits'
+"Only published, installable pieces" rule requires a connector file to have a
+`manifest:` block before it can be included. Zapier does not clear that bar
+today, so it is left out of this kit. Reconsider if/when Zapier ships a
+kit-eligible install path (e.g. a documented default manifest), or once a
+dedicated "connect your own automation" kit pattern exists that can disclose
+the user-managed setup honestly.
+
+**SKIP/deferred — `notebooklm`:** no `content/connectors/{en,es}/notebooklm.md`
+exists in the catalog at all — Google does not publish an installable MCP
+server for NotebookLM (it's a consumer research/notebook product, not an
+MCP-exposed API), matching the same gate that already SKIPs other
+Google-consumer-product connectors in `content/connectors/SOURCES.md`. This is
+a Connector Loop candidate, not a Kit Loop one: it cannot be added to any kit
+until (if ever) an official installable connector exists. No kit content
+references `notebooklm` in this run.
