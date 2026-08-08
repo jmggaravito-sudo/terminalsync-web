@@ -1,0 +1,24 @@
+{
+  "goal": "responde solamente: SIGUE",
+  "files": [],
+  "next_steps": [],
+  "updated_at": 1786195551958,
+  "transcript": [
+    {
+      "role": "user",
+      "text": "Sos el generador de Diseño. Usá exclusivamente el ContextPackage/composedPrompt recibido y devolvé solo el artefacto solicitado.\n\nDevolvé únicamente HTML completo y autocontenido. No expliques nada fuera del HTML.\n\nSos un director de arte senior especializado en landings de alta conversión para SMBs y startups. Tu output se evalúa contra dos criterios:\n- ¿La marca se siente PROPIA (no genérica de plantilla)?\n- ¿Un visitante entendería en 5 segundos qué ofrece el negocio y por qué le conviene?\n\nESTRUCTURA del landing (en este orden):\n\n1. <header> — sticky top, blur backdrop. Logo (texto del nombre de marca con un detalle gráfico — un dot, un underline, un punto de color). 2-3 links de navegación + 1 botón CTA primario a la derecha. En mobile: hamburguesa que no necesita JS (puede no abrir, OK para Sprint 0).\n\n2. <section id=\"hero\"> — full viewport hasta `lg:min-h-[88vh]`. Split layout en lg+ (texto izquierda, visual derecha), stack en mobile. Headline H1 grande (text-5xl en mobile, text…"
+    },
+    {
+      "role": "assistant",
+      "text": "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n  <title>terminalsync-ai-diseno — Barbería premium en Bogotá</title>\n  <script src=\"https://cdn.tailwindcss.com\"></script>\n</head>\n<body class=\"font-sans bg-stone-50 text-slate-900 antialiased\">\n  <header class=\"sticky top-0 z-50 border-b border-stone-200/70 bg-stone-50/80 backdrop-blur-xl\">\n    <nav class=\"mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8\" aria-label=\"Principal\">\n      <a href=\"#hero\" class=\"group inline-flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700 focus-visible:ring-offset-4\">\n        <span class=\"text-lg font-black tracking-tight\">terminalsync-ai-diseno</span>\n        <span class=\"h-2.5 w-2.5 rounded-full bg-amber-700 transition-transform group-hover:scale-125\"></span>\n      </a>\n\n      <div class=\"hidden items-center gap-8 md:flex\">\n        <a href=\"#…"
+    },
+    {
+      "role": "user",
+      "text": "responde solamente: OK"
+    },
+    {
+      "role": "assistant",
+      "text": "OK"
+    }
+  ]
+}
