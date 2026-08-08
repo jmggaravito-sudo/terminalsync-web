@@ -1,72 +1,99 @@
-# Integration Loop two-PR policy
+# Integration Loop — política de sincronización landing ↔ app
 
-Every TerminalSync integration loop must leave **two reviewable PRs** when it changes what users see or can install:
+> **El nombre del archivo quedó histórico.** Se llama `two-pr-policy` porque
+> antes exigía dos PRs siempre. Ya no: el segundo PR ahora se pide solo cuando
+> hay código de la app que escribir. El path se mantiene para no romper las 13
+> referencias que apuntan acá.
 
-1. **Landing/Web PR** in `jmggaravito-sudo/terminalsync-web`.
-   - Catalog content, public landing pages, marketplace metadata, loop report bookkeeping.
-   - This PR is the source of truth for `/api/marketplace/catalog`.
+## La regla en una línea
 
-2. **App mirror PR** in `jmggaravito-sudo/terminal-sync`.
-   - Mirrors the web catalog behavior inside the desktop app (`Integraciones`, install/CTA behavior, special cases, tests, and support-bot copy).
-   - Base branch: `release/v0.2.18-lab` unless the coordinator states otherwise.
-   - The app PR must prove the new/changed integration does not render as a broken generic card.
+**El landing va primero, siempre. El PR de la app se abre solo si hay código
+de la app que cambiar.**
 
-## What counts as an app mirror change
+## Por qué cambió (2026-08-07)
 
-The app PR is required even when the app consumes the remote catalog automatically. If no production code change is needed, the app PR must still include one of:
+La versión anterior exigía un PR de la app *"incluso cuando la app consume el
+catálogo remoto automáticamente"*. Como en esos casos no había nada que
+programar, los loops cumplieron el trámite con **tests de fixtures escritas a
+mano**: de 7 PRs de loops mergeados, **5 no tocaron una línea de código de
+producto**. El de Xero decía espejar `content/plugins/{en,es}/xero.md` — un
+archivo que no existe. Pasó verde igual, porque el test nunca consulta el
+catálogo.
 
-- a targeted test/fixture proving the remote catalog item renders and routes correctly;
-- a support-bot knowledge note for the integration behavior;
-- a small app-side copy/CTA adjustment for the exact integration;
-- a documented `no-code mirror` assertion explaining why the existing app path covers it.
+O sea: el segundo PR no evitaba la desincronización, **la disfrazaba**. Daba
+una señal de "espejado ✅" sobre algo que nadie había verificado.
 
-Examples:
+Auditoría completa: `terminal-sync` → `docs/loops-integracion-auditoria.md`.
 
-- A connector with a normal `manifest` should be smokeable through `Integraciones → Explorar` and should open the install path instead of a dead external CTA.
-- A connector with **no static manifest** (for example, a user-managed MCP like Zapier) must not look one-click installable. The app mirror PR should route it to the correct external/setup flow or explain the manual setup clearly.
-- A first-party integration (for example Meta Social) must open its native app flow, not only the generic catalog detail.
+## La asimetría que importa
 
-## PR body requirements
+No es lo mismo equivocarse en un orden que en el otro:
 
-Both PRs must link to each other when possible.
+- **Landing primero** → la app lo consume sola en cuanto está publicado. No
+  hace falta actualizar la app. No pasa nada malo.
+- **App primero** → la app promete algo que el catálogo todavía no sirve. El
+  cliente lo instala y falla, o el rol pide una skill que no existe y arranca
+  sin ella, en silencio.
 
-The landing/web PR body must include:
+Por eso la regla no es "sincronizados", es **"landing primero"**.
 
-- `App mirror PR: <url or pending>`
-- loop kind (`connectors`, `plugins`, `kits`, or `skills`)
+Caso real: `cotizaciones` y `contenido-social` entraron a la app en
+terminal-sync#1139 con su PR de landing (#260) todavía abierto. Los roles de
+El Departamento quedaron pidiendo dos skills que el catálogo no servía.
+
+## Qué se exige hoy
+
+### 1. PR del landing — siempre
+
+Es la fuente de verdad de `/api/marketplace/catalog`. Contenido, metadata,
+páginas públicas, bookkeeping del loop.
+
+El body debe incluir:
+
+- loop kind (`connectors`, `plugins`, `kits` o `skills`)
 - found/skipped counts
-- shipped/promoted landing slugs (`--items`) so the ops report links to `/es/connectors`, `/es/plugins`, `/es/stacks`, or `/es/skills`
-- where the run appears: `/admin/ops/loop-runs`
+- slugs shipeados/promovidos (`--items`), para que el reporte de ops linkee a
+  `/es/connectors`, `/es/plugins`, `/es/stacks` o `/es/skills`
+- dónde aparece la corrida: `/admin/ops/loop-runs`
+- `App PR: <url>` **o** `App PR: no aplica — la app consume el catálogo`
 
-The app PR body must include:
+### 2. PR de la app — solo si hay código
 
-- `Landing/Web PR: <url>`
-- what changed in the app surface
-- validation/smoke notes
-- `## Lo que el bot de soporte debe saber`
+Abrilo cuando el ítem necesite algo que la app no hace hoy:
 
-## Automation rule
+- una superficie nueva o un flujo de instalación distinto
+- un caso especial que hoy renderiza como tarjeta genérica rota
+- un connector sin manifest estático (por ejemplo un MCP administrado por el
+  usuario, tipo Zapier) que **no debe** parecer instalable en un clic
+- una integración de primera parte que abre su flujo nativo
 
-Automated loops should attempt both PRs. If the automation cannot push to the app repo because the required cross-repo token/secret is missing, the loop must:
+**No** lo abras para "dejar constancia". Si la app ya consume el catálogo y el
+ítem se ve bien, no hay PR que hacer: escribilo en el body del landing y listo.
 
-1. still open the landing/web draft PR;
-2. mark the landing/web PR body with `App mirror PR: blocked — missing cross-repo token`;
-3. record the blocker in the loop log and `/admin/ops/loop-runs` note when available;
-4. never report the integration as fully ready until the app mirror PR exists.
+### 3. El guard reemplaza la declaración
 
-## Loop report menu
+Lo que antes se declaraba en un PR, ahora se verifica solo:
 
-`/admin/ops/loop-runs` is the shared menu for all four loops: Connectors, Plugins, Kits, and Skills. Each run should record `--kind` and `--items` so the admin report can link directly to the public landing pages that the desktop app must mirror.
+- `terminal-sync` → `src/data/departamento.test.ts` cruza los slugs que la app
+  referencia contra `catalogSlugs.snapshot.json` (lo que el catálogo **sirve**).
+  Si la app pide algo que no existe, **CI en rojo con el nombre del slug**.
+- `terminal-sync` → `node scripts/verify-integration-loop.mjs` corre el
+  contrato entero: slugs fantasma, promesas de IA sin entrega real, y plugins
+  que referencian piezas inexistentes. Corrélo al final de cada corrida, antes
+  de reportar listo.
 
-## Weekly marketplace loop schedule
+La diferencia de fondo: antes la sincronización dependía de que alguien **la
+declarara**; ahora depende de que **sea cierta**.
 
-The four marketplace loops run as separate GitHub Actions every Monday, staggered so each can produce its own landing/web PR and app mirror PR:
+## Si la automatización no puede abrir el PR del landing
 
-| Loop       | Workflow                                        |   UTC | Bogotá | `--kind`     | Landing route           |
-| ---------- | ----------------------------------------------- | ----: | -----: | ------------ | ----------------------- |
-| Connectors | `.github/workflows/connector-curation-loop.yml` | 14:00 |  09:00 | `connectors` | `/es/connectors/<slug>` |
-| Plugins    | `.github/workflows/plugin-curation-loop.yml`    | 15:00 |  10:00 | `plugins`    | `/es/plugins/<slug>`    |
-| Kits       | `.github/workflows/kit-curation-loop.yml`       | 16:00 |  11:00 | `kits`       | `/es/stacks/<slug>`     |
-| Skills     | `.github/workflows/skill-curation-loop.yml`     | 17:00 |  12:00 | `skills`     | `/es/skills/<slug>`     |
+1. Registrá el bloqueo en el log del loop y en `/admin/ops/loop-runs`.
+2. **No reportes el ítem como listo.** Sin contenido publicado no hay ítem —
+   lo que existe es un borrador.
+3. Nunca compenses con un PR de la app que "espeje" contenido inexistente. Eso
+   es exactamente lo que producía los tests falsos.
 
-Each workflow also supports `workflow_dispatch` with `focus` and `dry_run`.
+## Loop report
+
+`/admin/ops/loop-runs` sigue siendo el menú compartido de los cuatro loops:
+Connectors, Plugins, Kits y Skills. Cada corrida registra `--kind` y `--items`.

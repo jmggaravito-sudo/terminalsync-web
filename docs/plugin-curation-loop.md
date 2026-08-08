@@ -54,9 +54,9 @@ Number semantics:
 - `--skipped`: candidate plugins documented as SKIP/deferred in this run.
 - `--items`: landing slugs for the plugins added/promoted, so `/admin/ops/loop-runs` can show direct `/es/plugins/<slug>` links.
 
-## Two-PR app mirror gate
+## Landing-first sync gate
 
-Plugin runs must follow `docs/integration-loop-two-pr-policy.md`: a Plugin is not fully ready with only a web catalog PR. The app mirror PR must verify install/render behavior in the desktop app, especially where a Plugin bundles connectors with OAuth, secrets, or first-party flows.
+Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first, always.** An app PR is required only when the Plugin needs desktop code it doesn't have — which for Plugins is more common than for plain connectors, since bundling OAuth, secrets or first-party flows often does need a real surface change. When the generic renderer already handles it, no app PR: state `App PR: no aplica — la app consume el catálogo`. What must never happen is an app PR made of hand-written fixtures asserting a file that doesn't exist — that is what the old mandatory-mirror rule produced.
 
 ## Run log
 

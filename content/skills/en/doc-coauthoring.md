@@ -2,14 +2,14 @@
 name: Doc Co-Authoring
 logo: /skills/doc-coauthoring.svg
 category: productivity
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "Anthropic"
 status: available
 tagline: "Structured co-author for long docs"
 description: "Guides complex documents through brief, outline, section drafts, review passes, and final polish without losing the thread."
 license: "MIT"
 marketplaceSource: "anthropic"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 
@@ -19,6 +19,14 @@ compatibleWith: ["claude", "codex"]
 - You need a stronger process than a one-shot "write this document" prompt.
 
 For legal documents, it can help organize a discussion draft, issues list, or plain-language summary. It does not create binding legal contracts and should recommend qualified lawyer review before use or signature.
+
+**Ask only when something is missing that BLOCKS the task.** If it can be done
+with what you were given, do it. Stopping to ask for precision when the task is
+already doable is not caution — it is not delivering. And scoring "how usable
+your data is" on a perfectly solvable task misleads more than it helps.
+
+When something really is missing, do both: deliver what the available input
+supports, and say what you need for the rest. Never the question alone.
 
 ## What it does
 
