@@ -33,6 +33,7 @@ permissions:
 env:
   TERMINALSYNC_APP_REPO: jmggaravito-sudo/terminal-sync
   TERMINALSYNC_APP_BASE_BRANCH: release/v0.2.18-lab
+  TERMINALSYNC_CATALOG_URL: https://terminalsync.ai/api/marketplace/catalog
 
 jobs:
   supervise:
@@ -124,8 +125,48 @@ jobs:
         working-directory: terminal-sync-app
         run: npm ci
 
+      # El catálogo que el cliente consume de verdad. Los tests de la app usan
+      # fixtures escritas a mano, así que detectan si la app deja de mapear un
+      # grupo, pero no si el landing publica uno nuevo — la fixture la
+      # escribimos nosotros. Bajando el catálogo servido, el test de PARIDAD
+      # FÍSICA de catalogStore compara contra lo que hay publicado.
+      #
+      # Se baja el de producción, no el del PR: armar el catálogo acá exigiría
+      # Supabase, y sin credenciales varios grupos volverían vacíos — el chequeo
+      # se ablandaría solo y en silencio, que es peor que no tenerlo. La
+      # contra es que un grupo nuevo se detecta recién en la corrida siguiente
+      # al deploy; para una deriva que hoy tarda semanas en verse, alcanza.
+      - name: Fetch served catalog
+        id: live_catalog
+        run: |
+          for intento in 1 2 3; do
+            if curl -fsS --max-time 30 "$TERMINALSYNC_CATALOG_URL" -o "$RUNNER_TEMP/live-catalog.json"; then
+              break
+            fi
+            echo "intento $intento falló; reintento en 5s"
+            sleep 5
+          done
+          node -e '
+            const fs = require("node:fs");
+            const ruta = process.env.RUNNER_TEMP + "/live-catalog.json";
+            if (!fs.existsSync(ruta)) {
+              console.error("No se pudo bajar el catálogo servido tras 3 intentos.");
+              process.exit(1);
+            }
+            const c = JSON.parse(fs.readFileSync(ruta, "utf8"));
+            const grupos = Object.entries(c).filter(([, v]) => Array.isArray(v) && v.length);
+            if (!grupos.length) {
+              console.error("El catálogo servido vino sin un solo grupo con contenido.");
+              process.exit(1);
+            }
+            for (const [k, v] of grupos) console.log(`${k}: ${v.length}`);
+          '
+          echo "path=$RUNNER_TEMP/live-catalog.json" >> "$GITHUB_OUTPUT"
+
       - name: Run app drag/install parity checks
         working-directory: terminal-sync-app
+        env:
+          LIVE_CATALOG_JSON: ${{ steps.live_catalog.outputs.path }}
         run: |
           npm test -- --run \
             src/components/PowerUpItemRow.test.tsx \
