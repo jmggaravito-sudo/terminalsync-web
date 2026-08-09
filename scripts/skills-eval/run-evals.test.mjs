@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  evidenciaInvalida,
   decideVerdict,
   resolveSkillPrompt,
   skillBody,
@@ -362,5 +363,23 @@ Pedile la reseña a quien tuvo una buena experiencia.`;
   it("falla claro si no hay ni SKILL.md ni override — nunca evalúa con prompt vacío", () => {
     expect(() => resolveSkillPrompt({ skill: "s" }, null)).toThrow(/no se pudo obtener/);
     expect(() => resolveSkillPrompt({ skill: "s", skillPrompt: "  " }, "   ")).toThrow();
+  });
+});
+
+describe("evidenciaInvalida", () => {
+  it("frena cuando no hay SKILL.md: se estaría midiendo la paráfrasis del fixture", () => {
+    // El caso real: `cotizaciones` sin --local cayó al fixture y aun así
+    // imprimió veredicto ("NO aprobada") y escribió el reporte. Un veredicto
+    // sobre el prompt equivocado es indistinguible de uno real.
+    expect(evidenciaInvalida(null, ["--provider", "gemini"])).toBe(true);
+    expect(evidenciaInvalida("", [])).toBe(true);
+  });
+
+  it("no frena cuando hay SKILL.md", () => {
+    expect(evidenciaInvalida("---\nname: X\n---\ncuerpo", [])).toBe(false);
+  });
+
+  it("deja medir el fixture si se pide a propósito", () => {
+    expect(evidenciaInvalida(null, ["--allow-fixture-prompt"])).toBe(false);
   });
 });

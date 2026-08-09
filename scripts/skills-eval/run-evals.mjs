@@ -176,6 +176,20 @@ export function resolveSkillPrompt(fixture, fetchedMd) {
  * después. Con `--local` se mide el cambio antes de shipearlo, que es el orden
  * correcto — y es lo que necesita un loop para no publicar a ciegas.
  */
+/**
+ * True cuando la corrida produciría evidencia que no es sobre la skill.
+ *
+ * Sin `SKILL.md` lo que se mide es la paráfrasis del fixture. El problema no es
+ * medir eso: es que el veredicto y el reporte salían idénticos a los de una
+ * corrida real. Evidencia falsa con cara de evidencia — ya nos pasó dos veces
+ * (0/12 aprobaciones por fixtures que parafraseaban, y `cotizaciones` al
+ * olvidar `--local`). Con `--allow-fixture-prompt` se acepta a propósito, y el
+ * reporte deja dicho de dónde salió el prompt.
+ */
+export function evidenciaInvalida(md, argv = []) {
+  return !md && !argv.includes("--allow-fixture-prompt");
+}
+
 function readLocalSkillMd(slug) {
   for (const lang of ["en", "es"]) {
     const f = path.join(process.cwd(), "content", "skills", lang, `${slug}.md`);
@@ -743,6 +757,19 @@ async function main() {
           : "SKILL.md del catálogo"
         : "fixture (no se encontró el SKILL.md)";
       process.stderr.write(`[skills-eval] ${fixture.skill}: prompt = ${promptSource}\n`);
+      // Sin SKILL.md, lo que se midió es la paráfrasis del fixture — NO la
+      // skill. El problema no es medir eso, es que el veredicto y el reporte
+      // salían idénticos a los de una corrida real: evidencia falsa con cara de
+      // evidencia. Pasó dos veces (0/12 aprobaciones en agosto por fixtures que
+      // parafraseaban, y otra vez con `cotizaciones` al olvidar `--local`).
+      // Ahora hay que pedirlo a propósito.
+      if (evidenciaInvalida(md, argv)) {
+        throw new Error(
+          `${fixture.skill}: no se encontró el SKILL.md, así que se evaluaría la paráfrasis del ` +
+            `fixture y no la skill. Si la skill está en el repo sin publicar, corré con --local. ` +
+            `Si de verdad querés medir el fixture, pasá --allow-fixture-prompt y el reporte lo va a decir.`,
+        );
+      }
     }
     // Varias corridas y decisión por mediana: una sola es un sorteo en el
     // margen (ver DEFAULT_RUNS). En DRY_RUN una alcanza — no hay varianza.
