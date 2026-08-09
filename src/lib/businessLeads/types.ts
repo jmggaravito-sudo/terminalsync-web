@@ -35,15 +35,3 @@ export type BusinessLead = {
   discovered_at: string | null;
   updated_at: string | null;
 };
-
-/** Builds a wa.me link with a prefilled greeting. Falls back to null when
- *  there's no usable phone (Maps often has none for smaller businesses). */
-export function whatsappUrl(lead: Pick<BusinessLead, "phone_e164" | "name">): string | null {
-  if (!lead.phone_e164) return null;
-  const digits = lead.phone_e164.replace(/[^0-9]/g, "");
-  if (!digits) return null;
-  const text = encodeURIComponent(
-    `Hola${lead.name ? " " + lead.name : ""}, te escribo de TerminalSync — ayudamos a negocios como el tuyo a automatizar la atención con IA. ¿Tenés 2 minutos?`,
-  );
-  return `https://wa.me/${digits}?text=${text}`;
-}
