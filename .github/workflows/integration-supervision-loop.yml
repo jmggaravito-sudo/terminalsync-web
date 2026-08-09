@@ -91,7 +91,15 @@ jobs:
             # mirror y el check terminaba compilando una rama vieja, fallando
             # por errores ajenos al PR. Pasó de verdad y costó un rato
             # entenderlo.
-            app_pr="$(printf '%s' "${PR_BODY:-}" | grep -iEo 'app mirror( pr)?:[^\n]*' | grep -Eo 'jmggaravito-sudo/terminal-sync/pull/[0-9]+|terminal-sync/pull/[0-9]+|terminal-sync#[0-9]+|#[0-9]+' | head -1 | grep -Eo '[0-9]+' || true)"
+            # `.*` y no `[^\n]*`: dentro de un bracket de ERE, `\n` NO es un
+            # escape — es "backslash o la letra n". En GNU grep (Ubuntu, o sea
+            # CI) eso cortaba la línea en la primera `n`, así que de
+            # ".../terminal-sync/pull/1314" quedaba ".../termi" y el número
+            # nunca aparecía: el gate pedía el link, vos lo ponías, y fallaba
+            # igual. En macOS (BSD grep) funcionaba, por eso se probaba bien en
+            # local. Es la razón real de que este check se terminara salteando
+            # con --admin. grep ya trabaja línea por línea: `.*` alcanza.
+            app_pr="$(printf '%s' "${PR_BODY:-}" | grep -iEo 'app mirror( pr)?:.*' | grep -Eo 'jmggaravito-sudo/terminal-sync/pull/[0-9]+|terminal-sync/pull/[0-9]+|terminal-sync#[0-9]+|#[0-9]+' | head -1 | grep -Eo '[0-9]+' || true)"
 
             # "no aplica" declarado explícitamente: la política dejó de exigir
             # un PR de app cuando el desktop ya consume el catálogo. Ver
