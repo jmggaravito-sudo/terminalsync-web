@@ -41,6 +41,9 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searching, setSearching] = useState(false);
+  const [searchResult, setSearchResult] = useState<string | null>(null);
 
   const fetchLeads = useCallback(async (status: BusinessLeadStatus) => {
     setLoading(true);
@@ -122,6 +125,36 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
     }
   }, [active, notes, saving]);
 
+  const runSearch = useCallback(async () => {
+    const query = searchQuery.trim();
+    if (!query || searching) return;
+    setSearching(true);
+    setSearchResult(null);
+    setError(null);
+    try {
+      const res = await authedFetch("/api/business-leads/search", {
+        method: "POST",
+        body: JSON.stringify({ query }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+      const { parsed, ingest } = json as {
+        parsed: { keyword: string; city: string; niche: string };
+        ingest: { inserted?: number; skipped?: number; total?: number };
+      };
+      setSearchResult(
+        `"${parsed.keyword}" en ${parsed.city} (${parsed.niche}) → ${ingest.inserted ?? 0} nuevos, ${ingest.skipped ?? 0} repetidos, ${ingest.total ?? 0} encontrados.`,
+      );
+      setSearchQuery("");
+      setFilter("nuevo");
+      await fetchLeads("nuevo");
+    } catch (e) {
+      setError(`No se pudo buscar: ${e instanceof Error ? e.message : "unknown error"}`);
+    } finally {
+      setSearching(false);
+    }
+  }, [searchQuery, searching, fetchLeads]);
+
   const totalLeads = useMemo(() => BUSINESS_LEAD_STATUSES.reduce((acc, s) => acc + (counts[s] || 0), 0), [counts]);
   const path = `/${lang}/admin/business-leads`;
   const loginHref = `/${lang}/login?next=${encodeURIComponent(path)}`;
@@ -181,6 +214,14 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
         .subfilters{display:flex;gap:8px;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--panel);}
         .sf{background:var(--bg);border:1px solid var(--line);color:var(--ink2);font-family:var(--mono);font-size:11px;
           padding:5px 9px;border-radius:6px;cursor:pointer;}
+        .searchbar{display:flex;gap:8px;padding:12px 22px;border-bottom:1px solid var(--line);}
+        .searchbar input{flex:1;background:var(--bg);border:1px solid var(--line);color:var(--ink);
+          font-family:var(--sans);font-size:13px;padding:9px 12px;border-radius:8px;}
+        .searchbar input:focus{outline:2px solid var(--acc);outline-offset:1px;}
+        .searchbar button{background:var(--acc);color:var(--acc-ink);border:none;font-family:var(--sans);
+          font-size:13px;font-weight:600;padding:9px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;}
+        .searchbar button:disabled{opacity:.5;cursor:not-allowed;}
+        .searchresult{padding:8px 22px;background:#0d2a16;color:#9ff0b2;font-family:var(--mono);font-size:11.5px;border-bottom:1px solid #1f7a34;}
         .list{flex:1;overflow:auto;}
         .row{display:grid;grid-template-columns:1fr auto;gap:8px;padding:13px 18px;border-bottom:1px solid var(--line);
           cursor:pointer;align-items:center;}
@@ -225,6 +266,20 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
           <h1>Leads B2B</h1>
           <div className="sub">business_leads · {totalLeads} leads totales · mostrando máximo 50{loading ? " · cargando…" : ""}</div>
         </div>
+        <div className="searchbar">
+          <input
+            type="text"
+            placeholder='Ej: "clínicas dentales en Bogotá, Colombia"'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && runSearch()}
+            disabled={searching}
+          />
+          <button onClick={runSearch} disabled={searching || !searchQuery.trim()}>
+            {searching ? "Buscando…" : "Buscar"}
+          </button>
+        </div>
+        {searchResult && <div className="searchresult">✓ {searchResult}</div>}
         <div className="tabs">
           {BUSINESS_LEAD_STATUSES.map((k) => (
             <button key={k} className="tab" data-on={filter === k ? 1 : 0} onClick={() => setFilter(k)}>
@@ -297,6 +352,20 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
               <div className="act-row">
                 <button className="btn primary" disabled={!wa} onClick={() => wa && window.open(wa, "_blank")}>
                   {wa ? "Abrir WhatsApp ↗" : "Sin teléfono"}
+                </button>
+                <button
+                  className="btn ghost"
+                  disabled={!active.email}
+                  onClick={() => {
+                    if (!active.email) return;
+                    const subject = encodeURIComponent(`TerminalSync — ${active.name}`);
+                    const bodyText = encodeURIComponent(
+                      `Hola${active.name ? " equipo de " + active.name : ""}, te escribo de TerminalSync — ayudamos a negocios como el tuyo a automatizar la atención con IA. ¿Tenés 5 minutos para charlar?`,
+                    );
+                    window.location.href = `mailto:${active.email}?subject=${subject}&body=${bodyText}`;
+                  }}
+                >
+                  {active.email ? "Enviar Email ↗" : "Sin email"}
                 </button>
                 <button className="btn ghost" disabled={!active.google_maps_url} onClick={() => active.google_maps_url && window.open(active.google_maps_url, "_blank")}>
                   Ver en Maps ↗
