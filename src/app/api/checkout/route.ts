@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server";
 import {
   TRIAL_DAYS,
+  includedAiPriceId,
   normalizePlanId,
   priceIdFor,
   siteUrl,
   stripe,
   type PlanId,
 } from "@/lib/stripe";
+import {
+  ExistingSubscriptionOnOtherRailError,
+  assertSameRailForChange,
+  changeStripeSubscription,
+  getCurrentSubscriptionForUser,
+  isChangeableSubscription,
+} from "@/lib/planChange";
 
 export const runtime = "nodejs";
 
@@ -33,12 +41,28 @@ interface Body {
    *  `terminalsync://billing/success`. */
   successUrl?: string;
   cancelUrl?: string;
+  /** TerminalSync AI included in the same subscription (+$15/mo). */
+  includedAi?: boolean;
+  addOns?: string[];
 }
 
 // CORS for the Tauri desktop app. Tauri v2 sends requests with a
 // `tauri://` scheme origin on macOS/Linux; browsers use the literal origin.
 // We allow-list both terminalsync.ai and all tauri origins since the anon
 // endpoint below doesn't expose any secrets beyond publishable info.
+function wantsIncludedAi(body: Body): boolean {
+  return (
+    body.includedAi === true || body.addOns?.includes("included_ai") === true
+  );
+}
+
+export function shouldApplyCheckoutTrial(
+  plan: PlanId,
+  supabaseUserId?: string | null,
+): boolean {
+  return !supabaseUserId && (plan === "pro" || plan === "max");
+}
+
 function corsHeaders(origin: string | null): Record<string, string> {
   const allowed =
     origin &&
@@ -91,6 +115,8 @@ export async function POST(req: Request) {
     );
   }
   const price = priceIdFor(plan);
+  const includedAi = wantsIncludedAi(body);
+  const includedAiPrice = includedAi ? includedAiPriceId() : null;
   if (!price) {
     const envVar =
       plan === "max"
@@ -105,28 +131,69 @@ export async function POST(req: Request) {
       { status: 503, headers: cors },
     );
   }
+  if (includedAi && !includedAiPrice) {
+    return NextResponse.json(
+      {
+        error:
+          "Missing Stripe price for TerminalSync AI. Set STRIPE_INCLUDED_AI_PRICE_ID in the environment.",
+      },
+      { status: 503, headers: cors },
+    );
+  }
 
   const lang: "es" | "en" = body.lang === "en" ? "en" : "es";
   const base = siteUrl();
 
-  // Trial-eligible tiers (Pro + Max). Agency is lead-gen, no trial.
-  const trialEligible = plan === "pro" || plan === "max";
+  // Public website signups get the 7-day trial. Existing app users already
+  // had their welcome period, so plan changes or adding TerminalSync AI should
+  // not restart a free trial or show “7 días gratis” again in Stripe.
+  const trialEligible = shouldApplyCheckoutTrial(plan, body.supabaseUserId);
 
   // Shared metadata so the webhook can identify the user + plan without
   // hitting Stripe's API again.
   const sharedMetadata: Record<string, string> = {
     plan,
     cycle: "monthly",
-    source: body.supabaseUserId ? "app.terminalsync/upsell" : "terminalsync.ai/pricing",
+    source: body.supabaseUserId
+      ? "app.terminalsync/upsell"
+      : "terminalsync.ai/pricing",
   };
+  if (includedAi) {
+    sharedMetadata.included_ai = "1";
+    sharedMetadata.add_ons = "included_ai";
+  }
   if (body.supabaseUserId) {
     sharedMetadata.supabase_user_id = body.supabaseUserId;
   }
 
   try {
+    const current = await getCurrentSubscriptionForUser(body.supabaseUserId);
+    if (isChangeableSubscription(current)) {
+      assertSameRailForChange(current, "stripe");
+      await changeStripeSubscription({
+        userId: body.supabaseUserId!,
+        current: current!,
+        plan,
+        includedAi,
+      });
+      return NextResponse.json(
+        {
+          url:
+            body.successUrl ??
+            `${base}/${lang}/checkout/success?changed=subscription`,
+          changed: true,
+          provider: "stripe",
+        },
+        { headers: cors },
+      );
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
-      line_items: [{ price, quantity: 1 }],
+      line_items: [
+        { price, quantity: 1 },
+        ...(includedAiPrice ? [{ price: includedAiPrice, quantity: 1 }] : []),
+      ],
       allow_promotion_codes: true,
       customer_email: body.email,
       client_reference_id: body.referral,
@@ -148,7 +215,7 @@ export async function POST(req: Request) {
           },
       // Always collect payment method up front so features can activate
       // immediately after checkout.session.completed.
-      payment_method_collection: trialEligible ? "always" : undefined,
+      payment_method_collection: "always",
       success_url:
         body.successUrl ??
         `${base}/${lang}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
@@ -162,9 +229,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: session.url }, { headers: cors });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
+    const status = err instanceof ExistingSubscriptionOnOtherRailError ? 409 : 500;
     return NextResponse.json(
       { error: message },
-      { status: 500, headers: cors },
+      { status, headers: cors },
     );
   }
 }

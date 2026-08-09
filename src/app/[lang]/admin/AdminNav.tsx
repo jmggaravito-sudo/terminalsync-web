@@ -14,11 +14,11 @@ export function adminSections(isEs: boolean): AdminSection[] {
   return [
     { slug: "launch-metrics", label: isEs ? "Métricas" : "Metrics" },
     { slug: "trends", label: "Trends" },
-    { slug: "discovery", label: "Discovery" },
     { slug: "marketplace", label: "Marketplace" },
     { slug: "comp", label: "Comp" },
     { slug: "mercadopago", label: "Mercado Pago" },
     { slug: "ops", label: "Ops" },
+    { slug: "business-leads", label: isEs ? "Leads B2B" : "B2B Leads" },
   ];
 }
 

@@ -3,8 +3,15 @@ import { normalizePlanId, siteUrl } from "@/lib/stripe";
 import {
   createPreapproval,
   mercadoPagoConfigured,
-  mpPreapprovalPlanFor,
+  mpAmountFor,
 } from "@/lib/mercadopago";
+import {
+  ExistingSubscriptionOnOtherRailError,
+  assertSameRailForChange,
+  changeMercadoPagoSubscription,
+  getCurrentSubscriptionForUser,
+  isChangeableSubscription,
+} from "@/lib/planChange";
 
 export const runtime = "nodejs";
 
@@ -16,10 +23,31 @@ interface Body {
   supabaseUserId?: string;
   /** Deep-link the desktop app passes; defaults to the marketing routes. */
   successUrl?: string;
+  includedAi?: boolean;
+  addOns?: string[];
 }
 
 // Same CORS posture as the Stripe checkout route: allow the Tauri desktop app
 // and the marketing site.
+function wantsIncludedAi(body: Body): boolean {
+  return body.includedAi === true || body.addOns?.includes("included_ai") === true;
+}
+
+
+function publicBackUrl(raw: string | undefined, base: string, lang: "es" | "en"): string {
+  const fallback = `${base.replace(/\/+$/, "")}/${lang}/checkout/success`;
+  if (!raw) return fallback;
+  try {
+    const parsed = new URL(raw);
+    // Mercado Pago rejects app deep links like terminalsync://billing/success.
+    // Always send a public web URL; the app/account refresh handles the final state.
+    if (parsed.protocol === "https:" || parsed.protocol === "http:") return parsed.toString();
+  } catch {
+    // Invalid URL: fall back to the public success page.
+  }
+  return fallback;
+}
+
 function corsHeaders(origin: string | null): Record<string, string> {
   const allowed =
     origin &&
@@ -68,15 +96,17 @@ export async function POST(req: Request) {
     );
   }
 
-  const preapprovalPlanId = mpPreapprovalPlanFor(plan);
-  if (!preapprovalPlanId) {
-    const envVar = plan === "pro" ? "MERCADOPAGO_PLAN_PRO" : "MERCADOPAGO_PLAN_MAX";
+  // Plan-less subscription: the amount lives in code/env, not on a dashboard
+  // plan (the associated-plan flow needs a tokenized card). Agency is lead-gen.
+  const includedAi = wantsIncludedAi(body);
+  const amount = mpAmountFor(plan, includedAi);
+  if (amount === null) {
     return NextResponse.json(
       {
         error:
           plan === "agency"
             ? "Agency is lead-gen — no self-serve Mercado Pago subscription."
-            : `Missing Mercado Pago plan for "${plan}". Set ${envVar}.`,
+            : `No Mercado Pago amount configured for "${plan}".`,
       },
       { status: 503, headers: cors },
     );
@@ -84,14 +114,38 @@ export async function POST(req: Request) {
 
   const lang: "es" | "en" = body.lang === "en" ? "en" : "es";
   const base = siteUrl();
-  const backUrl = body.successUrl ?? `${base}/${lang}/checkout/success`;
+  const backUrl = publicBackUrl(body.successUrl, base, lang);
 
   try {
+    const current = await getCurrentSubscriptionForUser(body.supabaseUserId);
+    if (isChangeableSubscription(current)) {
+      assertSameRailForChange(current, "mercadopago");
+      await changeMercadoPagoSubscription({
+        userId: body.supabaseUserId!,
+        current: current!,
+        plan,
+        includedAi,
+      });
+      return NextResponse.json(
+        {
+          url: backUrl,
+          changed: true,
+          provider: "mercadopago",
+        },
+        { headers: cors },
+      );
+    }
+
+    // Stamp the account key into external_reference (MP echoes it back verbatim,
+    // so linking is immune to whatever email MP attaches from the payer's own
+    // account). Prefer the Supabase user id when we have it (app / logged-in web);
+    // fall back to the email the buyer typed so the webhook can resolve it.
+    const externalReference = body.supabaseUserId ?? body.email;
     const { initPoint } = await createPreapproval({
-      preapprovalPlanId,
+      amount,
       payerEmail: body.email,
-      externalReference: body.supabaseUserId,
-      reason: `Terminal Sync ${plan === "max" ? "Max" : "Pro"}`,
+      externalReference,
+      reason: `Terminal Sync ${plan === "max" ? "Max" : "Pro"}${includedAi ? " + IA" : ""}`,
       backUrl,
     });
     // Same response shape as the Stripe route: { url } for the client to
@@ -99,6 +153,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: initPoint }, { headers: cors });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500, headers: cors });
+    const status = err instanceof ExistingSubscriptionOnOtherRailError ? 409 : 500;
+    return NextResponse.json({ error: message }, { status, headers: cors });
   }
 }

@@ -9,7 +9,7 @@ export function LoginForm({ lang }: { lang: string }) {
   const isEs = lang === "es";
   const router = useRouter();
   const search = useSearchParams();
-  const next = search.get("next") || `/${lang}/marketplace`;
+  const next = search.get("next") || `/${lang}/admin`;
 
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -69,8 +69,8 @@ export function LoginForm({ lang }: { lang: string }) {
       return;
     }
     // Forward `lang` and `next` to the callback so EN users don't land on
-    // /es/marketplace and so a deep-link-style redirect (e.g. login?next=
-    // /en/billing) survives the round-trip through email.
+    // the intended admin/page path and so a deep-link-style redirect (e.g. login?next=
+    // /es/admin/ops/outreach) survives the round-trip through email.
     const redirectTo =
       typeof window !== "undefined"
         ? `${window.location.origin}/auth/callback?lang=${lang}&next=${encodeURIComponent(next)}`

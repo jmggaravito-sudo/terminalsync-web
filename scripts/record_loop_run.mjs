@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Record a completed Connector Curation Loop run.
+ * Record a completed marketplace Loop run.
  *
  * This is only the bookkeeping utility that posts the final numbers to
  * /api/internal/loop-runs. It is NOT the Connector Curation Loop entrypoint:
@@ -10,18 +10,22 @@
  * Usage:
  *   LOOP_RUNS_ENDPOINT=https://terminalsync.ai/api/internal/loop-runs \
  *   LOOP_RUNS_WRITE_TOKEN=... \
- *   node scripts/record_loop_run.mjs --found 3 --skipped 2 --pr https://github.com/owner/repo/pull/123
+ *   node scripts/record_loop_run.mjs --kind connectors --found 3 --skipped 2 --items mongodb,posthog,pinecone --pr https://github.com/owner/repo/pull/123
  *
  * Semantics:
- *   --found    connectors added to the catalog in this run
- *   --skipped  candidate connectors documented as SKIP in this run
+ *   --kind     loop family: connectors, plugins, kits, skills, or supervision (default: connectors)
+ *   --found    items added/promoted in this run
+ *   --skipped  candidates documented as SKIP/deferred in this run
+ *   --items    comma-separated landing slugs added/promoted in this run
  */
 
 const args = process.argv.slice(2);
 
 function usage(exitCode = 1) {
   const stream = exitCode === 0 ? process.stdout : process.stderr;
-  stream.write(`Usage: node scripts/record_loop_run.mjs --found N --skipped N --pr https://...\n`);
+  stream.write(
+    `Usage: node scripts/record_loop_run.mjs [--kind connectors|plugins|kits|skills|supervision] --found N --skipped N [--items slug,slug] --pr https://...\n`,
+  );
   process.exit(exitCode);
 }
 
@@ -38,8 +42,33 @@ function readFlag(name) {
 function parseNonNegativeInteger(flag) {
   const raw = readFlag(flag);
   if (raw == null) throw new Error(`${flag} is required`);
-  if (!/^\d+$/.test(raw)) throw new Error(`${flag} must be a non-negative integer`);
+  if (!/^\d+$/.test(raw))
+    throw new Error(`${flag} must be a non-negative integer`);
   return Number(raw);
+}
+
+const ALLOWED_KINDS = new Set(["connectors", "plugins", "kits", "skills", "supervision"]);
+
+function parseKind() {
+  const raw = readFlag("--kind") ?? "connectors";
+  const kind = raw.trim().toLowerCase();
+  if (!ALLOWED_KINDS.has(kind)) {
+    throw new Error("--kind must be one of: connectors, plugins, kits, skills, supervision");
+  }
+  return kind;
+}
+
+function parseItemSlugs() {
+  const raw = readFlag("--items") ?? readFlag("--item-slugs");
+  if (raw == null || raw.trim() === "") return [];
+  const slugs = raw
+    .split(",")
+    .map((slug) => slug.trim().toLowerCase())
+    .filter(Boolean);
+  if (slugs.some((slug) => !/^[a-z0-9][a-z0-9-]*$/.test(slug))) {
+    throw new Error("--items must be comma-separated landing slugs");
+  }
+  return [...new Set(slugs)];
 }
 
 function parsePrUrl() {
@@ -57,12 +86,16 @@ function parsePrUrl() {
 
 if (args.includes("--help") || args.includes("-h")) usage(0);
 
-let connectorsFound;
-let connectorsSkipped;
+let kind;
+let itemsFound;
+let itemsSkipped;
 let prUrl;
+let itemSlugs;
 try {
-  connectorsFound = parseNonNegativeInteger("--found");
-  connectorsSkipped = parseNonNegativeInteger("--skipped");
+  kind = parseKind();
+  itemsFound = parseNonNegativeInteger("--found");
+  itemsSkipped = parseNonNegativeInteger("--skipped");
+  itemSlugs = parseItemSlugs();
   prUrl = parsePrUrl();
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
@@ -92,9 +125,15 @@ const res = await fetch(endpoint, {
     "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    connectorsFound,
-    connectorsSkipped,
+    kind,
+    itemsFound,
+    itemsSkipped,
+    // Back-compat while the server/API migrates across deployments.
+    connectorsFound: itemsFound,
+    connectorsSkipped: itemsSkipped,
     prUrl,
+    itemSlugs,
+    items: itemSlugs,
   }),
 });
 
@@ -113,5 +152,5 @@ if (!res.ok) {
 
 const run = json?.run;
 console.log(
-  `loop run history: recorded${run?.id ? ` id=${run.id}` : ""}${run?.ran_at ? ` ran_at=${run.ran_at}` : ""}`,
+  `loop run history: recorded kind=${run?.kind ?? kind} items=${(run?.item_slugs ?? itemSlugs).join(",") || "-"}${run?.id ? ` id=${run.id}` : ""}${run?.ran_at ? ` ran_at=${run.ran_at}` : ""}`,
 );

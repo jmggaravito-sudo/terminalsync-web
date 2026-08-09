@@ -89,6 +89,11 @@ export function Footer({ dict }: { dict: Dict }) {
         { key: "privacy", label: dict.footer.links.privacy, href: `/${lang}/legal/privacy` },
         { key: "terms", label: dict.footer.links.terms, href: `/${lang}/legal/terms` },
         { key: "security", label: dict.footer.links.security, href: `/${lang}/legal/security` },
+        {
+          key: "dataDeletion",
+          label: dict.footer.links.dataDeletion,
+          href: `/${lang}/legal/data-deletion`,
+        },
       ],
     },
   ];

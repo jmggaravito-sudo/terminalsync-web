@@ -42,12 +42,26 @@ export interface CallbackQueryParams {
   code?: string;
   state?: string;
   scope?: string;
+  error?: string;
+  error_description?: string;
+}
+
+export interface BuildDeepLinkOptions {
+  /**
+   * Native deep-link path. Defaults to the historical Google OAuth callback.
+   *
+   * Example: "/oauth/meta/callback" becomes
+   * "terminalsync://oauth/meta/callback?...".
+   */
+  nativePath?: string;
 }
 
 /**
  * Build the `<scheme>://oauth/callback?...` deep link for the native app
- * to pick up. Returns `null` when either `code` or `state` is missing —
- * the caller renders the malformed-params card instead of dispatching.
+ * to pick up. Success requires `code + state`; provider failure requires
+ * `error + state`. Returns `null` when `state` is missing, or when neither
+ * success nor error payload is present — the caller renders the malformed
+ * params card instead of dispatching.
  *
  * Production keeps the historical contract: `terminalsync://oauth/callback`,
  * with `state` percent-encoded by URLSearchParams. The "leave `:` literal"
@@ -55,8 +69,14 @@ export interface CallbackQueryParams {
  * the same code path covers both schemes so a future-prod state with `:`
  * inside would round-trip safely too.
  */
-export function buildDeepLink(params: CallbackQueryParams): string | null {
-  if (!params.code || !params.state) return null;
+export function buildDeepLink(
+  params: CallbackQueryParams,
+  options: BuildDeepLinkOptions = {},
+): string | null {
+  if (!params.state) return null;
+  const hasSuccessPayload = !!params.code;
+  const hasErrorPayload = !!params.error;
+  if (!hasSuccessPayload && !hasErrorPayload) return null;
 
   const isLab =
     params.state.startsWith(LAB_STATE_PREFIX) ||
@@ -65,13 +85,17 @@ export function buildDeepLink(params: CallbackQueryParams): string | null {
 
   const stateLiteral = encodeStateWithLiteralColon(params.state);
 
-  const parts: string[] = [
-    `code=${encodeURIComponent(params.code)}`,
-    `state=${stateLiteral}`,
-  ];
+  const parts: string[] = [];
+  if (params.code) parts.push(`code=${encodeURIComponent(params.code)}`);
+  if (params.error) parts.push(`error=${encodeURIComponent(params.error)}`);
+  if (params.error_description) {
+    parts.push(`error_description=${encodeURIComponent(params.error_description)}`);
+  }
+  parts.push(`state=${stateLiteral}`);
   if (params.scope) parts.push(`scope=${encodeURIComponent(params.scope)}`);
 
-  return `${scheme}://oauth/callback?${parts.join("&")}`;
+  const nativePath = normalizeNativePath(options.nativePath ?? "/oauth/callback");
+  return `${scheme}://${nativePath}?${parts.join("&")}`;
 }
 
 /**
@@ -85,4 +109,8 @@ export function buildDeepLink(params: CallbackQueryParams): string | null {
  */
 export function encodeStateWithLiteralColon(state: string): string {
   return encodeURIComponent(state).replace(/%3A/g, ":");
+}
+
+function normalizeNativePath(path: string): string {
+  return path.replace(/^\/+/, "").replace(/\?.*$/, "");
 }

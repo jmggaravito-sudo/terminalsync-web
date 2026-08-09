@@ -46,7 +46,29 @@ describe("buildDeepLink — scheme selection", () => {
     expect(url!).toMatch(/^terminalsync-lab:\/\/oauth\/callback\?/);
   });
 
-  it("missing code returns null (caller renders malformed-params card)", () => {
+
+  it("Lab error callback routes back to the Lab app with error + state", () => {
+    const url = buildDeepLink({
+      error: "access_denied",
+      error_description: "The user denied access",
+      state: "tslab:abc123",
+    });
+
+    expect(url).toBe(
+      "terminalsync-lab://oauth/callback?error=access_denied&error_description=The%20user%20denied%20access&state=tslab:abc123",
+    );
+  });
+
+  it("prod error callback routes back to the prod app", () => {
+    const url = buildDeepLink({
+      error: "server_error",
+      state: "abc123",
+    });
+
+    expect(url).toBe("terminalsync://oauth/callback?error=server_error&state=abc123");
+  });
+
+  it("missing success/error payload returns null (caller renders malformed-params card)", () => {
     expect(buildDeepLink({ state: "tslab:abc" })).toBeNull();
   });
 
@@ -117,6 +139,22 @@ describe("buildDeepLink — code and scope encoding", () => {
   it("scope is omitted from the URL when not provided", () => {
     const url = buildDeepLink({ code: "c", state: "abc" });
     expect(url!).not.toContain("scope=");
+  });
+
+  it("can target the native Meta OAuth callback path", () => {
+    const url = buildDeepLink(
+      { code: "AQ123", state: "abc" },
+      { nativePath: "/oauth/meta/callback" },
+    );
+    expect(url).toBe("terminalsync://oauth/meta/callback?code=AQ123&state=abc");
+  });
+
+  it("Meta callback preserves Lab scheme selection", () => {
+    const url = buildDeepLink(
+      { code: "AQ123", state: "tslab:abc" },
+      { nativePath: "/oauth/meta/callback" },
+    );
+    expect(url).toBe("terminalsync-lab://oauth/meta/callback?code=AQ123&state=tslab:abc");
   });
 });
 

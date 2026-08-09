@@ -19,6 +19,25 @@ import type { NextConfig } from "next";
 //     render. 'none' would block our own iframes too.
 // HSTS preload is on (already shipped in production but set explicitly so
 // it doesn't drop if Vercel changes defaults).
+const geoCorsHeaders = [
+  {
+    key: "Access-Control-Allow-Origin",
+    value: "*",
+  },
+  {
+    key: "Access-Control-Allow-Methods",
+    value: "GET, OPTIONS",
+  },
+  {
+    key: "Access-Control-Allow-Headers",
+    value: "Content-Type, Authorization",
+  },
+  {
+    key: "Access-Control-Max-Age",
+    value: "86400",
+  },
+];
+
 const securityHeaders = [
   {
     key: "Content-Security-Policy",
@@ -67,6 +86,10 @@ const config: NextConfig = {
   },
   async headers() {
     return [
+      {
+        source: "/api/geo",
+        headers: geoCorsHeaders,
+      },
       {
         source: "/:path*",
         headers: securityHeaders,

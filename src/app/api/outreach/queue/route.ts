@@ -16,8 +16,22 @@ const SELECT_COLS = [
   "track",
   "language",
   "source_keyword",
+  "source_url",
   "profile_url",
+  "description",
+  "target_audience",
+  "classification_score",
+  "classification_reason",
+  "email",
+  "instagram_handle",
+  "twitter_handle",
+  "linkedin_url",
+  "tiktok_handle",
+  "bio_link_url",
   "discovered_at",
+  "status",
+  "review_notes",
+  "reviewed_at",
   "op_status",
   "op_hook",
   "op_notes",
@@ -36,6 +50,8 @@ export async function GET(req: Request) {
 
   const url = new URL(req.url);
   const status = url.searchParams.get("status") ?? "pendiente";
+  const rawLimit = Number(url.searchParams.get("limit") ?? "50");
+  const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(Math.trunc(rawLimit), 1), 100) : 50;
   if (!isOpStatus(status)) {
     return NextResponse.json(
       { error: `invalid status, expected one of ${OP_STATUSES.join(", ")}` },
@@ -48,7 +64,8 @@ export async function GET(req: Request) {
       .from("agency_influencers")
       .select(SELECT_COLS)
       .eq("op_status", status)
-      .order("subscribers", { ascending: false, nullsFirst: false }),
+      .order("subscribers", { ascending: false, nullsFirst: false })
+      .limit(limit),
     ...OP_STATUSES.map((s) =>
       sb.from("agency_influencers").select("id", { count: "exact", head: true }).eq("op_status", s)
     ),

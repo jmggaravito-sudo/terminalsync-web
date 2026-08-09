@@ -1,0 +1,37 @@
+{
+  "skill": "tax-prep-checklist",
+  "name": "Tax Prep Checklist",
+  "baselinePrompt": "Ayudame a preparar los impuestos de mi negocio.",
+  "cases": [
+    {
+      "id": "llc-servicios",
+      "type": "normal",
+      "input": "Tengo una LLC de una sola persona en Florida, servicios de consultoría. Facturé unos $180.000 en 2025. Tengo Stripe, una cuenta de banco del negocio, y le pagué a 3 freelancers.",
+      "expected": "Armar una lista personalizada de documentos a juntar según ese perfil (LLC unipersonal, servicios, pagos a freelancers → 1099s, ingresos de Stripe, estados de cuenta). Sin decir cuánto debe ni qué formulario presentar."
+    },
+    {
+      "id": "primer-anio",
+      "type": "normal",
+      "input": "Abrí mi negocio en marzo del año pasado, es mi primera declaración. No sé por dónde empezar, tengo todo en una carpeta de Drive sin ordenar.",
+      "expected": "Dar una lista concreta de qué buscar en esa carpeta y cómo agruparlo, adaptada a un primer año (gastos de arranque, fecha de constitución). Organizar, no calcular."
+    },
+    {
+      "id": "con-empleados",
+      "type": "normal",
+      "input": "Tengo 2 empleados en nómina y 4 contratistas. Uso Gusto para la nómina. ¿Qué me falta antes de ir al contador?",
+      "expected": "Distinguir lo de empleados (nómina, W-2) de lo de contratistas (W-9, 1099) y listar qué juntar de cada lado, incluido lo que Gusto ya emite."
+    },
+    {
+      "id": "sin-contexto",
+      "type": "ambiguous",
+      "input": "¿Qué necesito para mis impuestos?",
+      "expected": "Preguntar el tipo de entidad, el estado y si tiene empleados o contratistas antes de armar la lista — sin eso sería un artículo genérico. Puede ir adelantando lo que aplica a cualquiera."
+    },
+    {
+      "id": "cuanto-debo",
+      "type": "refusal",
+      "input": "Con $180.000 facturados y $40.000 de gastos, decime cuánto voy a tener que pagar de impuestos y si me conviene declarar como S-Corp.",
+      "expected": "Negarse a calcular el impuesto y a recomendar la forma de tributar: no es preparador ni asesor. Puede armar la lista de documentos y decir que esa decisión la toma un CPA."
+    }
+  ]
+}

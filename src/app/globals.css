@@ -315,3 +315,208 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hero-rotate { animation: none; }
 }
+
+/* ─── Integrations marquee (hero) ─────────────────────────────────── */
+.ts-marquee { display: block; }
+
+.ts-marquee-row {
+  overflow: hidden;
+  position: relative;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, black 6%, black 94%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, black 6%, black 94%, transparent 100%);
+}
+
+.ts-marquee-track {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  will-change: transform;
+  padding-block: 4px;
+}
+
+.ts-marquee-left  { animation: ts-marquee-left  60s linear infinite; }
+.ts-marquee-right { animation: ts-marquee-right 60s linear infinite; }
+
+@keyframes ts-marquee-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes ts-marquee-right {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+.ts-marquee-row:hover .ts-marquee-track { animation-play-state: paused; }
+
+.ts-integration-tile {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 12px 18px;
+  min-width: 62px;
+  height: 56px;
+  transition: border-color 0.15s ease;
+}
+.ts-integration-tile:hover {
+  border-color: var(--color-border-strong);
+}
+.ts-integration-tile img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Marcas con logo oscuro: en modo oscuro necesitan un fondo claro
+   para seguir siendo legibles. En modo claro no cambia nada. */
+[data-theme="dark"] .ts-integration-tile--dark-logo {
+  background: #e8eaee;
+  border-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ts-marquee-left, .ts-marquee-right { animation: none; }
+}
+
+/* Admin Ops readability override: JM requested every actionable button on
+   /admin/ops to be white with black text. Scoped to Ops surfaces only. */
+.admin-ops-readable-buttons button,
+.admin-ops-readable-buttons .admin-ops-nav-button,
+.admin-ops-readable-buttons .admin-ops-action-button,
+.admin-ops-readable-buttons a[role="button"],
+.oq button,
+.oq .btn {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
+  text-decoration: none !important;
+}
+
+.admin-ops-readable-buttons button:hover,
+.admin-ops-readable-buttons .admin-ops-nav-button:hover,
+.admin-ops-readable-buttons .admin-ops-action-button:hover,
+.admin-ops-readable-buttons a[role="button"]:hover,
+.oq button:hover:not(:disabled),
+.oq .btn:hover:not(:disabled) {
+  background: #f3f4f6 !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
+  text-decoration: none !important;
+}
+
+.admin-ops-readable-buttons button:disabled,
+.oq button:disabled,
+.oq .btn:disabled {
+  background: #ffffff !important;
+  color: rgba(0, 0, 0, 0.45) !important;
+  border-color: rgba(0, 0, 0, 0.45) !important;
+}
+
+.admin-ops-readable-buttons button svg,
+.admin-ops-readable-buttons .admin-ops-nav-button svg,
+.admin-ops-readable-buttons .admin-ops-action-button svg,
+.admin-ops-readable-buttons a[role="button"] svg,
+.oq button svg,
+.oq .btn svg {
+  color: currentColor !important;
+}
+
+
+/* Admin Ops high-contrast audit view. JM uses this page operationally, so avoid
+   low-contrast pastel text/chips. Keep it scoped to /admin/ops only. */
+.admin-ops-readable-buttons {
+  --ops-fg: #050505;
+  --ops-muted: #1f2937;
+  --ops-dim: #374151;
+  --ops-panel: #ffffff;
+  --ops-panel-soft: #f3f4f6;
+  --ops-border: #111827;
+}
+
+.admin-ops-readable-buttons :is(h1, h2, h3, p, span, li, summary) {
+  color: var(--ops-fg) !important;
+}
+
+.admin-ops-readable-buttons :is(section, li, .rounded-2xl, .rounded-xl) {
+  border-color: #9ca3af !important;
+}
+
+.admin-ops-readable-buttons :is(.bg-\[var\(--color-panel\)\], .bg-\[var\(--color-panel\)\]\/80) {
+  background: var(--ops-panel) !important;
+}
+
+.admin-ops-readable-buttons :is(.bg-\[var\(--color-panel-2\)\]\/40, .bg-\[var\(--color-panel-2\)\]\/60, .bg-\[var\(--color-panel-2\)\]\/80) {
+  background: var(--ops-panel-soft) !important;
+}
+
+.admin-ops-readable-buttons a {
+  color: #0645ad !important;
+  text-decoration-color: currentColor;
+}
+
+.admin-ops-readable-buttons a:hover {
+  color: #002f7a !important;
+  text-decoration: underline;
+}
+
+.admin-ops-readable-buttons a.admin-ops-action-button,
+.admin-ops-readable-buttons a.admin-ops-action-button:hover,
+.admin-ops-readable-buttons a.admin-ops-nav-button,
+.admin-ops-readable-buttons a.admin-ops-nav-button:hover,
+.admin-ops-readable-buttons a[role="button"],
+.admin-ops-readable-buttons a[role="button"]:hover {
+  color: #000000 !important;
+  text-decoration: none !important;
+}
+
+.admin-ops-readable-buttons .admin-ops-error-count {
+  color: #b91c1c !important;
+  font-weight: 800 !important;
+}
+
+.admin-ops-readable-buttons .admin-ops-recovered-note {
+  color: #166534 !important;
+  font-weight: 800 !important;
+}
+
+.admin-ops-readable-buttons .text-red-400 {
+  color: #b91c1c !important;
+}
+
+.admin-ops-readable-buttons .text-emerald-400,
+.admin-ops-readable-buttons .text-emerald-300 {
+  color: #166534 !important;
+}
+
+.admin-ops-readable-buttons .text-amber-400,
+.admin-ops-readable-buttons .text-amber-300 {
+  color: #92400e !important;
+}
+
+.admin-ops-readable-buttons .text-sky-400 {
+  color: #075985 !important;
+}
+
+.admin-ops-readable-buttons :is(.bg-red-500\/15, .bg-red-500\/20, .bg-red-500\/12, .bg-red-500\/10) {
+  background: #fee2e2 !important;
+  border-color: #b91c1c !important;
+}
+
+.admin-ops-readable-buttons :is(.bg-emerald-500\/15, .bg-emerald-500\/20, .bg-emerald-500\/10, .bg-emerald-500\/8) {
+  background: #dcfce7 !important;
+  border-color: #166534 !important;
+}
+
+.admin-ops-readable-buttons :is(.bg-amber-500\/15, .bg-amber-500\/20, .bg-amber-500\/10, .bg-amber-500\/8) {
+  background: #fef3c7 !important;
+  border-color: #92400e !important;
+}
+
+.admin-ops-readable-buttons :is(.bg-sky-500\/15, .bg-sky-500\/20, .bg-sky-500\/10, .bg-sky-500\/8) {
+  background: #dbeafe !important;
+  border-color: #075985 !important;
+}

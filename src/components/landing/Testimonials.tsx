@@ -40,14 +40,6 @@ const COPY: Record<
           "Lo que más me sorprendió fue dejar de pensar en chats. Ahora tengo un espacio para ventas, otro para operaciones y otro para contabilidad. Se siente como tener departamentos completos trabajando con IA.",
       },
       {
-        company: "Kelaya Brokers",
-        author: "Christian Reber",
-        initials: "CR",
-        quote:
-          "Durante años fui yo haciendo ventas, propuestas, marketing y soporte. Con TerminalSync siento que por primera vez tengo un equipo digital que me ayuda a sacar trabajo adelante sin contratar más personas.",
-        highlighted: true,
-      },
-      {
         company: "Bench Accounting",
         author: "Markus Villig",
         initials: "MV",
@@ -62,18 +54,26 @@ const COPY: Record<
           "Los avisos importantes llegan directamente a Telegram. Cuando termina un análisis, una propuesta o un trabajo largo, simplemente recibo la notificación y reviso el resultado desde el celular.",
       },
       {
-        company: "Peak Design",
-        author: "Mathias Pollmann",
-        initials: "MP",
-        quote:
-          "Lo mejor no es tener varias IAs. Lo mejor es que mi empresa ahora recuerda todo. Cada proyecto conserva su historia, sus archivos y sus decisiones. Se siente como contratar un equipo que nunca olvida.",
-      },
-      {
         company: "OVHcloud",
         author: "Adrien Nussenbaum",
         initials: "AN",
         quote:
           "Poder cambiar entre Claude, Codex y Gemini sin perder el contexto nos ahorra muchísimo tiempo. Ya no tenemos que reconstruir el proyecto cada vez que cambiamos de modelo.",
+      },
+      {
+        company: "Emprendedor independiente",
+        author: "Christian Reber",
+        initials: "CR",
+        quote:
+          "Durante años fui yo haciendo ventas, propuestas, marketing y soporte. Con TerminalSync siento que por primera vez tengo un equipo digital que me ayuda a sacar trabajo adelante sin contratar más personas.",
+        highlighted: true,
+      },
+      {
+        company: "Peak Design",
+        author: "Mathias Pollmann",
+        initials: "MP",
+        quote:
+          "Lo mejor no es tener varias IAs. Lo mejor es que mi empresa ahora recuerda todo. Cada proyecto conserva su historia, sus archivos y sus decisiones. Se siente como contratar un equipo que nunca olvida.",
       },
       {
         company: "Intrepid Travel",
@@ -106,14 +106,6 @@ const COPY: Record<
           "What surprised me most was letting go of thinking in chats. Now I have one space for sales, another for operations and another for accounting. It feels like having entire departments working with AI.",
       },
       {
-        company: "Kelaya Brokers",
-        author: "Christian Reber",
-        initials: "CR",
-        quote:
-          "For years it was just me doing sales, proposals, marketing and support. With TerminalSync I feel that, for the first time, I have a digital team that helps me get work done without hiring more people.",
-        highlighted: true,
-      },
-      {
         company: "Bench Accounting",
         author: "Markus Villig",
         initials: "MV",
@@ -128,18 +120,26 @@ const COPY: Record<
           "Important alerts arrive straight to Telegram. When an analysis, a proposal or a long job finishes, I simply get the notification and review the result from my phone.",
       },
       {
-        company: "Peak Design",
-        author: "Mathias Pollmann",
-        initials: "MP",
-        quote:
-          "The best part isn't having several AIs. The best part is that my company now remembers everything. Each project keeps its history, its files and its decisions. It feels like hiring a team that never forgets.",
-      },
-      {
         company: "OVHcloud",
         author: "Adrien Nussenbaum",
         initials: "AN",
         quote:
           "Being able to switch between Claude, Codex and Gemini without losing context saves us a huge amount of time. We no longer have to rebuild the project every time we change models.",
+      },
+      {
+        company: "Solo entrepreneur",
+        author: "Christian Reber",
+        initials: "CR",
+        quote:
+          "For years it was just me doing sales, proposals, marketing and support. With TerminalSync I feel that, for the first time, I have a digital team that helps me get work done without hiring more people.",
+        highlighted: true,
+      },
+      {
+        company: "Peak Design",
+        author: "Mathias Pollmann",
+        initials: "MP",
+        quote:
+          "The best part isn't having several AIs. The best part is that my company now remembers everything. Each project keeps its history, its files and its decisions. It feels like hiring a team that never forgets.",
       },
       {
         company: "Intrepid Travel",
@@ -176,8 +176,9 @@ export function Testimonials({ lang }: { lang: Locale }) {
         </p>
       </div>
 
-      {/* Masonry wall — CSS columns, break-inside-avoid per card */}
-      <div className="columns-1 sm:columns-2 lg:columns-3 gap-[18px]">
+      {/* Masonry wall — CSS columns, break-inside-avoid per card.
+          2 columnas por spec (antes 3 en desktop). */}
+      <div className="columns-1 sm:columns-2 gap-[18px]">
         {t.items.map((card) => (
           <article
             key={card.author}

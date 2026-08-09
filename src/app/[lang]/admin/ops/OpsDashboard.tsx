@@ -27,6 +27,7 @@ interface OpsContact {
 }
 
 interface OpsResultItem {
+  id?: string;
   title: string;
   subtitle?: string;
   url?: string;
@@ -58,6 +59,7 @@ interface OpsWorkflow {
    *  the conversation itself. */
   resultUrl: string | null;
   resultLabel: string | null;
+  operatorActions: { label: string; href?: string; note?: string }[];
   updatedAt: string | null;
   todayCount: number;
   todaySuccess: number;
@@ -113,6 +115,24 @@ export function OpsDashboard({ lang }: { lang: string }) {
    *  next page reload — the server is the source of truth, the rename
    *  endpoint just confirms the write. */
   const [renames, setRenames] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("tab") === "repair") {
+      setSelectedProject("_repair");
+    }
+  }, []);
+
+  function selectProject(next: string) {
+    setSelectedProject(next);
+    const url = new URL(window.location.href);
+    if (next === "_repair") {
+      url.searchParams.set("tab", "repair");
+    } else {
+      url.searchParams.delete("tab");
+    }
+    window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+  }
 
   useEffect(() => {
     fetch("/api/admin/ops")
@@ -200,6 +220,15 @@ export function OpsDashboard({ lang }: { lang: string }) {
         />
       </section>
 
+      <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)]/70 p-4 text-[13px] leading-relaxed text-[var(--color-fg-muted)]">
+        <strong className="text-[var(--color-fg-strong)]">
+          {isEs ? "Vista limpia:" : "Clean view:"}
+        </strong>{" "}
+        {isEs
+          ? "mostrando solo los flujos que sirven para TerminalSync ahora: capturar influencers, enriquecerlos, preparar outreach, replies, radar de oportunidades, bienvenida, feedback y alertas. Los flujos viejos, tests y proyectos externos siguen en n8n, pero ya no ensucian esta landing."
+          : "showing only the workflows that matter for TerminalSync now: influencer capture, enrichment, outreach prep, replies, opportunity radar, welcome, feedback, and alerts. Old flows, tests, and external projects still exist in n8n but no longer clutter this landing."}
+      </div>
+
       {/* Project menu — horizontal tabs. TerminalSync first, Auto-
           Repair is its own tab at the end so JM can jump straight to
           pending Claude-proposed fixes. */}
@@ -211,7 +240,7 @@ export function OpsDashboard({ lang }: { lang: string }) {
           return (
             <button
               key={proj}
-              onClick={() => setSelectedProject(proj)}
+              onClick={() => selectProject(proj)}
               className={`group inline-flex items-center gap-2 rounded-t-xl rounded-b-none border border-b-0 px-4 py-2.5 text-[13px] font-semibold transition-all ${
                 isActive
                   ? "bg-[var(--color-panel)] border-[var(--color-border)] text-[var(--color-fg-strong)] -mb-px relative z-10"
@@ -240,7 +269,7 @@ export function OpsDashboard({ lang }: { lang: string }) {
           );
         })}
         <button
-          onClick={() => setSelectedProject("_repair")}
+          onClick={() => selectProject("_repair")}
           className={`group inline-flex items-center gap-2 rounded-t-xl rounded-b-none border border-b-0 px-4 py-2.5 text-[13px] font-semibold transition-all ${
             selectedProject === "_repair"
               ? "bg-[var(--color-panel)] border-[var(--color-border)] text-[var(--color-fg-strong)] -mb-px relative z-10"
@@ -399,19 +428,27 @@ function WorkflowCard({
 
   const editorUrl = `${n8nUrl}/workflow/${wf.id}`;
   // Internal admin routes need the [lang] prefix; absolute URLs (Sheets,
-  // GHL, etc.) pass through untouched.
-  const resultHref = wf.resultUrl
-    ? wf.resultUrl.startsWith("/")
-      ? `/${lang}${wf.resultUrl}`
-      : wf.resultUrl
-    : null;
+  // GHL, etc.) pass through untouched. Outreach is auth-gated, so send
+  // JM through login with a `next` deep link instead of landing on a
+  // confusing "Verificando sesión…" screen.
+  const makeHref = (href: string) => {
+    if (href === "/admin/ops/outreach") {
+      const next = `/${lang}${href}`;
+      return `/${lang}/login?next=${encodeURIComponent(next)}`;
+    }
+    return href.startsWith("/") ? `/${lang}${href}` : href;
+  };
+  const resultHref = wf.resultUrl ? makeHref(wf.resultUrl) : null;
   const resultIsExternal = !!wf.resultUrl && !wf.resultUrl.startsWith("/");
 
-  // Decide overall mood: red if errors today, amber if paused, green if active.
+  // Decide overall mood from the latest run, not from any older error in
+  // the last 24h. If a workflow failed earlier but recovered later, the card
+  // should read as working and only mention the old error in the run history.
+  const latestFailed = wf.lastExec?.status === "error";
   const mood: "ok" | "warn" | "err" | "off" =
     !wf.active
       ? "off"
-      : wf.todayError > 0
+      : latestFailed
       ? "err"
       : wf.todayCount > 0
       ? "ok"
@@ -528,7 +565,12 @@ function WorkflowCard({
                   {wf.todayError > 0 && (
                     <>
                       {" "}
-                      · <span className="text-red-400">✗ {wf.todayError}</span>
+                      · <span className="admin-ops-error-count text-red-400">✗ {wf.todayError}</span>
+                      {!latestFailed && (
+                        <span className="admin-ops-recovered-note ml-1">
+                          {isEs ? "(recuperado)" : "(recovered)"}
+                        </span>
+                      )}
                     </>
                   )}
                 </>
@@ -551,10 +593,38 @@ function WorkflowCard({
               failed, regardless of compact mode, so JM knows WHY a card
               is red without clicking into n8n. */}
           {wf.lastError && <ErrorBanner err={wf.lastError} isEs={isEs} />}
+          {!compact && wf.operatorActions.length > 0 && (
+            <OperatorActionsPanel
+              actions={wf.operatorActions}
+              lang={lang}
+              isEs={isEs}
+            />
+          )}
           {/* Live business results — only on the detailed (TerminalSync)
               view. Non-TS projects collapse to a health-only card. */}
+          {!compact && isInfluencerCrmWorkflow(wf.id) && (
+            <InfluencerCrmBlueprint isEs={isEs} />
+          )}
+          {!compact && isReplyTrackerWorkflow(wf.id) && (
+            <ReplyTrackerBlueprint isEs={isEs} />
+          )}
+          {!compact && isSenderWorkflow(wf.id) && (
+            <SenderBlueprint isEs={isEs} />
+          )}
+          {!compact && isNoDevProspectsWorkflow(wf.id) && (
+            <NoDevProspectsBlueprint isEs={isEs} />
+          )}
+          {!compact && isTrendSignalsWorkflow(wf.id) && (
+            <TrendSignalsBlueprint isEs={isEs} />
+          )}
+          {!compact && isMarketplaceDiscoveryWorkflow(wf.id) && (
+            <MarketplaceDiscoveryBlueprint isEs={isEs} />
+          )}
+          {!compact && isBundleCuratorWorkflow(wf.id) && (
+            <BundleCuratorBlueprint isEs={isEs} />
+          )}
           {!compact && wf.results && (
-            <ResultsPanel results={wf.results} isEs={isEs} />
+            <ResultsPanel results={wf.results} workflowId={wf.id} isEs={isEs} />
           )}
           {!compact && wf.recent.length > 0 && (
             <RecentRunsPanel runs={wf.recent} n8nUrl={n8nUrl} isEs={isEs} />
@@ -567,7 +637,7 @@ function WorkflowCard({
               href={resultHref}
               target={resultIsExternal ? "_blank" : undefined}
               rel={resultIsExternal ? "noopener noreferrer" : undefined}
-              className="inline-flex items-center gap-1 rounded-lg bg-[var(--color-accent)]/15 hover:bg-[var(--color-accent)]/25 border border-[var(--color-accent)]/40 px-2.5 py-1.5 text-[11px] font-medium text-[var(--color-accent)] transition-colors"
+              className="admin-ops-action-button inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition-colors"
               title={isEs ? "Ver resultados acumulados" : "View accumulated results"}
             >
               <ExternalLink size={11} />
@@ -578,7 +648,7 @@ function WorkflowCard({
             href={editorUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel-2)]/60 hover:bg-[var(--color-panel-2)] px-2.5 py-1.5 text-[11px] font-medium text-[var(--color-fg-muted)] transition-colors"
+            className="admin-ops-action-button inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition-colors"
             title={isEs ? "Abrir en n8n" : "Open in n8n"}
           >
             <ExternalLink size={11} />
@@ -633,6 +703,76 @@ function ErrorBanner({
   );
 }
 
+function OperatorActionsPanel({
+  actions,
+  lang,
+  isEs,
+}: {
+  actions: { label: string; href?: string; note?: string }[];
+  lang: string;
+  isEs: boolean;
+}) {
+  const toHref = (href: string) => {
+    if (href === "/admin/ops/outreach") {
+      const next = `/${lang}${href}`;
+      return `/${lang}/login?next=${encodeURIComponent(next)}`;
+    }
+    return href.startsWith("/") ? `/${lang}${href}` : href;
+  };
+
+  return (
+    <div className="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel)] p-3">
+      <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-[var(--color-fg-muted)]">
+        {isEs ? "Acciones manuales / para decidir" : "Manual actions / decisions"}
+      </p>
+      <div className="mt-2 grid gap-2 md:grid-cols-2">
+        {actions.map((action, idx) => {
+          const content = (
+            <>
+              <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-black text-[10px] font-bold text-white">
+                {idx + 1}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[12px] font-semibold text-[var(--color-fg-strong)]">
+                  {action.label}
+                </span>
+                {action.note && (
+                  <span className="mt-0.5 block text-[11px] leading-snug text-[var(--color-fg-muted)]">
+                    {action.note}
+                  </span>
+                )}
+              </span>
+              {action.href && (
+                <ExternalLink
+                  size={12}
+                  className="ml-auto shrink-0 text-[var(--color-fg-muted)]"
+                />
+              )}
+            </>
+          );
+
+          const className =
+            "flex min-h-[52px] items-start gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-2 text-left transition-colors hover:border-[var(--color-fg-muted)]";
+
+          return action.href ? (
+            <a
+              key={`${action.label}-${idx}`}
+              href={toHref(action.href)}
+              className={className}
+            >
+              {content}
+            </a>
+          ) : (
+            <div key={`${action.label}-${idx}`} className={className}>
+              {content}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /**
  * Inline business-result snapshot for workflows that write to a known
  * Supabase table. Shows totals (24h/7d/all-time) + the 5 most recent
@@ -642,12 +782,22 @@ function ErrorBanner({
  */
 function ResultsPanel({
   results,
+  workflowId,
   isEs,
 }: {
   results: OpsResults;
+  workflowId: string;
   isEs: boolean;
 }) {
+  const lang = isEs ? "es" : "en";
+  const outreachLoginHref = (leadId?: string) => {
+    const next = `/${lang}/admin/ops/outreach${leadId ? `?lead=${encodeURIComponent(leadId)}` : ""}`;
+    return `/${lang}/login?next=${encodeURIComponent(next)}`;
+  };
   const hasItems = results.items.length > 0;
+  const contactCounts = countVisibleContacts(results.items);
+  const contactTotal = Object.values(contactCounts).reduce((sum, n) => sum + n, 0);
+  const isInfluencerOutreach = isInfluencerCrmWorkflow(workflowId);
   return (
     <div className="mt-3 rounded-lg border border-[var(--color-accent)]/25 bg-[var(--color-accent)]/5 p-3">
       <header className="flex items-baseline justify-between gap-3 flex-wrap">
@@ -671,6 +821,36 @@ function ResultsPanel({
           </span>
         </div>
       </header>
+
+      {isInfluencerOutreach && hasItems && (
+        <div className="mt-2.5 space-y-2 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-2.5">
+          <div>
+            <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-emerald-300">
+              {isEs ? "Contactos listos para outreach" : "Contacts ready for outreach"}
+            </p>
+            <div className="mt-1.5 flex flex-wrap gap-1.5 text-[11px] font-mono">
+              <ContactCount label="Email" value={contactCounts.email ?? 0} />
+              <ContactCount label="IG" value={contactCounts.instagram ?? 0} />
+              <ContactCount label="X" value={contactCounts.twitter ?? 0} />
+              <ContactCount label="LinkedIn" value={contactCounts.linkedin ?? 0} />
+              <ContactCount label="TikTok" value={contactCounts.tiktok ?? 0} />
+              <ContactCount label="Bio link" value={contactCounts.biolink ?? 0} />
+            </div>
+            <p className="mt-1.5 text-[11.5px] text-[var(--color-fg-muted)]">
+              {isEs
+                ? `Mostrando ${results.items.length} leads accionables de ${results.total.toLocaleString("es-CO")}. Estrategia: DM-first; los emails son una parte, no todo el outreach.`
+                : `Showing ${results.items.length} actionable leads out of ${results.total.toLocaleString("en-US")}. Strategy: DM-first; emails are only one part of outreach.`}
+              {contactTotal > 0 ? ` ${isEs ? "Contactos visibles:" : "Visible contacts:"} ${contactTotal}.` : ""}
+            </p>
+          </div>
+          <div className="rounded-md border border-amber-500/35 bg-amber-500/10 px-2.5 py-2 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">
+            <strong className="text-amber-300">{isEs ? "Importante:" : "Important:"}</strong>{" "}
+            {isEs
+              ? "esta tarjeta es la base de seguimiento. El envío vive en el Sender pausado; las respuestas deben entrar por el Tracker de replies hacia GHL + Telegram + IA."
+              : "this card is the tracking base. Sending lives in the paused Sender; replies should flow through the Replies tracker into GHL + Telegram + AI."}
+          </div>
+        </div>
+      )}
 
       {hasItems ? (
         <ul className="mt-2.5 space-y-1.5">
@@ -703,6 +883,29 @@ function ResultsPanel({
                   {item.contacts && item.contacts.length > 0 && (
                     <ContactChips contacts={item.contacts} />
                   )}
+                  {isInfluencerOutreach && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      <a
+                        href={outreachLoginHref(item.id)}
+                        role="button"
+                        className="admin-ops-action-button inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-semibold hover:opacity-85"
+                        title={isEs ? "Abrir cola para aprobar/editar este lead" : "Open queue to approve/edit this lead"}
+                      >
+                        {item.badge === "Aprobado" ? (isEs ? "Editar mensaje" : "Edit message") : (isEs ? "Aprobar lead" : "Approve lead")}
+                      </a>
+                      {item.url && (
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          role="button"
+                          className="admin-ops-action-button inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-semibold hover:border-[var(--color-fg-muted)]"
+                        >
+                          {isEs ? "Abrir perfil" : "Open profile"}
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="shrink-0 flex items-center gap-1.5">
                   {item.badge && (
@@ -729,6 +932,271 @@ function ResultsPanel({
         </p>
       )}
     </div>
+  );
+}
+
+function isInfluencerCrmWorkflow(workflowId: string) {
+  return workflowId === "7ooGFm2XvT8SLdde";
+}
+
+function isReplyTrackerWorkflow(workflowId: string) {
+  return workflowId === "jINNqL72z9yNcKx6";
+}
+
+function isSenderWorkflow(workflowId: string) {
+  return workflowId === "21DqwyeruJlFNqgW";
+}
+
+function isNoDevProspectsWorkflow(workflowId: string) {
+  return workflowId === "lmbQv6R17dqY8pvO";
+}
+
+function isTrendSignalsWorkflow(workflowId: string) {
+  return workflowId === "2gbpZFPPlYMo6k3f";
+}
+
+function isMarketplaceDiscoveryWorkflow(workflowId: string) {
+  return workflowId === "6LuNDI8Hs90WyiUO" || workflowId === "kOrTycM21z6YxsmG";
+}
+
+function isBundleCuratorWorkflow(workflowId: string) {
+  return workflowId === "KpqQvgr6H1C2O4Oa";
+}
+
+function MarketplaceDiscoveryBlueprint({ isEs }: { isEs: boolean }) {
+  const rows = isEs
+    ? [
+        ["Para qué servía", "Descubrir herramientas/conectores para alimentar el catálogo/marketplace."],
+        ["Por qué no ahora", "Tu foco cambió a empresarios/agencias; esto trae productos técnicos, no compradores."],
+        ["Decisión", "Mantener archivado. No usarlo para outreach ni seguimiento."],
+      ]
+    : [
+        ["What it did", "Discovered tools/connectors to feed the catalog/marketplace."],
+        ["Why not now", "Focus moved to business owners/agencies; this finds technical products, not buyers."],
+        ["Decision", "Keep archived. Do not use for outreach or follow-up."],
+      ];
+  return <DecisionBlueprint tone="red" title={isEs ? "No necesario para el nicho actual" : "Not needed for current niche"} rows={rows} />;
+}
+
+function BundleCuratorBlueprint({ isEs }: { isEs: boolean }) {
+  const rows = isEs
+    ? [
+        ["Para qué sirve", "Convertir dolores/personas en paquetes/ofertas que puedas vender más fácil."],
+        ["Cómo aprovecharlo", "Sacar ideas de bundles para landing, contenido, demos y mensajes de venta."],
+        ["Qué NO es", "No es CRM, no manda mensajes y no captura leads."],
+      ]
+    : [
+        ["What it does", "Turns pain points/personas into offer packages that are easier to sell."],
+        ["How to use it", "Extract bundle ideas for landing, content, demos and sales messaging."],
+        ["What it is not", "Not CRM, not sending, and not lead capture."],
+      ];
+  return <DecisionBlueprint tone="emerald" title={isEs ? "Research de oferta" : "Offer research"} rows={rows} />;
+}
+
+function DecisionBlueprint({
+  title,
+  rows,
+  tone,
+}: {
+  title: string;
+  rows: string[][];
+  tone: "red" | "emerald";
+}) {
+  const toneClass =
+    tone === "red"
+      ? "border-red-500/35 bg-red-500/10 text-red-300"
+      : "border-emerald-500/35 bg-emerald-500/10 text-emerald-300";
+  return (
+    <div className={`mt-3 rounded-lg border p-3 ${toneClass}`}>
+      <p className="text-[11px] font-mono uppercase tracking-[0.12em]">{title}</p>
+      <div className="mt-2 grid gap-2 md:grid-cols-3">
+        {rows.map(([rowTitle, body]) => (
+          <div key={rowTitle} className="rounded-md border border-[var(--color-border)] bg-[var(--color-panel)] px-2.5 py-2">
+            <p className="text-[12px] font-semibold text-[var(--color-fg-strong)]">{rowTitle}</p>
+            <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">{body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TrendSignalsBlueprint({ isEs }: { isEs: boolean }) {
+  const rows = isEs
+    ? [
+        ["Para qué sirve", "Encontrar temas calientes de agencias, IA, automatización y empresarios para vender mejor."],
+        ["Qué hacer con esto", "Convertir señales en hooks de contenido, emails, ángulos de venta y mejoras de oferta."],
+        ["Qué NO es", "No es la cola de influencers ni el CRM; es radar de mercado y mensajes."],
+      ]
+    : [
+        ["What it does", "Finds hot topics around agencies, AI, automation and business owners to improve selling."],
+        ["What to do", "Turn signals into content hooks, emails, sales angles and offer improvements."],
+        ["What it is not", "Not the influencer queue or CRM; it is market/message radar."],
+      ];
+  return (
+    <div className="mt-3 rounded-lg border border-cyan-500/35 bg-cyan-500/10 p-3">
+      <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-cyan-300">
+        {isEs ? "Radar de mensajes y oportunidades" : "Message + opportunity radar"}
+      </p>
+      <div className="mt-2 grid gap-2 md:grid-cols-3">
+        {rows.map(([title, body]) => (
+          <div key={title} className="rounded-md border border-[var(--color-border)] bg-[var(--color-panel)] px-2.5 py-2">
+            <p className="text-[12px] font-semibold text-[var(--color-fg-strong)]">{title}</p>
+            <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">{body}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-2 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">
+        {isEs
+          ? "Mi recomendación: mantenerlo. Úsalo para saber qué está comprando/preguntando el mercado y para alimentar mejores mensajes de outreach."
+          : "Recommendation: keep it. Use it to see what the market is buying/asking and to feed better outreach messages."}
+      </p>
+    </div>
+  );
+}
+
+function NoDevProspectsBlueprint({ isEs }: { isEs: boolean }) {
+  const rows = isEs
+    ? [
+        ["Para qué sirve", "Research de mercado: encontrar dolores/frases de empresarios y usuarios no técnicos."],
+        ["Para qué NO sirve hoy", "No es el flujo ganador de outreach si no entrega prospects accionables."],
+        ["Decisión recomendada", "Mantenerlo como radar de mensajes; si sigue en 0, pausar o rediseñar fuentes."],
+      ]
+    : [
+        ["What it does", "Market research: finds pain points/phrasing from business owners and non-technical users."],
+        ["What it is not", "Not the winning outreach flow if it does not produce actionable prospects."],
+        ["Recommendation", "Keep as messaging radar; if it stays at 0, pause or redesign sources."],
+      ];
+  return (
+    <div className="mt-3 rounded-lg border border-slate-500/35 bg-slate-500/10 p-3">
+      <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-slate-300">
+        {isEs ? "Research, no outreach principal" : "Research, not main outreach"}
+      </p>
+      <div className="mt-2 grid gap-2 md:grid-cols-3">
+        {rows.map(([title, body]) => (
+          <div key={title} className="rounded-md border border-[var(--color-border)] bg-[var(--color-panel)] px-2.5 py-2">
+            <p className="text-[12px] font-semibold text-[var(--color-fg-strong)]">{title}</p>
+            <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">{body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ReplyTrackerBlueprint({ isEs }: { isEs: boolean }) {
+  const rows = isEs
+    ? [
+        ["Para qué sirve", "Que ninguna respuesta de influencer se pierda: clasifica interés, te avisa y manda el lead al pipeline."],
+        ["Dónde debe terminar", "GHL como pipeline comercial + Telegram como alerta rápida + IA como ayuda para responder."],
+        ["Estado real", "La web ya manda el evento cuando marcás Respondió; si falta OUTREACH_REPLY_WEBHOOK_URL, GHL/Telegram queda pendiente."],
+      ]
+    : [
+        ["What it does", "Prevents influencer replies from getting lost: classifies interest, alerts you, and pushes the lead to pipeline."],
+        ["Where it should land", "GHL as the sales pipeline + Telegram as the quick alert + AI as response helper."],
+        ["Real status", "The web emits the Responded event; if OUTREACH_REPLY_WEBHOOK_URL is missing, GHL/Telegram is still pending."],
+      ];
+  return (
+    <div className="mt-3 rounded-lg border border-purple-500/35 bg-purple-500/10 p-3">
+      <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-purple-300">
+        {isEs ? "Pieza clave de seguimiento" : "Key follow-up piece"}
+      </p>
+      <div className="mt-2 grid gap-2 md:grid-cols-3">
+        {rows.map(([title, body]) => (
+          <div key={title} className="rounded-md border border-[var(--color-border)] bg-[var(--color-panel)] px-2.5 py-2">
+            <p className="text-[12px] font-semibold text-[var(--color-fg-strong)]">{title}</p>
+            <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">{body}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-2 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">
+        {isEs
+          ? "Mi recomendación: mantenerlo. Es el que convierte una respuesta en una oportunidad real; sin este, el CRM captura leads pero vos seguís haciendo seguimiento a mano."
+          : "Recommendation: keep it. It turns a reply into a real opportunity; without it the CRM captures leads but follow-up stays manual."}
+      </p>
+    </div>
+  );
+}
+
+function SenderBlueprint({ isEs }: { isEs: boolean }) {
+  const rows = isEs
+    ? [
+        ["Para qué sirve", "Enviar emails/DMs desde los leads aprobados, usando plantillas editables."],
+        ["Por qué está pausado", "Para no disparar outreach antes de revisar mensajes, nicho y canales."],
+        ["Cuándo activarlo", "Cuando la cola tenga leads priorizados y confirmemos templates de agencia/empresario."],
+      ]
+    : [
+        ["What it does", "Sends emails/DMs from approved leads using editable templates."],
+        ["Why paused", "So outreach does not launch before messages, niche, and channels are reviewed."],
+        ["When to enable", "When the queue has prioritized leads and agency/business-owner templates are approved."],
+      ];
+  return (
+    <div className="mt-3 rounded-lg border border-amber-500/35 bg-amber-500/10 p-3">
+      <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-amber-300">
+        {isEs ? "Sender separado, no mezclar con captura" : "Separate sender, do not mix with capture"}
+      </p>
+      <div className="mt-2 grid gap-2 md:grid-cols-3">
+        {rows.map(([title, body]) => (
+          <div key={title} className="rounded-md border border-[var(--color-border)] bg-[var(--color-panel)] px-2.5 py-2">
+            <p className="text-[12px] font-semibold text-[var(--color-fg-strong)]">{title}</p>
+            <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">{body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function InfluencerCrmBlueprint({ isEs }: { isEs: boolean }) {
+  const steps = isEs
+    ? [
+        ["1. Captura", "YT+X → IA filtra → Supabase/agency_influencers"],
+        ["2. Envío", "Sender separado para emails/DMs, hoy pausado"],
+        ["3. Respuestas", "Replies tracker → GHL pipeline + Telegram + análisis IA"],
+      ]
+    : [
+        ["1. Capture", "YT+X → AI filter → Supabase/agency_influencers"],
+        ["2. Sending", "Separate email/DM sender, currently paused"],
+        ["3. Replies", "Replies tracker → GHL pipeline + Telegram + AI analysis"],
+      ];
+
+  return (
+    <div className="mt-3 rounded-lg border border-sky-500/35 bg-sky-500/10 p-3">
+      <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-sky-300">
+        {isEs ? "Diseño correcto del flujo ganador" : "Winning-flow architecture"}
+      </p>
+      <div className="mt-2 grid gap-2 md:grid-cols-3">
+        {steps.map(([title, body]) => (
+          <div key={title} className="rounded-md border border-[var(--color-border)] bg-[var(--color-panel)] px-2.5 py-2">
+            <p className="text-[12px] font-semibold text-[var(--color-fg-strong)]">{title}</p>
+            <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">{body}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-2 text-[11.5px] leading-relaxed text-[var(--color-fg-muted)]">
+        {isEs
+          ? "Meta: que esta tarjeta sea tu mano derecha para decidir a quién contactar, por dónde, con qué mensaje y qué pasó después; GHL queda como pipeline comercial."
+          : "Goal: make this card your right hand for who to contact, where, with what message, and what happened next; GHL remains the sales pipeline."}
+      </p>
+    </div>
+  );
+}
+
+function countVisibleContacts(items: OpsResultItem[]): Partial<Record<OpsContactKind, number>> {
+  const counts: Partial<Record<OpsContactKind, number>> = {};
+  for (const item of items) {
+    for (const c of item.contacts ?? []) {
+      counts[c.kind] = (counts[c.kind] ?? 0) + 1;
+    }
+  }
+  return counts;
+}
+
+function ContactCount({ label, value }: { label: string; value: number }) {
+  return (
+    <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-panel)] px-2 py-0.5 text-[var(--color-fg-strong)]">
+      {label}: <strong>{value}</strong>
+    </span>
   );
 }
 

@@ -1,8 +1,16 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { OP_STATUSES, type OpStatus, type Lead } from "@/lib/outreach/types";
-import { TEMPLATES, templateTrack, templateLang } from "@/lib/outreach/templates";
+import { useSearchParams } from "next/navigation";
+import { OP_STATUSES, type OpStatus, type Lead, type ReviewStatus } from "@/lib/outreach/types";
+import {
+  OUTREACH_TEMPLATES,
+  personalizeLead,
+  recommendedTemplateId,
+  renderOutreachTemplate,
+  templateLang,
+  templateTrack,
+} from "@/lib/outreach/templates";
 import { authedFetch } from "@/lib/supabase/browser";
 
 type AuthState = "checking" | "anon" | "forbidden" | "ready";
@@ -11,7 +19,7 @@ type AuthState = "checking" | "anon" | "forbidden" | "ready";
 // OUTREACH QUEUE — cola de contacto manual para TerminalSync
 // Lee de Supabase (agency_influencers) vía /api/outreach/queue.
 // Estado operativo local: pendiente / enviado / respondió / descartado.
-// "respondió" = handoff a GHL (estado comercial vive allá).
+// "respondió" is only the local operating state until the GHL reply bridge is wired.
 // ─────────────────────────────────────────────────────────────
 
 const STATUS_META: Record<OpStatus, { label: string }> = {
@@ -19,6 +27,21 @@ const STATUS_META: Record<OpStatus, { label: string }> = {
   enviado: { label: "Enviado" },
   respondio: { label: "Respondió" },
   descartado: { label: "Descartado" },
+};
+
+const REVIEW_META: Record<ReviewStatus, { label: string; help: string }> = {
+  pending: {
+    label: "Falta aprobación",
+    help: "Capturado por el radar, pero todavía no aprobado por JM para contactar.",
+  },
+  qualified: {
+    label: "Aprobado",
+    help: "Listo para copiar mensaje, contactar y marcar como enviado.",
+  },
+  rejected: {
+    label: "Rechazado",
+    help: "No es buen fit para este nicho/campaña.",
+  },
 };
 
 const PLATFORM_LABEL: Record<string, string> = {
@@ -44,7 +67,12 @@ const fmtSubs = (n: number | null) => {
 type Counts = Record<OpStatus, number>;
 const EMPTY_COUNTS: Counts = { pendiente: 0, enviado: 0, respondio: 0, descartado: 0 };
 
-export default function OutreachQueue({ lang: _lang }: { lang: string }) {
+export default function OutreachQueue({ lang }: { lang: string }) {
+  const search = useSearchParams();
+  const requestedLeadId = search.get("lead");
+  const outreachPath = requestedLeadId
+    ? `/${lang}/admin/ops/outreach?lead=${encodeURIComponent(requestedLeadId)}`
+    : `/${lang}/admin/ops/outreach`;
   const [auth, setAuth] = useState<AuthState>("checking");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [counts, setCounts] = useState<Counts>(EMPTY_COUNTS);
@@ -54,6 +82,7 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
   const [activeId, setActiveId] = useState<Lead["id"] | null>(null);
   const [draft, setDraft] = useState("");
   const [hook, setHook] = useState("");
+  const [templateId, setTemplateId] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -65,12 +94,16 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await authedFetch(`/api/outreach/queue?status=${status}`, { cache: "no-store" } as RequestInit);
+      const res = await authedFetch(`/api/outreach/queue?status=${status}&limit=50`, { cache: "no-store" } as RequestInit);
       if (res.status === 401) { setAuth("anon"); setLoading(false); return; }
       if (res.status === 403) { setAuth("forbidden"); setLoading(false); return; }
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
-      setLeads(Array.isArray(json.items) ? (json.items as Lead[]) : []);
+      const nextLeads = Array.isArray(json.items) ? (json.items as Lead[]) : [];
+      setLeads(nextLeads);
+      if (requestedLeadId && nextLeads.some((lead) => lead.id === requestedLeadId)) {
+        setActiveId(requestedLeadId);
+      }
       setCounts({ ...EMPTY_COUNTS, ...(json.counts || {}) });
       setAuth("ready");
     } catch (e) {
@@ -80,12 +113,19 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [requestedLeadId]);
 
   useEffect(() => {
-    void fetchLeads(filter);
-    setActiveId(null);
-  }, [filter, fetchLeads]);
+    const watchdog = window.setTimeout(() => {
+      setAuth((current) => (current === "checking" ? "anon" : current));
+      setLoading(false);
+    }, 3_000);
+
+    void fetchLeads(filter).finally(() => window.clearTimeout(watchdog));
+    if (!requestedLeadId) setActiveId(null);
+
+    return () => window.clearTimeout(watchdog);
+  }, [filter, fetchLeads, requestedLeadId]);
 
   // ── Derived: filtered list (client-side track/lang filter on top of server-fetched status) ──
   const visible = useMemo(
@@ -99,40 +139,77 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
   );
 
   const active = leads.find((l) => l.id === activeId) || null;
+  const activePersonalization = active ? personalizeLead(active) : null;
+  const activeTemplates = active
+    ? OUTREACH_TEMPLATES.filter(
+        (tpl) =>
+          tpl.lang === templateLang(active.language) &&
+          (tpl.segment === "any" || tpl.segment === activePersonalization?.segment),
+      )
+    : [];
 
-  // ── Build draft when a lead is opened ──
+  // ── Build personalized draft when a lead is opened ──
   useEffect(() => {
     if (!active) {
       setHook("");
       setDraft("");
+      setTemplateId("");
       return;
     }
-    const lang = templateLang(active.language);
-    const trk = templateTrack(active.track);
-    const tpl = TEMPLATES[trk][lang];
+    const nextTemplateId = recommendedTemplateId(active);
+    const tpl = OUTREACH_TEMPLATES.find((t) => t.id === nextTemplateId) || activeTemplates[0];
     const h = active.op_hook ?? "";
     setHook(h);
-    setDraft(
-      tpl
-        .replace("{name}", active.name || active.handle || "")
-        .replace("{hook}", h ? h.trim() + " — " : "")
-    );
+    setTemplateId(tpl?.id ?? "");
+    setDraft(tpl ? renderOutreachTemplate(tpl, { ...active, op_hook: h }) : "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeId]);
 
-  // ── Recompute draft as hook changes ──
+  // ── Recompute draft as hook/template changes ──
   useEffect(() => {
-    if (!active) return;
-    const lang = templateLang(active.language);
-    const trk = templateTrack(active.track);
-    const tpl = TEMPLATES[trk][lang];
-    setDraft(
-      tpl
-        .replace("{name}", active.name || active.handle || "")
-        .replace("{hook}", hook ? hook.trim() + " — " : "")
-    );
+    if (!active || !templateId) return;
+    const tpl = OUTREACH_TEMPLATES.find((t) => t.id === templateId);
+    if (!tpl) return;
+    const base = renderOutreachTemplate(tpl, active);
+    setDraft(hook.trim() ? `${hook.trim()}\n\n${base}` : base);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hook]);
+  }, [hook, templateId]);
+
+  // ── Persist human review decision ──
+  const setReviewStatus = useCallback(
+    async (id: Lead["id"], reviewStatus: ReviewStatus) => {
+      if (saving) return;
+      setSaving(true);
+      setError(null);
+
+      try {
+        const res = await authedFetch("/api/outreach/review", {
+          method: "POST",
+          body: JSON.stringify({ id, status: reviewStatus }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+
+        setLeads((current) =>
+          current.map((lead) =>
+            lead.id === id
+              ? {
+                  ...lead,
+                  status: reviewStatus,
+                  reviewed_at: reviewStatus === "pending" ? null : new Date().toISOString(),
+                }
+              : lead,
+          ),
+        );
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "unknown error";
+        setError(`No se pudo guardar aprobación: ${msg}`);
+      } finally {
+        setSaving(false);
+      }
+    },
+    [saving],
+  );
 
   // ── Persist status change ──
   const setStatus = useCallback(
@@ -155,10 +232,17 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
           body: JSON.stringify(body),
         });
         const json = await res.json();
-        if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+        if (!res.ok) throw new Error(json.error || json.replyBridge?.error || `HTTP ${res.status}`);
 
         // Refetch the current filter to reflect new counts and remove the moved item.
         await fetchLeads(filter);
+        if (status === "respondio" && json.replyBridge?.status !== "sent") {
+          setError(
+            json.replyBridge?.status === "not_configured"
+              ? "Marcado como respondió en Supabase. GHL/Telegram sigue pendiente: falta configurar OUTREACH_REPLY_WEBHOOK_URL."
+              : "Marcado como respondió, pero no pude confirmar el puente GHL/Telegram.",
+          );
+        }
         setActiveId(next ? next.id : null);
       } catch (e) {
         const msg = e instanceof Error ? e.message : "unknown error";
@@ -183,15 +267,33 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
     [counts]
   );
 
+  const loginHref = `/${lang}/login?next=${encodeURIComponent(outreachPath)}`;
+
   if (auth === "checking") {
-    return <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "#8b98a8" }}>Verificando sesión…</div>;
+    return (
+      <div style={{ padding: "48px 24px", fontFamily: "system-ui, sans-serif", color: "#000", background: "#fff", minHeight: "60vh" }}>
+        <p style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Verificando sesión admin…</p>
+        <p style={{ marginTop: 10, fontSize: 14, maxWidth: 620, lineHeight: 1.5 }}>
+          Si esto no abre en pocos segundos, no te dejo mirando una pantalla vacía: usá este botón y vuelves directo a la cola.
+        </p>
+        <a href={loginHref} style={{ display: "inline-flex", marginTop: 14, background: "#fff", color: "#000", border: "1px solid #000", padding: "10px 14px", borderRadius: 10, fontWeight: 800, textDecoration: "none" }}>
+          Iniciar sesión y abrir cola
+        </a>
+      </div>
+    );
   }
   if (auth === "anon") {
     return (
-      <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "#e6edf3" }}>
-        <p>Iniciá sesión con tu cuenta admin.</p>
-        <p style={{ marginTop: 8, color: "#8b98a8", fontSize: 13 }}>
-          Ir a <a href="/es/login" style={{ color: "#3fb950" }}>/es/login</a> → magic link → volvé acá.
+      <div style={{ padding: "48px 24px", fontFamily: "system-ui, sans-serif", color: "#000", background: "#fff", minHeight: "60vh" }}>
+        <p style={{ fontSize: 18, fontWeight: 800 }}>Esta cola requiere sesión admin.</p>
+        <p style={{ marginTop: 8, color: "#000", fontSize: 14, maxWidth: 620, lineHeight: 1.5 }}>
+          Existe para aprobar influencers, editar mensajes personalizados y marcar seguimiento.
+          Entrá con Google y volvés automáticamente a esta misma cola.
+        </p>
+        <p style={{ marginTop: 16 }}>
+          <a href={loginHref} style={{ display: "inline-flex", background: "#fff", color: "#000", border: "1px solid #000", padding: "10px 14px", borderRadius: 10, fontWeight: 800, textDecoration: "none" }}>
+            Iniciar sesión y abrir cola
+          </a>
         </p>
       </div>
     );
@@ -237,6 +339,9 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
         .row .meta{color:var(--ink3);font-family:var(--mono);font-size:11.5px;margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;}
         .pill{font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:5px;border:1px solid var(--line);color:var(--ink2);}
         .pill.aff{color:var(--acc);border-color:#1f5e2e;}
+        .pill.review{color:#ffd166;border-color:#7a5d17;background:#271f0b;}
+        .pill.review.ok{color:#9ff0b2;border-color:#1f7a34;background:#0d2a16;}
+        .pill.review.no{color:#ffb4b4;border-color:#7a2b2b;background:#2b1212;}
         .subs{font-family:var(--mono);font-size:12px;color:var(--ink2);text-align:right;}
         .empty{padding:60px 24px;text-align:center;color:var(--ink3);font-family:var(--mono);font-size:13px;}
         .errbar{padding:10px 18px;background:#3a1c1c;color:#f0b3b3;font-family:var(--mono);font-size:12px;border-bottom:1px solid #5a2a2a;}
@@ -255,6 +360,18 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
         .msg{width:100%;min-height:150px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);
           font-family:var(--sans);font-size:13.5px;line-height:1.55;padding:14px;resize:vertical;}
         .msg:focus{outline:2px solid var(--acc);outline-offset:1px;}
+        .review-box{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:13px 14px;margin-bottom:18px;}
+        .review-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px;}
+        .review-title{font-weight:700;font-size:13px;}
+        .review-help{color:var(--ink2);font-size:12.5px;line-height:1.45;}
+        .review-actions{display:flex;gap:9px;margin-top:12px;}
+        .intel{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:13px 14px;margin-bottom:18px;}
+        .intel-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px;}
+        .intel-card{border:1px solid var(--line);border-radius:8px;background:var(--panel2);padding:9px;}
+        .intel-k{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);}
+        .intel-v{margin-top:4px;font-size:12.5px;line-height:1.35;color:var(--ink);}
+        .tplsel{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:13px;padding:10px 12px;margin-bottom:18px;}
+        .contact-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;}
         .acts{padding:16px 24px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px;}
         .act-row{display:flex;gap:9px;}
         .btn{flex:1;font-family:var(--sans);font-size:13px;font-weight:600;padding:11px;border-radius:8px;
@@ -264,6 +381,8 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
         .btn:disabled{opacity:.5;cursor:not-allowed;}
         .btn.primary{background:var(--acc);color:var(--acc-ink);border-color:var(--acc);}
         .btn.primary:hover:not(:disabled){filter:brightness(1.08);}
+        .btn.approve{background:#fff;color:#000;border-color:#fff;}
+        .btn.reject{background:#000;color:#fff;border-color:#6b7280;}
         .btn.ghost{background:none;}
         .btn.sent{background:var(--s-sent);border-color:var(--s-sent);color:#fff;}
         .btn.resp{background:none;border-color:var(--s-resp);color:var(--s-resp);}
@@ -275,7 +394,7 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
         <div className="hd">
           <h1>Cola de contacto</h1>
           <div className="sub">
-            agency_influencers · {totalLeads} leads{loading ? " · cargando…" : ""}
+            agency_influencers · {totalLeads} leads totales · mostrando máximo 50{loading ? " · cargando…" : ""}
           </div>
         </div>
         <div className="tabs">
@@ -338,6 +457,11 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
                   </span>
                   {l.niche && <span className="pill">{l.niche}</span>}
                   {l.language && <span className="pill">{l.language}</span>}
+                  <span
+                    className={`pill review ${l.status === "qualified" ? "ok" : l.status === "rejected" ? "no" : ""}`}
+                  >
+                    {REVIEW_META[l.status || "pending"].label}
+                  </span>
                 </div>
               </div>
               <div className="subs">
@@ -378,15 +502,91 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
               </div>
             </div>
             <div className="dt-body">
-              <div className="lbl">Gancho personal (opcional)</div>
+              <div className="review-box">
+                <div className="review-top">
+                  <div className="review-title">Revisión humana</div>
+                  <span
+                    className={`pill review ${active.status === "qualified" ? "ok" : active.status === "rejected" ? "no" : ""}`}
+                  >
+                    {REVIEW_META[active.status || "pending"].label}
+                  </span>
+                </div>
+                <div className="review-help">
+                  {REVIEW_META[active.status || "pending"].help}
+                  {active.status !== "qualified" && " Primero aprobalo; después sí lo contactás."}
+                </div>
+                <div className="review-actions">
+                  <button
+                    className="btn approve"
+                    disabled={saving || active.status === "qualified"}
+                    onClick={() => setReviewStatus(active.id, "qualified")}
+                  >
+                    Aprobar para outreach
+                  </button>
+                  <button
+                    className="btn reject"
+                    disabled={saving || active.status === "rejected"}
+                    onClick={() => setReviewStatus(active.id, "rejected")}
+                  >
+                    Rechazar fit
+                  </button>
+                </div>
+              </div>
+              {activePersonalization && (
+                <div className="intel">
+                  <div className="review-top">
+                    <div className="review-title">Análisis para personalizar</div>
+                    <span className="pill">{activePersonalization.segment}</span>
+                  </div>
+                  <div className="intel-grid">
+                    <div className="intel-card">
+                      <div className="intel-k">Audiencia probable</div>
+                      <div className="intel-v">{activePersonalization.audienceLabel}</div>
+                    </div>
+                    <div className="intel-card">
+                      <div className="intel-k">Dolor a tocar</div>
+                      <div className="intel-v">{activePersonalization.pain}</div>
+                    </div>
+                    <div className="intel-card">
+                      <div className="intel-k">Oferta concreta</div>
+                      <div className="intel-v">{activePersonalization.offer}</div>
+                    </div>
+                    <div className="intel-card">
+                      <div className="intel-k">Por qué entró</div>
+                      <div className="intel-v">{active.classification_reason || active.source_keyword || "Sin razón guardada"}</div>
+                    </div>
+                  </div>
+                  <div className="contact-row">
+                    {active.email && <span className="pill">Email</span>}
+                    {active.instagram_handle && <span className="pill">IG</span>}
+                    {active.twitter_handle && <span className="pill">X</span>}
+                    {active.linkedin_url && <span className="pill">LinkedIn</span>}
+                    {active.tiktok_handle && <span className="pill">TikTok</span>}
+                    {active.bio_link_url && <span className="pill">Bio link</span>}
+                  </div>
+                </div>
+              )}
+              <div className="lbl">Template personalizado</div>
+              <select
+                className="tplsel"
+                value={templateId}
+                onChange={(e) => setTemplateId(e.target.value)}
+              >
+                {activeTemplates.map((tpl) => (
+                  <option key={tpl.id} value={tpl.id}>
+                    {tpl.channel.toUpperCase()} · {tpl.label}
+                  </option>
+                ))}
+              </select>
+              <div className="lbl">Gancho extra manual (opcional)</div>
               <input
                 className="hookin"
-                placeholder="ej: vi tu último video sobre n8n…"
+                placeholder="ej: vi tu último video sobre seguimiento de leads…"
                 value={hook}
                 onChange={(e) => setHook(e.target.value)}
               />
               <div className="lbl">
-                Mensaje sugerido · {templateTrack(active.track)} ·{" "}
+                Mensaje sugerido · {activePersonalization?.segment || templateTrack(active.track)} ·{" "}
                 {templateLang(active.language).toUpperCase()}
               </div>
               <textarea
@@ -412,7 +612,8 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
               <div className="act-row">
                 <button
                   className="btn sent"
-                  disabled={saving}
+                  disabled={saving || active.status !== "qualified"}
+                  title={active.status === "qualified" ? "" : "Primero aprobá el lead para outreach"}
                   onClick={() => setStatus(active.id, "enviado")}
                 >
                   Marcar enviado
@@ -422,7 +623,7 @@ export default function OutreachQueue({ lang: _lang }: { lang: string }) {
                   disabled={saving}
                   onClick={() => setStatus(active.id, "respondio")}
                 >
-                  Respondió → GHL
+                  Respondió (GHL pendiente)
                 </button>
                 <button
                   className="btn disc"

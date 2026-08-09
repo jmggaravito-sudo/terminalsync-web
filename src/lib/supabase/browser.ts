@@ -18,6 +18,44 @@ function normalizeSupabaseUrl(raw: string): string {
   }
 }
 
+function getSupabaseProjectRef(rawUrl: string | undefined): string | null {
+  if (!rawUrl) return null;
+  try {
+    const host = new URL(normalizeSupabaseUrl(rawUrl)).hostname;
+    const [ref] = host.split(".");
+    return ref || null;
+  } catch {
+    return null;
+  }
+}
+
+function readStoredAccessToken(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const projectRef = getSupabaseProjectRef(process.env.NEXT_PUBLIC_SUPABASE_URL);
+    const preferredKey = projectRef ? `sb-${projectRef}-auth-token` : null;
+    const keys = preferredKey
+      ? [preferredKey]
+      : Array.from({ length: window.localStorage.length }, (_, i) => window.localStorage.key(i)).filter(
+          (key): key is string => Boolean(key?.startsWith("sb-") && key.endsWith("-auth-token")),
+        );
+
+    for (const key of keys) {
+      const raw = window.localStorage.getItem(key);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw) as {
+        access_token?: unknown;
+        currentSession?: { access_token?: unknown };
+      };
+      const token = parsed.access_token ?? parsed.currentSession?.access_token;
+      if (typeof token === "string" && token.length > 0) return token;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 export function getSupabaseBrowser(): SupabaseClient | null {
   if (typeof window === "undefined") return null;
   const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -37,10 +75,11 @@ export function getSupabaseBrowser(): SupabaseClient | null {
 }
 
 export async function getAccessToken(): Promise<string | null> {
-  const sb = getSupabaseBrowser();
-  if (!sb) return null;
-  const { data } = await sb.auth.getSession();
-  return data.session?.access_token ?? null;
+  // Admin data fetches should never block on Supabase auth session recovery.
+  // In long-lived Chrome profiles, sb.auth.getSession() can hang before the page
+  // leaves "Verificando sesión…". Supabase persists the session in localStorage,
+  // so read the token directly and let the API return 401 if it is absent/expired.
+  return readStoredAccessToken();
 }
 
 export async function authedFetch(

@@ -1,213 +1,260 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { Locale } from "@/content";
 
 /**
- * §10 Capacity Calculator — capacidad recuperada al año (horas + plata) de
- * tres fuentes: Ejecución, Memoria y Continuidad. Lenguaje de dueño.
- * Bilingüe (ES neutro / EN). Valores ilustrativos; pura matemática cliente.
- * Defaults → $15,179/año (match del prototipo de Cowork).
+ * §10 Capacity Calculator — reencuadre completo a "capacidad" (2026-07-24).
+ * Ya NO habla de dinero: mide horas recuperadas. Tres sliders, una fórmula,
+ * y una equivalencia en "personas de tiempo completo".
+ *
+ *   horasMes = procesos × horas × %delegable × 4.33
+ *
+ * Copy exacto del prototipo aprobado. Bilingüe ES/EN.
  */
 
-const WEEKS = 52;
-const FULL_TIME_YEAR_HOURS = 2080;
-const HOURS_PER_WORKDAY = 8;
-const TS_MONTHLY = 19;
-const TS_ANNUAL = TS_MONTHLY * 12;
+const WEEKS_PER_MONTH = 4.33;
+const MONTHS_PER_YEAR = 12;
 
 const T = {
   es: {
-    eyebrow: "Calculadora",
-    title: "Mira cuánto te devuelve TerminalSync",
-    subtitle: "Pon tus números reales y mira la capacidad, las horas y la plata que recuperas al año.",
-    rateLabel: "Tu valor por hora (o el de tu equipo)",
-    rateHelp: "No es cuánto cobras: es cuánto vale una hora de tu tiempo enfocada en hacer crecer el negocio.",
-    execTitle: "Ejecución — capacidad que recuperas",
-    execHours: "Horas/semana en tareas repetitivas o cosas que pospones por falta de tiempo",
-    execPct: "% de eso que la IA puede ejecutar por ti",
-    memTitle: "Memoria permanente",
-    sessions: "Sesiones de IA por semana",
-    reexplain: "Minutos re-explicando tu contexto cada sesión",
-    memHelp: "Nunca repites quién eres, tu tono, tus reglas, dónde quedaste.",
-    contTitle: "Continuidad — nunca te quedas trabado",
-    fails: "Veces/semana que una IA llega a su límite o falla",
-    lost: "Minutos perdidos cada vez (esperar, cambiar, repetir)",
-    subs: "Suscripciones de IA extra que pagas hoy para esquivar límites",
-    subCost: "Costo de cada suscripción al mes",
-    hYr: "h/año", perYr: "/año", subsTag: "/año subs", perMo: "/mes",
-    resultLabel: "Lo que recuperas al año",
-    resultHours: (h: string, d: string) => `${h} horas/año · ≈ ${d} días de trabajo recuperados`,
-    fte: (p: string) => `≈ ${p}% de una persona a tiempo completo — sin nómina`,
-    cost: (m: string, roi: string) => `TerminalSync cuesta ${m}/mes · retorno ${roi}×`,
-    caveat: "Valores ilustrativos para validar la lógica · luego se afinan con datos reales.",
+    eyebrow: "Calcula tu capacidad",
+    title: "¿Cuánta capacidad le agregas a tu empresa?",
+    subtitle:
+      "Mueve los controles con la realidad de tu negocio. Medimos horas de trabajo recuperadas — no costo de tecnología.",
+    sProc: {
+      label: "Procesos que repites cada semana",
+      hint: "Propuestas, reportes, seguimientos, facturas, publicaciones…",
+    },
+    sHpp: { label: "Horas que te toma cada uno" },
+    sDel: {
+      label: "¿Cuántos podrían delegarse?",
+      hint: "Los que siguen un patrón: la IA los ejecuta y tú solo revisas.",
+    },
+    outHoursLabel: "Horas recuperadas al mes",
+    outProcs: "Procesos delegados por semana",
+    outYear: "Horas recuperadas al año",
+    cta: "Recupera esas horas gratis",
+    fte: {
+      quarter: "Equivale a un cuarto de persona de tiempo completo",
+      half: "Equivale a media persona de tiempo completo",
+      one: "Equivale a una persona de tiempo completo",
+      many: (n: number) => `Equivale a ${n} personas de tiempo completo`,
+    },
+    hSuffix: "h",
   },
   en: {
-    eyebrow: "Calculator",
-    title: "See how much TerminalSync gives you back",
-    subtitle: "Plug in your real numbers and see the capacity, hours and money you get back per year.",
-    rateLabel: "Your value per hour (or your team's)",
-    rateHelp: "Not what you charge: what an hour of your time is worth when focused on growing the business.",
-    execTitle: "Execution — capacity you get back",
-    execHours: "Hours/week on repetitive tasks or things you postpone for lack of time",
-    execPct: "% of that the AI can do for you",
-    memTitle: "Permanent memory",
-    sessions: "AI sessions per week",
-    reexplain: "Minutes re-explaining your context each session",
-    memHelp: "You never repeat who you are, your tone, your rules, where you left off.",
-    contTitle: "Continuity — you never get stuck",
-    fails: "Times/week an AI hits its limit or fails",
-    lost: "Minutes lost each time (waiting, switching, repeating)",
-    subs: "Extra AI subscriptions you pay today to dodge limits",
-    subCost: "Cost of each subscription per month",
-    hYr: "h/yr", perYr: "/yr", subsTag: "/yr subs", perMo: "/mo",
-    resultLabel: "What you get back per year",
-    resultHours: (h: string, d: string) => `${h} hours/yr · ≈ ${d} workdays recovered`,
-    fte: (p: string) => `≈ ${p}% of a full-time hire — without payroll`,
-    cost: (m: string, roi: string) => `TerminalSync costs ${m}/mo · ${roi}× return`,
-    caveat: "Illustrative values to validate the logic · later tuned with real data.",
+    eyebrow: "Calculate your capacity",
+    title: "How much capacity do you add to your business?",
+    subtitle:
+      "Move the controls to match your reality. We measure hours of work recovered — not the cost of technology.",
+    sProc: {
+      label: "Processes you repeat every week",
+      hint: "Proposals, reports, follow-ups, invoices, posts…",
+    },
+    sHpp: { label: "Hours each one takes" },
+    sDel: {
+      label: "How many could be delegated?",
+      hint: "The ones that follow a pattern: the AI runs them and you just review.",
+    },
+    outHoursLabel: "Hours recovered per month",
+    outProcs: "Processes delegated per week",
+    outYear: "Hours recovered per year",
+    cta: "Recover those hours for free",
+    fte: {
+      quarter: "Equivalent to a quarter of a full-time person",
+      half: "Equivalent to half a full-time person",
+      one: "Equivalent to one full-time person",
+      many: (n: number) => `Equivalent to ${n} full-time people`,
+    },
+    hSuffix: "h",
   },
 } as const;
 
+function formatInt(n: number): string {
+  return Math.round(n).toLocaleString("en-US");
+}
+
+interface FteCopy {
+  quarter: string;
+  half: string;
+  one: string;
+  many: (n: number) => string;
+}
+
+/**
+ * Escala del prototipo: <40 cuarto · 40-80 media · 80-160 una · >160 X personas.
+ */
+function fteLabel(hoursPerMonth: number, tFte: FteCopy): string {
+  if (hoursPerMonth < 40) return tFte.quarter;
+  if (hoursPerMonth < 80) return tFte.half;
+  if (hoursPerMonth < 160) return tFte.one;
+  const n = Math.round(hoursPerMonth / 160);
+  return tFte.many(n);
+}
+
 export function CapacityCalculator({ lang }: { lang: Locale }) {
   const t = T[lang];
-  const [rate, setRate] = useState(40);
-  const [execHours, setExecHours] = useState(12);
-  const [execPct, setExecPct] = useState(45);
-  const [sessions, setSessions] = useState(10);
-  const [reexplainMin, setReexplainMin] = useState(4);
-  const [fails, setFails] = useState(5);
-  const [lostMin, setLostMin] = useState(12);
-  const [extraSubs, setExtraSubs] = useState(2);
-  const [subCost, setSubCost] = useState(20);
 
-  const m = useMemo(() => {
-    const execHoursYr = execHours * (execPct / 100) * WEEKS;
-    const execValue = execHoursYr * rate;
-    const memHoursYr = ((sessions * reexplainMin) / 60) * WEEKS;
-    const memValue = memHoursYr * rate;
-    const contHoursYr = ((fails * lostMin) / 60) * WEEKS;
-    const contTimeValue = contHoursYr * rate;
-    const subsYr = extraSubs * subCost * 12;
-    const totalHours = execHoursYr + memHoursYr + contHoursYr;
-    const totalMoney = execValue + memValue + contTimeValue + subsYr;
-    const days = totalHours / HOURS_PER_WORKDAY;
-    const pctFTE = (totalHours / FULL_TIME_YEAR_HOURS) * 100;
-    const roi = totalMoney / TS_ANNUAL;
-    return { execHoursYr, execValue, memHoursYr, memValue, contHoursYr, contTimeValue, subsYr, totalHours, totalMoney, days, pctFTE, roi };
-  }, [rate, execHours, execPct, sessions, reexplainMin, fails, lostMin, extraSubs, subCost]);
+  const [procesos, setProcesos] = useState(12);
+  const [horas, setHoras] = useState(2.5);
+  const [delegablePct, setDelegablePct] = useState(70);
 
-  const usd = (n: number) => `$${Math.round(n).toLocaleString("en-US")}`;
-  const num = (n: number) => Math.round(n).toLocaleString("en-US");
+  const { hoursPerMonth, procsDelegated, hoursPerYear, fte } = useMemo(() => {
+    const pctFraction = delegablePct / 100;
+    const perMonth = procesos * horas * pctFraction * WEEKS_PER_MONTH;
+    return {
+      hoursPerMonth: perMonth,
+      procsDelegated: procesos * pctFraction,
+      hoursPerYear: perMonth * MONTHS_PER_YEAR,
+      fte: fteLabel(perMonth, t.fte),
+    };
+  }, [procesos, horas, delegablePct, t.fte]);
 
   return (
-    <section id="capacity-calculator" className="mx-auto max-w-2xl px-5 md:px-6 py-20 md:py-24">
-      <div className="text-center mb-10">
-        <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--color-accent)]">{t.eyebrow}</span>
-        <h2 className="mt-3 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.08]" style={{ fontSize: "clamp(1.75rem, 4.5vw, 2.75rem)" }}>
+    <section
+      id="calculadora"
+      className="scroll-mt-20 mx-auto max-w-6xl px-5 md:px-6 py-20 md:py-24"
+    >
+      <div className="text-center max-w-2xl mx-auto mb-10 md:mb-14">
+        <span className="text-[12.5px] font-mono uppercase tracking-[0.12em] text-[var(--color-accent)]">
+          {t.eyebrow}
+        </span>
+        <h2
+          className="mt-3 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.08]"
+          style={{ fontSize: "clamp(1.75rem, 4.4vw, 2.75rem)" }}
+        >
           {t.title}
         </h2>
-        <p className="mt-3 text-[16px] text-[var(--color-fg-muted)] leading-relaxed">{t.subtitle}</p>
+        <p className="mt-3 text-[15px] text-[var(--color-fg-muted)] leading-relaxed">
+          {t.subtitle}
+        </p>
       </div>
 
-      <Group>
-        <RowHead label={t.rateLabel} value={`${usd(rate)}/h`} />
-        <Range value={rate} onChange={setRate} min={10} max={200} step={5} />
-        <Help>{t.rateHelp}</Help>
-      </Group>
-
-      <Group title={t.execTitle}>
-        <RowHead label={t.execHours} value={num(execHours)} />
-        <Range value={execHours} onChange={setExecHours} min={0} max={40} step={1} />
-        <RowHead label={t.execPct} value={`${execPct}%`} />
-        <Range value={execPct} onChange={setExecPct} min={0} max={100} step={5} />
-        <Chips items={[`${num(m.execHoursYr)} ${t.hYr}`, `${usd(m.execValue)}${t.perYr}`]} />
-      </Group>
-
-      <Group title={t.memTitle}>
-        <RowHead label={t.sessions} value={num(sessions)} />
-        <Range value={sessions} onChange={setSessions} min={0} max={50} step={1} />
-        <RowHead label={t.reexplain} value={num(reexplainMin)} />
-        <Range value={reexplainMin} onChange={setReexplainMin} min={0} max={30} step={1} />
-        <Chips items={[`${num(m.memHoursYr)} ${t.hYr}`, `${usd(m.memValue)}${t.perYr}`]} />
-        <Help>{t.memHelp}</Help>
-      </Group>
-
-      <Group title={t.contTitle}>
-        <RowHead label={t.fails} value={num(fails)} />
-        <Range value={fails} onChange={setFails} min={0} max={30} step={1} />
-        <RowHead label={t.lost} value={num(lostMin)} />
-        <Range value={lostMin} onChange={setLostMin} min={0} max={60} step={1} />
-        <RowHead label={t.subs} value={num(extraSubs)} />
-        <Range value={extraSubs} onChange={setExtraSubs} min={0} max={10} step={1} />
-        <RowHead label={t.subCost} value={`${usd(subCost)}${t.perMo}`} />
-        <Range value={subCost} onChange={setSubCost} min={0} max={100} step={5} />
-        <Chips items={[`${num(m.contHoursYr)} ${t.hYr}`, `${usd(m.contTimeValue)}${t.perYr}`, `${usd(m.subsYr)}${t.subsTag}`]} />
-      </Group>
-
-      <div className="mt-6 rounded-2xl border border-[var(--color-ok)]/40 bg-[var(--color-ok)]/8 px-6 py-8 text-center">
-        <div className="text-[13px] text-[var(--color-fg-muted)]">{t.resultLabel}</div>
-        <div className="mt-1 font-semibold tracking-tight text-[var(--color-ok)] leading-none tabular-nums" style={{ fontSize: "clamp(3rem, 11vw, 4.5rem)" }}>
-          {usd(m.totalMoney)}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Sliders */}
+        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-6 md:p-7">
+          <SliderRow
+            label={t.sProc.label}
+            hint={t.sProc.hint}
+            value={procesos}
+            display={String(procesos)}
+            min={1}
+            max={50}
+            step={1}
+            onChange={setProcesos}
+          />
+          <SliderRow
+            label={t.sHpp.label}
+            value={horas}
+            display={`${horas} ${t.hSuffix}`}
+            min={0.5}
+            max={8}
+            step={0.5}
+            onChange={setHoras}
+          />
+          <SliderRow
+            label={t.sDel.label}
+            hint={t.sDel.hint}
+            value={delegablePct}
+            display={`${delegablePct}%`}
+            min={10}
+            max={100}
+            step={5}
+            onChange={setDelegablePct}
+          />
         </div>
-        <div className="mt-3 text-[14px] text-[var(--color-fg)]">{t.resultHours(num(m.totalHours), num(m.days))}</div>
-        <div className="mt-4 inline-flex items-center rounded-full border border-[var(--color-ok)]/40 bg-[var(--color-ok)]/10 px-4 py-1.5 text-[13px] font-semibold text-[var(--color-ok)]">
-          {t.fte(num(m.pctFTE))}
+
+        {/* Output */}
+        <div className="rounded-2xl border-2 border-[var(--color-accent)] bg-[var(--color-accent)]/[6%] p-6 md:p-7 flex flex-col">
+          <span className="text-[12px] font-mono uppercase tracking-[0.14em] text-[var(--color-fg-muted)]">
+            {t.outHoursLabel}
+          </span>
+          <div
+            className="mt-2 font-semibold text-[var(--color-fg-strong)] leading-none tabular-nums"
+            style={{ fontSize: "clamp(3rem, 8vw, 5rem)" }}
+          >
+            {formatInt(hoursPerMonth)}{" "}
+            <span className="text-[var(--color-accent)]">{t.hSuffix}</span>
+          </div>
+          <p className="mt-3 text-[14px] text-[var(--color-fg-muted)]">{fte}</p>
+
+          <div className="mt-6 space-y-2.5 border-t border-[var(--color-border)] pt-5">
+            <OutputRow label={t.outProcs} value={formatInt(procsDelegated)} />
+            <OutputRow
+              label={t.outYear}
+              value={`${formatInt(hoursPerYear)} ${t.hSuffix}`}
+            />
+          </div>
+
+          <a
+            href="#pricing"
+            data-cta="capacity-calc"
+            className="mt-auto pt-6 inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[14px] font-semibold px-5 py-3 transition-colors"
+          >
+            {t.cta}
+          </a>
         </div>
-        <div className="mt-4 text-[13px] text-[var(--color-fg-muted)]">{t.cost(usd(TS_MONTHLY), num(m.roi))}</div>
       </div>
-
-      <p className="mt-6 text-center text-[12px] text-[var(--color-fg-dim)]">{t.caveat}</p>
     </section>
   );
 }
 
-function Group({ title, children }: { title?: string; children: React.ReactNode }) {
+function SliderRow({
+  label,
+  hint,
+  value,
+  display,
+  min,
+  max,
+  step,
+  onChange,
+}: {
+  label: string;
+  hint?: string;
+  value: number;
+  display: string;
+  min: number;
+  max: number;
+  step: number;
+  onChange: (n: number) => void;
+}) {
   return (
-    <div className="mb-6 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-6 md:p-7">
-      {title ? <h3 className="mb-4 text-[15px] font-semibold text-[var(--color-fg-strong)]">{title}</h3> : null}
-      {children}
-    </div>
-  );
-}
-
-function RowHead({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-start justify-between gap-4 mb-2 mt-4 first:mt-0">
-      <label className="text-[13.5px] text-[var(--color-fg)] leading-snug">{label}</label>
-      <span className="shrink-0 text-[14px] font-semibold tabular-nums text-[var(--color-accent)]">{value}</span>
-    </div>
-  );
-}
-
-function Range({ value, onChange, min, max, step }: { value: number; onChange: (v: number) => void; min: number; max: number; step: number }) {
-  const pct = ((value - min) / (max - min)) * 100;
-  return (
-    <input
-      type="range"
-      min={min}
-      max={max}
-      step={step}
-      value={value}
-      onChange={(e) => onChange(Number(e.target.value))}
-      className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-[var(--color-accent)]"
-      style={{ background: `linear-gradient(to right, var(--color-accent) 0%, var(--color-accent) ${pct}%, var(--color-panel-2) ${pct}%, var(--color-panel-2) 100%)` }}
-    />
-  );
-}
-
-function Chips({ items }: { items: string[] }) {
-  return (
-    <div className="mt-5 flex flex-wrap gap-2.5">
-      {items.map((t) => (
-        <span key={t} className="inline-flex items-center rounded-lg border border-[var(--color-ok)]/35 bg-[var(--color-ok)]/8 px-3 py-1 text-[13px] font-medium tabular-nums text-[var(--color-ok)]">
-          {t}
+    <div className="py-4 first:pt-1 last:pb-1 border-b last:border-b-0 border-[var(--color-border)]">
+      <div className="flex items-baseline justify-between gap-3 mb-2">
+        <label className="text-[13.5px] text-[var(--color-fg)] font-medium">
+          {label}
+        </label>
+        <span className="font-mono text-[15px] font-semibold text-[var(--color-accent)] tabular-nums">
+          {display}
         </span>
-      ))}
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        className="w-full accent-[var(--color-accent)]"
+        aria-label={label}
+      />
+      {hint && (
+        <p className="mt-1.5 text-[12px] text-[var(--color-fg-muted)] leading-relaxed">
+          {hint}
+        </p>
+      )}
     </div>
   );
 }
 
-function Help({ children }: { children: React.ReactNode }) {
-  return <p className="mt-3 text-[12px] text-[var(--color-fg-dim)] leading-relaxed">{children}</p>;
+function OutputRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-baseline justify-between gap-3">
+      <span className="text-[13px] text-[var(--color-fg-muted)]">{label}</span>
+      <span className="font-mono text-[14px] font-semibold text-[var(--color-fg-strong)] tabular-nums">
+        {value}
+      </span>
+    </div>
+  );
 }

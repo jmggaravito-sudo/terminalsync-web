@@ -19,6 +19,7 @@ export const revalidate = 0;
 
 const N8N_URL = process.env.N8N_URL ?? "https://n8n.nexflowai.net";
 const N8N_API_KEY = process.env.N8N_API_KEY ?? "";
+const OUTREACH_REPLY_WEBHOOK_URL = process.env.OUTREACH_REPLY_WEBHOOK_URL ?? "";
 
 /**
  * Curated metadata per workflow ID. Lives here (not in Supabase) because
@@ -49,6 +50,7 @@ const WORKFLOW_META: Record<
     cadence?: string;
     resultUrl?: string;
     resultLabel?: string;
+    operatorActions?: { label: string; href?: string; note?: string }[];
   }
 > = {
   // ─────────────── MueveTuCarro ───────────────
@@ -399,14 +401,29 @@ const WORKFLOW_META: Record<
   "2gbpZFPPlYMo6k3f": {
     project: "TerminalSync",
     description:
-      "Trends Radar — todas las mañanas a las 6am COL captura GitHub trending + HackerNews top + Reddit top de 7 subreddits + universidades enseñando IA en YouTube.",
-    cadence: "diario 6am COL",
+      "Business + Agency Opportunity Radar — captura señales de empresarios, agencias, automatización, IA para negocios, pain points, competidores y hooks de contenido. Antes era tech/dev genérico; ahora debe servir para ventas y marketing de TerminalSync.",
+    cadence: "diario",
+    resultUrl: "/admin/trends",
+    resultLabel: "Ver radar",
+    operatorActions: [
+      { label: "Elegir señales útiles", href: "/admin/trends", note: "Separar ideas vendibles de ruido." },
+      { label: "Convertir en contenido", note: "Usar las mejores señales como hooks para LinkedIn, emails y demos." },
+      { label: "Actualizar oferta", note: "Si se repite un dolor, convertirlo en paquete o feature." },
+    ],
   },
   "7ooGFm2XvT8SLdde": {
     project: "TerminalSync",
     description:
-      "Captura diaria Influencers (YT + X) — busca creators que hablan a dueños de agencias (marketing, SaaS, growth). Un Gemini classifier dentro del flow filtra y solo guarda los agency-targeted en la tabla agency_influencers. NO manda emails — pausado hasta 'launch'.",
+      "CRM/Radar de Influencers YT+X para agencias — busca creators que hablan a dueños de agencias, los filtra con IA y guarda los buenos en Supabase (agency_influencers). Este flujo NO envía correos ni DMs: su trabajo es capturar, priorizar y alimentar el seguimiento.",
     cadence: "diario 9am COL",
+    resultUrl: "/admin/ops/outreach",
+    resultLabel: "Aprobar leads",
+    operatorActions: [
+      { label: "Aprobar o rechazar leads", href: "/admin/ops/outreach", note: "Los Pending significan falta revisión humana." },
+      { label: "Abrir perfil/canal", note: "Confirmar que sí hablan a agencias o empresarios." },
+      { label: "Escoger contacto", note: "Priorizar DM si hay IG/X/LinkedIn; email si el perfil lo trae." },
+      { label: "Editar mensaje", note: "Personalizar antes de cualquier envío." },
+    ],
   },
   "3ad53aIJo6QA1vI0": {
     project: "TerminalSync",
@@ -417,25 +434,32 @@ const WORKFLOW_META: Record<
   "5JJPordwuTwaPPPK": {
     project: "TerminalSync",
     description:
-      "Re-enrich Influencers DB — refresca emails y datos de contacto de los creators ya capturados. Mantiene la DB actualizada para cuando lances outreach.",
+      "Re-enrich Influencers DB — segunda pieza del seguimiento: vuelve sobre los influencers capturados y refresca emails, perfiles y datos de contacto para que el CRM no se quede viejo.",
     cadence: "cada 6 horas",
+    resultUrl: "/admin/ops/outreach",
+    resultLabel: "Ver CRM",
+    operatorActions: [
+      { label: "Revisar leads sin contacto", href: "/admin/ops/outreach", note: "Buscar perfiles buenos que todavía no tienen email/DM usable." },
+      { label: "Actualizar canal preferido", note: "Si aparece nuevo IG/X/LinkedIn, usarlo para outreach." },
+      { label: "Re-ejecutar solo si falta data", note: "No es para enviar; solo enriquece información." },
+    ],
   },
   "6LuNDI8Hs90WyiUO": {
     project: "TerminalSync",
     description:
-      "Connectors & Skills Discovery — scrapea YouTube + X buscando productos nuevos para listar en el marketplace.",
-    cadence: "diario",
+      "Connectors & Skills Discovery — NO es prioridad para el nicho actual. Era para descubrir herramientas/listings del marketplace; mantener archivado salvo que volvamos a crecer catálogo de conectores.",
+    cadence: "archivado / no usar para outreach",
   },
   kOrTycM21z6YxsmG: {
     project: "TerminalSync",
     description:
-      "Thunderbit Discovery (multi-source) — scraper alterno con Thunderbit + fallback gracioso si falla la API.",
-    cadence: "diario",
+      "Thunderbit Discovery (multi-source) — NO es prioridad para empresarios/agencias. Es scraper alterno de discovery técnico; mantener archivado para no meter ruido.",
+    cadence: "archivado / backup",
   },
   lmbQv6R17dqY8pvO: {
     project: "TerminalSync",
     description:
-      "No-Dev Prospects — busca usuarios potenciales que NO son devs en Reddit, Indie Hackers y forums. Te ayuda a entender el mercado del lado consumidor.",
+      "No-Dev Prospects — research, no flujo ganador de outreach. Busca empresarios/no-devs en Reddit, Indie Hackers y forums para entender dolores y lenguaje; si no produce prospects, se mantiene solo como radar de mensajes/ideas.",
     cadence: "diario",
   },
   Gifqx1Fjbtp6z1Ud: {
@@ -461,18 +485,40 @@ const WORKFLOW_META: Record<
     description:
       "Welcome Flow (consumer + dev) — email de bienvenida después del signup. Distinto copy según sea consumer o dev plan.",
     cadence: "cuando hay signup",
+    resultUrl: "/admin/launch-metrics",
+    resultLabel: "Ver métricas",
+    operatorActions: [
+      { label: "Revisar copy de bienvenida", note: "Debe hablarle a empresarios/agencias, no quedarse en consumer/dev viejo." },
+      { label: "Hacer signup de prueba", href: "/admin/launch-metrics", note: "Validar que llega el email y queda evento/lead." },
+      { label: "Decidir próximo paso", note: "Qué CTA recibe el usuario: demo, onboarding o responder email." },
+    ],
   },
   i5Miq18SAdvaTnbK: {
     project: "TerminalSync",
     description:
       "Feedback (Sugerencias) — recibe sugerencias de los usuarios y las guarda + te notifica.",
     cadence: "cuando hay feedback",
+    resultUrl: "/admin/ops/feedback",
+    resultLabel: "Ver inbox",
+    operatorActions: [
+      { label: "Ver inbox de feedback", href: "/admin/ops/feedback", note: "Leer sugerencias sin entrar a n8n." },
+      { label: "Clasificar sugerencias", note: "Separar bug, idea vendible, feature y queja." },
+      { label: "Convertir en tarea", note: "Las mejores sugerencias deberían terminar en roadmap/PR." },
+    ],
   },
   jINNqL72z9yNcKx6: {
     project: "TerminalSync",
-    description:
-      "Tracker · Replies — escucha respuestas a los emails de outreach (cuando lo lances) y las clasifica.",
+    description: OUTREACH_REPLY_WEBHOOK_URL
+      ? "Tracker · Replies — SÍ lo necesitamos: es el puente cuando alguien responde. Debe clasificar la respuesta, crear/actualizar contacto en GHL, mover pipeline, avisarte por Telegram y preparar análisis IA para que sepas qué contestar."
+      : "Tracker · Replies — SÍ lo necesitamos, pero todavía falta conectar el webhook OUTREACH_REPLY_WEBHOOK_URL. Sin eso, marcar 'Respondió' queda en Supabase/local y NO empuja todavía a GHL/Telegram/IA.",
     cadence: "cuando llega una respuesta",
+    resultUrl: "/admin/ops/outreach",
+    resultLabel: "Ver cola",
+    operatorActions: [
+      { label: "Ver respuestas", href: "/admin/ops/outreach", note: "Revisar quién respondió y qué intención tiene." },
+      { label: "Conectar GHL + Telegram", note: "Si falta webhook, la respuesta no entra al pipeline ni alerta completa." },
+      { label: "Usar análisis IA", note: "Preparar siguiente respuesta sin inventar ni perder contexto." },
+    ],
   },
   FVj4SmRqgDwlAAZ8: {
     project: "TerminalSync",
@@ -483,8 +529,16 @@ const WORKFLOW_META: Record<
   "21DqwyeruJlFNqgW": {
     project: "TerminalSync",
     description:
-      "Sender · Influencer Emails (PAUSED) — el envío real de emails a creators. PAUSADO hasta el launch.",
-    cadence: "deprecated (pausado)",
+      "Sender · Influencer Emails/DMs (PAUSED) — SÍ lo necesitamos, pero pausado a propósito. Es la pieza que enviará emails/DMs usando plantillas editables y registrará contacto; no debe mezclarse con la captura ni con replies.",
+    cadence: "pausado hasta launch",
+    resultUrl: "/admin/ops/outreach",
+    resultLabel: "Ver cola",
+    operatorActions: [
+      { label: "Mantener pausado", note: "No enviar masivo hasta aprobar leads, templates y canales." },
+      { label: "Revisar plantillas", href: "/admin/ops/outreach", note: "Mensajes deben ser personalizados por segmento." },
+      { label: "Smoke con 1 lead", note: "Primero prueba controlada; después se activa automatización." },
+      { label: "Registrar enviado", note: "Después del smoke debe quedar historial para seguimiento." },
+    ],
   },
   vN2iycD5AI2xRXqF: {
     project: "TerminalSync",
@@ -501,8 +555,75 @@ const WORKFLOW_META: Record<
   KpqQvgr6H1C2O4Oa: {
     project: "TerminalSync",
     description:
-      "Bundle Curator — Claude analiza el catálogo y propone nuevos Stack Packs (bundles) por persona/pain point. Resultado en bundle_proposals para aprobar.",
+      "Bundle Curator — SÍ puede servir, pero como research de oferta: propone paquetes por persona/dolor para vender mejor a empresarios/agencias. No es lead gen ni seguimiento.",
     cadence: "diario",
+    resultUrl: "/admin-bypass/bundles/proposals",
+    resultLabel: "Ver ideas",
+  },
+  bIQyZUPQOvmVXwj5: {
+    project: "TerminalSync",
+    description:
+      "Discovery · Error Alert — red de seguridad: avisa cuando los flujos de discovery/ops fallan para que no pasen días rotos sin enterarnos.",
+    cadence: "cuando algo falla",
+    operatorActions: [
+      { label: "Revisar error rojo", note: "Ver qué flujo falló y desde qué nodo." },
+      { label: "Abrir Auto-Reparación", href: "/admin/ops?tab=repair", note: "Usar el panel inferior de Ops si el error es repetido." },
+      { label: "Decidir si es crítico", note: "Si afecta captura/sender/replies, arreglar antes de seguir." },
+    ],
+  },
+  kpEnCfr9Jn6U51QT: {
+    project: "TerminalSync",
+    description:
+      "Sync-AI · Capture AI vs Human Diff — mide diferencias entre respuestas/decisiones de IA y humanos para mejorar calidad del soporte y detectar automatizaciones que necesitan revisión.",
+    cadence: "programado / diagnóstico",
+  },
+  DyimJH7PWG6SNyFH: {
+    project: "TerminalSync",
+    description:
+      "Sync-AI · Event Beacon — recibe eventos internos de Sync-AI para dejar trazabilidad de lo que pasó antes de que otro flujo responda o actúe.",
+    cadence: "cuando llega un evento",
+  },
+  "5vn2BvCsyXkp44ii": {
+    project: "TerminalSync",
+    description:
+      "Sync-AI · Image Generation — endpoint/flujo auxiliar para generar imágenes desde el sistema Sync-AI cuando una experiencia necesita visuales.",
+    cadence: "cuando se pide una imagen",
+  },
+  xsM52tJs7osyMoDv: {
+    project: "TerminalSync",
+    description:
+      "Sync-AI · Ticket Reply Action — toma una respuesta aprobada/lista y ejecuta la acción final de responder el ticket o actualizar el estado.",
+    cadence: "cuando hay respuesta lista",
+  },
+  fBb4i7UXDHSiK8ux: {
+    project: "TerminalSync",
+    description:
+      "Sync-AI · Ticket Reply Assistant — genera borradores/respuestas de soporte para tickets de TerminalSync usando el contexto disponible.",
+    cadence: "cuando entra un ticket",
+  },
+  FWEqbhqJ8Lxh13HX: {
+    project: "TerminalSync",
+    description:
+      "Sync-AI · Ticket Reply Cron — revisa periódicamente tickets pendientes y dispara el assistant cuando hay algo que responder.",
+    cadence: "cada 30 minutos",
+  },
+  "7ICunvtMag5cFoEh": {
+    project: "TerminalSync",
+    description:
+      "Sync-AI · Ticket Status Webhook — recibe cambios de estado de tickets para mantener Sync-AI y el panel sincronizados.",
+    cadence: "cuando cambia un ticket",
+  },
+  aF8Kcjkth2rQ9luN: {
+    project: "TerminalSync",
+    description:
+      "TSync Bridge · Inbound — recibe mensajes desde Kapso WhatsApp/Telegram y los guarda en Supabase para que los agentes de TerminalSync puedan procesarlos.",
+    cadence: "cuando llega un mensaje",
+  },
+  k3E4DdeKfItT9gqZ: {
+    project: "TerminalSync",
+    description:
+      "TSync Bridge · Outbound — envía respuestas/notificaciones desde TerminalSync hacia Kapso WhatsApp o Telegram. WhatsApp requiere template si la ventana de 24h está cerrada.",
+    cadence: "cuando hay mensaje saliente",
   },
 
   // ─────────────── Printify ───────────────
@@ -560,6 +681,19 @@ const WORKFLOW_META: Record<
   },
 };
 
+
+const OPS_LANDING_VISIBLE_WORKFLOW_IDS = new Set([
+  // Core growth/outreach operating system for the current empresarios/agencias niche.
+  "7ooGFm2XvT8SLdde", // Captura diaria Influencers YT+X Agencias
+  "5JJPordwuTwaPPPK", // Re-enrich Influencers DB
+  "21DqwyeruJlFNqgW", // Sender · Influencer Emails/DMs
+  "jINNqL72z9yNcKx6", // Tracker · Replies
+  "2gbpZFPPlYMo6k3f", // Trend Signals Daily
+  "9sMs1ExYtue9ay1n", // Welcome Flow
+  "i5Miq18SAdvaTnbK", // Feedback / sugerencias
+  "bIQyZUPQOvmVXwj5", // Discovery/Ops Error Alert
+]);
+
 interface N8nWorkflow {
   id: string;
   name: string;
@@ -595,6 +729,7 @@ interface OpsWorkflow {
    */
   resultUrl: string | null;
   resultLabel: string | null;
+  operatorActions: { label: string; href?: string; note?: string }[];
   updatedAt: string | null;
   todayCount: number;
   todaySuccess: number;
@@ -705,6 +840,16 @@ interface WorkflowResults {
  * Keep this in sync with WORKFLOW_META — if a TerminalSync workflow
  * starts writing to a new table, both maps want an entry.
  */
+
+function agencyReviewBadgeLabel(status: unknown): string | undefined {
+  const value = String(status ?? "").toLowerCase();
+  if (!value) return undefined;
+  if (value === "pending") return "Falta aprobación";
+  if (value === "qualified") return "Aprobado";
+  if (value === "rejected") return "Rechazado";
+  return String(status);
+}
+
 const WORKFLOW_RESULTS_SOURCE: Record<
   string,
   {
@@ -780,10 +925,10 @@ const WORKFLOW_RESULTS_SOURCE: Record<
     table: "agency_influencers",
     timeField: "discovered_at",
     select:
-      "name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,bio_link_url,subscribers,target_audience,language,classification_score,classification_reason,status,discovered_at",
+      "id,name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,bio_link_url,subscribers,target_audience,language,classification_score,classification_reason,status,discovered_at",
     label: "Influencers agency-targeted",
     unit: "influencers",
-    itemsLimit: 10,
+    itemsLimit: 25,
     mapItem: (r) => {
       const score =
         typeof r.classification_score === "number"
@@ -800,11 +945,12 @@ const WORKFLOW_RESULTS_SOURCE: Record<
         .filter(Boolean)
         .join(" · ");
       return {
+        id: r.id ? String(r.id) : undefined,
         title: String(r.name ?? r.handle ?? "(sin nombre)"),
         subtitle: sub || (r.classification_reason ? String(r.classification_reason).slice(0, 140) : undefined),
         url: r.source_url ? String(r.source_url) : undefined,
         timestamp: String(r.discovered_at ?? ""),
-        badge: r.status ? String(r.status) : undefined,
+        badge: agencyReviewBadgeLabel(r.status),
         contacts: buildContacts(r),
       };
     },
@@ -825,21 +971,42 @@ const WORKFLOW_RESULTS_SOURCE: Record<
       badge: r.review_status ? String(r.review_status) : undefined,
     }),
   },
-  // Re-enrich Influencers DB → uses updated_at to surface fresh enrichments
+  // Re-enrich Influencers DB → agency_influencers
+  // This flow refreshes the same CRM table used by Captura diaria. It
+  // should NOT read discovery_connectors; that old mapping made the card
+  // show marketplace/connector rows instead of influencer contacts.
   "5JJPordwuTwaPPPK": {
-    table: "discovery_connectors",
+    table: "agency_influencers",
     timeField: "updated_at",
     select:
-      "product_name,creator_name,creator_handle,creator_email,source_platform,source_url,review_status,updated_at",
-    label: "Filas re-enriquecidas",
-    unit: "filas",
-    mapItem: (r) => ({
-      title: String(r.creator_name ?? r.creator_handle ?? r.product_name ?? "(sin nombre)"),
-      subtitle: [r.creator_email, r.source_platform].filter(Boolean).join(" · ") || undefined,
-      url: r.source_url ? String(r.source_url) : undefined,
-      timestamp: String(r.updated_at ?? ""),
-      badge: r.review_status ? String(r.review_status) : undefined,
-    }),
+      "name,handle,platform,source_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,bio_link_url,website_url,subscribers,target_audience,language,classification_score,status,updated_at",
+    label: "Influencers refrescados",
+    unit: "influencers",
+    itemsLimit: 10,
+    mapItem: (r) => {
+      const score =
+        typeof r.classification_score === "number"
+          ? `${Math.round((r.classification_score as number) * 100)}%`
+          : null;
+      const langTag = r.language ? `🌐 ${String(r.language).toUpperCase()}` : null;
+      return {
+        id: r.id ? String(r.id) : undefined,
+        title: String(r.name ?? r.handle ?? "(sin nombre)"),
+        subtitle: [
+          r.target_audience,
+          langTag,
+          score ? `score ${score}` : null,
+          r.subscribers ? `${(r.subscribers as number).toLocaleString()} subs` : null,
+          r.platform,
+        ]
+          .filter(Boolean)
+          .join(" · ") || undefined,
+        url: r.source_url ? String(r.source_url) : undefined,
+        timestamp: String(r.updated_at ?? ""),
+        badge: agencyReviewBadgeLabel(r.status),
+        contacts: buildContacts(r),
+      };
+    },
   },
   // No-Dev Prospects → prospects_no_dev
   lmbQv6R17dqY8pvO: {
@@ -937,7 +1104,7 @@ async function fetchWorkflowResults(
     // they're audit-only artifacts, not actionable leads.
     const limit = cfg.itemsLimit ?? 5;
     const items = rows
-      .filter((r) => (r.badge ?? "").toLowerCase() !== "rejected")
+      .filter((r) => !["rejected", "rechazado"].includes((r.badge ?? "").toLowerCase()))
       .sort((a, b) => {
         const aHas = (a.contacts?.length ?? 0) > 0 ? 1 : 0;
         const bHas = (b.contacts?.length ?? 0) > 0 ? 1 : 0;
@@ -1116,7 +1283,7 @@ export async function GET() {
     }
   }
 
-  const items: OpsWorkflow[] = workflows.map((w) => {
+  const allItems: OpsWorkflow[] = workflows.map((w) => {
     const meta = WORKFLOW_META[w.id];
     const project = meta?.project ?? projectFromName(w.name);
     const allFor = byWorkflow.get(w.id) ?? [];
@@ -1135,6 +1302,7 @@ export async function GET() {
       cadence: meta?.cadence ?? null,
       resultUrl: meta?.resultUrl ?? null,
       resultLabel: meta?.resultLabel ?? null,
+      operatorActions: meta?.operatorActions ?? [],
       updatedAt: w.updatedAt ?? null,
       todayCount: todayFor.length,
       todaySuccess: todayFor.filter((e) => e.status === "success").length,
@@ -1160,6 +1328,11 @@ export async function GET() {
       lastError: lastErrorByWf.get(w.id) ?? null,
     };
   });
+
+  // The Ops landing is for JM's current TerminalSync growth/ops system, not
+  // a raw n8n inventory. Hide old client projects, tests, support internals,
+  // and deprecated discovery flows from this view. Nothing is deleted from n8n.
+  const items = allItems.filter((it) => OPS_LANDING_VISIBLE_WORKFLOW_IDS.has(it.id));
 
   // Aggregate per-project totals so the page shows a quick top strip.
   const projects = new Map<string, { total: number; active: number; runs24h: number; errors24h: number }>();

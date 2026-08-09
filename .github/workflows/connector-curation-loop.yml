@@ -1,0 +1,148 @@
+name: Connector Curation Loop
+
+# Weekly agent-run marketplace loop.
+#
+# This is intentionally NOT a plain script: the loop requires reading official
+# vendor sources, applying the persona/publisher/license gates, writing catalog
+# content, opening a draft PR, and registering the run in /admin/ops/loop-runs.
+# Claude Code GitHub Action supports scheduled custom automation with a prompt.
+# See: https://code.claude.com/docs/en/github-actions
+#
+# Required repo secrets:
+#   ANTHROPIC_API_KEY        Direct Claude API key for anthropics/claude-code-action@v1.
+#   LOOP_RUNS_WRITE_TOKEN    Shared bearer token accepted by /api/internal/loop-runs.
+#   TS_CROSS_REPO_TOKEN      Optional PAT/app token that can create the required app mirror PR in jmggaravito-sudo/terminal-sync.
+
+on:
+  schedule:
+    # Monday 14:00 UTC / 09:00 Bogotá. First of the four weekly marketplace rounds.
+    - cron: "0 14 * * 1"
+  workflow_dispatch:
+    inputs:
+      focus:
+        description: "Optional candidate focus, e.g. asana, klaviyo, canva"
+        required: false
+        type: string
+      dry_run:
+        description: "Investigate and report, but do not push/open PR/register run"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: connector-curation-loop
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  run:
+    name: Run Connector Loop agent
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Dry-run preflight smoke
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run == true }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LOOP_RUNS_ENDPOINT: https://terminalsync.ai/api/internal/loop-runs
+          LOOP_RUNS_WRITE_TOKEN: ${{ secrets.LOOP_RUNS_WRITE_TOKEN }}
+          TS_CROSS_REPO_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
+          TERMINALSYNC_APP_REPO: jmggaravito-sudo/terminal-sync
+        run: |
+          set -euo pipefail
+          test -n "$ANTHROPIC_API_KEY"
+          test -n "$LOOP_RUNS_WRITE_TOKEN"
+          test -n "$TS_CROSS_REPO_TOKEN"
+
+          anthropic_code=$(curl -sS -o /tmp/anthropic-models.json -w '%{http_code}'             https://api.anthropic.com/v1/models             -H "x-api-key: $ANTHROPIC_API_KEY"             -H "anthropic-version: 2023-06-01")
+          test "$anthropic_code" = "200"
+          python3 - <<'PYCODE'
+          import json
+          from pathlib import Path
+          ids = [m.get('id') for m in json.loads(Path('/tmp/anthropic-models.json').read_text()).get('data', [])]
+          assert 'claude-sonnet-5' in ids, 'claude-sonnet-5 not available to ANTHROPIC_API_KEY'
+          print('Anthropic API: OK')
+          PYCODE
+
+          loop_code=$(curl -sS -o /tmp/loop-runs-smoke.json -w '%{http_code}'             -X POST "$LOOP_RUNS_ENDPOINT"             -H "Authorization: Bearer $LOOP_RUNS_WRITE_TOKEN"             -H "Content-Type: application/json"             --data '{bad json')
+          test "$loop_code" = "400"
+          grep -q 'Invalid JSON' /tmp/loop-runs-smoke.json
+          echo 'Loop run write token: OK'
+
+          GH_TOKEN="$TS_CROSS_REPO_TOKEN" gh repo view "$TERMINALSYNC_APP_REPO" --json nameWithOwner >/tmp/app-repo.json
+          echo 'Cross-repo token: OK'
+
+      - name: Run marketplace connector curation loop
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run != true }}
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LOOP_RUNS_ENDPOINT: https://terminalsync.ai/api/internal/loop-runs
+          LOOP_RUNS_WRITE_TOKEN: ${{ secrets.LOOP_RUNS_WRITE_TOKEN }}
+          LOOP_FOCUS: ${{ inputs.focus }}
+          LOOP_DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          TERMINALSYNC_APP_REPO: jmggaravito-sudo/terminal-sync
+          TERMINALSYNC_APP_BASE_BRANCH: release/v0.2.18-lab
+          TS_CROSS_REPO_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          base_branch: main
+          branch_prefix: loop/connectors/
+          prompt: |
+            You are running TerminalSync's Connector Curation Loop automatically.
+
+            Goal: discover and ship marketplace connectors that pass the repo's published Connector Loop rules, then make the result visible in the existing ops panel.
+
+            Read these files first and treat them as authoritative:
+            - docs/connector-curation-loop.md
+            - content/connectors/SOURCES.md
+
+            Current focus from workflow input: "${{ inputs.focus }}".
+            Dry run: ${{ inputs.dry_run || 'false' }}.
+
+            Operating rules:
+            1. Start from current main and create exactly one branch for this run.
+            2. Use only official vendor sources for factual content. GitHub/npm/official docs are acceptable; aggregators are discovery hints only.
+            3. Apply the persona filter in content/connectors/SOURCES.md. Every completed run must include at least one business-first item unless the run is a documented no-ship run.
+            4. Prioritize the queued remote candidates in SOURCES.md: Asana, Klaviyo, Canva; also check whether any of them now publish official GitHub/registry material like Zoom did.
+            5. Do not ship PayPal unless the 8h-token + license/repo blockers are resolved. Do not ship Wix unless the toolset is no longer dev-docs-only.
+            6. If you ship a connector, create strict EN/ES parity content, official logo or documented fallback, and update SOURCES.md.
+            7. If nothing is shippable, still update SOURCES.md with a dated run note explaining what official sources were checked and why candidates were skipped/deferred. That gives the run a reviewable PR and makes the result visible.
+            8. Run the relevant validation before opening PRs: npm test at minimum; if only markdown/content changed and the full suite is unexpectedly blocked by unrelated environment issues, run the marketplace/content tests you can and document the blocker in the PR bodies.
+            9. Open exactly one landing/web draft PR in this repo. Never merge it.
+            10. Open exactly one app mirror draft PR in $TERMINALSYNC_APP_REPO against $TERMINALSYNC_APP_BASE_BRANCH, following docs/integration-loop-two-pr-policy.md. Use TS_CROSS_REPO_TOKEN for the app repo if present; if it is missing or unauthorized, mark the web PR body as `App mirror PR: blocked — missing cross-repo token` and do not report the integration as fully ready.
+            11. Link both PRs in their bodies when both exist. The app PR body must include `## Lo que el bot de soporte debe saber`.
+            12. After the landing/web draft PR exists and this is not a dry run, register the run history using scripts/record_loop_run.mjs with the actual counts and include the app PR URL or blocker in the log:
+                LOOP_RUNS_ENDPOINT="$LOOP_RUNS_ENDPOINT" LOOP_RUNS_WRITE_TOKEN="$LOOP_RUNS_WRITE_TOKEN" node scripts/record_loop_run.mjs --kind connectors --found <connectors_added> --skipped <candidates_skipped_or_deferred> --items <connector_slugs_csv> --pr <landing_web_draft_pr_url>
+
+            Expected final answer in the workflow log:
+            - Landing/web PR URL
+            - App mirror PR URL or blocker
+            - connectors added count
+            - skipped/deferred count
+            - landing connector links visible in /admin/ops/loop-runs
+            - where results are visible: /admin/ops/loop-runs
+          claude_args: |
+            --model claude-sonnet-5
+            --max-turns 80
+            --allowedTools Read,Write,Edit,MultiEdit,Bash,WebFetch,WebSearch,Grep,Glob

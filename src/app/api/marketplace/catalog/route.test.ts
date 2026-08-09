@@ -118,6 +118,35 @@ describe("GET /api/marketplace/catalog", () => {
     expect(existsSync(join(process.cwd(), "public", pathname!))).toBe(true);
   });
 
+  it("supervises integration UX: every public kit has TS logo, explanation, href and items", async () => {
+    for (const lang of ["es", "en"] as const) {
+      const { body } = await callCatalog(lang);
+      expect(body.bundles.length, `${lang} should expose kits`).toBeGreaterThan(0);
+
+      for (const kit of body.bundles) {
+        expect(kit.heroImageUrl, `${lang}/${kit.slug} heroImageUrl`).toMatch(
+          /^https:\/\/terminalsync\.ai\/logos\/ts-kit\.svg\?v=/,
+        );
+        const logoPath = publicAssetPathFromCatalogUrl(kit.heroImageUrl!);
+        expect(logoPath, `${lang}/${kit.slug} logo path`).toBe("/logos/ts-kit.svg");
+        expect(existsSync(join(process.cwd(), "public", logoPath!))).toBe(true);
+
+        expect(typeof kit.descriptionMd, `${lang}/${kit.slug} descriptionMd`).toBe("string");
+        expect(
+          kit.descriptionMd!.trim().length,
+          `${lang}/${kit.slug} needs a real explanation for the app detail panel`,
+        ).toBeGreaterThan(80);
+
+        expect(kit.href, `${lang}/${kit.slug} href`).toBe(`/${lang}/stacks/${kit.slug}`);
+        expect(kit.items.length, `${lang}/${kit.slug} items`).toBeGreaterThan(0);
+        for (const item of kit.items) {
+          expect(item.name, `${lang}/${kit.slug}/${item.slug} item name`).not.toBe("");
+          expect(item.tagline, `${lang}/${kit.slug}/${item.slug} item tagline`).not.toBe("");
+        }
+      }
+    }
+  });
+
   it("does not return duplicate bundle or kit slugs", async () => {
     const { body } = await callCatalog("es");
     const slugs = body.bundles.map((bundle) => bundle.slug);
@@ -135,7 +164,9 @@ describe("GET /api/marketplace/catalog", () => {
   });
 
   it("returns exactly the launch-ready skills in the public catalog response", async () => {
-    // 7 molded skills + the 4 native document skills (included: true).
+    // 15 molded skills (7 general + 6 CRM/retention + 2 empresario skills,
+    // published live with no catalogReady:false) + the 4 native document
+    // skills (included: true).
     const publicSlugs = [
       "code-reviewer",
       "doc-coauthoring",
@@ -144,10 +175,29 @@ describe("GET /api/marketplace/catalog", () => {
       "meta-ads-creator",
       "seo-auditor",
       "skill-creator",
+      // CRM / retention skills — live in the public catalog.
+      "carrito-abandonado",
+      "ltv-cohortes",
+      "pedir-resenas",
+      "promos-cupones",
+      "rfm-segmentacion",
+      "winback-dormidos",
+      // Empresario skills loop (quotes + organic social content).
+      "cotizaciones",
+      "contenido-social",
       "docx",
       "pdf",
       "pptx",
       "xlsx",
+      // Skills Loop 2026-07-31 (higgsfield/zapier/notebooklm/ideogram focus) —
+      // beat baseline clearly (see docs/skills-evals/<slug>.md).
+      "higgsfield-video-director",
+      "ideogram-creative-director",
+      "zapier-automation-blueprint",
+      // Tax skills for entrepreneurs — finance category.
+      "tax-prep-checklist",
+      "1099-w9-organizer",
+      "quarterly-tax-estimate-prep",
     ] as const;
     const sorted = [...publicSlugs].sort();
 

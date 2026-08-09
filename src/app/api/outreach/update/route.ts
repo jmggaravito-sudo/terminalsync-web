@@ -14,6 +14,57 @@ type UpdatePayload = {
   op_last_message?: string | null;
 };
 
+type ReplyBridgeResult =
+  | { status: "not_needed" }
+  | { status: "not_configured" }
+  | { status: "sent"; upstreamStatus: number }
+  | { status: "failed"; error: string };
+
+const OUTREACH_REPLY_WEBHOOK_URL = process.env.OUTREACH_REPLY_WEBHOOK_URL || "";
+
+async function notifyReplyBridge(args: {
+  lead: Record<string, unknown> | null;
+  payload: UpdatePayload;
+  nowIso: string;
+}): Promise<ReplyBridgeResult> {
+  if (args.payload.op_status !== "respondio") return { status: "not_needed" };
+  if (!OUTREACH_REPLY_WEBHOOK_URL) return { status: "not_configured" };
+
+  try {
+    const upstream = await fetch(OUTREACH_REPLY_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event: "agency_influencer_replied",
+        source: "terminalsync-web-admin-ops",
+        occurred_at: args.nowIso,
+        lead: args.lead,
+        operator_notes: args.payload.op_notes ?? null,
+        last_message: args.payload.op_last_message ?? null,
+        desired_actions: [
+          "upsert_ghl_contact",
+          "create_or_move_ghl_opportunity",
+          "notify_telegram",
+          "prepare_ai_response_analysis",
+        ],
+      }),
+      signal: AbortSignal.timeout(15_000),
+    });
+
+    if (!upstream.ok) {
+      const text = await upstream.text().catch(() => "");
+      return {
+        status: "failed",
+        error: `HTTP ${upstream.status}${text ? `: ${text.slice(0, 180)}` : ""}`,
+      };
+    }
+
+    return { status: "sent", upstreamStatus: upstream.status };
+  } catch (e) {
+    return { status: "failed", error: e instanceof Error ? e.message : "unknown error" };
+  }
+}
+
 export async function POST(req: Request) {
   const user = await authenticate(req);
   if (!user || !isAdmin(user)) {
@@ -43,12 +94,11 @@ export async function POST(req: Request) {
   const nowIso = new Date().toISOString();
   const patch: Record<string, unknown> = { op_status: body.op_status };
 
-  // TODO GHL (fast-follow): cuando body.op_status === 'respondio' disparar
-  // upsert de contacto a sub-account XMfsHoa5sEugu6zuVZdr (tag src:discovery)
-  // y crear/avanzar oportunidad a etapa "Contactado" del pipeline
-  // 4Y3fCkfYpBCDhjAbZMwJ vía n8n. Esto depende del cableado discovery→GHL
-  // que todavía no existe. Hasta entonces op_status es estado operativo,
-  // no verdad comercial.
+  // GHL/Telegram bridge: web stays credential-free and only notifies n8n.
+  // n8n owns GoHighLevel credentials, pipeline movement, Telegram alerts,
+  // and AI response analysis. If OUTREACH_REPLY_WEBHOOK_URL is unset, the
+  // Supabase state still updates but the API returns replyBridge.not_configured
+  // so the UI/operator can see that GHL is still pending.
 
   if (body.op_status === "enviado") {
     patch.op_contacted_at = nowIso;
@@ -66,9 +116,14 @@ export async function POST(req: Request) {
     .from("agency_influencers")
     .update(patch)
     .eq("id", body.id)
-    .select("id, op_status")
+    .select(
+      "id,op_status,name,handle,platform,profile_url,email,instagram_handle,twitter_handle,linkedin_url,tiktok_handle,source_url,op_last_message,op_notes",
+    )
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ ok: true, lead: data });
+
+  const replyBridge = await notifyReplyBridge({ lead: data ?? null, payload: body, nowIso });
+  const ok = replyBridge.status !== "failed";
+  return NextResponse.json({ ok, lead: data, replyBridge }, { status: ok ? 200 : 502 });
 }

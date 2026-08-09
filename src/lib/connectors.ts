@@ -24,6 +24,44 @@ import {
   readInstallOverrideFromFrontmatter,
 } from "./marketplace/installFields";
 
+/**
+ * Las IAs a las que el desktop le puede ENTREGAR un connector.
+ *
+ * TerminalSync/GLM no aparece a propósito: corre sobre el CLI de Claude
+ * (`aiProviders.ts`, `runtime.kind: "proxy-via-claude-cli"`), así que lee la
+ * misma config y hereda todo lo de `claude`. Listarlo aparte daría a entender
+ * que hay una cuarta escritura, y no la hay.
+ */
+export type AiDeliveryTarget = "claude" | "codex" | "gemini";
+
+/**
+ * A qué IAs llega un connector instalado.
+ *
+ * **Es un hecho del sistema, no del connector.** El desktop escribe la misma
+ * entrada MCP en las tres configs (`~/.claude.json`, `~/.codex/config.toml`,
+ * `~/.gemini/settings.json`), así que la respuesta es igual para los 54. Por
+ * eso vive acá, en un solo lugar, y no en el frontmatter de cada archivo:
+ * declararlo 54 veces sería 54 lugares para que se desincronice.
+ *
+ * Si algún día un connector puntual no llegue a alguna IA, ahí sí corresponde
+ * un override por frontmatter. Hoy no existe ese caso.
+ *
+ * ⚠️ **Entrega no es evaluación.** Esto dice que el connector *llega*, no que
+ * fue probado en cada IA. Es deliberadamente más débil que el `compatibleWith`
+ * de las skills, que según `content/skills/RULES.md` exige evaluar en cada
+ * proveedor antes de declararlo. Si algún día se evalúan los connectors uno
+ * por uno, ese resultado va en un campo aparte — no pisando éste.
+ *
+ * Histórico: hasta 2026-08-07 el desktop solo escribía la config de Claude
+ * (Codex y Gemini devolvían "writer not implemented yet"), así que un
+ * connector se veía universal y llegaba a una sola IA. Ver terminal-sync#1262.
+ */
+export const CONNECTOR_DELIVERY_TARGETS: readonly AiDeliveryTarget[] = [
+  "claude",
+  "codex",
+  "gemini",
+] as const;
+
 export interface ConnectorMeta {
   slug: string;
   name: string;
@@ -52,6 +90,9 @@ export interface ConnectorMeta {
    *  is opening the upstream SaaS. Drives whether we show the "Add to
    *  Terminal Sync" deep-link CTA. */
   hasManifest: boolean;
+  /** A qué IAs llega este connector una vez instalado. Ver
+   *  `CONNECTOR_DELIVERY_TARGETS` — hoy es igual para todos. */
+  deliveredTo: readonly AiDeliveryTarget[];
   /** True when the manifest declares any `${SECRET:NAME}` placeholder.
    *  Catalog endpoint reads this so the panel can show a "necesita clave"
    *  badge — and so drag&drop can route to the install modal (which
@@ -283,6 +324,9 @@ async function getMarketplaceConnector(
     affiliate: false,
     tagline: row.tagline,
     hasManifest: false,
+    // Mismo destino que los first-party: el desktop escribe la entrada MCP en
+    // las tres configs sin mirar de qué fuente vino el connector.
+    deliveredTo: CONNECTOR_DELIVERY_TARGETS,
     // Marketplace rows don't carry their manifest inline; the catalog
     // scan can't see secret placeholders without joining
     // connector_versions. Treat as `false` for now — all marketplace
@@ -350,6 +394,7 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMe
     affiliate: data.affiliate === true,
     tagline: get("tagline"),
     hasManifest,
+    deliveredTo: CONNECTOR_DELIVERY_TARGETS,
     requiresEnvSecrets,
     originalAuthor: get("originalAuthor") || undefined,
     originalAuthorUrl: get("originalAuthorUrl") || undefined,
@@ -438,6 +483,9 @@ export async function listMarketplaceConnectors(): Promise<ConnectorMeta[]> {
       // shape today — they're treated as external CTAs. When the marketplace
       // gains MCP manifests we'll flip this per-row.
       hasManifest: false,
+      // Mismo destino que los first-party: el desktop escribe la entrada MCP
+      // en las tres configs sin mirar de qué fuente vino el connector.
+      deliveredTo: CONNECTOR_DELIVERY_TARGETS,
       // Same constraint as `hasManifest`: the row doesn't expose the
       // manifest, so we can't scan for secrets here. Treat as false until
       // the listings query joins connector_versions.

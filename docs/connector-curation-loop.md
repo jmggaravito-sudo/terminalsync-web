@@ -18,8 +18,14 @@ auto-promotion pipeline and must not be used as the Loop entrypoint.
 6. Source the **official vendor logo** for each new connector (SOURCES.md rule #9) and vendorize it under `public/connectors/`. When the official logo can't be obtained in the run's environment, ship the TS fallback, record it in the "Logos pendientes" backlog of `content/connectors/SOURCES.md`, and flag it in the PR — a fallback logo is a debt the **next** Loop run must close, not a finished state.
 7. Document SKIPs in `content/connectors/SOURCES.md`.
 8. Before finishing, clear any items in the "Logos pendientes" backlog whose official logo is now obtainable — replacing a fallback counts toward the run.
-9. Validate the change and open one draft PR.
-10. Stop. Do not merge and do not push to `main`.
+9. Validate the change.
+10. Open the **landing/web draft PR** in `terminalsync-web`.
+11. Open the **app mirror draft PR** in `terminal-sync` following `docs/integration-loop-two-pr-policy.md`. This is required even when the app consumes the remote catalog automatically; prove or adjust the Integraciones behavior.
+12. Stop. Do not merge and do not push to `main`.
+
+## Landing-first sync gate
+
+Connector runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first, always** — it is what `/api/marketplace/catalog` serves and the desktop consumes it automatically. An app PR is required **only** when the connector needs desktop code it doesn't have (a special install flow, or an item that would render as a broken generic card). A connector with a normal manifest needs none: state `App PR: no aplica — la app consume el catálogo`. Sync is verified by the desktop guard, not declared. If the landing PR can't be created, the connector is **not** ready — never compensate with an app PR mirroring content that doesn't exist.
 
 ## Required run-history registration
 
@@ -30,8 +36,10 @@ After the draft PR exists, the agent must record the completed run with
 LOOP_RUNS_ENDPOINT="https://terminalsync.ai/api/internal/loop-runs" \
 LOOP_RUNS_WRITE_TOKEN="$LOOP_RUNS_WRITE_TOKEN" \
 node scripts/record_loop_run.mjs \
+  --kind connectors \
   --found 3 \
   --skipped 2 \
+  --items "pdf,map,threejs" \
   --pr "https://github.com/jmggaravito-sudo/terminalsync-web/pull/115"
 ```
 
@@ -40,8 +48,10 @@ node scripts/record_loop_run.mjs \
 
 Number semantics:
 
+- `--kind connectors`: identifies this as a connector Loop run in the shared ops panel.
 - `--found`: connectors added to the catalog in this run.
 - `--skipped`: candidate connectors documented as SKIP in this run.
+- `--items`: landing slugs for the connectors added/promoted, so `/admin/ops/loop-runs` can show direct `/es/connectors/<slug>` links.
 
 Example: PR #115 added `pdf`, `map`, and `threejs`, and documented SKIPs for
 `everything` and `server-sdk`, so the registration numbers are `--found 3` and
