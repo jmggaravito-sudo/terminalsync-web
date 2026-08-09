@@ -1,6 +1,24 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
-import { globSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { join } from "node:path";
+
+/** Recorrido manual en vez de `globSync`: ese existe recién en Node 22 y el CI
+ *  corre una versión anterior, así que en local pasaba y allá reventaba con
+ *  "globSync is not a function". Mismo tipo de trampa local-vs-CI que ya nos
+ *  costó el gate del app mirror. */
+function archivosEs(): string[] {
+  const out: string[] = [];
+  const raiz = "content";
+  if (!existsSync(raiz)) return out;
+  for (const grupo of readdirSync(raiz)) {
+    const dir = join(raiz, grupo, "es");
+    if (!existsSync(dir)) continue;
+    for (const f of readdirSync(dir)) {
+      if (f.endsWith(".md")) out.push(join(dir, f));
+    }
+  }
+  return out.sort();
+}
 
 /**
  * El catálogo en español habla neutral (tú), nunca voseo — el mercado es
@@ -160,7 +178,7 @@ const DEUDA = new Set([
 describe("el catálogo en español habla neutral", () => {
   it("ningún archivo NUEVO entra en voseo", () => {
     const nuevos: string[] = [];
-    for (const p of globSync("content/*/es/*.md").sort()) {
+    for (const p of archivosEs()) {
       if (DEUDA.has(p)) continue;
       const txt = readFileSync(p, "utf8");
       const m = VOSEO.exec(txt);
@@ -176,7 +194,7 @@ describe("el catálogo en español habla neutral", () => {
   it("la lista de deuda no crece: todo lo que está listado existe", () => {
     // Si alguien renombra un archivo y deja el viejo en la lista, la deuda
     // parece más grande de lo que es y nadie lo nota.
-    const vivos = new Set(globSync("content/*/es/*.md"));
+    const vivos = new Set(archivosEs());
     const fantasmas = [...DEUDA].filter((d) => !vivos.has(d));
     expect(fantasmas, `Listados pero ya no existen:\n  ${fantasmas.join("\n  ")}`).toEqual([]);
   });
