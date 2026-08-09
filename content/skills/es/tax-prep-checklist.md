@@ -5,7 +5,7 @@ category: finance
 vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
-tagline: "Sabé exactamente qué necesitás antes de que llegue la temporada de impuestos"
+tagline: "Sabe exactamente qué necesitas antes de que llegue la temporada de impuestos"
 description: "Arma una checklist personalizada de documentos y datos para declarar los impuestos de tu negocio, según el tipo de entidad, el estado, si tenés empleados/contratistas y qué cambió este año — sin estimar nunca cuánto debés ni decirte cómo declarar."
 license: "proprietary"
 marketplaceSource: "terminalsync"

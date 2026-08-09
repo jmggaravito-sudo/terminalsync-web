@@ -4,12 +4,12 @@ logo: /connectors/whatsapp.svg
 category: messaging
 status: soon
 simpleTitle: "Tu WhatsApp Business, con IA que responde"
-simpleSubtitle: "Claude contesta tus clientes automáticamente mientras dormís. Vos aprobás, él manda."
+simpleSubtitle: "Claude contesta tus clientes automáticamente mientras duermes. Tú apruebas, él envía."
 devTitle: "WhatsApp Business MCP (via Meta Cloud API)"
 devSubtitle: "Programmatic access to conversations, templates, and outbound sends."
 ctaUrl: "https://business.whatsapp.com"
 affiliate: false
-tagline: "Atención 24/7, con vos al mando"
+tagline: "Atención 24/7, contigo al mando"
 originalAuthor: "Meta Platforms"
 originalAuthorUrl: "https://whatsapp.com"
 license: "proprietary"

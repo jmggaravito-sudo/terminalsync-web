@@ -6,7 +6,7 @@ category: marketing
 status: available
 catalogReady: false
 simpleTitle: "Hacé que Claude escriba en TU voz"
-simpleSubtitle: "Dale 5 muestras de tu escritura una sola vez. De ahí en más cada mail, post, copy de anuncio suena a vos."
+simpleSubtitle: "Dale 5 muestras de tu escritura una sola vez. De ahí en más cada mail, post, copy de anuncio suena a ti."
 devTitle: "Brand Voice Skill"
 devSubtitle: "Modelado de voz few-shot: guarda 3-7 muestras + un manifest de tono, y lo aplica en cada generación."
 ctaUrl: "https://github.com/terminalsync/skills"

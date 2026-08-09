@@ -3,7 +3,7 @@ name: Kit Dueño de Negocio
 logo: /logos/ts-kit.svg
 category: operations
 status: available
-tagline: "Seguí prospectos, mandá propuestas, hacé el follow-up y mirá la plata — el lado de ventas y caja de un negocio chico en un solo lugar."
+tagline: "Sigue prospectos, envía propuestas, haz el follow-up y mira la plata — el lado de ventas y caja de un negocio chico en un solo lugar."
 description: "Un combo coherente para el dueño de un negocio chico que hace de todo un poco: tener prospectos y oportunidades en un tracker, mandar propuestas profesionales, hacer seguimiento sin que se te caiga nada, y ver la plata que entra — sin armar un stack aparte."
 marketplaceSource: "terminalsync"
 items:

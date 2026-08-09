@@ -4,7 +4,7 @@ logo: /connectors/pinecone.svg
 category: dev
 status: available
 simpleTitle: "Preguntale — y actuá — sobre tu base de datos vectorial de Pinecone en lenguaje natural"
-simpleSubtitle: "Server oficial de Pinecone: buscá en la doc, configurá índices, subí y consultá datos."
+simpleSubtitle: "Server oficial de Pinecone: busca en la doc, configura índices, sube y consulta datos."
 devTitle: "Pinecone MCP Connector"
 devSubtitle: "Official @pinecone-database/mcp: developer tools over Pinecone projects and docs, API-key scoped."
 ctaUrl: "https://www.pinecone.io"

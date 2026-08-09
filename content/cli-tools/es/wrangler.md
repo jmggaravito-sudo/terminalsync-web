@@ -8,7 +8,7 @@ vendor: Cloudflare
 homepage: https://developers.cloudflare.com/workers/wrangler/
 repo: https://github.com/cloudflare/workers-sdk
 category: deploy
-tagline: Construí, probá y deployá Workers, Pages y D1 desde un solo CLI.
+tagline: Construye, prueba y despliega Workers, Pages y D1 desde un solo CLI.
 description: El CLI oficial de Cloudflare para todo Workers — Workers, Pages, D1 (SQLite), R2 (object storage), KV, Queues, Durable Objects. Dev local, tail de logs en prod, secretos, deploy en un comando. TerminalSync mantiene el runbook de Workers y `.env` del proyecto junto a tu terminal sincronizada.
 status: available
 ---

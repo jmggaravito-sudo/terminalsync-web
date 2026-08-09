@@ -4,7 +4,7 @@ logo: /connectors/gdrive.svg
 category: productivity
 status: available
 simpleTitle: "Tu Drive hablándole a tu IA (versión Anthropic)"
-simpleSubtitle: "Leé documentos, buscá archivos, resumí sheets — OAuth directo sin intermediarios."
+simpleSubtitle: "Lee documentos, busca archivos, resume sheets — OAuth directo sin intermediarios."
 devTitle: "Google Drive MCP (Anthropic first-party)"
 devSubtitle: "OAuth directo a Drive. Files API + export de Docs/Sheets/Slides."
 ctaUrl: "https://github.com/modelcontextprotocol/servers/tree/main/src/gdrive"

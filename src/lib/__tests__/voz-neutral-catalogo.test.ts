@@ -198,4 +198,27 @@ describe("el catálogo en español habla neutral", () => {
     const fantasmas = [...DEUDA].filter((d) => !vivos.has(d));
     expect(fantasmas, `Listados pero ya no existen:\n  ${fantasmas.join("\n  ")}`).toEqual([]);
   });
+
+  // Los taglines y subtítulos se reescribieron enteros el 9 ago (46 renglones),
+  // así que acá NO hay lista de deuda: es tolerancia cero. Son lo que se ve en
+  // la tarjeta del catálogo, o sea el texto que más gente lee y el único que
+  // muchos van a leer. El cuerpo del .md sigue grandfathered arriba.
+  it("ningún tagline ni subtítulo está en voseo — sin excepciones", () => {
+    const malos: string[] = [];
+    for (const p of archivosEs()) {
+      readFileSync(p, "utf8")
+        .split("\n")
+        .slice(0, 25)
+        .forEach((linea) => {
+          if (!/^(tagline|simpleSubtitle|devSubtitle):/.test(linea)) return;
+          const m = VOSEO.exec(linea);
+          if (m) malos.push(`${p} «${m[0]}» ${linea.trim().slice(0, 70)}`);
+        });
+    }
+    expect(
+      malos,
+      `Estos taglines están en voseo. Es lo que se ve en la tarjeta:\n  ` +
+        malos.join("\n  "),
+    ).toEqual([]);
+  });
 });

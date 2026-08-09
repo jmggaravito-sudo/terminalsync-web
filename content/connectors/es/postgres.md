@@ -4,7 +4,7 @@ logo: /connectors/postgres.svg
 category: database
 status: available
 simpleTitle: "Que tu IA consulte tu base Postgres en modo seguro"
-simpleSubtitle: "Mirá cómo está armada la base y hacé preguntas — sin tocar nada, sin escribir SQL."
+simpleSubtitle: "Mira cómo está armada la base y haz preguntas — sin tocar nada, sin escribir SQL."
 devTitle: "Postgres MCP Connector"
 devSubtitle: "Servidor oficial @modelcontextprotocol: schema resources + tool query en transacción READ ONLY."
 ctaUrl: "https://www.postgresql.org"

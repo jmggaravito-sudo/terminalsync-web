@@ -6,7 +6,7 @@ logo: /skills/xlsx.svg
 category: productivity
 status: available
 simpleTitle: "Hojas de cálculo que se llenan solas"
-simpleSubtitle: "Tablas dinámicas, fórmulas, gráficos — describí qué querés y Claude arma el .xlsx."
+simpleSubtitle: "Tablas dinámicas, fórmulas, gráficos — describe qué quieres y Claude arma el .xlsx."
 devTitle: "XLSX Skill"
 devSubtitle: "Skill oficial de Anthropic para workbooks `.xlsx`: fórmulas, pivots, charts, formato condicional."
 ctaUrl: "https://docs.claude.com/en/docs/agent-skills"

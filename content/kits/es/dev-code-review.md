@@ -3,7 +3,7 @@ name: Kit de Code Review y Triage
 logo: /logos/ts-kit.svg
 category: dev
 status: available
-tagline: "Revisá pull requests con contexto del repo y señal de errores de producción, desde la terminal."
+tagline: "Revisa pull requests con contexto del repo y señal de errores de producción, desde la terminal."
 description: "Un bundle de workflow de ingeniería para desarrolladores y equipos chicos que revisan código, triagean issues y conectan los cambios con los errores de producción sin rearmar el stack en cada repo."
 marketplaceSource: "terminalsync"
 items:

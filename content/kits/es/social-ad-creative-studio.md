@@ -3,7 +3,7 @@ name: Kit de Estudio Creativo para Avisos y Redes
 logo: /logos/ts-kit.svg
 category: marketing
 status: available
-tagline: "Planificá el concepto del aviso y después generá la imagen y el video — sin contratar un estudio."
+tagline: "Planifica el concepto del aviso y después genera la imagen y el video — sin contratar un estudio."
 description: "Un bundle de producción creativa para dueños de negocio y marketers que necesitan convertir una oferta en un concepto de aviso probado, más la imagen y el video reales, en vez de quedarse solo en un brief de texto."
 marketplaceSource: "terminalsync"
 items:

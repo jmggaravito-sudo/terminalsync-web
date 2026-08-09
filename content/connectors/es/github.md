@@ -4,7 +4,7 @@ logo: /connectors/github.svg
 category: dev
 status: available
 simpleTitle: "Que tu IA trabaje sobre tus repos"
-simpleSubtitle: "Leé archivos, abrí pull requests, buscá en issues — desde el chat, con los permisos que vos elijas."
+simpleSubtitle: "Lee archivos, abre pull requests, busca en issues — desde el chat, con los permisos que tú elijas."
 devTitle: "GitHub MCP Connector"
 devSubtitle: "Servidor oficial @modelcontextprotocol: repos, files, issues, PRs, reviews y búsqueda."
 ctaUrl: "https://github.com"

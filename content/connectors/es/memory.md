@@ -4,7 +4,7 @@ logo: /connectors/memory.svg
 category: dev
 status: available
 simpleTitle: "Tu IA recuerda entre conversaciones"
-simpleSubtitle: "Guardá preferencias, hechos y relaciones para que el agente no arranque de cero cada vez."
+simpleSubtitle: "Guarda preferencias, hechos y relaciones para que el agente no arranque de cero cada vez."
 devTitle: "Memory MCP Server"
 devSubtitle: "Persistent local knowledge graph with entities, relations and observations."
 ctaUrl: "https://github.com/modelcontextprotocol/servers/tree/main/src/memory"

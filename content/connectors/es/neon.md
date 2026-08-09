@@ -4,7 +4,7 @@ logo: /connectors/neon.svg
 category: dev
 status: available
 simpleTitle: "Preguntale — y actuá — sobre tu Postgres de Neon en lenguaje natural"
-simpleSubtitle: "Server oficial de Neon: administrá proyectos, branches y corré SQL."
+simpleSubtitle: "Server oficial de Neon: administra proyectos, branches y ejecuta SQL."
 devTitle: "Neon MCP Connector"
 devSubtitle: "Official @neondatabase/mcp-server-neon: tools over the Neon API, API-key scoped."
 ctaUrl: "https://neon.tech"

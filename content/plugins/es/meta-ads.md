@@ -3,7 +3,7 @@ name: Meta Ads
 logo: /connectors/meta-ads.svg
 category: marketing
 status: available
-tagline: "Mirá qué campaña ya no rinde — y conseguí ideas nuevas para probar, en un solo producto."
+tagline: "Mira qué campaña ya no rinde — y consigue ideas nuevas para probar, en un solo producto."
 description: "Junta el conector de Meta Ads (gasto, resultados y rendimiento de campañas de Facebook e Instagram, de solo lectura) con Meta Ads Creator (convierte lo que vendés en varias ideas de aviso distintas y listas para probar), para que 'esta campaña ya cansó' se convierta en creatividades nuevas para testear — sin abrir Ads Manager ni contratar una agencia."
 author: "TerminalSync"
 marketplaceSource: "terminalsync"

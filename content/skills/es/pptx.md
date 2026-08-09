@@ -6,7 +6,7 @@ logo: /skills/pptx.svg
 category: productivity
 status: available
 simpleTitle: "Decks armados en minutos, no en tardes"
-simpleSubtitle: "Pitches de ventas, all-hands, revisiones con clientes — Claude compone las slides por vos."
+simpleSubtitle: "Pitches de ventas, all-hands, revisiones con clientes — Claude compone las slides por ti."
 devTitle: "PPTX Skill"
 devSubtitle: "Skill oficial de Anthropic para presentaciones `.pptx`: layouts, slides master, charts, imágenes."
 ctaUrl: "https://docs.claude.com/en/docs/agent-skills"

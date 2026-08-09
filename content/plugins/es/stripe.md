@@ -3,7 +3,7 @@ name: Stripe
 logo: /connectors/stripe.svg
 category: operations
 status: available
-tagline: "Mirá quién no pagó y mandá el recordatorio — los cobros y el mensaje, juntos."
+tagline: "Mira quién no pagó y envía el recordatorio — los cobros y el mensaje, juntos."
 description: "Junta el conector de Stripe (facturación, pagos, clientes, reembolsos) con Internal Comms (redacta el recordatorio amable al cliente), para pasar de 'quién me debe' a 'ya le escribí' sin cambiar de herramienta — con vos aprobando antes de enviar."
 author: "TerminalSync"
 marketplaceSource: "terminalsync"

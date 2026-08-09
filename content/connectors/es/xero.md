@@ -4,7 +4,7 @@ logo: /connectors/xero.svg
 category: automation
 status: available
 simpleTitle: "Tu contabilidad, respondiendo en voz alta"
-simpleSubtitle: "\"¿Quién me debe?\" \"¿Qué está vencido?\" \"¿Cómo nos fue el mes pasado?\" — tu IA lee tus libros por vos."
+simpleSubtitle: "\"¿Quién me debe?\" \"¿Qué está vencido?\" \"¿Cómo nos fue el mes pasado?\" — tu IA lee tus libros por ti."
 devTitle: "Conector MCP de Xero"
 devSubtitle: "OAuth2 custom-connection sobre la Xero Accounting API — facturas, cuentas por cobrar vencidas, pagos, P&L, balance, contactos."
 ctaUrl: "https://www.xero.com"

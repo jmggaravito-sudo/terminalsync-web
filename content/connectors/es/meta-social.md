@@ -4,12 +4,12 @@ logo: /connectors/meta-social.svg
 category: messaging
 status: available
 simpleTitle: "Posteá en Instagram y Facebook sin abrir ninguna de las dos apps"
-simpleSubtitle: "Escribí el texto, elegí la foto — Claude lo publica en tus redes. Vos aprobás, él postea."
+simpleSubtitle: "Escribe el texto, elige la foto — Claude lo publica en tus redes. Tú apruebas, él publica."
 devTitle: "Publicación en Instagram + Facebook (via Meta Graph API)"
 devSubtitle: "OAuth de página + tokens de IG, publicación IG en dos pasos, posteo directo al feed de la Página — detrás de un gate de aprobación obligatorio."
 ctaUrl: "https://developers.facebook.com/docs/instagram-platform/content-publishing"
 affiliate: false
-tagline: "Un posteo, las dos redes — con vos al mando"
+tagline: "Una publicación, las dos redes — contigo al mando"
 originalAuthor: "Meta Platforms"
 originalAuthorUrl: "https://about.meta.com"
 license: "proprietary"

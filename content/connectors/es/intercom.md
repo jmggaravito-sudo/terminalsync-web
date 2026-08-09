@@ -4,7 +4,7 @@ logo: /connectors/intercom.svg
 category: support
 status: available
 simpleTitle: "Tu bandeja de soporte, atendida con vos"
-simpleSubtitle: "\"Mostrame las conversaciones sin leer\" \"Buscá al cliente juan@empresa.com\" — la IA revisa tu Intercom y prepara la respuesta."
+simpleSubtitle: "\"Muéstrame las conversaciones sin leer\" \"Busca al cliente juan@empresa.com\" — la IA revisa tu Intercom y prepara la respuesta."
 devTitle: "Conector de Intercom (propio)"
 devSubtitle: "Servidor MCP propio de TerminalSync sobre la Intercom API oficial — listar conversaciones, leerlas, buscar contactos y responder con confirmación."
 ctaUrl: "https://www.intercom.com"

@@ -4,7 +4,7 @@ logo: /connectors/monday.svg
 category: productivity
 status: available
 simpleTitle: "Tu tablero de trabajo, manejado por la IA"
-simpleSubtitle: "\"¿Qué está trabado?\" \"Agregá el lead nuevo al tablero de ventas\" — tu IA lee y actualiza monday.com."
+simpleSubtitle: "\"¿Qué está trabado?\" \"Agrega el lead nuevo al tablero de ventas\" — tu IA lee y actualiza monday.com."
 devTitle: "Conector MCP de monday.com"
 devSubtitle: "MCP oficial de monday.com sobre la API — boards, items, columnas, updates."
 ctaUrl: "https://monday.com"

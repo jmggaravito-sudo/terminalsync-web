@@ -4,7 +4,7 @@ logo: /connectors/puppeteer.svg
 category: dev
 status: available
 simpleTitle: "Que tu IA use un navegador real"
-simpleSubtitle: "Abrí páginas, hacé clic, completá formularios y sacá capturas cuando leer HTML no alcanza."
+simpleSubtitle: "Abre páginas, haz clic, completa formularios y saca capturas cuando leer HTML no alcanza."
 devTitle: "Puppeteer MCP Connector"
 devSubtitle: "Servidor oficial @modelcontextprotocol: browser automation con screenshots, console logs y JavaScript."
 ctaUrl: "https://pptr.dev"
