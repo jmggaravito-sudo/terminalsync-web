@@ -3,7 +3,7 @@ name: Kit de Contabilidad y Handoff al Contador
 logo: /logos/ts-kit.svg
 category: finance
 status: available
-tagline: "Ordená tus números y armale a tu contador un paquete limpio para la entrega — no un manotazo de ahogado con recibos en abril."
+tagline: "Ordena tus números y ármale a tu contador un paquete limpio para la entrega — no un manotazo de ahogado con recibos en abril."
 description: "Un combo coherente de finanzas para el dueño de un negocio chico que se prepara para la temporada de impuestos: leer los números reales desde Xero o la planilla contable, convertirlos en un paquete de entrega organizado, y mandárselo al contador o contadora con una nota clara."
 marketplaceSource: "terminalsync"
 items:

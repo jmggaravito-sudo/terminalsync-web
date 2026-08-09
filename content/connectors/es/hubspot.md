@@ -4,7 +4,7 @@ logo: /connectors/hubspot.svg
 category: automation
 status: available
 simpleTitle: "Tu CRM, trabajando mientras hablás"
-simpleSubtitle: "\"¿Qué clientes no compran hace 60 días?\" \"Registrá una llamada con María\" — tu IA lee y actualiza tu CRM."
+simpleSubtitle: "\"¿Qué clientes no compran hace 60 días?\" \"Registra una llamada con María\" — tu IA lee y actualiza tu CRM."
 devTitle: "Conector MCP de HubSpot"
 devSubtitle: "MCP oficial de HubSpot sobre la CRM API — list/search objects, batch create/update, properties, associations, engagements."
 ctaUrl: "https://www.hubspot.com"

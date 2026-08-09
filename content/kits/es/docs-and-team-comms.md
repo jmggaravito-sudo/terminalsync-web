@@ -3,7 +3,7 @@ name: Kit de Docs y Comunicación Interna
 logo: /logos/ts-kit.svg
 category: operations
 status: available
-tagline: "Redactá documentación apoyada en el Notion de tu equipo y convertila en anuncios internos claros."
+tagline: "Redacta documentación apoyada en el Notion de tu equipo y conviértela en anuncios internos claros."
 description: "Un bundle de operaciones para equipos de conocimiento y ops que escriben documentación y comunicaciones internas, manteniendo los borradores apoyados en el Notion y el Slack que el equipo ya usa en vez de arrancar de una página en blanco."
 marketplaceSource: "terminalsync"
 items:

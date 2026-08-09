@@ -5,7 +5,7 @@ category: marketing
 vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
-tagline: "Traé de vuelta a los clientes que se apagaron"
+tagline: "Trae de vuelta a los clientes que se apagaron"
 description: "Encuentra a los clientes que compraban y dejaron de hacerlo, y escribe una secuencia respetuosa de mensajes para recuperarlos — el recordatorio, la razón para volver y el último llamado — agrupados por cuánto valían. Sin prometer que vuelven."
 license: "proprietary"
 marketplaceSource: "terminalsync"

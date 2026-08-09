@@ -3,7 +3,7 @@ name: Auditoría SEO
 logo: /plugins/seo-audit.svg
 category: marketing
 status: available
-tagline: "Auditá tu sitio de verdad — la skill que analiza SEO + la herramienta que baja tus páginas."
+tagline: "Audita tu sitio de verdad — la skill que analiza SEO + la herramienta que baja tus páginas."
 description: "Un pack que junta el SEO Auditor (analiza y prioriza problemas con evidencia) con Firecrawl (baja el contenido real de tu sitio), para que la auditoría no dependa de que pegues el HTML de cada página a mano."
 author: "TerminalSync"
 marketplaceSource: "terminalsync"

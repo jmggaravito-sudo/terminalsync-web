@@ -5,7 +5,7 @@ category: marketing
 vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
-tagline: "Ordená tus clientes por quién vale la pena"
+tagline: "Ordena tus clientes por quién vale la pena"
 description: "Toma tu lista de clientes y la agrupa por qué tan reciente compraron, con qué frecuencia y cuánto — para que sepas quiénes son tus mejores clientes, quiénes se están yendo y qué decirle a cada grupo. Sin números inventados."
 license: "proprietary"
 marketplaceSource: "terminalsync"

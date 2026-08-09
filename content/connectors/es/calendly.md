@@ -4,7 +4,7 @@ logo: /connectors/calendly.svg
 category: productivity
 status: available
 simpleTitle: "Tus agendamientos, resueltos en lenguaje natural"
-simpleSubtitle: "Server oficial de Calendly: chequeá disponibilidad, agendá y gestioná reuniones por OAuth."
+simpleSubtitle: "Server oficial de Calendly: consulta disponibilidad, agenda y gestiona reuniones por OAuth."
 devTitle: "Conector MCP de Calendly"
 devSubtitle: "MCP oficial hospedado de Calendly (mcp.calendly.com) — tipos de evento, disponibilidad y reservas."
 ctaUrl: "https://calendly.com"

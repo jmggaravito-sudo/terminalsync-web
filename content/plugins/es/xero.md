@@ -3,7 +3,7 @@ name: Xero
 logo: /connectors/xero.svg
 category: operations
 status: available
-tagline: "Sabé qué está vencido y reclamalo — los libros y el recordatorio, juntos."
+tagline: "Sabe qué está vencido y reclámalo — los libros y el recordatorio, juntos."
 description: "Junta el conector de Xero (facturas, cuentas por cobrar vencidas, pagos, P&L, balance) con Internal Comms (redacta el recordatorio de pago con el tono justo), para que un dueño de negocio pase de 'quién me debe' a 'ya le hice seguimiento' sin abrir Xero ni escribir el mail a mano."
 author: "TerminalSync"
 marketplaceSource: "terminalsync"

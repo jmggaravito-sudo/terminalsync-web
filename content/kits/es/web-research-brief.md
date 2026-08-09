@@ -3,7 +3,7 @@ name: Kit de Investigación Web y Briefs
 logo: /logos/ts-kit.svg
 category: research
 status: available
-tagline: "Investigá un tema en la web, recordá lo que encontrás entre sesiones y convertilo en un brief claro."
+tagline: "Investiga un tema en la web, recuerda lo que encuentras entre sesiones y conviértelo en un brief claro."
 description: "Un bundle de investigación para analistas, consultores y fundadores que investigan temas en la web y necesitan hallazgos que persistan entre sesiones y se conviertan en un brief estructurado, no en pestañas sueltas."
 marketplaceSource: "terminalsync"
 items:

@@ -3,7 +3,7 @@ name: Kit de Finanzas para Negocio Chico
 logo: /logos/ts-kit.svg
 category: finance
 status: available
-tagline: "Leé los libros, conciliá los pagos online, y sacá un resumen financiero mensual escrito — sin abrir un solo armador de reportes."
+tagline: "Lee los libros, concilia los pagos online, y saca un resumen financiero mensual escrito — sin abrir un solo armador de reportes."
 description: "Un combo coherente de finanzas para el dueño de un negocio chico o su contador que lleva los libros en Xero y cobra pagos online por Stripe: ver quién debe plata, qué está vencido, cómo vino el mes pasado, y que quede redactado como un resumen en castellano llano."
 marketplaceSource: "terminalsync"
 items:

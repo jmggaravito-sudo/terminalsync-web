@@ -3,7 +3,7 @@ name: Kit de campañas y SEO para marketing
 logo: /logos/ts-kit.svg
 category: marketing
 status: available
-tagline: "Planificá campañas de Meta, auditá SEO con evidencia e investigá competencia o keywords en un solo install."
+tagline: "Planifica campañas de Meta, audita SEO con evidencia e investiga competencia o keywords en un solo install."
 description: "Un bundle enfocado para agencias, consultores y marketers de marca que manejan pauta y contenido, combinando estructura de campañas de Meta, evidencia SEO e investigación web sin obligarlos a elegir el stack pieza por pieza."
 marketplaceSource: "terminalsync"
 items:

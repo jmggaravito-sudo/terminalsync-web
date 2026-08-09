@@ -5,7 +5,7 @@ category: productivity
 vendors: ["claude", "codex"]
 author: "TerminalSync"
 status: available
-tagline: "Convertí las notas de una reunión en decisiones y tareas con dueño"
+tagline: "Convierte las notas de una reunión en decisiones y tareas con dueño"
 description: "Lee notas crudas o la transcripción de una reunión y devuelve las decisiones tomadas, las tareas con dueño y fecha cuando están dichas, y las preguntas abiertas — sin inventar dueños, fechas ni compromisos que nadie asumió."
 license: "proprietary"
 marketplaceSource: "terminalsync"

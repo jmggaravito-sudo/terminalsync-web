@@ -5,7 +5,7 @@ category: productivity
 vendors: ["claude", "codex", "gemini"]
 author: "Anthropic"
 status: available
-tagline: "Creá skills que superen baseline"
+tagline: "Crea skills que superen baseline"
 description: "Guía una skill desde caso recurrente hasta contenido que cumple el molde, evals, comparación contra baseline, límites y plan de iteración."
 license: "MIT"
 marketplaceSource: "anthropic"

@@ -4,7 +4,7 @@ logo: /connectors/vercel.svg
 category: dev
 status: available
 simpleTitle: "Deploys sin salir de tu chat"
-simpleSubtitle: "\"¿Cómo está el deploy?\" \"Promové staging a producción\" — directo al agente."
+simpleSubtitle: "\"¿Cómo está el deploy?\" \"Promueve staging a producción\" — directo al agente."
 devTitle: "Vercel MCP Connector"
 devSubtitle: "Project, deployment, env var, and log access via Vercel REST API."
 ctaUrl: "https://vercel.com"

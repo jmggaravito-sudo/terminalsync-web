@@ -5,7 +5,7 @@ category: marketing
 vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
-tagline: "Convertí clientes contentos en reseñas públicas"
+tagline: "Convierte clientes contentos en reseñas públicas"
 description: "Detecta a los clientes con más chance de dejar una buena reseña y escribe el pedido — el mensaje justo, en el momento justo, con el link directo — más un recordatorio amable. Nunca inventa reseñas ni ofrece pagar por ellas."
 license: "proprietary"
 marketplaceSource: "terminalsync"

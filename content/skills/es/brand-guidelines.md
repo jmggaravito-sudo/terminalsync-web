@@ -6,7 +6,7 @@ vendors: ["claude", "codex"]
 author: "Anthropic"
 status: available
 catalogReady: false
-tagline: "Aplicá tu marca a cualquier artifact"
+tagline: "Aplica tu marca a cualquier artifact"
 description: "Carga tus colores, tipografía, voz de marca y los aplica automáticamente a docs, presentaciones, landings, copy."
 license: "MIT"
 marketplaceSource: "anthropic"

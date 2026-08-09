@@ -4,7 +4,7 @@ logo: /connectors/clickup.svg
 category: productivity
 status: available
 simpleTitle: "Tus proyectos, manejados por conversación"
-simpleSubtitle: "\"¿Qué vence esta semana?\" \"Creá una tarea para el cliente nuevo\" — tu IA lee y actualiza ClickUp."
+simpleSubtitle: "\"¿Qué vence esta semana?\" \"Crea una tarea para el cliente nuevo\" — tu IA lee y actualiza ClickUp."
 devTitle: "Conector MCP de ClickUp"
 devSubtitle: "MCP sobre la ClickUp API — workspaces, spaces, listas, tareas, docs, comentarios."
 ctaUrl: "https://clickup.com"

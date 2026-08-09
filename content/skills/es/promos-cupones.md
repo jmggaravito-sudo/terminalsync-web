@@ -5,7 +5,7 @@ category: marketing
 vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
-tagline: "Diseñá una promo que no te funda el margen"
+tagline: "Diseña una promo que no te funda el margen"
 description: "Te ayuda a diseñar una promoción o cupón dirigido — quién lo recibe, qué tipo de descuento, los límites (vencimiento, un solo uso, mínimo) y el mensaje — pensado para proteger tu margen. Sin prometer cuánto vas a vender de más."
 license: "proprietary"
 marketplaceSource: "terminalsync"

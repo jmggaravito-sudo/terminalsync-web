@@ -3,7 +3,7 @@ name: Kit de Tienda Ecommerce
 logo: /logos/ts-kit.svg
 category: ecommerce
 status: available
-tagline: "Chequeá ventas y stock, redactá la descripción de una línea nueva de productos, y avisale al equipo qué cambió — el día a día de manejar una tienda en Square."
+tagline: "Chequea ventas y stock, redacta la descripción de una línea nueva de productos, y avísale al equipo qué cambió — el día a día de manejar una tienda en Square."
 description: "Un combo coherente para un comerciante o un equipo chico de retail que maneja su tienda en Square: leer ventas, inventario y pedidos en castellano llano, co-escribir la descripción de una nueva línea de productos, y avisarle al equipo de tienda qué es nuevo antes de que llegue al mostrador o al sitio."
 marketplaceSource: "terminalsync"
 items:

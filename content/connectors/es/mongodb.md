@@ -4,7 +4,7 @@ logo: /connectors/mongodb.svg
 category: dev
 status: available
 simpleTitle: "Preguntale — y actuá — sobre tu MongoDB en lenguaje natural"
-simpleSubtitle: "Server oficial de MongoDB: consultá tus bases y administrá Atlas sin una shell."
+simpleSubtitle: "Server oficial de MongoDB: consulta tus bases y administra Atlas sin una shell."
 devTitle: "MongoDB MCP Connector"
 devSubtitle: "Official mongodb-mcp-server: tools over MongoDB databases + Atlas, connection-string scoped."
 ctaUrl: "https://www.mongodb.com"
