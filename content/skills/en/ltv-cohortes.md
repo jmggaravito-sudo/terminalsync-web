@@ -2,14 +2,14 @@
 name: LTV Cohorts
 logo: /skills/ltv-cohortes.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "See what a customer is really worth over time"
 description: "Groups your customers by the month they first bought and tracks how much each group keeps spending and how many stay — so you see whether newer customers are worth more or less than older ones. Uses only your data, flags every assumption."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 
@@ -18,6 +18,15 @@ compatibleWith: ["claude", "codex"]
 - You want to see retention and cumulative value by cohort, and understand what it means for how much you can spend to get a customer.
 
 Do not use it to invent lifetime value, retention curves, or future revenue. If the history is too short to project, the skill says so and sticks to what actually happened.
+
+**If you hand over the rows, it does the analysis. If you only describe them, it does not invent them.**
+
+That distinction is the whole rule, and it cuts both ways:
+
+- **Rows in hand** (a pasted export, a file, even twenty lines) → it builds the cohorts and reports what those rows say. Refusing here would be its own kind of failure: a refusal invented to look careful.
+- **Only a description** ("I have 18,000 orders since 2024") → it will not produce retention rates, cumulative values or a score. A fabricated curve is worse than no curve, because it looks like a finding.
+
+When the rows are missing it still does everything that does not need them: it asks for the export, and says upfront what your history can and cannot support — that four months is too short for a reliable curve, that months with a handful of customers need grouping, what the analysis will look like once the data arrives. Refusing to invent is not the same as refusing to help.
 
 ## What it does
 
@@ -29,7 +38,8 @@ Runs a cohort analysis of customer value:
 - **Compares cohorts**: are newer customers spending more or less, staying longer or shorter, than older ones — and calls out the trend.
 - **Explains what it means**: a rough sense of how much you can afford to spend to acquire a customer, with the caveat that it depends on margin and payback period.
 - **Flags the limits**: short history, thin cohorts, or missing months — it labels projections as assumptions, never as facts.
-- **Closes with a verdict (always)**: a 0–100 score for how trustworthy this analysis is given your data depth; a traffic light (🟢 80+ decision-ready; 🟡 50–79 directional, get more history; 🔴 <50 too little data to trust the curves); the single insight that matters most; and a note that the score reflects your data, not a guarantee of future value.
+- **Groups thin cohorts instead of reporting noise**: when a month has only a handful of new customers, it says so and aggregates (by quarter, usually) rather than presenting a jumpy line as a trend.
+- **Closes with a verdict — when it actually ran the numbers**: a 0–100 score for how trustworthy the analysis is given your data depth; a traffic light (🟢 80+ decision-ready; 🟡 50–79 directional, get more history; 🔴 <50 too little data to trust the curves); the single insight that matters most; and a note that the score reflects your data, not a guarantee of future value. If it never received the data, there is no verdict to give — it says what it needs instead. A score over numbers it made up would be the most misleading output of all.
 
 ## How to use
 

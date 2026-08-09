@@ -2,14 +2,14 @@
 name: Abandoned Cart Recovery
 logo: /skills/carrito-abandonado.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Win back the sale they almost made"
 description: "Takes your abandoned carts and writes the recovery sequence — the reminder, the objection-handler, and the last nudge — with the right timing and only the incentive you allow. No promises about how many carts come back."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 

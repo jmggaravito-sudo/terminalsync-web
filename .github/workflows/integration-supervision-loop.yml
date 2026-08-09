@@ -6,6 +6,12 @@ on:
     # Tuesday 14:00 UTC / 09:00 Bogotá, after the four Monday marketplace loops.
     - cron: "0 14 * * 2"
   pull_request:
+    # `edited` no viene por defecto, y sin él este gate era una trampa: exige una
+    # línea en el cuerpo del PR, lee ese cuerpo del payload del evento
+    # (`github.event.pull_request.body`), y editarlo no volvía a correr nada. Un
+    # re-run tampoco sirve: replaya el payload viejo. La única salida era pushear
+    # un commit vacío — por eso el gate se terminaba saltando con `--admin`.
+    types: [opened, synchronize, reopened, edited]
     paths:
       - "content/connectors/**"
       - "content/plugins/**"
@@ -18,6 +24,10 @@ on:
       - "src/app/api/marketplace/catalog/**"
       - "src/lib/marketplace/**"
       - "src/lib/plugins*"
+      # El propio workflow: sin esto, un cambio a estas reglas no re-corre el
+      # check en su propio PR y hay que dispararlo a mano para saber si el
+      # arreglo funciona.
+      - ".github/workflows/integration-supervision-loop.yml"
       - "src/lib/skills*"
       - ".github/workflows/integration-supervision-loop.yml"
       - "docs/integration-supervision-loop.md"
@@ -29,6 +39,7 @@ permissions:
 env:
   TERMINALSYNC_APP_REPO: jmggaravito-sudo/terminal-sync
   TERMINALSYNC_APP_BASE_BRANCH: release/v0.2.18-lab
+  TERMINALSYNC_CATALOG_URL: https://terminalsync.ai/api/marketplace/catalog
 
 jobs:
   supervise:
@@ -74,15 +85,37 @@ jobs:
           fi
 
           if [ "$EVENT_NAME" = "pull_request" ]; then
-            app_pr="$(printf '%s' "${PR_BODY:-}" | grep -Eo 'jmggaravito-sudo/terminal-sync/pull/[0-9]+|terminal-sync/pull/[0-9]+|terminal-sync#[0-9]+|app #[0-9]+' | head -1 | grep -Eo '[0-9]+' || true)"
-            if [ -z "$app_pr" ]; then
+            # El link al app mirror se lee SOLO detrás de "App mirror PR:".
+            # Antes se buscaba el patrón en todo el cuerpo, así que una cita
+            # histórica ("esto pasó en terminal-sync#1139") se tomaba como el
+            # mirror y el check terminaba compilando una rama vieja, fallando
+            # por errores ajenos al PR. Pasó de verdad y costó un rato
+            # entenderlo.
+            # `.*` y no `[^\n]*`: dentro de un bracket de ERE, `\n` NO es un
+            # escape — es "backslash o la letra n". En GNU grep (Ubuntu, o sea
+            # CI) eso cortaba la línea en la primera `n`, así que de
+            # ".../terminal-sync/pull/1314" quedaba ".../termi" y el número
+            # nunca aparecía: el gate pedía el link, vos lo ponías, y fallaba
+            # igual. En macOS (BSD grep) funcionaba, por eso se probaba bien en
+            # local. Es la razón real de que este check se terminara salteando
+            # con --admin. grep ya trabaja línea por línea: `.*` alcanza.
+            app_pr="$(printf '%s' "${PR_BODY:-}" | grep -iEo 'app mirror( pr)?:.*' | grep -Eo 'jmggaravito-sudo/terminal-sync/pull/[0-9]+|terminal-sync/pull/[0-9]+|terminal-sync#[0-9]+|#[0-9]+' | head -1 | grep -Eo '[0-9]+' || true)"
+
+            # "no aplica" declarado explícitamente: la política dejó de exigir
+            # un PR de app cuando el desktop ya consume el catálogo. Ver
+            # docs/integration-loop-two-pr-policy.md — el PR espejo obligatorio
+            # producía mirrors de fixtures escritas a mano que no verificaban
+            # nada (5 de 7 PRs de loops no tocaron código de producto).
+            mirror_na="$(printf '%s' "${PR_BODY:-}" | grep -icE 'app (mirror )?pr:[[:space:]]*(no aplica|n/?a|not needed)' || true)"
+
+            if [ -z "$app_pr" ] && [ "$mirror_na" = "0" ]; then
               changed_files="$(gh pr view "$PR_NUMBER" --repo "$LANDING_REPO" --json files --jq '.files[].path')"
               if echo "$changed_files" | grep -Eq '^(content/(connectors|plugins|kits|skills)/|public/(connectors|plugins|skills|logos)/|src/app/api/marketplace/catalog/|src/lib/(marketplace|plugins|skills))'; then
-                echo "This marketplace PR must link its app mirror PR (for example: App mirror: jmggaravito-sudo/terminal-sync/pull/1045)." >&2
+                echo "Este PR toca el catálogo: enlazá su app mirror con 'App mirror PR: <url>', o declará 'App mirror PR: no aplica — la app consume el catálogo' si no hace falta código en la app." >&2
                 exit 1
               fi
               echo "app_ref=$TERMINALSYNC_APP_BASE_BRANCH" >> "$GITHUB_OUTPUT"
-              echo "Ops-only supervision PR: no app mirror required; verifying app base $TERMINALSYNC_APP_BASE_BRANCH"
+              echo "Sin app mirror (ops-only o declarado no-aplica); se verifica la base $TERMINALSYNC_APP_BASE_BRANCH"
             else
               app_ref="$(gh pr view "$app_pr" --repo "$TERMINALSYNC_APP_REPO" --json headRefName --jq .headRefName)"
               echo "app_pr=$app_pr" >> "$GITHUB_OUTPUT"
@@ -106,8 +139,48 @@ jobs:
         working-directory: terminal-sync-app
         run: npm ci
 
+      # El catálogo que el cliente consume de verdad. Los tests de la app usan
+      # fixtures escritas a mano, así que detectan si la app deja de mapear un
+      # grupo, pero no si el landing publica uno nuevo — la fixture la
+      # escribimos nosotros. Bajando el catálogo servido, el test de PARIDAD
+      # FÍSICA de catalogStore compara contra lo que hay publicado.
+      #
+      # Se baja el de producción, no el del PR: armar el catálogo acá exigiría
+      # Supabase, y sin credenciales varios grupos volverían vacíos — el chequeo
+      # se ablandaría solo y en silencio, que es peor que no tenerlo. La
+      # contra es que un grupo nuevo se detecta recién en la corrida siguiente
+      # al deploy; para una deriva que hoy tarda semanas en verse, alcanza.
+      - name: Fetch served catalog
+        id: live_catalog
+        run: |
+          for intento in 1 2 3; do
+            if curl -fsS --max-time 30 "$TERMINALSYNC_CATALOG_URL" -o "$RUNNER_TEMP/live-catalog.json"; then
+              break
+            fi
+            echo "intento $intento falló; reintento en 5s"
+            sleep 5
+          done
+          node -e '
+            const fs = require("node:fs");
+            const ruta = process.env.RUNNER_TEMP + "/live-catalog.json";
+            if (!fs.existsSync(ruta)) {
+              console.error("No se pudo bajar el catálogo servido tras 3 intentos.");
+              process.exit(1);
+            }
+            const c = JSON.parse(fs.readFileSync(ruta, "utf8"));
+            const grupos = Object.entries(c).filter(([, v]) => Array.isArray(v) && v.length);
+            if (!grupos.length) {
+              console.error("El catálogo servido vino sin un solo grupo con contenido.");
+              process.exit(1);
+            }
+            for (const [k, v] of grupos) console.log(`${k}: ${v.length}`);
+          '
+          echo "path=$RUNNER_TEMP/live-catalog.json" >> "$GITHUB_OUTPUT"
+
       - name: Run app drag/install parity checks
         working-directory: terminal-sync-app
+        env:
+          LIVE_CATALOG_JSON: ${{ steps.live_catalog.outputs.path }}
         run: |
           npm test -- --run \
             src/components/PowerUpItemRow.test.tsx \

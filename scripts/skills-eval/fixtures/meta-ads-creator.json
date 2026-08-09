@@ -1,0 +1,38 @@
+{
+  "skill": "meta-ads-creator",
+  "name": "Meta Ads Creator",
+  "baselinePrompt": "Escribime anuncios para Facebook e Instagram para este negocio.",
+  "skillPrompt": "Usá Meta Ads Creator. Dame varias ideas distintas, cada una con su texto, el botón, cómo se ve la imagen, y un plan de cuál testear primero. No inventes cuánta gente va a comprar, ROAS ni CPA: si falta el dato, marcá el supuesto y recomendá un test.",
+  "cases": [
+    {
+      "id": "local-servicio",
+      "type": "normal",
+      "input": "Estudio de kinesiología en Palermo. Sesión $25.000. Quiero pacientes nuevos del barrio. Diferencial: turnos en el día, sin lista de espera.",
+      "expected": "Varias ideas DISTINTAS entre sí (no la misma con otras palabras), cada una con texto, botón y descripción visual, apoyadas en el diferencial real (turno en el día) y en la localidad. Más un orden de test."
+    },
+    {
+      "id": "ecommerce-producto",
+      "type": "normal",
+      "input": "Vendo mochilas antirrobo, $95.000. Público: gente que viaja en transporte público. Tengo fotos del producto y un video de 15s mostrando el cierre oculto.",
+      "expected": "Aprovechar el material que ya existe (foto vs video) en distintos formatos, con ángulos diferenciados (seguridad, diseño, precio) y un plan de qué probar primero."
+    },
+    {
+      "id": "sin-diferencial",
+      "type": "normal",
+      "input": "Vendo ropa de mujer online, como mil tiendas más. No tengo nada que me distinga y el precio es de mercado.",
+      "expected": "No fingir un diferencial inventado. Trabajar ángulos honestos (oferta puntual, segmento específico, prueba social real si la hay) y ser explícito en que sin diferencial el test importa más."
+    },
+    {
+      "id": "sin-contexto",
+      "type": "ambiguous",
+      "input": "Hacé anuncios para mi negocio.",
+      "expected": "Preguntar qué vende, a quién y con qué objetivo, en vez de producir anuncios genéricos que servirían para cualquier rubro."
+    },
+    {
+      "id": "inventar-roas",
+      "type": "refusal",
+      "input": "Armá los anuncios y calculame el ROAS y el costo por venta que voy a tener con $500.000 de presupuesto, así lo pongo en el plan de negocio.",
+      "expected": "Negarse a dar ROAS y CPA inventados sin datos históricos. Puede explicar de qué dependen y proponer un test chico para medirlos de verdad."
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "skill": "rfm-segmentacion",
+  "name": "RFM Segmentation",
+  "baselinePrompt": "Segmentá esta lista de clientes y decime a quién le vendo.",
+  "skillPrompt": "Usá Segmentación RFM. Agrupá por qué tan reciente compraron, con qué frecuencia y cuánto gastaron, y dame una acción concreta por grupo. No inventes números que no estén en los datos: si falta información, decilo.",
+  "cases": [
+    {
+      "id": "lista-completa",
+      "type": "normal",
+      "input": "Lista de clientes (nombre,última compra,cantidad de compras,total gastado en COP):\nAna,2026-07-28,9,4100000\nBeto,2025-11-02,1,95000\nCaro,2026-08-01,3,780000\nDiego,2026-07-15,12,5200000\nElena,2025-09-14,2,210000\nFabio,2026-06-30,5,1350000\nGina,2024-12-20,1,60000\nHugo,2026-07-31,7,2900000\nIvan,2026-02-11,2,340000\nJulia,2025-08-05,4,890000\nKarla,2026-08-03,6,1800000\nLuis,2025-06-18,1,75000",
+      "expected": "Segmentar usando las TRES dimensiones (recencia, frecuencia, monto) con estas filas: ubicar arriba a los de compra reciente + alta frecuencia + alto gasto, y abajo a los que compraron una sola vez hace más de un año (Beto, Gina, Luis). Cada grupo con una acción concreta, y sin inventar cifras que no estén en la lista. NO se exige una asignación exacta cliente por cliente: con estos datos más de una segmentación es defendible según cómo se pondere cada dimensión. Lo que se evalúa es que use las tres, que los perdidos queden abajo, y que explique el criterio."
+    },
+    {
+      "id": "solo-recencia",
+      "type": "normal",
+      "input": "Solo tengo fecha de última compra de 300 clientes, no tengo ni cuántas veces compraron ni cuánto gastaron. ¿Se puede hacer algo igual?",
+      "expected": "Decir con claridad que sin frecuencia ni monto no es RFM completo, hacer la segmentación por recencia sola, y marcar explícitamente qué conclusiones NO se pueden sacar con ese dato."
+    },
+    {
+      "id": "negocio-estacional",
+      "type": "normal",
+      "input": "Vendo equipamiento de esquí. Todos mis clientes compran entre mayo y agosto. Si segmento por recencia en diciembre me da que están todos dormidos.",
+      "expected": "Reconocer que la estacionalidad rompe la lectura ingenua de recencia y ajustar los cortes al ciclo del negocio (comparar contra la misma temporada) en vez de marcar a todos como perdidos."
+    },
+    {
+      "id": "que-corte-uso",
+      "type": "ambiguous",
+      "input": "Segmentame los clientes.",
+      "expected": "Pedir los datos mínimos (fecha de última compra, cantidad de compras, monto) antes de segmentar, en vez de inventar una tabla de ejemplo y presentarla como si fuera del negocio."
+    },
+    {
+      "id": "proyectar-ingresos",
+      "type": "refusal",
+      "input": "Con esta segmentación decime cuánta plata voy a facturar el trimestre que viene si le mando la campaña a los mejores clientes.",
+      "expected": "Negarse a proyectar facturación futura como si fuera un hecho. Puede mostrar el gasto histórico de ese grupo y plantear escenarios marcados como supuestos, nunca como pronóstico."
+    }
+  ]
+}

@@ -2,14 +2,14 @@
 name: Carrito Abandonado
 logo: /skills/carrito-abandonado.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Recuperá la venta que casi hacen"
 description: "Toma tus carritos abandonados y escribe la secuencia de recuperación — el recordatorio, la respuesta a la duda y el último empujón — con el timing justo y solo el incentivo que vos permitás. Sin prometer cuántos carritos vuelven."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarla
 

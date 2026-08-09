@@ -45,14 +45,12 @@
  * test passed because invoking `GET(req)` direct reads the Response
  * before Vercel's edge layer touches it.
  */
-import fs from "node:fs";
-import path from "node:path";
-import matter from "gray-matter";
 import { NextResponse } from "next/server";
 import { listAllConnectors, type ConnectorMeta } from "@/lib/connectors";
 import { listSkills, type SkillMeta } from "@/lib/skills";
 import { listCliTools, type CliToolMeta } from "@/lib/cliTools";
 import { listPlugins, type PluginMeta } from "@/lib/plugins";
+import { loadFileKits } from "@/lib/marketplace/fileKits";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import {
   isBundleItemKind,
@@ -82,8 +80,6 @@ const CORS_HEADERS = {
 
 const PUBLIC_ASSET_ORIGIN = "https://terminalsync.ai";
 const PUBLIC_ASSET_VERSION = "2026-07-13";
-const CONTENT_ROOT = path.join(process.cwd(), "content");
-const PUBLIC_ROOT = path.join(process.cwd(), "public");
 
 function localizePublicAssetUrl(
   value: string | null | undefined,
@@ -131,20 +127,6 @@ function localizeCatalogAssets(body: CatalogResponse): CatalogResponse {
       logo: localizePublicAssetUrl(item.logo) ?? item.logo,
     })),
   };
-}
-
-function publicAssetExists(value: string | null | undefined): boolean {
-  if (!value) return true;
-  let pathname = value;
-  if (value.startsWith("http://") || value.startsWith("https://")) {
-    try {
-      pathname = new URL(value).pathname;
-    } catch {
-      return false;
-    }
-  }
-  if (!pathname.startsWith("/")) return true;
-  return fs.existsSync(path.join(PUBLIC_ROOT, pathname));
 }
 
 export async function OPTIONS() {
@@ -222,13 +204,15 @@ export async function GET(req: Request) {
   // total wait is max(N), not sum(N). `bundles` reaches into Supabase
   // and may be slowest in cold cache; running it next to the markdown
   // reads keeps the wall-clock short.
-  const [connectors, skills, cliTools, bundles, pluginsRaw] = await Promise.all([
-    listAllConnectors(lang),
-    listSkills(lang),
-    listCliTools(lang),
-    loadBundles(lang),
-    listPlugins(lang),
-  ]);
+  const [connectors, skills, cliTools, bundles, pluginsRaw] = await Promise.all(
+    [
+      listAllConnectors(lang),
+      listSkills(lang),
+      listCliTools(lang),
+      loadBundles(lang),
+      listPlugins(lang),
+    ],
+  );
 
   // Derive each plugin's "needs a key?" signal by joining its connector slug
   // against the connectors we already loaded — no extra IO. This is the
@@ -371,103 +355,6 @@ async function loadDbBundles(lang: string): Promise<BundleSummary[]> {
     }),
   );
   return resolved;
-}
-
-function kitsLangDir(lang: string): string {
-  const dir = path.join(CONTENT_ROOT, "kits", lang);
-  if (fs.existsSync(dir)) return dir;
-  return path.join(CONTENT_ROOT, "kits", "en");
-}
-
-function stringValue(data: Record<string, unknown>, key: string): string {
-  const value = data[key];
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function parseKitItems(raw: unknown): BundleItemRef[] {
-  if (!Array.isArray(raw)) return [];
-  const items: BundleItemRef[] = [];
-  for (const [index, value] of raw.entries()) {
-    if (!value || typeof value !== "object") continue;
-    const row = value as Record<string, unknown>;
-    const kind = row.kind;
-    const slug = row.slug;
-    if (!isBundleItemKind(kind) || typeof slug !== "string" || !slug.trim()) {
-      continue;
-    }
-    const sortOrder =
-      typeof row.sortOrder === "number"
-        ? row.sortOrder
-        : typeof row.sort_order === "number"
-          ? row.sort_order
-          : index;
-    const reason = typeof row.reason === "string" ? row.reason.trim() : "";
-    items.push({
-      kind,
-      slug: slug.trim(),
-      sortOrder,
-      whyItHelps: reason || undefined,
-    });
-  }
-  return items;
-}
-
-async function loadFileKits(lang: string): Promise<BundleSummary[]> {
-  const dir = kitsLangDir(lang);
-  if (!fs.existsSync(dir)) return [];
-
-  const files = fs
-    .readdirSync(dir)
-    .filter((file) => file.endsWith(".md"))
-    .sort();
-
-  const kits = await Promise.all(
-    files.map(async (file, index): Promise<BundleSummary | null> => {
-      const slug = file.replace(/\.md$/, "");
-      const raw = fs.readFileSync(path.join(dir, file), "utf8");
-      const { data, content } = matter(raw);
-      const fm = data as Record<string, unknown>;
-      if (stringValue(fm, "status") !== "available") return null;
-
-      const refs = parseKitItems(fm.items);
-      const items = await resolveBundleItems(refs, lang);
-      const logo = stringValue(fm, "logo") || "/logos/ts-kit.svg";
-      if (!publicAssetExists(logo)) {
-        throw new Error(
-          `File kit ${slug} references missing logo asset: ${logo}`,
-        );
-      }
-
-      return {
-        id: `kit:${slug}`,
-        slug,
-        name: stringValue(fm, "name") || slug,
-        tagline: stringValue(fm, "tagline") || null,
-        // The desktop BundleSummary contract renders kits from heroImageUrl.
-        // File-based kits author `logo`, so bridge that field here instead
-        // of requiring a desktop release just to show the TS kit mark.
-        heroImageUrl: logo,
-        priceCents: 0,
-        currency: "usd",
-        purchaseCount: 0,
-        sortOrder:
-          typeof fm.sortOrder === "number"
-            ? fm.sortOrder
-            : typeof fm.sort_order === "number"
-              ? fm.sort_order
-              : index,
-        href: `/${lang}/stacks/${slug}`,
-        items,
-        descriptionMd:
-          content.trim() || stringValue(fm, "description") || undefined,
-        isExclusiveTS: true,
-      };
-    }),
-  );
-
-  return kits
-    .filter((kit): kit is BundleSummary => kit !== null)
-    .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name));
 }
 
 function assertNoDuplicateBundleSlugs(bundles: BundleSummary[]): void {
