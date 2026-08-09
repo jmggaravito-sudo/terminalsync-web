@@ -3,7 +3,7 @@ name: Google Drive
 logo: /connectors/gdrive.svg
 category: productivity
 status: available
-tagline: "Escribí el documento y guardalo en tu Drive — en una sola acción."
+tagline: "Escribe el documento y guárdalo en tu Drive — en una sola acción."
 description: "Junta el conector de Google Drive (crear, leer y organizar archivos) con Doc Co-Authoring (escribe propuestas, informes y documentos listos para mandar), para que 'hacé este documento y guardalo' sea un solo flujo."
 author: "TerminalSync"
 marketplaceSource: "terminalsync"

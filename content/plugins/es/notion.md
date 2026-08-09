@@ -3,7 +3,7 @@ name: Notion
 logo: /connectors/notion.svg
 category: productivity
 status: available
-tagline: "Escribí el documento y guardalo en tu Notion — en una sola acción."
+tagline: "Escribe el documento y guárdalo en tu Notion — en una sola acción."
 description: "Junta el conector de Notion (leer y crear páginas) con Doc Co-Authoring (escribe propuestas, informes y documentos listos), para que 'armá esta nota y guardala en Notion' sea un solo flujo."
 author: "TerminalSync"
 marketplaceSource: "terminalsync"

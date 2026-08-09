@@ -4,7 +4,7 @@ logo: /connectors/pdf.svg
 category: productivity
 status: available
 simpleTitle: "Dejá que tu IA lea y marque PDFs"
-simpleSubtitle: "Abrí papers locales o URLs académicas permitidas, buscá páginas, extraé texto y anotá documentos."
+simpleSubtitle: "Abre papers locales o URLs académicas permitidas, busca páginas, extrae texto y anota documentos."
 devTitle: "Conector MCP de PDF"
 devSubtitle: "Server MCP App oficial de @modelcontextprotocol: visor interactivo, lectura por partes, anotaciones y guardado con límites."
 ctaUrl: "https://github.com/modelcontextprotocol/ext-apps/tree/main/examples/pdf-server"

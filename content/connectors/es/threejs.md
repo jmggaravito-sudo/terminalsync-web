@@ -4,7 +4,7 @@ logo: /connectors/threejs.svg
 category: dev
 status: available
 simpleTitle: "Previsualizá escenas 3D con tu IA"
-simpleSubtitle: "Dejá que el agente renderice e itere escenas chicas de Three.js en una vista interactiva."
+simpleSubtitle: "Deja que el agente renderice e itere escenas chicas de Three.js en una vista interactiva."
 devTitle: "Conector MCP de Three.js"
 devSubtitle: "Server MCP App oficial de @modelcontextprotocol: renderer de escenas Three.js en streaming y ayuda de documentación."
 ctaUrl: "https://github.com/modelcontextprotocol/ext-apps/tree/main/examples/threejs-server"

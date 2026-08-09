@@ -4,7 +4,7 @@ logo: /connectors/slack.svg
 category: messaging
 status: available
 simpleTitle: "Que tu IA lea y escriba en Slack"
-simpleSubtitle: "Resúmenes de canales, respuestas en threads, mensajes nuevos — con permisos explícitos que vos elegís."
+simpleSubtitle: "Resúmenes de canales, respuestas en threads, mensajes nuevos — con permisos explícitos que tú eliges."
 devTitle: "Slack MCP Connector"
 devSubtitle: "Servidor oficial @modelcontextprotocol para Slack Web API: channel history, post, replies, users."
 ctaUrl: "https://slack.com"

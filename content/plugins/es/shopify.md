@@ -3,7 +3,7 @@ name: Shopify
 logo: /connectors/shopify.svg
 category: ecommerce
 status: available
-tagline: "Mirá quién dejó de comprarte — y recuperalo, en un solo producto."
+tagline: "Mira quién dejó de comprarte — y recupéralo, en un solo producto."
 description: "Junta el conector de Shopify (pedidos, productos y clientes de tu tienda real) con Recuperar Clientes Dormidos (escribe la secuencia de contacto para compradores que dejaron de comprar), para que 'quién se apagó' se convierta en una secuencia lista para mandar."
 author: "TerminalSync"
 marketplaceSource: "terminalsync"

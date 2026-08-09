@@ -3,7 +3,7 @@ name: Slack
 logo: /connectors/slack.svg
 category: communication
 status: available
-tagline: "Tus mensajes de Slack, redactados y enviados — vos aprobás antes de mandar."
+tagline: "Tus mensajes de Slack, redactados y enviados — tú apruebas antes de enviar."
 description: "Junta el conector de Slack (leer y publicar en tus canales) con Internal Comms (redacta la novedad, el anuncio o el recordatorio con el tono justo), para mantener a tu equipo al día sin escribir cada mensaje a mano."
 author: "TerminalSync"
 marketplaceSource: "terminalsync"

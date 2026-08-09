@@ -4,7 +4,7 @@ logo: /connectors/map.svg
 category: productivity
 status: available
 simpleTitle: "Mostrá lugares en un globo 3D"
-simpleSubtitle: "Buscá direcciones o puntos de referencia y dejá que el agente abra una vista de mapa interactiva."
+simpleSubtitle: "Busca direcciones o puntos de referencia y deja que el agente abra una vista de mapa interactiva."
 devTitle: "Conector MCP de Map"
 devSubtitle: "Server MCP App oficial de @modelcontextprotocol: globo CesiumJS, mapas OpenStreetMap y geocoding con Nominatim."
 ctaUrl: "https://github.com/modelcontextprotocol/ext-apps/tree/main/examples/map-server"

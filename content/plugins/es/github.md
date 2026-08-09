@@ -3,7 +3,7 @@ name: GitHub
 logo: /connectors/github.svg
 category: dev
 status: available
-tagline: "Revisá el código de tus repos — el conector trae los cambios, la skill los audita."
+tagline: "Revisa el código de tus repos — el conector trae los cambios, la skill los audita."
 description: "Junta el conector de GitHub (repos, PRs, issues, archivos) con Code Reviewer (revisa un diff o PR con hallazgos priorizados por severidad y evidencia), para que 'revisá este PR' sea una sola acción."
 author: "TerminalSync"
 marketplaceSource: "terminalsync"

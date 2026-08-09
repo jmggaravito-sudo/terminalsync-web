@@ -3,7 +3,7 @@ name: Google Business
 logo: /connectors/google-business.svg
 category: marketing
 status: available
-tagline: "Pedile una reseña al cliente contento — y mirá cómo llegan las nuevas, en un solo producto."
+tagline: "Pídele una reseña al cliente contento — y mira cómo llegan las nuevas, en un solo producto."
 description: "Junta el conector de Google Business (vigila tus reseñas de Google y redacta respuestas con confirmación) con Pedir Reseñas (detecta a los clientes con más chance de dejar una buena y escribe el pedido), para que tu reputación en Google reciba reseñas nuevas y también conteste las que ya tenés."
 author: "TerminalSync"
 marketplaceSource: "terminalsync"

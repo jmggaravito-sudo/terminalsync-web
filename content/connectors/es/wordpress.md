@@ -4,7 +4,7 @@ logo: /connectors/wordpress.svg
 category: productivity
 status: available
 simpleTitle: "Tu sitio web, actualizado por conversación"
-simpleSubtitle: "\"Armá un post sobre el servicio nuevo\" — tu IA escribe y publica en tu sitio WordPress."
+simpleSubtitle: "\"Arma un post sobre el servicio nuevo\" — tu IA escribe y publica en tu sitio WordPress."
 devTitle: "Conector MCP de WordPress"
 devSubtitle: "MCP sobre la WordPress REST API — posts y páginas con auth de application-password."
 ctaUrl: "https://wordpress.org"

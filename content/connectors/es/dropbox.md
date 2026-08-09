@@ -4,7 +4,7 @@ logo: /connectors/dropbox.svg
 category: storage
 status: available
 simpleTitle: "Tu Dropbox, buscable por voz"
-simpleSubtitle: "\"Buscá el contrato del cliente X\" \"Pasame la factura de marzo\" — la IA busca en tu Dropbox por vos."
+simpleSubtitle: "\"Busca el contrato del cliente X\" \"Pásame la factura de marzo\" — la IA busca en tu Dropbox por ti."
 devTitle: "Conector de Dropbox (propio)"
 devSubtitle: "Servidor MCP propio de TerminalSync sobre la Dropbox API v2 oficial — listar, buscar, links temporales, links públicos con confirmación."
 ctaUrl: "https://www.dropbox.com"

@@ -4,7 +4,7 @@ logo: /connectors/todoist.svg
 category: productivity
 status: available
 simpleTitle: "Tu lista de tareas, manejada por la IA"
-simpleSubtitle: "\"¿Qué vence hoy?\" \"Agregá: llamar al contador el viernes\" — tu IA lee y actualiza tu Todoist."
+simpleSubtitle: "\"¿Qué vence hoy?\" \"Agrega: llamar al contador el viernes\" — tu IA lee y actualiza tu Todoist."
 devTitle: "Conector MCP de Todoist"
 devSubtitle: "MCP oficial de Doist sobre la Todoist API — tareas, proyectos, secciones, etiquetas, comentarios."
 ctaUrl: "https://todoist.com"

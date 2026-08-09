@@ -3,7 +3,7 @@ name: Kit para Publicar una App Supabase
 logo: /logos/ts-kit.svg
 category: dev
 status: available
-tagline: "Construí, revisá, migrá y desplegá una app Supabase + Vercel sin salir de la terminal."
+tagline: "Construye, revisa, migra y despliega una app Supabase + Vercel sin salir de la terminal."
 description: "Un flujo de publicación coherente para desarrolladores solos y equipos chicos que construyen sobre Supabase y Vercel: leé y operá el backend, revisá el diff, corré migraciones y desplegá — de punta a punta, desde un solo lugar."
 marketplaceSource: "terminalsync"
 items:

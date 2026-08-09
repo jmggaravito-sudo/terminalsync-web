@@ -3,7 +3,7 @@ name: Kit de Operaciones de Equipo
 logo: /logos/ts-kit.svg
 category: operations
 status: available
-tagline: "Mirá qué vence, sacá el contexto del hilo, y contale al equipo qué se mueve y qué está frenado — manejá la operación del día a día desde un solo lugar."
+tagline: "Mira qué vence, saca el contexto del hilo, y cuéntale al equipo qué se mueve y qué está frenado — maneja la operación del día a día desde un solo lugar."
 description: "Un combo coherente de operaciones para un líder de operaciones o un equipo chico que lleva el trabajo en ClickUp y coordina en Slack: ver qué vence o está frenado, sacar el contexto del hilo relevante, y convertirlo en un status claro en vez de perseguir gente para un resumen verbal."
 marketplaceSource: "terminalsync"
 items:

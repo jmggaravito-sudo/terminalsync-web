@@ -3,7 +3,7 @@ name: Kit de Pipeline de Ventas B2B
 logo: /logos/ts-kit.svg
 category: sales
 status: available
-tagline: "Mantené el CRM al día, escribí la propuesta, y dale al equipo un status claro — el ciclo de venta B2B con varios stakeholders, en un solo lugar."
+tagline: "Mantén el CRM al día, escribe la propuesta, y dale al equipo un estado claro — el ciclo de venta B2B con varios stakeholders, en un solo lugar."
 description: "Un combo coherente para un vendedor B2B o un equipo chico de ventas que corre oportunidades por un CRM real: sacar a la luz las oportunidades frenadas o en riesgo en HubSpot, convertir el contexto de la oportunidad en una propuesta o respuesta a RFP estructurada, y mantener informado a liderazgo de ventas o CS con un update interno claro."
 marketplaceSource: "terminalsync"
 items:

@@ -4,7 +4,7 @@ logo: /connectors/google-sheets.svg
 category: productivity
 status: available
 simpleTitle: "Tus planillas, respondiendo preguntas"
-simpleSubtitle: "La planilla donde llevás ventas, clientes y stock — ahora tu IA la lee y la actualiza por vos."
+simpleSubtitle: "La planilla donde llevas ventas, clientes y stock — ahora tu IA la lee y la actualiza por ti."
 devTitle: "Conector MCP de Google Sheets"
 devSubtitle: "Lectura/escritura por OAuth sobre la Sheets API — get, batch-get, update, batch-update, manejo de planillas y hojas."
 ctaUrl: "https://www.google.com/sheets/about/"

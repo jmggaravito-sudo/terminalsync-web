@@ -3,7 +3,7 @@ name: HubSpot
 logo: /connectors/hubspot.svg
 category: sales
 status: available
-tagline: "Mirá quién no te compra hace rato — y mandale el follow-up, en un solo producto."
+tagline: "Mira quién no te compra hace rato — y mándale el follow-up, en un solo producto."
 description: "Junta el conector de HubSpot (contactos, negocios, notas y tareas de tu CRM) con Internal Comms (redacta el follow-up al cliente con el tono justo), para que 'qué clientes se apagaron' se convierta en un mensaje listo para mandar — con vos aprobando antes de enviarlo."
 author: "TerminalSync"
 marketplaceSource: "terminalsync"

@@ -4,7 +4,7 @@ logo: /connectors/elasticsearch.svg
 category: dev
 status: available
 simpleTitle: "Preguntale a tu Elasticsearch en lenguaje común"
-simpleSubtitle: "Server oficial de Elastic: buscá en tus índices en lenguaje natural."
+simpleSubtitle: "Server oficial de Elastic: busca en tus índices en lenguaje natural."
 devTitle: "Elasticsearch MCP Connector"
 devSubtitle: "Official @elastic/mcp-server-elasticsearch: tools over your Elasticsearch cluster, API-key scoped."
 ctaUrl: "https://www.elastic.co"

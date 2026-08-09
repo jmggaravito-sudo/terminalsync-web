@@ -4,7 +4,7 @@ logo: /connectors/gitlab.svg
 category: dev
 status: available
 simpleTitle: "Que tu IA ayude con tus proyectos de GitLab"
-simpleSubtitle: "Leé archivos, prepará issues y armá merge requests sin saltar entre pantallas."
+simpleSubtitle: "Lee archivos, prepara issues y arma merge requests sin saltar entre pantallas."
 devTitle: "GitLab MCP Connector"
 devSubtitle: "Servidor oficial @modelcontextprotocol: proyectos, archivos, issues, merge requests y ramas vía GitLab API."
 ctaUrl: "https://gitlab.com"

@@ -4,7 +4,7 @@ logo: /connectors/twitter.svg
 category: messaging
 status: available
 simpleTitle: "Publicá y escuchá en X, desde el chat"
-simpleSubtitle: "\"Publicá este anuncio\" \"¿Qué dicen de nosotros?\" — tu IA publica en X y lo busca por vos."
+simpleSubtitle: "\"Publica este anuncio\" \"¿Qué dicen de nosotros?\" — tu IA publica en X y lo busca por ti."
 devTitle: "Conector MCP de X (Twitter)"
 devSubtitle: "MCP sobre la X API v2 oficial — publicar tweets, buscar tweets recientes."
 ctaUrl: "https://x.com"

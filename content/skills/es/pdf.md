@@ -6,7 +6,7 @@ logo: /skills/pdf.svg
 category: productivity
 status: available
 simpleTitle: "Editá, llená y generá PDFs sin copiar y pegar"
-simpleSubtitle: "Dile a Claude qué necesitás — facturas, contratos, formularios — y arma el PDF por vos."
+simpleSubtitle: "Dile a Claude qué necesitas — facturas, contratos, formularios — y arma el PDF por ti."
 devTitle: "PDF Skill"
 devSubtitle: "Skill oficial de Anthropic para generar, llenar y parsear PDFs usando `pdf-lib` + `pdfplumber`."
 ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
