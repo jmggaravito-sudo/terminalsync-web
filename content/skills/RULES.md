@@ -88,14 +88,14 @@ Every skill file must include these fields:
 name: Skill Name
 logo: /skills/<slug>.svg
 category: productivity
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Short one-line promise"
 description: "Concrete description of what the assistant does and when it helps."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]  # only providers with real delivery + eval — see "Cross-provider coverage"
+compatibleWith: ["claude", "codex", "gemini"]  # las 4 IAs — ver "Cross-provider coverage"
 ---
 ```
 
@@ -104,7 +104,10 @@ Required field meanings:
 - `name`: user-facing skill name.
 - `logo`: local `/skills/<slug>.svg` path or an approved existing asset.
 - `category`: one of the allowed categories below.
-- `vendors`: the agent/provider surfaces where this skill can run.
+- `vendors`: the agent/provider surfaces where this skill can run. **Una skill
+  nueva se publica con las tres (`claude`, `codex`, `gemini`) o no se publica** —
+  GLM/TerminalSync hereda la de Claude, así que esas tres son las 4 IAs. No
+  copies este bloque con menos: ver "Cross-provider coverage" abajo.
 - `author`: original author or maintainer.
 - `status`: publication state; use `available` only after review approval.
 - `tagline`: short catalog-card promise.
@@ -221,6 +224,12 @@ Las 4 superficies y cómo les llega:
 | **Gemini** | `~/.gemini/skills/<slug>/` **+** el bloque `@import` en `GEMINI.md` — no auto-descubre el dir (terminal-sync#1268) |
 
 #### Regla para skills NUEVAS
+
+> **Ojo con el bloque de frontmatter de arriba.** Hasta el 2026-08-08 ese
+> ejemplo decía `["claude", "codex"]`, contradiciendo esta regla escrita 100
+> líneas más abajo. Los loops copian el ejemplo, no leen hasta acá: por eso
+> #260 salió con 2 vendedores en vez de 3. Si cambiás la regla, cambiá el
+> ejemplo en el mismo commit — es el que se obedece.
 
 Una skill nueva **nace multi-IA o no se publica.** No se shipea con
 `compatibleWith: ["claude"]` "por ahora": eso es lo que produce catálogos donde
