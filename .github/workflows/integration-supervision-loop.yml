@@ -6,6 +6,12 @@ on:
     # Tuesday 14:00 UTC / 09:00 Bogotá, after the four Monday marketplace loops.
     - cron: "0 14 * * 2"
   pull_request:
+    # `edited` no viene por defecto, y sin él este gate era una trampa: exige una
+    # línea en el cuerpo del PR, lee ese cuerpo del payload del evento
+    # (`github.event.pull_request.body`), y editarlo no volvía a correr nada. Un
+    # re-run tampoco sirve: replaya el payload viejo. La única salida era pushear
+    # un commit vacío — por eso el gate se terminaba saltando con `--admin`.
+    types: [opened, synchronize, reopened, edited]
     paths:
       - "content/connectors/**"
       - "content/plugins/**"
