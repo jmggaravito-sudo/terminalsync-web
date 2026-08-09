@@ -42,9 +42,26 @@ No pongas un puntaje donde no aplica: una skill que solo redacta un texto
 (comunicación, documentos) informa, no puntúa una decisión de negocio. El
 Veredicto es para skills de **decisión**.
 
-## Two-PR app mirror gate
+## Landing-first sync gate
 
-Every skill Loop run that publishes or changes marketplace-visible content must produce the two PRs described in `docs/integration-loop-two-pr-policy.md`: one landing/web PR and one app mirror PR. The app PR proves the desktop `Integraciones`/marketplace surface renders, installs, or explains the item correctly. If automation cannot create the app PR, the web PR must mark the app mirror as blocked and the item is not fully ready.
+Every skill Loop run publishes through the **landing PR first** — it is the source of truth for `/api/marketplace/catalog`, and the desktop consumes it automatically. An **app PR is required only when the item needs desktop code** it doesn't have yet (a new surface, a special install flow, or an item that would otherwise render as a broken generic card). Do **not** open an app PR just to leave a record: that rule used to be mandatory and produced mirror PRs made of hand-written fixtures that asserted nothing — see `docs/integration-loop-two-pr-policy.md`. State `App PR: no aplica — la app consume el catálogo` in the landing body instead. Sync is verified by the desktop guard (`src/data/departamento.test.ts` + `scripts/verify-integration-loop.mjs`), not declared. If the landing PR itself cannot be created, the item is **not** ready — never compensate with an app PR that mirrors content that does not exist.
+
+#### Cómo declarar que no hace falta app mirror
+
+Cuando el desktop ya consume el catálogo y no hay código de app que escribir,
+poné en el cuerpo del PR de landing, tal cual:
+
+    App mirror PR: no aplica — la app consume el catálogo
+
+El check del supervisor lo acepta y no pide el enlace. Si en cambio SÍ hay un
+PR de app, enlazalo detrás de la misma etiqueta:
+
+    App mirror PR: https://github.com/jmggaravito-sudo/terminal-sync/pull/1286
+
+**Solo se lee lo que esté detrás de `App mirror PR:`.** Citar un PR de la app
+en cualquier otra parte del texto —por ejemplo como antecedente histórico— no
+cuenta, y así debe ser: antes se buscaba el patrón en todo el cuerpo y una
+cita hacía que el check compilara una rama vieja y fallara por errores ajenos.
 
 ## File structure
 
@@ -71,14 +88,14 @@ Every skill file must include these fields:
 name: Skill Name
 logo: /skills/<slug>.svg
 category: productivity
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Short one-line promise"
 description: "Concrete description of what the assistant does and when it helps."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]  # only providers with real delivery + eval — see "Cross-provider coverage"
+compatibleWith: ["claude", "codex", "gemini"]  # las 4 IAs — ver "Cross-provider coverage"
 ---
 ```
 
@@ -87,7 +104,10 @@ Required field meanings:
 - `name`: user-facing skill name.
 - `logo`: local `/skills/<slug>.svg` path or an approved existing asset.
 - `category`: one of the allowed categories below.
-- `vendors`: the agent/provider surfaces where this skill can run.
+- `vendors`: the agent/provider surfaces where this skill can run. **Una skill
+  nueva se publica con las tres (`claude`, `codex`, `gemini`) o no se publica** —
+  GLM/TerminalSync hereda la de Claude, así que esas tres son las 4 IAs. No
+  copies este bloque con menos: ver "Cross-provider coverage" abajo.
 - `author`: original author or maintainer.
 - `status`: publication state; use `available` only after review approval.
 - `tagline`: short catalog-card promise.
@@ -183,34 +203,62 @@ Required evidence:
 
 If the skill does not clearly beat the generic baseline, it does not publish.
 
-### Cross-provider coverage (claude / codex / gemini)
+### Cross-provider coverage — las 4 IAs, no una lista por skill
 
-`compatibleWith` is a claim to the user, not a default. A skill may only declare
-a provider that has **both** a real delivery path **and** eval evidence.
+**Decisión JM 2026-08-07: todo tiene que funcionar en las 4 IAs.** Una skill que
+solo anda en algunas no es una skill "parcialmente compatible": es una skill
+**incompleta**, y el trabajo es arreglarla, no documentar dónde falla.
 
-Delivery reality today:
+Esto cambia para qué sirve `compatibleWith`. Sigue siendo una promesa que exige
+evidencia — nunca se declara un proveedor sin evals ahí — pero ya no es una
+característica que el cliente compara. Es un **termómetro interno**: lo que
+todavía no llegó a la barra.
 
-- **Claude** and **Codex** are deliverable: the catalog raw endpoint emits
-  `vendors` and the same `SKILL.md`, and the desktop writes it to
-  `~/.claude/skills/<slug>/` and `~/.codex/skills/<slug>/` (`skills_sync`,
-  `Vendor::{Claude, Codex}`). These are the only two `SkillVendor` values.
-- **Gemini has no delivery path yet** — it is not a `SkillVendor`, the raw
-  endpoint filters it out, and the desktop has no Gemini skills directory. Do
-  **not** put `gemini` in `compatibleWith` until that path ships (context
-  injection, e.g. `GEMINI.md` / system-prompt preamble) **and** the skill is
-  evaluated on it. The default template is `["claude", "codex"]`.
+Las 4 superficies y cómo les llega:
 
-Evaluation rule:
+| IA | Cómo recibe la skill |
+|---|---|
+| **Claude** | `~/.claude/skills/<slug>/SKILL.md` |
+| **Codex** | `~/.codex/skills/<slug>/SKILL.md` |
+| **TerminalSync / GLM** | hereda la de Claude — corre sobre ese CLI (`proxy-via-claude-cli`) |
+| **Gemini** | `~/.gemini/skills/<slug>/` **+** el bloque `@import` en `GEMINI.md` — no auto-descubre el dir (terminal-sync#1268) |
 
-- Run the eval set on **each** provider the skill claims in `compatibleWith`,
-  not on Claude alone. The skills-eval harness takes a `provider` dimension for
-  this; the report shows per-provider results.
-- The skill must beat its baseline on every claimed provider. If it only clears
-  the bar on Claude, narrow `compatibleWith` to `["claude"]` — do not ship a
-  multi-AI claim backed by one-AI evidence.
-- A skill whose behavior depends on Claude-specific tools, formatting, or the
-  Agent Skills (`SKILL.md`) mechanism is Claude-only until it is rewritten to be
-  portable. Flag such coupling in the PR.
+#### Regla para skills NUEVAS
+
+> **Ojo con el bloque de frontmatter de arriba.** Hasta el 2026-08-08 ese
+> ejemplo decía `["claude", "codex"]`, contradiciendo esta regla escrita 100
+> líneas más abajo. Los loops copian el ejemplo, no leen hasta acá: por eso
+> #260 salió con 2 vendedores en vez de 3. Si cambiás la regla, cambiá el
+> ejemplo en el mismo commit — es el que se obedece.
+
+Una skill nueva **nace multi-IA o no se publica.** No se shipea con
+`compatibleWith: ["claude"]` "por ahora": eso es lo que produce catálogos donde
+cada ítem anda en un subconjunto distinto, y deja al cliente adivinando.
+
+Antes de publicar, el loop corre los evals en **cada** proveedor y las cuatro
+tienen que pasar el umbral. Si una no pasa, la skill se reescribe hasta que
+pase — o no entra. Un `SKILL.md` que depende de tools, formato o mecanismos
+específicos de un proveedor está mal escrito para este catálogo; hacerlo
+portable es parte del trabajo, no un extra.
+
+#### Skills que YA están publicadas y no cumplen
+
+Se tratan como deuda, no como diseño. Se declaran solo donde tienen evidencia
+—para no mentir mientras tanto— y quedan en la lista de arreglo. Al 2026-08-07:
+`rfm-segmentacion` y `doc-coauthoring` no pasan en Gemini.
+
+#### Cómo se corre
+
+    GEMINI_API_KEY=... ANTHROPIC_API_KEY=... \
+      node scripts/skills-eval/run-evals.mjs <slug> --provider gemini
+
+- **Mediana de 3 corridas**, no una. Medido el 2026-08-07: la misma skill con
+  el mismo prompt dio 5/5, 4/5 y 5/5 en tres corridas seguidas — una sola es un
+  sorteo en el margen.
+- El **sujeto** es el proveedor evaluado y el **juez** es Claude: modelos
+  distintos, así el que produce no es el que aprueba.
+- `--local` evalúa el `SKILL.md` del repo antes de publicarlo, que es el orden
+  correcto: medir el arreglo sin tener que shipearlo primero.
 
 ### Evidence is not the verdict
 

@@ -1,7 +1,42 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { getTrm, TRM_FALLBACK } from "@/lib/trm";
 
 export const CREDIT_CHECKOUT_SOURCE = "terminalsync_credits";
-export const CREDIT_COP_PER_USD = 4_100;
+
+/**
+ * What is added on top of the TRM when charging in pesos.
+ *
+ * Not profit: it covers what charging in another currency actually costs —
+ * Mercado Pago's commission and the IVA on it, plus the exchange rate moving
+ * between the moment of the charge and the settlement. The TRM swung 3.1%
+ * across two weeks of August 2026, so a buffer in that neighbourhood is what
+ * the evidence supports rather than a guess.
+ *
+ * **This is the one number to change if the policy changes.** It is deliberately
+ * a single constant so nobody has to hunt for it.
+ */
+export const CREDIT_COP_MARGIN = 0.08;
+
+/**
+ * @deprecated Kept only so an unconverted caller still compiles. The real rate
+ * comes from {@link copRateForCredits}; this constant was 4,100 and had drifted
+ * ~28% above the real TRM, which is what made Colombians overpay.
+ */
+export const CREDIT_COP_PER_USD = TRM_FALLBACK * (1 + CREDIT_COP_MARGIN);
+
+/** The COP/USD rate to charge at today: the legal TRM plus the margin. */
+export async function copRateForCredits(): Promise<{
+  rate: number;
+  trm: number;
+  source: string;
+}> {
+  const trm = await getTrm();
+  return {
+    rate: trm.value * (1 + CREDIT_COP_MARGIN),
+    trm: trm.value,
+    source: trm.source,
+  };
+}
 
 export interface CreditPackage {
   amountCents: 1000 | 2000;
@@ -19,11 +54,23 @@ export function creditPackageFor(amountCents: unknown): CreditPackage | null {
   return PACKAGES[amountCents] ?? null;
 }
 
+/**
+ * Price of a package in pesos, rounded to the nearest 100 so the customer sees
+ * a normal amount rather than 34,608.
+ */
 export function copAmountForCreditPackage(
   creditPackage: CreditPackage,
   rate = CREDIT_COP_PER_USD,
 ): number {
   return Math.round((creditPackage.usd * rate) / 100) * 100;
+}
+
+/** Same, at today's TRM. This is what the checkout and the webhook must use. */
+export async function copAmountForCreditPackageToday(
+  creditPackage: CreditPackage,
+): Promise<number> {
+  const { rate } = await copRateForCredits();
+  return copAmountForCreditPackage(creditPackage, rate);
 }
 
 export type CreditRail = "stripe" | "mercadopago";
@@ -98,6 +145,9 @@ export function creditMetadata(input: {
   userId: string;
   creditPackage: CreditPackage;
   rail: CreditRail;
+  /** Pesos actually charged, recorded so the webhook can verify what was
+   *  agreed instead of recomputing it at a rate that has since moved. */
+  copAmount?: number;
 }): CreditPaymentMetadata {
   return {
     source: CREDIT_CHECKOUT_SOURCE,
@@ -105,6 +155,7 @@ export function creditMetadata(input: {
     credit_amount_cents: String(input.creditPackage.amountCents),
     credit_amount_micros: String(input.creditPackage.amountMicros),
     rail: input.rail,
+    ...(input.copAmount ? { cop_amount: String(input.copAmount) } : {}),
   };
 }
 
@@ -114,6 +165,9 @@ export function parseCreditPaymentMetadata(
   userId: string;
   creditPackage: CreditPackage;
   rail: CreditRail;
+  /** What the customer agreed to pay in pesos, when the checkout recorded it.
+   *  Absent on payments started before the rate became live. */
+  copAmount: number | null;
 } | null {
   if (raw?.source !== CREDIT_CHECKOUT_SOURCE) return null;
   const userId = raw.supabase_user_id?.trim();
@@ -122,7 +176,9 @@ export function parseCreditPaymentMetadata(
   const rail = normalizeCreditRail(raw.rail);
   if (!userId || !creditPackage || !rail) return null;
   if (Number(raw.credit_amount_micros) !== creditPackage.amountMicros) return null;
-  return { userId, creditPackage, rail };
+  const rawCop = Number(raw.cop_amount);
+  const copAmount = Number.isFinite(rawCop) && rawCop > 0 ? rawCop : null;
+  return { userId, creditPackage, rail, copAmount };
 }
 
 export async function grantPurchasedCredits(input: {

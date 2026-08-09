@@ -58,9 +58,26 @@ A kit must answer these questions clearly:
 
 If the answer is only "these are good tools", it is not a kit.
 
-## Two-PR app mirror gate
+## Landing-first sync gate
 
-Every kit Loop run that publishes or changes marketplace-visible content must produce the two PRs described in `docs/integration-loop-two-pr-policy.md`: one landing/web PR and one app mirror PR. The app PR proves the desktop `Integraciones`/marketplace surface renders, installs, or explains the item correctly. If automation cannot create the app PR, the web PR must mark the app mirror as blocked and the item is not fully ready.
+Every kit Loop run publishes through the **landing PR first** — it is the source of truth for `/api/marketplace/catalog`, and the desktop consumes it automatically. An **app PR is required only when the item needs desktop code** it doesn't have yet (a new surface, a special install flow, or an item that would otherwise render as a broken generic card). Do **not** open an app PR just to leave a record: that rule used to be mandatory and produced mirror PRs made of hand-written fixtures that asserted nothing — see `docs/integration-loop-two-pr-policy.md`. State `App PR: no aplica — la app consume el catálogo` in the landing body instead. Sync is verified by the desktop guard (`src/data/departamento.test.ts` + `scripts/verify-integration-loop.mjs`), not declared. If the landing PR itself cannot be created, the item is **not** ready — never compensate with an app PR that mirrors content that does not exist.
+
+#### Cómo declarar que no hace falta app mirror
+
+Cuando el desktop ya consume el catálogo y no hay código de app que escribir,
+poné en el cuerpo del PR de landing, tal cual:
+
+    App mirror PR: no aplica — la app consume el catálogo
+
+El check del supervisor lo acepta y no pide el enlace. Si en cambio SÍ hay un
+PR de app, enlazalo detrás de la misma etiqueta:
+
+    App mirror PR: https://github.com/jmggaravito-sudo/terminal-sync/pull/1286
+
+**Solo se lee lo que esté detrás de `App mirror PR:`.** Citar un PR de la app
+en cualquier otra parte del texto —por ejemplo como antecedente histórico— no
+cuenta, y así debe ser: antes se buscaba el patrón en todo el cuerpo y una
+cita hacía que el check compilara una rama vieja y fallara por errores ajenos.
 
 ## File structure
 
@@ -343,3 +360,78 @@ This run's original plan was a Sales Kit (`hubspot`) and a Finance Kit (`xero` +
 **Still blocked — Local Marketing kit:** same gate failure as before, `google-business` has no `manifest:` block. No new information this run; not re-researched.
 
 **Note for whoever reviews #258, #262, and this run's PR together:** `small-business-finance` (#258) and `bookkeeping-tax-handoff` (#262) both anchor on `xero` and both category `finance` — #262's own run-log already flags this and argues the audience/artifact differ (monthly summary for the owner vs. accountant handoff packet). Not this run's call to resolve; flagging again so it isn't missed if all three PRs land close together.
+
+### 2026-08-02 — empresario-first batch (dueño, ecommerce, B2B, soporte, finanzas, marketing local, operaciones)
+
+**Shipped (4 kits, EN/ES parity):**
+
+- `b2b-sales-pipeline` (category: sales) — `hubspot` + `doc-coauthoring` + `internal-comms`.
+- `small-business-finance` (category: finance) — `xero` + `stripe` + `doc-coauthoring`.
+- `ecommerce-storefront` (category: ecommerce) — `square` + `doc-coauthoring` + `internal-comms`.
+- `team-operations` (category: operations) — `clickup` + `slack` + `internal-comms`.
+
+All items use only `kind: connector`/`kind: skill` (the two kinds `bundleItems.ts`/`isBundleItemKind` actually resolves, along with `cli`), only manifest-bearing connectors and the 7 allowed skills, and carry the fixed `/logos/ts-kit.svg` logo.
+
+**Deferred — Customer Service kit (servicio al cliente):** the natural core connector is `intercom`, but `content/connectors/en/intercom.md` has no `manifest:` block (first-party, app-side connection) — it fails this file's literal "Allowed connectors" test (`manifest:` block required). Building a support kit instead from `notion` + `slack` + `doc-coauthoring` + `internal-comms` would duplicate 3 of the 4 items already in `docs-and-team-comms` with no distinct connector to anchor a genuinely different workflow — that reads as a relabeled kit, not a coherent new one (see "Duplicates another kit's purpose" prohibition). Deferred until either (a) the Connector Loop ships a manifest-eligible support/ticketing connector, or (b) this file gets an explicit first-party exception (see next item).
+
+**Deferred — Local Marketing kit (marketing local):** the natural core connector is `google-business` (reviews/local listings), also first-party with no `manifest:` block, same gate failure as above. A version built from `google-maps` + `seo-auditor` + `meta-ads-creator` would overlap 2 of 3 items with the existing `marketing-campaign-seo` kit without a connector strong enough to justify a distinct local-business audience — same duplicate-purpose risk. Deferred for the same reason as Customer Service.
+
+**Open question for a future run (not resolved here):** this file's "Allowed connectors" section defines installable as "has a `manifest:` block", which pre-dates first-party connectors (`shopify`, `meta-ads`, `meta-social`, `google-business`, `intercom`, `dropbox`) that install via the app's Settings → Integrations flow instead of an npx manifest — they are not "card-only" dead-end CTAs in the sense the "Card-only today" list means (`gmail`, `gdrive`, `kit`, `sqlite`, `vercel`, `whatsapp`), but they also don't satisfy the literal manifest test. This run treated the literal text as authoritative and excluded them rather than reinterpret the rule. If JM confirms first-party app-connected connectors should count as kit-eligible, `ecommerce-storefront` could gain `shopify` and a real Customer Service / Local Marketing kit becomes buildable — but that is a rule change, not a call for an automated run to make unilaterally.
+
+**Separate drift note:** `content/plugins/RULES.md` ("Relationship to Kits") says a Kit's `items:` may reference `kind: plugin`. The actual resolver (`isBundleItemKind` in `src/lib/marketplace/bundleItems.ts`) only accepts `connector` / `skill` / `cli` — `plugin` is not a valid `BundleItemKind` and would be dropped/fail the `kitsIntegrity.test.ts` gate. No kit in this run uses `kind: plugin`; flagging so a future run doesn't try it and hit a silent-drop or test failure.
+
+**Solapamiento resuelto (2026-08-09):** la corrida de abajo pidió que alguien confirmara si
+`small-business-finance` y `bookkeeping-tax-handoff` se pisan, ya que los dos son `finance` y los dos
+anclan en `xero`. Se publican los dos: cambian el destinatario y el artefacto — este escribe el
+**resumen mensual que lee el dueño** (Xero + Stripe), el otro arma el **paquete de entrega al contador**
+(Xero + Google Sheets). Si en uso real resultan indistinguibles, lo barato es bajar uno a `status: soon`.
+
+### 2026-08-02 — tax kits for entrepreneurs (tax prep, bookkeeping cleanup, 1099, payroll tax forms, accountant handoff, SMB finance ops)
+
+**Shipped (1 kit, EN/ES parity):**
+
+- `bookkeeping-tax-handoff` (category: finance) — `xero` + `google-sheets` + `doc-coauthoring` + `internal-comms`. Scoped to the run-up to the accountant: read the real books (Xero, or a spreadsheet for the very common owner without accounting software), organize them into a structured handoff packet, and draft the cover note that goes with it. Not a general finance/summary kit — see the differentiation note below.
+
+**Overlap check against a parallel, not-yet-merged Kit Curation Loop run:** a separate open PR (branch `kits-loop/empresario-2026-08-02`, not merged at the time of this run) proposes `content/kits/en/small-business-finance.md` — also category `finance`, also anchored on the `xero` connector. This run's kit deliberately targets a different audience and artifact so the two don't duplicate purpose: that kit reads Xero + Stripe and writes a **monthly financial summary for the owner** to read; this kit reads Xero (or Google Sheets, for owners without Xero) and writes an **accountant handoff packet + cover note** for an outside professional at tax time or quarter-end. Both kits' own "Why these pieces belong together" sections cross-reference this distinction. If both are ever reviewed together, JM should confirm the distinction holds; if not, they should be merged into one kit rather than published as two overlapping ones.
+
+**Deferred / SKIP — no catalog piece exists for these parts of the focus, documented for the proper Loop instead of forced into this kit:**
+
+- **1099 contractor compliance** (e.g. generating/e-filing 1099-NEC forms) — no connector or skill in the catalog does tax-form generation or e-filing. Candidates like Track1099/Tax1099/Avalara 1099 have no known official npm-stdio or documented remote MCP server as of this run. Candidate for a future **Connector Loop** run, not this one.
+- **Payroll tax forms** (e.g. 941, state withholding filings) — no payroll-provider connector (Gusto, ADP, Rippling, QuickBooks Payroll) exists in the catalog; Xero's own payroll tools are read-oriented and scoped to orgs with Xero Payroll enabled, not a general payroll-tax-forms solution. Candidate for a future **Connector Loop** run.
+- **Tax prep / filing itself** — no tax-prep or e-filing connector exists (and none of the 7 allowed skills covers tax law). This kit explicitly documents in its Limits that it organizes numbers for the accountant, it does not prepare or file returns.
+
+None of the 7 allowed skills (`code-reviewer`, `doc-coauthoring`, `internal-comms`, `mcp-builder`, `meta-ads-creator`, `seo-auditor`, `skill-creator`) covers bookkeeping/tax/finance directly — `doc-coauthoring` and `internal-comms` are used here for their generic structuring/messaging behavior, applied to the accountant-handoff artifact, the same pattern already used for client proposals (Business Owner Kit) and team announcements (Docs & Team Comms Kit).
+
+## Loop run notes
+
+### 2026-07-31 — focus "higgsfield, zapier, notebooklm, ideogram"
+
+**Shipped:** `social-ad-creative-studio` (marketing) — `meta-ads-creator` (skill) +
+`ideogram` (connector) + `higgsfield` (connector). Both connectors are official,
+OAuth-connected, and already `status: available` with a `manifest:` block
+(`content/connectors/{en,es}/{ideogram,higgsfield}.md`), so they pass the
+"only published, installable pieces" gate. Coherence: Meta Ads Creator supplies
+the creative brief (copy + image description + format); Ideogram turns it into
+the still image; Higgsfield turns it into the video for Stories/Reels formats a
+still image can't serve.
+
+**SKIP/deferred — `zapier`:** shipped as a connector (`status: available`,
+2026-07-29) but its `content/connectors/{en,es}/zapier.md` has **no `manifest:`
+block** — it is a user-managed MCP where the URL/tools are configured entirely
+in the user's own Zapier dashboard (`docs/integration-loop-two-pr-policy.md`
+explicitly calls this out: "must not look one-click installable"). Kits'
+"Only published, installable pieces" rule requires a connector file to have a
+`manifest:` block before it can be included. Zapier does not clear that bar
+today, so it is left out of this kit. Reconsider if/when Zapier ships a
+kit-eligible install path (e.g. a documented default manifest), or once a
+dedicated "connect your own automation" kit pattern exists that can disclose
+the user-managed setup honestly.
+
+**SKIP/deferred — `notebooklm`:** no `content/connectors/{en,es}/notebooklm.md`
+exists in the catalog at all — Google does not publish an installable MCP
+server for NotebookLM (it's a consumer research/notebook product, not an
+MCP-exposed API), matching the same gate that already SKIPs other
+Google-consumer-product connectors in `content/connectors/SOURCES.md`. This is
+a Connector Loop candidate, not a Kit Loop one: it cannot be added to any kit
+until (if ever) an official installable connector exists. No kit content
+references `notebooklm` in this run.

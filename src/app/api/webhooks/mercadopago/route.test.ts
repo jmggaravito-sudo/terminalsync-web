@@ -7,6 +7,13 @@ const mocks = vi.hoisted(() => ({
   grantPurchasedCredits: vi.fn(),
 }));
 
+// A fixed rate keeps these deterministic: the real one comes from a live
+// government service, and a pricing test must not need the network.
+vi.mock("@/lib/trm", () => ({
+  TRM_FALLBACK: 3_204.51,
+  getTrm: vi.fn(async () => ({ value: 3_204.51, date: "2026-08-05", source: "live" })),
+}));
+
 vi.mock("@/lib/mercadopago", () => ({
   getPayment: mocks.getPayment,
   getPreapproval: mocks.getPreapproval,
@@ -48,7 +55,7 @@ function paymentRequest(body: Record<string, unknown>) {
   });
 }
 
-function approvedPayment(amount = 41_000) {
+function approvedPayment(amount = 34_600) {
   return {
     id: 456,
     status: "approved",

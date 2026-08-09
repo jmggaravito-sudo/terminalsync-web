@@ -36,6 +36,29 @@ describe("AI credit checkout contracts", () => {
     );
   });
 
+  it("carries the agreed peso amount so a moving rate cannot void a payment", () => {
+    const creditPackage = creditPackageFor(1000)!;
+    const metadata = creditMetadata({
+      userId: "user-123",
+      creditPackage,
+      rail: "mercadopago",
+      copAmount: 34_600,
+    });
+    // The webhook verifies against this, not against whatever the TRM is by the
+    // time the payment confirms — otherwise a real payment gets rejected and
+    // the customer pays without receiving credits.
+    expect(metadata.cop_amount).toBe("34600");
+    expect(parseCreditPaymentMetadata(metadata)?.copAmount).toBe(34_600);
+
+    // A junk or negative amount reads as "not recorded" rather than as a price.
+    expect(
+      parseCreditPaymentMetadata({ ...metadata, cop_amount: "-1" })?.copAmount,
+    ).toBeNull();
+    expect(
+      parseCreditPaymentMetadata({ ...metadata, cop_amount: "nope" })?.copAmount,
+    ).toBeNull();
+  });
+
   it("rejects tampered payment metadata before granting credits", () => {
     const creditPackage = creditPackageFor(1000)!;
     const metadata = creditMetadata({
@@ -47,6 +70,8 @@ describe("AI credit checkout contracts", () => {
       userId: "user-123",
       creditPackage,
       rail: "mercadopago",
+      // No amount was recorded, so the webhook falls back to the fixed figure.
+      copAmount: null,
     });
     expect(
       parseCreditPaymentMetadata({

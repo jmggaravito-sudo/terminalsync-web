@@ -2,14 +2,14 @@
 name: Promos & Coupons
 logo: /skills/promos-cupones.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Design a promo that doesn't wreck your margin"
 description: "Helps you design a targeted promotion or coupon — who gets it, what kind of discount, the guardrails (expiry, one-use, minimum), and the message — built to protect your margin. No promises about the sales lift."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 

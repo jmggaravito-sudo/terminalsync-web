@@ -6,6 +6,11 @@ const mocks = vi.hoisted(() => ({
   createPaymentPreference: vi.fn(),
 }));
 
+vi.mock("@/lib/trm", () => ({
+  TRM_FALLBACK: 3_204.51,
+  getTrm: vi.fn(async () => ({ value: 3_204.51, date: "2026-08-05", source: "live" })),
+}));
+
 vi.mock("@/lib/marketplace/auth", () => ({ authenticate: mocks.authenticate }));
 vi.mock("@/lib/stripe", () => ({
   siteUrl: () => "https://terminalsync.ai",
@@ -160,7 +165,7 @@ describe("POST /api/credits/checkout", () => {
     }));
     expect(res.status).toBe(200);
     expect(mocks.createPaymentPreference).toHaveBeenCalledWith(expect.objectContaining({
-      amount: 41_000,
+      amount: 34_600,
       currency: "COP",
       externalReference: "user-verified",
       metadata: expect.objectContaining({ rail: "mercadopago" }),

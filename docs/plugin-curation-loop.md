@@ -54,6 +54,50 @@ Number semantics:
 - `--skipped`: candidate plugins documented as SKIP/deferred in this run.
 - `--items`: landing slugs for the plugins added/promoted, so `/admin/ops/loop-runs` can show direct `/es/plugins/<slug>` links.
 
-## Two-PR app mirror gate
+## Landing-first sync gate
 
-Plugin runs must follow `docs/integration-loop-two-pr-policy.md`: a Plugin is not fully ready with only a web catalog PR. The app mirror PR must verify install/render behavior in the desktop app, especially where a Plugin bundles connectors with OAuth, secrets, or first-party flows.
+Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first, always.** An app PR is required only when the Plugin needs desktop code it doesn't have — which for Plugins is more common than for plain connectors, since bundling OAuth, secrets or first-party flows often does need a real surface change. When the generic renderer already handles it, no app PR: state `App PR: no aplica — la app consume el catálogo`. What must never happen is an app PR made of hand-written fixtures asserting a file that doesn't exist — that is what the old mandatory-mirror rule produced.
+
+## Run log
+
+### 2026-08-02 — "plugins para empresarios: ventas, ecommerce, soporte al cliente, marketing, finanzas, operaciones, reportes ejecutivos" (automated)
+
+**Shipped 5 Plugins**, each an already-published connector + an already-evaluated skill, picked so the pairing reflects what the connector's real tools can actually feed the skill (no invented capability):
+
+- **shopify** (`ecommerce`) — Shopify connector + Win Back Dormant Customers. Chose `winback-dormidos` over `carrito-abandonado`: the Shopify connector's tools (`shopify_list_orders`, `shopify_search_customers`) expose fulfilled-order history (last purchase date, amount), which is exactly what win-back segmentation needs — it does **not** expose abandoned-checkout/cart-level events, so bundling the cart-recovery skill here would have been an unsupported claim. Covers ecommerce + ventas.
+- **meta-ads** (`marketing`) — Meta Ads (read-only insights) connector + Meta Ads Creator. The connector flags what's underperforming; the skill hands you fresh creative to test — a real "see the problem → get the next move" loop.
+- **google-business** (`marketing`) — Google Business connector + Ask for Reviews. One side gets new reviews in (asking happy customers), the other watches/replies to the ones that land — both halves of the same reputation loop.
+- **hubspot** (`sales`) — HubSpot connector + Internal Comms. Mirrors the already-shipped Stripe + Internal Comms pattern ("who needs a nudge" → drafted, approved, sent) applied to CRM follow-ups instead of billing.
+- ~~**xero** (`operations`) — Xero connector + Doc Co-Authoring.~~ **No se publicó así.** Para cuando este PR se mergeó (2026-08-09), `xero` ya estaba vivo pareado con Internal Comms (corrida del 2026-08-02 de abajo), que es el cobro de facturas vencidas. Se conservó el publicado: cambiarlo habría alterado un plugin en producción. Es el costo de que dos corridas del loop trabajen sobre el mismo slug sin verse.
+
+**Deferred / SKIP, documented for the other Loops:**
+
+- **Intercom (soporte al cliente)** — the connector (`content/connectors/en/intercom.md`) is published and support-first, but no publishable skill pairs with it: the obvious candidate, `email-drafter`, is `status: soon` + `hidden: true` and fails the Skill Loop's delivery gate, and it's written for internal/client email tone, not inbox-triage. Shipping Intercom as a connector-only Plugin was considered (the rule allows it) but rejected this run for low marginal value over just browsing the Connector — no skill piece to make it a real "product pack" yet. Deferred to the Skill Loop: publish a support-reply drafting skill (or un-hide/re-mold `email-drafter`), then pair it with Intercom here.
+- **Shopify-adjacent ecommerce skills** (`rfm-segmentacion`, `ltv-cohortes`, `carrito-abandonado`, `promos-cupones`) — all real, evaluated, available skills that would strengthen a Shopify bundle, but stacking them all into one Plugin file would blur "one product" into a role bundle. That's what a **Kit** is for (`content/kits/RULES.md`): a future "Ecommerce Growth Kit" referencing the `shopify` Plugin plus these skills is the right home for them, not a bigger `shopify.md`. Left as a candidate for the Kit Loop.
+
+Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` (17/17 pass) + `tsc --noEmit` (clean). All 5 new plugins reuse their connector's existing, committed logo (`/connectors/<slug>.svg`) — no new logo assets needed.
+
+
+### 2026-08-02 — focus: tax plugins for small business owners
+
+Focus input: "TaxBandits, QuickBooks, Odoo, Xero, 1099, W-9, W-2, payroll tax filing, bookkeeping reports."
+
+- **Shipped:** `xero` Plugin (`content/plugins/{en,es}/xero.md`) — bundles the existing `xero` connector (invoices, aged receivables, payments, P&L/balance sheet, already `status: available`) with the existing `internal-comms` skill (drafts the payment-reminder follow-up), mirroring the already-shipped `stripe` Plugin's collections pattern. Xero is the only piece in this focus area with both a publishable connector and a skill that genuinely reinforces it.
+- **Skipped/deferred (no connector to bundle — Connector Loop tasks, not this loop's):**
+  - **QuickBooks** — already SKIP in `content/connectors/SOURCES.md` (2026-07-23): only a community `quickbooks-mcp` package exists, Intuit does not publish an official npm server. Reconfirmed still SKIP on 2026-08-02.
+  - **Odoo** — new SKIP, documented in `content/connectors/SOURCES.md`: `odoo-mcp` on npm is community-maintained (not the Odoo org), fails the official-publisher gate. `@odoo/mcp` does not exist.
+  - **TaxBandits** — new SKIP, documented in `content/connectors/SOURCES.md`: no npm package exists at all (`taxbandits-mcp` / `@taxbandits/mcp` both 404). No official or community MCP server to evaluate.
+  - **1099 / W-9 / W-2 e-filing, payroll tax filing** — these are the actual jobs TaxBandits/QuickBooks would cover; with neither connector available, no Plugin can honestly claim this capability. The shipped `xero` Plugin's body explicitly discloses this gap rather than overclaiming.
+- **Not pursued:** pairing Xero with a document skill (e.g. `xlsx`) for "bookkeeping reports" was considered, but `xlsx` is a generic spreadsheet skill with no Xero- or bookkeeping-specific behavior to demonstrate — internal-comms + Xero's own follow-up use case was the stronger, more honest bundle.
+
+
+### 2026-07-31 — focus "higgsfield, zapier, notebooklm, ideogram"
+
+- **Shipped (2):**
+  - `higgsfield` — bundles the `higgsfield` connector (image/15s video generation, remote/OAuth) with the `meta-ads-creator` skill. The skill's mobile/home-video ad angle needed an actual UGC-style video generator; Higgsfield is the natural pairing.
+  - `ideogram` — bundles the `ideogram` connector (image generation/remix, remote/OAuth) with the `meta-ads-creator` skill. The skill writes five ad concepts with an image direction per concept; Ideogram renders the actual visual instead of leaving the owner to prompt an image tool by hand.
+- **Skipped/deferred (2):**
+  - `zapier` — the connector exists and is `available`, but it is a many-to-many automation hub (9,000+ apps), not a single product with one usage pattern. No skill in `content/skills/{en,es}` teaches a specific Zapier workflow, and forcing a generic skill (e.g. Internal Comms) onto it would misrepresent a broad automation hub as a one-product Plugin. Deferred: a future Skill Loop candidate could target one concrete Zapier workflow (e.g. "capture a lead into a sheet + task"); until then this is not a Plugin.
+  - `notebooklm` — no connector for NotebookLM exists in `content/connectors/{en,es}` or `content/connectors/SOURCES.md`. This is a Connector Loop task first (source the official NotebookLM MCP/API surface, if one exists) — the Plugin Loop does not source new connectors.
+- Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` + `tsc --noEmit`.
+- Landing/web PR and app mirror PR opened per `docs/integration-loop-two-pr-policy.md`; see `/admin/ops/loop-runs` for the recorded run.

@@ -2,14 +2,14 @@
 name: Win Back Dormant Customers
 logo: /skills/winback-dormidos.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Bring back the customers who went quiet"
 description: "Finds the customers who used to buy and stopped, and writes a respectful sequence of messages to bring them back — the reminder, the reason to return, and the last call — grouped by how valuable they were. No promises they'll come back."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 
