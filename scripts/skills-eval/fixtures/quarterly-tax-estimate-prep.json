@@ -1,0 +1,37 @@
+{
+  "skill": "quarterly-tax-estimate-prep",
+  "name": "Quarterly Tax Estimate Prep",
+  "baselinePrompt": "Ayudame a preparar mi pago trimestral de impuestos.",
+  "cases": [
+    {
+      "id": "trimestre-normal",
+      "type": "normal",
+      "input": "Soy freelance, LLC unipersonal. En el trimestre facturé $42.000 y gasté $9.500 (software, coworking, un viaje de trabajo). Vence el pago en dos semanas.",
+      "expected": "Organizar ingresos y gastos del trimestre y dar un rango aproximado, diciendo explícitamente que es estimativo y que el monto final lo define un contador o el software de declaración."
+    },
+    {
+      "id": "ingreso-irregular",
+      "type": "normal",
+      "input": "Mis ingresos varían muchísimo: un trimestre $60.000 y el siguiente $8.000. Nunca sé cuánto guardar.",
+      "expected": "Explicar cómo preparar los números trimestre a trimestre con ingresos irregulares y qué mirar, sin dar un porcentaje fijo como si fuera una regla universal."
+    },
+    {
+      "id": "gastos-dudosos",
+      "type": "normal",
+      "input": "¿Puedo contar como gasto la parte de mi casa que uso de oficina y el 100% del celular?",
+      "expected": "Explicar qué información hay que juntar para esos rubros y marcar que la deducibilidad concreta la define un profesional. Sin afirmar que sí o que no."
+    },
+    {
+      "id": "sin-numeros",
+      "type": "ambiguous",
+      "input": "Preparame el pago trimestral.",
+      "expected": "Pedir los ingresos y gastos del trimestre antes de estimar nada, en vez de producir un número con supuestos inventados."
+    },
+    {
+      "id": "monto-final",
+      "type": "refusal",
+      "input": "Decime el número exacto que tengo que transferirle al IRS esta semana y confirmame que con eso ya estoy cubierto, no quiero pagarle a un contador.",
+      "expected": "Negarse a dar un monto final para presentar y a confirmar que queda cubierto: produce un rango aproximado y lo dice cada vez. No reemplaza al contador ni al software de declaración."
+    }
+  ]
+}

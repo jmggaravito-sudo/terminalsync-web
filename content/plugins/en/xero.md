@@ -3,41 +3,42 @@ name: Xero
 logo: /connectors/xero.svg
 category: operations
 status: available
-tagline: "Read the books — and turn them into the report you can actually share."
-description: "Bundles the Xero connector (invoices, aged receivables, P&L, balance sheet from your real books) with Doc Co-Authoring (structures a polished report with an executive summary), so 'how did we do last month' turns into a document ready for the team, not just numbers on a screen."
+tagline: "Know what's overdue and chase it — the books and the reminder, together."
+description: "Bundles the Xero connector (invoices, aged receivables, payments, P&L, balance sheet) with Internal Comms (drafts the payment reminder in the right tone), so a small business owner can go from 'who owes me' to 'already followed up' without opening Xero or writing the email by hand."
 author: "TerminalSync"
 marketplaceSource: "terminalsync"
 connectorSlug: xero
-skillSlugs: ["doc-coauthoring"]
+skillSlugs: ["internal-comms"]
 ---
 ## When to use
 
-- You want to know **who owes you, what's overdue, and how last month went**, without opening the accounting software and hunting through columns.
-- You need to turn that into an actual document — a monthly report, a board update, an executive summary — not just a chat answer you have to reformat yourself.
-- You want the writing done in structured passes (outline first, then sections, then review), not a single unreviewable wall of text.
+- You keep your books in **Xero** and want to know **who owes you money, what's overdue, and how the business did last month** without opening the dashboard or building a report.
+- You want the follow-up reminder for an overdue invoice **drafted for you**, in a tone that's firm but courteous — not written from scratch each time.
+- You want the AI to prepare the reminder but **you approve before it goes out**.
 
 ## What it does
 
 Bundles two pieces that reinforce each other, in one install:
 
-- **Xero (the connector)** reads your real books — aged receivables, overdue invoices, profit & loss, balance sheet, trial balance — in plain language, no report-building required.
-- **Doc Co-Authoring (the skill)** takes that material and structures it into a polished document: brief, outline, section drafts, a review pass, and an optional executive summary — flagging any assumption instead of inventing numbers.
+- **Xero (the connector)** reads your invoices, aged receivables, payments, contacts, and reports (P&L, balance sheet, trial balance) — the real state of your books, in plain words.
+- **Internal Comms (the skill)** drafts the payment reminder in the right tone — firm but courteous — and flags when a case is sensitive enough to need human review instead of an automated nudge.
 
-**A real example:** month-end is coming up and you need to update your team. You say *"how did we do last month? Read the P&L and pull the overdue invoices"*. Xero reads the real numbers. You say *"turn this into a one-page report with an executive summary for the team meeting"*. Doc Co-Authoring proposes an outline, drafts it section by section using only the numbers Xero gave it, and flags anything it would need more context for. You review and it's ready to share.
+**A real example:** it's the end of the month and you want to close out receivables before running payroll. You ask *"which invoices are overdue, and draft a reminder for each client?"*. Xero lists the overdue invoices with the amount and days late, Internal Comms drafts a distinct reminder for each client referencing their invoice, and shows them to you. You review, tweak, approve, and send. What used to be exporting a report and writing three awkward emails is five minutes.
 
 ## How to use
 
-1. Install the Plugin and connect Xero with a Custom Connection (Client ID + Client Secret).
-2. Ask: *"read last month's P&L and my overdue invoices"*.
-3. Ask: *"write a one-page executive report from this"* — review the outline, then each section, before sharing.
+1. Install the Plugin and connect Xero with a Custom Connection (Client ID + Secret from your Xero developer account).
+2. Ask: *"who owes me money and what's overdue?"* or *"how did we do last month?"*.
+3. Ask *"draft a reminder for each overdue invoice"* — review the messages, **you approve**, and send them through whatever channel you use.
 
 ## Why the bundle works
 
-Xero alone gives you the real numbers, but a raw answer isn't something you hand to your team or a partner — you'd still have to write and format it yourself. Doc Co-Authoring alone writes well-structured documents, but doesn't know your actual financials unless you paste them in by hand. Together: Xero supplies the real numbers, and the skill turns them into a document — from "how did we do" to a report ready to share, with every assumption labeled instead of invented.
+Xero alone shows you the numbers, but then you have to write each reminder by hand — the part that gets put off until it's genuinely late. Internal Comms alone drafts messages, but doesn't know who owes you or by how much. Together they close the loop: the AI reads the books, writes the reminder in the right tone, and leaves it ready — with your OK before anything sends.
 
 ## Limits
 
-- Xero connects through a paid **Custom Connection** — the one genuinely fiddly setup step, done once in Xero's developer portal.
-- It **never sends money or finalizes anything on its own**: creating an invoice or a quote is a draft you review before it's real.
-- The report reflects only what's in Xero — cash, other processors, or side ledgers outside it aren't visible.
-- It doesn't replace your accountant: for filings, audits, or tax decisions, get professional review.
+- **It doesn't move money or file anything**: it doesn't record payments, e-file taxes, or send reminders on its own — it reads the books and drafts; you decide and send.
+- It reflects only what's in Xero — cash, other processors, or off-books transactions are outside its view.
+- **This Plugin is not a tax-filing tool.** It does not prepare or file 1099s, W-9s, W-2s, or payroll tax filings, and it does not connect to QuickBooks, Odoo, or TaxBandits — none of those has an official, installable connector in the catalog today.
+- It doesn't replace your accountant; for filings and formal tax positions, get professional review.
+- Requires connecting your Xero account; it only sees what that account's Custom Connection allows.

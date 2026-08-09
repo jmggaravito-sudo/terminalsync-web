@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getDict, isLocale } from "@/content";
 import { Nav } from "@/components/landing/Nav";
+import { WhatsAppFloatingButton } from "@/components/landing/WhatsAppFloatingButton";
 
 interface Props {
   children: React.ReactNode;
@@ -79,6 +80,7 @@ export default async function LangLayout({ children, params }: Props) {
       </a>
       <Nav dict={d} lang={lang} />
       <main id="main">{children}</main>
+      <WhatsAppFloatingButton lang={lang} />
     </>
   );
 }

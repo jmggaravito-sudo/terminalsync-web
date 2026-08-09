@@ -3,6 +3,7 @@ import { CategoryBar, DragStrip } from "@/components/landing/CatalogChrome";
 import Link from "next/link";
 import { ArrowRight, Package, ShoppingBag } from "lucide-react";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { loadFileKits } from "@/lib/marketplace/fileKits";
 import {
   isBundleItemKind,
   resolveBundleItems,
@@ -43,8 +44,20 @@ interface BundleCard {
 }
 
 async function fetchBundles(lang: string): Promise<BundleCard[]> {
+  const fileKits: BundleCard[] = (await loadFileKits(lang)).map((kit) => ({
+    id: kit.id,
+    slug: kit.slug,
+    name: kit.name,
+    tagline: kit.tagline ?? "",
+    hero_image_url: kit.heroImageUrl,
+    price_cents: kit.priceCents,
+    currency: kit.currency,
+    purchase_count: kit.purchaseCount,
+    items: kit.items,
+  }));
+
   const sb = getSupabaseAdmin();
-  if (!sb) return [];
+  if (!sb) return fileKits;
   const { data: bundles, error } = await sb
     .from("bundles")
     .select(
@@ -52,12 +65,15 @@ async function fetchBundles(lang: string): Promise<BundleCard[]> {
     )
     .eq("status", "active")
     .order("sort_order", { ascending: true });
-  if (error || !bundles || bundles.length === 0) return [];
+  if (error || !bundles || bundles.length === 0) return fileKits;
 
   const linksRes = await sb
     .from("bundle_listings")
     .select("bundle_id, kind, item_slug, sort_order")
-    .in("bundle_id", bundles.map((b) => b.id));
+    .in(
+      "bundle_id",
+      bundles.map((b) => b.id),
+    );
 
   type Row = {
     bundle_id: string;
@@ -70,17 +86,22 @@ async function fetchBundles(lang: string): Promise<BundleCard[]> {
     const row = raw as Row;
     if (!isBundleItemKind(row.kind)) continue;
     const arr = refsByBundle.get(row.bundle_id) ?? [];
-    arr.push({ kind: row.kind, slug: row.item_slug, sortOrder: row.sort_order });
+    arr.push({
+      kind: row.kind,
+      slug: row.item_slug,
+      sortOrder: row.sort_order,
+    });
     refsByBundle.set(row.bundle_id, arr);
   }
 
-  return Promise.all(
+  const dbBundles = await Promise.all(
     bundles.map(async (b) => {
       const refs = refsByBundle.get(b.id) ?? [];
       const items = await resolveBundleItems(refs, lang);
       return { ...b, items };
     }),
   );
+  return [...fileKits, ...dbBundles];
 }
 
 // Kits están incluidos en el plan — no se cobran individualmente. El campo
@@ -96,8 +117,7 @@ function inclusionLine(items: ResolvedBundleItem[], isEs: boolean): string {
     parts.push(`${counts.connector} ${isEs ? "conectores" : "connectors"}`);
   if (counts.skill > 0)
     parts.push(`${counts.skill} ${isEs ? "skills" : "skills"}`);
-  if (counts.cli > 0)
-    parts.push(`${counts.cli} CLI`);
+  if (counts.cli > 0) parts.push(`${counts.cli} CLI`);
   return parts.join(" · ");
 }
 
@@ -132,7 +152,10 @@ export default async function StacksIndex({ params }: Props) {
       {bundles.length === 0 ? (
         <section className="mx-auto max-w-3xl px-6 pb-32">
           <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-8 text-center">
-            <ShoppingBag size={32} className="mx-auto text-[var(--color-fg-dim)]" />
+            <ShoppingBag
+              size={32}
+              className="mx-auto text-[var(--color-fg-dim)]"
+            />
             <p className="mt-4 text-[14px] text-[var(--color-fg-muted)]">
               {isEs
                 ? "Estamos preparando los primeros Stack Packs. Vuelvé pronto."
@@ -151,7 +174,10 @@ export default async function StacksIndex({ params }: Props) {
       )}
 
       {/* Trust footer — guarantee + how it works */}
-      <section id="how-it-works" className="scroll-mt-20 mx-auto max-w-3xl px-6 pb-24">
+      <section
+        id="how-it-works"
+        className="scroll-mt-20 mx-auto max-w-3xl px-6 pb-24"
+      >
         <div className="rounded-3xl border border-[var(--color-accent)]/20 bg-[var(--color-accent)]/5 p-7 text-center">
           <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-[var(--color-accent)] mb-3">
             {isEs ? "Cómo funciona" : "How it works"}
@@ -162,7 +188,9 @@ export default async function StacksIndex({ params }: Props) {
                 1
               </span>
               <span>
-                {isEs ? "Comprás el pack que más se ajusta a tu negocio." : "Buy the pack that fits your business."}
+                {isEs
+                  ? "Comprás el pack que más se ajusta a tu negocio."
+                  : "Buy the pack that fits your business."}
               </span>
             </li>
             <li className="flex gap-3">
@@ -198,7 +226,13 @@ export default async function StacksIndex({ params }: Props) {
   );
 }
 
-function BundleCardItem({ bundle, lang }: { bundle: BundleCard; lang: string }) {
+function BundleCardItem({
+  bundle,
+  lang,
+}: {
+  bundle: BundleCard;
+  lang: string;
+}) {
   const isEs = lang === "es";
   const summary = inclusionLine(bundle.items, isEs);
   return (
@@ -230,7 +264,11 @@ function BundleCardItem({ bundle, lang }: { bundle: BundleCard; lang: string }) 
           >
             {it.logo ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={it.logo} alt={it.name} className="h-5 w-5 object-contain" />
+              <img
+                src={it.logo}
+                alt={it.name}
+                className="h-5 w-5 object-contain"
+              />
             ) : (
               <span className="text-[10px] font-mono text-[var(--color-fg-dim)]">
                 {initialsFrom(it.name)}
@@ -249,7 +287,10 @@ function BundleCardItem({ bundle, lang }: { bundle: BundleCard; lang: string }) 
         <span className="text-[12px] text-[var(--color-fg-dim)]">
           {summary || `${bundle.items.length} ${isEs ? "ítems" : "items"}`}
           {bundle.purchase_count > 0 && (
-            <> · {bundle.purchase_count} {isEs ? "compras" : "buyers"}</>
+            <>
+              {" "}
+              · {bundle.purchase_count} {isEs ? "compras" : "buyers"}
+            </>
           )}
         </span>
         <span className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--color-accent)] group-hover:translate-x-0.5 transition-transform">

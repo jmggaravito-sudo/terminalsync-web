@@ -26,7 +26,11 @@ export interface RawSkillExtra {
 export interface RawSkillPayload {
   slug: string;
   version: string;
-  vendors: Array<"claude" | "codex">;
+  /** A qué agent surfaces se entrega. `gemini` habilitado 2026-08-07
+   *  (terminal-sync#1268) — ESTE campo es el que lee el desktop para decidir
+   *  dónde escribir, así que sin ampliarlo acá la declaración del catálogo no
+   *  llegaría nunca a la app. */
+  vendors: Array<"claude" | "codex" | "gemini">;
   checksum: string;
   skill_md: string;
   extras: RawSkillExtra[];
@@ -76,7 +80,8 @@ export async function buildRawSkillPayload(
 
   const vendorsRaw = Array.isArray(data.vendors) ? data.vendors : ["claude"];
   const vendors = vendorsRaw.filter(
-    (v: unknown): v is "claude" | "codex" => v === "claude" || v === "codex",
+    (v: unknown): v is "claude" | "codex" | "gemini" =>
+      v === "claude" || v === "codex" || v === "gemini",
   );
 
   const checksum =

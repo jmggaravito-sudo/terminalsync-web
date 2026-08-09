@@ -3,41 +3,42 @@ name: Xero
 logo: /connectors/xero.svg
 category: operations
 status: available
-tagline: "Leé los libros contables — y convertilos en el informe que de verdad podés compartir."
-description: "Junta el conector de Xero (facturas, cuentas por cobrar vencidas, P&L, balance general de tus libros reales) con Doc Co-Authoring (estructura un informe pulido con resumen ejecutivo), para que 'cómo nos fue el mes pasado' se convierta en un documento listo para el equipo, no solo números en pantalla."
+tagline: "Sabé qué está vencido y reclamalo — los libros y el recordatorio, juntos."
+description: "Junta el conector de Xero (facturas, cuentas por cobrar vencidas, pagos, P&L, balance) con Internal Comms (redacta el recordatorio de pago con el tono justo), para que un dueño de negocio pase de 'quién me debe' a 'ya le hice seguimiento' sin abrir Xero ni escribir el mail a mano."
 author: "TerminalSync"
 marketplaceSource: "terminalsync"
 connectorSlug: xero
-skillSlugs: ["doc-coauthoring"]
+skillSlugs: ["internal-comms"]
 ---
 ## Cuándo usarlo
 
-- Querés saber **quién te debe, qué está vencido y cómo te fue el mes pasado**, sin abrir el software contable y buscar entre columnas.
-- Necesitás convertir eso en un documento de verdad —un informe mensual, una novedad para el directorio, un resumen ejecutivo— no solo una respuesta de chat que tenés que reformatear vos.
-- Querés que la redacción se haga en pasadas estructuradas (primero el outline, después las secciones, después la revisión), no en un solo bloque sin revisar.
+- Llevás tus libros en **Xero** y querés saber **quién te debe plata, qué está vencido y cómo le fue al negocio el mes pasado** sin abrir el dashboard ni armar un reporte.
+- Querés que el recordatorio de seguimiento de una factura vencida **te lo redacten**, con un tono firme pero cordial — no escribirlo de cero cada vez.
+- Querés que la IA prepare el recordatorio pero **vos aprobás antes de que salga**.
 
 ## Qué hace
 
 Junta dos piezas que se potencian, en un solo install:
 
-- **Xero (el conector)** lee tus libros reales —cuentas por cobrar vencidas, facturas atrasadas, estado de resultados, balance general, balance de comprobación— en palabras simples, sin armar un reporte vos.
-- **Doc Co-Authoring (la skill)** toma ese material y lo estructura en un documento pulido: brief, outline, borradores por sección, una pasada de revisión, y un resumen ejecutivo opcional —marcando cualquier supuesto en vez de inventar números.
+- **Xero (el conector)** lee tus facturas, cuentas por cobrar vencidas, pagos, contactos y reportes (P&L, balance, balance de comprobación) — el estado real de tus libros, en palabras simples.
+- **Internal Comms (la skill)** redacta el recordatorio de pago con el tono justo — firme pero cordial — y marca cuándo un caso es lo bastante sensible como para necesitar revisión humana en vez de un mensaje automático.
 
-**Un ejemplo real:** se acerca fin de mes y necesitás actualizar a tu equipo. Le decís *"¿cómo nos fue el mes pasado? Leé el P&L y traeme las facturas vencidas"*. Xero lee los números reales. Le decís *"convertí esto en un informe de una página con resumen ejecutivo para la reunión de equipo"*. Doc Co-Authoring propone un outline, lo redacta sección por sección usando solo los números que le dio Xero, y marca cualquier cosa donde necesitaría más contexto. Revisás y queda listo para compartir.
+**Un ejemplo real:** es fin de mes y querés cerrar las cuentas por cobrar antes de correr la nómina. Le decís *"¿qué facturas están vencidas, y redactame un recordatorio para cada cliente?"*. Xero lista las facturas vencidas con el monto y los días de atraso, Internal Comms redacta un recordatorio distinto para cada cliente referenciando su factura, y te los muestra. Revisás, ajustás, aprobás y mandás. Lo que antes era exportar un reporte y escribir tres mails incómodos, son cinco minutos.
 
 ## Cómo usarlo
 
-1. Instalá el Plugin y conectá Xero con una Custom Connection (Client ID + Client Secret).
-2. Pedí: *"leé el P&L del mes pasado y mis facturas vencidas"*.
-3. Pedí: *"escribime un informe ejecutivo de una página con esto"* —revisá el outline y después cada sección, antes de compartirlo.
+1. Instalá el Plugin y conectá Xero con una Custom Connection (Client ID + Secret de tu cuenta de desarrollador de Xero).
+2. Preguntá: *"¿quién me debe plata y qué está vencido?"* o *"¿cómo nos fue el mes pasado?"*.
+3. Pedí *"redactame un recordatorio para cada factura vencida"* — revisá los mensajes, **vos aprobás**, y mandalos por el canal que uses.
 
 ## Por qué el combo funciona
 
-Xero solo te da los números reales, pero una respuesta cruda no es algo que le entregás a tu equipo o a un socio —igual tendrías que redactarla y darle formato vos. Doc Co-Authoring solo escribe documentos bien estructurados, pero no conoce tus finanzas reales a menos que se las pegues a mano. Juntos: Xero aporta los números reales, y la skill los convierte en un documento —de "cómo nos fue" a un informe listo para compartir, con cada supuesto marcado en vez de inventado.
+Xero solo te muestra los números, pero después tenés que redactar cada recordatorio a mano — la parte que se posterga hasta que ya está muy atrasada. Internal Comms solo redacta, pero no sabe quién te debe ni cuánto. Juntos cierran el loop: la IA lee los libros, escribe el recordatorio con el tono justo, y te lo deja listo — con tu OK antes de que salga cualquier cosa.
 
 ## Límites
 
-- Xero se conecta mediante una **Custom Connection** paga —el paso de configuración genuinamente más engorroso, se hace una sola vez en el portal de desarrolladores de Xero.
-- **Nunca mueve plata ni finaliza nada por su cuenta**: crear una factura o una cotización es un borrador que revisás antes de que sea real.
-- El informe refleja solo lo que está en Xero —efectivo, otros procesadores, o libros paralelos fuera de él no son visibles.
-- No reemplaza a tu contador: para declaraciones, auditorías o decisiones impositivas, conseguí revisión profesional.
+- **No mueve plata ni presenta nada**: no registra pagos, no presenta impuestos, no manda recordatorios solo — lee los libros y redacta; vos decidís y enviás.
+- Refleja solo lo que está en Xero — efectivo, otros procesadores o movimientos fuera de libros quedan afuera de su vista.
+- **Este Plugin no es una herramienta de presentación de impuestos.** No prepara ni presenta 1099s, W-9s, W-2s ni declaraciones de nómina, y no se conecta con QuickBooks, Odoo ni TaxBandits — ninguno de esos tiene hoy un conector oficial e instalable en el catálogo.
+- No reemplaza a tu contador; para presentaciones y posiciones fiscales formales, revisión profesional.
+- Requiere conectar tu cuenta de Xero; solo ve lo que esa Custom Connection permite.
