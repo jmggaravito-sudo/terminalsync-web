@@ -2,14 +2,14 @@
 name: Quotes & Estimates
 logo: /skills/cotizaciones.svg
 category: finance
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "A quote that protects your price and your time"
 description: "Turns a scope, a price, and terms into a clean, sendable quote or estimate — with an expiry date, what's excluded, and payment terms — so a client can't quietly expand the job or delay paying. Never invents a price you didn't give it."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 
@@ -23,9 +23,9 @@ Do not use it to invent a price, discount, or timeline you haven't decided. If y
 
 Builds a quote end to end:
 
-- **Turns your scope into line items**: what you described as deliverables, not a vague paragraph a client has to interpret.
+- **Turns your scope into line items**: what you described as deliverables, not a vague paragraph a client has to interpret. **Only what you described**: never add items that sound reasonable but nobody asked for (strategy consulting, wireframes, SEO). Inventing scope inflates the quote and commits you to work you did not sell.
 - **Sets a validity window** (e.g., "valid 15 days") so the price doesn't sit open forever and get used against you later.
-- **Lists exclusions explicitly**: what's out of scope, so if the client asks for more later, there's a paper trail that it's a change order, not scope creep.
+- **Lists exclusions explicitly**: what's out of scope, so if the client asks for more later, there's a paper trail that it's a change order, not scope creep. Exclusions come from what you said is out of scope; do not invent them to pad the list.
 - **Adds payment terms**: deposit percentage, milestones or net-30, and what happens if payment is late — only from what you tell it, never invented defaults like "50% deposit" if you didn't say that.
 - **Writes the sending message**: a short email/WhatsApp note to go with the quote, with a clear next step and a date to follow up.
 - **Flags anything missing**: no price, no scope, no payment terms — it asks instead of filling the gap with a guess.

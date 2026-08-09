@@ -2,14 +2,14 @@
 name: Tanda de Contenido Social
 logo: /skills/contenido-social.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Una semana de posteos, no un caption solitario"
 description: "Convierte lo que vendés o hacés en una tanda de posteos orgánicos para redes — captions, notas de formato, hashtags y un calendario de publicación — ajustados a lo que realmente funciona en cada plataforma. Sin números de engagement inventados, sin alcance garantizado."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarla
 

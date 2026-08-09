@@ -2,14 +2,14 @@
 name: Social Content Batch
 logo: /skills/contenido-social.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "A week of posts, not one lonely caption"
 description: "Turns what you sell or do into a batch of organic social posts across platforms — captions, format notes, hashtags, and a posting cadence — matched to what actually works on each platform. No fake engagement numbers, no guaranteed reach."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 

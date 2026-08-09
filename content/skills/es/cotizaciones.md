@@ -2,14 +2,14 @@
 name: Cotizaciones y Presupuestos
 logo: /skills/cotizaciones.svg
 category: finance
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Una cotización que protege tu precio y tu tiempo"
 description: "Convierte un alcance, un precio y unas condiciones en una cotización lista para enviar — con vencimiento, qué queda excluido y condiciones de pago — para que el cliente no pueda ampliar el trabajo en silencio ni demorar el pago. Nunca inventa un precio que no le diste."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## Cuándo usarla
 
@@ -23,9 +23,9 @@ No la uses para inventar un precio, un descuento o un plazo que no decidiste. Si
 
 Arma la cotización de punta a punta:
 
-- **Convierte tu alcance en ítems**: lo que describiste como entregables, no un párrafo vago que el cliente tiene que interpretar.
+- **Convierte tu alcance en ítems**: lo que describiste como entregables, no un párrafo vago que el cliente tiene que interpretar. **Solo lo que describiste**: no agregues ítems que suenan razonables pero que nadie pidió (consultoría de estrategia, wireframes, SEO). Inventar alcance infla la cotización y te compromete a trabajo que no vendiste.
 - **Fija un vencimiento** (ej. "válida 15 días") para que el precio no quede abierto para siempre y se use en tu contra más adelante.
-- **Lista las exclusiones explícitamente**: qué queda fuera de alcance, para que si el cliente pide más después, quede constancia de que es una ampliación, no un regalo.
+- **Lista las exclusiones explícitamente**: qué queda fuera de alcance, para que si el cliente pide más después, quede constancia de que es una ampliación, no un regalo. Las exclusiones salen de lo que dijiste que NO entra; no las inventes para rellenar la lista.
 - **Agrega condiciones de pago**: porcentaje de seña, hitos o a 30 días, y qué pasa si el pago se atrasa — solo con lo que le dijiste, nunca inventa un default tipo "seña del 50%" si no lo dijiste.
 - **Escribe el mensaje de envío**: una nota corta de email/WhatsApp para acompañar la cotización, con el próximo paso claro y una fecha de seguimiento.
 - **Marca lo que falta**: sin precio, sin alcance, sin condiciones de pago — pregunta en vez de llenar el hueco con una suposición.
