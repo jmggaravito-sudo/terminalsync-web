@@ -2,14 +2,14 @@
 name: Ask for Reviews
 logo: /skills/pedir-resenas.svg
 category: marketing
-vendors: ["claude", "codex"]
+vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
 tagline: "Turn happy customers into public reviews"
 description: "Spots the customers most likely to leave a good review and writes the ask — the right message, at the right moment, with the direct link — plus a gentle follow-up. Never fakes reviews or offers to pay for them."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex"]
+compatibleWith: ["claude", "codex", "gemini"]
 ---
 ## When to use
 
