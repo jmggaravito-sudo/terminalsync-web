@@ -12,6 +12,7 @@ devSubtitle: "Skill oficial de Anthropic para generación, edición y styling de
 ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
 affiliate: false
 tagline: "Docs Word sin pelea"
+description: "Crea y edita documentos de Word desde un prompt — cartas, informes, plantillas — con títulos, tablas y formato, y extrae contenido de archivos .docx existentes. Viene incluida de fábrica con Claude Code."
 tsInstallable: true
 included: true
 ---

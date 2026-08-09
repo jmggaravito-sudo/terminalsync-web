@@ -12,6 +12,7 @@ devSubtitle: "Skill oficial de Anthropic para generar, llenar y parsear PDFs usa
 ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
 affiliate: false
 tagline: "PDFs editables directo desde un prompt"
+description: "Genera, llena y lee archivos PDF desde un prompt — facturas, contratos, formularios — y puede extraer texto, unir o separar documentos. Viene incluida de fábrica con Claude Code."
 tsInstallable: true
 included: true
 ---

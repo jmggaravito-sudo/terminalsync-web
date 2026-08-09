@@ -12,6 +12,7 @@ devSubtitle: "Skill oficial de Anthropic para workbooks `.xlsx`: fórmulas, pivo
 ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
 affiliate: false
 tagline: "Excel sin cazar fórmulas"
+description: "Crea y edita planillas desde un prompt — fórmulas, tablas, formato, gráficos — y limpia o extrae datos de archivos .xlsx/.csv existentes. Viene incluida de fábrica con Claude Code."
 tsInstallable: true
 included: true
 ---
