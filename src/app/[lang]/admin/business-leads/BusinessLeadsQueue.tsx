@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { BUSINESS_LEAD_STATUSES, type BusinessLeadStatus, type BusinessLead, whatsappUrl } from "@/lib/businessLeads/types";
+import { BUSINESS_LEAD_STATUSES, type BusinessLeadStatus, type BusinessLead } from "@/lib/businessLeads/types";
+import { whatsappTemplate, emailSubjectTemplate, emailBodyTemplate } from "@/lib/businessLeads/templates";
 import { authedFetch } from "@/lib/supabase/browser";
 
 type AuthState = "checking" | "anon" | "forbidden" | "ready";
@@ -44,6 +45,11 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searching, setSearching] = useState(false);
   const [searchResult, setSearchResult] = useState<string | null>(null);
+  const [waDraft, setWaDraft] = useState("");
+  const [emailSubjectDraft, setEmailSubjectDraft] = useState("");
+  const [emailBodyDraft, setEmailBodyDraft] = useState("");
+  const [copiedWa, setCopiedWa] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
 
   const fetchLeads = useCallback(async (status: BusinessLeadStatus) => {
     setLoading(true);
@@ -83,6 +89,18 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
 
   const active = leads.find((l) => l.id === activeId) || null;
   useEffect(() => setNotes(active?.notes ?? ""), [activeId]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!active) {
+      setWaDraft("");
+      setEmailSubjectDraft("");
+      setEmailBodyDraft("");
+      return;
+    }
+    setWaDraft(whatsappTemplate(active));
+    setEmailSubjectDraft(emailSubjectTemplate(active));
+    setEmailBodyDraft(emailBodyTemplate(active));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeId]);
 
   const setStatus = useCallback(
     async (id: BusinessLead["id"], status: BusinessLeadStatus) => {
@@ -189,7 +207,16 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
     );
   }
 
-  const wa = active ? whatsappUrl(active) : null;
+  const waDigits = active?.phone_e164 ? active.phone_e164.replace(/[^0-9]/g, "") : null;
+  const wa = waDigits ? `https://wa.me/${waDigits}?text=${encodeURIComponent(waDraft)}` : null;
+
+  const copyText = async (text: string, setCopied: (v: boolean) => void) => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      await navigator.clipboard.writeText(text);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1400);
+  };
 
   return (
     <div className="bl">
@@ -249,6 +276,18 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
         .notes{width:100%;min-height:100px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);
           font-family:var(--sans);font-size:13.5px;line-height:1.5;padding:12px;resize:vertical;margin-top:14px;}
         .notes:focus{outline:2px solid var(--acc);outline-offset:1px;}
+        .msgbox{margin-top:18px;border:1px solid var(--line);border-radius:10px;padding:13px 14px;background:var(--bg);}
+        .msgbox-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+        .msgbox-hd .lbl{margin:0;}
+        .copybtn{background:none;border:1px solid var(--line);color:var(--ink2);font-family:var(--mono);
+          font-size:11px;padding:4px 9px;border-radius:6px;cursor:pointer;}
+        .copybtn:hover{border-color:var(--ink3);color:var(--ink);}
+        .subjectin{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);
+          font-family:var(--sans);font-size:13px;padding:9px 11px;margin-bottom:8px;}
+        .subjectin:focus{outline:2px solid var(--acc);outline-offset:1px;}
+        .msgta{width:100%;min-height:110px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);
+          font-family:var(--sans);font-size:13px;line-height:1.5;padding:11px;resize:vertical;}
+        .msgta:focus{outline:2px solid var(--acc);outline-offset:1px;}
         .acts{padding:16px 24px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px;}
         .act-row{display:flex;gap:9px;flex-wrap:wrap;}
         .btn{flex:1;font-family:var(--sans);font-size:13px;font-weight:600;padding:11px;border-radius:8px;
@@ -345,6 +384,21 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
                 <span className="k">Google Maps</span>
                 <span className="v">{active.google_maps_url ? <a href={active.google_maps_url} target="_blank" rel="noreferrer">Abrir ↗</a> : "—"}</span>
               </div>
+              <div className="msgbox">
+                <div className="msgbox-hd">
+                  <div className="lbl">Mensaje WhatsApp</div>
+                  <button className="copybtn" onClick={() => copyText(waDraft, setCopiedWa)}>{copiedWa ? "✓ Copiado" : "Copiar"}</button>
+                </div>
+                <textarea className="msgta" value={waDraft} onChange={(e) => setWaDraft(e.target.value)} />
+              </div>
+              <div className="msgbox">
+                <div className="msgbox-hd">
+                  <div className="lbl">Email</div>
+                  <button className="copybtn" onClick={() => copyText(`${emailSubjectDraft}\n\n${emailBodyDraft}`, setCopiedEmail)}>{copiedEmail ? "✓ Copiado" : "Copiar"}</button>
+                </div>
+                <input className="subjectin" value={emailSubjectDraft} onChange={(e) => setEmailSubjectDraft(e.target.value)} placeholder="Asunto…" />
+                <textarea className="msgta" value={emailBodyDraft} onChange={(e) => setEmailBodyDraft(e.target.value)} />
+              </div>
               <div className="lbl" style={{ marginTop: 16 }}>Notas</div>
               <textarea className="notes" value={notes} onChange={(e) => setNotes(e.target.value)} onBlur={saveNotes} placeholder="Notas de seguimiento…" />
             </div>
@@ -358,10 +412,8 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
                   disabled={!active.email}
                   onClick={() => {
                     if (!active.email) return;
-                    const subject = encodeURIComponent(`TerminalSync — ${active.name}`);
-                    const bodyText = encodeURIComponent(
-                      `Hola${active.name ? " equipo de " + active.name : ""}, te escribo de TerminalSync — ayudamos a negocios como el tuyo a automatizar la atención con IA. ¿Tenés 5 minutos para charlar?`,
-                    );
+                    const subject = encodeURIComponent(emailSubjectDraft);
+                    const bodyText = encodeURIComponent(emailBodyDraft);
                     window.location.href = `mailto:${active.email}?subject=${subject}&body=${bodyText}`;
                   }}
                 >
