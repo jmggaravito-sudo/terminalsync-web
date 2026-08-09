@@ -5,7 +5,7 @@ category: marketing
 vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
-tagline: "Encontrá a tus promotores y diseñá un referido que se paga solo"
+tagline: "Encuentra a tus promotores y diseña un referido que se paga solo"
 description: "Identifica a los clientes con más chances de referir, propone una mecánica de referidos ajustada a tu margen, y redacta el pedido — con una lectura honesta de si un programa de referidos va a funcionar de verdad en tu negocio."
 license: "proprietary"
 marketplaceSource: "terminalsync"

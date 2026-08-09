@@ -20,7 +20,7 @@ manifest:
         ACCESS_TOKEN: "${SECRET:TWITTER_ACCESS_TOKEN}"
         ACCESS_TOKEN_SECRET: "${SECRET:TWITTER_ACCESS_TOKEN_SECRET}"
 affiliate: false
-tagline: "Publicá y escuchá en X"
+tagline: "Publica y escucha en X"
 originalAuthor: "Enes Cinar"
 originalAuthorUrl: "https://github.com/EnesCinr/twitter-mcp"
 license: "MIT"

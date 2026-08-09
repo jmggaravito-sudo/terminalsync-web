@@ -4,7 +4,7 @@ logo: /connectors/google-calendar.svg
 category: productivity
 status: available
 simpleTitle: "Tu calendario, manejado por conversación"
-simpleSubtitle: "\"¿Qué tengo mañana?\" \"Agendá a María el jueves a las 3\" — tu IA lee y maneja tu calendario."
+simpleSubtitle: "\"¿Qué tengo mañana?\" \"Agenda a María el jueves a las 3\" — tu IA lee y maneja tu calendario."
 devTitle: "Conector MCP de Google Calendar"
 devSubtitle: "OAuth sobre la Calendar API — listar calendarios, próximos eventos, crear/editar/borrar eventos, detalle de evento."
 ctaUrl: "https://calendar.google.com"

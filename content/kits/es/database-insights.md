@@ -3,7 +3,7 @@ name: Kit de Insights de Base de Datos
 logo: /logos/ts-kit.svg
 category: operations
 status: available
-tagline: "Convertí una pregunta sobre tus datos de Postgres en una respuesta escrita y estructurada."
+tagline: "Convierte una pregunta sobre tus datos de Postgres en una respuesta escrita y estructurada."
 description: "Un flujo de análisis coherente para operadores y PMs con manejo de datos: consultá una base Postgres en modo solo lectura, razoná la pregunta paso a paso, y devolvé un informe escrito en vez de una tabla cruda."
 marketplaceSource: "terminalsync"
 items:

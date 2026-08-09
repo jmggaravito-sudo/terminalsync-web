@@ -3,7 +3,7 @@ name: Kit de Contenido SEO
 logo: /logos/ts-kit.svg
 category: marketing
 status: available
-tagline: "Encontrá sobre qué escribir, auditá antes de publicar, redactá el post y publicalo en WordPress — un solo flujo de contenido en vez de cuatro herramientas sueltas."
+tagline: "Encuentra sobre qué escribir, audita antes de publicar, redacta el post y publícalo en WordPress — un solo flujo de contenido en vez de cuatro herramientas sueltas."
 description: "Un paquete coherente de marketing de contenidos para quien maneja el blog de un negocio: trae datos reales de keywords y backlinks de Ahrefs, audita con evidencia antes de publicar, co-escribe el post y lo publica directo en WordPress."
 marketplaceSource: "terminalsync"
 items:

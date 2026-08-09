@@ -4,7 +4,7 @@ logo: /connectors/google-maps.svg
 category: research
 status: available
 simpleTitle: "Que tu IA entienda direcciones, lugares y rutas"
-simpleSubtitle: "Convertí direcciones, encontrá lugares cercanos y calculá distancias sin abrir Maps a mano."
+simpleSubtitle: "Convierte direcciones, encuentra lugares cercanos y calcula distancias sin abrir Maps a mano."
 devTitle: "Google Maps MCP Connector"
 devSubtitle: "Servidor oficial @modelcontextprotocol: geocoding, places, distance matrix, elevation y directions."
 ctaUrl: "https://mapsplatform.google.com"

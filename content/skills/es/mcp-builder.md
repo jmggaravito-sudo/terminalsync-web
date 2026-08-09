@@ -5,7 +5,7 @@ category: dev
 vendors: ["claude", "codex", "gemini"]
 author: "Anthropic"
 status: available
-tagline: "Diseñá y endurecé MCP servers"
+tagline: "Diseña y endurece MCP servers"
 description: "Guía el diseño, implementación, testing y hardening de un MCP server, con chequeos explícitos antes de llamarlo production-ready."
 license: "MIT"
 marketplaceSource: "anthropic"

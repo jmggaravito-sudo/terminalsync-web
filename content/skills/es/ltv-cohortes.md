@@ -5,7 +5,7 @@ category: marketing
 vendors: ["claude", "codex", "gemini"]
 author: "TerminalSync"
 status: available
-tagline: "Veá cuánto vale de verdad un cliente en el tiempo"
+tagline: "Ve cuánto vale de verdad un cliente en el tiempo"
 description: "Agrupa a tus clientes por el mes en que compraron por primera vez y sigue cuánto sigue gastando cada grupo y cuántos se quedan — para que veas si los clientes nuevos valen más o menos que los viejos. Usa solo tus datos y marca cada supuesto."
 license: "proprietary"
 marketplaceSource: "terminalsync"

@@ -8,7 +8,7 @@ vendor: Stripe
 homepage: https://stripe.com/docs/stripe-cli
 repo: https://github.com/stripe/stripe-cli
 category: payments
-tagline: Forwardeá webhooks, disparar eventos, ver logs — sin tocar el dashboard.
+tagline: Reenvía webhooks, disparar eventos, ver logs — sin tocar el dashboard.
 description: El CLI oficial de Stripe. Forward de webhooks a localhost mientras programás, trigger de cualquier evento para testing, browse de charges y customers desde el shell, y tail de logs en vivo. TerminalSync deja el workflow de Stripe cerca de la terminal del proyecto y protege secretos `.env` con el vault cifrado.
 status: available
 ---
