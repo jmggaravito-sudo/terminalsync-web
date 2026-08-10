@@ -13,10 +13,28 @@ Aplica el filtro de persona del Loop (definido en `content/connectors/SOURCES.md
 → "Filtro de persona"): el norte es el **dueño de negocio no técnico**. Priorizá
 skills que un empresario entiende y usa esta semana — documentos de un clic
 (Word/Excel/PPT/PDF), ventas, marketing, comunicación, memoria del negocio.
-**Nota de backlog:** las skills `docx`/`pdf`/`pptx`/`xlsx` (documentos) ya existen
-pero están `hidden` por no pasar el molde (categoría inválida `documents`, sin
-paridad ES, sin evals). Destaparlas —moldearlas + evals— es el win no-dev más
-barato disponible; tiene prioridad sobre skills nuevas de nicho dev.
+**Backlog cerrado (2026-08-10):** las skills `docx`/`pdf`/`pptx`/`xlsx` ya
+pasan el molde de contenido — frontmatter completo (`vendors`, `description`,
+`license: "proprietary"` + `licenseUrl` al `LICENSE.txt` oficial de
+`anthropics/skills`, `marketplaceSource: "anthropic"`), paridad ES/EN estricta
+con las secciones requeridas (antes tenían prosa libre y un artefacto literal
+`--- dev ---` que se renderizaba en la página), y contenido verbatim contra el
+`SKILL.md` oficial de cada una en `github.com/anthropics/skills` (no de
+memoria). Categoría (`productivity`) y `included: true` ya venían resueltos de
+#162/#188.
+
+**Excepción documentada — por qué `compatibleWith: ["claude"]` y sin fixture
+de evals:** son skills **nativas** de Claude Code (`included: true`), no
+prompt-recipes que TerminalSync entregue — `getSkillInstallPayload` y
+`buildRawSkillPayload` las rechazan a propósito (`included` → null / 409). Sin
+un `SKILL.md` propio que el catálogo sirva, no hay nada real que evaluar con
+`run-evals.mjs`: por eso `scripts/skills-eval/fixtures-coverage.test.mjs`
+las excluye explícitamente (constante `NATIVE`) del requisito de fixture. Esto
+**no es una excepción a la decisión JM 2026-08-07 de "las 4 IAs"** — esa regla
+rige skills nuevas que el loop autora y entrega; estas cuatro son una
+capacidad nativa de Claude que Codex/Gemini no tienen un equivalente para
+entregar, así que declarar más de `["claude"]` sería la misma promesa sin
+evidencia que esa decisión vino a prohibir.
 
 ## El veredicto — decisión, no ensayo (skills de decisión)
 
