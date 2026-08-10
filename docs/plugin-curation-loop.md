@@ -60,6 +60,24 @@ Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first,
 
 ## Run log
 
+### 2026-08-10 — automated run, no focus input given
+
+**Shipped 2 Plugins**, both pairing an already-published, `available` connector with an already-evaluated, `available` skill (evals + fixtures on disk for both):
+
+- **zapier** (`productivity`) — Zapier connector + Zapier Automation Blueprint. Closes the gap the 2026-07-31 run documented as deferred: back then Zapier had a connector but "no skill in `content/skills/{en,es}` teaches a specific Zapier workflow." `zapier-automation-blueprint` now exists and is a near-literal match — it names `mcp.zapier.com`, the exact read/write action split, and the approval-gate pattern the connector's own body warns about. No invented capability: the skill designs the blueprint, the connector is what a user's own Zapier MCP server executes.
+- **google-sheets** (`operations`) — Google Sheets connector + 1099/W-9 Organizer. The connector's real tools (`sheets_values_get`/`sheets_values_batch_get`) read exactly the kind of contractor-payment tab a small business already keeps; the skill sorts that list into needs-a-1099 / doesn't / missing-W-9 / unresolved per IRS-stated rules. Chosen over pairing 1099/W-9 Organizer with Xero (already shipped, paired with Internal Comms, and its plugin body explicitly discloses it does *not* cover 1099/W-9/W-2 — reopening that file to add a second, unrelated skill would blur one product into two jobs, which is what a Kit is for).
+
+**Deferred / SKIP, documented for the other Loops:**
+
+- **klaviyo (marketing, email/SMS)** — connector is `available`, and `lifecycle-email` is the obvious skill pairing (both literally about lifecycle email), but the skill carries `catalogReady: false` — it fails the Skill Loop's publication gate today. Deferred: un-flag `lifecycle-email` in the Skill Loop, then pair it with `klaviyo` here.
+- **zoom (productivity, meetings)** — connector is `available` and `meeting-notes` is the natural pairing (Zoom Workspace's own capabilities include meeting summaries/transcripts, which is exactly what Meeting Notes turns into decisions/owners/action items), but `meeting-notes` carries `catalogReady: false` **and** only declares `vendors: ["claude", "codex"]` — it fails both the publication gate and the "las 4 IAs" cross-provider rule (`content/skills/RULES.md`). Deferred to the Skill Loop: publish `meeting-notes` for all three vendors first.
+- **shopify / klaviyo (referral-program)** — `referral-program` is a strong ecommerce-adjacent skill, but it also carries `catalogReady: false`. Same blocker as above; not this loop's to fix.
+- **asana (productivity, tasks/projects)** — connector is `available` (OAuth, business-first), but no skill in `content/skills/{en,es}` teaches a specific Asana workflow the way `zapier-automation-blueprint` does for Zapier. Forcing a generic skill onto it would be the same overclaim the 2026-07-31 run avoided for bare Zapier. Left as a Skill Loop candidate: an Asana-specific task-triage or status-digest skill would make this pairing real.
+- **twitter / wordpress (marketing, content)** — both connectors are `available`, and `contenido-social` is close in spirit (organic social content), but its own body scopes to "Instagram, Facebook, LinkedIn, TikTok" — it doesn't claim X or WordPress-blog specifically, and pairing it here would be exactly the kind of unsupported-capability claim `RULES.md` warns against (see the 2026-08-02 Shopify/`carrito-abandonado` precedent). Left as candidates once a skill explicitly covers that surface.
+
+Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` (17/17 pass) + `tsc --noEmit` (clean). Both new plugins reuse their connector's existing, committed logo (`/connectors/<slug>.svg`) — no new logo assets needed.
+
+
 ### 2026-08-02 — "plugins para empresarios: ventas, ecommerce, soporte al cliente, marketing, finanzas, operaciones, reportes ejecutivos" (automated)
 
 **Shipped 5 Plugins**, each an already-published connector + an already-evaluated skill, picked so the pairing reflects what the connector's real tools can actually feed the skill (no invented capability):
