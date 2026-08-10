@@ -341,6 +341,20 @@ Until these are present, keep the kit out of the published marketplace catalog.
 
 ## Loop run log
 
+### 2026-08-10 — Sales Meeting Follow-up Kit (Zoom); Support and payroll/design candidates still blocked
+
+**Shipped (1 kit, EN/ES parity, neutral Spanish per the voseo ratchet — see `src/lib/__tests__/voz-neutral-catalogo.test.ts`):**
+
+- `sales-meeting-followup` (category: sales) — `zoom` + `doc-coauthoring` + `internal-comms`. Scoped to the meeting-to-action loop of an individual sales call: pull the real Zoom meeting summary/transcript/action items instead of re-watching the recording, turn them into a client-ready follow-up (Doc Co-authoring), and flag internal deal risk to a manager or teammate (Internal Comms). `zoom` had shipped as a connector (2026-07-24) but was not yet used by any kit. Differentiated from `b2b-sales-pipeline` (also `sales`, also reuses `doc-coauthoring`+`internal-comms`): that kit anchors on HubSpot's CRM record across a multi-stage pipeline (which accounts are stalled, deal-stage history); this kit anchors on a single Zoom call's actual content and works even for a solo rep or founder with no CRM at all. Both kits' "Why these pieces belong together" sections cross-reference the distinction, same pattern already used between `small-business-finance`/`bookkeeping-tax-handoff`.
+
+**Considered and deferred — other unused-in-any-kit remote connectors shipped since the last empresario-first batch (2026-08-02):**
+
+- **`gusto`** (payroll/HR, shipped 2026-08-02) — real candidate for a Payroll/HR Ops kit (`gusto` + `internal-comms` for payroll-related team announcements), but it is **read-only** (Gusto's own docs: no tool can run payroll, move money, or edit records) and pairing it with only one generic writing skill felt thin next to this run's Zoom kit, which had a clearer three-piece loop. Left for a future run to build out properly rather than ship a two-item kit as a placeholder.
+- **`klaviyo`** / **`canva`** (marketing, shipped 2026-07-31) — real candidates for an ecommerce email/SMS marketing kit, but neither pairs cleanly with any of the 7 allowed skills without stretching scope: `meta-ads-creator`'s own content is scoped to Meta ad creative briefs, not lifecycle email/SMS copy or general design generation. Building a kit from the connector alone (no skill) would fail the "combination of pieces" test in this file's "What a kit is" section. Deferred until a lifecycle-email or design-brief skill passes the mold — note `content/skills/RULES.md` still lists only the 7 allowed skills as of this run; a `lifecycle-email` skill exists in `content/skills/es/` per the ratchet's debt list but is not in the kits allow-list and was not used here.
+- **`asana`** (operations, shipped 2026-07-31) — would duplicate `team-operations` (ClickUp + Slack + Internal Comms) almost item-for-item (task board + team comms), with no connector-level distinction strong enough to justify a second kit for the same job. Same conclusion as the existing `team-operations` overlap reasoning.
+
+**Still blocked — Support / Customer Service kit:** no new information this run. `intercom` is still first-party with no `manifest:` block, same gate failure documented in the 2026-08-02 and 2026-08-03 run-log entries. Not re-researched.
+
 ### 2026-08-03 — SEO Content Kit; overlap check against in-flight kit PRs
 
 **Shipped (1 kit, EN/ES parity):**
