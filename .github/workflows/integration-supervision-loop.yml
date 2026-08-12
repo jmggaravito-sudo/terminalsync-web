@@ -99,8 +99,6 @@ jobs:
             # igual. En macOS (BSD grep) funcionaba, por eso se probaba bien en
             # local. Es la razón real de que este check se terminara salteando
             # con --admin. grep ya trabaja línea por línea: `.*` alcanza.
-            app_pr="$(printf '%s' "${PR_BODY:-}" | grep -iEo 'app mirror( pr)?:.*' | grep -Eo 'jmggaravito-sudo/terminal-sync/pull/[0-9]+|terminal-sync/pull/[0-9]+|terminal-sync#[0-9]+|#[0-9]+' | head -1 | grep -Eo '[0-9]+' || true)"
-
             # "no aplica" declarado explícitamente: la política dejó de exigir
             # un PR de app cuando el desktop ya consume el catálogo. Ver
             # docs/integration-loop-two-pr-policy.md — el PR espejo obligatorio
@@ -108,21 +106,23 @@ jobs:
             # nada (5 de 7 PRs de loops no tocaron código de producto).
             mirror_na="$(printf '%s' "${PR_BODY:-}" | grep -icE 'app (mirror )?pr:[[:space:]]*(no aplica|n/?a|not needed)' || true)"
 
-            # Se decide por lo que HAY, no por lo que falta. La versión anterior
-            # preguntaba `if [ -z "$app_pr" ] && [ "$mirror_na" = "0" ]`, así que
-            # declarar "no aplica" (app_pr vacío + mirror_na=1) caía al `else`
-            # y corría `gh pr view ""` sin número: "could not determine current
-            # branch" en el checkout detached. O sea que el atajo que el propio
-            # mensaje de error recomienda NUNCA pudo funcionar — y por eso este
-            # check se terminaba saltando con --admin en vez de cumplirse.
-            if [ -n "$app_pr" ]; then
+            app_pr=""
+            if [ "$mirror_na" = "0" ]; then
+              app_pr="$(printf '%s' "${PR_BODY:-}" | grep -iEo 'app mirror( pr)?:.*' | grep -Eo 'jmggaravito-sudo/terminal-sync/pull/[0-9]+|terminal-sync/pull/[0-9]+|terminal-sync#[0-9]+|#[0-9]+' | head -1 | grep -Eo '[0-9]+' || true)"
+            fi
+
+            # Se decide por lo que HAY, no por lo que falta. Si la línea declara
+            # `no aplica`, esa señal gana incluso si después menciona un PR
+            # histórico como "see #162"; de lo contrario el parser intenta
+            # verificar una rama espejo vieja que no pertenece a este PR.
+            if [ "$mirror_na" != "0" ]; then
+              echo "app_ref=$TERMINALSYNC_APP_BASE_BRANCH" >> "$GITHUB_OUTPUT"
+              echo "Declarado 'no aplica': se verifica la base $TERMINALSYNC_APP_BASE_BRANCH"
+            elif [ -n "$app_pr" ]; then
               app_ref="$(gh pr view "$app_pr" --repo "$TERMINALSYNC_APP_REPO" --json headRefName --jq .headRefName)"
               echo "app_pr=$app_pr" >> "$GITHUB_OUTPUT"
               echo "app_ref=$app_ref" >> "$GITHUB_OUTPUT"
               echo "Resolved app mirror PR #$app_pr → $app_ref"
-            elif [ "$mirror_na" != "0" ]; then
-              echo "app_ref=$TERMINALSYNC_APP_BASE_BRANCH" >> "$GITHUB_OUTPUT"
-              echo "Declarado 'no aplica': se verifica la base $TERMINALSYNC_APP_BASE_BRANCH"
             else
               changed_files="$(gh pr view "$PR_NUMBER" --repo "$LANDING_REPO" --json files --jq '.files[].path')"
               if echo "$changed_files" | grep -Eq '^(content/(connectors|plugins|kits|skills)/|public/(connectors|plugins|skills|logos)/|src/app/api/marketplace/catalog/|src/lib/(marketplace|plugins|skills))'; then

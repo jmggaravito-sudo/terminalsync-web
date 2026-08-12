@@ -18,6 +18,13 @@ const MOLDED_PUBLIC_SKILLS = [
 // stay intact on disk for when the external tooling is guaranteed.
 const MOLDED_HIDDEN_SKILLS = ["deep-research", "slack-summarizer"] as const;
 
+// Native document skills: they ship WITH Claude (included: true), so Terminal
+// Sync never installs them and they are Claude-only — no Codex/Gemini
+// delivery path to claim, and no fixture to evaluate (see
+// scripts/skills-eval/fixtures-coverage.test.mjs's NATIVE set). See
+// content/skills/RULES.md's docx/pdf/pptx/xlsx backlog note.
+const MOLDED_NATIVE_DOCUMENT_SKILLS = ["docx", "pdf", "pptx", "xlsx"] as const;
+
 const readRawSkill = (lang: string, slug: string): string =>
   fs.readFileSync(
     path.join(process.cwd(), "content", "skills", lang, `${slug}.md`),
@@ -44,6 +51,51 @@ describe("skills content mold", () => {
       );
       for (const v of skill?.compatibleWith ?? []) {
         expect(["claude", "codex", "gemini"], `${slug} declara ${v}`).toContain(v);
+      }
+    }
+  });
+
+  it("molded native document skills expose RULES.md-required frontmatter", async () => {
+    const skills = await listSkills("es");
+
+    for (const slug of MOLDED_NATIVE_DOCUMENT_SKILLS) {
+      const skill = skills.find((item) => item.slug === slug);
+      expect(skill, `${slug} should be listed`).toBeDefined();
+      expect(skill).toMatchObject({
+        marketplaceSource: "anthropic",
+        included: true,
+        license: "proprietary",
+        // Claude-only: they ship natively with Claude, not Codex/Gemini — no
+        // delivery path or eval on those providers to back a wider claim.
+        compatibleWith: ["claude"],
+      });
+      expect(skill?.licenseUrl, `${slug} needs a licenseUrl`).toMatch(
+        /^https:\/\/github\.com\/anthropics\/skills\//,
+      );
+      expect(skill?.description?.length, `${slug} needs a real description`).toBeGreaterThan(0);
+    }
+  });
+
+  it("molded native document skills use localized RULES.md headings, no stray dev-block artifact", async () => {
+    for (const lang of ["en", "es"] as const) {
+      for (const slug of MOLDED_NATIVE_DOCUMENT_SKILLS) {
+        const doc = await getSkill(lang, slug);
+        expect(doc, `${lang}/${slug} should render`).not.toBeNull();
+        if (lang === "es") {
+          expect(doc?.bodyHtml).toContain("Cuándo usarlo");
+          expect(doc?.bodyHtml).toContain("Qué hace");
+          expect(doc?.bodyHtml).toContain("Cómo usarlo");
+          expect(doc?.bodyHtml).toContain("Ideal para");
+        } else {
+          expect(doc?.bodyHtml).toContain("When to use");
+          expect(doc?.bodyHtml).toContain("What it does");
+          expect(doc?.bodyHtml).toContain("How to use");
+          expect(doc?.bodyHtml).toContain("Best for");
+        }
+        expect(
+          readRawSkill(lang, slug),
+          `${lang}/${slug} should not carry the stray "--- dev ---" artifact`,
+        ).not.toContain("--- dev ---");
       }
     }
   });

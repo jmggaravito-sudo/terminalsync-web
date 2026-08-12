@@ -1,32 +1,42 @@
 ---
 name: PDF
-vendor: anthropic
-author: "Anthropic"
 logo: /skills/pdf.svg
 category: productivity
+vendors: ["claude"]
+author: "Anthropic"
 status: available
-simpleTitle: "Edit, fill and generate PDFs without copy-pasting"
-simpleSubtitle: "Tell Claude what you need — invoices, contracts, forms — and it builds the PDF for you."
-devTitle: "PDF Skill"
-devSubtitle: "Anthropic's official skill for generating, filling and parsing PDF files using `pdf-lib` + `pdfplumber` under the hood."
-ctaUrl: "https://docs.claude.com/en/docs/agent-skills"
-affiliate: false
 tagline: "Editable PDFs straight from a prompt"
-description: "Generates, fills and reads PDF files from a prompt — invoices, contracts, forms — and can extract text, merge or split documents. Ships natively with Claude Code."
-tsInstallable: true
+description: "Reads, fills, merges, splits, watermarks, and generates PDFs — including detecting and filling real AcroForm fields instead of retyping a form as chat text. Ships natively with Claude; nothing to install."
+license: "proprietary"
+licenseUrl: "https://github.com/anthropics/skills/blob/main/skills/pdf/LICENSE.txt"
+marketplaceSource: "anthropic"
+compatibleWith: ["claude"]
 included: true
 ---
-Stop fighting with PDFs. Ask Claude to *"fill this contract with the data from my CRM and email it to the client"* — done. Generate quotes, invoices, NDAs in your tone, signed and ready.
+## When to use
 
-The PDF skill ships with form-filling, page extraction, and merging. Pair it with your Notion or Drive connector and Claude has end-to-end document workflows.
+- You have a PDF form to fill out — a vendor form, an application, an intake sheet — and want the real fields filled, not a text summary of what should go where.
+- You need to combine several PDFs into one, split one apart, rotate pages, or stamp a watermark across a contract before sending it out.
+- You need text or tables pulled out of a PDF (including a scanned one that needs OCR first) to reuse elsewhere.
+- You want a new PDF generated — a quote, invoice, or one-pager — as an actual file.
 
---- dev ---
+Do not use it for Word documents, slide decks, or spreadsheets — that's the DOCX, PPTX, or XLSX skill.
 
-The official Anthropic PDF skill exposes a tool layer over `pdf-lib` for generation/editing and `pdfplumber` for parsing. It handles:
+## What it does
 
-- Filling AcroForm fields by key
-- Extracting text + tables from arbitrary PDFs
-- Composing multi-page documents from templates
-- Merging, splitting, rotating, watermarking
+- **Fills forms correctly**: checks whether the PDF has real fillable fields first. If it does, fills each field (text, checkbox, radio group, multiple choice) by its actual field ID and value — never by guessing coordinates or faking a filled look with an image.
+- **Reads and extracts** text and tables from existing PDFs, including running OCR on a scanned document to make it searchable.
+- **Merges, splits, and reorders** pages across multiple PDFs while preserving page order.
+- **Rotates, watermarks, and encrypts/decrypts** a PDF without altering the underlying content.
+- **Generates new PDFs** from scratch for quotes, invoices, letters, and similar one-off documents.
 
-Once installed via Terminal Sync, the skill lives at `~/.claude/skills/pdf/` and is automatically available to Claude Code on every Mac you sign in to. No re-installation, no per-machine config.
+## How to use
+
+1. Share the PDF and say exactly what you need: *"Fill this form with [the specific values]"* or *"Merge these three invoices into one, in date order."*
+2. For a form, Claude checks whether it has fillable fields before doing anything — if it doesn't, say so instead of getting a fake-looking result.
+3. Give the real data to fill in — Claude does not invent names, amounts, or dates that weren't provided.
+4. Review the exported PDF before sending it, especially for anything with legal or financial weight (contracts, signed forms) — the skill fills and formats accurately, but the content and the decision to send it are still yours.
+
+## Best for
+
+Business owners and teams who need a real, correctly filled or assembled PDF — forms, contracts, invoices, merged reports — without hunting for a separate PDF editor.
