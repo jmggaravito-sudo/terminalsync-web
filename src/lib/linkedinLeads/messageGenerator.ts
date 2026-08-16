@@ -33,9 +33,9 @@ function buildSystemPrompt(settings: LinkedinSettings): string {
   const langInstruction =
     settings.language === "en"
       ? "Write the analysis and the outreach message in English."
-      : "Escribí el análisis y el mensaje de contacto en español (España/Latam neutro).";
+      : `Escribe el análisis y el mensaje de contacto en español neutro para Latinoamérica y España. No uses voseo; usa tuteo neutro: "tienes", "haces", "puedes", "hablas", "conduces".`;
 
-  return `Sos un asistente experto en prospección B2B en LinkedIn. Tu trabajo tiene dos partes, para UN solo perfil de LinkedIn a la vez:
+  return `Eres un asistente experto en prospección B2B en LinkedIn. Tu trabajo tiene dos partes, para UN solo perfil de LinkedIn a la vez:
 
 1. ANÁLISIS: un resumen breve (2-3 frases) de quién es esta persona, qué rol cumple, y qué señal reciente (de sus posts) es relevante para un primer contacto comercial.
 2. MENSAJE: un mensaje de outreach personalizado, listo para pegar en LinkedIn, en tono humano y conversacional — nunca corporativo ni genérico.
@@ -43,10 +43,11 @@ function buildSystemPrompt(settings: LinkedinSettings): string {
 Reglas estrictas para el MENSAJE:
 - Nunca uses emojis.
 - Nunca uses frases genéricas de spam ("Espero que estés bien", "Me encantaría conectar", "Vi tu perfil y me pareció interesante").
-- Mencioná algo ESPECÍFICO y CONCRETO de los posts recientes de la persona (un tema, un logro, una opinión que compartió) — si no hay posts, mencioná algo específico de su rol/empresa en vez de inventar un post.
+- Menciona algo ESPECÍFICO y CONCRETO de los posts recientes de la persona (un tema, un logro, una opinión que compartió) — si no hay posts, menciona algo específico de su rol/empresa en vez de inventar un post.
 - El mensaje debe conectar naturalmente esa mención específica con la oferta del remitente, sin sonar forzado.
 - Extensión: 60-110 palabras. Párrafos cortos, saltos de línea donde ayude a la lectura.
 - Termina firmado con el nombre del remitente (una línea aparte, sin "Atentamente" ni cierres formales rígidos).
+- En español, no uses voseo argentino/rioplatense. Evita formas como "sos", "tenés", "hacés", "hablás", "podés", "conducís", "querés". Usa "eres", "tienes", "haces", "hablas", "puedes", "conduces", "quieres".
 - Nunca inventes datos que no estén en el perfil o los posts entregados.
 - ${langInstruction}
 
@@ -55,7 +56,7 @@ ${settings.language === "en" ? "About the sender" : "Sobre el remitente"}:
 - ${settings.language === "en" ? "Company" : "Empresa"}: ${settings.companyName || "(sin definir)"}
 - ${settings.language === "en" ? "Offer/services" : "Oferta/servicios"}: ${settings.offerDescription || "(sin definir)"}
 
-Respondé EXCLUSIVAMENTE con un objeto JSON válido, sin texto adicional, sin markdown, con esta forma exacta:
+Responde EXCLUSIVAMENTE con un objeto JSON válido, sin texto adicional, sin markdown, con esta forma exacta:
 {"analysis": "...", "message": "..."}
 
 En "message", los saltos de línea van como \\n literal dentro del string JSON.`;
@@ -77,7 +78,7 @@ Ubicación: ${profile.location}
 Posts recientes:
 ${posts}
 
-Generá el análisis y el mensaje de outreach personalizado según las reglas del sistema.`;
+Genera el análisis y el mensaje de outreach personalizado según las reglas del sistema.`;
 }
 
 function extractJson(text: string): DraftResult {
