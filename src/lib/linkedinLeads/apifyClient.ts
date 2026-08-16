@@ -22,7 +22,7 @@ const APIFY_BASE = "https://api.apify.com/v2";
  * Runs the configured Apify actor to search public LinkedIn profiles
  * (no login/cookies) per the given filters.
  *
- * Default actor: harvestapi/linkedin-profile-search ("No cookies or
+ * Default actor: harvestapi~linkedin-profile-search ("No cookies or
  * account required"). The input block below covers the field names
  * documented on the actor page (searchQuery, currentJobTitles, location,
  * maxItems) PLUS generic aliases, so this keeps working if
@@ -33,7 +33,7 @@ export async function runLinkedInSearch(filters: LinkedinSearchFilters): Promise
   if (!token) {
     throw new Error("Falta APIFY_TOKEN. Configuralo en las variables de entorno de Vercel antes de buscar.");
   }
-  const actorId = process.env.APIFY_LINKEDIN_ACTOR_ID || "harvestapi/linkedin-profile-search";
+  const actorId = (process.env.APIFY_LINKEDIN_ACTOR_ID || "harvestapi~linkedin-profile-search").replace("/", "~");
 
   const location = [filters.city, filters.state, filters.country].filter(Boolean).join(", ");
 
