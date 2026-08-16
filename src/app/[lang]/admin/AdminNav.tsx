@@ -19,6 +19,7 @@ export function adminSections(isEs: boolean): AdminSection[] {
     { slug: "mercadopago", label: "Mercado Pago" },
     { slug: "ops", label: "Ops" },
     { slug: "business-leads", label: isEs ? "Leads B2B" : "B2B Leads" },
+    { slug: "leads-linkedin", label: isEs ? "Leads LinkedIn" : "LinkedIn Leads" },
   ];
 }
 
