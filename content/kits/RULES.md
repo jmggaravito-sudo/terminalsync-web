@@ -95,6 +95,7 @@ Rules:
   intentionally localized text.
 - Keep the same body sections in both languages.
 - Do not publish a kit in only one language.
+- App-visible text (`tagline`, `description`, long markdown body/`descriptionMd`) must be localized in the file language; do not publish Spanish detail copy in `/en/` or identical long descriptions as a fallback.
 - Do not add a kit directly to code without the matching content files.
 
 ## Required frontmatter

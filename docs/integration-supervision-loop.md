@@ -8,6 +8,8 @@ job is to stop broken UX from reaching the desktop app.
 
 For the public `/api/marketplace/catalog` contract:
 
+- every public catalog pillar has the same public slugs in `lang=en` and `lang=es`;
+- app-visible text that opens in the detail panel is localized per language — no Spanish fallback in `lang=en` and no identical long copy-paste descriptions;
 - every public kit has the TerminalSync kit logo (`/logos/ts-kit.svg`), not an
   empty/generic tile;
 - every public kit exposes a real `descriptionMd` explanation for the app detail
@@ -15,7 +17,7 @@ For the public `/api/marketplace/catalog` contract:
 - every kit has a web `href` and at least one resolved item;
 - every resolved kit item has a name and tagline;
 - the standard marketplace catalog, kit integrity, plugin integrity, skills and
-  logo tests stay green.
+  i18n and logo tests stay green.
 
 ## When it runs
 
@@ -27,7 +29,7 @@ For the public `/api/marketplace/catalog` contract:
 
 ## Where JM sees it
 
-Every completed supervision run writes a `supervision` row to `/admin/ops/loop-runs`, next to Connectors, Plugins, Kits and Skills. The row links to the GitHub Actions run as evidence, because this loop verifies catalog/app parity instead of publishing new landing item slugs.
+Every completed supervision run writes a `supervision` row to `/admin/ops/loop-runs`, next to Connectors, Plugins, Kits and Skills. The row links to the GitHub Actions run as evidence, because this loop verifies catalog/app parity instead of publishing new landing item slugs. The report includes served counts for both `lang=en` and `lang=es`.
 
 ## Human policy
 
@@ -52,3 +54,4 @@ The app-side parity suite covers:
 - Kits keep the TS logo fallback and render long catalog explanations.
 - External-only connectors stay non-draggable.
 - The marketplace catalog wrapper keeps the landing wire shape compatible with the app.
+- The app parity smoke receives the served EN and ES catalogs and fails if either language is missing, stale, or has different public counts.

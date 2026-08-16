@@ -122,7 +122,7 @@ jobs:
             2. Use only official/repo-local evidence for factual content. GitHub/npm/official docs are acceptable where external verification is needed; aggregators are discovery hints only.
             3. Start from a concrete role or workflow, not from a pile of available tools. Prioritize business-owner roles: sales, support, finance, marketing, operations.
             4. Include only published, installable catalog pieces allowed by content/kits/RULES.md. If a needed piece is missing or hidden, document it as SKIP/deferred for the proper Loop.
-            5. Write approved kits in content/kits/en and content/kits/es with strict parity and the fixed /logos/ts-kit.svg logo.
+            5. Write approved kits in content/kits/en and content/kits/es with strict parity and the fixed /logos/ts-kit.svg logo. The opened `descriptionMd` must be localized in both languages; no copied Spanish detail copy in `content/kits/en`.
             6. Explain why each piece belongs together; remove generic filler items.
             7. If nothing is shippable, still update a dated run note / blocker summary so the run is reviewable.
             8. Run validation before opening PRs: npm test -- --run src/lib/marketplace/kitsIntegrity.test.ts src/app/api/marketplace/catalog/route.test.ts, plus npm run typecheck when feasible. If a full suite is unexpectedly blocked by unrelated environment issues, run the targeted tests you can and document the blocker in both PR bodies.

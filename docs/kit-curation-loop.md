@@ -11,6 +11,7 @@ Its gate is `content/kits/RULES.md`.
 3. Pick a concrete role/workflow, prioritizing business-owner jobs: sales, support, finance, marketing, operations.
 4. Verify every included piece is already published and installable. If a needed piece is missing, defer it to the right Loop.
 5. Write the Kit in `content/kits/en` and `content/kits/es` with strict parity.
+6. **I18n gate before PR:** `tagline`, `description`, and long `descriptionMd` body must be localized in both `content/kits/en` and `content/kits/es`; no Spanish opened detail in `lang=en`.
 6. Use the fixed `/logos/ts-kit.svg` logo.
 7. Explain why each piece belongs in the workflow; remove generic filler.
 8. Validate with `src/lib/marketplace/kitsIntegrity.test.ts`, catalog tests, and typecheck when feasible.

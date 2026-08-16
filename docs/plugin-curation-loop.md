@@ -19,6 +19,7 @@ Its gate is `content/plugins/RULES.md`.
    - the **connector** is in `content/connectors/{en,es}` and passed the Connector Loop gate (official publisher + npm/remote); if it's missing, that's a Connector Loop task first, not this one;
    - the **skill(s)** are in `content/skills/{en,es}` and pass `content/skills/RULES.md` (evals, honesty, Veredicto for decision skills); a public skill is required because the loader composes only publishable pieces.
 5. Write the Plugin in `content/plugins/en` and `content/plugins/es` using `content/plugins/RULES.md`: reference the pieces **by slug** (`connectorSlug` + `skillSlugs`) — never duplicate their content. At least one real piece; value is highest with both.
+6. **I18n gate before PR:** `tagline`, `description`, and body copy must be localized in both `content/plugins/en` and `content/plugins/es`; references stay identical.
 6. Source/create the Plugin logo under `public/plugins/<slug>.svg`.
 7. Keep ES/EN strict parity. Status `soon` if any referenced piece is `soon`.
 8. Validate: `vitest run src/lib/plugins.test.ts` (composition resolves the real pieces) + `tsc`. Add a loader/catalog test for the new Plugin when it exercises a new shape.

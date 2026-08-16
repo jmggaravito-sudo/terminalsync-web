@@ -126,7 +126,7 @@ jobs:
             3. Apply the persona filter in content/connectors/SOURCES.md. Every completed run must include at least one business-first item unless the run is a documented no-ship run.
             4. Prioritize the queued remote candidates in SOURCES.md: Asana, Klaviyo, Canva; also check whether any of them now publish official GitHub/registry material like Zoom did.
             5. Do not ship PayPal unless the 8h-token + license/repo blockers are resolved. Do not ship Wix unless the toolset is no longer dev-docs-only.
-            6. If you ship a connector, create strict EN/ES parity content, official logo or documented fallback, and update SOURCES.md.
+            6. If you ship a connector, create strict EN/ES parity content, official logo or documented fallback, and update SOURCES.md. The app-visible fields/body must be localized in both languages; do not copy Spanish descriptions into `content/connectors/en` or rely on fallback copy.
             7. If nothing is shippable, still update SOURCES.md with a dated run note explaining what official sources were checked and why candidates were skipped/deferred. That gives the run a reviewable PR and makes the result visible.
             8. Run the relevant validation before opening PRs: npm test at minimum; if only markdown/content changed and the full suite is unexpectedly blocked by unrelated environment issues, run the marketplace/content tests you can and document the blocker in the PR bodies.
             9. Open exactly one landing/web draft PR in this repo. Never merge it.

@@ -120,7 +120,7 @@ jobs:
             1. Start from current main and create exactly one branch for this run.
             2. Use only official/repo-local evidence for factual content. GitHub/npm/official docs are acceptable where external verification is needed; aggregators are discovery hints only.
             3. Prioritize the documented non-dev backlog: docx, pdf, pptx, xlsx before niche dev skills unless workflow input says otherwise.
-            4. Every publishable skill needs strict EN/ES parity, valid categories, delivery-compatible vendors, and reproducible eval evidence per content/skills/RULES.md.
+            4. Every publishable skill needs strict EN/ES parity, localized app-visible copy (`tagline`, `description`, markdown body), valid categories, delivery-compatible vendors, and reproducible eval evidence per content/skills/RULES.md. No Spanish fallback in `content/skills/en`.
             5. Add or update scripts/skills-eval fixtures and docs/skills-evals/<slug>.md for shipped skills.
             6. Do not claim Gemini compatibility until the delivery path and provider evals exist.
             7. If a skill does not clearly beat baseline, keep it hidden/deferred and document the SKIP reason in the PR.
