@@ -34,6 +34,67 @@ function publicAssetPathFromCatalogUrl(value: string): string | null {
   return null;
 }
 
+type CatalogPillar =
+  "connectors" | "skills" | "cliTools" | "plugins" | "bundles";
+
+type CatalogTextItem = {
+  slug: string;
+  name?: string | null;
+  tagline?: string | null;
+  description?: string | null;
+  descriptionMd?: string | null;
+};
+
+const TEXT_PILLARS: readonly CatalogPillar[] = [
+  "connectors",
+  "skills",
+  "cliTools",
+  "plugins",
+  "bundles",
+] as const;
+
+const SPANISH_IN_EN_MARKERS: readonly RegExp[] = [
+  /[¿¡]/,
+  /\bal alcance de\b/i,
+  /\bsin abrir\b/i,
+  /\bcon vo[sz]\b/i,
+  /\b(tu|tus|un|una|los|las)\s+(campañas?|pagos?|posteos?|posts?|redes?|clientes?|docs?|documentos?|archivos?|negocio|equipo|postgres|mongo|memoria|mapas?|boards?|emails?|facturas?)\b/i,
+  /\b(revisa|convierte|publica|planifica|investiga|redacta|organiza|vigila|maneja|cuida|conecta|consulta|crea|prepara|obtén|obtiene)\b/i,
+];
+
+function visibleCatalogItems(
+  body: CatalogResponse,
+  pillar: CatalogPillar,
+): CatalogTextItem[] {
+  return (body[pillar] as CatalogTextItem[] | undefined) ?? [];
+}
+
+function textForLanguageAudit(item: CatalogTextItem): string {
+  return [item.name, item.tagline, item.description, item.descriptionMd]
+    .filter(
+      (value): value is string =>
+        typeof value === "string" && value.trim().length > 0,
+    )
+    .join("\n");
+}
+
+function normalizeLocalizedText(value: string | null | undefined): string {
+  return (value ?? "")
+    .replace(/https?:\/\/\S+/g, "")
+    .replace(/`[^`]+`/g, "")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function textNeedsLocalizedPair(value: string | null | undefined): boolean {
+  const normalized = normalizeLocalizedText(value);
+  if (!normalized) return false;
+  // Avoid forcing brands/product names like "Stripe" to translate; this is
+  // for customer-visible explanatory copy that opens in the desktop detail panel.
+  return normalized.split(/\s+/).length >= 5 || normalized.length >= 45;
+}
+
 describe("GET /api/marketplace/catalog", () => {
   it("returns 200 with the four pillars present (lang=es)", async () => {
     const { status, body } = await callCatalog("es");
@@ -63,6 +124,57 @@ describe("GET /api/marketplace/catalog", () => {
     expect(body.connectors.length).toBeGreaterThan(0);
     expect(body.skills.length).toBeGreaterThan(0);
     expect(body.cliTools.length).toBeGreaterThan(0);
+  });
+
+  it("serves localized integration copy for both landing and desktop catalog consumers", async () => {
+    const en = (await callCatalog("en")).body;
+    const es = (await callCatalog("es")).body;
+
+    for (const pillar of TEXT_PILLARS) {
+      const enItems = visibleCatalogItems(en, pillar);
+      const esItems = visibleCatalogItems(es, pillar);
+      const enSlugs = enItems.map((item) => item.slug).sort();
+      const esSlugs = esItems.map((item) => item.slug).sort();
+      expect(
+        esSlugs,
+        `${pillar}: ES and EN must expose the same public slugs`,
+      ).toEqual(enSlugs);
+
+      const esBySlug = new Map(esItems.map((item) => [item.slug, item]));
+      for (const enItem of enItems) {
+        const label = `${pillar}/${enItem.slug}`;
+        const enText = textForLanguageAudit(enItem);
+        const spanishHit = SPANISH_IN_EN_MARKERS.find((marker) =>
+          marker.test(enText),
+        );
+        expect(
+          spanishHit?.source ?? null,
+          `${label} English catalog copy appears to contain Spanish; the app detail panel must not open Spanish text when lang=en`,
+        ).toBeNull();
+
+        const esItem = esBySlug.get(enItem.slug);
+        expect(esItem, `${label} missing ES pair`).toBeDefined();
+        if (!esItem) continue;
+
+        for (const field of [
+          "tagline",
+          "description",
+          "descriptionMd",
+        ] as const) {
+          const enValue = enItem[field];
+          const esValue = esItem[field];
+          if (
+            !textNeedsLocalizedPair(enValue) ||
+            !textNeedsLocalizedPair(esValue)
+          )
+            continue;
+          expect(
+            normalizeLocalizedText(esValue),
+            `${label}.${field} is identical in EN/ES; do not fallback or copy-paste opened descriptions between languages`,
+          ).not.toBe(normalizeLocalizedText(enValue));
+        }
+      }
+    }
   });
 
   it("serves plugins with the derived requiresEnvSecrets contract", async () => {
@@ -121,27 +233,44 @@ describe("GET /api/marketplace/catalog", () => {
   it("supervises integration UX: every public kit has TS logo, explanation, href and items", async () => {
     for (const lang of ["es", "en"] as const) {
       const { body } = await callCatalog(lang);
-      expect(body.bundles.length, `${lang} should expose kits`).toBeGreaterThan(0);
+      expect(body.bundles.length, `${lang} should expose kits`).toBeGreaterThan(
+        0,
+      );
 
       for (const kit of body.bundles) {
         expect(kit.heroImageUrl, `${lang}/${kit.slug} heroImageUrl`).toMatch(
           /^https:\/\/terminalsync\.ai\/logos\/ts-kit\.svg\?v=/,
         );
         const logoPath = publicAssetPathFromCatalogUrl(kit.heroImageUrl!);
-        expect(logoPath, `${lang}/${kit.slug} logo path`).toBe("/logos/ts-kit.svg");
+        expect(logoPath, `${lang}/${kit.slug} logo path`).toBe(
+          "/logos/ts-kit.svg",
+        );
         expect(existsSync(join(process.cwd(), "public", logoPath!))).toBe(true);
 
-        expect(typeof kit.descriptionMd, `${lang}/${kit.slug} descriptionMd`).toBe("string");
+        expect(
+          typeof kit.descriptionMd,
+          `${lang}/${kit.slug} descriptionMd`,
+        ).toBe("string");
         expect(
           kit.descriptionMd!.trim().length,
           `${lang}/${kit.slug} needs a real explanation for the app detail panel`,
         ).toBeGreaterThan(80);
 
-        expect(kit.href, `${lang}/${kit.slug} href`).toBe(`/${lang}/stacks/${kit.slug}`);
-        expect(kit.items.length, `${lang}/${kit.slug} items`).toBeGreaterThan(0);
+        expect(kit.href, `${lang}/${kit.slug} href`).toBe(
+          `/${lang}/stacks/${kit.slug}`,
+        );
+        expect(kit.items.length, `${lang}/${kit.slug} items`).toBeGreaterThan(
+          0,
+        );
         for (const item of kit.items) {
-          expect(item.name, `${lang}/${kit.slug}/${item.slug} item name`).not.toBe("");
-          expect(item.tagline, `${lang}/${kit.slug}/${item.slug} item tagline`).not.toBe("");
+          expect(
+            item.name,
+            `${lang}/${kit.slug}/${item.slug} item name`,
+          ).not.toBe("");
+          expect(
+            item.tagline,
+            `${lang}/${kit.slug}/${item.slug} item tagline`,
+          ).not.toBe("");
         }
       }
     }

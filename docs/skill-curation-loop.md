@@ -10,6 +10,7 @@ Its gate is `content/skills/RULES.md`.
 2. Create a fresh branch for the curation run.
 3. Prioritize the documented business-friendly backlog (`docx`, `pdf`, `pptx`, `xlsx`) unless a workflow input says otherwise.
 4. Write or update strict EN/ES parity content in `content/skills/en` and `content/skills/es`.
+5. **I18n gate before PR:** `tagline`, `description`, body/headings in `content/skills/en` and `content/skills/es` must be localized for the file language; no copied opened-description fallback.
 5. Add reproducible eval fixtures under `scripts/skills-eval/fixtures/<slug>.json`.
 6. Run `node scripts/skills-eval/run-evals.mjs <slug>` and commit the report under `docs/skills-evals/<slug>.md`.
 7. Publish only if the skill clearly beats the baseline for every claimed provider.

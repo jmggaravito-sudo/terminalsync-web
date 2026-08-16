@@ -96,6 +96,7 @@ Rules:
 - Keep frontmatter fields equivalent across ES/EN unless the value is intentionally localized text.
 - Keep the same body sections in both languages.
 - Do not publish a skill in only one language.
+- App-visible text (`tagline`, `description`, markdown body/headings) must be localized in the file language; do not publish Spanish detail copy in `/en/` or identical long descriptions as a fallback.
 
 ## Required frontmatter
 

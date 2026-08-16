@@ -160,37 +160,65 @@ jobs:
       # se ablandaría solo y en silencio, que es peor que no tenerlo. La
       # contra es que un grupo nuevo se detecta recién en la corrida siguiente
       # al deploy; para una deriva que hoy tarda semanas en verse, alcanza.
-      - name: Fetch served catalog
+      - name: Fetch served catalogs (EN + ES)
         id: live_catalog
         run: |
-          for intento in 1 2 3; do
-            if curl -fsS --max-time 30 "$TERMINALSYNC_CATALOG_URL" -o "$RUNNER_TEMP/live-catalog.json"; then
-              break
-            fi
-            echo "intento $intento falló; reintento en 5s"
-            sleep 5
-          done
-          node -e '
-            const fs = require("node:fs");
-            const ruta = process.env.RUNNER_TEMP + "/live-catalog.json";
-            if (!fs.existsSync(ruta)) {
-              console.error("No se pudo bajar el catálogo servido tras 3 intentos.");
-              process.exit(1);
+          set -euo pipefail
+          fetch_lang() {
+            local lang="$1"
+            local out="$RUNNER_TEMP/live-catalog-$lang.json"
+            for intento in 1 2 3; do
+              if curl -fsS --max-time 30 "$TERMINALSYNC_CATALOG_URL?lang=$lang" -o "$out"; then
+                return 0
+              fi
+              echo "intento $intento ($lang) falló; reintento en 5s"
+              sleep 5
+            done
+            echo "No se pudo bajar el catálogo servido lang=$lang tras 3 intentos." >&2
+            return 1
+          }
+
+          fetch_lang en
+          fetch_lang es
+
+          node <<'NODE'
+          const fs = require("node:fs");
+          const path = require("node:path");
+          const root = process.env.RUNNER_TEMP;
+          const langs = ["en", "es"];
+          const catalogs = Object.fromEntries(langs.map((lang) => {
+            const file = path.join(root, `live-catalog-${lang}.json`);
+            if (!fs.existsSync(file)) throw new Error(`missing served catalog: ${file}`);
+            return [lang, JSON.parse(fs.readFileSync(file, "utf8"))];
+          }));
+          const groups = ["connectors", "plugins", "bundles", "skills", "cliTools"];
+          for (const lang of langs) {
+            const populated = groups.filter((group) => Array.isArray(catalogs[lang][group]) && catalogs[lang][group].length);
+            if (!populated.length) throw new Error(`served catalog lang=${lang} has no populated groups`);
+            console.log(`lang=${lang}`);
+            for (const group of groups) console.log(`  ${group}: ${Array.isArray(catalogs[lang][group]) ? catalogs[lang][group].length : 0}`);
+          }
+          for (const group of groups) {
+            const en = new Set((catalogs.en[group] || []).map((item) => item.slug).filter(Boolean));
+            const es = new Set((catalogs.es[group] || []).map((item) => item.slug).filter(Boolean));
+            const missingEs = [...en].filter((slug) => !es.has(slug));
+            const missingEn = [...es].filter((slug) => !en.has(slug));
+            if (missingEs.length || missingEn.length) {
+              throw new Error(`${group} served EN/ES slug mismatch: missing ES=${missingEs.join(",") || "-"}; missing EN=${missingEn.join(",") || "-"}`);
             }
-            const c = JSON.parse(fs.readFileSync(ruta, "utf8"));
-            const grupos = Object.entries(c).filter(([, v]) => Array.isArray(v) && v.length);
-            if (!grupos.length) {
-              console.error("El catálogo servido vino sin un solo grupo con contenido.");
-              process.exit(1);
-            }
-            for (const [k, v] of grupos) console.log(`${k}: ${v.length}`);
-          '
-          echo "path=$RUNNER_TEMP/live-catalog.json" >> "$GITHUB_OUTPUT"
+          }
+          NODE
+
+          echo "path=$RUNNER_TEMP/live-catalog-es.json" >> "$GITHUB_OUTPUT"
+          echo "path_en=$RUNNER_TEMP/live-catalog-en.json" >> "$GITHUB_OUTPUT"
+          echo "path_es=$RUNNER_TEMP/live-catalog-es.json" >> "$GITHUB_OUTPUT"
 
       - name: Run app drag/install parity checks
         working-directory: terminal-sync-app
         env:
           LIVE_CATALOG_JSON: ${{ steps.live_catalog.outputs.path }}
+          LIVE_CATALOG_JSON_EN: ${{ steps.live_catalog.outputs.path_en }}
+          LIVE_CATALOG_JSON_ES: ${{ steps.live_catalog.outputs.path_es }}
         run: |
           npm test -- --run \
             src/components/PowerUpItemRow.test.tsx \

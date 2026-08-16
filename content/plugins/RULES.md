@@ -108,3 +108,4 @@ A **Kit** is a bundle of **Plugins** for a role/job (e.g. Business Owner Kit).
 Kits stay as the role-level layer; Plugins are the product-level layer beneath
 them. A Kit's `items:` may reference `kind: plugin` (as well as the existing
 `connector`/`skill`).
+- App-visible text (`tagline`, `description`, markdown body) must be localized in the file language; do not publish Spanish copy in `/en/`, English copy in `/es/`, or identical long descriptions as a fallback.
