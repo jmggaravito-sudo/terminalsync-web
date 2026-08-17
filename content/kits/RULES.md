@@ -342,6 +342,20 @@ Until these are present, keep the kit out of the published marketplace catalog.
 
 ## Loop run log
 
+### 2026-08-17 — Payroll & Team Pay Review Kit (automated, no focus input)
+
+**Shipped (1 kit, EN/ES parity):**
+
+- `payroll-pay-review` (category: finance) — `gusto` (connector) + `doc-coauthoring` (skill) + `internal-comms` (skill). Scoped to the pre-approval loop around a Gusto pay run: read the real read-only roster/contractor/pay-period data from Gusto, turn it into a short review note before the owner approves the run inside Gusto itself, and draft the team-facing message for pay-related changes (raise, benefit, correction) — Internal Comms' own stated scope explicitly names compensation/benefits/policy updates and already builds in the "flag when this needs HR/legal review" behavior, which is an unusually tight fit for a payroll-adjacent announcement.
+
+**Overlap check before starting:** checked open PRs for in-flight kit work. PR #297 (`kits-loop/sales-meeting-followup-2026-08-10`, not yet merged) already claims the `zoom` connector for a Sales Meeting Follow-up Kit, so this run did not build anything on Zoom to avoid shipping a duplicate/conflicting kit once both PRs reach review. `gusto` itself was unclaimed by any kit — the only other place it appears is the separate, still-open Plugin Loop PR #303 (`plugin-loop/2026-08-17-meta-social-dropbox-gusto`), which pairs the same connector with the `tax-prep-checklist` skill at the **Plugin** (product) layer, not the Kit (role) layer, and that skill is not one of the 7 skills this file allows in a Kit — no conflict, different layer and different pieces.
+
+**Why finance, not a duplicate of the existing Xero kits:** `bookkeeping-tax-handoff` and `small-business-finance` both anchor on Xero and read general books/invoices. This kit anchors on Gusto and reads payroll/HR data specifically (roster, contractors, pay periods, time tracking) — a different system for most small businesses, a different artifact (pre-approval review note + team pay announcement, not an accountant packet or an owner's financial summary), and a different trigger (before approving a scheduled pay run, not tax season or month-end). The kit's own "Why these pieces belong together" section states this explicitly so a future run doesn't need to re-derive it.
+
+**Deferred — still no Support kit:** re-checked `intercom` (first-party, no `manifest:` block — sidecar connects from the app, not via npx) and `gmail` (card-only, no manifest per this file's own list) against the 7 allowed skills. Same conclusion as the 2026-08-02 and 2026-08-03 runs: no allowed skill fits customer-facing reply drafting without stretching past its declared scope (`internal-comms` is explicitly internal/team-facing; `doc-coauthoring` is a long-document process, not a quick support reply). No new connector or skill closed this gap since the last check. Still a Connector/Skill Loop candidate, not resolvable from this run.
+
+**Deferred — Local Marketing kit:** re-checked, no change. `google-business` remains first-party with no `manifest:` block (same gate failure noted in every prior run since 2026-08-02).
+
 ### 2026-08-03 — SEO Content Kit; overlap check against in-flight kit PRs
 
 **Shipped (1 kit, EN/ES parity):**
