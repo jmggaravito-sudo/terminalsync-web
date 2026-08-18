@@ -27,24 +27,24 @@ marketplaceCategory: "web"
 ---
 **GitHub** es donde viven el código y las conversaciones técnicas de cualquier proyecto de software: los archivos del repo, las tareas pendientes (issues), las propuestas de cambio (pull requests) y las discusiones del equipo. Es la plataforma estándar para guardar y revisar código.
 
-Este conector deja que tu IA trabaje contra GitHub directamente: leer archivos, contestar preguntas sobre el código, abrir tareas nuevas, proponer cambios — todo con los permisos que vos le des en el token. En palabras del README oficial, el server cubre *"file operations, repository management, search functionality, and more"*. Si el token solo permite leer, la IA solo lee; si autorizás escribir, puede abrir PRs y comentar.
+Este conector deja que tu IA trabaje contra GitHub directamente: leer archivos, contestar preguntas sobre el código, abrir tareas nuevas, proponer cambios — todo con los permisos que tú le des en el token. En palabras del README oficial, el server cubre *"file operations, repository management, search functionality, and more"*. Si el token solo permite leer, la IA solo lee; si autorizas escribir, puede abrir PRs y comentar.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Buscá en este repo dónde está definida la lógica de login y resumime los archivos relevantes."*
-- *"Abrí un pull request en borrador desde la rama `feature/login` hacia `main`, con este título y descripción."*
-- *"Listame los issues abiertos con la etiqueta `bug`, ordenados por los más recientes, y decime cuáles parecen urgentes."*
+- *"Busca en este repo dónde está definida la lógica de login y resúmeme los archivos relevantes."*
+- *"Abre un pull request en borrador desde la rama `feature/login` hacia `main`, con este título y descripción."*
+- *"Lístame los issues abiertos con la etiqueta `bug`, ordenados por los más recientes, y dime cuáles parecen urgentes."*
 
-### Qué token necesitás
+### Qué token necesitas
 
-Necesitás un **GitHub Personal Access Token** — una clave que GitHub genera para identificarte y delimitar qué puede hacer la IA en tu nombre. El README oficial pide *"Create a token with the `repo` scope"* para repos privados, o `public_repo` si solo trabajás con repos públicos.
+Necesitas un **GitHub Personal Access Token** — una clave que GitHub genera para identificarte y delimitar qué puede hacer la IA en tu nombre. El README oficial pide *"Create a token with the `repo` scope"* para repos privados, o `public_repo` si solo trabajas con repos públicos.
 
-1. Andá a [github.com/settings/tokens](https://github.com/settings/tokens) (estando logueado en GitHub).
-2. **Creá un token nuevo** y elegí los repos exactos a los que querés darle acceso (GitHub te deja seleccionar uno por uno con los "fine-grained tokens").
-3. **Para repos privados**: marcá el scope `repo`. **Para repos públicos**: alcanza con `public_repo`.
-4. Pegá el token cuando el Lab te pida `GITHUB_PERSONAL_ACCESS_TOKEN`. Terminal Sync lo guarda cifrado en tu Keychain — nunca queda en texto plano.
+1. Ve a [github.com/settings/tokens](https://github.com/settings/tokens) (estando logueado en GitHub).
+2. **Crea un token nuevo** y elige los repos exactos a los que quieres darle acceso (GitHub te deja seleccionar uno por uno con los "fine-grained tokens").
+3. **Para repos privados**: marca el scope `repo`. **Para repos públicos**: alcanza con `public_repo`.
+4. Pega el token cuando el Lab te pida `GITHUB_PERSONAL_ACCESS_TOKEN`. Terminal Sync lo guarda cifrado en tu Keychain — nunca queda en texto plano.
 
-Buena práctica: **dale el mínimo acceso posible**. Si solo querés que la IA lea y conteste preguntas, no le des permisos de escritura. Si más adelante querés que abra PRs, generás otro token con permisos extra para esos repos puntuales.
+Buena práctica: **dale el mínimo acceso posible**. Si solo quieres que la IA lea y conteste preguntas, no le des permisos de escritura. Si más adelante quieres que abra PRs, genera otro token con permisos extra para esos repos puntuales.
 
 --- dev ---
 

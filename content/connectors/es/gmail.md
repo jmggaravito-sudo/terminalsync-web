@@ -26,22 +26,22 @@ licenseUrl: "https://github.com/domdomegg/gmail-mcp/blob/master/LICENSE"
 ---
 Llegás a la mañana con 80 correos sin leer. Le preguntás *"¿qué es urgente hoy?"* y tu IA lee tu inbox y te dice lo que de verdad importa. Le pedís *"resumime lo que mandó el cliente X esta semana"* y trae el hilo y te da la idea. Es el conector que convierte tu inbox de una pila que da miedo en algo que simplemente preguntás — y es del que dependen, sin hacer ruido, la mayoría de tus automatizaciones.
 
-Decile *"redactame una respuesta para María con tono formal"* y la arma. Nunca envía solo — vos revisás, y recién ahí manda cuando le decís.
+Dile *"redáctame una respuesta para María con tono formal"* y la arma. Nunca envía solo — tú revisas, y recién ahí manda cuando le dices.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
 - *"¿Qué entró durante la noche que necesite respuesta hoy?"*
-- *"Buscá el correo con la cotización del proveedor de León y decime el precio."*
-- *"Redactame una respuesta amable confirmando la reunión del jueves — no la mandes todavía."*
+- *"Busca el correo con la cotización del proveedor de León y dime el precio."*
+- *"Redáctame una respuesta amable confirmando la reunión del jueves — no la mandes todavía."*
 
-### Qué necesitás
+### Qué necesitas
 
 Gmail usa el inicio de sesión de Google (OAuth), igual que nuestros conectores de Google Sheets y Calendar — así que si configuraste esos, este reutiliza el mismísimo proyecto de Google:
 
-1. Entrá a [console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials) y creá un proyecto (o reutilizá el de Sheets/Calendar).
-2. Activá la **Gmail API** para ese proyecto.
-3. Creá un **OAuth client ID** y copiá el **Client ID** y el **Client Secret**.
-4. Pegalos cuando el Lab te pida `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`.
+1. Entra a [console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials) y crea un proyecto (o reutiliza el de Sheets/Calendar).
+2. Activa la **Gmail API** para ese proyecto.
+3. Crea un **OAuth client ID** y copia el **Client ID** y el **Client Secret**.
+4. Pégalos cuando el Lab te pida `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`.
 5. La primera vez se abre una ventana del navegador para aprobar el acceso a tu inbox. Después es silencioso.
 
 Los dos valores quedan guardados cifrados en tu Keychain y sincronizados entre tus máquinas.

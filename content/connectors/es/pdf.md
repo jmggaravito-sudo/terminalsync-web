@@ -3,7 +3,7 @@ name: PDF
 logo: /connectors/pdf.svg
 category: productivity
 status: available
-simpleTitle: "Dejá que tu IA lea y marque PDFs"
+simpleTitle: "Deja que tu IA lea y marque PDFs"
 simpleSubtitle: "Abre papers locales o URLs académicas permitidas, busca páginas, extrae texto y anota documentos."
 devTitle: "Conector MCP de PDF"
 devSubtitle: "Server MCP App oficial de @modelcontextprotocol: visor interactivo, lectura por partes, anotaciones y guardado con límites."
@@ -26,21 +26,21 @@ marketplaceCategory: "desktop"
 
 Qué hace: tu IA puede listar PDFs disponibles, mostrar un documento, buscar dentro del archivo, ir a una página, extraer texto de páginas elegidas, tomar una captura, agregar resaltados o notas, sellar páginas, completar formularios y guardar una copia anotada cuando el archivo está dentro de una carpeta local permitida. El README describe el patrón central como *"chunked pagination"*: leer por partes para no mandar un PDF grande en una sola llamada enorme.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Abrí este paper y resumime el argumento de las páginas 1 a 3."*
-- *"Buscá en este contrato las condiciones de cancelación y resaltá el párrafo importante."*
-- *"Poné un sello de confidencial en todas las páginas y guardá una copia anotada."*
+- *"Abre este paper y resúmeme el argumento de las páginas 1 a 3."*
+- *"Busca en este contrato las condiciones de cancelación y resalta el párrafo importante."*
+- *"Pon un sello de confidencial en todas las páginas y guarda una copia anotada."*
 
-### Qué configuración necesitás
+### Qué configuración necesitas
 
-No necesitás token. El conector corre localmente con `npx` y solo puede leer archivos locales que le pases, carpetas locales expuestas por el cliente o PDFs remotos de la lista de fuentes permitidas.
+No necesitas token. El conector corre localmente con `npx` y solo puede leer archivos locales que le pases, carpetas locales expuestas por el cliente o PDFs remotos de la lista de fuentes permitidas.
 
-1. Instalalo desde el Lab como cualquier conector sin secretos.
-2. Abrí PDFs solo desde carpetas que estés cómodo exponiendo al agente.
-3. Para guardar anotaciones, usá una carpeta local montada como raíz; el server rechaza escrituras fuera de las raíces permitidas.
+1. Instálalo desde el Lab como cualquier conector sin secretos.
+2. Abre PDFs solo desde carpetas que estés cómodo exponiendo al agente.
+3. Para guardar anotaciones, usa una carpeta local montada como raíz; el server rechaza escrituras fuera de las raíces permitidas.
 
-Cuidado con documentos confidenciales. Este conector pone el contenido del PDF a disposición de la sesión de IA, así que abrí solo archivos que correspondan a ese workspace.
+Cuidado con documentos confidenciales. Este conector pone el contenido del PDF a disposición de la sesión de IA, así que abre solo archivos que correspondan a ese workspace.
 
 --- dev ---
 

@@ -21,7 +21,7 @@ items:
 
 El dueño de un negocio chico, o el contador que trabaja para uno, que lleva los libros en Xero y cobra pagos online por Stripe, y necesita responder *"¿quién nos debe plata?"*, *"¿qué está vencido?"*, y *"¿cómo vino de verdad el mes pasado?"* sin armar un reporte a mano cada vez.
 
-Usalo cuando el trabajo recurrente es leer los números y redactarlos, no hacer la contabilidad en sí — este kit lee y redacta, no reemplaza a un contador.
+Úsalo cuando el trabajo recurrente es leer los números y redactarlos, no hacer la contabilidad en sí — este kit lee y redacta, no reemplaza a un contador.
 
 ## Qué te ayuda a hacer
 
@@ -47,11 +47,11 @@ El resultado esperado es un resumen financiero corto y con fuente que el dueño 
 
 ## Cómo usarlo
 
-1. Instalá el kit, conectá Xero por una Custom Connection (Client ID + Client Secret), y conectá Stripe con su clave.
-2. Preguntá *"¿quién nos debe plata y cuánto, y qué está vencido?"* — Xero responde con las cuentas por cobrar vencidas.
-3. Preguntá *"¿cómo vinimos el mes pasado?"* para el P&L, y *"¿cuál es nuestra posición ahora?"* para el balance.
-4. Preguntá *"¿hubo pagos fallidos o reembolsos en Stripe este mes?"* para chequear el lado online.
-5. Pedile a Doc Co-authoring que *"redacte esto como un resumen financiero mensual corto que le pueda mandar a mi socio"* usando los números de arriba.
+1. Instala el kit, conecta Xero por una Custom Connection (Client ID + Client Secret), y conecta Stripe con su clave.
+2. Pregunta *"¿quién nos debe plata y cuánto, y qué está vencido?"* — Xero responde con las cuentas por cobrar vencidas.
+3. Pregunta *"¿cómo vinimos el mes pasado?"* para el P&L, y *"¿cuál es nuestra posición ahora?"* para el balance.
+4. Pregunta *"¿hubo pagos fallidos o reembolsos en Stripe este mes?"* para chequear el lado online.
+5. Pídele a Doc Co-authoring que *"redacte esto como un resumen financiero mensual corto que le pueda mandar a mi socio"* usando los números de arriba.
 
 ## Por qué estas piezas van juntas
 
@@ -71,4 +71,4 @@ Se solapa con el Kit Dueño de Negocio en Stripe y Doc Co-authoring, pero el pro
 - No manda facturas, no mueve plata ni hace reembolsos por su cuenta; las escrituras de Xero (facturas, pagos, contactos) y las acciones de Stripe necesitan tu revisión y confirmación.
 - La Custom Connection de Xero necesita un plan pago de Xero y su propia configuración única en el portal de desarrolladores; Stripe necesita su propia cuenta y API key.
 - Solo ve lo que está registrado en Xero y Stripe — efectivo, cheques, u otra plataforma de contabilidad/pagos quedan fuera de su vista.
-- Si tu negocio corre en Alegra, Siigo, QuickBooks u otra plataforma en vez de Xero, este kit todavía no lo cubre; muchas preguntas de "facturas y presupuesto" pueden funcionar por el conector de Google Sheets si las llevás en una planilla.
+- Si tu negocio corre en Alegra, Siigo, QuickBooks u otra plataforma en vez de Xero, este kit todavía no lo cubre; muchas preguntas de "facturas y presupuesto" pueden funcionar por el conector de Google Sheets si las llevas en una planilla.

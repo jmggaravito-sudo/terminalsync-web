@@ -25,20 +25,20 @@ licenseUrl: "https://github.com/nsxdavid/clickup-mcp-server/blob/main/LICENSE"
 ---
 Si tu equipo lleva el trabajo en **ClickUp** — las listas, las tareas, el quién-hace-qué — este conector deja que tu IA lo lea y lo mantenga en movimiento, para que preguntes por tus proyectos en vez de andar clickeando entre ellos.
 
-Preguntale *"¿qué vence esta semana en todas mis listas?"* y lee tus tareas. Decile *"creá una tarea en la lista 'Onboarding' para el cliente nuevo, vence el lunes"* y la agrega. Preguntale *"¿qué está trabado sin novedades?"* y las encuentra. Tu tablero de proyectos se vuelve algo con lo que simplemente hablás.
+Pregúntale *"¿qué vence esta semana en todas mis listas?"* y lee tus tareas. Dile *"crea una tarea en la lista 'Onboarding' para el cliente nuevo, vence el lunes"* y la agrega. Pregúntale *"¿qué está trabado sin novedades?"* y las encuentra. Tu tablero de proyectos se vuelve algo con lo que simplemente hablas.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
 - *"¿Qué tareas vencen esta semana y a quién están asignadas?"*
-- *"Creá una tarea en 'Ventas': seguir la propuesta de León, vence el jueves."*
-- *"Listame los spaces y las listas de mi workspace así sé dónde está cada cosa."*
+- *"Crea una tarea en 'Ventas': seguir la propuesta de León, vence el jueves."*
+- *"Lístame los spaces y las listas de mi workspace así sé dónde está cada cosa."*
 
-### Qué necesitás
+### Qué necesitas
 
 ClickUp se conecta con un **API token** de tu propia cuenta:
 
-1. Abrí [ClickUp → Settings → Apps](https://app.clickup.com/settings/apps) y generá un token personal (empieza con `pk_`).
-2. Pegalo cuando el Lab te pida `CLICKUP_API_TOKEN`.
+1. Abre [ClickUp → Settings → Apps](https://app.clickup.com/settings/apps) y genera un token personal (empieza con `pk_`).
+2. Pégalo cuando el Lab te pida `CLICKUP_API_TOKEN`.
 
 El token queda guardado cifrado en tu Keychain y sincronizado entre tus máquinas.
 

@@ -25,26 +25,26 @@ licenseUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-brave-se
 marketplaceSource: "anthropic"
 marketplaceCategory: "web"
 ---
-**Brave Search** es el buscador de Brave. Usa un índice propio, útil cuando querés que tu IA busque en la web sin depender de Google.
+**Brave Search** es el buscador de Brave. Usa un índice propio, útil cuando quieres que tu IA busque en la web sin depender de Google.
 
 Este conector conecta tu IA con la API de Brave Search. El README oficial dice que integra la API de Brave y ofrece *"both web and local search capabilities"*: búsqueda general de páginas, noticias y artículos, además de búsquedas locales para negocios, restaurantes y servicios.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Buscá noticias recientes sobre esta empresa y resumime los puntos que se repiten en varias fuentes."*
-- *"Encontrá servicios de reparación de bicicletas cerca de esta zona y compará opciones."*
-- *"Buscá artículos de los últimos meses sobre este tema y separá fuentes oficiales de opiniones."*
+- *"Busca noticias recientes sobre esta empresa y resúmeme los puntos que se repiten en varias fuentes."*
+- *"Encuentra servicios de reparación de bicicletas cerca de esta zona y compara opciones."*
+- *"Busca artículos de los últimos meses sobre este tema y separa fuentes oficiales de opiniones."*
 
-### Qué token necesitás
+### Qué token necesitas
 
-Necesitás una **API key de Brave Search API**. El README oficial indica que hay un plan gratuito disponible y enlaza el dashboard de claves.
+Necesitas una **API key de Brave Search API**. El README oficial indica que hay un plan gratuito disponible y enlaza el dashboard de claves.
 
-1. Creá una cuenta de Brave Search API en `https://brave.com/search/api/`.
-2. Elegí un plan; el README menciona un free tier de 2.000 consultas por mes.
-3. Generá tu clave en `https://api.search.brave.com/app/keys`.
-4. Pegá la clave cuando el Lab te pida `BRAVE_API_KEY`. Terminal Sync la guarda cifrada en tu Keychain.
+1. Crea una cuenta de Brave Search API en `https://brave.com/search/api/`.
+2. Elige un plan; el README menciona un free tier de 2.000 consultas por mes.
+3. Genera tu clave en `https://api.search.brave.com/app/keys`.
+4. Pega la clave cuando el Lab te pida `BRAVE_API_KEY`. Terminal Sync la guarda cifrada en tu Keychain.
 
-Tené presente los límites de uso del plan elegido. Para equipos, conviene usar una key separada para Terminal Sync y revisarla periódicamente.
+Ten presente los límites de uso del plan elegido. Para equipos, conviene usar una key separada para Terminal Sync y revisarla periódicamente.
 
 --- dev ---
 

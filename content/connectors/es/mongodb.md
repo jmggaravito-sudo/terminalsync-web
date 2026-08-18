@@ -3,7 +3,7 @@ name: MongoDB
 logo: /connectors/mongodb.svg
 category: dev
 status: available
-simpleTitle: "Preguntale — y actuá — sobre tu MongoDB en lenguaje natural"
+simpleTitle: "Pregúntale — y actúa — sobre tu MongoDB en lenguaje natural"
 simpleSubtitle: "Server oficial de MongoDB: consulta tus bases y administra Atlas sin una shell."
 devTitle: "MongoDB MCP Connector"
 devSubtitle: "Official mongodb-mcp-server: tools over MongoDB databases + Atlas, connection-string scoped."
@@ -25,30 +25,30 @@ licenseUrl: "https://github.com/mongodb-js/mongodb-mcp-server/blob/main/LICENSE"
 marketplaceSource: "official"
 marketplaceCategory: "web"
 ---
-**MongoDB** es la base de datos de documentos detrás de un montón de apps — datos guardados como documentos flexibles tipo JSON en vez de filas y tablas. El conector oficial, publicado por MongoDB, es *"un servidor Model Context Protocol para interactuar con bases de datos MongoDB y MongoDB Atlas"*. Es el puente entre lo que pedís y tus datos: traduce tus pedidos en las consultas y llamadas a la API de Atlas necesarias para explorar colecciones, correr agregaciones e inspeccionar tus clusters.
+**MongoDB** es la base de datos de documentos detrás de un montón de apps — datos guardados como documentos flexibles tipo JSON en vez de filas y tablas. El conector oficial, publicado por MongoDB, es *"un servidor Model Context Protocol para interactuar con bases de datos MongoDB y MongoDB Atlas"*. Es el puente entre lo que pides y tus datos: traduce tus pedidos en las consultas y llamadas a la API de Atlas necesarias para explorar colecciones, correr agregaciones e inspeccionar tus clusters.
 
-Le pedís *"listá todas las bases de esta conexión y cuántos documentos tiene cada colección"* y lee tu instancia y te responde. Le decís *"mostrame el schema de la colección orders"* y te describe los campos — sin shell, sin escribir consultas a mano. Habla con MongoDB usando tu connection string, así que puede alcanzar todo lo que esa conexión tenga permitido alcanzar.
+Le pides *"lista todas las bases de esta conexión y cuántos documentos tiene cada colección"* y lee tu instancia y te responde. Le dices *"muéstrame el schema de la colección orders"* y te describe los campos — sin shell, sin escribir consultas a mano. Habla con MongoDB usando tu connection string, así que puede alcanzar todo lo que esa conexión tenga permitido alcanzar.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Listá todas las bases de esta conexión y las colecciones dentro de la base 'shop'."*
-- *"Describí el schema de la colección 'orders' y después buscá las 10 órdenes más recientes."*
-- *"Corré una agregación sobre 'sales' que agrupe la facturación por mes de este año."*
-- *"Listá mis clusters de Atlas e inspeccioná la metadata del de producción."*
+- *"Lista todas las bases de esta conexión y las colecciones dentro de la base 'shop'."*
+- *"Describe el schema de la colección 'orders' y después busca las 10 órdenes más recientes."*
+- *"Corre una agregación sobre 'sales' que agrupe la facturación por mes de este año."*
+- *"Lista mis clusters de Atlas e inspecciona la metadata del de producción."*
 
-### Qué token necesitás
+### Qué token necesitas
 
-Necesitás un **connection string de MongoDB** — la línea única que le dice a un software cómo llegar a tu base, incluyendo su host y credenciales. Se ve así: `mongodb+srv://username:password@cluster.mongodb.net/myDatabase` (o `mongodb://localhost:27017/myDatabase` para una instancia local).
+Necesitas un **connection string de MongoDB** — la línea única que le dice a un software cómo llegar a tu base, incluyendo su host y credenciales. Se ve así: `mongodb+srv://username:password@cluster.mongodb.net/myDatabase` (o `mongodb://localhost:27017/myDatabase` para una instancia local).
 
-1. En [MongoDB Atlas](https://cloud.mongodb.com), abrí tu cluster y hacé clic en **Connect**, después elegí un método de conexión para ver el string; la [referencia del connection string](https://www.mongodb.com/docs/manual/reference/connection-string/) explica el formato.
-2. Copiá el string completo — ya trae adentro el usuario y la contraseña de la base.
-3. Pegalo cuando el Lab te pida `MONGODB_CONNECTION_STRING`. Se guarda cifrado en tu Keychain.
+1. En [MongoDB Atlas](https://cloud.mongodb.com), abre tu cluster y haz clic en **Connect**, después elige un método de conexión para ver el string; la [referencia del connection string](https://www.mongodb.com/docs/manual/reference/connection-string/) explica el formato.
+2. Copia el string completo — ya trae adentro el usuario y la contraseña de la base.
+3. Pégalo cuando el Lab te pida `MONGODB_CONNECTION_STRING`. Se guarda cifrado en tu Keychain.
 
-El connection string contiene credenciales de la base, así que tratalo como una contraseña. **Una advertencia, directo de MongoDB:** el connection string *"puede contener credenciales que quedan visibles en las listas de procesos"* — MongoDB *"recomienda fuertemente usar variables de entorno para pasar la configuración sensible"*, que es exactamente como este manifest lo inyecta. Este conector viene con `--readOnly` activado por defecto, que — en palabras de MongoDB — *"solo permite operaciones de lectura, conexión y metadata, deshabilitando las operaciones de create/update/delete"*. Dejalo activado salvo que deliberadamente necesites escribir, y dale a la conexión solo los permisos mínimos que necesite.
+El connection string contiene credenciales de la base, así que trátalo como una contraseña. **Una advertencia, directo de MongoDB:** el connection string *"puede contener credenciales que quedan visibles en las listas de procesos"* — MongoDB *"recomienda fuertemente usar variables de entorno para pasar la configuración sensible"*, que es exactamente como este manifest lo inyecta. Este conector viene con `--readOnly` activado por defecto, que — en palabras de MongoDB — *"solo permite operaciones de lectura, conexión y metadata, deshabilitando las operaciones de create/update/delete"*. Déjalo activado salvo que deliberadamente necesites escribir, y dale a la conexión solo los permisos mínimos que necesite.
 
 --- dev ---
 
-`mongodb-mcp-server` (MongoDB, oficial — repo `mongodb-js/mongodb-mcp-server`) es *"un servidor Model Context Protocol para interactuar con bases de datos MongoDB y MongoDB Atlas"*, corre con `npx -y mongodb-mcp-server@latest [options]`. La auth es tu connection string de MongoDB, pasado vía la variable de entorno `MDB_MCP_CONNECTION_STRING` (equivalente por CLI `--connectionString`); el manifest de acá lo inyecta desde Keychain como `${SECRET:MONGODB_CONNECTION_STRING}`. Las tools de administración de Atlas usan además credenciales de service account de la API de Atlas (`MDB_MCP_API_CLIENT_ID` / `MDB_MCP_API_CLIENT_SECRET`), que podés agregar si las necesitás — ver el [overview de Service Accounts](https://www.mongodb.com/docs/atlas/api/service-accounts-overview/) de MongoDB. Requiere **Node.js al menos v22.13.0** (el soporte de Node 20.x está deprecado).
+`mongodb-mcp-server` (MongoDB, oficial — repo `mongodb-js/mongodb-mcp-server`) es *"un servidor Model Context Protocol para interactuar con bases de datos MongoDB y MongoDB Atlas"*, corre con `npx -y mongodb-mcp-server@latest [options]`. La auth es tu connection string de MongoDB, pasado vía la variable de entorno `MDB_MCP_CONNECTION_STRING` (equivalente por CLI `--connectionString`); el manifest de acá lo inyecta desde Keychain como `${SECRET:MONGODB_CONNECTION_STRING}`. Las tools de administración de Atlas usan además credenciales de service account de la API de Atlas (`MDB_MCP_API_CLIENT_ID` / `MDB_MCP_API_CLIENT_SECRET`), que puedes agregar si las necesitas — ver el [overview de Service Accounts](https://www.mongodb.com/docs/atlas/api/service-accounts-overview/) de MongoDB. Requiere **Node.js al menos v22.13.0** (el soporte de Node 20.x está deprecado).
 
 Tools expuestas al cliente (verbatim del README):
 
@@ -57,7 +57,7 @@ Tools expuestas al cliente (verbatim del README):
 - **MongoDB Atlas Local Tools:** `atlas-local-connect-deployment` — Connect to Atlas Local deployment · `atlas-local-create-deployment` — Create Atlas local deployment · `atlas-local-delete-deployment` — Delete Atlas local deployment · `atlas-local-list-deployments` — List Atlas local deployments
 - **MongoDB Assistant Tools:** `list-knowledge-sources` — List available data sources in knowledge base · `search-knowledge` — Search MongoDB Assistant knowledge base
 
-**Seguridad, en las palabras de MongoDB:** el flag `--readOnly` (env `MDB_MCP_READ_ONLY`), *"cuando se pone en true, solo permite operaciones de lectura, conexión y metadata, deshabilitando las operaciones de create/update/delete"*. MongoDB aconseja *"asignar solo los permisos mínimos requeridos a tu service account"*, y *"recomienda fuertemente usar variables de entorno para pasar la configuración sensible"* porque *"los argumentos de línea de comandos pueden quedar visibles en las listas de procesos y logueados en varias ubicaciones del sistema"*. Este manifest activa `--readOnly` por defecto y pasa el connection string vía env — igual que los ejemplos de safe-default del propio README. Sacá `--readOnly` solo cuando deliberadamente necesites tools destructivas como `delete-many`, `drop-collection` o `drop-database`, y revisá y autorizá siempre las acciones antes de que corran.
+**Seguridad, en las palabras de MongoDB:** el flag `--readOnly` (env `MDB_MCP_READ_ONLY`), *"cuando se pone en true, solo permite operaciones de lectura, conexión y metadata, deshabilitando las operaciones de create/update/delete"*. MongoDB aconseja *"asignar solo los permisos mínimos requeridos a tu service account"*, y *"recomienda fuertemente usar variables de entorno para pasar la configuración sensible"* porque *"los argumentos de línea de comandos pueden quedar visibles en las listas de procesos y logueados en varias ubicaciones del sistema"*. Este manifest activa `--readOnly` por defecto y pasa el connection string vía env — igual que los ejemplos de safe-default del propio README. Quita `--readOnly` solo cuando deliberadamente necesites tools destructivas como `delete-many`, `drop-collection` o `drop-database`, y revisa y autoriza siempre las acciones antes de que corran.
 
 Terminal Sync mantiene el connection string en Keychain vía `apiKeyHelper`, sincronizado cifrado con AES-256-GCM entre máquinas.
 

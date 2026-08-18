@@ -21,7 +21,7 @@ items:
 
 Dueños de negocios chicos, locales, profesionales independientes y marketers que ya tienen (o pueden escribir) una oferta, pero no tienen un estudio de diseño ni un equipo de video para convertirla en piezas listas para pautar.
 
-Usalo cuando el trabajo no es solo "escribime el copy del aviso" — es "dame el concepto, la imagen y el video, listos para probar".
+Úsalo cuando el trabajo no es solo "escríbeme el copy del aviso" — es "dame el concepto, la imagen y el video, listos para probar".
 
 ## Qué te ayuda a hacer
 
@@ -50,12 +50,12 @@ No se incluye ninguna herramienta CLI. El usuario objetivo es un dueño de negoc
 
 ## Cómo usarlo
 
-1. Instalá el kit y conectá Ideogram y Higgsfield — ambos usan el login de tu cuenta ya existente en el navegador, sin pegar ninguna API key.
-2. Contale a Meta Ads Creator tu oferta: qué vendés, a qué precio, a quién, en qué zona y qué acción querés (escribir, comprar, reservar).
-3. Pedí la tanda de 5 conceptos de aviso para Meta con copy, descripción de imagen, formato y plan de prueba.
-4. Elegí el o los 1–2 conceptos más fuertes y pedile a Ideogram que genere la imagen fija usando la descripción de imagen del concepto.
-5. Para un concepto de Historias/Reels, pedile a Higgsfield que genere una versión corta en video usando la misma dirección creativa.
-6. Revisá el copy, la imagen y el video juntos antes de cargarlos en Meta Ads Manager para probar.
+1. Instala el kit y conecta Ideogram y Higgsfield — ambos usan el login de tu cuenta ya existente en el navegador, sin pegar ninguna API key.
+2. Cuéntale a Meta Ads Creator tu oferta: qué vendes, a qué precio, a quién, en qué zona y qué acción quieres (escribir, comprar, reservar).
+3. Pide la tanda de 5 conceptos de aviso para Meta con copy, descripción de imagen, formato y plan de prueba.
+4. Elige el o los 1–2 conceptos más fuertes y pídele a Ideogram que genere la imagen fija usando la descripción de imagen del concepto.
+5. Para un concepto de Historias/Reels, pídele a Higgsfield que genere una versión corta en video usando la misma dirección creativa.
+6. Revisa el copy, la imagen y el video juntos antes de cargarlos en Meta Ads Manager para probar.
 
 ## Por qué estas piezas van juntas
 

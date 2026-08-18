@@ -3,7 +3,7 @@ name: Meta Ads
 logo: /connectors/meta-ads.svg
 category: automation
 status: available
-simpleTitle: "Preguntale a tu IA cómo van tus anuncios de Facebook e Instagram"
+simpleTitle: "Pregúntale a tu IA cómo van tus anuncios de Facebook e Instagram"
 simpleSubtitle: "Conector propio de Terminal Sync sobre la API oficial de Meta: gasto, resultados y campañas — solo lectura."
 devTitle: "Meta Ads Insights Connector"
 devSubtitle: "Servidor MCP first-party (solo lectura) sobre la Marketing (Graph) API oficial de Meta."
@@ -22,17 +22,17 @@ Es la pieza que hace posible el trabajo automatizado **"Vigía de campañas"**: 
 
 Se conecta **desde adentro de la app**, en **Ajustes → Integraciones → Meta Ads**. Es **solo lectura**: la IA lee tus métricas, **no cambia ni pausa tus anuncios**, así que es seguro desde el día uno. Tu token se guarda **cifrado en tu computadora**.
 
-### Qué le podés preguntar
+### Qué le puedes preguntar
 
 - *"¿Cuánto gasté esta semana en anuncios y cuántos resultados tuve?"*
 - *"¿Cómo viene cada campaña activa — CTR, costo por clic, alcance?"*
 - *"¿Qué cuentas publicitarias tengo conectadas?"*
 
-### Qué necesitás
+### Qué necesitas
 
-Necesitás un **token de acceso de Meta** con permiso de lectura de anuncios (`ads_read`), que se genera en el ecosistema de desarrolladores de Meta. La guía oficial está en [developers.facebook.com](https://developers.facebook.com/docs/marketing-api/overview/authorization). Después lo pegás en **Ajustes → Integraciones → Meta Ads**, probás la conexión y listo.
+Necesitas un **token de acceso de Meta** con permiso de lectura de anuncios (`ads_read`), que se genera en el ecosistema de desarrolladores de Meta. La guía oficial está en [developers.facebook.com](https://developers.facebook.com/docs/marketing-api/overview/authorization). Después lo pegas en **Ajustes → Integraciones → Meta Ads**, pruebas la conexión y listo.
 
-> **Nota:** Meta pide más pasos que otras plataformas para dar acceso. Estamos trabajando en un botón **"Conectá con Facebook"** que simplifica todo esto — por ahora se usa un token.
+> **Nota:** Meta pide más pasos que otras plataformas para dar acceso. Estamos trabajando en un botón **"Conéctate con Facebook"** que simplifica todo esto — por ahora se usa un token.
 
 --- dev ---
 
@@ -42,4 +42,4 @@ Conector **first-party**: Terminal Sync bundlea su propio servidor MCP (`termina
 
 **Tools:** `meta_ads_list_accounts`, `meta_ads_list_campaigns`, `meta_ads_insights` (gasto, impresiones, clics, CTR, CPC, CPM, alcance, por cuenta o campaña y `date_preset`).
 
-La conexión se hace desde **Ajustes → Integraciones → Meta Ads** (verifica el token antes de guardar y cablea el servidor en Claude/Codex/Gemini). **Auth:** un token de larga duración sirve hoy; el camino para el dueño no técnico es un flujo OAuth "Conectá con Facebook" (app de Meta + review de `ads_read`). Fuente: Marketing API oficial de Meta (`developers.facebook.com`).
+La conexión se hace desde **Ajustes → Integraciones → Meta Ads** (verifica el token antes de guardar y cablea el servidor en Claude/Codex/Gemini). **Auth:** un token de larga duración sirve hoy; el camino para el dueño no técnico es un flujo OAuth "Conéctate con Facebook" (app de Meta + review de `ads_read`). Fuente: Marketing API oficial de Meta (`developers.facebook.com`).

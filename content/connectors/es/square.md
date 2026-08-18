@@ -3,7 +3,7 @@ name: Square
 logo: /connectors/square.svg
 category: automation
 status: available
-simpleTitle: "Preguntale a tu IA por tu negocio en Square — y dejá que actúe sobre él"
+simpleTitle: "Pregúntale a tu IA por tu negocio en Square — y deja que actúe sobre él"
 simpleSubtitle: "Server oficial de Square (por Block): pagos, catálogo, órdenes y clientes."
 devTitle: "Square MCP Connector"
 devSubtitle: "Official square-mcp-server, published by Block."
@@ -26,23 +26,23 @@ licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0"
 ---
 **Square** es la plataforma detrás de los pagos, el punto de venta y el catálogo de millones de negocios. El conector oficial, publicado por Block, deja que los asistentes de IA interactúen con la Connect API de Square — así el agente trabaja directo sobre tu cuenta: procesar pagos, administrar tu catálogo de ítems y categorías, manejar órdenes y buscar clientes. La lista completa y siempre actualizada de servicios está en la [documentación de la API de Square](https://developer.squareup.com/docs).
 
-Le preguntás *"¿cuánto vendimos esta semana?"* y lee tus datos de Square y te responde. Le pedís *"agregá un ítem nuevo al catálogo llamado Espresso a $3.50"* y lo arma solo — sin tocar el panel. Habla con Square usando tu token de acceso, así que puede hacer todo lo que vos podés hacer desde tu propia cuenta. Por defecto el manifest corre en modo **sandbox**, así que no se mueve nada real mientras lo probás.
+Le preguntas *"¿cuánto vendimos esta semana?"* y lee tus datos de Square y te responde. Le pedís *"agrega un ítem nuevo al catálogo llamado Espresso a $3.50"* y lo arma solo — sin tocar el panel. Habla con Square usando tu token de acceso, así que puede hacer todo lo que puedes hacer desde tu propia cuenta. Por defecto el manifest corre en modo **sandbox**, así que no se mueve nada real mientras lo pruebas.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
 - *"¿Cuántos pagos cobramos hoy, y cuál es el total?"*
-- *"Buscá al cliente con el email ana@empresa.com y mostrame sus últimas órdenes."*
-- *"Agregá un ítem llamado 'Consultoría 1h' a $80 al catálogo."*
+- *"Busca al cliente con el email ana@empresa.com y muéstrame sus últimas órdenes."*
+- *"Agrega un ítem llamado 'Consultoría 1h' a $80 al catálogo."*
 
-### Qué token necesitás
+### Qué token necesitas
 
-Necesitás un **token de acceso** de Square — la credencial que permite que un software actúe sobre tu cuenta. Va en la env var que se llama literalmente `ACCESS_TOKEN`.
+Necesitas un **token de acceso** de Square — la credencial que permite que un software actúe sobre tu cuenta. Va en la env var que se llama literalmente `ACCESS_TOKEN`.
 
-1. Andá a [developer.squareup.com/docs/build-basics/access-tokens](https://developer.squareup.com/docs/build-basics/access-tokens) y seguí la guía para obtener tu token.
-2. Pegalo cuando el Lab te pida `SQUARE_ACCESS_TOKEN`. Se guarda cifrado en tu Keychain.
-3. El manifest viene con `SANDBOX=true`, que apunta al entorno sandbox de Square — datos falsos, no se mueve nada real mientras probás.
+1. Anda a [developer.squareup.com/docs/build-basics/access-tokens](https://developer.squareup.com/docs/build-basics/access-tokens) y sigue la guía para obtener tu token.
+2. Pégalo cuando el Lab te pida `SQUARE_ACCESS_TOKEN`. Se guarda cifrado en tu Keychain.
+3. El manifest viene con `SANDBOX=true`, que apunta al entorno sandbox de Square — datos falsos, no se mueve nada real mientras pruebas.
 
-Cuando estés listo para trabajar sobre tu negocio de verdad, pasá a producción: poné `PRODUCTION=true` en vez de `SANDBOX=true`. En producción el token actúa sobre tu cuenta real, así que tratalo como una contraseña.
+Cuando estés listo para trabajar sobre tu negocio de verdad, pasa a producción: pon `PRODUCTION=true` en vez de `SANDBOX=true`. En producción el token actúa sobre tu cuenta real, así que trátalo como una contraseña.
 
 --- dev ---
 

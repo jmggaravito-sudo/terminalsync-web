@@ -26,21 +26,21 @@ marketplaceCategory: "desktop"
 
 Este conector deja que tu IA abra páginas, haga clic, complete campos, seleccione opciones, saque capturas, lea mensajes de consola y ejecute JavaScript en el navegador. El README oficial dice que permite a los modelos *"interact with web pages, take screenshots, and execute JavaScript in a real browser environment"*.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Abrí esta página, sacá una captura y decime si el formulario principal se ve bien."*
-- *"Entrá a esta URL de staging, hacé clic en el botón de compra y contame qué aparece después."*
-- *"Revisá la consola del navegador y resumí los errores que aparezcan al cargar la página."*
+- *"Abre esta página, sacá una captura y dime si el formulario principal se ve bien."*
+- *"Entra a esta URL de staging, haz clic en el botón de compra y cuéntame qué aparece después."*
+- *"Revisa la consola del navegador y resumí los errores que aparezcan al cargar la página."*
 
-### Qué configuración necesitás
+### Qué configuración necesitas
 
-No necesitás token. El conector instala el server con `npx` y abre un navegador local para que la IA pueda interactuar con páginas.
+No necesitas token. El conector instala el server con `npx` y abre un navegador local para que la IA pueda interactuar con páginas.
 
-1. Instalalo desde el Lab como cualquier conector sin secretos.
-2. Usalo solo con sitios donde tengas permiso para navegar o testear.
-3. Si necesitás cambiar cómo arranca el navegador, pedile a alguien técnico que revise las opciones de Puppeteer antes de tocar seguridad.
+1. Instálalo desde el Lab como cualquier conector sin secretos.
+2. Úsalo solo con sitios donde tengas permiso para navegar o testear.
+3. Si necesitas cambiar cómo arranca el navegador, pídele a alguien técnico que revise las opciones de Puppeteer antes de tocar seguridad.
 
-Puppeteer es más pesado que un lector simple de páginas porque levanta un navegador real. Reservalo para casos donde necesitás ver, hacer clic o probar una página como una persona.
+Puppeteer es más pesado que un lector simple de páginas porque levanta un navegador real. Resérvalo para casos donde necesitas ver, hacer clic o probar una página como una persona.
 
 --- dev ---
 

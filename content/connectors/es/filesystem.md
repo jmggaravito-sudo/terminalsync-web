@@ -4,7 +4,7 @@ logo: /connectors/filesystem.svg
 category: dev
 status: available
 simpleTitle: "Tu IA lee y escribe archivos en tu computadora"
-simpleSubtitle: "Elegís qué carpetas puede tocar — todo lo demás queda fuera de alcance."
+simpleSubtitle: "Eliges qué carpetas puede tocar — todo lo demás queda fuera de alcance."
 devTitle: "Filesystem MCP Server"
 devSubtitle: "Official MCP filesystem server: read/write, search, edit, allow-listed directories."
 ctaUrl: "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem"
@@ -24,19 +24,19 @@ marketplaceCategory: "desktop"
 ---
 **Filesystem** es la herramienta más simple y más útil del catálogo. En palabras del propio README oficial, es un *"Node.js server implementing Model Context Protocol (MCP) for filesystem operations"* — tu IA pasa a poder leer, escribir, listar, buscar, editar y mover archivos directamente en tu disco.
 
-Pero no es acceso total. Vos le declarás una lista de carpetas permitidas (un "allow-list") y todo lo que esté afuera de esa lista es invisible para el agente. Si le permitís `~/Documents/proyectos`, no puede mirar `~/Desktop`, ni `/etc`, ni tus fotos. Sandboxed por diseño.
+Pero no es acceso total. Tú le declaras una lista de carpetas permitidas (un "allow-list") y todo lo que esté afuera de esa lista es invisible para el agente. Si le permites `~/Documents/proyectos`, no puede mirar `~/Desktop`, ni `/etc`, ni tus fotos. Sandboxed por diseño.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Leéme todos los `.md` de mi carpeta de notas y decime cuáles son apuntes de viaje y cuáles de reuniones."*
-- *"En `~/Documents/proyectos/cliente-X`, creame una carpeta `propuesta-mayo/` con un `README.md` que explique la estructura."*
-- *"Buscá en mis notas dónde mencioné 'pricing' la semana pasada y traeme el contexto."*
+- *"Léeme todos los `.md` de mi carpeta de notas y dime cuáles son apuntes de viaje y cuáles de reuniones."*
+- *"En `~/Documents/proyectos/cliente-X`, créame una carpeta `propuesta-mayo/` con un `README.md` que explique la estructura."*
+- *"Busca en mis notas dónde mencioné 'pricing' la semana pasada y tráeme el contexto."*
 
-### Qué necesitás configurar
+### Qué necesitas configurar
 
-A diferencia del resto, este conector **no pide token**, pero sí pide que vos elijas **qué carpetas puede acceder**. Hay dos formas de hacerlo, ambas documentadas en el README oficial:
+A diferencia del resto, este conector **no pide token**, pero sí pide que tú elijas **qué carpetas puede acceder**. Hay dos formas de hacerlo, ambas documentadas en el README oficial:
 
-**Opción 1 — Argumentos CLI** (la clásica): abrí `~/.claude.json`, buscá el bloque `filesystem` y agregale cada carpeta permitida al final del array `args`:
+**Opción 1 — Argumentos CLI** (la clásica): abre `~/.claude.json`, busca el bloque `filesystem` y agrégale cada carpeta permitida al final del array `args`:
 
 ```json
 "filesystem": {
@@ -48,7 +48,7 @@ A diferencia del resto, este conector **no pide token**, pero sí pide que vos e
 
 **Opción 2 — MCP Roots protocol** (recomendado por el oficial): el cliente puede declarar las carpetas dinámicamente sin reiniciar el server. Cuando el cliente envía `roots`, *"completely replace any server-side Allowed directories when provided"*. Útil para entornos donde la carpeta cambia por sesión.
 
-Cada path que sumes es una llave más en el llavero del agente. Empezá con poco (una carpeta específica de proyectos) y andá agregando a medida que veas que necesitás.
+Cada path que sumes es una llave más en el llavero del agente. Empieza con poco (una carpeta específica de proyectos) y ve agregando a medida que veas que necesitas.
 
 --- dev ---
 

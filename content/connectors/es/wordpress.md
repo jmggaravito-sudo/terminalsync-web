@@ -25,24 +25,24 @@ originalAuthor: "Utsav Ladani"
 originalAuthorUrl: "https://www.npmjs.com/package/wordpress-mcp"
 license: "ISC"
 ---
-El blog de tu sitio es una de las mejores formas de que te encuentren y de mostrarte vivo ante los clientes — pero escribir y publicar es lo que siempre se posterga. Si tu sitio corre en **WordPress**, este conector deja que tu IA arme un post y lo suba por vos, así el "deberíamos postear sobre eso" de verdad pasa.
+El blog de tu sitio es una de las mejores formas de que te encuentren y de mostrarte vivo ante los clientes — pero escribir y publicar es lo que siempre se posterga. Si tu sitio corre en **WordPress**, este conector deja que tu IA arme un post y lo suba por ti, así el "deberíamos postear sobre eso" de verdad pasa.
 
-Decile *"armá un post corto anunciando nuestro nuevo servicio de envío a domicilio, tono amable"* y lo escribe y crea el borrador en tu sitio. Pedile que publique y lo hace — vos mantenés el control de qué sale al aire.
+Dile *"arma un post corto anunciando nuestro nuevo servicio de envío a domicilio, tono amable"* y lo escribe y crea el borrador en tu sitio. Pídele que publique y lo hace — tú mantienes el control de qué sale al aire.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Escribí un post de 300 palabras sobre por qué cambiamos a packaging ecológico, y guardalo como borrador."*
-- *"Publicá el borrador sobre los horarios de las fiestas."*
-- *"Armá tres ideas de título de blog sobre nuestro menú de invierno."*
+- *"Escribe un post de 300 palabras sobre por qué cambiamos a packaging ecológico, y guárdalo como borrador."*
+- *"Publica el borrador sobre los horarios de las fiestas."*
+- *"Arma tres ideas de título de blog sobre nuestro menú de invierno."*
 
-### Qué necesitás
+### Qué necesitas
 
 WordPress se conecta con una **Application Password** — una clave segura y revocable que WordPress crea justo para esto (nunca compartís tu login real):
 
-1. En tu admin de WordPress, andá a **Users → Profile → Application Passwords** (mirá la [guía oficial](https://wordpress.org/documentation/article/application-passwords/)) y creá una llamada "Terminal Sync".
-2. Pegá la dirección de tu sitio, tu usuario, esa application password y tu id de autor cuando el Lab te lo pida (`WORDPRESS_HOST_URL`, `WORDPRESS_API_USERNAME`, `WORDPRESS_API_PASSWORD`, `WORDPRESS_POST_AUTHOR_ID`).
+1. En tu admin de WordPress, anda a **Users → Profile → Application Passwords** (mira la [guía oficial](https://wordpress.org/documentation/article/application-passwords/)) y crea una llamada "Terminal Sync".
+2. Pega la dirección de tu sitio, tu usuario, esa application password y tu id de autor cuando el Lab te lo pida (`WORDPRESS_HOST_URL`, `WORDPRESS_API_USERNAME`, `WORDPRESS_API_PASSWORD`, `WORDPRESS_POST_AUTHOR_ID`).
 
-Todo queda guardado cifrado en tu Keychain y sincronizado entre tus máquinas. Podés revocar la application password cuando quieras desde tu perfil — tu contraseña real nunca se toca.
+Todo queda guardado cifrado en tu Keychain y sincronizado entre tus máquinas. Puedes revocar la application password cuando quieras desde tu perfil — tu contraseña real nunca se toca.
 
 --- dev ---
 

@@ -25,7 +25,7 @@ licenseUrl: "https://unpkg.com/webflow-mcp-server@1.0.0/LICENSE.md"
 marketplaceSource: "official"
 marketplaceCategory: "web"
 ---
-**Webflow** es uno de los constructores de sitios web visuales más usados — páginas diseñadas a mano, colecciones de CMS, e-commerce, todo manejado sin código. Si tu sitio (o el de un cliente) corre en Webflow, este conector hace que tu IA pueda trabajar contra el sitio directamente, sin que vos abras el panel.
+**Webflow** es uno de los constructores de sitios web visuales más usados — páginas diseñadas a mano, colecciones de CMS, e-commerce, todo manejado sin código. Si tu sitio (o el de un cliente) corre en Webflow, este conector hace que tu IA pueda trabajar contra el sitio directamente, sin que tú abras el panel.
 
 La documentación oficial separa dos APIs que el conector expone:
 
@@ -34,7 +34,7 @@ La documentación oficial separa dos APIs que el conector expone:
 
 Cubre desde *"updateá el título de la home"* hasta cosas más jugosas como auditar SEO sobre todas las páginas o construir secciones de design system completas.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
 Los tres ejemplos que la documentación oficial sugiere como prompts representativos:
 
@@ -42,18 +42,18 @@ Los tres ejemplos que la documentación oficial sugiere como prompts representat
 - *"Audit my site for broken links, missing alt text, and incomplete meta descriptions."*
 - *"Create a responsive hero section with a headline, description, and CTA button."*
 
-### Qué token necesitás
+### Qué token necesitas
 
 La documentación oficial enfatiza **OAuth** como método recomendado: el agente se autentica con tu cuenta de Webflow sin que tengas que copiar/pegar API keys.
 
-Para el modo local con `webflow-mcp-server` (lo que instala este conector), se usa un **API token** que generás en [webflow.com/dashboard/account/integrations](https://webflow.com/dashboard/account/integrations):
+Para el modo local con `webflow-mcp-server` (lo que instala este conector), se usa un **API token** que generas en [webflow.com/dashboard/account/integrations](https://webflow.com/dashboard/account/integrations):
 
-1. Andá a la sección "API Access" / "Integrations" de tu Workspace o cuenta.
-2. Creá un token nuevo eligiendo entre Site Token (alcance: un sitio) o Workspace Token (alcance: toda la workspace).
-3. Marcá los scopes que necesites: `sites:read`, `cms:read`, `cms:write`, `pages:read`, `pages:write`.
-4. Copiá el token y pegalo cuando el Lab te pida `WEBFLOW_TOKEN`. Cifrado en tu Keychain, nunca plaintext en disco.
+1. Anda a la sección "API Access" / "Integrations" de tu Workspace o cuenta.
+2. Crea un token nuevo eligiendo entre Site Token (alcance: un sitio) o Workspace Token (alcance: toda la workspace).
+3. Marca los scopes que necesites: `sites:read`, `cms:read`, `cms:write`, `pages:read`, `pages:write`.
+4. Copia el token y pégalo cuando el Lab te pida `WEBFLOW_TOKEN`. Cifrado en tu Keychain, nunca plaintext en disco.
 
-Para edición visual con bridge a Designer (no solo CMS) seguí la [guía oficial de AI tools](https://developers.webflow.com/data/v2.0.0/docs/ai-tools) — incluye instalar la MCP Bridge App de Webflow.
+Para edición visual con bridge a Designer (no solo CMS) sigue la [guía oficial de AI tools](https://developers.webflow.com/data/v2.0.0/docs/ai-tools) — incluye instalar la MCP Bridge App de Webflow.
 
 --- dev ---
 

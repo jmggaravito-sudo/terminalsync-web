@@ -23,22 +23,22 @@ originalAuthorUrl: "https://github.com/Doist/todoist-mcp"
 license: "MIT"
 licenseUrl: "https://github.com/Doist/todoist-mcp/blob/main/LICENSE"
 ---
-La mitad de llevar un negocio chico es acordarse del próximo paso — devolverle la llamada a este cliente, mandar aquel presupuesto, renovar el seguro. Si eso lo llevás en **Todoist**, este conector deja que tu IA lea tu lista y le agregue, para que nada viva solo en tu cabeza.
+La mitad de llevar un negocio chico es acordarse del próximo paso — devolverle la llamada a este cliente, mandar aquel presupuesto, renovar el seguro. Si eso lo llevas en **Todoist**, este conector deja que tu IA lea tu lista y le agregue, para que nada viva solo en tu cabeza.
 
-Preguntale *"¿qué vence hoy?"* y lee tus tareas. Decile *"agregá: mandar la propuesta a María, vence el viernes, prioridad alta"* y la crea. Preguntale *"¿qué no terminé esta semana?"* y trae las vencidas. Tu lista de tareas se vuelve algo con lo que hablás en vez de una pantalla que te olvidás de abrir.
+Pregúntale *"¿qué vence hoy?"* y lee tus tareas. Dile *"agrega: mandar la propuesta a María, vence el viernes, prioridad alta"* y la crea. Pregúntale *"¿qué no terminé esta semana?"* y trae las vencidas. Tu lista de tareas se vuelve algo con lo que hablas en vez de una pantalla que te olvidas de abrir.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
 - *"¿Qué tengo en la lista para hoy y mañana?"*
-- *"Agregá una tarea: renovar el seguro del local, vence el 30, en el proyecto 'Administración'."*
+- *"Agrega una tarea: renovar el seguro del local, vence el 30, en el proyecto 'Administración'."*
 - *"¿Qué tareas están vencidas? Reprogramalas para la semana que viene."*
 
-### Qué necesitás
+### Qué necesitas
 
 Todoist se conecta con un **API token** de tu propia cuenta:
 
-1. Abrí [Todoist → Settings → Integrations → Developer](https://todoist.com/help/articles/find-your-api-token-Jpzx9IIlB) y copiá tu API token.
-2. Pegalo cuando el Lab te pida `TODOIST_API_KEY`.
+1. Abre [Todoist → Settings → Integrations → Developer](https://todoist.com/help/articles/find-your-api-token-Jpzx9IIlB) y copia tu API token.
+2. Pégalo cuando el Lab te pida `TODOIST_API_KEY`.
 
 El token queda guardado cifrado en tu Keychain y sincronizado entre tus máquinas.
 

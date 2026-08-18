@@ -4,7 +4,7 @@ logo: /logos/ts-kit.svg
 category: operations
 status: available
 tagline: "Convierte una pregunta sobre tus datos de Postgres en una respuesta escrita y estructurada."
-description: "Un flujo de análisis coherente para operadores y PMs con manejo de datos: consultá una base Postgres en modo solo lectura, razoná la pregunta paso a paso, y devolvé un informe escrito en vez de una tabla cruda."
+description: "Un flujo de análisis coherente para operadores y PMs con manejo de datos: consulta una base Postgres en modo solo lectura, razona la pregunta paso a paso, y devuelve un informe escrito en vez de una tabla cruda."
 marketplaceSource: "terminalsync"
 items:
   - kind: connector
@@ -21,7 +21,7 @@ items:
 
 Operadores, analistas y product managers con manejo de datos que tienen una base Postgres y responden seguido la misma forma de pregunta — "cuántos, qué segmento, qué cambió" — y quieren una respuesta escrita que puedan compartir, no solo el resultado de una consulta.
 
-Usalo cuando quien pregunta puede leer output SQL pero quiere que el razonamiento y la redacción se manejen de forma consistente.
+Úsalo cuando quien pregunta puede leer output SQL pero quiere que el razonamiento y la redacción se manejen de forma consistente.
 
 ## Qué te ayuda a hacer
 
@@ -46,11 +46,11 @@ El resultado esperado es un informe corto y con fuentes — qué se preguntó, c
 
 ## Cómo usarlo
 
-1. Instalá el kit y conectá Postgres con una cadena de conexión de solo lectura.
-2. Hacé tu pregunta en lenguaje natural ("¿qué planes impulsaron la baja del mes pasado?").
-3. Pedile a la IA que use Sequential Thinking para plantear los pasos del análisis y las consultas que cada uno necesita antes de correrlas.
-4. Dejala correr las consultas de solo lectura por Postgres y revisá los resultados intermedios.
-5. Pedile a Doc Co-authoring que escriba el informe: pregunta, método, hallazgos y salvedades — listo para pegar en un doc o mensaje.
+1. Instala el kit y conecta Postgres con una cadena de conexión de solo lectura.
+2. Haz tu pregunta en lenguaje natural ("¿qué planes impulsaron la baja del mes pasado?").
+3. Pídele a la IA que use Sequential Thinking para plantear los pasos del análisis y las consultas que cada uno necesita antes de correrlas.
+4. Déjala correr las consultas de solo lectura por Postgres y revisa los resultados intermedios.
+5. Pídele a Doc Co-authoring que escriba el informe: pregunta, método, hallazgos y salvedades — listo para pegar en un doc o mensaje.
 
 ## Por qué estas piezas van juntas
 
@@ -60,12 +60,12 @@ El kit es coherente porque separa las tres cosas que necesita una buena respuest
 - Sequential Thinking aporta el método — pasos ordenados en vez de una consulta con suerte.
 - Doc Co-authoring aporta el entregable — un informe que un stakeholder puede leer.
 
-Instaladas por separado, tenés una herramienta de consulta y un asistente de escritura que no se hablan. Instaladas juntas, el kit da un camino: **plantear la pregunta → consultar los datos → razonar en pasos → escribir el informe**.
+Instaladas por separado, tienes una herramienta de consulta y un asistente de escritura que no se hablan. Instaladas juntas, el kit da un camino: **plantear la pregunta → consultar los datos → razonar en pasos → escribir el informe**.
 
 ## Límites
 
-- Lee datos; no los cambia. Usá una conexión de solo lectura — el kit no la impone por vos.
-- Es tan correcto como los datos y la pregunta: una suposición equivocada produce un informe equivocado pero seguro. Revisá el método, no solo el número.
+- Lee datos; no los cambia. Usa una conexión de solo lectura — el kit no la impone por ti.
+- Es tan correcto como los datos y la pregunta: una suposición equivocada produce un informe equivocado pero seguro. Revisa el método, no solo el número.
 - No es un dashboard de BI ni un reporte programado — responde una pregunta a demanda, no monitorea métricas en el tiempo.
 - Postgres requiere su propia cadena de conexión y está sujeto a los controles de acceso de esa base.
 - No se conecta a planillas, warehouses ni bases que no sean Postgres; eso necesita otra configuración.

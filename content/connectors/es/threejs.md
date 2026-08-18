@@ -26,21 +26,21 @@ marketplaceCategory: "desktop"
 
 Qué hace: tu IA puede crear una escena 3D desde código JavaScript, previsualizar la escena mientras se escribe y usar una tool de ayuda para consultar documentación y ejemplos de la API de Three.js. El README describe *"Interactive 3D Rendering"*, *"Streaming Preview"* y una *"Documentation Tool"* como funciones centrales.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Creá una escena 3D simple con un cubo rotando y un piso."*
-- *"Mostrame un mockup de producto con fondo transparente e iluminación suave."*
-- *"Revisá cómo funcionan las luces de Three.js y ajustá la escena para que las sombras se vean mejor."*
+- *"Crea una escena 3D simple con un cubo rotando y un piso."*
+- *"Muéstrame un mockup de producto con fondo transparente e iluminación suave."*
+- *"Revisa cómo funcionan las luces de Three.js y ajustá la escena para que las sombras se vean mejor."*
 
-### Qué configuración necesitás
+### Qué configuración necesitas
 
-No necesitás token. El conector corre localmente con `npx` y abre una vista de app interactiva para la escena generada con Three.js.
+No necesitas token. El conector corre localmente con `npx` y abre una vista de app interactiva para la escena generada con Three.js.
 
-1. Instalalo desde el Lab como cualquier conector sin secretos.
-2. Usalo para prototipos, explicaciones visuales y experimentos 3D chicos.
-3. Revisá el JavaScript generado antes de reutilizarlo en una app de producción.
+1. Instálalo desde el Lab como cualquier conector sin secretos.
+2. Úsalo para prototipos, explicaciones visuales y experimentos 3D chicos.
+3. Revisa el JavaScript generado antes de reutilizarlo en una app de producción.
 
-Este conector ejecuta código de escena dentro de su entorno de preview. Tratalo como un sandbox creativo/dev, no como un lugar para correr lógica de negocio no confiable.
+Este conector ejecuta código de escena dentro de su entorno de preview. Trátalo como un sandbox creativo/dev, no como un lugar para correr lógica de negocio no confiable.
 
 --- dev ---
 

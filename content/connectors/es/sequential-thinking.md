@@ -22,11 +22,11 @@ licenseUrl: "https://github.com/modelcontextprotocol/servers/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
 ---
-**Sequential Thinking** habilita, en palabras del README oficial, *"a detailed, step-by-step thinking process for problem-solving and analysis"*. Está pensado para tareas *"where the full scope might not be clear initially"* y donde necesitás *"course correction"* — escenarios en los que la IA tiende a saltar a la conclusión antes de mirar bien.
+**Sequential Thinking** habilita, en palabras del README oficial, *"a detailed, step-by-step thinking process for problem-solving and analysis"*. Está pensado para tareas *"where the full scope might not be clear initially"* y donde necesitas *"course correction"* — escenarios en los que la IA tiende a saltar a la conclusión antes de mirar bien.
 
 Le da estructura al razonamiento: cada pensamiento se numera, se puede revisar uno anterior (`isRevision`/`revisesThought`), o abrir una rama paralela con una hipótesis alternativa (`branchFromThought`/`branchId`). Además permite *"adjust the total number of thoughts dynamically"* y *"generate and verify solution hypotheses"*. No agrega capacidades nuevas — agrega disciplina.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
 Los tres ejemplos del README oficial muestran bien para qué sirve:
 
@@ -34,11 +34,11 @@ Los tres ejemplos del README oficial muestran bien para qué sirve:
 - *"Debug why this deployment only fails in production and show your reasoning step by step."*
 - *"Compare three architecture options for a file sync engine and branch if one assumption turns out to be wrong."*
 
-### Qué necesitás configurar
+### Qué necesitas configurar
 
-**Nada.** No pide token, no pide cuenta, no pide acceso a archivos ni servicios. Es una herramienta de razonamiento puro que vive adentro del agente — instalás y ya está disponible.
+**Nada.** No pide token, no pide cuenta, no pide acceso a archivos ni servicios. Es una herramienta de razonamiento puro que vive adentro del agente — instalas y ya está disponible.
 
-Pensalo como darle al agente una hoja en blanco mental donde puede pensar fuerte antes de hablar. Particularmente útil combinado con otros conectores: cuando el agente tiene que decidir qué consultar en Sentry, qué archivos leer del Filesystem, qué query hacer a Supabase, este conector le ayuda a planear esa secuencia.
+Piénsalo como darle al agente una hoja en blanco mental donde puede pensar fuerte antes de hablar. Particularmente útil combinado con otros conectores: cuando el agente tiene que decidir qué consultar en Sentry, qué archivos leer del Filesystem, qué query hacer a Supabase, este conector le ayuda a planear esa secuencia.
 
 --- dev ---
 

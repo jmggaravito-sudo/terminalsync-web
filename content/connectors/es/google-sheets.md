@@ -24,27 +24,27 @@ originalAuthorUrl: "https://github.com/domdomegg"
 license: "MIT"
 licenseUrl: "https://github.com/domdomegg/google-sheets-mcp/blob/master/LICENSE"
 ---
-Casi todo negocio chico corre sobre una planilla. Las ventas del mes, la lista de clientes, el inventario, el control de caja — todo vive en un Google Sheet que alguien mantiene a mano. Este conector deja que tu IA abra esa planilla, la lea y la actualice igual que lo harías vos.
+Casi todo negocio chico corre sobre una planilla. Las ventas del mes, la lista de clientes, el inventario, el control de caja — todo vive en un Google Sheet que alguien mantiene a mano. Este conector deja que tu IA abra esa planilla, la lea y la actualice igual que lo harías tú.
 
-Preguntale *"¿cuánto vendimos esta semana?"* y lee la planilla y te responde con el número — sin fórmulas ni tablas dinámicas. Decile *"agregá a María García, $450, pendiente, en la pestaña Pedidos"* y escribe la fila. La planilla en la que ya confiás se vuelve algo con lo que simplemente hablás.
+Pregúntale *"¿cuánto vendimos esta semana?"* y lee la planilla y te responde con el número — sin fórmulas ni tablas dinámicas. Dile *"agrega a María García, $450, pendiente, en la pestaña Pedidos"* y escribe la fila. La planilla en la que ya confías se vuelve algo con lo que simplemente hablas.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"En mi hoja 'Ventas', sumá el total de este mes y decime si superamos el mes pasado."*
-- *"Agregá una fila a 'Pedidos': cliente María García, monto 450, estado Pendiente."*
-- *"Mirá la pestaña 'Inventario' y listame los productos que quedan con menos de 5 unidades."*
+- *"En mi hoja 'Ventas', suma el total de este mes y dime si superamos el mes pasado."*
+- *"Agrega una fila a 'Pedidos': cliente María García, monto 450, estado Pendiente."*
+- *"Mira la pestaña 'Inventario' y lístame los productos que quedan con menos de 5 unidades."*
 
-### Qué necesitás
+### Qué necesitas
 
-Google Sheets usa el inicio de sesión de Google (OAuth), así que en vez de una clave simple lo conectás una vez a través de un **proyecto de Google Cloud**. Suena técnico, pero es una configuración de una sola vez y después funciona en todos tus dispositivos:
+Google Sheets usa el inicio de sesión de Google (OAuth), así que en vez de una clave simple lo conectas una vez a través de un **proyecto de Google Cloud**. Suena técnico, pero es una configuración de una sola vez y después funciona en todos tus dispositivos:
 
-1. Entrá a [console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials) y creá un proyecto (o elegí uno que ya tengas).
-2. Activá la **Google Sheets API** para ese proyecto.
-3. Creá un **OAuth client ID** (tipo: Desktop / Web app) y agregá `http://localhost:3000/callback` como URL de redirección autorizada.
-4. Copiá el **Client ID** y el **Client Secret** que te da y pegalos cuando el Lab te pida `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`.
+1. Entra a [console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials) y crea un proyecto (o elige uno que ya tengas).
+2. Activa la **Google Sheets API** para ese proyecto.
+3. Crea un **OAuth client ID** (tipo: Desktop / Web app) y agrega `http://localhost:3000/callback` como URL de redirección autorizada.
+4. Copia el **Client ID** y el **Client Secret** que te da y pégalos cuando el Lab te pida `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`.
 5. La primera vez que lo uses, se abre una ventana del navegador para que apruebes el acceso a tus planillas. Después es silencioso.
 
-Los dos valores quedan guardados cifrados en tu Keychain y sincronizados entre tus máquinas — lo configurás en una computadora y ya está listo en el resto.
+Los dos valores quedan guardados cifrados en tu Keychain y sincronizados entre tus máquinas — lo configuras en una computadora y ya está listo en el resto.
 
 > Aviso: la configuración de Google Cloud es la única parte realmente engorrosa. Si te trabás, el chat de soporte dentro de la app te guía paso a paso.
 

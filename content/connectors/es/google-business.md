@@ -15,23 +15,23 @@ originalAuthor: "Google (Business Profile API) · conector de Terminal Sync"
 originalAuthorUrl: "https://developers.google.com/my-business"
 license: "proprietary"
 ---
-Para un negocio local, tus reseñas de Google *son* tu reputación — lo primero que ve un cliente nuevo. Pero aparecen en cualquier momento, y una reseña sin responder por una semana se lee como "acá no les importa". Este conector pone a tu IA a vigilar: lee tus reseñas, te dice cuáles son nuevas, te marca si baja el puntaje, y te arma una respuesta para cada una — que solo publica cuando vos decís que sí.
+Para un negocio local, tus reseñas de Google *son* tu reputación — lo primero que ve un cliente nuevo. Pero aparecen en cualquier momento, y una reseña sin responder por una semana se lee como "acá no les importa". Este conector pone a tu IA a vigilar: lee tus reseñas, te dice cuáles son nuevas, te marca si baja el puntaje, y te arma una respuesta para cada una — que solo publica cuando tú dices que sí.
 
-Preguntale *"¿tengo reseñas nuevas?"* y te las lista, las más nuevas primero, marcando cuáles no respondiste. Preguntale *"¿bajó mi puntaje este mes?"* y lee tu promedio y total. Decile *"armá una respuesta amable a la de 2 estrellas de Beto"* y la escribe — después te la muestra y espera tu OK antes de que salga a la vista de todos.
+Pregúntale *"¿tengo reseñas nuevas?"* y te las lista, las más nuevas primero, marcando cuáles no respondiste. Pregúntale *"¿bajó mi puntaje este mes?"* y lee tu promedio y total. Dile *"arma una respuesta amable a la de 2 estrellas de Beto"* y la escribe — después te la muestra y espera tu OK antes de que salga a la vista de todos.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
 - *"¿Qué reseñas de esta semana todavía no respondí?"*
 - *"¿Cuál es mi puntaje promedio y cuántas reseñas tengo?"*
-- *"Armá una respuesta cordial a la última de 1 estrella, reconociendo el problema — no la publiques todavía."*
+- *"Arma una respuesta cordial a la última de 1 estrella, reconociendo el problema — no la publiques todavía."*
 
 ### Cómo se conecta
 
-Google Business es un **conector propio**: corre el servidor chico de Terminal Sync sobre la API oficial de Business Profile de Google — no hay paquete npm para instalar. Lo conectás desde la app (Ajustes → Integraciones → Google Business), y las respuestas de la IA quedan guardadas cifradas en tu Keychain y sincronizadas entre tus máquinas.
+Google Business es un **conector propio**: corre el servidor chico de Terminal Sync sobre la API oficial de Business Profile de Google — no hay paquete npm para instalar. Lo conectas desde la app (Ajustes → Integraciones → Google Business), y las respuestas de la IA quedan guardadas cifradas en tu Keychain y sincronizadas entre tus máquinas.
 
-Publicar una respuesta es público y no se puede deshacer en silencio, así que las respuestas van **con confirmación**: la IA siempre te muestra el borrador y solo lo publica cuando confirmás.
+Publicar una respuesta es público y no se puede deshacer en silencio, así que las respuestas van **con confirmación**: la IA siempre te muestra el borrador y solo lo publica cuando confirmas.
 
-> Aviso: la API de reseñas de Google requiere un proyecto de Google Cloud con acceso a la Business Profile API aprobado por Google — el único paso de configuración realmente engorroso. El chat de soporte dentro de la app te guía. (Un flujo de "Conectá con Google" de un clic está en camino.)
+> Aviso: la API de reseñas de Google requiere un proyecto de Google Cloud con acceso a la Business Profile API aprobado por Google — el único paso de configuración realmente engorroso. El chat de soporte dentro de la app te guía. (Un flujo de "Conéctate con Google" de un clic está en camino.)
 
 --- dev ---
 

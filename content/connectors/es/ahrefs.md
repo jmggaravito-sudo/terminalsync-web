@@ -22,27 +22,27 @@ originalAuthor: "Ahrefs"
 originalAuthorUrl: "https://ahrefs.com"
 license: "MIT"
 ---
-Que te encuentren en Google es media batalla para un negocio chico, pero las herramientas de SEO están hechas para especialistas y te ahogan en gráficos. Si tenés una cuenta de **Ahrefs**, este conector deja que tu IA lea tus datos de SEO y responda las preguntas que de verdad importan — en palabras simples, sin que aprendas el panel.
+Que te encuentren en Google es media batalla para un negocio chico, pero las herramientas de SEO están hechas para especialistas y te ahogan en gráficos. Si tienes una cuenta de **Ahrefs**, este conector deja que tu IA lea tus datos de SEO y responda las preguntas que de verdad importan — en palabras simples, sin que aprendas el panel.
 
-Preguntale *"¿dónde aparecemos por nuestras palabras clave?"* y lee tus posiciones. Preguntale *"¿quién nos está linkeando y perdimos algún link este mes?"* y chequea tus backlinks. Preguntale *"¿qué está buscando la gente sobre lo que podríamos escribir?"* y trae ideas de keywords. Convierte una herramienta de especialista en algo que simplemente preguntás.
+Pregúntale *"¿dónde aparecemos por nuestras palabras clave?"* y lee tus posiciones. Pregúntale *"¿quién nos está linkeando y perdimos algún link este mes?"* y chequea tus backlinks. Pregúntale *"¿qué está buscando la gente sobre lo que podríamos escribir?"* y trae ideas de keywords. Convierte una herramienta de especialista en algo que simplemente preguntas.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
 - *"¿Por qué keywords estamos en la página 2? Esas son las ganancias rápidas."*
-- *"Listame los sitios que nos linkean, mejores primero, y marcá los links que perdimos."*
-- *"Compará la fuerza de nuestro dominio contra mis dos competidores principales."*
+- *"Lístame los sitios que nos linkean, mejores primero, y marca los links que perdimos."*
+- *"Compara la fuerza de nuestro dominio contra mis dos competidores principales."*
 
-### Qué necesitás
+### Qué necesitas
 
 Ahrefs se conecta con una **API key** de tu cuenta de Ahrefs:
 
-1. Seguí la guía oficial en [docs.ahrefs.com → API keys](https://docs.ahrefs.com/docs/api/reference/api-keys-creation-and-management) para crear y administrar una key.
-2. Asegurate de que los permisos de la key cubran los datos que querés consultar.
-3. Copiá la key y pegala cuando el Lab te pida `AHREFS_API_KEY`.
+1. Sigue la guía oficial en [docs.ahrefs.com → API keys](https://docs.ahrefs.com/docs/api/reference/api-keys-creation-and-management) para crear y administrar una key.
+2. Asegúrate de que los permisos de la key cubran los datos que quieres consultar.
+3. Copia la key y pégala cuando el Lab te pida `AHREFS_API_KEY`.
 
 La key queda guardada cifrada en tu Keychain y sincronizada entre tus máquinas.
 
-> Aviso: la Ahrefs API es un adicional **pago** a una suscripción de Ahrefs — este conector lee los datos que tu plan ya te da, pero necesitás tener el acceso a la API habilitado en tu cuenta. Si no tenés Ahrefs, los chequeos tipo "¿está caído mi sitio / qué tan rápido carga?" los cubren otros conectores; Ahrefs es específicamente para posiciones de búsqueda y backlinks.
+> Aviso: la Ahrefs API es un adicional **pago** a una suscripción de Ahrefs — este conector lee los datos que tu plan ya te da, pero necesitas tener el acceso a la API habilitado en tu cuenta. Si no tienes Ahrefs, los chequeos tipo "¿está caído mi sitio / qué tan rápido carga?" los cubren otros conectores; Ahrefs es específicamente para posiciones de búsqueda y backlinks.
 
 --- dev ---
 

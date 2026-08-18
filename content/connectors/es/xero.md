@@ -24,27 +24,27 @@ originalAuthorUrl: "https://github.com/XeroAPI/xero-mcp-server"
 license: "MIT"
 licenseUrl: "https://github.com/XeroAPI/xero-mcp-server/blob/master/LICENSE"
 ---
-La parte del negocio que nadie quiere abrir es la contabilidad. Quién te debe, qué debés vos, qué facturas están vencidas, si el mes pasado de verdad dio ganancia. Si llevás tus libros en **Xero**, este conector deja que tu IA los lea y te responda esas preguntas en palabras simples — sin armar reportes ni buscar entre columnas.
+La parte del negocio que nadie quiere abrir es la contabilidad. Quién te debe, qué debes tú, qué facturas están vencidas, si el mes pasado de verdad dio ganancia. Si llevas tus libros en **Xero**, este conector deja que tu IA los lea y te responda esas preguntas en palabras simples — sin armar reportes ni buscar entre columnas.
 
-Preguntale *"¿quién me debe y cuánto?"* y te trae las cuentas por cobrar. Preguntale *"¿qué está vencido?"* y lista las facturas pasadas de fecha. Preguntale *"¿cómo nos fue el mes pasado?"* y lee tu estado de resultados. También puede armarte una factura o un presupuesto para que lo revises antes de mandarlo — nunca manda plata ni finaliza nada solo.
+Pregúntale *"¿quién me debe y cuánto?"* y te trae las cuentas por cobrar. Pregúntale *"¿qué está vencido?"* y lista las facturas pasadas de fecha. Pregúntale *"¿cómo nos fue el mes pasado?"* y lee tu estado de resultados. También puede armarte una factura o un presupuesto para que lo revises antes de mandarlo — nunca manda plata ni finaliza nada solo.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Listame las facturas impagas y decime cuáles están vencidas y por cuántos días."*
+- *"Lístame las facturas impagas y dime cuáles están vencidas y por cuántos días."*
 - *"¿Cuánto facturamos este mes contra el mes pasado?"*
-- *"Armá una factura para la clienta María García, $450, por 'consultoría', a 15 días."*
+- *"Arma una factura para la clienta María García, $450, por 'consultoría', a 15 días."*
 
-### Qué necesitás
+### Qué necesitas
 
 Xero se conecta con una **Custom Connection** — la forma de Xero de enlazar una app con los libros de una empresa. Es una configuración de una sola vez en el portal de desarrolladores de Xero:
 
-1. Entrá a [developer.xero.com](https://developer.xero.com/documentation/guides/oauth2/custom-connections/) y creá una app **Custom Connection** para tu organización.
-2. Agregá los permisos (scopes) que querés que tenga la IA — como mínimo `accounting.transactions` y `accounting.contacts` (lectura); sumá el scope de reportes de solo lectura para el P&L y el balance.
-3. Copiá el **Client ID** y el **Client Secret** que te da y pegalos cuando el Lab te pida `XERO_CLIENT_ID` y `XERO_CLIENT_SECRET`.
+1. Entra a [developer.xero.com](https://developer.xero.com/documentation/guides/oauth2/custom-connections/) y crea una app **Custom Connection** para tu organización.
+2. Agrega los permisos (scopes) que quieres que tenga la IA — como mínimo `accounting.transactions` y `accounting.contacts` (lectura); sumá el scope de reportes de solo lectura para el P&L y el balance.
+3. Copia el **Client ID** y el **Client Secret** que te da y pegalos cuando el Lab te pida `XERO_CLIENT_ID` y `XERO_CLIENT_SECRET`.
 
 Los dos valores quedan guardados cifrados en tu Keychain y sincronizados entre tus máquinas. La conexión está atada a tu única empresa, así que la IA solo ve tus libros — nada más.
 
-> Aviso: las Custom Connections necesitan un plan pago de Xero y son el único paso de configuración realmente engorroso. Si estás en Latinoamérica y usás **Alegra** o **Siigo** en vez de Xero, esos todavía no tienen conector — avisanos y lo evaluamos. Mientras tanto, muchas de las preguntas de "facturas y presupuesto" también funcionan con el conector de **Google Sheets** si las llevás en una planilla.
+> Aviso: las Custom Connections necesitan un plan pago de Xero y son el único paso de configuración realmente engorroso. Si estás en Latinoamérica y usas **Alegra** o **Siigo** en vez de Xero, esos todavía no tienen conector — avisanos y lo evaluamos. Mientras tanto, muchas de las preguntas de "facturas y presupuesto" también funcionan con el conector de **Google Sheets** si las llevas en una planilla.
 
 --- dev ---
 

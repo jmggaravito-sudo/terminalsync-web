@@ -24,7 +24,7 @@ items:
 
 Equipos de operaciones, conocimiento y programa que dedican tiempo real a escribir documentación y anuncios internos, y que ya mantienen su fuente de verdad en Notion y sus conversaciones en Slack.
 
-Usalo cuando el trabajo recurrente es "escribí esto claro, apoyado en lo que ya tenemos, y después contáselo al equipo".
+Úsalo cuando el trabajo recurrente es "escribe esto claro, apoyado en lo que ya tenemos, y después cuéntaselo al equipo".
 
 ## Qué te ayuda a hacer
 
@@ -55,11 +55,11 @@ No se incluye ninguna CLI. El usuario objetivo suele ser no-técnico, y el workf
 
 ## Cómo usarlo
 
-1. Instalá el kit y conectá Notion y Slack.
-2. Pedile al asistente que lea la(s) página(s) de Notion relevante(s) y resuma el estado actual.
-3. Usá Doc Co-authoring para redactar o reestructurar el doc, y guardalo de vuelta en Notion.
-4. Traé el contexto del hilo de Slack de la decisión que se comunica.
-5. Usá Internal Comms para convertir el doc en un anuncio corto y claro, y compartilo en el canal de Slack correcto.
+1. Instala el kit y conecta Notion y Slack.
+2. Pídele al asistente que lea la(s) página(s) de Notion relevante(s) y resuma el estado actual.
+3. Usa Doc Co-authoring para redactar o reestructurar el doc, y guárdalo de vuelta en Notion.
+4. Trae el contexto del hilo de Slack de la decisión que se comunica.
+5. Usa Internal Comms para convertir el doc en un anuncio corto y claro, y compártelo en el canal de Slack correcto.
 
 ## Por qué estas piezas van juntas
 
@@ -78,4 +78,4 @@ Instalados por separado, el usuario copia contexto entre herramientas a mano y r
 - Trabaja con el contenido de Notion y Slack al que tiene acceso; espacios y canales privados a los que no está conectado quedan fuera de alcance.
 - Notion y Slack requieren sus propias conexiones y están sujetos a los permisos de esas cuentas.
 - No es una plataforma completa de comunicación interna (sin programación, aprobaciones ni analytics) — redacta y te ayuda a compartir, nada más.
-- Para comunicación externa o de cara al cliente, usá otro workflow — este kit está acotado a docs y comunicación internos.
+- Para comunicación externa o de cara al cliente, usa otro workflow — este kit está acotado a docs y comunicación internos.
