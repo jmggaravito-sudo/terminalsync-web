@@ -24,7 +24,7 @@ items:
 
 El dueño de un negocio chico o un profesional independiente que hace de todo un poco — ventas, propuestas, seguimiento, y estar atento a la plata — y no quiere armar (ni pagar) un stack de ventas completo para hacerlo.
 
-Usalo cuando la misma persona persigue el prospecto, escribe la propuesta, manda el follow-up y se pregunta *"¿al final nos pagaron?"*.
+Úsalo cuando la misma persona persigue el prospecto, escribe la propuesta, manda el follow-up y se pregunta *"¿al final nos pagaron?"*.
 
 ## Qué te ayuda a hacer
 
@@ -51,27 +51,27 @@ El resultado esperado es que el dueño maneje el lado de ventas y caja del negoc
 
 ## Cómo usarlo
 
-1. Instalá el kit, conectá Stripe con su clave y conectá Airtable con su token.
-2. Preguntá *"¿qué oportunidades siguen abiertas?"* y mantenelas en una base de Airtable.
-3. Pedile a Doc Co-authoring *"redactame una propuesta para este cliente con estas notas"*.
-4. Pedile a Internal Comms *"escribime un follow-up amable de la propuesta que le mandé a Acme la semana pasada"*.
-5. Preguntá *"¿cuánto facturamos este mes y hubo pagos fallidos?"* — Stripe responde.
+1. Instala el kit, conecta Stripe con su clave y conecta Airtable con su token.
+2. Pregunta *"¿qué oportunidades siguen abiertas?"* y mantenlas en una base de Airtable.
+3. Pídele a Doc Co-authoring *"redáctame una propuesta para este cliente con estas notas"*.
+4. Pídele a Internal Comms *"escríbeme un follow-up amable de la propuesta que le mandé a Acme la semana pasada"*.
+5. Pregunta *"¿cuánto facturamos este mes y hubo pagos fallidos?"* — Stripe responde.
 
 ## Por qué estas piezas van juntas
 
 El kit es coherente porque sigue un solo loop, de punta a punta:
 
 - Airtable guarda **con quién** son las oportunidades.
-- Doc Co-authoring produce **lo que les mandás**.
+- Doc Co-authoring produce **lo que les mandas**.
 - Internal Comms mantiene la oportunidad **en movimiento** con el empujón justo.
 - Stripe cierra el loop con **la plata que entró**.
 
-Instaladas por separado, el dueño salta entre una planilla, un editor de documentos, un borrador de email y un dashboard de pagos. Instaladas juntas, es un solo flujo en castellano: **seguí la oportunidad → mandá la propuesta → hacé el follow-up → mirá la plata**. (Se solapa con el kit Docs & Team Comms en las dos skills de escritura, pero su propósito es distinto: aquel es para documentación de equipo; este es para las ventas y la caja del dueño.)
+Instaladas por separado, el dueño salta entre una planilla, un editor de documentos, un borrador de email y un dashboard de pagos. Instaladas juntas, es un solo flujo en castellano: **sigue la oportunidad → manda la propuesta → haz el follow-up → mira la plata**. (Se solapa con el kit Docs & Team Comms en las dos skills de escritura, pero su propósito es distinto: aquel es para documentación de equipo; este es para las ventas y la caja del dueño.)
 
 ## Límites
 
-- No vende por vos ni toma decisiones de negocio — te saca el trabajo repetitivo alrededor de ellas.
-- No mueve plata, no hace reembolsos ni manda mensajes solo sin que se lo pidas; redacta e informa, vos mandás y decidís.
+- No vende por ti ni toma decisiones de negocio — te saca el trabajo repetitivo alrededor de ellas.
+- No mueve plata, no hace reembolsos ni manda mensajes solo sin que se lo pidas; redacta e informa, tú mandas y decides.
 - Stripe y Airtable necesitan cada uno su cuenta y token de acceso, y el kit solo ve lo que esas cuentas permiten.
 - Stripe refleja lo que está en Stripe — efectivo, cheques u otros procesadores quedan fuera de su vista.
-- Es un kit liviano de dueño, no un CRM ni un sistema contable completo — usalo para estar al día con el día a día, no para reemplazar a tu contador.
+- Es un kit liviano de dueño, no un CRM ni un sistema contable completo — úsalo para estar al día con el día a día, no para reemplazar a tu contador.

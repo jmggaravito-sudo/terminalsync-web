@@ -3,7 +3,7 @@ name: HubSpot
 logo: /connectors/hubspot.svg
 category: automation
 status: available
-simpleTitle: "Tu CRM, trabajando mientras hablás"
+simpleTitle: "Tu CRM, trabajando mientras hablas"
 simpleSubtitle: "\"¿Qué clientes no compran hace 60 días?\" \"Registra una llamada con María\" — tu IA lee y actualiza tu CRM."
 devTitle: "Conector MCP de HubSpot"
 devSubtitle: "MCP oficial de HubSpot sobre la CRM API — list/search objects, batch create/update, properties, associations, engagements."
@@ -22,25 +22,25 @@ originalAuthor: "HubSpot"
 originalAuthorUrl: "https://developers.hubspot.com/mcp"
 license: "MIT"
 ---
-Tu CRM es donde vive la relación con cada cliente — quién es, qué compró, qué le prometiste, cuándo hablaron por última vez. Si eso lo llevás en **HubSpot**, este conector deja que tu IA lo lea y lo mantenga al día, para que los seguimientos no se te escapen mientras estás ocupado con el negocio.
+Tu CRM es donde vive la relación con cada cliente — quién es, qué compró, qué le prometiste, cuándo hablaron por última vez. Si eso lo llevas en **HubSpot**, este conector deja que tu IA lo lea y lo mantenga al día, para que los seguimientos no se te escapen mientras estás ocupado con el negocio.
 
-Preguntale *"¿qué clientes no compran hace 60 días?"* y busca en tus contactos y te da la lista. Decile *"registrá una llamada con María García y ponete una tarea para seguir el viernes"* y escribe la nota y crea la tarea. El CRM deja de ser eso que te olvidás de actualizar.
+Pregúntale *"¿qué clientes no compran hace 60 días?"* y busca en tus contactos y te da la lista. Dile *"registra una llamada con María García y pon una tarea para seguir el viernes"* y escribe la nota y crea la tarea. El CRM deja de ser eso que se te olvida actualizar.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Buscá los negocios trabados en 'Propuesta' sin actividad en las últimas dos semanas."*
-- *"Agregá una nota al contacto de Carlos Pérez: 'Interesado en el plan anual, llamar el martes.'"*
-- *"Listame los contactos que marcamos como leads este mes y cómo llegó cada uno."*
+- *"Busca los negocios trabados en 'Propuesta' sin actividad en las últimas dos semanas."*
+- *"Agrega una nota al contacto de Carlos Pérez: 'Interesado en el plan anual, llamar el martes.'"*
+- *"Lístame los contactos que marcamos como leads este mes y cómo llegó cada uno."*
 
-### Qué necesitás
+### Qué necesitas
 
-HubSpot se conecta con un **token de Private App** — una clave que creás dentro de tu propia cuenta de HubSpot:
+HubSpot se conecta con un **token de Private App** — una clave que creas dentro de tu propia cuenta de HubSpot:
 
-1. En HubSpot, andá a **Settings → Integrations → Private Apps** (o abrí [developers.hubspot.com/docs/api/private-apps](https://developers.hubspot.com/docs/api/private-apps)).
-2. Creá una private app, nombrala algo como "Terminal Sync", y elegí los **scopes** que querés — arrancá con scopes de **solo lectura** del CRM (contactos, negocios, empresas) y sumá los de escritura recién cuando quieras que la IA edite.
-3. Copiá el **access token** generado y pegalo cuando el Lab te pida `HUBSPOT_PRIVATE_APP_ACCESS_TOKEN`.
+1. En HubSpot, ve a **Settings → Integrations → Private Apps** (o abre [developers.hubspot.com/docs/api/private-apps](https://developers.hubspot.com/docs/api/private-apps)).
+2. Crea una private app, nómbrala algo como "Terminal Sync", y elige los **scopes** que quieras — arranca con scopes de **solo lectura** del CRM (contactos, negocios, empresas) y suma los de escritura recién cuando quieras que la IA edite.
+3. Copia el **access token** generado y pégalo cuando el Lab te pida `HUBSPOT_PRIVATE_APP_ACCESS_TOKEN`.
 
-El token queda guardado cifrado en tu Keychain y sincronizado entre tus máquinas. Los scopes que elegís deciden exactamente qué puede ver y hacer la IA — empezá acotado, ampliás después.
+El token queda guardado cifrado en tu Keychain y sincronizado entre tus máquinas. Los scopes que elijas deciden exactamente qué puede ver y hacer la IA — empieza acotado, amplías después.
 
 --- dev ---
 

@@ -3,7 +3,7 @@ name: Shopify
 logo: /connectors/shopify.svg
 category: automation
 status: available
-simpleTitle: "Preguntale a tu IA por tu tienda de Shopify"
+simpleTitle: "Pregúntale a tu IA por tu tienda de Shopify"
 simpleSubtitle: "Conector propio de Terminal Sync sobre la Admin API oficial de Shopify: ventas, pedidos, productos y clientes."
 devTitle: "Shopify Admin GraphQL Connector"
 devSubtitle: "Servidor MCP first-party sobre la Admin GraphQL API oficial de Shopify."
@@ -18,25 +18,25 @@ licenseUrl: "https://terminalsync.ai"
 ---
 **Shopify** es la plataforma detrás de millones de tiendas online. Este conector es **propio de Terminal Sync**: hablamos con la **Admin GraphQL API oficial** de Shopify para que tu asistente lea tu negocio y te responda en lenguaje natural — sin que tengas que entrar al panel.
 
-A diferencia de otras integraciones, **no se instala pegando un paquete**: se conecta **desde adentro de la app**, en **Ajustes → Integraciones → Shopify**. Pegás la dirección de tu tienda y una clave de acceso que generás en Shopify, le das "Probar conexión", y listo. La clave se guarda **cifrada en tu computadora** (nunca en un archivo a la vista).
+A diferencia de otras integraciones, **no se instala pegando un paquete**: se conecta **desde adentro de la app**, en **Ajustes → Integraciones → Shopify**. Pegas la dirección de tu tienda y una clave de acceso que generas en Shopify, le das "Probar conexión", y listo. La clave se guarda **cifrada en tu computadora** (nunca en un archivo a la vista).
 
-Le preguntás *"¿cuánto vendí esta semana?"* y lee tus datos de Shopify y te contesta. Le pedís *"mostrame los pedidos sin enviar"* y te arma la lista. También puede **hacer cambios seguros** — como crear un producto (queda en borrador) o publicar/despublicar uno — pero **siempre te muestra primero qué va a hacer y espera tu OK** antes de tocar nada. Nunca cambia tu tienda sin que confirmes.
+Le preguntas *"¿cuánto vendí esta semana?"* y lee tus datos de Shopify y te contesta. Le pedís *"muéstrame los pedidos sin enviar"* y te arma la lista. También puede **hacer cambios seguros** — como crear un producto (queda en borrador) o publicar/despublicar uno — pero **siempre te muestra primero qué va a hacer y espera tu OK** antes de tocar nada. Nunca cambia tu tienda sin que confirmes.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
 - *"¿Cuántas ventas y cuánta plata hicimos esta semana?"*
-- *"Mostrame los últimos 10 pedidos y cuáles faltan enviar."*
+- *"Muéstrame los últimos 10 pedidos y cuáles faltan enviar."*
 - *"¿Qué productos tengo activos y con cuánto stock?"*
-- *"Buscá al cliente con el email ana@empresa.com y cuántas compras hizo."*
+- *"Busca al cliente con el email ana@empresa.com y cuántas compras hizo."*
 
-### Qué necesitás
+### Qué necesitas
 
-Necesitás dos cosas de tu cuenta de Shopify:
+Necesitas dos cosas de tu cuenta de Shopify:
 
 1. **La dirección de tu tienda** — algo como `mi-tienda.myshopify.com`.
 2. **Una clave de acceso (Admin API access token)** — se genera creando una *"custom app"* en tu Shopify, con permisos de lectura de pedidos, productos y clientes. La guía oficial está en [help.shopify.com](https://help.shopify.com/en/manual/apps/app-types/custom-apps).
 
-Después vas a **Ajustes → Integraciones → Shopify** en Terminal Sync, pegás las dos cosas y conectás. La clave viaja cifrada entre tus computadoras junto con el resto de tu perfil.
+Después vas a **Ajustes → Integraciones → Shopify** en Terminal Sync, pegas las dos cosas y conectas. La clave viaja cifrada entre tus computadoras junto con el resto de tu perfil.
 
 --- dev ---
 

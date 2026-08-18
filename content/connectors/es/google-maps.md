@@ -29,21 +29,21 @@ marketplaceCategory: "web"
 
 Este conector deja que tu IA consulte Google Maps Platform: puede convertir una dirección en coordenadas, convertir coordenadas en una dirección, buscar lugares, traer detalles de un lugar, calcular distancias, mirar elevación y pedir rutas paso a paso.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Buscá cafeterías cerca de esta dirección y pasame nombre, ubicación y datos de contacto si están disponibles."*
-- *"Calculá cuánto tardaría un repartidor desde estos tres puntos hasta la tienda principal."*
-- *"Convertí esta lista de direcciones en coordenadas para revisarlas en un mapa."*
+- *"Busca cafeterías cerca de esta dirección y pásame nombre, ubicación y datos de contacto si están disponibles."*
+- *"Calcula cuánto tardaría un repartidor desde estos tres puntos hasta la tienda principal."*
+- *"Convierte esta lista de direcciones en coordenadas para revisarlas en un mapa."*
 
-### Qué token necesitás
+### Qué token necesitas
 
-Necesitás una **API key de Google Maps Platform**. El README oficial enlaza la guía de Google para crear claves de API.
+Necesitas una **API key de Google Maps Platform**. El README oficial enlaza la guía de Google para crear claves de API.
 
-1. Abrí la guía oficial: `https://developers.google.com/maps/documentation/javascript/get-api-key#create-api-keys`.
-2. Creá o elegí un proyecto de Google Cloud con facturación habilitada.
-3. Creá una API key y restringila a las APIs de Maps que vayas a usar.
-4. Revisá cuotas y costos: Google Maps Platform cobra por uso según API y volumen.
-5. Pegá la clave cuando el Lab te pida `GOOGLE_MAPS_API_KEY`. Terminal Sync la guarda cifrada en tu Keychain.
+1. Abre la guía oficial: `https://developers.google.com/maps/documentation/javascript/get-api-key#create-api-keys`.
+2. Crea o elige un proyecto de Google Cloud con facturación habilitada.
+3. Crea una API key y restríngela a las APIs de Maps que vayas a usar.
+4. Revisa cuotas y costos: Google Maps Platform cobra por uso según API y volumen.
+5. Pega la clave cuando el Lab te pida `GOOGLE_MAPS_API_KEY`. Terminal Sync la guarda cifrada en tu Keychain.
 
 Si el conector solo se va a usar para lectura e investigación, no le des más acceso del necesario: restringir la API key ayuda a evitar gastos o usos accidentales.
 

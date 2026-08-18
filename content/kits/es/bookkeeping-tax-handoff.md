@@ -3,7 +3,7 @@ name: Kit de Contabilidad y Handoff al Contador
 logo: /logos/ts-kit.svg
 category: finance
 status: available
-tagline: "Ordena tus números y ármale a tu contador un paquete limpio para la entrega — no un manotazo de ahogado con recibos en abril."
+tagline: "Ordena tus números y arma para tu contador un paquete limpio para la entrega — no un manotazo de ahogado con recibos en abril."
 description: "Un combo coherente de finanzas para el dueño de un negocio chico que se prepara para la temporada de impuestos: leer los números reales desde Xero o la planilla contable, convertirlos en un paquete de entrega organizado, y mandárselo al contador o contadora con una nota clara."
 marketplaceSource: "terminalsync"
 items:
@@ -12,7 +12,7 @@ items:
     reason: "Lee facturas, cuentas por cobrar/pagar vencidas, contactos y los reportes de P&L/balance/balance de comprobación directo de los libros — justo lo que un contador pide en época de impuestos, sin exportar cada reporte a mano."
   - kind: connector
     slug: google-sheets
-    reason: "La mayoría de los negocios chicos no usan un software contable — llevan ingresos y gastos en una planilla. Este conector lee esa misma planilla para que el dueño sin Xero tenga el mismo flujo de 'ordename los números'."
+    reason: "La mayoría de los negocios chicos no usan un software contable — llevan ingresos y gastos en una planilla. Este conector lee esa misma planilla para que el dueño sin Xero tenga el mismo flujo de 'ordena los números'."
   - kind: skill
     slug: doc-coauthoring
     reason: "Convierte los números en bruto y las notas del dueño ('este gasto fue la laptop nueva', 'este cliente todavía no pagó') en un paquete de entrega estructurado que el contador puede usar de verdad, en vez de una montaña de filas exportadas."
@@ -22,9 +22,9 @@ items:
 ---
 ## Para quién es
 
-Dueños de negocios chicos y profesionales independientes que llevan sus propios libros (en Xero o en una planilla) y necesitan entregarle números limpios a un contador o contadora — en época de impuestos, a fin de trimestre, o cada vez que el contador pregunta "¿me podés mandar un P&L actualizado?".
+Dueños de negocios chicos y profesionales independientes que llevan sus propios libros (en Xero o en una planilla) y necesitan entregarle números limpios a un contador o contadora — en época de impuestos, a fin de trimestre, o cada vez que el contador pregunta "¿me puedes mandar un P&L actualizado?".
 
-Usalo cuando el trabajo recurrente es "ordename los números y mandalos", no declarar los impuestos vos mismo.
+Úsalo cuando el trabajo recurrente es "ordena los números y mándalos", no declarar los impuestos tú mismo.
 
 ## Qué te ayuda a hacer
 
@@ -35,14 +35,14 @@ Este kit cubre la previa al contador, no la declaración en sí:
 - Convertir los números más el contexto en un paquete de entrega organizado con Doc Co-authoring: resumen categorizado, ítems marcados, preguntas abiertas.
 - Redactar la nota que lo acompaña con Internal Comms — qué se adjunta, qué cambió, qué se necesita de vuelta, y para cuándo.
 
-El resultado esperado es que el dueño llegue a la temporada de impuestos con un paquete organizado y una nota clara, en vez de una carpeta de archivos sueltos y un email vago de "avisame si necesitás algo más".
+El resultado esperado es que el dueño llegue a la temporada de impuestos con un paquete organizado y una nota clara, en vez de una carpeta de archivos sueltos y un email vago de "avísame si necesitas algo más".
 
 ## Qué incluye
 
 ### Conectores
 
 - **Xero** — lee facturas, cuentas por cobrar/pagar vencidas, contactos y los reportes de P&L/balance/balance de comprobación. Es la fuente de verdad contable para los dueños que usan software de contabilidad.
-- **Google Sheets** — lee la planilla donde muchos negocios chicos realmente llevan ingresos, gastos y flujo de caja, para el dueño que no usa Xero. El mismo trabajo de "ordename los números", la otra fuente común.
+- **Google Sheets** — lee la planilla donde muchos negocios chicos realmente llevan ingresos, gastos y flujo de caja, para el dueño que no usa Xero. El mismo trabajo de "ordena los números", la otra fuente común.
 
 ### Skills
 
@@ -55,11 +55,11 @@ No incluye ninguna herramienta de CLI. El flujo es leer los libros, ordenarlos y
 
 ## Cómo usarlo
 
-1. Instalá el kit y conectá Xero (si lo usás) o Google Sheets (si tus libros viven en una planilla).
-2. Preguntá *"¿cuál es nuestro P&L de este trimestre?"* o *"¿qué facturas siguen sin cobrarse?"* y recibí los números reales.
-3. Pedile a Doc Co-authoring que *"arme un paquete de entrega para mi contador: ingresos, gastos por categoría, facturas sin cobrar, y marcá cualquier cosa rara."*
-4. Sumá el contexto que Doc Co-authoring no puede inferir solo — para qué fue un gasto grande, qué cliente está disputando una factura — así el paquete no queda con huecos.
-5. Pedile a Internal Comms que *"redacte el email para mandar con este paquete, mencionando qué cambió desde el trimestre pasado y qué me falta mandar todavía."*
+1. Instala el kit y conecta Xero (si lo usas) o Google Sheets (si tus libros viven en una planilla).
+2. Pregunta *"¿cuál es nuestro P&L de este trimestre?"* o *"¿qué facturas siguen sin cobrarse?"* y recibe los números reales.
+3. Pídele a Doc Co-authoring que *"arme un paquete de entrega para mi contador: ingresos, gastos por categoría, facturas sin cobrar, y marque cualquier cosa rara."*
+4. Suma el contexto que Doc Co-authoring no puede inferir solo — para qué fue un gasto grande, qué cliente está disputando una factura — así el paquete no queda con huecos.
+5. Pídele a Internal Comms que *"redacte el email para mandar con este paquete, mencionando qué cambió desde el trimestre pasado y qué falta mandar todavía."*
 
 ## Por qué estas piezas van juntas
 
@@ -75,7 +75,7 @@ Instaladas por separado, el dueño sigue exportando reportes a mano, reformateá
 
 ## Límites
 
-- No prepara ni declara impuestos, no genera 1099s, no calcula retenciones de nómina, ni presenta ningún formulario ante una autoridad fiscal — ningún conector ni skill del catálogo hace eso hoy. Usá software dedicado de impuestos/nómina o a tu contador para la declaración.
+- No prepara ni declara impuestos, no genera 1099s, no calcula retenciones de nómina, ni presenta ningún formulario ante una autoridad fiscal — ningún conector ni skill del catálogo hace eso hoy. Usa software dedicado de impuestos/nómina o a tu contador para la declaración.
 - No da asesoría fiscal ni interpreta la ley impositiva — ordena números y redacta la nota alrededor de ellos; las decisiones fiscales las toma el contador.
 - Xero y Google Sheets necesitan cada uno su propia cuenta/conexión, y el kit solo ve lo que esas cuentas permiten.
 - El paquete de entrega es tan completo como los libros detrás de él — efectivo, cheques u otro procesador que no esté en Xero o en la planilla quedan invisibles para el kit.

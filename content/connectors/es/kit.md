@@ -14,9 +14,9 @@ originalAuthor: "Kit (ex-ConvertKit)"
 originalAuthorUrl: "https://kit.com"
 license: "proprietary"
 ---
-Kit (antes ConvertKit) es donde vive tu lista. Pero escribir un broadcast, segmentar suscriptores y schedulear te lleva 30 minutos cada vez — y siempre te olvidás de un campo.
+Kit (antes ConvertKit) es donde vive tu lista. Pero escribir un broadcast, segmentar suscriptores y schedulear te lleva 30 minutos cada vez — y siempre se te olvida un campo.
 
-Con este conector, le pedís a Claude *"escribí un broadcast con el resumen del último post, mandalo solo a los suscriptores que abrieron los últimos 3 emails y schedulealo para el martes 9am"* — y él arma el draft en Kit listo para que vos solo aprobés.
+Con este conector, le pides a Claude *"escribe un broadcast con el resumen del último post, mándalo solo a los suscriptores que abrieron los últimos 3 emails y prográmalo para el martes 9am"* — y él arma el draft en Kit listo para que tú solo lo apruebes.
 
 Configurado una vez, viaja contigo gracias a Terminal Sync.
 

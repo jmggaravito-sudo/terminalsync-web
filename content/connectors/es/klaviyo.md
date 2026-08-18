@@ -3,7 +3,7 @@ name: Klaviyo
 logo: /connectors/klaviyo.svg
 category: automation
 status: available
-simpleTitle: "Manejá tu marketing por email y SMS preguntando"
+simpleTitle: "Maneja tu marketing por email y SMS preguntando"
 simpleSubtitle: "MCP oficial de Klaviyo: campañas, flows, perfiles y reportes por OAuth."
 devTitle: "Klaviyo MCP Connector"
 devSubtitle: "Official hosted Klaviyo MCP (mcp.klaviyo.com) — campaigns, flows, profiles and reporting through OAuth."
@@ -25,24 +25,24 @@ marketplaceCategory: "web"
 ---
 **Klaviyo** es la plataforma de marketing por email y SMS que usan los negocios de ecommerce para manejar campañas, flows automáticos y segmentos de clientes. El server MCP oficial de Klaviyo deja que tu agente chequee el rendimiento y arme campañas directamente — sin pegar ninguna API key en TerminalSync, solo con el login de tu propia cuenta de Klaviyo.
 
-Le preguntás *"Mostrame el rendimiento de mis campañas de email de los últimos 30 días"* y el agente trae los números de tu cuenta. Le pedís *"Creá una campaña de email promocionando nuestra oferta de fin de temporada"* y la arma sobre tus listas y templates reales. Sirve para revisar el rendimiento de campañas y flows, gestionar perfiles y segmentos, y redactar campañas nuevas.
+Le preguntas *"Muéstrame el rendimiento de mis campañas de email de los últimos 30 días"* y el agente trae los números de tu cuenta. Le pides *"Crea una campaña de email promocionando nuestra oferta de fin de temporada"* y la arma sobre tus listas y templates reales. Sirve para revisar el rendimiento de campañas y flows, gestionar perfiles y segmentos, y redactar campañas nuevas.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Mostrame el rendimiento de mis campañas de email de los últimos 30 días."*
+- *"Muéstrame el rendimiento de mis campañas de email de los últimos 30 días."*
 - *"¿Qué flows están rindiendo mejor en conversiones?"*
-- *"Creá una campaña de email promocionando nuestra oferta de fin de temporada."*
-- *"Buscá el perfil de este cliente y agregalo al segmento VIP."*
+- *"Crea una campaña de email promocionando nuestra oferta de fin de temporada."*
+- *"Busca el perfil de este cliente y agrégalo al segmento VIP."*
 
-### Cómo conectás
+### Cómo conectas
 
 Este conector **no te pide pegar ninguna API key**. Usa el login de tu propia cuenta de Klaviyo:
 
-1. Activá el conector en TerminalSync.
+1. Activa el conector en TerminalSync.
 2. El puente `mcp-remote` abre el login de Klaviyo en tu navegador y te pide autorizar el acceso (OAuth con registro dinámico de cliente).
-3. Aprobalo con tu cuenta — el conector solo ve y hace lo que tu rol permita. La doc oficial de Klaviyo está en [developers.klaviyo.com](https://developers.klaviyo.com/en/docs/klaviyo_mcp_server).
+3. Apruébalo con tu cuenta — el conector solo ve y hace lo que tu rol permita. La doc oficial de Klaviyo está en [developers.klaviyo.com](https://developers.klaviyo.com/en/docs/klaviyo_mcp_server).
 
-**Aclaración honesta:** es un server **hospedado por Klaviyo** (`https://mcp.klaviyo.com/mcp`), no algo que corre en tu computadora. La doc de Klaviyo dice que este server **solo está disponible para usuarios con rol Owner, Admin o Manager** en la cuenta, y que puede crear y enviar campañas reales — revisá antes de enviar.
+**Aclaración honesta:** es un server **hospedado por Klaviyo** (`https://mcp.klaviyo.com/mcp`), no algo que corre en tu computadora. La doc de Klaviyo dice que este server **solo está disponible para usuarios con rol Owner, Admin o Manager** en la cuenta, y que puede crear y enviar campañas reales — revisa antes de enviar.
 
 --- dev ---
 

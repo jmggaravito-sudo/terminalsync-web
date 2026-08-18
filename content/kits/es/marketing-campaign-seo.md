@@ -21,7 +21,7 @@ items:
 
 Agencias, consultores, growth marketers y marketers internos de una marca que manejan pauta social y contenido para uno o más negocios.
 
-Usalo cuando una persona o equipo necesita pasar de investigación de mercado a estructura de campañas de Meta y hallazgos de auditoría SEO sin reconstruir la combinación de herramientas para cada cliente, lanzamiento o sprint de contenido.
+Úsalo cuando una persona o equipo necesita pasar de investigación de mercado a estructura de campañas de Meta y hallazgos de auditoría SEO sin reconstruir la combinación de herramientas para cada cliente, lanzamiento o sprint de contenido.
 
 ## Qué te ayuda a hacer
 
@@ -51,13 +51,13 @@ No se incluye ninguna herramienta CLI. El usuario objetivo puede ser no técnico
 
 ## Cómo usarlo
 
-1. Instalá el kit y conectá Brave Search con una `BRAVE_API_KEY`.
-2. Empezá por investigación: pedile al asistente que encuentre competidores, claims repetidos, temas de keywords, intención de búsqueda y brechas de prueba para el producto o servicio.
+1. Instala el kit y conecta Brave Search con una `BRAVE_API_KEY`.
+2. Empieza por investigación: pídele al asistente que encuentre competidores, claims repetidos, temas de keywords, intención de búsqueda y brechas de prueba para el producto o servicio.
 3. Dale a Meta Ads Creator la oferta, audiencia, mercado, precio, ruta de conversión, voz de marca y límites de compliance.
-4. Pedí una matriz de Meta Ads con conceptos creativos, copy, formatos, supuestos de audiencia, plan de test y caveats.
+4. Pide una matriz de Meta Ads con conceptos creativos, copy, formatos, supuestos de audiencia, plan de test y caveats.
 5. Dale a SEO Auditor la URL objetivo, datos renderizados de la página, crawl, extractos de Search Console o screenshots.
-6. Pedí bloqueos, fixes de alto impacto, mejoras de menor prioridad, evidencia, responsable, esfuerzo y límites.
-7. Combiná la investigación, matriz de anuncios y auditoría SEO en una lista de acciones para el próximo sprint de campaña/contenido.
+6. Pide bloqueos, fixes de alto impacto, mejoras de menor prioridad, evidencia, responsable, esfuerzo y límites.
+7. Combina la investigación, matriz de anuncios y auditoría SEO en una lista de acciones para el próximo sprint de campaña/contenido.
 
 ## Por qué estas piezas van juntas
 

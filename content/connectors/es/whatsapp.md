@@ -20,9 +20,9 @@ Pensado para negocios en LatAm donde WhatsApp es el canal principal. Claude te a
 - Triagear qué conversaciones necesitan humano
 - Mandar seguimientos programados
 
-Viene con tu approval layer: ningún mensaje sale sin que vos lo autorices (o podés dar auto-aprobación a ciertos templates).
+Viene con tu approval layer: ningún mensaje sale sin que lo autorices (o puedes dar auto-aprobación a ciertos templates).
 
-*Disponible en beta próxima — hoy lo tenés vía n8n + Meta Cloud API.*
+*Disponible en beta próxima — hoy lo tienes vía n8n + Meta Cloud API.*
 
 --- dev ---
 

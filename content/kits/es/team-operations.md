@@ -21,7 +21,7 @@ items:
 
 Un líder de operaciones, coordinador de proyectos, o un equipo chico que lleva el trabajo en sí en ClickUp y coordina al equipo en Slack, y necesita convertir *"¿cómo viene esto?"* en una respuesta real sin escribirle a cinco personas para un resumen verbal.
 
-Usalo cuando el trabajo recurrente es *"¿qué vence, qué está frenado, y el equipo se enteró?"* para trabajo que vive en un tablero de tareas, no en una wiki.
+Úsalo cuando el trabajo recurrente es *"¿qué vence, qué está frenado, y el equipo se enteró?"* para trabajo que vive en un tablero de tareas, no en una wiki.
 
 ## Qué te ayuda a hacer
 
@@ -47,11 +47,11 @@ El resultado esperado es un status apoyado en el estado real del trabajo, escrit
 
 ## Cómo usarlo
 
-1. Instalá el kit, conectá ClickUp con un token personal de API, y conectá Slack con un bot token con scope a los canales relevantes.
-2. Preguntá *"¿qué vence esta semana en mis listas, y qué está frenado sin novedades?"* para chequear ClickUp.
-3. Para lo que esté en riesgo, pedile al asistente que saque el hilo de Slack relevante así el contexto es real, no supuesto.
-4. Pedile a Internal Comms que convierta el status de la tarea y el contexto del hilo en un update corto: qué cambió, qué está bloqueado, quién lo tiene, qué sigue.
-5. Publicá el update en el canal de Slack correspondiente, o creá una tarea de seguimiento en ClickUp para lo que necesite un responsable.
+1. Instala el kit, conecta ClickUp con un token personal de API, y conecta Slack con un bot token con scope a los canales relevantes.
+2. Pregunta *"¿qué vence esta semana en mis listas, y qué está frenado sin novedades?"* para chequear ClickUp.
+3. Para lo que esté en riesgo, pídele al asistente que saque el hilo de Slack relevante así el contexto es real, no supuesto.
+4. Pídele a Internal Comms que convierta el status de la tarea y el contexto del hilo en un update corto: qué cambió, qué está bloqueado, quién lo tiene, qué sigue.
+5. Publica el update en el canal de Slack correspondiente, o crea una tarea de seguimiento en ClickUp para lo que necesite un responsable.
 
 ## Por qué estas piezas van juntas
 
@@ -70,5 +70,5 @@ Se solapa con Docs & Team Comms en Internal Comms y Slack, pero el propósito es
 - No maneja deadlines, no reasigna trabajo ni toma decisiones de prioridad por su cuenta — muestra el status y redacta el update; una persona sigue decidiendo y actuando.
 - ClickUp y Slack necesitan cada uno su propia conexión de token/app y están sujetos a los permisos y el scope de canales de esas cuentas.
 - Las acciones de creación/actualización en ClickUp modifican tareas reales y están frenadas por un paso de confirmación.
-- No es una plataforma de gestión de proyectos completa — sin diagramas de Gantt, seguimiento de horas, o asignación de recursos; para eso usá las vistas propias de ClickUp.
-- Para documentación y anuncios internos largos apoyados en una wiki de equipo, usá el Kit Docs & Team Comms en su lugar — este kit está acotado al status de tareas/proyectos, no a la redacción de base de conocimiento.
+- No es una plataforma de gestión de proyectos completa — sin diagramas de Gantt, seguimiento de horas, o asignación de recursos; para eso usa las vistas propias de ClickUp.
+- Para documentación y anuncios internos largos apoyados en una wiki de equipo, usa el Kit Docs & Team Comms en su lugar — este kit está acotado al status de tareas/proyectos, no a la redacción de base de conocimiento.

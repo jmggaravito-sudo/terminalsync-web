@@ -24,7 +24,7 @@ items:
 
 El dueño de un negocio chico, un marketer de contenidos, o una agencia que maneja el blog de un negocio en WordPress y quiere que cada post arranque de datos reales de búsqueda en vez de una corazonada, y que realmente se publique en vez de quedarse en la carpeta de borradores.
 
-Usalo cuando el trabajo recurrente es "qué escribimos ahora, está bien antes de publicarlo, y lo podemos simplemente publicar" — no un calendario editorial completo ni un flujo de CMS empresarial.
+Úsalo cuando el trabajo recurrente es "qué escribimos ahora, está bien antes de publicarlo, y lo podemos simplemente publicar" — no un calendario editorial completo ni un flujo de CMS empresarial.
 
 ## Qué te ayuda a hacer
 
@@ -42,7 +42,7 @@ El resultado esperado es un post de blog que arrancó de demanda de búsqueda re
 ### Conectores
 
 - **Ahrefs** — lee rankings de keywords, backlinks, dominios que enlazan e ideas de keywords desde los datos SEO propios de la cuenta. Va acá porque decidir sobre qué escribir debería partir de demanda de búsqueda real, no de intuición.
-- **WordPress** — redacta y publica posts y páginas en el sitio. Va acá porque un kit de contenido que se queda en "acá tenés un borrador" deja sin hacer el paso real de publicar; este conector cierra el ciclo.
+- **WordPress** — redacta y publica posts y páginas en el sitio. Va acá porque un kit de contenido que se queda en "acá tienes un borrador" deja sin hacer el paso real de publicar; este conector cierra el ciclo.
 
 ### Skills
 
@@ -55,11 +55,11 @@ No incluye ninguna herramienta CLI. El usuario objetivo suele ser no técnico, y
 
 ## Cómo usarlo
 
-1. Instalá el kit, conectá Ahrefs con una `AHREFS_API_KEY`, y conectá WordPress con la URL de tu sitio, tu usuario y una Application Password.
-2. Preguntá *"¿qué keywords nos faltan que sí rankean nuestros competidores?"* o *"¿qué está buscando la gente sobre lo que podríamos escribir?"* — Ahrefs responde.
-3. Elegí un ángulo y pedile a Doc Co-authoring un esquema primero, después redactá el post sección por sección.
-4. Antes de publicar, pedile a SEO Auditor que audite el borrador o la URL en vivo que va a reemplazar, y obtené los bloqueadores, los arreglos de alto impacto y el veredicto puntuado.
-5. Corregí lo que marque la auditoría, después pedile a WordPress que lo guarde como borrador en el sitio — o que lo publique una vez que revisaste la versión final.
+1. Instala el kit, conecta Ahrefs con una `AHREFS_API_KEY`, y conecta WordPress con la URL de tu sitio, tu usuario y una Application Password.
+2. Pregunta *"¿qué keywords nos faltan que sí rankean nuestros competidores?"* o *"¿qué está buscando la gente sobre lo que podríamos escribir?"* — Ahrefs responde.
+3. Elige un ángulo y pídele a Doc Co-authoring un esquema primero, después redacta el post sección por sección.
+4. Antes de publicar, pídele a SEO Auditor que audite el borrador o la URL en vivo que va a reemplazar, y obtén los bloqueadores, los arreglos de alto impacto y el veredicto puntuado.
+5. Corrige lo que marque la auditoría, después pídele a WordPress que lo guarde como borrador en el sitio — o que lo publique una vez que revisaste la versión final.
 
 ## Por qué estas piezas van juntas
 
@@ -70,14 +70,14 @@ El kit es coherente porque sigue un solo flujo real de contenido, no cuatro herr
 - SEO Auditor aporta **el chequeo antes de salir en vivo** — evidencia, prioridades y un veredicto, no una corazonada sobre si está listo.
 - WordPress aporta **la meta** — el post realmente termina en el sitio.
 
-Instalados por separado, el usuario investiga keywords en una herramienta, redacta en otra, no tiene una forma estructurada de auditar antes de publicar, y todavía tiene que entrar a WordPress a mano. Instalados juntos, el kit da un solo camino: **encontrá el hueco de keyword → redactá el post → auditalo → publicalo**.
+Instalados por separado, el usuario investiga keywords en una herramienta, redacta en otra, no tiene una forma estructurada de auditar antes de publicar, y todavía tiene que entrar a WordPress a mano. Instalados juntos, el kit da un solo camino: **encuentra el hueco de keyword → redacta el post → audítalo → publícalo**.
 
 No se superpone con el Kit de Campaña de Marketing & SEO ni con Social & Ad Creative Studio: esos están armados alrededor de social pago (Meta ads) y creatividad visual para anuncios, con el SEO limitado a un paso de auditoría y sin herramienta de keywords ni conector de publicación. Este kit está enfocado específicamente en contenido orgánico escrito — el flujo de investigación a publicación de un blog — y es el único kit del catálogo que puede realmente poner un post en vivo.
 
 ## Límites
 
 - No garantiza rankings, tráfico ni conversiones — Ahrefs y SEO Auditor reportan evidencia e impacto probable, no resultados.
-- La API de Ahrefs es un adicional pago sobre una suscripción de Ahrefs; necesitás acceso a la API habilitado en tu cuenta, aparte de un plan base de Ahrefs.
+- La API de Ahrefs es un adicional pago sobre una suscripción de Ahrefs; necesitas acceso a la API habilitado en tu cuenta, aparte de un plan base de Ahrefs.
 - Publicar en WordPress requiere tu propio sitio con acceso a la REST API y una Application Password; publicar queda condicionado a un paso de confirmación, y el kit nunca publica sin tu revisión.
 - SEO Auditor solo puede inspeccionar lo que se le da o a lo que puede acceder — analítica privada, Search Console, páginas renderizadas con JavaScript y logs de servidor hay que suministrarlos aparte para una auditoría completa.
 - No maneja un calendario editorial, no asigna redactores ni maneja flujos de aprobación multi-autor — es un pipeline de un solo post de investigación-a-publicación, no un CMS ni una plataforma editorial.

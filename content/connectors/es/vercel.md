@@ -14,7 +14,7 @@ originalAuthor: "Vercel Inc."
 originalAuthorUrl: "https://vercel.com"
 license: "proprietary"
 ---
-Si deployás en Vercel, podés preguntarle a Claude el status de builds, revisar logs de errores, promover deploys de preview a producción, o agregar variables de entorno — todo sin abrir el dashboard.
+Si deployas en Vercel, puedes preguntarle a Claude el status de builds, revisar logs de errores, promover deploys de preview a producción, o agregar variables de entorno — todo sin abrir el dashboard.
 
 --- dev ---
 

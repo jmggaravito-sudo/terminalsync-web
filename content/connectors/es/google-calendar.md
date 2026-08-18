@@ -24,27 +24,27 @@ originalAuthor: "Yevhen Romanov"
 originalAuthorUrl: "https://www.npmjs.com/package/google-calendar-mcp"
 license: "MIT"
 ---
-Si tu día es una tira de turnos — clientes, entregas, llamadas, visitas — tu Google Calendar es el mapa real de tu semana. Este conector deja que tu IA lo lea y lo maneje por vos, para que dejes de pelearte con la app mientras estás al teléfono con alguien.
+Si tu día es una tira de turnos — clientes, entregas, llamadas, visitas — tu Google Calendar es el mapa real de tu semana. Este conector deja que tu IA lo lea y lo maneje por ti, para que dejes de pelearte con la app mientras estás al teléfono con alguien.
 
-Preguntale *"¿qué tengo mañana?"* y te lee el día. Decile *"agendá a María el jueves a las 3, una hora"* y crea el evento. Preguntale *"¿estoy libre el viernes a la mañana?"* y chequea antes de que te comprometas. Es el asistente que te lleva la agenda — solo que le hablás.
+Pregúntale *"¿qué tengo mañana?"* y te lee el día. Dile *"agenda a María el jueves a las 3, una hora"* y crea el evento. Pregúntale *"¿estoy libre el viernes a la mañana?"* y chequea antes de que te comprometas. Es el asistente que te lleva la agenda — solo que le hablas.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
 - *"¿Qué turnos tengo para lo que queda de la semana?"*
-- *"Creá un evento: 'Entrega al depósito', jueves 10am, una hora."*
-- *"¿Tengo algo el viernes entre 9 y 12? Si estoy libre, agendá una llamada con el contador."*
+- *"Crea un evento: 'Entrega al depósito', jueves 10am, una hora."*
+- *"¿Tengo algo el viernes entre 9 y 12? Si estoy libre, agenda una llamada con el contador."*
 
-### Qué necesitás
+### Qué necesitas
 
-Google Calendar inicia sesión con Google (OAuth), así que en vez de una clave simple lo conectás una vez a través de un **proyecto de Google Cloud**. Es una configuración de una sola vez y después funciona en todos tus dispositivos:
+Google Calendar inicia sesión con Google (OAuth), así que en vez de una clave simple lo conectas una vez a través de un **proyecto de Google Cloud**. Es una configuración de una sola vez y después funciona en todos tus dispositivos:
 
-1. Entrá a [console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials) y creá un proyecto (o reutilizá uno).
-2. Activá la **Google Calendar API** para ese proyecto.
-3. Creá un **OAuth client ID** y agregá `http://localhost:3000/auth/callback` como URL de redirección autorizada.
-4. Copiá el **Client ID** y el **Client Secret** y pegalos cuando el Lab te pida `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`.
+1. Entra a [console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials) y crea un proyecto (o reutiliza uno).
+2. Activa la **Google Calendar API** para ese proyecto.
+3. Crea un **OAuth client ID** y agrega `http://localhost:3000/auth/callback` como URL de redirección autorizada.
+4. Copia el **Client ID** y el **Client Secret** y pégalos cuando el Lab te pida `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`.
 5. La primera vez se abre una ventana del navegador para aprobar el acceso a tu calendario. Después es silencioso.
 
-Las credenciales quedan guardadas cifradas en tu Keychain y sincronizadas entre tus máquinas — lo configurás una vez y ya está en todas.
+Las credenciales quedan guardadas cifradas en tu Keychain y sincronizadas entre tus máquinas — lo configuras una vez y ya está en todas.
 
 > Aviso: la configuración de Google Cloud es la única parte realmente engorrosa. Si te trabás, el chat de soporte dentro de la app te guía paso a paso. Crear y borrar eventos cambia tu calendario real, así que la IA confirma antes de agendar o cancelar.
 

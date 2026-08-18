@@ -3,7 +3,7 @@ name: Pinecone
 logo: /connectors/pinecone.svg
 category: dev
 status: available
-simpleTitle: "Preguntale — y actuá — sobre tu base de datos vectorial de Pinecone en lenguaje natural"
+simpleTitle: "Pregúntale — y actúa — sobre tu base de datos vectorial de Pinecone en lenguaje natural"
 simpleSubtitle: "Server oficial de Pinecone: busca en la doc, configura índices, sube y consulta datos."
 devTitle: "Pinecone MCP Connector"
 devSubtitle: "Official @pinecone-database/mcp: developer tools over Pinecone projects and docs, API-key scoped."
@@ -27,26 +27,26 @@ marketplaceCategory: "web"
 ---
 **Pinecone** es una base de datos vectorial — la capa de almacenamiento que hace posible la búsqueda semántica y el retrieval para apps de IA, guardando tus datos como embeddings para que un asistente encuentre registros por significado y no por palabras exactas. El conector oficial, publicado por Pinecone, es el *Pinecone Developer MCP Server*: deja que los asistentes de código y otras herramientas de IA se conecten con tus proyectos de Pinecone y con la documentación. Una vez conectado, la IA puede buscar en la doc de Pinecone para responder con precisión, ayudarte a configurar índices según lo que tu aplicación necesita, generar código a partir de la configuración y los datos de tu índice, y subir y buscar registros para que pruebes consultas y evalúes resultados en tu propio entorno de desarrollo.
 
-Le pedís *"listá todos mis índices de Pinecone y describí sus configuraciones"* y lee tu proyecto y te responde. Le decís *"creá un índice nuevo llamado 'my-docs' usando el modelo multilingual-e5-large"* y lo arma solo. Habla con Pinecone usando tu clave de API, así que puede hacer todo lo que vos podés hacer desde tu propia cuenta. Ojo: sin clave de API la IA igual puede buscar en la documentación — lo que no puede es administrar ni consultar tus índices.
+Le pides *"lista todos mis índices de Pinecone y describe sus configuraciones"* y lee tu proyecto y te responde. Le dices *"crea un índice nuevo llamado 'my-docs' usando el modelo multilingual-e5-large"* y lo arma solo. Habla con Pinecone usando tu clave de API, así que puede hacer todo lo que tú puedes hacer desde tu propia cuenta. Ojo: sin clave de API la IA igual puede buscar en la documentación — lo que no puede es administrar ni consultar tus índices.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Buscá en la doc de Pinecone información sobre filtrado por metadata."*
-- *"Listá todos mis índices de Pinecone y describí sus configuraciones."*
-- *"Creá un índice nuevo llamado 'my-docs' usando el modelo multilingual-e5-large."*
-- *"Subí estos documentos a mi índice: [pegá tus documentos]."*
-- *"Buscá en mi índice los registros relacionados con 'authentication best practices'."*
+- *"Busca en la doc de Pinecone información sobre filtrado por metadata."*
+- *"Lista todos mis índices de Pinecone y describe sus configuraciones."*
+- *"Crea un índice nuevo llamado 'my-docs' usando el modelo multilingual-e5-large."*
+- *"Sube estos documentos a mi índice: [pega tus documentos]."*
+- *"Busca en mi índice los registros relacionados con 'authentication best practices'."*
 - *"¿Qué namespaces existen en mi índice y cuántos registros hay en cada uno?"*
 
-### Qué token necesitás
+### Qué token necesitas
 
-Necesitás una **clave de API de Pinecone** — la que permite que un software actúe sobre tu proyecto de Pinecone.
+Necesitas una **clave de API de Pinecone** — la que permite que un software actúe sobre tu proyecto de Pinecone.
 
-1. Entrá a la [consola de Pinecone](https://app.pinecone.io) y generá una clave de API.
-2. Copiala.
-3. Pegala cuando el Lab te pida `PINECONE_API_KEY`. Se guarda cifrada en tu Keychain.
+1. Entra a la [consola de Pinecone](https://app.pinecone.io) y genera una clave de API.
+2. Cópiala.
+3. Pégala cuando el Lab te pida `PINECONE_API_KEY`. Se guarda cifrada en tu Keychain.
 
-La clave de API puede crear, cambiar y consultar índices y datos reales, así que tratala como una contraseña. **Una aclaración honesta:** sin clave de API el server igual sirve para buscar en la documentación, pero no va a poder administrar ni consultar tus índices. El server además **solo soporta índices con integrated inference** — mirá la limitación más abajo.
+La clave de API puede crear, cambiar y consultar índices y datos reales, así que trátala como una contraseña. **Una aclaración honesta:** sin clave de API el server igual sirve para buscar en la documentación, pero no va a poder administrar ni consultar tus índices. El server además **solo soporta índices con integrated inference** — mira la limitación más abajo.
 
 --- dev ---
 

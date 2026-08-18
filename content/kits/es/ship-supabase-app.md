@@ -4,7 +4,7 @@ logo: /logos/ts-kit.svg
 category: dev
 status: available
 tagline: "Construye, revisa, migra y despliega una app Supabase + Vercel sin salir de la terminal."
-description: "Un flujo de publicación coherente para desarrolladores solos y equipos chicos que construyen sobre Supabase y Vercel: leé y operá el backend, revisá el diff, corré migraciones y desplegá — de punta a punta, desde un solo lugar."
+description: "Un flujo de publicación coherente para desarrolladores solos y equipos chicos que construyen sobre Supabase y Vercel: lee y opera el backend, revisa el diff, corre migraciones y despliega — de punta a punta, desde un solo lugar."
 marketplaceSource: "terminalsync"
 items:
   - kind: connector
@@ -27,7 +27,7 @@ items:
 
 Desarrolladores solos y equipos chicos que construyen una app web sobre Supabase y Vercel y quieren ir de un cambio a un deploy en vivo sin cablear las mismas herramientas en cada proyecto.
 
-Usalo cuando la misma persona escribe el código, es dueña de la base de datos y publica — y quiere que el camino de revisar-y-desplegar quede en un solo lugar.
+Úsalo cuando la misma persona escribe el código, es dueña de la base de datos y publica — y quiere que el camino de revisar-y-desplegar quede en un solo lugar.
 
 ## Qué te ayuda a hacer
 
@@ -59,11 +59,11 @@ El resultado esperado es un cambio revisado que llega a producción con su migra
 
 ## Cómo usarlo
 
-1. Instalá el kit, conectá Supabase con su token de acceso, autenticá GitHub, y corré `supabase login` y `vercel login`.
-2. Pedile a la IA que lea el schema actual desde Supabase y el diff desde GitHub del cambio que vas a publicar.
+1. Instala el kit, conecta Supabase con su token de acceso, autentica GitHub, y corre `supabase login` y `vercel login`.
+2. Pídele a la IA que lea el schema actual desde Supabase y el diff desde GitHub del cambio que vas a publicar.
 3. Que Code Reviewer revise el diff por correctitud, casos borde y cualquier riesgo de schema/datos.
-4. Usá el CLI de Supabase para escribir y aplicar la migración que el cambio necesita (`supabase migration new`, `supabase db push`).
-5. Desplegá con el CLI de Vercel (`vercel --prod`) y confirmá que el despliegue está en vivo.
+4. Usa el CLI de Supabase para escribir y aplicar la migración que el cambio necesita (`supabase migration new`, `supabase db push`).
+5. Despliega con el CLI de Vercel (`vercel --prod`) y confirma que el despliegue está en vivo.
 
 ## Por qué estas piezas van juntas
 
@@ -77,8 +77,8 @@ Instaladas por separado, la migración y el deploy son dos pasos manuales descon
 
 ## Límites
 
-- No decide *qué* construir; te ayuda a publicar lo que ya tenés.
-- No mergea, aprueba ni hace rollback por vos — una persona corre la migración y el deploy.
+- No decide *qué* construir; te ayuda a publicar lo que ya tienes.
+- No mergea, aprueba ni hace rollback por ti — una persona corre la migración y el deploy.
 - Supabase, GitHub y Vercel requieren cada uno su cuenta, tokens y logins de CLI, y están sujetos a los límites de esos planes.
-- Las migraciones tocan datos reales: revisá vos mismo los cambios destructivos antes de `db push`. El kit revisa el diff, no garantiza una migración segura.
-- No reemplaza tests, CI ni un entorno de staging — usalo junto con ellos, no en su lugar.
+- Las migraciones tocan datos reales: revisa tú mismo los cambios destructivos antes de `db push`. El kit revisa el diff, no garantiza una migración segura.
+- No reemplaza tests, CI ni un entorno de staging — úsalo junto con ellos, no en su lugar.

@@ -24,22 +24,22 @@ originalAuthorUrl: "https://github.com/mondaycom/monday-ai"
 license: "MIT"
 licenseUrl: "https://github.com/mondaycom/monday-ai/blob/master/LICENSE"
 ---
-Si tu negocio corre sobre tableros de **monday.com** — pipeline de ventas, proyectos, pedidos, lo que sea que lleves en esas columnas de colores — este conector deja que tu IA los lea y los actualice, así el tablero queda al día sin que andés arrastrando tarjetas todo el día.
+Si tu negocio corre sobre tableros de **monday.com** — pipeline de ventas, proyectos, pedidos, lo que sea que lleves en esas columnas de colores — este conector deja que tu IA los lea y los actualice, así el tablero queda al día sin que andes arrastrando tarjetas todo el día.
 
-Preguntale *"¿qué está trabado en el tablero de proyectos?"* y lee los items y su estado. Decile *"agregá un lead al tablero de Ventas: María García, origen Instagram, estado Nuevo"* y crea el item. Preguntale *"¿qué está vencido?"* y lo encuentra. Tu tablero se vuelve algo que simplemente preguntás.
+Pregúntale *"¿qué está trabado en el tablero de proyectos?"* y lee los items y su estado. Dile *"agrega un lead al tablero de Ventas: María García, origen Instagram, estado Nuevo"* y crea el item. Pregúntale *"¿qué está vencido?"* y lo encuentra. Tu tablero se vuelve algo que simplemente preguntas.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
 - *"En el tablero de Ventas, ¿qué negocios están trabados en 'Negociación'?"*
-- *"Agregá un item a 'Pedidos': cliente León, monto 450, estado Pendiente."*
+- *"Agrega un item a 'Pedidos': cliente León, monto 450, estado Pendiente."*
 - *"¿Qué items están asignados a mí y vencen esta semana?"*
 
-### Qué necesitás
+### Qué necesitas
 
 monday.com se conecta con un **API token** de tu propia cuenta:
 
-1. En monday.com, abrí tu **avatar → Administration → Connections → API** (o **Developers**) y copiá tu token personal — mirá la [guía oficial](https://developer.monday.com/api-reference/docs/authentication).
-2. Pegalo cuando el Lab te pida `MONDAY_TOKEN`.
+1. En monday.com, abre tu **avatar → Administration → Connections → API** (o **Developers**) y copia tu token personal — mira la [guía oficial](https://developer.monday.com/api-reference/docs/authentication).
+2. Pégalo cuando el Lab te pida `MONDAY_TOKEN`.
 
 El token queda guardado cifrado en tu Keychain y sincronizado entre tus máquinas.
 

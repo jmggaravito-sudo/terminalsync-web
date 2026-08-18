@@ -3,7 +3,7 @@ name: Map
 logo: /connectors/map.svg
 category: productivity
 status: available
-simpleTitle: "Mostrá lugares en un globo 3D"
+simpleTitle: "Muestra lugares en un globo 3D"
 simpleSubtitle: "Busca direcciones o puntos de referencia y deja que el agente abra una vista de mapa interactiva."
 devTitle: "Conector MCP de Map"
 devSubtitle: "Server MCP App oficial de @modelcontextprotocol: globo CesiumJS, mapas OpenStreetMap y geocoding con Nominatim."
@@ -26,19 +26,19 @@ marketplaceCategory: "desktop"
 
 Qué hace: tu IA puede buscar un lugar por nombre o dirección, obtener coordenadas y límites del área, y después abrir un globo 3D centrado en ese resultado. El README destaca *"3D Globe Rendering"*, *"Geocoding"* y *"OpenStreetMap Tiles"* como funciones principales.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Buscá la Torre Eiffel y mostrámela en el mapa."*
-- *"Buscá esta dirección de cliente y decime qué coordenadas encontraste."*
-- *"Abrí un mapa del centro de Londres para que podamos revisar ubicaciones cercanas."*
+- *"Busca la Torre Eiffel y muéstramela en el mapa."*
+- *"Busca esta dirección de cliente y dime qué coordenadas encontraste."*
+- *"Abre un mapa del centro de Londres para que podamos revisar ubicaciones cercanas."*
 
-### Qué configuración necesitás
+### Qué configuración necesitas
 
-No necesitás token. El conector corre localmente con `npx`, usa OpenStreetMap Nominatim para buscar lugares y carga CesiumJS desde un CDN en tiempo de ejecución.
+No necesitas token. El conector corre localmente con `npx`, usa OpenStreetMap Nominatim para buscar lugares y carga CesiumJS desde un CDN en tiempo de ejecución.
 
-1. Instalalo desde el Lab como cualquier conector sin secretos.
-2. Usalo para búsquedas razonables de lugares y orientación visual.
-3. Evitá geocoding masivo: el README menciona un límite de Nominatim de una solicitud por segundo.
+1. Instálalo desde el Lab como cualquier conector sin secretos.
+2. Úsalo para búsquedas razonables de lugares y orientación visual.
+3. Evita geocoding masivo: el README menciona un límite de Nominatim de una solicitud por segundo.
 
 Es una ayuda visual, no un sistema de rutas o ubicación privada. No lo uses como única fuente para decisiones de navegación críticas.
 

@@ -25,27 +25,27 @@ licenseUrl: "https://github.com/makenotion/notion-mcp-server/blob/main/LICENSE"
 ---
 **Notion** es donde mucha gente guarda años de trabajo: recetas, notas de clientes, decisiones de equipo, links, planes de proyectos, manuales internos. El conector oficial — mantenido por Notion Labs — implementa un *"MCP server for the Notion API"* y expone 22 tools cubriendo data sources (databases), páginas, comentarios, búsqueda y conversión de contenido a Markdown.
 
-Con este conector, el agente lee tu workspace directamente (con tu permiso) y te responde con base en **tu** conocimiento. Le preguntás *"¿qué decidimos con el cliente X el mes pasado?"* y va al doc correcto. Le pedís *"agregame un comentario en la página de Getting Started"* y lo escribe.
+Con este conector, el agente lee tu workspace directamente (con tu permiso) y te responde con base en **tu** conocimiento. Le preguntas *"¿qué decidimos con el cliente X el mes pasado?"* y va al doc correcto. Le pides *"agrégame un comentario en la página de Getting Started"* y lo escribe.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Leé mi database 'Reuniones 2026' y resumime las 3 decisiones más importantes de marzo."*
-- *"Creá una página nueva dentro de 'Recetas' titulada 'Pasta limón' con esta lista de ingredientes y pasos."*
-- *"Buscá en mi workspace cualquier mención de 'pricing' y traeme los párrafos relevantes."*
+- *"Lee mi database 'Reuniones 2026' y resúmeme las 3 decisiones más importantes de marzo."*
+- *"Crea una página nueva dentro de 'Recetas' titulada 'Pasta limón' con esta lista de ingredientes y pasos."*
+- *"Busca en mi workspace cualquier mención de 'pricing' y tráeme los párrafos relevantes."*
 
-> **Nota oficial del repo:** *"While we limit the scope of Notion API's exposed (for example, you will not be able to delete databases via MCP), there is a non-zero risk to workspace data by exposing it to LLMs."* Compartí solo lo que necesites que el agente vea.
+> **Nota oficial del repo:** *"While we limit the scope of Notion API's exposed (for example, you will not be able to delete databases via MCP), there is a non-zero risk to workspace data by exposing it to LLMs."* Comparte solo lo que necesites que el agente vea.
 
-### Qué token necesitás
+### Qué token necesitas
 
-Necesitás una **Internal Integration** de Notion, que te genera un token al estilo `secret_xxx`.
+Necesitas una **Internal Integration** de Notion, que te genera un token al estilo `secret_xxx`.
 
-1. Andá a [notion.so/profile/integrations](https://www.notion.so/profile/integrations).
-2. Click "+ New integration". Ponele un nombre tipo "Terminal Sync — Claude". Capacities: dejá las defaults (Read content, Update content, Insert content) o ajustá según querés.
-3. Guardá y copiá el "Internal Integration Secret".
-4. **Importante** — Notion exige que vos compartas explícitamente cada página o database con la integration. Dos formas: (a) en la pestaña Access de tu integration elegís páginas/databases; (b) por página, abrís el menú "..." → Connect to integration → buscás la tuya. Lo que no compartas, no se ve.
-5. Pegá el token cuando el Lab te pida `NOTION_API_KEY`. Cifrado en tu Keychain.
+1. Ve a [notion.so/profile/integrations](https://www.notion.so/profile/integrations).
+2. Click "+ New integration". Ponle un nombre tipo "Terminal Sync — Claude". Capacities: deja las defaults (Read content, Update content, Insert content) o ajusta según quieras.
+3. Guarda y copia el "Internal Integration Secret".
+4. **Importante** — Notion exige que tú compartas explícitamente cada página o database con la integration. Dos formas: (a) en la pestaña Access de tu integration eliges páginas/databases; (b) por página, abres el menú "..." → Connect to integration → buscas la tuya. Lo que no compartas, no se ve.
+5. Pega el token cuando el Lab te pida `NOTION_API_KEY`. Cifrado en tu Keychain.
 
-Si compartís solo una página padre, el agente accede a todos sus hijos. Si querés alcance limitado, compartí solo databases puntuales.
+Si compartes solo una página padre, el agente accede a todos sus hijos. Si quieres alcance limitado, comparte solo databases puntuales.
 
 --- dev ---
 

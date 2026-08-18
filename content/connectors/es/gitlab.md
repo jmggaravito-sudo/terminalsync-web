@@ -30,23 +30,23 @@ marketplaceCategory: "web"
 
 Este conector deja que tu IA trabaje con GitLab usando la API oficial: puede buscar proyectos, leer archivos, crear issues, preparar merge requests, crear ramas y subir cambios cuando se lo pedís. El README oficial lo resume como un server para la API de GitLab que permite *"project management, file operations, and more"*.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Buscá el repositorio del sitio web y explicame qué archivos parecen controlar la página de precios."*
-- *"Creá un issue para revisar el flujo de onboarding, con estos pasos y etiquetas."*
-- *"Prepará una rama y un merge request con este cambio de copy en el README."*
+- *"Busca el repositorio del sitio web y explícame qué archivos parecen controlar la página de precios."*
+- *"Crea un issue para revisar el flujo de onboarding, con estos pasos y etiquetas."*
+- *"Prepara una rama y un merge request con este cambio de copy en el README."*
 
-### Qué token necesitás
+### Qué token necesitas
 
-Necesitás un **Personal Access Token de GitLab**. Lo creás desde tu perfil de GitLab; el README oficial indica ir a **User Settings > Access Tokens** y elegir los permisos que correspondan.
+Necesitas un **Personal Access Token de GitLab**. Lo creas desde tu perfil de GitLab; el README oficial indica ir a **User Settings > Access Tokens** y elegir los permisos que correspondan.
 
-1. Abrí la guía oficial de GitLab para crear tokens personales: `https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html`.
-2. Creá un token nuevo para Terminal Sync, con una fecha de vencimiento razonable.
-3. Elegí permisos según el uso: `read_api` para mirar información, `read_repository` para leer repos, `write_repository` si querés que pueda subir cambios y `api` si necesitás acceso completo a la API.
-4. Pegá el token cuando el Lab te pida `GITLAB_PERSONAL_ACCESS_TOKEN`. Terminal Sync lo guarda cifrado en tu Keychain.
-5. Si usás GitLab self-managed, cambiá `GITLAB_API_URL` por la URL de tu instancia, por ejemplo `https://gitlab.tuempresa.com/api/v4`.
+1. Abre la guía oficial de GitLab para crear tokens personales: `https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html`.
+2. Crea un token nuevo para Terminal Sync, con una fecha de vencimiento razonable.
+3. Elige permisos según el uso: `read_api` para mirar información, `read_repository` para leer repos, `write_repository` si quieres que pueda subir cambios y `api` si necesitas acceso completo a la API.
+4. Pega el token cuando el Lab te pida `GITLAB_PERSONAL_ACCESS_TOKEN`. Terminal Sync lo guarda cifrado en tu Keychain.
+5. Si usas GitLab self-managed, cambia `GITLAB_API_URL` por la URL de tu instancia, por ejemplo `https://gitlab.tuempresa.com/api/v4`.
 
-Para empezar seguro, usá el token con los permisos mínimos y ampliá solo cuando necesites que la IA escriba cambios.
+Para empezar seguro, usa el token con los permisos mínimos y amplíalo solo cuando necesites que la IA escriba cambios.
 
 --- dev ---
 

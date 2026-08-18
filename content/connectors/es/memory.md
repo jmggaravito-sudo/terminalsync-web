@@ -26,19 +26,19 @@ marketplaceCategory: "desktop"
 
 El modelo del oficial tiene tres piezas: **entidades** (nodos del grafo con un nombre, un tipo, y observaciones — por ejemplo *"Juan_Garavito"* tipo *"persona"* con observación *"prefiere Tailwind"*); **relaciones** (conexiones direccionales entre entidades — por ejemplo *Juan_Garavito → works_at → NexFlowAI*); y **observaciones** (hechos atómicos como strings, uno por dato).
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Recordá que mi tono preferido para emails de clientes es formal pero cálido, sin emojis."*
+- *"Recuerda que mi tono preferido para emails de clientes es formal pero cálido, sin emojis."*
 - *"¿Qué decidimos la última vez que hablamos del rediseño del checkout?"*
-- *"Anotá que el restaurante 'La Mariposa' tiene problemas con el menú vegano — para tenerlo en cuenta la próxima vez que les escribamos."*
+- *"Anota que el restaurante 'La Mariposa' tiene problemas con el menú vegano — para tenerlo en cuenta la próxima vez que les escribamos."*
 
-Para que el agente lo aproveche al máximo, el README oficial recomienda un system prompt corto que le diga: *"al inicio de la conversación, identificá al usuario y consultá la memoria; al final, anotá hechos nuevos."* Así el cuaderno se acumula sin que vos tengas que pedirlo cada vez.
+Para que el agente lo aproveche al máximo, el README oficial recomienda un system prompt corto que le diga: *"al inicio de la conversación, identifica al usuario y consulta la memoria; al final, anota hechos nuevos."* Así el cuaderno se acumula sin que tú tengas que pedirlo cada vez.
 
-### Qué necesitás configurar
+### Qué necesitas configurar
 
 **Nada.** No pide token, no pide cuenta externa, no pide carpetas. La memoria vive en tu propia computadora como un archivo JSON y el agente la lee/escribe vía las tools del MCP.
 
-El path del archivo es configurable vía la env `MEMORY_FILE_PATH`. Si no la setteás, el archivo nace en el cwd del proceso — conviene fijarlo a una ruta absoluta para que persista entre sesiones.
+El path del archivo es configurable vía la env `MEMORY_FILE_PATH`. Si no la configuras, el archivo nace en el cwd del proceso — conviene fijarlo a una ruta absoluta para que persista entre sesiones.
 
 --- dev ---
 

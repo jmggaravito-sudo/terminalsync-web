@@ -15,23 +15,23 @@ originalAuthor: "Dropbox (API v2) · conector de Terminal Sync"
 originalAuthorUrl: "https://www.dropbox.com/developers/documentation"
 license: "proprietary"
 ---
-Cuando los archivos que hacen andar tu negocio viven en **Dropbox** — contratos, facturas, propuestas, fotos — encontrar el que buscás es la mitad del laburo. Este conector pone a tu IA a hacerlo: pedile un archivo en palabras simples y busca, lo encuentra y te pasa el link. Sin escarbar entre carpetas.
+Cuando los archivos que hacen andar tu negocio viven en **Dropbox** — contratos, facturas, propuestas, fotos — encontrar el que buscas es la mitad del laburo. Este conector pone a tu IA a hacerlo: pídele un archivo en palabras simples y busca, lo encuentra y te pasa el link. Sin escarbar entre carpetas.
 
-Preguntale *"buscá el contrato del cliente León"* y busca y te da el archivo. Preguntale *"pasame un link a la factura de marzo"* y arma un link de descarga temporal. Decile *"compartí la carpeta del catálogo con un link público"* y crea uno — pero recién después de mostrártelo y que confirmes, porque un link público lo ve cualquiera que lo tenga.
+Pregúntale *"busca el contrato del cliente León"* y busca y te da el archivo. Pregúntale *"pásame un link a la factura de marzo"* y arma un link de descarga temporal. Dile *"comparte la carpeta del catálogo con un link público"* y crea uno — pero recién después de mostrártelo y que confirmes, porque un link público lo ve cualquiera que lo tenga.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Buscá la propuesta firmada del proyecto García y dame el link."*
+- *"Busca la propuesta firmada del proyecto García y dame el link."*
 - *"¿Qué hay en mi carpeta 'Facturas' de este mes?"*
-- *"Creá un link público para compartir el PDF de la lista de precios."*
+- *"Crea un link público para compartir el PDF de la lista de precios."*
 
 ### Cómo se conecta
 
-Dropbox es un **conector propio**: corre el servidor chico de Terminal Sync sobre la API oficial de Dropbox — no hay paquete npm para instalar. Lo conectás desde la app (Ajustes → Integraciones → Dropbox), y tu token de acceso queda guardado cifrado en tu Keychain y sincronizado entre tus máquinas.
+Dropbox es un **conector propio**: corre el servidor chico de Terminal Sync sobre la API oficial de Dropbox — no hay paquete npm para instalar. Lo conectas desde la app (Ajustes → Integraciones → Dropbox), y tu token de acceso queda guardado cifrado en tu Keychain y sincronizado entre tus máquinas.
 
-Leer y buscar corren libremente; **crear un link público sale hacia afuera**, así que la IA te muestra qué va a compartir y solo crea el link cuando confirmás.
+Leer y buscar corren libremente; **crear un link público sale hacia afuera**, así que la IA te muestra qué va a compartir y solo crea el link cuando confirmas.
 
-> Aviso: para conectar, creá una app de Dropbox en la consola de desarrolladores y generá un token de acceso — el chat de soporte dentro de la app te guía. (Un flujo de "Conectá con Dropbox" por OAuth está en camino.)
+> Aviso: para conectar, crea una app de Dropbox en la consola de desarrolladores y genera un token de acceso — el chat de soporte dentro de la app te guía. (Un flujo de "Conéctate con Dropbox" por OAuth está en camino.)
 
 --- dev ---
 

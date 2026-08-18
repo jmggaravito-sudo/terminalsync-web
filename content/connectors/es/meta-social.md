@@ -3,7 +3,7 @@ name: Meta Social
 logo: /connectors/meta-social.svg
 category: messaging
 status: available
-simpleTitle: "Posteá en Instagram y Facebook sin abrir ninguna de las dos apps"
+simpleTitle: "Postea en Instagram y Facebook sin abrir ninguna de las dos apps"
 simpleSubtitle: "Escribe el texto, elige la foto — Claude lo publica en tus redes. Tú apruebas, él publica."
 devTitle: "Publicación en Instagram + Facebook (via Meta Graph API)"
 devSubtitle: "OAuth de página + tokens de IG, publicación IG en dos pasos, posteo directo al feed de la Página — detrás de un gate de aprobación obligatorio."
@@ -16,21 +16,21 @@ license: "proprietary"
 ---
 Construido sobre la Graph API oficial de Meta — la misma familia que usa nuestro conector de WhatsApp. Te deja publicar un posteo (imagen + texto) en tu **Instagram** y en tu **Página de Facebook** sin abrir ninguna de las dos apps.
 
-Claude redacta el texto con tu tono, adjunta la imagen y te muestra exactamente qué va a salir — y en qué cuenta. Nada se publica hasta que vos digas que sí. Postear es público y no se puede deshacer, así que el paso de aprobación no es opcional: **vos aprobás, él postea.**
+Claude redacta el texto con tu tono, adjunta la imagen y te muestra exactamente qué va a salir — y en qué cuenta. Nada se publica hasta que tú digas que sí. Postear es público y no se puede deshacer, así que el paso de aprobación no es opcional: **tú apruebas, él postea.**
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Posteá esta foto en mi Instagram con un texto sobre la promo del finde."*
-- *"Compartí este anuncio en mi Página de Facebook."*
-- *"Ponelo en las dos — Instagram y Facebook."*
+- *"Postea esta foto en mi Instagram con un texto sobre la promo del finde."*
+- *"Comparte este anuncio en mi Página de Facebook."*
+- *"Ponlo en las dos — Instagram y Facebook."*
 - *"¿En qué cuentas puedo postear?"* — te lista tus Páginas y las cuentas de Instagram vinculadas para que elijas dónde.
 
-### Qué necesitás para conectar
+### Qué necesitas para conectar
 
-Iniciás sesión una vez con Facebook y le das permiso para postear — sin claves de API que copiar ni pegar. Dos requisitos honestos antes de que pueda postear en Instagram:
+Inicias sesión una vez con Facebook y le das permiso para postear — sin claves de API que copiar ni pegar. Dos requisitos honestos antes de que pueda postear en Instagram:
 
-- Tu Instagram tiene que ser una cuenta **Business o Creator** (el cambio es gratis y está en la configuración de la app de Instagram), y tiene que estar **vinculada a una Página de Facebook**. Un Instagram personal no puede publicar por la API — el conector lo verifica de entrada y te lo dice en criollo si necesitás cambiar, en vez de fallar con un error incomprensible.
-- Tenés que ser administrador de la Página de Facebook donde querés postear.
+- Tu Instagram tiene que ser una cuenta **Business o Creator** (el cambio es gratis y está en la configuración de la app de Instagram), y tiene que estar **vinculada a una Página de Facebook**. Un Instagram personal no puede publicar por la API — el conector lo verifica de entrada y te lo dice con claridad si necesitas cambiar, en vez de fallar con un error incomprensible.
+- Tienes que ser administrador de la Página de Facebook donde quieres postear.
 
 La conexión pide los permisos **mínimos**: publicar en tu Página y en el Instagram vinculado, y listar tus cuentas. Nada de pauta, mensajes ni de leer tu audiencia.
 

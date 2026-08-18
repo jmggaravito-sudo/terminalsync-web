@@ -24,7 +24,7 @@ items:
 
 Desarrolladores y equipos de ingeniería chicos que dedican tiempo real a revisar pull requests, triagear issues y conectar los cambios propuestos con lo que efectivamente se rompe en producción.
 
-Usalo cuando una persona o un equipo chico quiere una pasada de review consistente en varios repos sin cablear las mismas herramientas cada vez.
+Úsalo cuando una persona o un equipo chico quiere una pasada de review consistente en varios repos sin cablear las mismas herramientas cada vez.
 
 ## Qué te ayuda a hacer
 
@@ -54,11 +54,11 @@ El resultado esperado es un review que cita código real y fallas reales, con ha
 
 ## Cómo usarlo
 
-1. Instalá el kit, autenticá GitHub, conectá Sentry con su token y corré `gh auth login`.
-2. Apuntá Code Reviewer a un pull request: pedile que revise el diff por correctitud, casos borde y riesgo.
-3. Pedile que cruce los archivos cambiados contra errores recientes de Sentry y marque cualquier cambio que toque una ruta que falla.
-4. Pedí una lista de hallazgos priorizada (bloqueantes → menores) con referencias a archivos.
-5. Usá `gh` para comentar, pedir cambios o revisar la corrida de CI sin salir de la terminal.
+1. Instala el kit, autentica GitHub, conecta Sentry con su token y corre `gh auth login`.
+2. Apunta Code Reviewer a un pull request: pídele que revise el diff por correctitud, casos borde y riesgo.
+3. Pídele que cruce los archivos cambiados contra errores recientes de Sentry y marque cualquier cambio que toque una ruta que falla.
+4. Pide una lista de hallazgos priorizada (bloqueantes → menores) con referencias a archivos.
+5. Usa `gh` para comentar, pedir cambios o revisar la corrida de CI sin salir de la terminal.
 
 ## Por qué estas piezas van juntas
 
@@ -72,8 +72,8 @@ Instalados por separado, quien revisa tiene que acordarse de correlacionar a man
 
 ## Límites
 
-- No mergea, deploya ni aprueba pull requests por vos; la decisión la toma una persona.
+- No mergea, deploya ni aprueba pull requests por ti; la decisión la toma una persona.
 - Revisa la evidencia que puede leer; submódulos privados, secretos y servicios no vinculados quedan fuera de alcance.
 - GitHub y Sentry requieren sus propios tokens y están sujetos a los permisos y límites de plan de esas cuentas.
 - El contexto de Sentry solo ayuda cuando el proyecto realmente reporta errores a Sentry; sin eso, el kit igual revisa pero pierde la ponderación por riesgo de producción.
-- No es una auditoría de seguridad ni un reemplazo de los tests y el CI — usalo junto a ellos, no en su lugar.
+- No es una auditoría de seguridad ni un reemplazo de los tests y el CI — úsalo junto a ellos, no en su lugar.

@@ -26,19 +26,19 @@ marketplaceCategory: "desktop"
 
 Este conector deja que tu IA mire tus tablas y conteste preguntas sobre los datos — **pero solo leer, nunca modificar**. El server oficial de Anthropic lo garantiza por diseño: en sus palabras, *"All queries are executed within a READ ONLY transaction"*. Si la IA intenta cambiar algo, Postgres lo rechaza.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Mostrame qué tablas tiene esta base y cómo creés que están conectadas entre sí."*
-- *"Contame cuántos clientes activos hay en cada plan en los últimos 30 días."*
-- *"Mirá la tabla de pedidos y proponeme la forma más segura de sacar la facturación mes a mes."*
+- *"Muéstrame qué tablas tiene esta base y cómo crees que están conectadas entre sí."*
+- *"Cuéntame cuántos clientes activos hay en cada plan en los últimos 30 días."*
+- *"Mira la tabla de pedidos y propóneme la forma más segura de sacar la facturación mes a mes."*
 
-### Qué conexión necesitás
+### Qué conexión necesitas
 
-Necesitás una **URL de conexión a Postgres**, con este formato: `postgresql://usuario:password@host:5432/nombre-de-base`. La hace el equipo técnico que mantiene la base (o tu proveedor de hosting, si usás Supabase, Neon o Render).
+Necesitas una **URL de conexión a Postgres**, con este formato: `postgresql://usuario:password@host:5432/nombre-de-base`. La hace el equipo técnico que mantiene la base (o tu proveedor de hosting, si usas Supabase, Neon o Render).
 
-1. **Pedile a quien administra la base que cree un usuario nuevo solo para Terminal Sync** — separado de los usuarios reales o de tu app.
-2. **Dale a ese usuario permisos solo de lectura** sobre las tablas que querés que la IA vea.
-3. Pegá la URL completa cuando el Lab te pida `POSTGRES_URL`. Terminal Sync la guarda cifrada en tu Keychain — nunca queda en texto plano.
+1. **Pídele a quien administra la base que cree un usuario nuevo solo para Terminal Sync** — separado de los usuarios reales o de tu app.
+2. **Dale a ese usuario permisos solo de lectura** sobre las tablas que quieras que la IA vea.
+3. Pega la URL completa cuando el Lab te pida `POSTGRES_URL`. Terminal Sync la guarda cifrada en tu Keychain — nunca queda en texto plano.
 
 El conector ya garantiza por su lado que solo lee. Crear además un usuario de Postgres con permisos solo de lectura es **cerrar dos puertas en vez de una** — recomendado para cualquier base con datos sensibles.
 

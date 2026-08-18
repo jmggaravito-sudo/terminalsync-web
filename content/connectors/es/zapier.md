@@ -18,26 +18,26 @@ licenseUrl: "https://zapier.com/terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
 ---
-**Zapier MCP** es el puente entre tu agente y las apps que ya usás: Gmail, Google Sheets, Slack, Salesforce, HubSpot, Asana y miles más. A diferencia de un conector de un solo producto, Zapier te deja elegir exactamente qué acciones le exponés a la IA: enviar un email, agregar una fila a una planilla, crear una tarea, actualizar un negocio del CRM o disparar una de las herramientas que habilitaste en tu servidor MCP de Zapier.
+**Zapier MCP** es el puente entre tu agente y las apps que ya usas: Gmail, Google Sheets, Slack, Salesforce, HubSpot, Asana y miles más. A diferencia de un conector de un solo producto, Zapier te deja elegir exactamente qué acciones le expones a la IA: enviar un email, agregar una fila a una planilla, crear una tarea, actualizar un negocio del CRM o disparar una de las herramientas que habilitaste en tu servidor MCP de Zapier.
 
-Le pedís *"Creá una tarea en Asana para este seguimiento y agregá el lead a mi Google Sheet"* y el agente puede llamar las tools de Zapier que vos permitiste. Funciona mejor cuando mantenés el server enfocado: habilitá solo las acciones que realmente querés que el agente use.
+Le pedís *"Crea una tarea en Asana para este seguimiento y agrega el lead a mi Google Sheet"* y el agente puede llamar las tools de Zapier que tú permitiste. Funciona mejor cuando mantienes el server enfocado: habilitá solo las acciones que realmente quieres que el agente use.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Agregá este lead nuevo a Google Sheets y creá una tarea de seguimiento."*
-- *"Enviá este mensaje aprobado por Gmail."*
-- *"Creá un canal de Slack para este proyecto e invitá al equipo."*
-- *"Buscá este contacto en HubSpot y actualizá la etapa del negocio."*
+- *"Agrega este lead nuevo a Google Sheets y crea una tarea de seguimiento."*
+- *"Envía este mensaje aprobado por Gmail."*
+- *"Crea un canal de Slack para este proyecto e invita al equipo."*
+- *"Busca este contacto en HubSpot y actualiza la etapa del negocio."*
 
-### Cómo conectás
+### Cómo conectas
 
 La configuración de Zapier se maneja en **tu dashboard de Zapier MCP**, no con un manifest público fijo:
 
-1. Entrá a [mcp.zapier.com](https://mcp.zapier.com) y creá o abrí tu servidor MCP.
-2. Agregá las acciones de apps que querés que tenga el agente.
-3. Conectá en tu cliente de IA la URL/credenciales MCP que te da Zapier.
+1. Entra a [mcp.zapier.com](https://mcp.zapier.com) y crea o abrí tu servidor MCP.
+2. Agrega las acciones de apps que quieres que tenga el agente.
+3. Conecta en tu cliente de IA la URL/credenciales MCP que te da Zapier.
 
-**Aclaración honesta:** las acciones de Zapier pueden cambiar sistemas reales. Mantené la lista de tools acotada, usá lectura/búsqueda cuando puedas y pedí aprobación antes de enviar mensajes, editar registros o disparar workflows del negocio. Zapier documenta que el uso por MCP consume tareas de tu plan existente de Zapier.
+**Aclaración honesta:** las acciones de Zapier pueden cambiar sistemas reales. Mantén la lista de tools acotada, usá lectura/búsqueda cuando puedas y pedí aprobación antes de enviar mensajes, editar registros o disparar workflows del negocio. Zapier documenta que el uso por MCP consume tareas de tu plan existente de Zapier.
 
 --- dev ---
 

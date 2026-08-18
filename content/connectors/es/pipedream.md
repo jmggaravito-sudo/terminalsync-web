@@ -3,7 +3,7 @@ name: Pipedream
 logo: /connectors/pipedream.svg
 category: automation
 status: available
-simpleTitle: "Conectá tu IA a miles de apps"
+simpleTitle: "Conecta tu IA a miles de apps"
 simpleSubtitle: "Que ejecute acciones aprobadas en Slack, Gmail, Sheets, GitHub y más desde Pipedream."
 devTitle: "Pipedream MCP Connector"
 devSubtitle: "Servidor oficial @pipedream/mcp: stdio local o SSE self-hosted sobre Pipedream Connect."
@@ -32,23 +32,23 @@ marketplaceSource: "official"
 
 Este conector deja que tu IA use la capa MCP oficial de Pipedream para una app concreta, como Slack, Gmail, GitHub, Google Sheets o miles más. La documentación de Pipedream resume la promesa como sumar *"10,000+ tools from 3,000+ APIs"* a herramientas de IA, con la conexión de cuentas manejada por Pipedream.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Buscá las respuestas nuevas de Typeform y agregá los leads calificados a Google Sheets."*
-- *"Creá un issue de GitHub con esta nota del cliente y mandá el link por Slack."*
-- *"Revisá las reuniones de hoy y armá un borrador de seguimiento para cada una."*
+- *"Busca las respuestas nuevas de Typeform y agrega los leads calificados a Google Sheets."*
+- *"Crea un issue de GitHub con esta nota del cliente y manda el link por Slack."*
+- *"Revisa las reuniones de hoy y arma un borrador de seguimiento para cada una."*
 
-### Qué configuración necesitás
+### Qué configuración necesitas
 
-Necesitás un **proyecto de Pipedream** y credenciales de un cliente OAuth. También elegís el slug de la app para este server MCP — por ejemplo `slack`, `gmail`, `github` o `google_sheets`.
+Necesitas un **proyecto de Pipedream** y credenciales de un cliente OAuth. También eliges el slug de la app para este server MCP — por ejemplo `slack`, `gmail`, `github` o `google_sheets`.
 
-1. Creá o abrí un proyecto en Pipedream.
-2. Creá un cliente OAuth de Pipedream desde la configuración de autenticación de la REST API.
-3. Copiá el client ID, el client secret y el project ID.
-4. Elegí el slug de la app que querés exponer con este server. Pipedream muestra los slugs en la sección Authentication de cada app.
-5. Pegá esos valores cuando el Lab te pida `PIPEDREAM_CLIENT_ID`, `PIPEDREAM_CLIENT_SECRET`, `PIPEDREAM_PROJECT_ID`, `PIPEDREAM_APP` y `PIPEDREAM_EXTERNAL_USER_ID`. Terminal Sync los guarda cifrados en tu Keychain.
+1. Crea o abre un proyecto en Pipedream.
+2. Crea un cliente OAuth de Pipedream desde la configuración de autenticación de la REST API.
+3. Copia el client ID, el client secret y el project ID.
+4. Elige el slug de la app que quieras exponer con este server. Pipedream muestra los slugs en la sección Authentication de cada app.
+5. Pega esos valores cuando el Lab te pida `PIPEDREAM_CLIENT_ID`, `PIPEDREAM_CLIENT_SECRET`, `PIPEDREAM_PROJECT_ID`, `PIPEDREAM_APP` y `PIPEDREAM_EXTERNAL_USER_ID`. Terminal Sync los guarda cifrados en tu Keychain.
 
-Arrancá con una app por vez. Pipedream puede llegar a muchísimas herramientas, así que limitar el slug de app es la forma más simple de que la primera instalación sea clara.
+Arranca con una app por vez. Pipedream puede llegar a muchísimas herramientas, así que limitar el slug de app es la forma más simple de que la primera instalación sea clara.
 
 --- dev ---
 

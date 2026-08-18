@@ -25,23 +25,23 @@ licenseUrl: "https://github.com/exa-labs/exa-mcp-server/blob/main/LICENSE"
 ---
 **Exa** es un buscador hecho para IA, no para humanos que clickean links azules. Su conector oficial, según el README, es *"a Model Context Protocol server with Exa for web search and web crawling"* que da resultados en tiempo real como **contenido limpio y listo para usar** — así el agente recibe el texto real de una página, no una lista de links para abrir. Más allá de la búsqueda simple, puede investigar una empresa, encontrar personas y correr tareas de research de varios pasos.
 
-Le preguntás *"¿qué está diciendo la gente de este producto este mes?"* y busca en la web en vivo y resume. Le pedís *"investigá esta empresa — qué hace, quién la dirige, noticias recientes"* y usa su tool de research de empresas para armar un perfil real. Es la diferencia entre una IA que adivina desde datos viejos de entrenamiento y una que de verdad lo buscó hoy.
+Le preguntas *"¿qué está diciendo la gente de este producto este mes?"* y busca en la web en vivo y resume. Le pides *"investiga esta empresa — qué hace, quién la dirige, noticias recientes"* y usa su tool de research de empresas para armar un perfil real. Es la diferencia entre una IA que adivina desde datos viejos de entrenamiento y una que de verdad lo buscó hoy.
 
-### Qué le podés pedir
+### Qué le puedes pedir
 
-- *"Buscá en la web qué cambió en las reglas de privacidad de datos de la UE en 2026 y resumí el impacto práctico para un negocio chico."*
-- *"Investigá la empresa de stripe.com — qué hacen, tamaño, y cualquier anuncio reciente."*
-- *"Encontrá tres artículos recientes y creíbles que comparen paneles solares vs. bombas de calor para calefacción del hogar y dame las conclusiones."*
+- *"Busca en la web qué cambió en las reglas de privacidad de datos de la UE en 2026 y resume el impacto práctico para un negocio chico."*
+- *"Investiga la empresa de stripe.com — qué hacen, tamaño, y cualquier anuncio reciente."*
+- *"Encuentra tres artículos recientes y creíbles que comparen paneles solares vs. bombas de calor para calefacción del hogar y dame las conclusiones."*
 
-### Qué token necesitás
+### Qué token necesitas
 
-Necesitás una **API key de Exa**.
+Necesitas una **API key de Exa**.
 
-1. Andá a [dashboard.exa.ai/api-keys](https://dashboard.exa.ai/api-keys) y creá una cuenta gratis.
-2. Copiá tu API key.
-3. Pegala cuando el Lab te pida `EXA_API_KEY`. Se guarda cifrada en tu Keychain.
+1. Ve a [dashboard.exa.ai/api-keys](https://dashboard.exa.ai/api-keys) y crea una cuenta gratis.
+2. Copia tu API key.
+3. Pégala cuando el Lab te pida `EXA_API_KEY`. Se guarda cifrada en tu Keychain.
 
-El tier gratis de Exa alcanza para probarlo; la búsqueda intensiva y las tools de deep-research consumen más de tu cuenta, así que mirá tu uso en el panel de ellos.
+El tier gratis de Exa alcanza para probarlo; la búsqueda intensiva y las tools de deep-research consumen más de tu cuenta, así que mira tu uso en el panel de ellos.
 
 --- dev ---
 
