@@ -67,7 +67,8 @@ jobs:
             src/lib/plugins.integrity.test.ts \
             src/lib/plugins.test.ts \
             src/lib/skills.test.ts \
-            src/lib/logoAssets.test.ts
+            src/lib/logoAssets.test.ts \
+            src/lib/__tests__/voz-neutral-catalogo.test.ts
 
       - name: Resolve matching app PR or release branch
         id: app_ref
