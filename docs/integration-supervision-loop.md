@@ -16,6 +16,10 @@ For the public `/api/marketplace/catalog` contract:
   panel;
 - every kit has a web `href` and at least one resolved item;
 - every resolved kit item has a name and tagline;
+- the Spanish catalog copy stays in neutral Spanish, never voseo (ratchet
+  test, `src/lib/__tests__/voz-neutral-catalogo.test.ts` — new
+  connectors/kits/plugins/skills must be clean; the `DEUDA` allowlist only
+  shrinks, never grows);
 - the standard marketplace catalog, kit integrity, plugin integrity, skills and
   i18n and logo tests stay green.
 
