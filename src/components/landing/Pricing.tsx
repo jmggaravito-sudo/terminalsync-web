@@ -5,17 +5,20 @@ import { Check, Sparkles, ArrowRight, Zap } from "lucide-react";
 import type { Dict } from "@/content";
 import { CheckoutButton } from "./CheckoutButton";
 import { PlanQuiz } from "./PlanQuiz";
+import { useGeoCurrency, type Currency } from "@/lib/useGeoCurrency";
 
 type PlanKey = "starter" | "pro" | "max";
 
 export function Pricing({ dict }: { dict: Dict }) {
   // Solo facturación mensual desde 2026-05-29 — JM removió la opción anual.
-  // Tampoco mostramos conversión local USD→COP/EUR/etc: las tasas hardcoded
-  // en lib/geoCurrency.ts quedaban obsoletas y daban una sensación de
-  // descuido al visitante (JM 2026-05-29). Stripe igual cobra en USD y el
-  // banco hace la conversión real — el "≈ $X COP" era ruido sin valor.
+  // Moneda geo-detectada desde 2026-08-21 (useGeoCurrency): Colombia ve el
+  // precio real en COP (Mercado Pago), el resto del mundo ve el precio real
+  // en USD (Stripe) — dos listas de precio fijas, no una conversión FX
+  // estimada. Eso sí lo removió JM el 2026-05-29 (un "≈ $X COP" calculado
+  // que se desfasaba del FX real cada par de semanas); esto es distinto.
   const [quizOpen, setQuizOpen] = useState(false);
   const [highlighted, setHighlighted] = useState<PlanKey | null>(null);
+  const currency = useGeoCurrency();
 
   function handleQuizCommit(plan: PlanKey) {
     setQuizOpen(false);
@@ -91,7 +94,7 @@ export function Pricing({ dict }: { dict: Dict }) {
         </div>
       </button>
 
-      <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
+      <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-stretch">
         <PlanCard
           id="plan-starter"
           name={dict.pricing.plans.starter.name}
@@ -113,6 +116,16 @@ export function Pricing({ dict }: { dict: Dict }) {
           plan="pro"
           copy={dict.pricing.plans.pro}
           dict={dict}
+          currency={currency}
+          highlighted={highlighted === "pro"}
+        />
+
+        <PaidCard
+          id="plan-proAi"
+          plan="pro"
+          copy={dict.pricing.plans.proAi}
+          dict={dict}
+          currency={currency}
           featured
           highlighted={highlighted === "pro"}
         />
@@ -122,6 +135,16 @@ export function Pricing({ dict }: { dict: Dict }) {
           plan="max"
           copy={dict.pricing.plans.max}
           dict={dict}
+          currency={currency}
+          highlighted={highlighted === "max"}
+        />
+
+        <PaidCard
+          id="plan-maxAi"
+          plan="max"
+          copy={dict.pricing.plans.maxAi}
+          dict={dict}
+          currency={currency}
           highlighted={highlighted === "max"}
         />
       </div>
@@ -141,6 +164,7 @@ function PaidCard({
   plan,
   copy,
   dict,
+  currency,
   featured,
   highlighted,
 }: {
@@ -148,14 +172,23 @@ function PaidCard({
   plan: "pro" | "max";
   copy: Dict["pricing"]["plans"]["pro"];
   dict: Dict;
+  currency: Currency;
   featured?: boolean;
   highlighted?: boolean;
 }) {
-  // Solo facturación mensual (JM, 2026-05-29). Sin conversión local USD→COP/EUR/etc
-  // (las tasas hardcoded del removed geoCurrency.ts daban una falsa sensación
-  // de precisión y se desfasaban del FX real cada par de semanas).
-  const price = copy.price;
-  const note = copy.priceNote;
+  // Geo-detected currency (JM, 2026-08-21): Colombia sees the real Mercado
+  // Pago COP price, everyone else sees the real Stripe USD price — two
+  // fixed price lists, not a computed FX estimate. This is distinct from
+  // the old geoCurrency.ts (killed 2026-05-29), which showed a computed
+  // "≈ $X COP" next to the USD price and went stale between rate updates.
+  const showCop = currency === "COP" && copy.priceCop;
+  const price = showCop ? copy.priceCop! : copy.price;
+  const note = showCop ? copy.priceNoteCop ?? copy.priceNote : copy.priceNote;
+  const reciprocalNote = showCop
+    ? dict.locale === "es"
+      ? `También en Stripe: ${copy.price}${copy.priceNote} USD`
+      : `Also via Stripe: ${copy.price}${copy.priceNote} USD`
+    : null;
   return (
     <article
       id={id}
@@ -177,12 +210,17 @@ function PaidCard({
         {copy.name}
       </h3>
 
-      <div className="mt-3 flex items-baseline gap-1.5 min-h-[3rem]">
-        <span className="text-[34px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
+      <div className="mt-3 flex flex-wrap items-baseline gap-x-1.5 gap-y-0 min-h-[3rem]">
+        <span
+          className={`font-semibold tracking-tight text-[var(--color-fg-strong)] ${showCop ? "text-[26px]" : "text-[34px]"}`}
+        >
           {price}
         </span>
-        <span className="text-[12px] text-[var(--color-fg-muted)]">{note}</span>
+        <span className="text-[12px] text-[var(--color-fg-muted)] whitespace-nowrap">{note}</span>
       </div>
+      {reciprocalNote && (
+        <p className="text-[10.5px] text-[var(--color-fg-dim)] -mt-1">{reciprocalNote}</p>
+      )}
 
       {copy.tagline ? (
         <p className="text-[12.5px] text-[var(--color-fg-muted)] mt-1 leading-snug">

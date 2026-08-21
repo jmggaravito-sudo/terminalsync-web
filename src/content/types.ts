@@ -271,11 +271,16 @@ export interface Dict {
       }>;
     };
     plans: {
-      // Después del kill-yearly (2026-05-29) los 3 planes tienen el mismo
+      // Después del kill-yearly (2026-05-29) los planes tienen el mismo
       // shape: precio único + features. Pro/Max llevan `badge` que Free no.
+      // proAi/maxAi son Pro/Max con la IA de TerminalSync incluida (sin
+      // cuenta propia de Claude/Codex/Gemini) — mismo tier de terminales,
+      // solo cambia quién paga la IA.
       starter: Plan;
       pro: PaidPlan;
+      proAi: PaidPlan;
       max: PaidPlan;
+      maxAi: PaidPlan;
     };
   };
   trust: {
@@ -484,6 +489,10 @@ interface PaidPlan {
   badge: string;
   price: string;
   priceNote: string;
+  /** Precio en COP para visitantes geolocalizados en Colombia (Mercado
+   *  Pago). Si falta, la tarjeta se queda en USD aunque el geo diga "CO". */
+  priceCop?: string;
+  priceNoteCop?: string;
   /** Micro-subtitulo bajo el precio. */
   tagline?: string;
   features: string[];
