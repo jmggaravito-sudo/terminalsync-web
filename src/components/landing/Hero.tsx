@@ -178,7 +178,7 @@ export function Hero({ dict }: { dict: Dict }) {
       </div>
 
       {/* Dashboard */}
-      <div className="relative mx-auto max-w-6xl px-3 sm:px-5 md:px-6 pb-16 md:pb-20">
+      <div className="relative mx-auto max-w-7xl px-3 sm:px-5 md:px-6 pb-16 md:pb-20">
         <h2
           className="text-center font-semibold text-[var(--color-fg-strong)] leading-tight mx-auto mb-4"
           style={{ fontSize: "clamp(22px, 3.2vw, 36px)", letterSpacing: "-0.03em" }}
@@ -188,7 +188,7 @@ export function Hero({ dict }: { dict: Dict }) {
 
         {/* Portada del video con botón ▶ */}
         <div className="relative mt-6 rounded-2xl overflow-hidden group cursor-pointer shadow-floating">
-          <div style={{ aspectRatio: "1525/909" }}>
+          <div style={{ aspectRatio: "2400/1860" }}>
             <img
               src={dict.locale === "en" ? "/redesign/dashboard-hero-en.png" : "/redesign/dashboard-hero.png"}
               alt="TerminalSync dashboard"
