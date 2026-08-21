@@ -34,7 +34,7 @@ const en: Dict = {
     trustLine: "No install · No context loss · Works on any computer · Encrypted secrets & conversations · Your files in YOUR cloud",
     nextUp: {
       eyebrow: "Latest",
-      body: "Anywhere Access via Cloudflare Tunnel — open your session from your phone with zero install. Unified multi-AI workflow: Claude and Codex sharing the same context. Per-terminal secrets vault.",
+      body: "Anywhere Access via Cloudflare Tunnel — open your session from your phone with zero install. Unified multi-AI workflow: Claude and Codex sharing the same context. Per-workspace secrets vault.",
     },
     mockup: {
       appName: "Terminal Sync",
@@ -175,11 +175,11 @@ const en: Dict = {
   benefits: {
     title: "Your agent is never left alone",
     subtitle:
-      "Three guarantees no terminal — and no AI vendor — gives you: real persistence, access from anywhere, and a system that pings you before you have to ask.",
+      "Three guarantees no workspace — and no AI vendor — gives you: real persistence, access from anywhere, and a system that pings you before you have to ask.",
     items: {
       uninterrupted: {
         title: "Uninterrupted Work",
-        body: "Your work is bulletproof: if the internet drops, your agent (Claude/Codex) does NOT stop. The terminal keeps running in the background and we notify you the moment connectivity returns or the task finishes.",
+        body: "Your work is bulletproof: if the internet drops, your agent (Claude/Codex) does NOT stop. The workspace keeps running in the background and we notify you the moment connectivity returns or the task finishes.",
       },
       anywhere: {
         title: "Anywhere Access",
@@ -232,7 +232,7 @@ const en: Dict = {
           "Full Codex configuration",
           "Global state of your sessions",
           "Skills and plugins auto-reinstalled",
-          "AI picker — pick Claude or Codex per terminal",
+          "AI picker — pick Claude or Codex per workspace",
           "Conversation alive when you reopen (via session resurrection)",
         ],
         upcoming: [],
@@ -307,7 +307,7 @@ const en: Dict = {
       },
       {
         q: "Do I need to configure anything?",
-        a: "No. You open your space and your terminals, tools and memory are ready from the first session. Nothing to configure.",
+        a: "No. You open the app and your workspaces, tools and memory are ready from the first session. Nothing to configure.",
       },
     ],
   },
@@ -402,13 +402,13 @@ const en: Dict = {
       responsiveNotifications:
         "When your agent finishes something, fails, or needs a call from you, it pings you via email and Telegram. Reply from wherever you are.",
       webMobileMirror:
-        "Your active session looks and feels the same from your computer, a browser, or your phone. Same terminal, same context, same agent.",
+        "Your active session looks and feels the same from your computer, a browser, or your phone. Same workspace, same context, same agent.",
       offlineLocal:
         "Works without internet. Your computer is the source of truth — cloud sync is asynchronous and never blocks your work.",
       aes256:
         "Your secrets, credentials and AI conversations are encrypted on your computer before they leave, with a master key only you hold, protected by your secret phrase. Your files go straight to your own cloud — they never pass through our servers.",
       secretsVault:
-        "Built-in vault for access keys, tokens, and credentials. Available to your terminals as environment variables — never written to plain files.",
+        "Built-in vault for access keys, tokens, and credentials. Available to your workspaces as environment variables — never written to plain files.",
       internetImmunity:
         "If your internet drops while an agent is running, it keeps working locally. When you're back online, it syncs on its own.",
       aiConversationSync:
@@ -426,7 +426,7 @@ const en: Dict = {
       deviceRoaming:
         "Switch computers (office, home, travel) and your session, files, and context follow. No re-installing agents, no re-pasting access keys.",
       multipleSessions:
-        "Multiple terminals running in parallel, each with its own agent, context, and folder. Hop between them with a click.",
+        "Multiple workspaces running in parallel, each with its own agent, context, and folder. Hop between them with a click.",
     },
   },
   personas: {
@@ -514,7 +514,7 @@ const en: Dict = {
         priceNote: "forever",
         tagline: "For anyone starting to organize their business with AI.",
         features: [
-          "3 active terminals with real persistence",
+          "3 active workspaces with real persistence",
           "Use 1, 2 or all 3 AIs — on your own subscription",
           "AES-256 · not even we can read it",
           "Google Drive sync (your account)",
@@ -531,7 +531,7 @@ const en: Dict = {
         priceNoteCop: "COP/mo",
         tagline: "Bring your own Claude, Codex, or Gemini account.",
         features: [
-          "10 terminals with persistence + resurrection",
+          "10 workspaces with persistence + resurrection",
           "Claude + Codex + Gemini in one workspace",
           "Your business remembers everything — no explaining twice",
           "Per-project key vault",
@@ -568,7 +568,7 @@ const en: Dict = {
         tagline: "Max, bringing your own AI account.",
         features: [
           "Everything in Pro, plus:",
-          "Unlimited terminals",
+          "Unlimited workspaces",
           "Up to 10 devices",
           "Shared tools and commands per team",
           "Pair programming (read-only)",
@@ -693,7 +693,7 @@ const en: Dict = {
     ],
     replies: {
       install:
-        "Download TerminalSync, create a terminal and choose the AI you want to use: Claude Code, Codex, Gemini CLI or No AI. In Integrations you can configure connectors, skills and terminal tools. Tell me your use case and I can recommend the best starting point.",
+        "Download TerminalSync, create a workspace and choose the AI you want to use: Claude Code, Codex, Gemini CLI or No AI. In Integrations you can configure connectors, skills and workspace tools. Tell me your use case and I can recommend the best starting point.",
       pricing:
         "There are plans for trying the product, power users and technical users/teams. Starter is for getting started; Pro adds advanced capabilities like memory/integrations; Max is for Git-native sync, secrets vault and our most complete workflows. Check Pricing for the current details. Want me to recommend a plan for your use case?",
       security:

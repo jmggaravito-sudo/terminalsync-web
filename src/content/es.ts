@@ -34,7 +34,7 @@ const es: Dict = {
     trustLine: "Sin instalación · Sin perder contexto · Funciona en cualquier computadora · Secretos y conversaciones cifrados · Tus archivos en TU nube",
     nextUp: {
       eyebrow: "Lo último",
-      body: "Tu sesión en cualquier dispositivo — ábrela desde el celular sin instalar nada. Un solo flujo entre Claude y Codex con el mismo contexto. Bóveda de secretos por terminal.",
+      body: "Tu sesión en cualquier dispositivo — ábrela desde el celular sin instalar nada. Un solo flujo entre Claude y Codex con el mismo contexto. Bóveda de secretos por espacio de trabajo.",
     },
     mockup: {
       appName: "Terminal Sync",
@@ -175,11 +175,11 @@ const es: Dict = {
   benefits: {
     title: "Tu agente nunca se queda solo",
     subtitle:
-      "Tres garantías que ningún terminal — ni los AI vendors — te dan: persistencia real, acceso desde cualquier lugar, y un sistema que te avisa antes de que tengas que preguntar.",
+      "Tres garantías que ningún espacio de trabajo — ni los AI vendors — te dan: persistencia real, acceso desde cualquier lugar, y un sistema que te avisa antes de que tengas que preguntar.",
     items: {
       uninterrupted: {
         title: "Trabajo Ininterrumpido",
-        body: "Tu trabajo está blindado: si el internet falla, tu agente (Claude/Codex) NO se detendrá. La terminal sigue trabajando en segundo plano y te notificamos apenas recupere la conexión o termine la tarea.",
+        body: "Tu trabajo está blindado: si el internet falla, tu agente (Claude/Codex) NO se detendrá. El espacio de trabajo sigue trabajando en segundo plano y te notificamos apenas recupere la conexión o termine la tarea.",
       },
       anywhere: {
         title: "Tu sesión en cualquier dispositivo",
@@ -232,7 +232,7 @@ const es: Dict = {
           "Configuración completa de Codex",
           "Estado global de tus sesiones",
           "Skills y plugins reinstalados automáticamente",
-          "AI picker — eliges Claude o Codex por terminal",
+          "AI picker — eliges Claude o Codex por espacio de trabajo",
           "Conversación viva al reabrir (vía resurrección de sesión)",
         ],
         upcoming: [],
@@ -307,7 +307,7 @@ const es: Dict = {
       },
       {
         q: "¿Necesito configurar algo?",
-        a: "No. Abres tu espacio y tus terminales, herramientas y memoria ya están listas desde la primera sesión. Nada que configurar.",
+        a: "No. Abres la app y tus espacios de trabajo, herramientas y memoria ya están listos desde la primera sesión. Nada que configurar.",
       },
     ],
   },
@@ -402,13 +402,13 @@ const es: Dict = {
       responsiveNotifications:
         "Cuando tu agente termina algo, falla, o te pide una decisión, te avisa por correo y Telegram. Respondes desde donde estés.",
       webMobileMirror:
-        "Tu sesión activa se ve y se controla igual desde tu computadora, desde un navegador o desde tu celular. Misma terminal, mismo contexto, mismo agente.",
+        "Tu sesión activa se ve y se controla igual desde tu computadora, desde un navegador o desde tu celular. Mismo espacio de trabajo, mismo contexto, mismo agente.",
       offlineLocal:
         "Funciona sin internet. Tu computadora es la fuente de verdad — la sincronización con la nube es asíncrona y nunca bloquea tu trabajo.",
       aes256:
         "Tus secretos, credenciales y conversaciones con la IA se cifran en tu computadora antes de salir, con una llave maestra que solo tienes tú, protegida por tu frase secreta. Tus archivos van directo a tu propia nube — nunca pasan por nuestros servidores.",
       secretsVault:
-        "Vault integrado para llaves de acceso, tokens y credenciales. Disponibles en tus terminales como variables de entorno — nunca escritos en archivos planos.",
+        "Vault integrado para llaves de acceso, tokens y credenciales. Disponibles en tus espacios de trabajo como variables de entorno — nunca escritos en archivos planos.",
       internetImmunity:
         "Si tu internet se cae mientras un agente está corriendo, sigue trabajando localmente. Cuando vuelves a tener señal, sincroniza solo.",
       aiConversationSync:
@@ -426,7 +426,7 @@ const es: Dict = {
       deviceRoaming:
         "Cambias de computadora (oficina, casa, viaje) y tu sesión, archivos y contexto te siguen. Sin re-instalar agentes ni re-pegar llaves de acceso.",
       multipleSessions:
-        "Múltiples terminales corriendo en paralelo, cada una con su agente, su contexto y su carpeta. Saltas entre ellas con un click.",
+        "Múltiples espacios de trabajo corriendo en paralelo, cada uno con su agente, su contexto y su carpeta. Saltas entre ellos con un click.",
     },
   },
   personas: {
@@ -514,7 +514,7 @@ const es: Dict = {
         priceNote: "para siempre",
         tagline: "Para quien empieza a organizar su empresa con IA.",
         features: [
-          "3 terminales activas con persistencia real",
+          "3 espacios de trabajo activos con persistencia real",
           "Usa 1, 2 o las 3 IAs — con tu propia suscripción",
           "AES-256 · ni nosotros lo leemos",
           "Sync con Google Drive (tu cuenta)",
@@ -531,7 +531,7 @@ const es: Dict = {
         priceNoteCop: "COP/mes",
         tagline: "Traes tu cuenta de Claude, Codex o Gemini.",
         features: [
-          "10 terminales con persistencia + resurrección",
+          "10 espacios de trabajo con persistencia + resurrección",
           "Claude + Codex + Gemini en un espacio de trabajo",
           "Tu empresa recuerda todo — no explicas dos veces",
           "Bóveda de claves por proyecto",
@@ -568,7 +568,7 @@ const es: Dict = {
         tagline: "Max trayendo tu propia cuenta de IA.",
         features: [
           "Todo lo de Pro, más:",
-          "Terminales ilimitadas",
+          "Espacios de trabajo ilimitados",
           "Hasta 10 dispositivos",
           "Herramientas y comandos compartidos por equipo",
           "Programación en pareja (solo lectura)",
@@ -693,7 +693,7 @@ const es: Dict = {
     ],
     replies: {
       install:
-        "Descarga TerminalSync, crea una terminal y elige la IA que quieres usar: Claude Code, Codex, Gemini CLI o Sin IA. Desde Integraciones puedes configurar conectores, skills y herramientas de terminal. Si me dices tu caso de uso, te recomiendo por dónde empezar.",
+        "Descarga TerminalSync, crea un espacio de trabajo y elige la IA que quieres usar: Claude Code, Codex, Gemini CLI o Sin IA. Desde Integraciones puedes configurar conectores, skills y herramientas del espacio de trabajo. Si me dices tu caso de uso, te recomiendo por dónde empezar.",
       pricing:
         "Tenemos planes para probar, power users y usuarios técnicos/equipos. Starter sirve para empezar; Pro agrega capacidades avanzadas como memoria/integraciones; Max está pensado para Git-native sync, vault de secretos y workflows más completos. Mira la sección de Precios para el detalle actualizado. ¿Quieres que te recomiende un plan según tu uso?",
       security:
