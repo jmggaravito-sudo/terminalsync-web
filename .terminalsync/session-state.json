@@ -1,0 +1,45 @@
+{
+  "goal": "?",
+  "files": [],
+  "next_steps": [],
+  "updated_at": 1787411837232,
+  "commands": [
+    "ls -la /Users/jm/projects/diseno-terminalsync-ai/locucion 2>/dev/null | head -30",
+    "ls -la /Users/jm/projects/diseno-terminalsync-ai/locucion/scripts 2>/dev/null; find /Users/jm/projects/diseno-terminalsync-ai -iname \"guion-video.html\" -not -path \"*/node_modules/*\" 2>/dev/null",
+    "ls -la /Users/jm/projects/diseno-terminalsync-ai/locucion/",
+    "grep -n \"locucion\" /Users/jm/projects/diseno-terminalsync-ai/.gitignore; echo \"---log---\"; git -C /Users/jm/projects/diseno-terminalsync-ai log --oneline --all -- locucion | head -20",
+    "git -C /Users/jm/projects/diseno-terminalsync-ai log --oneline --all -- \"**/generar-locucion.js\" \"**/armar-guia.sh\"; echo \"---\"; git -C /Users/jm/projects/diseno-terminalsync-ai log -1 --format=%H -- locucion/README.md",
+    "git -C /Users/jm/projects/diseno-terminalsync-ai show --stat 35dfb20 | grep -i \"locucion\\|voz\\|scripts/generar\\|armar-guia\"",
+    "ls -la /Users/jm/projects/diseno-terminalsync-ai/scripts/ | grep -i \"locucion\\|guia\""
+  ],
+  "transcript": [
+    {
+      "role": "assistant",
+      "text": "Confirmado: ahora el avatar del chat siempre muestra el ícono de TerminalSync (la casita), y \"WhatsApp\" queda solo como badge de canal, no tapando a nuestro bot. Reviso también los textos con \"espacios de trabajo\"."
+    },
+    {
+      "role": "assistant",
+      "text": "Todo confirmado. Apago el servidor y publico los cambios."
+    },
+    {
+      "role": "assistant",
+      "text": "Publicado. Dos cambios:\n\n**1. \"Terminal(es)\" → \"Espacio(s) de trabajo\" en todo el landing** (ES y EN) — features de pricing, beneficios, FAQ, comparación de dispositivos, vault, sesiones múltiples y el mensaje de respaldo del asistente. Dejé intacto el nombre de marca \"TerminalSync\"/\"Terminal Sync\", claro. Revisé también los 10 demos HTML embebidos — solo tenían menciones de marca, ninguna otra que cambiar.\n\n**2. El WhatsApp que aparecía \"encima de nuestro bot\"**: era un bug real en el demo de \"Continuidad\" (la sección donde muestro que tu conversación sigue en WhatsApp/Telegram). Cuando la conversación pasaba a WhatsApp, el código reemplazaba el ícono del avatar de \"TerminalSync\" por el logo propio de WhatsApp — pero el nombre arriba seguía diciendo \"TerminalSync\", entonces se veía como si el logo de WhatsApp le hubiera robado la identidad a nuestro bot. Lo corregí: el avatar ahora siempre muestra el ícono de TerminalSync (la casita); solo el color de fondo del chat y la etiqueta pequ…"
+    },
+    {
+      "role": "user",
+      "text": "?"
+    },
+    {
+      "role": "assistant",
+      "text": "¿En qué te quedó la duda? Ya publiqué los dos cambios que pediste:\n\n1. **\"Terminal(es)\" → \"Espacios de trabajo\" / \"Workspaces\"** en todo el landing (ES/EN), sin tocar la marca \"TerminalSync\".\n2. **El bug del WhatsApp sobre el bot**: en el demo de \"Continuidad\", el avatar del chat ahora siempre muestra el ícono de TerminalSync — WhatsApp/Telegram solo aparecen como badge de canal y color de fondo, ya no reemplazan nuestro ícono.\n\nAmbos ya están en producción (commit `9fdbfd6`, pusheado a `main`). Si no se ve reflejado en el sitio en vivo, puede ser que el deploy automático (Vercel u otro) todavía esté corriendo — dame un par de minutos y avisame si seguís viendo algo raro."
+    },
+    {
+      "role": "user",
+      "text": "Tu tienes la info de como creamos ese video cierto?  Que programa nos hizo la voz y todo"
+    },
+    {
+      "role": "assistant",
+      "text": "Sí, tengo toda la info. El video se hizo con este pipeline (todo versionado en el repo):\n\n**Voz: ElevenLabs**\n- Modelo: `eleven_multilingual_v2`\n- Voz ES: **Catalina** — \"Sunny and Engaging\" (colombiana, joven) — ID `k7v2xzj8pZoayBVu9pvq`\n- Voz EN: **Kristen** — \"Upbeat social media\" (americana, joven) — ID `XZUXLIpE3dqJ9aCZUj2R`\n- Elegidas en una prueba A/B con vos el 2026-06-20, priorizando energía/animación sobre narración solemne\n- Ajustes: `stability 0.4 · similarity 0.75 · style 0.30 · speaker_boost` (si querés más actuado: style→0.5, stability→0.3)\n\n**Pipeline (2 scripts, en `scripts/`):**\n1. `scripts/generar-locucion.js` — genera 13 MP3 por idioma (guion completo en el array `LINES` del script) llamando a la API de ElevenLabs. Es idempotente (si el MP3 ya existe lo salta) y tiene retry automático.\n2. `scripts/armar-guia.sh` — usa `ffmpeg` para concatenar los MP3 de cada idioma con silencios entre bloques, y arma `locucion/es-guia.mp3` / `locucion/en-guia.mp3` (las pistas guía).…"
+    }
+  ]
+}
