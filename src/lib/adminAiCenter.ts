@@ -1,219 +1,566 @@
-export type AiCenterLifecycle =
+// Internal Admin AI Center data adapter.
+//
+// Source of truth mirrored from TerminalSync merged PRs:
+// - PR #1504: src-tauri/src/ai_provider_catalog.rs
+// - PR #1522: src-tauri/src/ai_catalog_policy.rs
+// - PR #1526: src-tauri/src/ai_control_center.rs
+// - PR #1527: src/lib/aiCatalogPolicy.ts / composer provider-first wiring
+// - PR #1534: lifecycle metadata
+//
+// This file is intentionally used only by /[lang]/admin/ai-center. Do not import
+// it from public landing/client pages. `glm` remains the stable internal
+// provider_id and its visible label is TerminalSync / Z.ai.
+
+export type AiCatalogPromotionChannel = "internal" | "beta" | "public";
+export type AiCatalogSurface = "chat" | "design" | "image" | "video" | "automation";
+export type AiAdminSurface = "chat" | "image" | "video" | "automation";
+export type AiCatalogAccess = "connected" | "managed" | "credits" | "requires_key";
+export type AiCatalogDiscoveryState = "seeded" | "discovered";
+export type AiCatalogSourceKind = "seed_snapshot" | "provider_api";
+export type AiCatalogModelLifecycleState =
   | "active"
   | "beta"
   | "deprecated"
+  | "retired"
+  | "replacement_available";
+export type AiCatalogMigrationMode = "automatic" | "manual";
+
+export interface ProviderCatalogSourceMetadata {
+  kind: AiCatalogSourceKind;
+  label: string;
+  endpoint: string | null;
+}
+
+export interface ProviderCatalogModelEntry {
+  modelId: string;
+  visibleLabel: string;
+  capabilities: string[];
+  lifecycle: AiCatalogModelLifecycleState;
+  retiresAt: string | null;
+  replacementModelId: string | null;
+  replacementVisibleLabel: string | null;
+  migrationMode: AiCatalogMigrationMode | null;
+  isDefault: boolean;
+}
+
+export interface ProviderCatalogLifecycleSummary {
+  totalModels: number;
+  visibleModels: number;
+  activeModels: number;
+  betaModels: number;
+  deprecatedModels: number;
+  retiredModels: number;
+  replacementAvailableModels: number;
+  automaticMigrations: number;
+}
+
+export interface ProviderCatalogViewEntry {
+  providerId: string;
+  visibleLabel: string;
+  discoveryState: AiCatalogDiscoveryState;
+  source: ProviderCatalogSourceMetadata;
+  updatedAt: number;
+  channel: AiCatalogPromotionChannel;
+  access: AiCatalogAccess;
+  surfaces: AiCatalogSurface[];
+  capabilities: string[];
+  defaultModelId: string | null;
+  modelIds: string[];
+  models: ProviderCatalogModelEntry[];
+  lifecycleSummary: ProviderCatalogLifecycleSummary;
+}
+
+export interface ManagedEngineCatalogViewEntry {
+  engineId: string;
+  visibleLabel: string;
+  creditsProviderId: string;
+  channel: AiCatalogPromotionChannel;
+  access: AiCatalogAccess;
+  surfaces: AiCatalogSurface[];
+  capabilities: string[];
+}
+
+export interface ProviderFirstCatalogView {
+  audience: AiCatalogPromotionChannel;
+  surface: AiCatalogSurface;
+  connectedProviders: ProviderCatalogViewEntry[];
+  managedEngines: ManagedEngineCatalogViewEntry[];
+}
+
+export interface AiControlCenterSnapshot {
+  generatedAt: number;
+  catalogStatus: "seeded_only" | "fresh" | "refresh_due";
+  refreshIntervalSecs: number;
+  lastRefreshedAt: number | null;
+  refreshDue: boolean;
+  connectedProviders: ProviderCatalogViewEntry[];
+  managedEngines: ManagedEngineCatalogViewEntry[];
+  composerView: ProviderFirstCatalogView;
+  surfaceViews: ProviderFirstCatalogView[];
+}
+
+export type AiCenterAlertKind =
+  | "new_model_detected"
   | "retiring_soon"
-  | "retired";
-
-export type AiCenterSurface = "chat" | "image" | "video" | "automation";
-
-export interface AiCenterModel {
-  /** Internal slug. Keep out of client-facing UI; admin surfaces may use it only as a React key. */
-  id: string;
-  publicName: string;
-  lifecycle: AiCenterLifecycle;
-  replacementId?: string;
-  notes: string;
-  surfaces: Record<AiCenterSurface, boolean>;
-  source: "extension-proxy" | "hosted-key" | "manual-seed" | "policy-snapshot";
-}
-
-export interface AiCenterProvider {
-  /** Internal provider id. Keep out of client-facing UI. */
-  id: string;
-  publicName: string;
-  family: string;
-  lifecycle: AiCenterLifecycle;
-  source: "extension-proxy" | "hosted-key" | "manual-seed" | "policy-snapshot";
-  models: AiCenterModel[];
-}
+  | "replacement_available"
+  | "automatic_migration_scheduled"
+  | "provider_degraded"
+  | "new_capability";
 
 export interface AiCenterAlert {
+  kind: AiCenterAlertKind;
   severity: "info" | "warning" | "critical";
   title: string;
   detail: string;
+  providerId?: string;
+  modelId?: string;
   owner: "Producto" | "Ingeniería" | "Ops";
 }
 
-export const AI_CENTER_SURFACES: { key: AiCenterSurface; es: string; en: string }[] = [
+export const AI_CENTER_SURFACES: { key: AiAdminSurface; es: string; en: string }[] = [
   { key: "chat", es: "Chat", en: "Chat" },
   { key: "image", es: "Imagen", en: "Image" },
   { key: "video", es: "Video", en: "Video" },
   { key: "automation", es: "Automatización", en: "Automation" },
 ];
 
-/**
- * Phase-1 internal admin snapshot.
- *
- * This is intentionally NOT exported to public catalog/landing routes. It mirrors
- * the provider families currently supported by the web extension proxy and keeps
- * publication policy separate from client-facing labels. The next step is to
- * replace/augment this seed with the provider/model discovery snapshot once that
- * engine lands in this repo's main branch.
- */
-export const AI_CENTER_PROVIDERS: AiCenterProvider[] = [
-  {
-    id: "openai",
-    publicName: "OpenAI",
-    family: "OpenAI",
-    lifecycle: "active",
-    source: "extension-proxy",
+const REAL_GENERATED_AT = Date.UTC(2026, 7, 23, 15, 0, 0);
+const REAL_UPDATED_AT = Date.UTC(2026, 7, 23, 15, 0, 0);
+const GEMINI_DISCOVERED_AT = Date.UTC(2026, 7, 23, 14, 45, 0);
+const PROVIDER_API_ENDPOINT_REDACTED = "provider_api_endpoint_redacted";
+
+const ALL_CODE_CAPABILITIES = [
+  "chat",
+  "code",
+  "filesystem",
+  "background_jobs",
+  "scheduled_jobs",
+  "design_text",
+  "tool_approval_gate",
+];
+
+const GLM_CAPABILITIES = [
+  "chat",
+  "code",
+  "filesystem",
+  "background_jobs",
+  "scheduled_jobs",
+  "design_text",
+  "image_generation",
+];
+
+function source(label: string, kind: AiCatalogSourceKind = "seed_snapshot"): ProviderCatalogSourceMetadata {
+  return {
+    kind,
+    label,
+    endpoint: kind === "provider_api" ? PROVIDER_API_ENDPOINT_REDACTED : null,
+  };
+}
+
+function summarizeLifecycle(models: ProviderCatalogModelEntry[]): ProviderCatalogLifecycleSummary {
+  const summary: ProviderCatalogLifecycleSummary = {
+    totalModels: models.length,
+    visibleModels: 0,
+    activeModels: 0,
+    betaModels: 0,
+    deprecatedModels: 0,
+    retiredModels: 0,
+    replacementAvailableModels: 0,
+    automaticMigrations: 0,
+  };
+  for (const model of models) {
+    if (model.lifecycle !== "retired") summary.visibleModels += 1;
+    if (model.migrationMode === "automatic") summary.automaticMigrations += 1;
+    if (model.lifecycle === "active") summary.activeModels += 1;
+    if (model.lifecycle === "beta") summary.betaModels += 1;
+    if (model.lifecycle === "deprecated") summary.deprecatedModels += 1;
+    if (model.lifecycle === "retired") summary.retiredModels += 1;
+    if (model.lifecycle === "replacement_available") summary.replacementAvailableModels += 1;
+  }
+  return summary;
+}
+
+function provider(input: Omit<ProviderCatalogViewEntry, "lifecycleSummary">): ProviderCatalogViewEntry {
+  return {
+    ...input,
+    modelIds: input.models.filter((model) => model.lifecycle !== "retired").map((model) => model.modelId),
+    lifecycleSummary: summarizeLifecycle(input.models),
+  };
+}
+
+const connectedProviders: ProviderCatalogViewEntry[] = [
+  provider({
+    providerId: "glm",
+    visibleLabel: "TerminalSync / Z.ai",
+    discoveryState: "seeded",
+    source: source("Z.ai seed snapshot from TerminalSync ai_provider_catalog.rs"),
+    updatedAt: REAL_UPDATED_AT,
+    channel: "public",
+    access: "credits",
+    surfaces: ["chat", "design", "image", "automation"],
+    capabilities: GLM_CAPABILITIES,
+    defaultModelId: "glm-5.3",
+    modelIds: [],
     models: [
       {
-        id: "openai-primary-chat",
-        publicName: "OpenAI · Chat principal",
+        modelId: "glm-5.3",
+        visibleLabel: "GLM-5.3",
+        capabilities: GLM_CAPABILITIES,
         lifecycle: "active",
-        notes: "Modelo recomendado para conversaciones generales y asistencia operativa.",
-        source: "policy-snapshot",
-        surfaces: { chat: true, image: false, video: false, automation: true },
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: true,
       },
       {
-        id: "openai-image",
-        publicName: "OpenAI · Imagen",
-        lifecycle: "beta",
-        notes: "Disponible como candidato interno; publicar en cliente solo detrás de policy por superficie.",
-        source: "manual-seed",
-        surfaces: { chat: false, image: false, video: false, automation: false },
+        modelId: "glm-4.5",
+        visibleLabel: "GLM 4.5",
+        capabilities: GLM_CAPABILITIES,
+        lifecycle: "active",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
+      },
+      {
+        modelId: "glm-image",
+        visibleLabel: "GLM Image",
+        capabilities: GLM_CAPABILITIES,
+        lifecycle: "active",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
       },
     ],
-  },
-  {
-    id: "anthropic",
-    publicName: "Claude",
-    family: "Anthropic",
-    lifecycle: "active",
-    source: "extension-proxy",
+  }),
+  provider({
+    providerId: "claude",
+    visibleLabel: "Claude Code",
+    discoveryState: "seeded",
+    source: source("Anthropic seed snapshot from TerminalSync ai_provider_catalog.rs"),
+    updatedAt: REAL_UPDATED_AT,
+    channel: "public",
+    access: "connected",
+    surfaces: ["chat", "design", "automation"],
+    capabilities: ALL_CODE_CAPABILITIES,
+    defaultModelId: "claude-sonnet-4-6",
+    modelIds: [],
     models: [
       {
-        id: "claude-primary-chat",
-        publicName: "Claude · Chat principal",
+        modelId: "claude-sonnet-4-6",
+        visibleLabel: "Claude Sonnet 4.6",
+        capabilities: ALL_CODE_CAPABILITIES,
         lifecycle: "active",
-        notes: "Apto para chat y automatizaciones con razonamiento largo.",
-        source: "policy-snapshot",
-        surfaces: { chat: true, image: false, video: false, automation: true },
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: true,
       },
       {
-        id: "claude-legacy-chat",
-        publicName: "Claude · Legacy",
+        modelId: "claude-opus-4-7",
+        visibleLabel: "Claude Opus 4.7",
+        capabilities: ALL_CODE_CAPABILITIES,
+        lifecycle: "beta",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
+      },
+      {
+        modelId: "haiku",
+        visibleLabel: "Haiku",
+        capabilities: ALL_CODE_CAPABILITIES,
         lifecycle: "deprecated",
-        replacementId: "claude-primary-chat",
-        notes: "Mantener solo para compatibilidad interna; no publicar como opción nueva.",
-        source: "manual-seed",
-        surfaces: { chat: false, image: false, video: false, automation: false },
+        retiresAt: null,
+        replacementModelId: "claude-haiku-4-5",
+        replacementVisibleLabel: "Claude Haiku 4.5",
+        migrationMode: "manual",
+        isDefault: false,
       },
     ],
-  },
-  {
-    id: "gemini",
-    publicName: "Gemini",
-    family: "Google",
-    lifecycle: "active",
-    source: "extension-proxy",
+  }),
+  provider({
+    providerId: "codex",
+    visibleLabel: "Codex",
+    discoveryState: "seeded",
+    source: source("OpenAI/Codex seed snapshot from TerminalSync ai_provider_catalog.rs"),
+    updatedAt: REAL_UPDATED_AT,
+    channel: "public",
+    access: "connected",
+    surfaces: ["chat", "design", "image", "automation"],
+    capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+    defaultModelId: "gpt-5.6-terra",
+    modelIds: [],
     models: [
       {
-        id: "gemini-primary-chat",
-        publicName: "Gemini · Chat principal",
+        modelId: "gpt-5.6-terra",
+        visibleLabel: "GPT-5.6 Terra",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
         lifecycle: "active",
-        notes: "Útil para chat multimodal y tareas de alto volumen cuando policy lo permita.",
-        source: "policy-snapshot",
-        surfaces: { chat: true, image: false, video: false, automation: true },
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: true,
       },
       {
-        id: "gemini-retiring-candidate",
-        publicName: "Gemini · Modelo anterior",
-        lifecycle: "retiring_soon",
-        replacementId: "gemini-primary-chat",
-        notes: "Candidato a retiro: mantener alerta visible antes de removerlo.",
-        source: "manual-seed",
-        surfaces: { chat: false, image: false, video: false, automation: false },
-      },
-    ],
-  },
-  {
-    id: "ideogram",
-    publicName: "Ideogram",
-    family: "Imagen",
-    lifecycle: "beta",
-    source: "manual-seed",
-    models: [
-      {
-        id: "ideogram-image-recommended",
-        publicName: "Ideogram · Imagen comercial",
+        modelId: "gpt-5.5",
+        visibleLabel: "GPT-5.5",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
         lifecycle: "beta",
-        notes: "Candidato recomendado para piezas comerciales con texto; publicar solo en superficie Imagen.",
-        source: "manual-seed",
-        surfaces: { chat: false, image: true, video: false, automation: false },
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
+      },
+      {
+        modelId: "gpt-5.4",
+        visibleLabel: "GPT-5.4",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+        lifecycle: "replacement_available",
+        retiresAt: "2026-08-31",
+        replacementModelId: "gpt-5.6-terra",
+        replacementVisibleLabel: "GPT-5.6 Terra",
+        migrationMode: "automatic",
+        isDefault: false,
+      },
+      {
+        modelId: "gpt-5.4-mini",
+        visibleLabel: "GPT-5.4 Mini",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+        lifecycle: "active",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
+      },
+      {
+        modelId: "gpt-image-2",
+        visibleLabel: "GPT Image 2",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+        lifecycle: "active",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
       },
     ],
-  },
-  {
-    id: "legacy-video-provider",
-    publicName: "Video legacy",
-    family: "Video",
-    lifecycle: "retired",
-    source: "manual-seed",
+  }),
+  provider({
+    providerId: "gemini",
+    visibleLabel: "Gemini",
+    discoveryState: "discovered",
+    source: source("Google Gemini provider API", "provider_api"),
+    updatedAt: GEMINI_DISCOVERED_AT,
+    channel: "public",
+    access: "connected",
+    surfaces: ["chat", "design", "image", "automation"],
+    capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+    defaultModelId: "gemini-2.5-pro",
+    modelIds: [],
     models: [
       {
-        id: "legacy-video-model",
-        publicName: "Video · Retirado",
-        lifecycle: "retired",
-        notes: "Placeholder interno para que el Centro muestre retirados sin exponerlos al cliente.",
-        source: "manual-seed",
-        surfaces: { chat: false, image: false, video: false, automation: false },
+        modelId: "gemini-2.5-pro",
+        visibleLabel: "Gemini 2.5 Pro",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+        lifecycle: "active",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: true,
+      },
+      {
+        modelId: "gemini-2.5-flash",
+        visibleLabel: "Gemini 2.5 Flash",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+        lifecycle: "active",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
+      },
+      {
+        modelId: "gemini-2.5-flash-lite",
+        visibleLabel: "Gemini 2.5 Flash Lite",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+        lifecycle: "beta",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
+      },
+      {
+        modelId: "gemini-2.5-flash-image",
+        visibleLabel: "Gemini 2.5 Flash Image",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+        lifecycle: "active",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
       },
     ],
+  }),
+];
+
+const managedEngines: ManagedEngineCatalogViewEntry[] = [
+  {
+    engineId: "ideogram",
+    visibleLabel: "Ideogram",
+    creditsProviderId: "ideogram",
+    channel: "public",
+    access: "requires_key",
+    surfaces: ["image"],
+    capabilities: ["image_generation"],
+  },
+  {
+    engineId: "ts-video",
+    visibleLabel: "TS Video",
+    creditsProviderId: "wavespeed",
+    channel: "public",
+    access: "managed",
+    surfaces: ["video"],
+    capabilities: ["video_generation"],
   },
 ];
 
-export function getAiCenterAlerts(): AiCenterAlert[] {
+const SURFACE_ORDER: AiCatalogSurface[] = ["chat", "design", "image", "video", "automation"];
+
+function surfaceView(surface: AiCatalogSurface): ProviderFirstCatalogView {
+  return {
+    audience: "internal",
+    surface,
+    connectedProviders: connectedProviders.filter((provider) => provider.surfaces.includes(surface)),
+    managedEngines: managedEngines.filter((engine) => engine.surfaces.includes(surface)),
+  };
+}
+
+export function getAiControlCenterSnapshot(): AiControlCenterSnapshot {
+  const surfaceViews = SURFACE_ORDER.map(surfaceView);
+  return {
+    generatedAt: REAL_GENERATED_AT,
+    catalogStatus: "fresh",
+    refreshIntervalSecs: 21_600,
+    lastRefreshedAt: REAL_UPDATED_AT,
+    refreshDue: false,
+    connectedProviders,
+    managedEngines,
+    composerView: surfaceViews.find((view) => view.surface === "chat")!,
+    surfaceViews,
+  };
+}
+
+export function getAiCenterAlerts(snapshot: AiControlCenterSnapshot = getAiControlCenterSnapshot()): AiCenterAlert[] {
   const alerts: AiCenterAlert[] = [];
-  for (const provider of AI_CENTER_PROVIDERS) {
+  for (const provider of snapshot.connectedProviders) {
+    if (provider.providerId === "gemini" && provider.discoveryState === "discovered") {
+      alerts.push({
+        kind: "new_model_detected",
+        severity: "info",
+        title: "Nuevo modelo Gemini detectado",
+        detail: "Gemini 2.5 Flash Image aparece en detected_model_ids desde provider_api.",
+        providerId: provider.providerId,
+        modelId: "gemini-2.5-flash-image",
+        owner: "Producto",
+      });
+      alerts.push({
+        kind: "new_capability",
+        severity: "info",
+        title: "Capability nueva: image_generation en Gemini",
+        detail: "El catálogo real reporta superficie Imagen disponible para Gemini; mantener gated por policy antes de publicarlo al cliente.",
+        providerId: provider.providerId,
+        modelId: "gemini-2.5-flash-image",
+        owner: "Ingeniería",
+      });
+    }
+
+    if (provider.providerId === "glm") {
+      alerts.push({
+        kind: "new_model_detected",
+        severity: "info",
+        title: "GLM-5.3 available",
+        detail: "provider_id interno estable: glm. Label visible: TerminalSync / Z.ai.",
+        providerId: provider.providerId,
+        modelId: "glm-5.3",
+        owner: "Producto",
+      });
+    }
+
     for (const model of provider.models) {
-      if (model.lifecycle === "retiring_soon") {
+      if (model.retiresAt) {
         alerts.push({
+          kind: "retiring_soon",
           severity: "warning",
-          title: `${model.publicName}: retiro próximo`,
-          detail: model.replacementId
-            ? "Tiene reemplazo asignado. Revisar superficies antes de apagarlo."
-            : "No tiene reemplazo asignado todavía.",
+          title: `${model.visibleLabel} retires on ${model.retiresAt}`,
+          detail: model.replacementVisibleLabel
+            ? `Replacement available: ${model.replacementVisibleLabel}.`
+            : "No replacement configured yet.",
+          providerId: provider.providerId,
+          modelId: model.modelId,
           owner: "Producto",
         });
       }
-      if (model.lifecycle === "deprecated") {
+      if (model.lifecycle === "replacement_available") {
         alerts.push({
-          severity: "info",
-          title: `${model.publicName}: deprecado`,
-          detail: "No debería publicarse para usuarios nuevos.",
+          kind: "replacement_available",
+          severity: "warning",
+          title: `Replacement available for ${model.visibleLabel}`,
+          detail: model.replacementVisibleLabel
+            ? `${model.visibleLabel} should move to ${model.replacementVisibleLabel}.`
+            : "Replacement flag exists but visible label is missing.",
+          providerId: provider.providerId,
+          modelId: model.modelId,
           owner: "Ingeniería",
         });
       }
-      if (model.lifecycle === "retired" && Object.values(model.surfaces).some(Boolean)) {
+      if (model.migrationMode === "automatic") {
         alerts.push({
-          severity: "critical",
-          title: `${model.publicName}: retirado pero publicado`,
-          detail: "Apagar inmediatamente en policy de publicación.",
+          kind: "automatic_migration_scheduled",
+          severity: "warning",
+          title: `Cambio automático programado: ${model.visibleLabel}`,
+          detail: `${model.modelId} migrará automáticamente a ${model.replacementModelId ?? "replacement"}.`,
+          providerId: provider.providerId,
+          modelId: model.modelId,
           owner: "Ops",
         });
       }
     }
   }
 
-  alerts.push({
-    severity: "info",
-    title: "Fase 1 conectada como panel interno",
-    detail: "La fuente actual es snapshot/policy interna. Cuando el motor de discovery llegue a main, esta página debe leer su snapshot productivo.",
-    owner: "Ingeniería",
-  });
+  if (snapshot.refreshDue || snapshot.catalogStatus === "refresh_due") {
+    alerts.push({
+      kind: "provider_degraded",
+      severity: "critical",
+      title: "Provider catalog refresh due",
+      detail: "El catálogo necesita refresh; revisar scheduler del motor de IAs.",
+      owner: "Ops",
+    });
+  }
 
   return alerts;
 }
 
-export function aiCenterStats() {
-  const models = AI_CENTER_PROVIDERS.flatMap((p) => p.models);
+export function aiCenterStats(snapshot: AiControlCenterSnapshot = getAiControlCenterSnapshot()) {
+  const models = snapshot.connectedProviders.flatMap((p) => p.models);
+  const publishedConnected = snapshot.connectedProviders.filter((p) => p.surfaces.length > 0).length;
   return {
-    providers: AI_CENTER_PROVIDERS.length,
+    providers: snapshot.connectedProviders.length,
+    managedEngines: snapshot.managedEngines.length,
     models: models.length,
-    published: models.filter((m) => Object.values(m.surfaces).some(Boolean)).length,
-    alerts: getAiCenterAlerts().length,
+    published: publishedConnected + snapshot.managedEngines.length,
+    alerts: getAiCenterAlerts(snapshot).length,
   };
 }
