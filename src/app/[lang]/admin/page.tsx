@@ -49,6 +49,13 @@ export default async function AdminHome({ params }: Props) {
         ? "Landing operativa con cada flujo, para qué sirve, salud, últimos resultados y links a n8n."
         : "Operational landing with each flow, what it does, health, latest results and n8n links.",
     },
+    {
+      slug: "ai-center",
+      title: isEs ? "Centro de IAs" : "AI Center",
+      desc: isEs
+        ? "Panel interno para catálogo de providers/modelos, lifecycle, replacements y publicación por superficie."
+        : "Internal panel for provider/model catalog, lifecycle, replacements and publishing by surface.",
+    },
   ];
 
   return (
