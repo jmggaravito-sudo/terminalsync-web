@@ -117,6 +117,27 @@ export interface AiCenterAlert {
   owner: "Producto" | "Ingeniería" | "Ops";
 }
 
+export interface AiCenterStats {
+  providers: number;
+  managedEngines: number;
+  models: number;
+  published: number;
+  alerts: number;
+}
+
+export type AiCenterPayloadMode = "live_endpoint" | "fallback_local";
+export type AiCenterPayloadSource = "terminalsync_live" | "admin_api_mirror" | "page_local_mirror";
+
+export interface AiCenterPayload {
+  snapshot: AiControlCenterSnapshot;
+  alerts: AiCenterAlert[];
+  stats: AiCenterStats;
+  generated_at: string;
+  mode: AiCenterPayloadMode;
+  source: AiCenterPayloadSource;
+  fallbackReason?: string;
+}
+
 export const AI_CENTER_SURFACES: { key: AiAdminSurface; es: string; en: string }[] = [
   { key: "chat", es: "Chat", en: "Chat" },
   { key: "image", es: "Imagen", en: "Image" },
@@ -553,7 +574,7 @@ export function getAiCenterAlerts(snapshot: AiControlCenterSnapshot = getAiContr
   return alerts;
 }
 
-export function aiCenterStats(snapshot: AiControlCenterSnapshot = getAiControlCenterSnapshot()) {
+export function aiCenterStats(snapshot: AiControlCenterSnapshot = getAiControlCenterSnapshot()): AiCenterStats {
   const models = snapshot.connectedProviders.flatMap((p) => p.models);
   const publishedConnected = snapshot.connectedProviders.filter((p) => p.surfaces.length > 0).length;
   return {
@@ -563,4 +584,52 @@ export function aiCenterStats(snapshot: AiControlCenterSnapshot = getAiControlCe
     published: publishedConnected + snapshot.managedEngines.length,
     alerts: getAiCenterAlerts(snapshot).length,
   };
+}
+
+export function buildAiCenterPayload(options: {
+  mode?: AiCenterPayloadMode;
+  source?: AiCenterPayloadSource;
+  snapshot?: unknown;
+  alerts?: unknown;
+  stats?: unknown;
+  fallbackReason?: string;
+} = {}): AiCenterPayload {
+  const snapshot = isAiControlCenterSnapshot(options.snapshot)
+    ? options.snapshot
+    : getAiControlCenterSnapshot();
+  const alerts = Array.isArray(options.alerts)
+    ? (options.alerts as AiCenterAlert[])
+    : getAiCenterAlerts(snapshot);
+  const stats = isAiCenterStats(options.stats)
+    ? options.stats
+    : aiCenterStats(snapshot);
+
+  return {
+    snapshot,
+    alerts,
+    stats,
+    generated_at: new Date().toISOString(),
+    mode: options.mode ?? "fallback_local",
+    source: options.source ?? "page_local_mirror",
+    ...(options.fallbackReason ? { fallbackReason: options.fallbackReason } : {}),
+  };
+}
+
+function isAiControlCenterSnapshot(value: unknown): value is AiControlCenterSnapshot {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<AiControlCenterSnapshot>;
+  return Array.isArray(candidate.connectedProviders)
+    && Array.isArray(candidate.managedEngines)
+    && Array.isArray(candidate.surfaceViews)
+    && typeof candidate.generatedAt === "number";
+}
+
+function isAiCenterStats(value: unknown): value is AiCenterStats {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<AiCenterStats>;
+  return typeof candidate.providers === "number"
+    && typeof candidate.managedEngines === "number"
+    && typeof candidate.models === "number"
+    && typeof candidate.published === "number"
+    && typeof candidate.alerts === "number";
 }
