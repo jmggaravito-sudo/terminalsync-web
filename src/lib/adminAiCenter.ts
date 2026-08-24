@@ -125,8 +125,8 @@ export interface AiCenterStats {
   alerts: number;
 }
 
-export type AiCenterPayloadMode = "live_endpoint" | "fallback_local";
-export type AiCenterPayloadSource = "terminalsync_live" | "admin_api_mirror" | "page_local_mirror";
+export type AiCenterPayloadMode = "live" | "fallback_local";
+export type AiCenterPayloadSource = "terminalsync_ai_center_url" | "page_local_mirror";
 
 export interface AiCenterPayload {
   snapshot: AiControlCenterSnapshot;
@@ -615,7 +615,7 @@ export function buildAiCenterPayload(options: {
   };
 }
 
-function isAiControlCenterSnapshot(value: unknown): value is AiControlCenterSnapshot {
+export function isAiControlCenterSnapshot(value: unknown): value is AiControlCenterSnapshot {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<AiControlCenterSnapshot>;
   return Array.isArray(candidate.connectedProviders)
@@ -624,7 +624,7 @@ function isAiControlCenterSnapshot(value: unknown): value is AiControlCenterSnap
     && typeof candidate.generatedAt === "number";
 }
 
-function isAiCenterStats(value: unknown): value is AiCenterStats {
+export function isAiCenterStats(value: unknown): value is AiCenterStats {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<AiCenterStats>;
   return typeof candidate.providers === "number"

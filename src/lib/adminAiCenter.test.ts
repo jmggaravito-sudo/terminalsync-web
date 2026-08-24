@@ -26,10 +26,10 @@ describe("Admin AI Center payload", () => {
   });
 
   it("builds endpoint-ready payload with snapshot, alerts, stats and mode/source", () => {
-    const payload = buildAiCenterPayload({ mode: "live_endpoint", source: "admin_api_mirror" });
+    const payload = buildAiCenterPayload({ mode: "live", source: "terminalsync_ai_center_url" });
 
-    expect(payload.mode).toBe("live_endpoint");
-    expect(payload.source).toBe("admin_api_mirror");
+    expect(payload.mode).toBe("live");
+    expect(payload.source).toBe("terminalsync_ai_center_url");
     expect(payload.snapshot.connectedProviders).toHaveLength(4);
     expect(payload.stats).toMatchObject({ providers: 4, managedEngines: 2, models: 15, published: 6 });
     expect(payload.alerts).toHaveLength(getAiCenterAlerts(payload.snapshot).length);

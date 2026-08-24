@@ -266,7 +266,7 @@ function AlertsTab({ alerts }: { alerts: AiCenterAlert[] }) {
 
 export function AiCenterClient({ lang, requestedTab, initialPayload }: { lang: string; requestedTab?: string; initialPayload: AiCenterPayload }) {
   const [payload, setPayload] = useState<AiCenterPayload>(initialPayload);
-  const [loadState, setLoadState] = useState<"idle" | "loading" | "ready" | "fallback">("idle");
+  const [loadState, setLoadState] = useState<"idle" | "loading" | "live" | "fallback">("idle");
   const active: TabKey = requestedTab === "publishing" || requestedTab === "alerts" ? requestedTab : "catalog";
   const isEs = lang === "es";
 
@@ -279,7 +279,7 @@ export function AiCenterClient({ lang, requestedTab, initialPayload }: { lang: s
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = (await res.json()) as AiCenterPayload;
         setPayload(json);
-        setLoadState("ready");
+        setLoadState(json.mode === "live" && json.source === "terminalsync_ai_center_url" ? "live" : "fallback");
       })
       .catch((error) => {
         if (!alive) return;
