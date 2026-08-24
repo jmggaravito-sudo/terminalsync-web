@@ -12,7 +12,7 @@ license: "MIT"
 marketplaceSource: "anthropic"
 compatibleWith: ["claude", "codex"]
 ---
-## Cuándo usar
+## Cuándo usarlo
 
 - Querés aprender algo nuevo (un idioma, un framework, un dominio) sin tomar un curso formal.
 - Estás trancado en el self-learning porque no sabés qué hacer después.
@@ -25,13 +25,13 @@ compatibleWith: ["claude", "codex"]
 - Genera ejercicios adaptados a tu nivel; los corrige con feedback estructurado.
 - Ajusta el plan cuando ve que estás trancado o avanzás más rápido.
 
-## Cómo usar
+## Cómo usarlo
 
 1. Decile a tu IA: *"Quiero aprender X usando `learn`"*.
 2. Respondés las preguntas de diagnóstico.
 3. La skill te propone un plan; lo aceptás o ajustás el ritmo.
 4. Cada sesión: teoría + ejercicios + feedback estructurado.
 
-## Mejor para
+## Ideal para
 
 Solo learners con disciplina sin tutor. Autodidactas que se quedaron trancados porque no saben dónde están fallando. Cualquiera que prefiere conversación 1:1 sobre cursos genéricos.

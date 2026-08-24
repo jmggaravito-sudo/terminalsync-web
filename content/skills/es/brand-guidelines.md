@@ -12,7 +12,7 @@ license: "MIT"
 marketplaceSource: "anthropic"
 compatibleWith: ["claude", "codex"]
 ---
-## Cuándo usar
+## Cuándo usarlo
 
 - Estás escribiendo copy, diseñando un doc, o armando una landing y querés que aplique tu marca sin pensarlo.
 - Tenés una brand guide en PDF y querés que "viva" dentro de la IA.
@@ -24,12 +24,12 @@ compatibleWith: ["claude", "codex"]
 - Aplica a outputs: doc corporativo, copy de landing, post para redes, slides.
 - Valida compliance: avisa cuando un output se desvía de la guía ("color non-brand", "voz fuera de tono").
 
-## Cómo usar
+## Cómo usarlo
 
 1. Subís (o describís) tu brand guide.
 2. La skill guarda las convenciones.
 3. Desde cualquier tarea, mencionás *"usando `brand-guidelines`"* y el output viene adaptado.
 
-## Mejor para
+## Ideal para
 
 Solo founders sin equipo de diseño que quieren consistencia visual. Marketing leads delegando generación de contenido. Cualquiera con una brand guide que nadie lee.
