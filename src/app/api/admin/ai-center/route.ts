@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import {
   buildAiCenterPayload,
+  getAiCenterAlerts,
+  aiCenterStats,
+  isAiControlCenterSnapshot,
+  isAiCenterStats,
   type AiCenterPayload,
-  type AiCenterPayloadMode,
   type AiCenterPayloadSource,
 } from "@/lib/adminAiCenter";
 import { authenticate, isAdmin } from "@/lib/marketplace/auth";
@@ -13,52 +16,103 @@ export const revalidate = 0;
 
 const LIVE_SNAPSHOT_URL = process.env.TERMINALSYNC_AI_CENTER_URL ?? "";
 const LIVE_SNAPSHOT_TOKEN = process.env.TERMINALSYNC_AI_CENTER_TOKEN ?? "";
+const LIVE_TIMEOUT_MS = Number(process.env.TERMINALSYNC_AI_CENTER_TIMEOUT_MS ?? 5_000);
 
-type LiveCandidate = Partial<AiCenterPayload>;
+function fallbackPayload(fallbackReason: string) {
+  return buildAiCenterPayload({
+    mode: "fallback_local",
+    source: "page_local_mirror" satisfies AiCenterPayloadSource,
+    fallbackReason,
+  });
+}
 
-function isAiCenterPayload(value: unknown): value is AiCenterPayload {
+type AiCenterPayloadCandidate = Partial<AiCenterPayload>;
+
+function isLivePayload(value: unknown): value is AiCenterPayload {
   if (!value || typeof value !== "object") return false;
-  const candidate = value as LiveCandidate;
+  const candidate = value as AiCenterPayloadCandidate;
   return Boolean(
-    candidate.snapshot &&
-      candidate.alerts &&
-      candidate.stats &&
-      typeof candidate.generated_at === "string" &&
-      candidate.mode &&
-      candidate.source,
+    isAiControlCenterSnapshot(candidate.snapshot) &&
+      Array.isArray(candidate.alerts) &&
+      isAiCenterStats(candidate.stats) &&
+      typeof candidate.generated_at === "string",
   );
 }
 
-async function readLivePayload(): Promise<AiCenterPayload | null> {
-  if (!LIVE_SNAPSHOT_URL) return null;
+function normalizeLiveResponse(json: unknown): AiCenterPayload {
+  if (isAiControlCenterSnapshot(json)) {
+    return buildAiCenterPayload({
+      mode: "live",
+      source: "terminalsync_ai_center_url",
+      snapshot: json,
+    });
+  }
 
-  const headers = new Headers({ Accept: "application/json" });
-  if (LIVE_SNAPSHOT_TOKEN) headers.set("Authorization", `Bearer ${LIVE_SNAPSHOT_TOKEN}`);
+  if (json && typeof json === "object") {
+    const wrapped = json as { snapshot?: unknown; alerts?: unknown; stats?: unknown };
+    const snapshot = wrapped.snapshot;
+    if (isAiControlCenterSnapshot(snapshot)) {
+      const alerts = Array.isArray(wrapped.alerts) ? wrapped.alerts : getAiCenterAlerts(snapshot);
+      const stats = isAiCenterStats(wrapped.stats) ? wrapped.stats : aiCenterStats(snapshot);
 
-  const res = await fetch(LIVE_SNAPSHOT_URL, {
-    headers,
-    cache: "no-store",
-    next: { revalidate: 0 },
-  });
-  if (!res.ok) throw new Error(`TerminalSync live snapshot HTTP ${res.status}`);
-
-  const json = (await res.json()) as unknown;
-  const payload = isAiCenterPayload(json)
-    ? json
-    : buildAiCenterPayload({
-        mode: "live_endpoint",
-        source: "terminalsync_live",
-        snapshot: (json as { snapshot?: unknown }).snapshot,
-        alerts: (json as { alerts?: unknown }).alerts,
-        stats: (json as { stats?: unknown }).stats,
+      return buildAiCenterPayload({
+        mode: "live",
+        source: "terminalsync_ai_center_url",
+        snapshot,
+        alerts,
+        stats,
       });
+    }
+  }
 
-  return {
-    ...payload,
-    mode: "live_endpoint" satisfies AiCenterPayloadMode,
-    source: "terminalsync_live" satisfies AiCenterPayloadSource,
-    generated_at: new Date().toISOString(),
-  };
+  if (isLivePayload(json)) {
+    return {
+      ...json,
+      mode: "live",
+      source: "terminalsync_ai_center_url",
+      generated_at: new Date().toISOString(),
+    };
+  }
+
+  throw new Error("TERMINALSYNC_AI_CENTER_URL returned invalid payload: missing valid snapshot");
+}
+
+async function readLivePayload(): Promise<AiCenterPayload> {
+  if (!LIVE_SNAPSHOT_URL) {
+    throw new Error("TERMINALSYNC_AI_CENTER_URL not configured");
+  }
+
+  let url: URL;
+  try {
+    url = new URL(LIVE_SNAPSHOT_URL);
+  } catch {
+    throw new Error("TERMINALSYNC_AI_CENTER_URL is not a valid URL");
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), Math.max(1_000, LIVE_TIMEOUT_MS));
+  try {
+    const headers = new Headers({ Accept: "application/json" });
+    if (LIVE_SNAPSHOT_TOKEN) headers.set("Authorization", `Bearer ${LIVE_SNAPSHOT_TOKEN}`);
+
+    const res = await fetch(url, {
+      headers,
+      cache: "no-store",
+      next: { revalidate: 0 },
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error(`TERMINALSYNC_AI_CENTER_URL HTTP ${res.status}`);
+
+    const json = (await res.json()) as unknown;
+    return normalizeLiveResponse(json);
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error(`TERMINALSYNC_AI_CENTER_URL timeout after ${Math.max(1_000, LIVE_TIMEOUT_MS)}ms`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export async function GET(req: Request) {
@@ -71,21 +125,10 @@ export async function GET(req: Request) {
   }
 
   try {
-    const livePayload = await readLivePayload();
-    if (livePayload) return NextResponse.json(livePayload);
+    return NextResponse.json(await readLivePayload());
   } catch (error) {
-    const payload = buildAiCenterPayload({
-      mode: "live_endpoint",
-      source: "admin_api_mirror",
-      fallbackReason: error instanceof Error ? error.message : "live snapshot unavailable",
-    });
-    return NextResponse.json(payload);
+    return NextResponse.json(
+      fallbackPayload(error instanceof Error ? error.message : "live snapshot unavailable"),
+    );
   }
-
-  return NextResponse.json(
-    buildAiCenterPayload({
-      mode: "live_endpoint",
-      source: "admin_api_mirror",
-    }),
-  );
 }
