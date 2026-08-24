@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 const LIVE_SNAPSHOT_URL = process.env.TERMINALSYNC_AI_CENTER_URL ?? "";
-const LIVE_SNAPSHOT_TOKEN = process.env.TERMINALSYNC_AI_CENTER_TOKEN ?? "";
+const LIVE_SNAPSHOT_TOKEN = process.env.TERMINALSYNC_AI_CENTER_TOKEN ?? process.env.OPS_GITHUB_TOKEN ?? "";
 const LIVE_TIMEOUT_MS = Number(process.env.TERMINALSYNC_AI_CENTER_TIMEOUT_MS ?? 5_000);
 
 function fallbackPayload(fallbackReason: string) {
@@ -92,8 +92,14 @@ async function readLivePayload(): Promise<AiCenterPayload> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), Math.max(1_000, LIVE_TIMEOUT_MS));
   try {
-    const headers = new Headers({ Accept: "application/json" });
+    const isGithubContentsApi = url.hostname === "api.github.com" && url.pathname.includes("/contents/");
+    const headers = new Headers({
+      Accept: isGithubContentsApi ? "application/vnd.github.raw+json" : "application/json",
+    });
     if (LIVE_SNAPSHOT_TOKEN) headers.set("Authorization", `Bearer ${LIVE_SNAPSHOT_TOKEN}`);
+    if (isGithubContentsApi && !LIVE_SNAPSHOT_TOKEN) {
+      throw new Error("TERMINALSYNC_AI_CENTER_URL points to private GitHub contents API but no token is configured");
+    }
 
     const res = await fetch(url, {
       headers,
