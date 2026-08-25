@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { buildAiCenterPayload, getAiCenterAlerts, getAiControlCenterSnapshot } from "./adminAiCenter";
+import {
+  buildAiCenterPayload,
+  buildLocalFallbackAlerts,
+  getAiControlCenterSnapshot,
+  normalizeSnapshot,
+} from "./adminAiCenter";
 
 describe("Admin AI Center payload", () => {
   it("keeps TerminalSync/Z.ai provider contract and lifecycle cases", () => {
@@ -20,6 +25,8 @@ describe("Admin AI Center payload", () => {
       replacementVisibleLabel: "GPT-5.6 Terra",
       migrationMode: "automatic",
     });
+    // New fields land on every model entry, direct providers included.
+    expect(gpt54).toMatchObject({ upstreamProviderSlug: null, modalities: [], pricing: null });
 
     expect(gemini?.discoveryState).toBe("discovered");
     expect(gemini?.modelIds).toContain("gemini-2.5-flash-image");
@@ -32,7 +39,154 @@ describe("Admin AI Center payload", () => {
     expect(payload.source).toBe("terminalsync_ai_center_url");
     expect(payload.snapshot.connectedProviders).toHaveLength(4);
     expect(payload.stats).toMatchObject({ providers: 4, managedEngines: 2, models: 15, published: 6 });
-    expect(payload.alerts).toHaveLength(getAiCenterAlerts(payload.snapshot).length);
+    // Real snapshot alerts (3 gpt-5.4 findings) take priority over the local
+    // heuristic, which is what the bug fix in this PR is about.
+    expect(payload.alerts).toHaveLength(3);
+    expect(payload.stats.alerts).toBe(3);
     expect(new Date(payload.generated_at).toString()).not.toBe("Invalid Date");
+  });
+
+  it("carries internalSources with the OpenRouter mirror, never as a connectedProvider", () => {
+    const snapshot = getAiControlCenterSnapshot();
+    expect(snapshot.internalSources).toHaveLength(1);
+    const openrouter = snapshot.internalSources[0];
+    expect(openrouter.providerId).toBe("openrouter");
+    expect(openrouter.channel).toBe("internal");
+    expect(openrouter.access).toBe("managed");
+    expect(openrouter.models.map((m) => m.modelId)).toEqual(
+      expect.arrayContaining([
+        "openai/gpt-5.6-terra",
+        "openai/gpt-5.4",
+        "anthropic/claude-sonnet-4.6",
+        "google/gemini-2.5-pro",
+        "z-ai/glm-5.3",
+        "black-forest-labs/flux-1.1-pro",
+      ]),
+    );
+    const flux = openrouter.models.find((m) => m.modelId === "black-forest-labs/flux-1.1-pro");
+    expect(flux?.upstreamProviderSlug).toBe("black-forest-labs");
+    expect(flux?.modalities).toEqual(["text", "image"]);
+    expect(flux?.pricing).not.toBeNull();
+
+    expect(snapshot.connectedProviders.some((p) => p.providerId === "openrouter")).toBe(false);
+  });
+
+  it("populates changeReport and alerts with the three gpt-5.4 findings", () => {
+    const snapshot = getAiControlCenterSnapshot();
+    const { changeReport } = snapshot;
+
+    expect(changeReport.detectedModels).toEqual([]);
+    expect(changeReport.newCapabilities).toEqual([]);
+    expect(changeReport.comparedAgainstUpdatedAt).toBeNull();
+
+    expect(changeReport.retirements).toHaveLength(1);
+    expect(changeReport.retirements[0]).toMatchObject({
+      providerId: "codex",
+      modelId: "gpt-5.4",
+      retiresAt: "2026-08-31",
+      replacementModelId: "gpt-5.6-terra",
+    });
+
+    expect(changeReport.replacementCandidates).toHaveLength(1);
+    expect(changeReport.replacementCandidates[0]).toMatchObject({
+      modelId: "gpt-5.4",
+      replacementModelId: "gpt-5.6-terra",
+      migrationMode: "automatic",
+    });
+
+    expect(changeReport.scheduledAutoSwitches).toHaveLength(1);
+    expect(changeReport.scheduledAutoSwitches[0]).toMatchObject({
+      fromModelId: "gpt-5.4",
+      toModelId: "gpt-5.6-terra",
+      switchAt: "2026-08-31",
+    });
+
+    expect(changeReport.alerts).toHaveLength(3);
+    expect(changeReport.alerts.map((a) => a.kind).sort()).toEqual(
+      ["replacement_available", "scheduled_auto_switch", "upcoming_retirement"].sort(),
+    );
+    expect(snapshot.alerts).toEqual(changeReport.alerts);
+  });
+
+  it("carries exactly the two premium lanes (image and video)", () => {
+    const snapshot = getAiControlCenterSnapshot();
+    expect(snapshot.premiumLanes).toHaveLength(2);
+    const ideogram = snapshot.premiumLanes.find((lane) => lane.engineId === "ideogram");
+    expect(ideogram).toMatchObject({ surface: "image", creditsProviderId: "ideogram", billing: "credits" });
+    expect(ideogram?.bestFor.length).toBeGreaterThan(0);
+
+    const tsVideo = snapshot.premiumLanes.find((lane) => lane.engineId === "ts-video");
+    expect(tsVideo).toMatchObject({ surface: "video", creditsProviderId: "wavespeed", billing: "credits" });
+  });
+
+  describe("buildLocalFallbackAlerts", () => {
+    it("is documented as local-only and still produces a non-empty heuristic", () => {
+      const snapshot = getAiControlCenterSnapshot();
+      const alerts = buildLocalFallbackAlerts(snapshot);
+      expect(alerts.length).toBeGreaterThan(0);
+      expect(alerts.every((alert) => typeof alert.title === "string")).toBe(true);
+    });
+  });
+
+  describe("normalizeSnapshot", () => {
+    it("defaults every new field to a safe empty value for an old, field-less payload", () => {
+      const oldSnapshot = getAiControlCenterSnapshot();
+      // Simulate a payload from before this PR: strip the 4 new top-level
+      // fields and the 3 new per-model fields entirely.
+      const stripped = {
+        ...oldSnapshot,
+        connectedProviders: oldSnapshot.connectedProviders.map((p) => ({
+          ...p,
+          models: p.models.map(({ upstreamProviderSlug, modalities, pricing, ...rest }) => rest),
+        })),
+      } as Record<string, unknown>;
+      delete stripped.internalSources;
+      delete stripped.changeReport;
+      delete stripped.alerts;
+      delete stripped.premiumLanes;
+
+      const normalized = normalizeSnapshot(stripped);
+
+      expect(normalized.internalSources).toEqual([]);
+      expect(normalized.alerts).toEqual([]);
+      expect(normalized.premiumLanes).toEqual([]);
+      expect(normalized.changeReport).toMatchObject({
+        comparedAgainstUpdatedAt: null,
+        detectedModels: [],
+        retirements: [],
+        replacementCandidates: [],
+        scheduledAutoSwitches: [],
+        newCapabilities: [],
+        alerts: [],
+      });
+      expect(typeof normalized.changeReport.generatedAt).toBe("number");
+
+      for (const provider of normalized.connectedProviders) {
+        for (const model of provider.models) {
+          expect(model.upstreamProviderSlug).toBeNull();
+          expect(model.modalities).toEqual([]);
+          expect(model.pricing).toBeNull();
+        }
+      }
+
+      // Fields that already existed pre-PR are preserved untouched.
+      expect(normalized.connectedProviders.map((p) => p.providerId)).toEqual(
+        oldSnapshot.connectedProviders.map((p) => p.providerId),
+      );
+    });
+
+    it("preserves new fields as-is when the payload already carries them", () => {
+      const snapshot = getAiControlCenterSnapshot();
+      const normalized = normalizeSnapshot(snapshot);
+      expect(normalized).toEqual(snapshot);
+    });
+  });
+
+  it("buildAiCenterPayload falls back to the heuristic only when the snapshot truly has no alerts", () => {
+    const snapshot = getAiControlCenterSnapshot();
+    const emptyAlertsSnapshot = { ...snapshot, alerts: [], changeReport: { ...snapshot.changeReport, alerts: [] } };
+    const payload = buildAiCenterPayload({ snapshot: emptyAlertsSnapshot });
+    expect(payload.alerts.length).toBeGreaterThan(0);
+    expect(payload.alerts).toEqual(buildLocalFallbackAlerts(normalizeSnapshot(emptyAlertsSnapshot)));
   });
 });
