@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import {
   buildAiCenterPayload,
-  getAiCenterAlerts,
-  aiCenterStats,
   isAiControlCenterSnapshot,
   isAiCenterStats,
+  normalizeSnapshot,
   type AiCenterPayload,
   type AiCenterPayloadSource,
 } from "@/lib/adminAiCenter";
@@ -41,6 +40,12 @@ function isLivePayload(value: unknown): value is AiCenterPayload {
 
 function normalizeLiveResponse(json: unknown): AiCenterPayload {
   if (isAiControlCenterSnapshot(json)) {
+    // Bare `AiControlCenterSnapshot` straight from the engine — it already
+    // carries its own real `alerts`/`changeReport`/`internalSources`/
+    // `premiumLanes`. `buildAiCenterPayload` (via `normalizeSnapshot` +
+    // `resolveAlerts`) prefers `snapshot.alerts` over the local heuristic
+    // whenever it is non-empty, so this passes them through untouched
+    // instead of recomputing alerts from scratch.
     return buildAiCenterPayload({
       mode: "live",
       source: "terminalsync_ai_center_url",
@@ -50,17 +55,16 @@ function normalizeLiveResponse(json: unknown): AiCenterPayload {
 
   if (json && typeof json === "object") {
     const wrapped = json as { snapshot?: unknown; alerts?: unknown; stats?: unknown };
-    const snapshot = wrapped.snapshot;
-    if (isAiControlCenterSnapshot(snapshot)) {
-      const alerts = Array.isArray(wrapped.alerts) ? wrapped.alerts : getAiCenterAlerts(snapshot);
-      const stats = isAiCenterStats(wrapped.stats) ? wrapped.stats : aiCenterStats(snapshot);
-
+    if (isAiControlCenterSnapshot(wrapped.snapshot)) {
       return buildAiCenterPayload({
         mode: "live",
         source: "terminalsync_ai_center_url",
-        snapshot,
-        alerts,
-        stats,
+        snapshot: wrapped.snapshot,
+        // Only override with an explicit `alerts` array when the caller
+        // sent one — otherwise `buildAiCenterPayload` falls through to
+        // `snapshot.alerts` (real) and only then the local heuristic.
+        ...(Array.isArray(wrapped.alerts) ? { alerts: wrapped.alerts } : {}),
+        ...(isAiCenterStats(wrapped.stats) ? { stats: wrapped.stats } : {}),
       });
     }
   }
@@ -68,6 +72,7 @@ function normalizeLiveResponse(json: unknown): AiCenterPayload {
   if (isLivePayload(json)) {
     return {
       ...json,
+      snapshot: normalizeSnapshot(json.snapshot),
       mode: "live",
       source: "terminalsync_ai_center_url",
       generated_at: new Date().toISOString(),
