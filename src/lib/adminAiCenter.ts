@@ -6,11 +6,17 @@
 // - PR #1526: src-tauri/src/ai_control_center.rs
 // - PR #1527: src/lib/aiCatalogPolicy.ts / composer provider-first wiring
 // - PR #1534: lifecycle metadata
-// - PR 8 (this one): internal_sources / change_report / alerts /
+// - PR 8: internal_sources / change_report / alerts /
 //   premium_lanes, mirrored from ai_catalog_lifecycle.rs (CatalogChangeAlert,
 //   CatalogChangeReport) and ai_plan_policy.rs (PremiumLaneDefinition), plus
 //   the upstream_provider_slug/modalities/pricing fields ai_provider_catalog.rs
 //   added to ProviderCatalogModelEntry for internal-source (OpenRouter) models.
+// - (this one): routingMatrix / videoLanePricing, mirrored from a parallel
+//   CI train (not yet merged into TerminalSync at the time of writing) that
+//   adds precomputed routing-engine decisions and the video x2 commercial-
+//   rule audit to the same snapshot, camelCase, internal-audience only. Both
+//   are tolerant-only additions here — no local seed data, since there is no
+//   merged source module yet to mirror. See `normalizeSnapshot` below.
 //
 // This file is intentionally used only by /[lang]/admin/ai-center. Do not import
 // it from public landing/client pages. `glm` remains the stable internal
@@ -200,6 +206,55 @@ export interface PremiumLaneDefinition {
   upsellDetail: string;
 }
 
+// ---- Routing matrix + video lane pricing (parallel CI train) --------------
+//
+// Precomputed routing-engine decisions and a video-pricing-rule audit. Same
+// snapshot, camelCase, internal-audience only — see the module doc comment
+// above. Tolerant-only: a snapshot from a CI run that predates these two
+// blocks simply omits them, and `normalizeSnapshot` defaults both to `[]`.
+
+/** Standard routing profiles as of this PR (`profileId`). Not exhaustive by
+ *  design — the field itself stays `string`-typed below so a new profile the
+ *  engine adds later still round-trips instead of getting coerced away. */
+export type AiRoutingKnownProfileId = "sin-ias" | "solo-glm" | "glm-completo" | "claude-solo";
+
+/** Which lane the routing engine picked for a given (surface, plan, profile). */
+export type AiRoutingLaneKind =
+  | { kind: "connected_provider"; providerId: string }
+  | { kind: "managed_engine"; engineId: string; creditsProviderId: string }
+  | { kind: "internal_routed"; sourceId: string; upstreamModelId: string };
+
+export interface AiRoutingSelection {
+  kind: AiRoutingLaneKind;
+  visibleLabel: string;
+  billing: string;
+  detail: string;
+}
+
+export interface AiRoutingMatrixEntry {
+  surface: AiCatalogSurface;
+  /** e.g. "base15" | "credits_only" | "premium_unlocked" — kept as `string`
+   *  for the same forward-compat reason as `profileId`. */
+  plan: string;
+  profileId: string;
+  profileLabel: string;
+  /** `null` when the engine has no lane to offer for this combination
+   *  (e.g. a "sin-ias" profile on a surface that requires an AI). */
+  selected: AiRoutingSelection | null;
+  upsell: string | null;
+  trace: string[];
+}
+
+export interface VideoLanePricingEntry {
+  modelId: string;
+  label: string | null;
+  costUsd5s: number | null;
+  priceUsd5s: number | null;
+  multiple: number | null;
+  /** Whether `multiple` falls inside the commercial x2 rule's 2.0-2.5 band. */
+  withinRule: boolean;
+}
+
 export interface AiControlCenterSnapshot {
   generatedAt: number;
   catalogStatus: "seeded_only" | "fresh" | "refresh_due";
@@ -221,6 +276,14 @@ export interface AiControlCenterSnapshot {
   alerts: CatalogChangeAlert[];
   /** Always the full `premium_lane_registry()`, for every audience. */
   premiumLanes: PremiumLaneDefinition[];
+  /** Precomputed routing-engine decisions, one entry per (surface, plan,
+   *  profile) combination. Empty on a snapshot from a CI run that predates
+   *  this field — see `normalizeSnapshot`. */
+  routingMatrix: AiRoutingMatrixEntry[];
+  /** Audit of the video lane's commercial x2 rule (price = cost * 2, 2.0-2.5
+   *  band). Empty on a snapshot from a CI run that predates this field —
+   *  see `normalizeSnapshot`. */
+  videoLanePricing: VideoLanePricingEntry[];
 }
 
 // ---- Local-only alert shape (payload-level, used by the Alerts tab) -------
@@ -875,6 +938,11 @@ export function getAiControlCenterSnapshot(): AiControlCenterSnapshot {
     changeReport,
     alerts: changeReport.alerts,
     premiumLanes,
+    // No merged source module to mirror yet (see the module doc comment) —
+    // this local mirror stays empty, same as a real snapshot from a CI run
+    // that predates the parallel train landing.
+    routingMatrix: [],
+    videoLanePricing: [],
   };
 }
 
@@ -1129,6 +1197,83 @@ function normalizeChangeReport(raw: unknown): CatalogChangeReport {
   };
 }
 
+function normalizeRoutingLaneKind(raw: unknown): AiRoutingLaneKind | null {
+  const candidate = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  if (candidate.kind === "connected_provider") {
+    return {
+      kind: "connected_provider",
+      providerId: typeof candidate.providerId === "string" ? candidate.providerId : "",
+    };
+  }
+  if (candidate.kind === "managed_engine") {
+    return {
+      kind: "managed_engine",
+      engineId: typeof candidate.engineId === "string" ? candidate.engineId : "",
+      creditsProviderId: typeof candidate.creditsProviderId === "string" ? candidate.creditsProviderId : "",
+    };
+  }
+  if (candidate.kind === "internal_routed") {
+    return {
+      kind: "internal_routed",
+      sourceId: typeof candidate.sourceId === "string" ? candidate.sourceId : "",
+      upstreamModelId: typeof candidate.upstreamModelId === "string" ? candidate.upstreamModelId : "",
+    };
+  }
+  // Unknown/missing `kind` — no lane can be reconstructed from this shape.
+  return null;
+}
+
+function normalizeRoutingSelection(raw: unknown): AiRoutingSelection | null {
+  if (raw === null || raw === undefined) return null;
+  const candidate = (raw && typeof raw === "object" ? raw : {}) as Partial<AiRoutingSelection> & Record<string, unknown>;
+  const kind = normalizeRoutingLaneKind(candidate.kind);
+  if (!kind) return null;
+  return {
+    kind,
+    visibleLabel: typeof candidate.visibleLabel === "string" ? candidate.visibleLabel : "",
+    billing: typeof candidate.billing === "string" ? candidate.billing : "",
+    detail: typeof candidate.detail === "string" ? candidate.detail : "",
+  };
+}
+
+function normalizeRoutingMatrixEntry(raw: unknown): AiRoutingMatrixEntry {
+  const candidate = (raw && typeof raw === "object" ? raw : {}) as Partial<AiRoutingMatrixEntry> & Record<string, unknown>;
+  const profileId = typeof candidate.profileId === "string" ? candidate.profileId : "";
+  return {
+    surface: typeof candidate.surface === "string" ? (candidate.surface as AiCatalogSurface) : "chat",
+    plan: typeof candidate.plan === "string" ? candidate.plan : "",
+    profileId,
+    profileLabel: typeof candidate.profileLabel === "string" ? candidate.profileLabel : profileId,
+    selected: normalizeRoutingSelection(candidate.selected),
+    upsell: typeof candidate.upsell === "string" ? candidate.upsell : null,
+    trace: Array.isArray(candidate.trace) ? candidate.trace.filter((step): step is string => typeof step === "string") : [],
+  };
+}
+
+function normalizeRoutingMatrix(list: unknown): AiRoutingMatrixEntry[] {
+  return Array.isArray(list) ? list.map(normalizeRoutingMatrixEntry) : [];
+}
+
+function toFiniteNumberOrNull(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function normalizeVideoLanePricingEntry(raw: unknown): VideoLanePricingEntry {
+  const candidate = (raw && typeof raw === "object" ? raw : {}) as Partial<VideoLanePricingEntry> & Record<string, unknown>;
+  return {
+    modelId: typeof candidate.modelId === "string" ? candidate.modelId : "",
+    label: typeof candidate.label === "string" ? candidate.label : null,
+    costUsd5s: toFiniteNumberOrNull(candidate.costUsd5s),
+    priceUsd5s: toFiniteNumberOrNull(candidate.priceUsd5s),
+    multiple: toFiniteNumberOrNull(candidate.multiple),
+    withinRule: Boolean(candidate.withinRule),
+  };
+}
+
+function normalizeVideoLanePricing(list: unknown): VideoLanePricingEntry[] {
+  return Array.isArray(list) ? list.map(normalizeVideoLanePricingEntry) : [];
+}
+
 export function normalizeSnapshot(json: unknown): AiControlCenterSnapshot {
   const raw = (json && typeof json === "object" ? json : {}) as Partial<AiControlCenterSnapshot> & Record<string, unknown>;
   return {
@@ -1145,5 +1290,7 @@ export function normalizeSnapshot(json: unknown): AiControlCenterSnapshot {
     changeReport: normalizeChangeReport(raw.changeReport),
     alerts: Array.isArray(raw.alerts) ? (raw.alerts as CatalogChangeAlert[]) : [],
     premiumLanes: Array.isArray(raw.premiumLanes) ? (raw.premiumLanes as PremiumLaneDefinition[]) : [],
+    routingMatrix: normalizeRoutingMatrix(raw.routingMatrix),
+    videoLanePricing: normalizeVideoLanePricing(raw.videoLanePricing),
   };
 }
