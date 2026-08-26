@@ -13,6 +13,61 @@ interface Params {
   error_description?: string;
 }
 
+type CallbackLang = "en" | "es";
+
+const COPY = {
+  en: {
+    successTitle: "Done!",
+    defaultSuccessMessage:
+      "Your Google Drive is connected to Terminal Sync. Taking you back to the app.",
+    openApp: "Open Terminal Sync",
+    redirecting: "Redirecting automatically…",
+    alreadyDispatched: "If it did not open automatically, use the button above.",
+    authErrorTitle: "We could not complete sign-in",
+    providerAnswered: (providerName: string) => `${providerName} responded:`,
+    retryInApp: "Taking you back to the app so you can try again.",
+    missingTitle: "Missing redirect parameters",
+    missingBody:
+      "This page should arrive with code and state in the URL. It looks like something interrupted the flow.",
+    missingRetryPrefix: "Try again from the app — if the problem continues, email us at",
+  },
+  es: {
+    successTitle: "¡Listo!",
+    defaultSuccessMessage:
+      "Tu Google Drive está conectado a Terminal Sync. Te llevamos de vuelta a la app.",
+    openApp: "Abrir Terminal Sync",
+    redirecting: "Redirigiendo automáticamente…",
+    alreadyDispatched: "Si no abrió sola, usa el botón de arriba.",
+    authErrorTitle: "No pudimos completar el inicio de sesión",
+    providerAnswered: (providerName: string) => `${providerName} respondió:`,
+    retryInApp: "Te llevamos de vuelta a la app para que puedas intentarlo de nuevo.",
+    missingTitle: "Faltan parámetros en la redirección",
+    missingBody:
+      "Esta página debería llegar con code y state en la URL. Parece que algo interrumpió el flujo.",
+    missingRetryPrefix: "Reintenta desde la app — si el problema persiste, escríbenos a",
+  },
+} as const;
+
+export function normalizeCallbackLang(value?: string | null): CallbackLang {
+  return value?.toLowerCase().startsWith("en") ? "en" : "es";
+}
+
+export function resolveCallbackLang({
+  explicitLang,
+  state,
+  acceptLanguage,
+}: {
+  explicitLang?: string | null;
+  state?: string | null;
+  acceptLanguage?: string | null;
+}): CallbackLang {
+  if (explicitLang) return normalizeCallbackLang(explicitLang);
+  const normalizedState = state?.toLowerCase() ?? "";
+  if (normalizedState.startsWith("tslang:en:")) return "en";
+  if (normalizedState.startsWith("tslang:es:")) return "es";
+  return normalizeCallbackLang(acceptLanguage);
+}
+
 // Auto-trigger the deep link back into the native Tauri app. Three states:
 //  1. idle      → show branded card + auto-redirect countdown
 //  2. dispatched → asked the browser to open terminalsync:// or terminalsync-lab:// (may prompt user)
@@ -20,15 +75,19 @@ interface Params {
 export function CallbackClient({
   params,
   providerName = "Google",
-  successMessage = "Tu Google Drive está conectado a Terminal Sync. Te llevamos de vuelta a la app.",
+  successMessage,
   nativePath,
+  lang = "es",
 }: {
   params: Params;
   providerName?: string;
   successMessage?: string;
   nativePath?: string;
+  lang?: CallbackLang;
 }) {
   const [dispatched, setDispatched] = useState(false);
+  const copy = COPY[lang];
+  const resolvedSuccessMessage = successMessage ?? copy.defaultSuccessMessage;
 
   const isError = !!params.error;
   const isMissing = !params.state || (!params.code && !params.error);
@@ -57,17 +116,17 @@ export function CallbackClient({
     return (
       <Layout variant="error">
         <h1 className="text-[22px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-          No pudimos completar el inicio de sesión
+          {copy.authErrorTitle}
         </h1>
         <p className="mt-3 text-[14px] text-[var(--color-fg-muted)] leading-relaxed">
-          {providerName} respondió:{" "}
+          {copy.providerAnswered(providerName)}{" "}
           <code className="font-mono text-[12.5px] bg-[var(--color-panel-2)] px-1.5 py-0.5 rounded">
             {params.error}
           </code>
           {params.error_description ? ` — ${params.error_description}` : null}
         </p>
         <p className="mt-3 text-[13px] text-[var(--color-fg-muted)]">
-          Te llevamos de vuelta a la app para que puedas intentarlo de nuevo.
+          {copy.retryInApp}
         </p>
       </Layout>
     );
@@ -77,14 +136,13 @@ export function CallbackClient({
     return (
       <Layout variant="error">
         <h1 className="text-[22px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-          Faltan parámetros en la redirección
+          {copy.missingTitle}
         </h1>
         <p className="mt-3 text-[14px] text-[var(--color-fg-muted)]">
-          Esta página debería llegar con <code>code</code> y <code>state</code>{" "}
-          en la URL. Parece que algo interrumpió el flujo.
+          {copy.missingBody}
         </p>
         <p className="mt-3 text-[13px] text-[var(--color-fg-muted)]">
-          Reintenta desde la app — si el problema persiste, escríbenos a{" "}
+          {copy.missingRetryPrefix}{" "}
           <a
             href="mailto:support@terminalsync.ai"
             className="text-[var(--color-accent)] hover:underline"
@@ -100,22 +158,20 @@ export function CallbackClient({
   return (
     <Layout variant="success">
       <h1 className="text-[22px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-        ¡Listo!
+        {copy.successTitle}
       </h1>
       <p className="mt-3 text-[14px] text-[var(--color-fg-muted)] leading-relaxed">
-        {successMessage}
+        {resolvedSuccessMessage}
       </p>
       <a
         href={deepLink ?? "#"}
         className="mt-7 inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] transition-colors glow-accent"
       >
-        Abrir Terminal Sync
+        {copy.openApp}
         <ArrowRight size={14} strokeWidth={2.4} />
       </a>
       <p className="mt-4 text-[11.5px] text-[var(--color-fg-dim)]">
-        {dispatched
-          ? "Si no abrió sola, usa el botón de arriba."
-          : "Redirigiendo automáticamente…"}
+        {dispatched ? copy.alreadyDispatched : copy.redirecting}
       </p>
     </Layout>
   );
