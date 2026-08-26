@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { CallbackClient } from "./CallbackClient";
+import { headers } from "next/headers";
+import { CallbackClient, resolveCallbackLang } from "./CallbackClient";
 
 // This route is the Google OAuth redirect target for the Tauri app's "Web
 // application" OAuth client. Google sends the user here with ?code=...&state=...;
@@ -19,10 +20,11 @@ interface Props {
     scope?: string;
     error?: string;
     error_description?: string;
+    lang?: string;
   }>;
 }
 
 export default async function OAuthCallback({ searchParams }: Props) {
   const params = await searchParams;
-  return <CallbackClient params={params} />;
+  return <CallbackClient params={params} lang={resolveCallbackLang({ explicitLang: params.lang, state: params.state, acceptLanguage: (await headers()).get("accept-language") })} />;
 }
