@@ -15,11 +15,14 @@ import {
   type AiCenterAlertKind,
   type AiCenterPayload,
   type AiControlCenterSnapshot,
+  type AiRoutingLaneKind,
+  type AiRoutingMatrixEntry,
   type CatalogAlertSeverity,
   type CatalogChangeReport,
   type PremiumLaneDefinition,
   type ProviderCatalogModelEntry,
   type ProviderCatalogViewEntry,
+  type VideoLanePricingEntry,
 } from "@/lib/adminAiCenter";
 
 const TABS = [
@@ -340,6 +343,82 @@ function AlertsTab({ alerts, isEs }: { alerts: AiCenterAlert[]; isEs: boolean })
   );
 }
 
+function VideoLanePricingSection({ isEs, videoLanePricing }: { isEs: boolean; videoLanePricing: VideoLanePricingEntry[] }) {
+  const title = isEs ? "Regla x2 — video" : "x2 rule — video";
+
+  if (videoLanePricing.length === 0) {
+    return (
+      <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5">
+        <h2 className="text-[18px] font-semibold text-[var(--color-fg-strong)]">{title}</h2>
+        <div className="mt-3">
+          <EmptyState>
+            {isEs ? "El próximo snapshot va a traer estos datos." : "The next snapshot will bring this data."}
+          </EmptyState>
+        </div>
+      </section>
+    );
+  }
+
+  const deviations = videoLanePricing.filter((row) => !row.withinRule);
+
+  return (
+    <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5">
+      <h2 className="text-[18px] font-semibold text-[var(--color-fg-strong)]">{title}</h2>
+      <p className="mt-1 max-w-3xl text-[13px] leading-relaxed text-[var(--color-fg-muted)]">
+        {isEs
+          ? "Auditoría de la regla comercial: precio = costo × 2, banda aceptable de múltiplo 2.0–2.5."
+          : "Audit of the commercial rule: price = cost × 2, acceptable multiple band 2.0–2.5."}
+      </p>
+
+      {deviations.length > 0 ? (
+        <div className="mt-3 rounded-xl border border-red-800 bg-red-50 p-3 text-[13px] font-bold text-red-950">
+          {isEs
+            ? `${deviations.length} modelo(s) fuera de la banda comercial — es una desviación, revisar precio.`
+            : `${deviations.length} model(s) outside the commercial band — this is a pricing deviation, needs review.`}
+        </div>
+      ) : null}
+
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full min-w-[640px] border-collapse text-left text-[13px]">
+          <thead>
+            <tr className="border-b border-[var(--color-border)] text-[12px] uppercase tracking-[0.14em] text-[var(--color-fg-muted)]">
+              <th className="py-2 pr-4">{isEs ? "Modelo" : "Model"}</th>
+              <th className="py-2 pr-4">{isEs ? "Costo /5s" : "Cost /5s"}</th>
+              <th className="py-2 pr-4">{isEs ? "Precio /5s" : "Price /5s"}</th>
+              <th className="py-2 pr-4">{isEs ? "Múltiplo" : "Multiple"}</th>
+              <th className="py-2 pr-4">{isEs ? "Regla" : "Rule"}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {videoLanePricing.map((row) => (
+              <tr key={row.modelId} className={`border-b border-[var(--color-border)] ${row.withinRule ? "" : "bg-red-50"}`}>
+                <td className="py-2 pr-4">
+                  <p className="font-semibold text-[var(--color-fg-strong)]">{row.label ?? row.modelId}</p>
+                  {row.label ? <p className="text-[11px] text-[var(--color-fg-muted)]">model_id: <CodePill>{row.modelId}</CodePill></p> : null}
+                </td>
+                <td className="py-2 pr-4">{row.costUsd5s !== null ? `$${row.costUsd5s.toFixed(4)}` : "—"}</td>
+                <td className="py-2 pr-4">{row.priceUsd5s !== null ? `$${row.priceUsd5s.toFixed(4)}` : "—"}</td>
+                <td className="py-2 pr-4">{row.multiple !== null ? `${row.multiple.toFixed(2)}×` : "—"}</td>
+                <td className="py-2 pr-4">
+                  <span
+                    className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-bold ${
+                      row.withinRule
+                        ? "border-emerald-800 bg-emerald-50 text-emerald-900"
+                        : "border-red-800 bg-red-100 text-red-950"
+                    }`}
+                  >
+                    {row.withinRule ? (isEs ? "En banda" : "Within rule") : (isEs ? "FUERA DE BANDA" : "OUT OF RULE")}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
 function LanesTab({ isEs, snapshot }: { isEs: boolean; snapshot: AiControlCenterSnapshot }) {
   return (
     <div className="space-y-5">
@@ -406,6 +485,8 @@ function LanesTab({ isEs, snapshot }: { isEs: boolean; snapshot: AiControlCenter
             : "The policy is enforced in the app's engine; this matrix is informational only."}
         </p>
       </section>
+
+      <VideoLanePricingSection isEs={isEs} videoLanePricing={snapshot.videoLanePricing} />
     </div>
   );
 }
@@ -550,14 +631,161 @@ function InternalSourceModelsTable({ models }: { models: ProviderCatalogModelEnt
   );
 }
 
+const ROUTING_SURFACE_ORDER: AiCatalogSurface[] = ["chat", "design", "automation", "image", "video"];
+
+const routingLaneKindClass: Record<AiRoutingLaneKind["kind"], string> = {
+  connected_provider: "border-emerald-700 bg-emerald-50 text-emerald-900",
+  managed_engine: "border-sky-700 bg-sky-50 text-sky-900",
+  internal_routed: "border-violet-700 bg-violet-50 text-violet-900",
+};
+
+function RoutingLaneKindChip({ kind }: { kind: AiRoutingLaneKind }) {
+  return (
+    <span className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold ${routingLaneKindClass[kind.kind]}`}>
+      {kind.kind}
+    </span>
+  );
+}
+
+/** internal_routed carries sourceId/upstreamModelId — this is admin-internal
+ *  tooling, so it's fine to show the OpenRouter-backed technical detail
+ *  directly instead of hiding it behind the client-facing label. */
+function RoutingLaneKindDetail({ kind }: { kind: AiRoutingLaneKind }) {
+  if (kind.kind === "connected_provider") {
+    return <span>provider_id: <CodePill>{kind.providerId}</CodePill></span>;
+  }
+  if (kind.kind === "managed_engine") {
+    return (
+      <span>
+        engine_id: <CodePill>{kind.engineId}</CodePill> · credits_provider_id: <CodePill>{kind.creditsProviderId}</CodePill>
+      </span>
+    );
+  }
+  return (
+    <span>
+      source_id: <CodePill>{kind.sourceId}</CodePill> · upstream_model_id: <CodePill>{kind.upstreamModelId}</CodePill>
+    </span>
+  );
+}
+
+function RoutingMatrixSection({ isEs, routingMatrix }: { isEs: boolean; routingMatrix: AiRoutingMatrixEntry[] }) {
+  const title = isEs ? "Matriz de routing precomputada" : "Precomputed routing matrix";
+
+  if (routingMatrix.length === 0) {
+    return (
+      <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5">
+        <h2 className="text-[18px] font-semibold text-[var(--color-fg-strong)]">{title}</h2>
+        <div className="mt-3">
+          <EmptyState>
+            {isEs ? "El próximo snapshot va a traer estos datos." : "The next snapshot will bring this data."}
+          </EmptyState>
+        </div>
+      </section>
+    );
+  }
+
+  const bySurface = new Map<AiCatalogSurface, AiRoutingMatrixEntry[]>();
+  for (const entry of routingMatrix) {
+    const list = bySurface.get(entry.surface) ?? [];
+    list.push(entry);
+    bySurface.set(entry.surface, list);
+  }
+  const surfacesInOrder = ROUTING_SURFACE_ORDER.filter((surface) => bySurface.has(surface));
+  const surfacesUnknown = [...bySurface.keys()].filter((surface) => !ROUTING_SURFACE_ORDER.includes(surface));
+
+  return (
+    <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5">
+      <h2 className="text-[18px] font-semibold text-[var(--color-fg-strong)]">{title}</h2>
+      <p className="mt-1 max-w-3xl text-[13px] leading-relaxed text-[var(--color-fg-muted)]">
+        {isEs
+          ? "Decisiones ya calculadas por el motor de routing para cada combinación de superficie, plan y perfil — dato real del snapshot, no la política documentada más abajo."
+          : "Decisions already computed by the routing engine for every surface/plan/profile combination — real snapshot data, not the documented policy further below."}
+      </p>
+
+      <div className="mt-4 space-y-6">
+        {[...surfacesInOrder, ...surfacesUnknown].map((surface) => (
+          <div key={surface}>
+            <h3 className="text-[13px] font-bold uppercase tracking-[0.12em] text-[var(--color-fg-strong)]">
+              {surfaceLabel[surface] ? (isEs ? surfaceLabel[surface].es : surfaceLabel[surface].en) : surface}
+            </h3>
+            <div className="mt-2 overflow-x-auto">
+              <table className="w-full min-w-[960px] border-collapse text-left text-[13px]">
+                <thead>
+                  <tr className="border-b border-[var(--color-border)] text-[12px] uppercase tracking-[0.14em] text-[var(--color-fg-muted)]">
+                    <th className="py-2 pr-4">plan</th>
+                    <th className="py-2 pr-4">{isEs ? "Perfil" : "Profile"}</th>
+                    <th className="py-2 pr-4">{isEs ? "Carril elegido" : "Selected lane"}</th>
+                    <th className="py-2 pr-4">{isEs ? "Detalle técnico" : "Technical detail"}</th>
+                    <th className="py-2 pr-4">Upsell</th>
+                    <th className="py-2 pr-4">Trace</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bySurface.get(surface)!.map((entry, idx) => (
+                    <tr key={`${entry.plan}-${entry.profileId}-${idx}`} className="border-b border-[var(--color-border)] align-top">
+                      <td className="py-2 pr-4"><CodePill>{entry.plan}</CodePill></td>
+                      <td className="py-2 pr-4">
+                        <p className="font-semibold text-[var(--color-fg-strong)]">{entry.profileLabel}</p>
+                        <p className="text-[11px] text-[var(--color-fg-muted)]">profile_id: <CodePill>{entry.profileId}</CodePill></p>
+                      </td>
+                      <td className="py-2 pr-4">
+                        {entry.selected ? (
+                          <>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-semibold text-[var(--color-fg-strong)]">{entry.selected.visibleLabel}</span>
+                              <RoutingLaneKindChip kind={entry.selected.kind} />
+                              <span className="text-[11px] text-[var(--color-fg-muted)]">billing: {entry.selected.billing || "—"}</span>
+                            </div>
+                            {entry.selected.detail ? (
+                              <p className="mt-1 text-[12px] leading-relaxed text-[var(--color-fg-muted)]">{entry.selected.detail}</p>
+                            ) : null}
+                          </>
+                        ) : (
+                          <span className="text-[12px] text-[var(--color-fg-muted)]">{isEs ? "sin carril" : "no lane"}</span>
+                        )}
+                      </td>
+                      <td className="py-2 pr-4 text-[12px] text-[var(--color-fg-muted)]">
+                        {entry.selected ? <RoutingLaneKindDetail kind={entry.selected.kind} /> : "—"}
+                      </td>
+                      <td className="py-2 pr-4 text-[12px] text-[var(--color-fg-muted)]">{entry.upsell ?? "—"}</td>
+                      <td className="py-2 pr-4">
+                        {entry.trace.length === 0 ? (
+                          "—"
+                        ) : (
+                          <details>
+                            <summary className="cursor-pointer text-[12px] font-semibold text-[var(--color-fg-strong)]">
+                              {isEs ? `ver (${entry.trace.length})` : `view (${entry.trace.length})`}
+                            </summary>
+                            <ol className="mt-1 list-decimal space-y-0.5 pl-4 text-[11px] leading-relaxed text-[var(--color-fg-muted)]">
+                              {entry.trace.map((step, stepIdx) => (
+                                <li key={stepIdx}>{step}</li>
+                              ))}
+                            </ol>
+                          </details>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function RoutingTab({ isEs, snapshot }: { isEs: boolean; snapshot: AiControlCenterSnapshot }) {
   return (
     <div className="space-y-5">
       <p className="text-[12px] text-[var(--color-fg-muted)]">
         {isEs
-          ? "El snapshot no trae decisiones de routing en vivo; esta pestaña combina lo que sí trae (superficies servidas) con la política del motor documentada abajo."
-          : "The snapshot carries no live routing decisions; this tab combines what it does carry (surfaces served) with the engine policy documented below."}
+          ? "Esta pestaña combina la matriz de routing precomputada (dato real del snapshot, cuando está disponible) con la política del motor documentada abajo."
+          : "This tab combines the precomputed routing matrix (real snapshot data, when available) with the engine policy documented below."}
       </p>
+
+      <RoutingMatrixSection isEs={isEs} routingMatrix={snapshot.routingMatrix} />
 
       <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5">
         <h2 className="text-[18px] font-semibold text-[var(--color-fg-strong)]">

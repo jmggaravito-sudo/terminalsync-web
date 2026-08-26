@@ -182,6 +182,157 @@ describe("Admin AI Center payload", () => {
     });
   });
 
+  describe("routingMatrix normalization", () => {
+    it("defaults to an empty array when the field is absent (old snapshot)", () => {
+      const snapshot = getAiControlCenterSnapshot() as unknown as Record<string, unknown>;
+      const { routingMatrix: _omit, ...withoutRoutingMatrix } = snapshot;
+      const normalized = normalizeSnapshot(withoutRoutingMatrix);
+      expect(normalized.routingMatrix).toEqual([]);
+    });
+
+    it("normalizes a full entry for each selected.kind variant, preserving trace and upsell", () => {
+      const raw = {
+        ...getAiControlCenterSnapshot(),
+        routingMatrix: [
+          {
+            surface: "chat",
+            plan: "base15",
+            profileId: "solo-glm",
+            profileLabel: "Solo GLM",
+            selected: {
+              kind: { kind: "connected_provider", providerId: "glm" },
+              visibleLabel: "TerminalSync / Z.ai",
+              billing: "included",
+              detail: "Ruta directa a glm-5.3.",
+            },
+            upsell: null,
+            trace: ["profile=solo-glm", "surface=chat", "picked connected_provider:glm"],
+          },
+          {
+            surface: "chat",
+            plan: "credits_only",
+            profileId: "claude-solo",
+            profileLabel: "Claude solo",
+            selected: {
+              kind: { kind: "internal_routed", sourceId: "openrouter", upstreamModelId: "anthropic/claude-sonnet-4.6" },
+              visibleLabel: "Claude Sonnet 4.6",
+              billing: "credits",
+              detail: "Ruteado por OpenRouter hacia Anthropic.",
+            },
+            upsell: "Con créditos podés desbloquear Claude directo.",
+            trace: [],
+          },
+          {
+            surface: "video",
+            plan: "premium_unlocked",
+            profileId: "glm-completo",
+            profileLabel: "GLM completo",
+            selected: {
+              kind: { kind: "managed_engine", engineId: "ts-video", creditsProviderId: "wavespeed" },
+              visibleLabel: "TS Video",
+              billing: "premium",
+              detail: "",
+            },
+            upsell: null,
+            trace: [],
+          },
+          {
+            surface: "automation",
+            plan: "base15",
+            profileId: "sin-ias",
+            profileLabel: "Sin IAs",
+            selected: null,
+            upsell: "Activá un perfil con IA para usar automatización.",
+            trace: [],
+          },
+        ],
+      };
+
+      const normalized = normalizeSnapshot(raw);
+      expect(normalized.routingMatrix).toHaveLength(4);
+
+      const glmEntry = normalized.routingMatrix[0];
+      expect(glmEntry.selected?.kind).toEqual({ kind: "connected_provider", providerId: "glm" });
+      expect(glmEntry.trace).toEqual(["profile=solo-glm", "surface=chat", "picked connected_provider:glm"]);
+
+      const routedEntry = normalized.routingMatrix[1];
+      expect(routedEntry.selected?.kind).toEqual({
+        kind: "internal_routed",
+        sourceId: "openrouter",
+        upstreamModelId: "anthropic/claude-sonnet-4.6",
+      });
+      expect(routedEntry.upsell).toBe("Con créditos podés desbloquear Claude directo.");
+
+      const engineEntry = normalized.routingMatrix[2];
+      expect(engineEntry.selected?.kind).toEqual({ kind: "managed_engine", engineId: "ts-video", creditsProviderId: "wavespeed" });
+
+      const noLaneEntry = normalized.routingMatrix[3];
+      expect(noLaneEntry.selected).toBeNull();
+      expect(noLaneEntry.upsell).toBe("Activá un perfil con IA para usar automatización.");
+    });
+
+    it("tolerates a partial/malformed entry without throwing", () => {
+      const raw = {
+        ...getAiControlCenterSnapshot(),
+        routingMatrix: [
+          {},
+          { surface: "image", profileId: "solo-glm", selected: { kind: { kind: "unknown_future_kind" } } },
+          "not-an-object",
+          null,
+        ],
+      };
+
+      const normalized = normalizeSnapshot(raw);
+      expect(normalized.routingMatrix).toHaveLength(4);
+      expect(normalized.routingMatrix[0]).toMatchObject({ surface: "chat", plan: "", profileId: "", selected: null, trace: [] });
+      expect(normalized.routingMatrix[1]).toMatchObject({ surface: "image", profileId: "solo-glm", selected: null });
+      expect(normalized.routingMatrix[2].profileId).toBe("");
+      expect(normalized.routingMatrix[3].selected).toBeNull();
+    });
+  });
+
+  describe("videoLanePricing normalization", () => {
+    it("defaults to an empty array when the field is absent (old snapshot)", () => {
+      const snapshot = getAiControlCenterSnapshot() as unknown as Record<string, unknown>;
+      const { videoLanePricing: _omit, ...withoutVideoLanePricing } = snapshot;
+      const normalized = normalizeSnapshot(withoutVideoLanePricing);
+      expect(normalized.videoLanePricing).toEqual([]);
+    });
+
+    it("normalizes full entries and preserves withinRule true/false", () => {
+      const raw = {
+        ...getAiControlCenterSnapshot(),
+        videoLanePricing: [
+          { modelId: "wavespeed/ts-video-1", label: "TS Video 1", costUsd5s: 0.2, priceUsd5s: 0.44, multiple: 2.2, withinRule: true },
+          { modelId: "wavespeed/ts-video-fast", label: "TS Video Fast", costUsd5s: 0.1, priceUsd5s: 0.35, multiple: 3.5, withinRule: false },
+        ],
+      };
+
+      const normalized = normalizeSnapshot(raw);
+      expect(normalized.videoLanePricing).toHaveLength(2);
+      expect(normalized.videoLanePricing[0]).toMatchObject({ modelId: "wavespeed/ts-video-1", multiple: 2.2, withinRule: true });
+      expect(normalized.videoLanePricing[1]).toMatchObject({ modelId: "wavespeed/ts-video-fast", multiple: 3.5, withinRule: false });
+    });
+
+    it("tolerates a partial/malformed entry without throwing", () => {
+      const raw = {
+        ...getAiControlCenterSnapshot(),
+        videoLanePricing: [
+          { modelId: "wavespeed/ts-video-1" },
+          { modelId: "wavespeed/ts-video-2", costUsd5s: "not-a-number", withinRule: "yes" },
+          {},
+          null,
+        ],
+      };
+
+      const normalized = normalizeSnapshot(raw);
+      expect(normalized.videoLanePricing).toHaveLength(4);
+      expect(normalized.videoLanePricing[0]).toMatchObject({ modelId: "wavespeed/ts-video-1", label: null, costUsd5s: null, withinRule: false });
+      expect(normalized.videoLanePricing[1]).toMatchObject({ modelId: "wavespeed/ts-video-2", costUsd5s: null, withinRule: true });
+      expect(normalized.videoLanePricing[2]).toMatchObject({ modelId: "", withinRule: false });
+    });
+  });
+
   it("buildAiCenterPayload falls back to the heuristic only when the snapshot truly has no alerts", () => {
     const snapshot = getAiControlCenterSnapshot();
     const emptyAlertsSnapshot = { ...snapshot, alerts: [], changeReport: { ...snapshot.changeReport, alerts: [] } };

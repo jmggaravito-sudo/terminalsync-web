@@ -42,10 +42,11 @@ function normalizeLiveResponse(json: unknown): AiCenterPayload {
   if (isAiControlCenterSnapshot(json)) {
     // Bare `AiControlCenterSnapshot` straight from the engine — it already
     // carries its own real `alerts`/`changeReport`/`internalSources`/
-    // `premiumLanes`. `buildAiCenterPayload` (via `normalizeSnapshot` +
-    // `resolveAlerts`) prefers `snapshot.alerts` over the local heuristic
-    // whenever it is non-empty, so this passes them through untouched
-    // instead of recomputing alerts from scratch.
+    // `premiumLanes`/`routingMatrix`/`videoLanePricing`. `buildAiCenterPayload`
+    // (via `normalizeSnapshot` + `resolveAlerts`) prefers `snapshot.alerts`
+    // over the local heuristic whenever it is non-empty, so this passes
+    // every snapshot field through untouched (routingMatrix/videoLanePricing
+    // included) instead of recomputing anything from scratch.
     return buildAiCenterPayload({
       mode: "live",
       source: "terminalsync_ai_center_url",
