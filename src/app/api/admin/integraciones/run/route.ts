@@ -76,6 +76,13 @@ export interface IntegracionesRunStatus {
   created_at: string;
 }
 
+/** Thrown only when GitHub answers 404 for the workflow-runs lookup — i.e.
+ *  `connector-loop.yml` doesn't exist yet on `DISPATCH_REF` (PR #1603 not
+ *  merged into release yet). The GET handler treats this as "no runs yet",
+ *  not as an error. Any other non-2xx keeps throwing a plain Error, which
+ *  the GET handler still turns into a 502. */
+class WorkflowNotFoundError extends Error {}
+
 async function fetchLatestRun(token: string): Promise<IntegracionesRunStatus | null> {
   const res = await fetch(
     `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW}/runs?per_page=1`,
@@ -84,6 +91,11 @@ async function fetchLatestRun(token: string): Promise<IntegracionesRunStatus | n
       cache: "no-store",
     },
   );
+  if (res.status === 404) {
+    throw new WorkflowNotFoundError(
+      `GitHub 404: workflow ${WORKFLOW} not found on ${OWNER}/${REPO} yet`,
+    );
+  }
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`GitHub ${res.status}${text ? `: ${text.slice(0, 300)}` : ""}`);
@@ -142,13 +154,23 @@ export async function GET(req: Request) {
     );
   }
 
+  // Kick off both lookups concurrently; fetchLatestLoopRun() never throws
+  // (best-effort, see its own doc comment) so it's safe to await from
+  // either branch below without a second try/catch.
+  const lastLoopRunPromise = fetchLatestLoopRun();
+
   try {
-    const [run, lastLoopRun] = await Promise.all([
-      fetchLatestRun(token),
-      fetchLatestLoopRun(),
-    ]);
+    const run = await fetchLatestRun(token);
+    const lastLoopRun = await lastLoopRunPromise;
     return NextResponse.json({ run, lastLoopRun });
   } catch (err) {
+    if (err instanceof WorkflowNotFoundError) {
+      // connector-loop.yml isn't on release yet (PR #1603 unmerged) — this
+      // is "no runs yet", not a failure. 200, not 502, so the client panel
+      // renders normally instead of showing a load error.
+      const lastLoopRun = await lastLoopRunPromise;
+      return NextResponse.json({ run: null, lastLoopRun, workflowMissing: true });
+    }
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Error desconocido" },
       { status: 502 },

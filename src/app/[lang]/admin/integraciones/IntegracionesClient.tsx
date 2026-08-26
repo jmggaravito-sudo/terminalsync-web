@@ -23,6 +23,7 @@ interface LastLoopRun {
 interface StatusResp {
   run: RunStatus | null;
   lastLoopRun: LastLoopRun | null;
+  workflowMissing?: boolean;
 }
 
 const POLL_MS = 5000;
@@ -33,6 +34,7 @@ export function IntegracionesClient({ lang }: { lang: string }) {
   const [auth, setAuth] = useState<AuthState>("checking");
   const [run, setRun] = useState<RunStatus | null>(null);
   const [lastLoopRun, setLastLoopRun] = useState<LastLoopRun | null>(null);
+  const [workflowMissing, setWorkflowMissing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [dispatching, setDispatching] = useState(false);
   const [dispatchError, setDispatchError] = useState<string | null>(null);
@@ -55,14 +57,26 @@ export function IntegracionesClient({ lang }: { lang: string }) {
       if (!res.ok) throw new Error(json.error ?? `API ${res.status}`);
       setRun(json.run ?? null);
       setLastLoopRun(json.lastLoopRun ?? null);
-      setAuth("ready");
+      setWorkflowMissing(Boolean(json.workflowMissing));
       setLoadError(null);
     } catch (e) {
+      // Solo reportamos el error de status — NUNCA tocamos `auth` acá. La
+      // sesión ya se resolvió (ver el useEffect de abajo); si este fetch
+      // falla (ej. el workflow todavía no existe en release, o GitHub cae),
+      // el panel se muestra igual con el error visible, en vez de quedarse
+      // colgado en "Verificando sesión…".
       setLoadError(e instanceof Error ? e.message : String(e));
     }
   }, []);
 
-  // Login/session gate, same shape as LoopRunsClient.
+  // Login/session gate, same shape as LoopRunsClient — pero con una
+  // diferencia clave: `auth` pasa a "ready" apenas confirmamos la sesión,
+  // ANTES de esperar loadStatus(). Antes, loadStatus() solo ponía "ready"
+  // en su propio try exitoso, así que un fallo (ej. 404 de GitHub porque
+  // connector-loop.yml no existe todavía en release) dejaba `auth` colgado
+  // en "checking" para siempre — y el loadError, que se renderiza adentro
+  // del bloque auth==="ready", nunca llegaba a mostrarse. loadStatus sigue
+  // pudiendo bajar a "anon"/"forbidden" según el status HTTP.
   useEffect(() => {
     const sb = getSupabaseBrowser();
     if (!sb) {
@@ -70,8 +84,12 @@ export function IntegracionesClient({ lang }: { lang: string }) {
       return;
     }
     sb.auth.getSession().then(({ data: { session } }) => {
-      if (!session) setAuth("anon");
-      else void loadStatus();
+      if (!session) {
+        setAuth("anon");
+      } else {
+        setAuth("ready");
+        void loadStatus();
+      }
     });
     const { data: sub } = sb.auth.onAuthStateChange((_event, session) => {
       if (!session) {
@@ -79,6 +97,7 @@ export function IntegracionesClient({ lang }: { lang: string }) {
         setRun(null);
         setLastLoopRun(null);
       } else {
+        setAuth("ready");
         void loadStatus();
       }
     });
@@ -241,7 +260,13 @@ export function IntegracionesClient({ lang }: { lang: string }) {
                 </div>
               ) : (
                 <p className="text-[13px] text-[var(--color-fg-muted)]">
-                  {isEs ? "Todavía no hay corridas registradas." : "No runs recorded yet."}
+                  {workflowMissing
+                    ? isEs
+                      ? "Todavía no se corrió — el workflow connector-loop.yml está pendiente de desplegar en release."
+                      : "Not run yet — the connector-loop.yml workflow is pending deploy to release."
+                    : isEs
+                      ? "Todavía no hay corridas registradas."
+                      : "No runs recorded yet."}
                 </p>
               )}
 
