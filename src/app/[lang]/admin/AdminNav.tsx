@@ -18,6 +18,7 @@ export function adminSections(isEs: boolean): AdminSection[] {
     { slug: "comp", label: "Comp" },
     { slug: "mercadopago", label: "Mercado Pago" },
     { slug: "ops", label: "Ops" },
+    { slug: "integraciones", label: isEs ? "Integraciones" : "Integrations" },
     { slug: "ai-center", label: isEs ? "Centro de IAs" : "AI Center" },
     { slug: "business-leads", label: isEs ? "Leads B2B" : "B2B Leads" },
     { slug: "leads-linkedin", label: isEs ? "Leads LinkedIn" : "LinkedIn Leads" },

@@ -50,6 +50,13 @@ export default async function AdminHome({ params }: Props) {
         : "Operational landing with each flow, what it does, health, latest results and n8n links.",
     },
     {
+      slug: "integraciones",
+      title: isEs ? "Integraciones" : "Integrations",
+      desc: isEs
+        ? "Supervisión de paridad de connectors entre las 4 IAs (Claude/Codex/Gemini/GLM): correr el loop y ver el último resultado."
+        : "Connector-parity supervision across the 4 AIs (Claude/Codex/Gemini/GLM): run the loop and see the latest result.",
+    },
+    {
       slug: "ai-center",
       title: isEs ? "Centro de IAs" : "AI Center",
       desc: isEs
