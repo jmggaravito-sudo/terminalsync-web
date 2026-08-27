@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { CallbackClient, resolveCallbackLang } from "../../callback/CallbackClient";
+import { CallbackClient } from "../../callback/CallbackClient";
+import { resolveCallbackLang } from "../../callback/callbackLang";
 
 // Meta/Facebook Login redirects here first because Meta requires an HTTPS
 // redirect URI. This page immediately deep-links back into the desktop app at
