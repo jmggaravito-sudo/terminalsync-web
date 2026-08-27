@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeCallbackLang, resolveCallbackLang } from "./CallbackClient";
+import { normalizeCallbackLang, resolveCallbackLang } from "./callbackLang";
 
 describe("normalizeCallbackLang", () => {
   it("uses English when OAuth callback carries lang=en", () => {

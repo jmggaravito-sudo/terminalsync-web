@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { CallbackClient, resolveCallbackLang } from "./CallbackClient";
+import { CallbackClient } from "./CallbackClient";
+import { resolveCallbackLang } from "./callbackLang";
 
 // This route is the Google OAuth redirect target for the Tauri app's "Web
 // application" OAuth client. Google sends the user here with ?code=...&state=...;

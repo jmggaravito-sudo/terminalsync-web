@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, AlertTriangle, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { buildDeepLink } from "./buildDeepLink";
+import type { CallbackLang } from "./callbackLang";
 
 interface Params {
   code?: string;
@@ -12,8 +13,6 @@ interface Params {
   error?: string;
   error_description?: string;
 }
-
-type CallbackLang = "en" | "es";
 
 const COPY = {
   en: {
@@ -47,26 +46,6 @@ const COPY = {
     missingRetryPrefix: "Reintenta desde la app — si el problema persiste, escríbenos a",
   },
 } as const;
-
-export function normalizeCallbackLang(value?: string | null): CallbackLang {
-  return value?.toLowerCase().startsWith("en") ? "en" : "es";
-}
-
-export function resolveCallbackLang({
-  explicitLang,
-  state,
-  acceptLanguage,
-}: {
-  explicitLang?: string | null;
-  state?: string | null;
-  acceptLanguage?: string | null;
-}): CallbackLang {
-  if (explicitLang) return normalizeCallbackLang(explicitLang);
-  const normalizedState = state?.toLowerCase() ?? "";
-  if (normalizedState.startsWith("tslang:en:")) return "en";
-  if (normalizedState.startsWith("tslang:es:")) return "es";
-  return normalizeCallbackLang(acceptLanguage);
-}
 
 // Auto-trigger the deep link back into the native Tauri app. Three states:
 //  1. idle      → show branded card + auto-redirect countdown
