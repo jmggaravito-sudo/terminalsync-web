@@ -9,6 +9,8 @@ hidden: true
 tagline: "Emails people actually reply to"
 description: "Short, clear, specific drafts — paste and send."
 license: "proprietary"
+marketplaceSource: "terminalsync"
+compatibleWith: ["claude", "codex"]
 ---
 ## When to use
 

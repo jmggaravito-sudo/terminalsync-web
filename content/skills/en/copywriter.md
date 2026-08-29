@@ -9,6 +9,8 @@ hidden: true
 tagline: "Your landing, hero and emails in your voice"
 description: "Writes direct, specific copy — no AI clichés."
 license: "proprietary"
+marketplaceSource: "terminalsync"
+compatibleWith: ["claude", "codex"]
 ---
 ## When to use
 

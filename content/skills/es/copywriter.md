@@ -9,8 +9,10 @@ hidden: true
 tagline: "Tu landing, hero y emails con tu voz"
 description: "Escribe copy directo y específico — sin clichés de IA."
 license: "proprietary"
+marketplaceSource: "terminalsync"
+compatibleWith: ["claude", "codex"]
 ---
-## Cuándo usar
+## Cuándo usarlo
 
 - Pediste "ayudame a escribir el hero", "necesito copy para landing", "armame un email de bienvenida".
 - Tenés que escribir algo que vende y no querés que suene como ChatGPT genérico.
@@ -27,12 +29,12 @@ Después devuelve copy en tres registros: directo, persuasivo, irreverente. Vos 
 
 Bloqueos de output: nunca usa "elevate", "unlock", "seamless", "in today's fast-paced world", "imagine if", o emojis decorativos.
 
-## Cómo usar
+## Cómo usarlo
 
 1. Decile qué tipo de copy querés: hero, email, ad, landing, descripción de producto.
 2. Respondele las 3 preguntas (toma 1 minuto).
 3. Te devuelve 3 registros distintos. Pedile el que más te gusta en variantes A/B.
 
-## Mejor para
+## Ideal para
 
 Founders escribiendo su propia landing, agencias que quieren un baseline antes del cliente, devs que odian escribir copy.
