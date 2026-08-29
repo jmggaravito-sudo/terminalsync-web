@@ -61,6 +61,23 @@ Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first,
 
 ## Run log
 
+### 2026-08-24 — automated run, no focus input given
+
+**Shipped 3 Plugins**, each pairing an already-published, `available` connector with an already-evaluated, `available` skill:
+
+- **ahrefs** (`marketing`) — Ahrefs connector + SEO Auditor. A deliberately *different* SEO product than the existing `seo-audit` Plugin (Firecrawl + SEO Auditor): Firecrawl fetches a page's rendered content, Ahrefs supplies the organic-keyword-ranking/backlink/referring-domain/keyword-idea data the same skill's "When to use" section explicitly asks for ("relevant analytics/search data") when a URL fetch alone can't answer "where do we rank" or "who links to us". Reusing the same skill across two distinct connector-driven Plugins mirrors the precedent already set by `internal-comms` (Gmail/HubSpot/Slack/Stripe/Xero) — one skill, several real products. No overclaim: the connector is read-only and the Plugin body says so.
+- **gusto** (`operations`) — Gusto connector + Tax Prep Checklist. Gusto's read-only tools (`list_company_employees`, `list_company_contractors`, `list_company_contractor_payments`, `list_employee_work_addresses`, `list_company_payrolls`) answer exactly the intake questions Tax Prep Checklist otherwise has to ask by hand (entity/headcount, which states, whether contractors were paid) — so the checklist starts from the owner's real payroll numbers instead of memory. Explicitly disclosed as a limit: Gusto's own tools don't expose W-9-on-file status, so that check still needs the owner's own records — no invented capability.
+- **square** (`operations`) — Square connector + Internal Comms. Mirrors the already-shipped Stripe/Xero/HubSpot "who hasn't paid → drafted, approved, sent" pattern for POS/invoice businesses instead of pure online billing. Disclosed: Square's manifest defaults to sandbox mode, so the Plugin body tells the owner to switch to production themselves before it reflects real customers.
+
+**Considered and rejected (not deferred — a real capability mismatch, not a missing piece):**
+
+- **dropbox + doc-coauthoring** — tempting because it would mirror the already-shipped `gdrive`/`notion` "write the doc and save it" Plugins, but Dropbox's connector (`content/connectors/en/dropbox.md`) only exposes read tools (`dropbox_list_files`, `dropbox_search`, `dropbox_get_link`) plus one gated write tool that creates a **share link** for an existing file (`dropbox_share_link`) — there is no upload/create-file tool. Bundling a document-authoring skill would claim a "save the new document to Dropbox" capability the connector cannot perform. Not a Plugin until Dropbox's connector gains an upload tool.
+
+**Deferred / SKIP, already documented for the other Loops (reconfirmed unchanged this run):** klaviyo (`lifecycle-email` still `catalogReady: false`), zoom (`meeting-notes` still `catalogReady: false` and single-vendor), asana (no Asana-specific skill exists yet), twitter/wordpress (`contenido-social` still scopes only to Instagram/Facebook/LinkedIn/TikTok) — see the 2026-08-10 entry below for the original reasoning, none of it changed this run.
+
+Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` (17/17 pass) + `tsc --noEmit` (clean). All 3 new plugins reuse their connector's existing, committed logo (`/connectors/<slug>.svg`) — no new logo assets needed.
+
+
 ### 2026-08-10 — automated run, no focus input given
 
 **Shipped 2 Plugins**, both pairing an already-published, `available` connector with an already-evaluated, `available` skill (evals + fixtures on disk for both):
