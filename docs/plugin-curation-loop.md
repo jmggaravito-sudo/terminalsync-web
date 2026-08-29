@@ -61,6 +61,24 @@ Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first,
 
 ## Run log
 
+### 2026-08-17 — automated run, no focus input given
+
+**Shipped 3 Plugins**, each pairing an already-published, `available` connector with an already-evaluated, `available` skill (both resolve through the loader and pass the `/raw` delivery gate):
+
+- **meta-social** (`marketing`) — Meta Social connector (organic Instagram + Facebook Page publishing, official Meta Graph API, approval-gated) + Social Content Batch (`contenido-social`). The skill's own scope line names "Instagram, Facebook, LinkedIn, TikTok" — Meta Social covers exactly the Instagram/Facebook subset of that with real publish tools, so the plugin body is explicit that LinkedIn/TikTok drafts still get posted by hand. This is the honest version of the twitter/wordpress pairing the 2026-08-10 run declined: here the connector's real capability is a genuine subset of the skill's claimed scope, not an unsupported platform.
+- **dropbox** (`productivity`) — Dropbox connector (first-party, search + temporary/public links) + Doc Co-Authoring (`doc-coauthoring`). Same mold as the already-shipped `gdrive` and `notion` Plugins (search-and-write-and-file, one flow); Dropbox's real tools (search, temporary link, gated public share) support the "find a prior doc as reference, write the new one, hand back a link" story without inventing capability.
+- **gusto** (`operations`) — Gusto connector (official, remote/OAuth, **read-only** payroll/employee/contractor data) + Tax Prep Checklist (`tax-prep-checklist`). Chosen over `quarterly-tax-estimate-prep` (see Skipped below): Tax Prep Checklist's intake literally asks "do you have employees / contractors / did anything change this year", which is exactly what Gusto's roster, contractor-payment, and termination/rehire tools answer directly — no invented capability, and Gusto's read-only nature matches the skill's own "never estimates what you owe" boundary.
+
+**Skipped / deferred, documented for the other Loops:**
+
+- **`cotizaciones` (Quotes & Estimates)** — finance skill, available, no `catalogReady:false` blocker, but no connector in the catalog gives it real reinforcement without overclaiming. `square` was considered (it lists an "invoices" service in its catalog), but its actual tools are a generic `get_service_info`/`get_type_info`/`make_api_request` gateway with no invoicing-specific tool named in `content/connectors/SOURCES.md` — bundling it here would claim a capability the connector's own documented surface doesn't clearly support. Left as a candidate for a future run once a connector exposes a named invoicing/quote tool.
+- **`quarterly-tax-estimate-prep`** — finance skill, available, but it's scoped to freelancer/solo self-employment tax (its own inputs are "your net profit", safe-harbor from *your* prior liability). Gusto is a team-payroll connector — it reports what a business pays *others*, not the owner's own net profit across income sources, so pairing them would overclaim what Gusto's read-only data actually feeds. No other connector in the catalog exposes an owner's aggregate income/expense picture. Deferred — a bank-feed or full-ledger connector (Xero already covers invoicing/P&L, but is already shipped bundled with `internal-comms`) would be the real pairing.
+
+**Also noted, not actioned this run:** the already-shipped `higgsfield` and `ideogram` Plugins bundle `meta-ads-creator`, but two more specific skills now exist and pass the catalog gate — `higgsfield-video-director` and `ideogram-creative-director`, each written for that exact connector's real limits (15s cap, async jobs, Soul/character reuse for Higgsfield; exact in-image text and remix plan for Ideogram). Swapping the bundled skill on a published Plugin is an edit to a live file, not a new pairing, and the 2026-08-02 log already documents the cost of two runs touching the same slug without seeing each other — left for a run that owns that specific edit deliberately rather than as a side effect of an unrelated pass.
+
+Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` (20/20 pass, includes the neutral-Spanish ratchet test) + `tsc --noEmit` (clean) + full suite (`vitest run`, 251/251). All 3 new plugins reuse their connector's existing, committed logo (`/connectors/<slug>.svg`) — no new logo assets needed. ES copy written in neutral Spanish (tú-form) per `src/lib/__tests__/voz-neutral-catalogo.test.ts` — new files are not grandfathered into the existing voseo debt.
+
+
 ### 2026-08-10 — automated run, no focus input given
 
 **Shipped 2 Plugins**, both pairing an already-published, `available` connector with an already-evaluated, `available` skill (evals + fixtures on disk for both):
