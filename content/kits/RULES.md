@@ -342,6 +342,103 @@ Until these are present, keep the kit out of the published marketplace catalog.
 
 ## Loop run log
 
+### 2026-08-24 — Payroll & HR Updates Kit (business-owner role, operations)
+
+**Shipped (1 kit, EN/ES parity):** `payroll-hr-updates` (category: `operations`) —
+`gusto` (connector) + `doc-coauthoring` (skill) + `internal-comms` (skill).
+
+**Why this focus.** The workflow input for this run was empty, so this run
+applied rule #3 directly: start from a business-owner role, not from a pile of
+available pieces. `gusto` (shipped 2026-08-02) was the one installable,
+`business`-first connector in the whole catalog that **no existing kit used
+yet** — every other kit in this file's log already anchors on `xero`, `stripe`,
+`hubspot`, `clickup`+`slack`, `airtable`, `square`, `ahrefs`+`wordpress`, or the
+creative-studio connectors. Payroll/HR is also one of the explicitly
+under-built business-owner roles this file calls out (rule: "no cerrar una
+tanda de kits sin al menos uno para un rol de negocio real").
+
+**Installability check.** `content/connectors/en/gusto.md` /
+`content/connectors/es/gusto.md` carry a `manifest:` block
+(`mcp-remote@latest https://mcp.api.gusto.com`), `status: available`, not
+hidden — passes the "only published, installable pieces" gate. `doc-coauthoring`
+and `internal-comms` are 2 of the 7 allowed skills. No `cli` item: the workflow
+is read-and-summarize-and-communicate, not terminal-level execution, so adding
+a CLI tool here would be exactly the filler rule #279 of this file warns
+against.
+
+**Coherence review.** Each item covers a distinct step of one real cycle
+(payroll run → cost summary → team message), argued in full in the kit's own
+"Why these pieces belong together" section:
+- `gusto` is the **only source of the actual numbers** (roster, pay schedule,
+  contractor payments, time sheets) — read-only, so the kit never claims to run
+  payroll or touch money.
+- `doc-coauthoring` turns those numbers into the **owner/accountant-facing
+  summary** — same role it already plays in `small-business-finance` and
+  `bookkeeping-tax-handoff`, applied here to a payroll cost readout instead of
+  a P&L.
+- `internal-comms` turns the same cycle into the **team-facing message** — its
+  own content file explicitly names "benefits" and "regulated HR topics" as in
+  scope, which is exactly what a payroll-adjacent announcement is. This is a
+  cleaner fit than its use in `team-operations` (generic task-status update).
+
+**Workflow smoke test (positive).**
+- **User goal:** a small-business owner running payroll for an 8-person shop
+  wants to know what the next payroll will cost before it runs, and wants the
+  team reminded to submit time sheets.
+- **Installed items:** `gusto`, `doc-coauthoring`, `internal-comms`.
+- **Prompt 1:** *"Who's on payroll right now, what's our next pay date, and are
+  there any time sheets that look incomplete this period?"* — **Expected
+  behavior:** Gusto's documented read tools (`list_company_employees`,
+  `list_company_pay_schedules`/`list_company_pay_periods`,
+  `list_company_time_sheets`/`list_time_records`) answer directly from the
+  connected account; nothing here requires a tool Gusto's own reference doesn't
+  list.
+- **Prompt 2:** *"Write this up as a short payroll cost summary for this pay
+  period."* — **Expected behavior:** Doc Co-authoring structures the numbers
+  from prompt 1 into a short summary per its documented brief → outline →
+  draft flow.
+- **Prompt 3:** *"Draft a reminder to the team that time sheets are due
+  Friday."* — **Expected behavior:** Internal Comms drafts a short, audience-
+  aware team message per its documented process.
+- **Actual result:** not exercised against a live Gusto OAuth session in this
+  run's environment (Gusto's connector requires the owner's own account login
+  in a browser — there is no sandbox credential available to this automated
+  run, same constraint every remote-OAuth connector in this catalog has for an
+  unattended Loop run). The evidence above is the documented-tool-surface check
+  every prior automated Kit Loop run has used for connectors it can't log into
+  live (see e.g. the 2026-08-02 and 2026-08-03 entries below, which reason from
+  each connector's/skill's own published README/content file rather than a
+  live session). **Gap found:** a live end-to-end run with a real Gusto account
+  is still open — flagged for human/JM review before `status: available`
+  ships broadly, consistent with "Evidence is not the verdict."
+- **Negative fit check:** the kit should **not** be read as covering "run this
+  week's payroll" — Gusto's connector is read-only by Gusto's own design (its
+  content file states this explicitly and lists what it cannot do: execute
+  payroll runs, transfer money, create/modify employees, change compensation/
+  benefits, modify company settings). The kit's own Limits section states this
+  up front so no user mistakes it for a payroll-execution tool.
+
+**Human review note.** The smoke test above is evidence, not approval — per
+this file's Verification gate, JM/human review decides whether the kit is
+coherent enough to publish, especially given the live-session gap noted above.
+
+**SKIP/deferred — no new item forced in to round out the bundle.** Considered
+and rejected adding `google-sheets` (already used in `bookkeeping-tax-handoff`
+for a different job — payroll numbers don't need a spreadsheet fallback the way
+general bookkeeping does, since Gusto's read surface already covers the
+numbers this kit needs) and `slack`/`clickup` (would just re-import
+`team-operations`'s task-status angle onto a payroll kit with no payroll-
+specific reason — exactly the "generic enough to fit any kit" filler this
+file's coherence rule prohibits). Kept the kit to 1 connector + 2 skills
+rather than pad it.
+
+**Category note.** Filed as `operations` rather than `finance`: this file
+already has two `finance` kits anchored on Xero (`small-business-finance`,
+`bookkeeping-tax-handoff`) for books/invoicing; this kit's job is checking a
+payroll cycle and communicating it to the team, not accounting, so `operations`
+reads truer and avoids implying a third overlapping finance kit needs
+resolving the way the 2026-08-02/2026-08-09 entries below had to.
+
 ### 2026-08-03 — SEO Content Kit; overlap check against in-flight kit PRs
 
 **Shipped (1 kit, EN/ES parity):**
