@@ -61,6 +61,23 @@ Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first,
 
 ## Run log
 
+### 2026-08-31 — automated run, no focus input given
+
+**Shipped 2 Plugins**, both pairing an already-published, `available` connector with an already-published, `available` skill (no `catalogReady: false`, no vendor gap):
+
+- **meta-social** (`marketing`) — Meta Social connector + Social Content Batch (`contenido-social`). `contenido-social`'s own scope line is explicit: "Instagram, Facebook, LinkedIn, TikTok." `meta-social` covers exactly two of those four (organic Instagram + Facebook Page publishing via Meta's Graph API) — no capability claimed beyond what the connector's README documents. This closes the gap the 2026-08-10 run left open for `twitter`/`wordpress` (whose surfaces `contenido-social` does *not* claim): the honest pairing was already in the catalog, just unpaired until now.
+- **gusto** (`operations`) — Gusto connector + 1099/W-9 Organizer. Gusto's own read-only tools (`list_company_contractors`, `list_company_contractor_payments`) are literally the payee-list-plus-totals input the skill asks for — a tighter, more direct match than the already-shipped `google-sheets` + `1099-w9-organizer` pairing (a generic spreadsheet vs. a payroll platform that already has the contractor payment history on file). Reusing the same skill across two connector pairings mirrors the existing `meta-ads-creator` precedent (bundled by `higgsfield`, `ideogram`, and `meta-ads`). Limits section discloses that Gusto's contractor tools don't track W-9-on-file status — that still comes from the user.
+
+**Deferred / SKIP, re-confirmed still blocked (documented previously, re-checked this run):**
+
+- **klaviyo (marketing, email/SMS)** — `lifecycle-email` still carries `catalogReady: false`. Still a Skill Loop task.
+- **zoom (productivity, meetings)** — `meeting-notes` still `catalogReady: false` and still only `vendors: ["claude", "codex"]` (fails "las 4 IAs"). Still a Skill Loop task.
+- **shopify / klaviyo (referral-program)** — `referral-program` still `catalogReady: false`. Still a Skill Loop task.
+- **asana (productivity, tasks/projects)** — no Asana-specific skill exists yet in `content/skills/{en,es}`; `todoist`, `clickup`, and `monday` are in the same position (task-management connectors with no matching skill). Left as a Skill Loop candidate.
+
+Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` (17/17 pass) + `tsc --noEmit` (clean). Both new plugins reuse their connector's existing, committed logo (`/connectors/<slug>.svg`) — no new logo assets needed.
+
+
 ### 2026-08-10 — automated run, no focus input given
 
 **Shipped 2 Plugins**, both pairing an already-published, `available` connector with an already-evaluated, `available` skill (evals + fixtures on disk for both):
