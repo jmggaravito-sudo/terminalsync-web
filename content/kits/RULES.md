@@ -342,6 +342,40 @@ Until these are present, keep the kit out of the published marketplace catalog.
 
 ## Loop run log
 
+### 2026-08-31 — Ecommerce Email & SMS Retention Kit (Klaviyo + Square + Doc Co-authoring)
+
+**Shipped (1 kit, EN/ES parity):**
+
+- `ecommerce-email-retention` (category: marketing) — `square` + `doc-coauthoring` + `klaviyo`. Scoped to the promo-to-performance loop of owned-channel ecommerce marketing: read real sales/catalog/stock data from Square, draft the campaign copy from that data with Doc Co-authoring, send it as a real email/SMS campaign in Klaviyo, and check its performance back in Klaviyo. Klaviyo shipped as a connector 2026-07-31 (remote/OAuth) but no kit anchored it yet — it was the strongest unused business-owner-first connector in the catalog, and email/SMS marketing is squarely inside the "documents / marketing" value priority `content/connectors/SOURCES.md` names for the persona filter.
+
+**Focus was empty**, so per rule #3 this run started from an under-built business-owner workflow rather than a pile of available pieces: no kit in the catalog used Klaviyo, and ecommerce retention marketing (as opposed to storefront ops or paid ads) had no kit either.
+
+**Differentiation from existing kits (not a duplicate):**
+
+- Reuses the `square` connector from `ecommerce-storefront`, but for a different job: that kit is staff-facing catalog/inventory operations (new-line copy, staff announcements); this kit is customer-facing promotional campaigns (email/SMS). Both kits' bodies cross-reference this split.
+- Distinct from `marketing-campaign-seo` and `social-ad-creative-studio`, which are paid-social/SEO workflows; this kit is scoped to owned channels (email/SMS) and does not touch ads, budgets, or ad creative.
+
+**Overlap check against in-flight, not-yet-merged Kit Curation Loop PRs:** at the time of this run, three kit PRs were open — `payroll-hr-updates` (#315, Gusto), `payroll-pay-review` (#304, Gusto), and `sales-meeting-followup` (#297, Zoom). None reference Klaviyo or Square, so this run does not duplicate any of them. (Separately, `payroll-hr-updates` and `payroll-pay-review` both anchor on Gusto with the same doc-coauthoring/internal-comms pairing — flagging again for whoever reviews all open kit PRs together, since it looks like the same overlap the 2026-08-09 note below already resolved once for Xero; this run did not touch either PR.)
+
+**Alternatives considered and rejected:**
+
+- A third Gusto-anchored payroll kit — rejected outright, two are already in flight (see above); a third would guarantee a duplicate.
+- Asana/Monday/Canva/Todoist/Google Calendar-anchored kits — none produced a coherence story clearly distinct from the existing `team-operations` (ClickUp + Slack + Internal Comms) or `docs-and-team-comms` (Notion + Slack) kits without forcing one of the 7 allowed skills outside its own declared scope.
+- Still blocked, same as prior runs: **Customer Service/Support kit** (`intercom` has no `manifest:` block — first-party, app-connected) and **Local Marketing kit** (`google-business`, same gate failure). Re-verified this run by grepping both files for `manifest:` — neither has one. No new information; not re-researched beyond confirming the gate still fails.
+
+**Negative fit check:** this kit does not solve paid social/search ad campaigns (no ad budget, targeting, or creative production — see the Marketing Campaign & SEO Kit or Social Ad Creative Studio Kit instead), and it does not help a merchant on a different email platform (e.g. Mailchimp) — no Mailchimp connector is installable today (SOURCES.md: the official Mailchimp MCP only covers Transactional/Mandrill, not the marketing platform).
+
+**Workflow smoke test (reasoned from each piece's own documented tool surface — no live Square/Klaviyo account exists for this automated run, same constraint noted in the 2026-08-24 Payroll & HR Updates Kit run):**
+
+- User goal: "I have excess stock on one item, help me send a quick promo to clear it."
+- Installed items: `square`, `doc-coauthoring`, `klaviyo`.
+- Prompt/action: "what's low on stock this week?" → Square's catalog/inventory surface (`get_type_info`/`make_api_request` against the `catalog`/`inventory` services per its README) returns the item → give Doc Co-authoring the item and the goal ("clear excess stock on this line") → ask for a subject line, body, and CTA → give Klaviyo the drafted copy and ask it to create a campaign against the right segment (`create_campaign` per Klaviyo's documented tools).
+- Expected behavior: Square answers with real catalog/inventory data (not invented numbers); Doc Co-authoring returns structured, on-goal copy instead of generic ad copy; Klaviyo drafts a real campaign object for review, not an auto-send.
+- Actual/summarized result: consistent with each piece's own documented tool surface (Square's service-catalog pattern; Klaviyo's `create_campaign`/`get_campaign_report`; Doc Co-authoring's own drafting behavior per its `SKILL.md`). No live OAuth session to verify end-to-end in this run.
+- Gap found: no sandbox Klaviyo/Square account to run this live — flagged here, not hidden. A live end-to-end pass with real accounts is still open before this should be treated as fully verified, same open item every remote-OAuth kit in this catalog carries after an unattended Loop run.
+
+**Human-review note:** the evidence above is not self-approval — JM/human review decides whether this bundle is coherent enough to publish, same as every other kit in this file.
+
 ### 2026-08-03 — SEO Content Kit; overlap check against in-flight kit PRs
 
 **Shipped (1 kit, EN/ES parity):**
