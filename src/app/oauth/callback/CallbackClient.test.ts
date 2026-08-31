@@ -25,6 +25,12 @@ describe("resolveCallbackLang", () => {
     expect(resolveCallbackLang({ state: "tslang:es:abc", acceptLanguage: "en-US" })).toBe("es");
   });
 
+  it("reads the language marker inside Lab OAuth state", () => {
+    expect(resolveCallbackLang({ state: "tslab:tslang:en:5145d67e", acceptLanguage: "es" })).toBe("en");
+    expect(resolveCallbackLang({ state: "tslab%3Atslang%3Aen%3A5145d67e", acceptLanguage: "es" })).toBe("en");
+    expect(resolveCallbackLang({ state: "tslab:tslang:es:5145d67e", acceptLanguage: "en-US" })).toBe("es");
+  });
+
   it("falls back to browser language for legacy states", () => {
     expect(resolveCallbackLang({ state: "legacy", acceptLanguage: "en-US,en;q=0.9" })).toBe("en");
   });
