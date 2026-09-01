@@ -14,8 +14,28 @@ export function resolveCallbackLang({
   acceptLanguage?: string | null;
 }): CallbackLang {
   if (explicitLang) return normalizeCallbackLang(explicitLang);
-  const normalizedState = state?.toLowerCase() ?? "";
-  if (normalizedState.startsWith("tslang:en:")) return "en";
-  if (normalizedState.startsWith("tslang:es:")) return "es";
+  const stateLang = resolveLangFromState(state);
+  if (stateLang) return stateLang;
   return normalizeCallbackLang(acceptLanguage);
+}
+
+function resolveLangFromState(state?: string | null): CallbackLang | null {
+  for (const candidate of stateCandidates(state)) {
+    const match = candidate.match(/(?:^|:)tslang:(en|es)(?::|$)/i);
+    if (match?.[1]) return normalizeCallbackLang(match[1]);
+  }
+  return null;
+}
+
+function stateCandidates(state?: string | null): string[] {
+  if (!state) return [];
+  const raw = state.toLowerCase();
+  const candidates = [raw];
+  try {
+    const decoded = decodeURIComponent(state).toLowerCase();
+    if (decoded !== raw) candidates.push(decoded);
+  } catch {
+    // Keep the raw state if the browser/framework already decoded it or it is malformed.
+  }
+  return candidates;
 }
