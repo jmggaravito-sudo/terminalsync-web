@@ -23,17 +23,15 @@
 // provider_id and its visible label is TerminalSync / Z.ai.
 
 export type AiCatalogPromotionChannel = "internal" | "beta" | "public";
-export type AiCatalogSurface = "chat" | "design" | "image" | "video" | "automation";
+export type AiCatalogSurface =
+  "chat" | "design" | "image" | "video" | "automation";
 export type AiAdminSurface = "chat" | "image" | "video" | "automation";
-export type AiCatalogAccess = "connected" | "managed" | "credits" | "requires_key";
+export type AiCatalogAccess =
+  "connected" | "managed" | "credits" | "requires_key";
 export type AiCatalogDiscoveryState = "seeded" | "discovered";
 export type AiCatalogSourceKind = "seed_snapshot" | "provider_api";
 export type AiCatalogModelLifecycleState =
-  | "active"
-  | "beta"
-  | "deprecated"
-  | "retired"
-  | "replacement_available";
+  "active" | "beta" | "deprecated" | "retired" | "replacement_available";
 export type AiCatalogMigrationMode = "automatic" | "manual";
 
 export interface ProviderCatalogSourceMetadata {
@@ -189,7 +187,8 @@ export interface CatalogChangeReport {
 // ---- Commercial policy types (mirrors ai_plan_policy.rs) -------------------
 
 /** How a surface's usage is billed under a plan — `EntitlementClass` in Rust. */
-export type AiCatalogEntitlementClass = "included" | "courtesy" | "credits" | "premium";
+export type AiCatalogEntitlementClass =
+  "included" | "courtesy" | "credits" | "premium";
 
 /** A premium, credits-billed lane sitting outside the flat plan (Ideogram for
  *  image, TS Video for video). Product configuration, not a per-tenant
@@ -216,7 +215,8 @@ export interface PremiumLaneDefinition {
 /** Standard routing profiles as of this PR (`profileId`). Not exhaustive by
  *  design — the field itself stays `string`-typed below so a new profile the
  *  engine adds later still round-trips instead of getting coerced away. */
-export type AiRoutingKnownProfileId = "sin-ias" | "solo-glm" | "glm-completo" | "claude-solo";
+export type AiRoutingKnownProfileId =
+  "sin-ias" | "solo-glm" | "glm-completo" | "claude-solo";
 
 /** Which lane the routing engine picked for a given (surface, plan, profile). */
 export type AiRoutingLaneKind =
@@ -317,7 +317,8 @@ export interface AiCenterStats {
 }
 
 export type AiCenterPayloadMode = "live" | "fallback_local";
-export type AiCenterPayloadSource = "terminalsync_ai_center_url" | "page_local_mirror";
+export type AiCenterPayloadSource =
+  "terminalsync_ai_center_url" | "page_local_mirror";
 
 export interface AiCenterPayload {
   snapshot: AiControlCenterSnapshot;
@@ -329,7 +330,11 @@ export interface AiCenterPayload {
   fallbackReason?: string;
 }
 
-export const AI_CENTER_SURFACES: { key: AiAdminSurface; es: string; en: string }[] = [
+export const AI_CENTER_SURFACES: {
+  key: AiAdminSurface;
+  es: string;
+  en: string;
+}[] = [
   { key: "chat", es: "Chat", en: "Chat" },
   { key: "image", es: "Imagen", en: "Image" },
   { key: "video", es: "Video", en: "Video" },
@@ -362,7 +367,10 @@ const GLM_CAPABILITIES = [
   "image_generation",
 ];
 
-function source(label: string, kind: AiCatalogSourceKind = "seed_snapshot"): ProviderCatalogSourceMetadata {
+function source(
+  label: string,
+  kind: AiCatalogSourceKind = "seed_snapshot",
+): ProviderCatalogSourceMetadata {
   return {
     kind,
     label,
@@ -370,7 +378,9 @@ function source(label: string, kind: AiCatalogSourceKind = "seed_snapshot"): Pro
   };
 }
 
-function summarizeLifecycle(models: ProviderCatalogModelEntry[]): ProviderCatalogLifecycleSummary {
+function summarizeLifecycle(
+  models: ProviderCatalogModelEntry[],
+): ProviderCatalogLifecycleSummary {
   const summary: ProviderCatalogLifecycleSummary = {
     totalModels: models.length,
     visibleModels: 0,
@@ -388,15 +398,20 @@ function summarizeLifecycle(models: ProviderCatalogModelEntry[]): ProviderCatalo
     if (model.lifecycle === "beta") summary.betaModels += 1;
     if (model.lifecycle === "deprecated") summary.deprecatedModels += 1;
     if (model.lifecycle === "retired") summary.retiredModels += 1;
-    if (model.lifecycle === "replacement_available") summary.replacementAvailableModels += 1;
+    if (model.lifecycle === "replacement_available")
+      summary.replacementAvailableModels += 1;
   }
   return summary;
 }
 
-function provider(input: Omit<ProviderCatalogViewEntry, "lifecycleSummary">): ProviderCatalogViewEntry {
+function provider(
+  input: Omit<ProviderCatalogViewEntry, "lifecycleSummary">,
+): ProviderCatalogViewEntry {
   return {
     ...input,
-    modelIds: input.models.filter((model) => model.lifecycle !== "retired").map((model) => model.modelId),
+    modelIds: input.models
+      .filter((model) => model.lifecycle !== "retired")
+      .map((model) => model.modelId),
     lifecycleSummary: summarizeLifecycle(input.models),
   };
 }
@@ -406,7 +421,9 @@ const connectedProviders: ProviderCatalogViewEntry[] = [
     providerId: "glm",
     visibleLabel: "TerminalSync / Z.ai",
     discoveryState: "seeded",
-    source: source("Z.ai seed snapshot from TerminalSync ai_provider_catalog.rs"),
+    source: source(
+      "Z.ai seed snapshot from TerminalSync ai_provider_catalog.rs",
+    ),
     updatedAt: REAL_UPDATED_AT,
     channel: "public",
     access: "credits",
@@ -463,7 +480,9 @@ const connectedProviders: ProviderCatalogViewEntry[] = [
     providerId: "claude",
     visibleLabel: "Claude Code",
     discoveryState: "seeded",
-    source: source("Anthropic seed snapshot from TerminalSync ai_provider_catalog.rs"),
+    source: source(
+      "Anthropic seed snapshot from TerminalSync ai_provider_catalog.rs",
+    ),
     updatedAt: REAL_UPDATED_AT,
     channel: "public",
     access: "connected",
@@ -501,6 +520,20 @@ const connectedProviders: ProviderCatalogViewEntry[] = [
         pricing: null,
       },
       {
+        modelId: "claude-fable-5",
+        visibleLabel: "Claude Fable 5",
+        capabilities: ALL_CODE_CAPABILITIES,
+        lifecycle: "beta",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
+        upstreamProviderSlug: null,
+        modalities: [],
+        pricing: null,
+      },
+      {
         modelId: "haiku",
         visibleLabel: "Haiku",
         capabilities: ALL_CODE_CAPABILITIES,
@@ -520,7 +553,9 @@ const connectedProviders: ProviderCatalogViewEntry[] = [
     providerId: "codex",
     visibleLabel: "Codex",
     discoveryState: "seeded",
-    source: source("OpenAI/Codex seed snapshot from TerminalSync ai_provider_catalog.rs"),
+    source: source(
+      "OpenAI/Codex seed snapshot from TerminalSync ai_provider_catalog.rs",
+    ),
     updatedAt: REAL_UPDATED_AT,
     channel: "public",
     access: "connected",
@@ -611,12 +646,12 @@ const connectedProviders: ProviderCatalogViewEntry[] = [
     access: "connected",
     surfaces: ["chat", "design", "image", "automation"],
     capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
-    defaultModelId: "gemini-2.5-pro",
+    defaultModelId: "gemini-3.7-flash",
     modelIds: [],
     models: [
       {
-        modelId: "gemini-2.5-pro",
-        visibleLabel: "Gemini 2.5 Pro",
+        modelId: "gemini-3.7-flash",
+        visibleLabel: "Gemini 3.7 Flash",
         capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
         lifecycle: "active",
         retiresAt: null,
@@ -629,10 +664,94 @@ const connectedProviders: ProviderCatalogViewEntry[] = [
         pricing: null,
       },
       {
+        modelId: "gemini-3.5-flash",
+        visibleLabel: "Gemini 3.5 Flash",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+        lifecycle: "active",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
+        upstreamProviderSlug: null,
+        modalities: [],
+        pricing: null,
+      },
+      {
+        modelId: "gemini-3.1-pro-preview",
+        visibleLabel: "Gemini 3.1 Pro Preview",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+        lifecycle: "beta",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
+        upstreamProviderSlug: null,
+        modalities: [],
+        pricing: null,
+      },
+      {
+        modelId: "gemini-3.1-flash-lite",
+        visibleLabel: "Gemini 3.1 Flash Lite",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+        lifecycle: "active",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
+        upstreamProviderSlug: null,
+        modalities: [],
+        pricing: null,
+      },
+      {
+        modelId: "gemini-3.1-flash-image",
+        visibleLabel: "Gemini 3.1 Flash Image",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+        lifecycle: "active",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
+        upstreamProviderSlug: null,
+        modalities: [],
+        pricing: null,
+      },
+      {
+        modelId: "gemini-omni-1.1-flash",
+        visibleLabel: "Gemini Omni 1.1 Flash",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+        lifecycle: "active",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
+        upstreamProviderSlug: null,
+        modalities: [],
+        pricing: null,
+      },
+      {
+        modelId: "gemini-2.5-pro",
+        visibleLabel: "Gemini 2.5 Pro",
+        capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
+        lifecycle: "deprecated",
+        retiresAt: null,
+        replacementModelId: null,
+        replacementVisibleLabel: null,
+        migrationMode: null,
+        isDefault: false,
+        upstreamProviderSlug: null,
+        modalities: [],
+        pricing: null,
+      },
+      {
         modelId: "gemini-2.5-flash",
         visibleLabel: "Gemini 2.5 Flash",
         capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
-        lifecycle: "active",
+        lifecycle: "deprecated",
         retiresAt: null,
         replacementModelId: null,
         replacementVisibleLabel: null,
@@ -646,7 +765,7 @@ const connectedProviders: ProviderCatalogViewEntry[] = [
         modelId: "gemini-2.5-flash-lite",
         visibleLabel: "Gemini 2.5 Flash Lite",
         capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
-        lifecycle: "beta",
+        lifecycle: "deprecated",
         retiresAt: null,
         replacementModelId: null,
         replacementVisibleLabel: null,
@@ -660,7 +779,7 @@ const connectedProviders: ProviderCatalogViewEntry[] = [
         modelId: "gemini-2.5-flash-image",
         visibleLabel: "Gemini 2.5 Flash Image",
         capabilities: [...ALL_CODE_CAPABILITIES, "image_generation"],
-        lifecycle: "active",
+        lifecycle: "deprecated",
         retiresAt: null,
         replacementModelId: null,
         replacementVisibleLabel: null,
@@ -735,6 +854,20 @@ const openRouterModels: ProviderCatalogModelEntry[] = [
     pricing: null,
   },
   {
+    modelId: "anthropic/claude-fable-5",
+    visibleLabel: "Claude Fable 5",
+    capabilities: ["chat"],
+    lifecycle: "beta",
+    retiresAt: null,
+    replacementModelId: null,
+    replacementVisibleLabel: null,
+    migrationMode: null,
+    isDefault: false,
+    upstreamProviderSlug: "anthropic",
+    modalities: ["text"],
+    pricing: null,
+  },
+  {
     modelId: "anthropic/claude-sonnet-4.6",
     visibleLabel: "Claude Sonnet 4.6",
     capabilities: ["chat"],
@@ -749,10 +882,24 @@ const openRouterModels: ProviderCatalogModelEntry[] = [
     pricing: null,
   },
   {
+    modelId: "google/gemini-3.7-flash",
+    visibleLabel: "Gemini 3.7 Flash",
+    capabilities: ["chat"],
+    lifecycle: "active",
+    retiresAt: null,
+    replacementModelId: null,
+    replacementVisibleLabel: null,
+    migrationMode: null,
+    isDefault: false,
+    upstreamProviderSlug: "google",
+    modalities: ["text"],
+    pricing: null,
+  },
+  {
     modelId: "google/gemini-2.5-pro",
     visibleLabel: "Gemini 2.5 Pro",
     capabilities: ["chat"],
-    lifecycle: "active",
+    lifecycle: "deprecated",
     retiresAt: null,
     replacementModelId: null,
     replacementVisibleLabel: null,
@@ -819,7 +966,12 @@ const premiumLanes: PremiumLaneDefinition[] = [
     surface: "image",
     visibleLabel: "Ideogram",
     billing: "credits",
-    bestFor: ["publicidad", "posts para redes", "imágenes con texto", "piezas de marca"],
+    bestFor: [
+      "publicidad",
+      "posts para redes",
+      "imágenes con texto",
+      "piezas de marca",
+    ],
     upsellDetail:
       "Con créditos o un plan superior puedes usar Ideogram para tus imágenes: es el que mejor resuelve piezas de marca, texto dentro de la imagen y contenido para publicidad o redes.",
   },
@@ -829,7 +981,12 @@ const premiumLanes: PremiumLaneDefinition[] = [
     surface: "video",
     visibleLabel: "TS Video",
     billing: "credits",
-    bestFor: ["videos cortos", "anuncios con movimiento", "promos", "animaciones"],
+    bestFor: [
+      "videos cortos",
+      "anuncios con movimiento",
+      "promos",
+      "animaciones",
+    ],
     upsellDetail:
       "Con créditos o un plan superior puedes generar video con TS Video: pensado para videos cortos, promos y anuncios con movimiento.",
   },
@@ -911,14 +1068,24 @@ const changeReport: CatalogChangeReport = {
   alerts: gpt54Alerts,
 };
 
-const SURFACE_ORDER: AiCatalogSurface[] = ["chat", "design", "image", "video", "automation"];
+const SURFACE_ORDER: AiCatalogSurface[] = [
+  "chat",
+  "design",
+  "image",
+  "video",
+  "automation",
+];
 
 function surfaceView(surface: AiCatalogSurface): ProviderFirstCatalogView {
   return {
     audience: "internal",
     surface,
-    connectedProviders: connectedProviders.filter((provider) => provider.surfaces.includes(surface)),
-    managedEngines: managedEngines.filter((engine) => engine.surfaces.includes(surface)),
+    connectedProviders: connectedProviders.filter((provider) =>
+      provider.surfaces.includes(surface),
+    ),
+    managedEngines: managedEngines.filter((engine) =>
+      engine.surfaces.includes(surface),
+    ),
   };
 }
 
@@ -962,23 +1129,28 @@ export function buildLocalFallbackAlerts(
 ): AiCenterAlert[] {
   const alerts: AiCenterAlert[] = [];
   for (const provider of snapshot.connectedProviders) {
-    if (provider.providerId === "gemini" && provider.discoveryState === "discovered") {
+    if (
+      provider.providerId === "gemini" &&
+      provider.discoveryState === "discovered"
+    ) {
       alerts.push({
         kind: "new_model_detected",
         severity: "info",
         title: "Nuevo modelo Gemini detectado",
-        detail: "Gemini 2.5 Flash Image aparece en detected_model_ids desde provider_api.",
+        detail:
+          "Gemini 3.7 Flash aparece en detected_model_ids desde provider_api.",
         providerId: provider.providerId,
-        modelId: "gemini-2.5-flash-image",
+        modelId: "gemini-3.7-flash",
         owner: "Producto",
       });
       alerts.push({
         kind: "new_capability",
         severity: "info",
         title: "Capability nueva: image_generation en Gemini",
-        detail: "El catálogo real reporta superficie Imagen disponible para Gemini; mantener gated por policy antes de publicarlo al cliente.",
+        detail:
+          "El catálogo real reporta superficie Imagen disponible para Gemini; mantener gated por policy antes de publicarlo al cliente.",
         providerId: provider.providerId,
-        modelId: "gemini-2.5-flash-image",
+        modelId: "gemini-3.1-flash-image",
         owner: "Ingeniería",
       });
     }
@@ -988,7 +1160,8 @@ export function buildLocalFallbackAlerts(
         kind: "new_model_detected",
         severity: "info",
         title: "GLM-5.3 available",
-        detail: "provider_id interno estable: glm. Label visible: TerminalSync / Z.ai.",
+        detail:
+          "provider_id interno estable: glm. Label visible: TerminalSync / Z.ai.",
         providerId: provider.providerId,
         modelId: "glm-5.3",
         owner: "Producto",
@@ -1048,7 +1221,8 @@ export function buildLocalFallbackAlerts(
       kind: "provider_degraded",
       severity: "critical",
       title: "Provider catalog refresh due",
-      detail: "El catálogo necesita refresh; revisar scheduler del motor de IAs.",
+      detail:
+        "El catálogo necesita refresh; revisar scheduler del motor de IAs.",
       owner: "Ops",
     });
   }
@@ -1057,9 +1231,14 @@ export function buildLocalFallbackAlerts(
 }
 
 /** Real alerts when the snapshot carries them, local heuristic otherwise. */
-function resolveAlerts(snapshot: AiControlCenterSnapshot, explicit?: unknown): AiCenterAlert[] {
+function resolveAlerts(
+  snapshot: AiControlCenterSnapshot,
+  explicit?: unknown,
+): AiCenterAlert[] {
   if (Array.isArray(explicit)) return explicit as AiCenterAlert[];
-  return snapshot.alerts.length > 0 ? snapshot.alerts : buildLocalFallbackAlerts(snapshot);
+  return snapshot.alerts.length > 0
+    ? snapshot.alerts
+    : buildLocalFallbackAlerts(snapshot);
 }
 
 export function aiCenterStats(
@@ -1067,7 +1246,9 @@ export function aiCenterStats(
   alerts?: AiCenterAlert[],
 ): AiCenterStats {
   const models = snapshot.connectedProviders.flatMap((p) => p.models);
-  const publishedConnected = snapshot.connectedProviders.filter((p) => p.surfaces.length > 0).length;
+  const publishedConnected = snapshot.connectedProviders.filter(
+    (p) => p.surfaces.length > 0,
+  ).length;
   return {
     providers: snapshot.connectedProviders.length,
     managedEngines: snapshot.managedEngines.length,
@@ -1077,14 +1258,16 @@ export function aiCenterStats(
   };
 }
 
-export function buildAiCenterPayload(options: {
-  mode?: AiCenterPayloadMode;
-  source?: AiCenterPayloadSource;
-  snapshot?: unknown;
-  alerts?: unknown;
-  stats?: unknown;
-  fallbackReason?: string;
-} = {}): AiCenterPayload {
+export function buildAiCenterPayload(
+  options: {
+    mode?: AiCenterPayloadMode;
+    source?: AiCenterPayloadSource;
+    snapshot?: unknown;
+    alerts?: unknown;
+    stats?: unknown;
+    fallbackReason?: string;
+  } = {},
+): AiCenterPayload {
   const snapshot = isAiControlCenterSnapshot(options.snapshot)
     ? normalizeSnapshot(options.snapshot)
     : getAiControlCenterSnapshot();
@@ -1100,27 +1283,35 @@ export function buildAiCenterPayload(options: {
     generated_at: new Date().toISOString(),
     mode: options.mode ?? "fallback_local",
     source: options.source ?? "page_local_mirror",
-    ...(options.fallbackReason ? { fallbackReason: options.fallbackReason } : {}),
+    ...(options.fallbackReason
+      ? { fallbackReason: options.fallbackReason }
+      : {}),
   };
 }
 
-export function isAiControlCenterSnapshot(value: unknown): value is AiControlCenterSnapshot {
+export function isAiControlCenterSnapshot(
+  value: unknown,
+): value is AiControlCenterSnapshot {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<AiControlCenterSnapshot>;
-  return Array.isArray(candidate.connectedProviders)
-    && Array.isArray(candidate.managedEngines)
-    && Array.isArray(candidate.surfaceViews)
-    && typeof candidate.generatedAt === "number";
+  return (
+    Array.isArray(candidate.connectedProviders) &&
+    Array.isArray(candidate.managedEngines) &&
+    Array.isArray(candidate.surfaceViews) &&
+    typeof candidate.generatedAt === "number"
+  );
 }
 
 export function isAiCenterStats(value: unknown): value is AiCenterStats {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<AiCenterStats>;
-  return typeof candidate.providers === "number"
-    && typeof candidate.managedEngines === "number"
-    && typeof candidate.models === "number"
-    && typeof candidate.published === "number"
-    && typeof candidate.alerts === "number";
+  return (
+    typeof candidate.providers === "number" &&
+    typeof candidate.managedEngines === "number" &&
+    typeof candidate.models === "number" &&
+    typeof candidate.published === "number" &&
+    typeof candidate.alerts === "number"
+  );
 }
 
 // ---- Tolerant normalization -------------------------------------------
@@ -1132,7 +1323,9 @@ export function isAiCenterStats(value: unknown): value is AiCenterStats {
 // the admin UI on a missing key.
 
 function normalizeModelEntry(model: unknown): ProviderCatalogModelEntry {
-  const raw = (model && typeof model === "object" ? model : {}) as Partial<ProviderCatalogModelEntry>;
+  const raw = (
+    model && typeof model === "object" ? model : {}
+  ) as Partial<ProviderCatalogModelEntry>;
   return {
     modelId: typeof raw.modelId === "string" ? raw.modelId : "",
     visibleLabel: typeof raw.visibleLabel === "string" ? raw.visibleLabel : "",
@@ -1150,8 +1343,12 @@ function normalizeModelEntry(model: unknown): ProviderCatalogModelEntry {
 }
 
 function normalizeProviderEntry(entry: unknown): ProviderCatalogViewEntry {
-  const raw = (entry && typeof entry === "object" ? entry : {}) as Partial<ProviderCatalogViewEntry>;
-  const models = Array.isArray(raw.models) ? raw.models.map(normalizeModelEntry) : [];
+  const raw = (
+    entry && typeof entry === "object" ? entry : {}
+  ) as Partial<ProviderCatalogViewEntry>;
+  const models = Array.isArray(raw.models)
+    ? raw.models.map(normalizeModelEntry)
+    : [];
   return {
     providerId: typeof raw.providerId === "string" ? raw.providerId : "",
     visibleLabel: typeof raw.visibleLabel === "string" ? raw.visibleLabel : "",
@@ -1163,7 +1360,9 @@ function normalizeProviderEntry(entry: unknown): ProviderCatalogViewEntry {
     surfaces: Array.isArray(raw.surfaces) ? raw.surfaces : [],
     capabilities: Array.isArray(raw.capabilities) ? raw.capabilities : [],
     defaultModelId: raw.defaultModelId ?? null,
-    modelIds: Array.isArray(raw.modelIds) ? raw.modelIds : models.map((m) => m.modelId),
+    modelIds: Array.isArray(raw.modelIds)
+      ? raw.modelIds
+      : models.map((m) => m.modelId),
     models,
     lifecycleSummary: raw.lifecycleSummary ?? summarizeLifecycle(models),
   };
@@ -1174,7 +1373,9 @@ function normalizeProviderEntries(list: unknown): ProviderCatalogViewEntry[] {
 }
 
 function normalizeProviderFirstView(view: unknown): ProviderFirstCatalogView {
-  const raw = (view && typeof view === "object" ? view : {}) as Partial<ProviderFirstCatalogView>;
+  const raw = (
+    view && typeof view === "object" ? view : {}
+  ) as Partial<ProviderFirstCatalogView>;
   return {
     audience: raw.audience ?? "internal",
     surface: raw.surface ?? "chat",
@@ -1184,39 +1385,60 @@ function normalizeProviderFirstView(view: unknown): ProviderFirstCatalogView {
 }
 
 function normalizeChangeReport(raw: unknown): CatalogChangeReport {
-  const r = (raw && typeof raw === "object" ? raw : {}) as Partial<CatalogChangeReport>;
+  const r = (
+    raw && typeof raw === "object" ? raw : {}
+  ) as Partial<CatalogChangeReport>;
   return {
     generatedAt: typeof r.generatedAt === "number" ? r.generatedAt : Date.now(),
-    comparedAgainstUpdatedAt: typeof r.comparedAgainstUpdatedAt === "number" ? r.comparedAgainstUpdatedAt : null,
+    comparedAgainstUpdatedAt:
+      typeof r.comparedAgainstUpdatedAt === "number"
+        ? r.comparedAgainstUpdatedAt
+        : null,
     detectedModels: Array.isArray(r.detectedModels) ? r.detectedModels : [],
     retirements: Array.isArray(r.retirements) ? r.retirements : [],
-    replacementCandidates: Array.isArray(r.replacementCandidates) ? r.replacementCandidates : [],
-    scheduledAutoSwitches: Array.isArray(r.scheduledAutoSwitches) ? r.scheduledAutoSwitches : [],
+    replacementCandidates: Array.isArray(r.replacementCandidates)
+      ? r.replacementCandidates
+      : [],
+    scheduledAutoSwitches: Array.isArray(r.scheduledAutoSwitches)
+      ? r.scheduledAutoSwitches
+      : [],
     newCapabilities: Array.isArray(r.newCapabilities) ? r.newCapabilities : [],
     alerts: Array.isArray(r.alerts) ? r.alerts : [],
   };
 }
 
 function normalizeRoutingLaneKind(raw: unknown): AiRoutingLaneKind | null {
-  const candidate = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const candidate = (raw && typeof raw === "object" ? raw : {}) as Record<
+    string,
+    unknown
+  >;
   if (candidate.kind === "connected_provider") {
     return {
       kind: "connected_provider",
-      providerId: typeof candidate.providerId === "string" ? candidate.providerId : "",
+      providerId:
+        typeof candidate.providerId === "string" ? candidate.providerId : "",
     };
   }
   if (candidate.kind === "managed_engine") {
     return {
       kind: "managed_engine",
-      engineId: typeof candidate.engineId === "string" ? candidate.engineId : "",
-      creditsProviderId: typeof candidate.creditsProviderId === "string" ? candidate.creditsProviderId : "",
+      engineId:
+        typeof candidate.engineId === "string" ? candidate.engineId : "",
+      creditsProviderId:
+        typeof candidate.creditsProviderId === "string"
+          ? candidate.creditsProviderId
+          : "",
     };
   }
   if (candidate.kind === "internal_routed") {
     return {
       kind: "internal_routed",
-      sourceId: typeof candidate.sourceId === "string" ? candidate.sourceId : "",
-      upstreamModelId: typeof candidate.upstreamModelId === "string" ? candidate.upstreamModelId : "",
+      sourceId:
+        typeof candidate.sourceId === "string" ? candidate.sourceId : "",
+      upstreamModelId:
+        typeof candidate.upstreamModelId === "string"
+          ? candidate.upstreamModelId
+          : "",
     };
   }
   // Unknown/missing `kind` — no lane can be reconstructed from this shape.
@@ -1225,28 +1447,44 @@ function normalizeRoutingLaneKind(raw: unknown): AiRoutingLaneKind | null {
 
 function normalizeRoutingSelection(raw: unknown): AiRoutingSelection | null {
   if (raw === null || raw === undefined) return null;
-  const candidate = (raw && typeof raw === "object" ? raw : {}) as Partial<AiRoutingSelection> & Record<string, unknown>;
+  const candidate = (
+    raw && typeof raw === "object" ? raw : {}
+  ) as Partial<AiRoutingSelection> & Record<string, unknown>;
   const kind = normalizeRoutingLaneKind(candidate.kind);
   if (!kind) return null;
   return {
     kind,
-    visibleLabel: typeof candidate.visibleLabel === "string" ? candidate.visibleLabel : "",
+    visibleLabel:
+      typeof candidate.visibleLabel === "string" ? candidate.visibleLabel : "",
     billing: typeof candidate.billing === "string" ? candidate.billing : "",
     detail: typeof candidate.detail === "string" ? candidate.detail : "",
   };
 }
 
 function normalizeRoutingMatrixEntry(raw: unknown): AiRoutingMatrixEntry {
-  const candidate = (raw && typeof raw === "object" ? raw : {}) as Partial<AiRoutingMatrixEntry> & Record<string, unknown>;
-  const profileId = typeof candidate.profileId === "string" ? candidate.profileId : "";
+  const candidate = (
+    raw && typeof raw === "object" ? raw : {}
+  ) as Partial<AiRoutingMatrixEntry> & Record<string, unknown>;
+  const profileId =
+    typeof candidate.profileId === "string" ? candidate.profileId : "";
   return {
-    surface: typeof candidate.surface === "string" ? (candidate.surface as AiCatalogSurface) : "chat",
+    surface:
+      typeof candidate.surface === "string"
+        ? (candidate.surface as AiCatalogSurface)
+        : "chat",
     plan: typeof candidate.plan === "string" ? candidate.plan : "",
     profileId,
-    profileLabel: typeof candidate.profileLabel === "string" ? candidate.profileLabel : profileId,
+    profileLabel:
+      typeof candidate.profileLabel === "string"
+        ? candidate.profileLabel
+        : profileId,
     selected: normalizeRoutingSelection(candidate.selected),
     upsell: typeof candidate.upsell === "string" ? candidate.upsell : null,
-    trace: Array.isArray(candidate.trace) ? candidate.trace.filter((step): step is string => typeof step === "string") : [],
+    trace: Array.isArray(candidate.trace)
+      ? candidate.trace.filter(
+          (step): step is string => typeof step === "string",
+        )
+      : [],
   };
 }
 
@@ -1259,7 +1497,9 @@ function toFiniteNumberOrNull(value: unknown): number | null {
 }
 
 function normalizeVideoLanePricingEntry(raw: unknown): VideoLanePricingEntry {
-  const candidate = (raw && typeof raw === "object" ? raw : {}) as Partial<VideoLanePricingEntry> & Record<string, unknown>;
+  const candidate = (
+    raw && typeof raw === "object" ? raw : {}
+  ) as Partial<VideoLanePricingEntry> & Record<string, unknown>;
   return {
     modelId: typeof candidate.modelId === "string" ? candidate.modelId : "",
     label: typeof candidate.label === "string" ? candidate.label : null,
@@ -1275,21 +1515,34 @@ function normalizeVideoLanePricing(list: unknown): VideoLanePricingEntry[] {
 }
 
 export function normalizeSnapshot(json: unknown): AiControlCenterSnapshot {
-  const raw = (json && typeof json === "object" ? json : {}) as Partial<AiControlCenterSnapshot> & Record<string, unknown>;
+  const raw = (
+    json && typeof json === "object" ? json : {}
+  ) as Partial<AiControlCenterSnapshot> & Record<string, unknown>;
   return {
-    generatedAt: typeof raw.generatedAt === "number" ? raw.generatedAt : Date.now(),
+    generatedAt:
+      typeof raw.generatedAt === "number" ? raw.generatedAt : Date.now(),
     catalogStatus: raw.catalogStatus ?? "fresh",
-    refreshIntervalSecs: typeof raw.refreshIntervalSecs === "number" ? raw.refreshIntervalSecs : 0,
-    lastRefreshedAt: typeof raw.lastRefreshedAt === "number" ? raw.lastRefreshedAt : null,
+    refreshIntervalSecs:
+      typeof raw.refreshIntervalSecs === "number" ? raw.refreshIntervalSecs : 0,
+    lastRefreshedAt:
+      typeof raw.lastRefreshedAt === "number" ? raw.lastRefreshedAt : null,
     refreshDue: Boolean(raw.refreshDue),
     connectedProviders: normalizeProviderEntries(raw.connectedProviders),
-    managedEngines: Array.isArray(raw.managedEngines) ? (raw.managedEngines as ManagedEngineCatalogViewEntry[]) : [],
+    managedEngines: Array.isArray(raw.managedEngines)
+      ? (raw.managedEngines as ManagedEngineCatalogViewEntry[])
+      : [],
     composerView: normalizeProviderFirstView(raw.composerView),
-    surfaceViews: Array.isArray(raw.surfaceViews) ? raw.surfaceViews.map(normalizeProviderFirstView) : [],
+    surfaceViews: Array.isArray(raw.surfaceViews)
+      ? raw.surfaceViews.map(normalizeProviderFirstView)
+      : [],
     internalSources: normalizeProviderEntries(raw.internalSources),
     changeReport: normalizeChangeReport(raw.changeReport),
-    alerts: Array.isArray(raw.alerts) ? (raw.alerts as CatalogChangeAlert[]) : [],
-    premiumLanes: Array.isArray(raw.premiumLanes) ? (raw.premiumLanes as PremiumLaneDefinition[]) : [],
+    alerts: Array.isArray(raw.alerts)
+      ? (raw.alerts as CatalogChangeAlert[])
+      : [],
+    premiumLanes: Array.isArray(raw.premiumLanes)
+      ? (raw.premiumLanes as PremiumLaneDefinition[])
+      : [],
     routingMatrix: normalizeRoutingMatrix(raw.routingMatrix),
     videoLanePricing: normalizeVideoLanePricing(raw.videoLanePricing),
   };
