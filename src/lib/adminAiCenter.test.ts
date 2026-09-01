@@ -9,9 +9,15 @@ import {
 describe("Admin AI Center payload", () => {
   it("keeps TerminalSync/Z.ai provider contract and lifecycle cases", () => {
     const snapshot = getAiControlCenterSnapshot();
-    const glm = snapshot.connectedProviders.find((provider) => provider.providerId === "glm");
-    const codex = snapshot.connectedProviders.find((provider) => provider.providerId === "codex");
-    const gemini = snapshot.connectedProviders.find((provider) => provider.providerId === "gemini");
+    const glm = snapshot.connectedProviders.find(
+      (provider) => provider.providerId === "glm",
+    );
+    const codex = snapshot.connectedProviders.find(
+      (provider) => provider.providerId === "codex",
+    );
+    const gemini = snapshot.connectedProviders.find(
+      (provider) => provider.providerId === "gemini",
+    );
 
     expect(glm?.visibleLabel).toBe("TerminalSync / Z.ai");
     expect(glm?.defaultModelId).toBe("glm-5.3");
@@ -26,19 +32,49 @@ describe("Admin AI Center payload", () => {
       migrationMode: "automatic",
     });
     // New fields land on every model entry, direct providers included.
-    expect(gpt54).toMatchObject({ upstreamProviderSlug: null, modalities: [], pricing: null });
+    expect(gpt54).toMatchObject({
+      upstreamProviderSlug: null,
+      modalities: [],
+      pricing: null,
+    });
 
     expect(gemini?.discoveryState).toBe("discovered");
-    expect(gemini?.modelIds).toContain("gemini-2.5-flash-image");
+    const claude = snapshot.connectedProviders.find(
+      (provider) => provider.providerId === "claude",
+    );
+    expect(claude?.modelIds).toContain("claude-fable-5");
+    expect(
+      claude?.models.find((model) => model.modelId === "claude-fable-5"),
+    ).toMatchObject({
+      visibleLabel: "Claude Fable 5",
+      lifecycle: "beta",
+    });
+
+    expect(gemini?.defaultModelId).toBe("gemini-3.7-flash");
+    expect(gemini?.modelIds).toContain("gemini-3.7-flash");
+    expect(gemini?.modelIds).toContain("gemini-omni-1.1-flash");
+    expect(
+      gemini?.models.find((model) => model.modelId === "gemini-2.5-pro"),
+    ).toMatchObject({
+      lifecycle: "deprecated",
+    });
   });
 
   it("builds endpoint-ready payload with snapshot, alerts, stats and mode/source", () => {
-    const payload = buildAiCenterPayload({ mode: "live", source: "terminalsync_ai_center_url" });
+    const payload = buildAiCenterPayload({
+      mode: "live",
+      source: "terminalsync_ai_center_url",
+    });
 
     expect(payload.mode).toBe("live");
     expect(payload.source).toBe("terminalsync_ai_center_url");
     expect(payload.snapshot.connectedProviders).toHaveLength(4);
-    expect(payload.stats).toMatchObject({ providers: 4, managedEngines: 2, models: 15, published: 6 });
+    expect(payload.stats).toMatchObject({
+      providers: 4,
+      managedEngines: 2,
+      models: 22,
+      published: 6,
+    });
     // Real snapshot alerts (3 gpt-5.4 findings) take priority over the local
     // heuristic, which is what the bug fix in this PR is about.
     expect(payload.alerts).toHaveLength(3);
@@ -57,18 +93,24 @@ describe("Admin AI Center payload", () => {
       expect.arrayContaining([
         "openai/gpt-5.6-terra",
         "openai/gpt-5.4",
+        "anthropic/claude-fable-5",
         "anthropic/claude-sonnet-4.6",
+        "google/gemini-3.7-flash",
         "google/gemini-2.5-pro",
         "z-ai/glm-5.3",
         "black-forest-labs/flux-1.1-pro",
       ]),
     );
-    const flux = openrouter.models.find((m) => m.modelId === "black-forest-labs/flux-1.1-pro");
+    const flux = openrouter.models.find(
+      (m) => m.modelId === "black-forest-labs/flux-1.1-pro",
+    );
     expect(flux?.upstreamProviderSlug).toBe("black-forest-labs");
     expect(flux?.modalities).toEqual(["text", "image"]);
     expect(flux?.pricing).not.toBeNull();
 
-    expect(snapshot.connectedProviders.some((p) => p.providerId === "openrouter")).toBe(false);
+    expect(
+      snapshot.connectedProviders.some((p) => p.providerId === "openrouter"),
+    ).toBe(false);
   });
 
   it("populates changeReport and alerts with the three gpt-5.4 findings", () => {
@@ -103,7 +145,11 @@ describe("Admin AI Center payload", () => {
 
     expect(changeReport.alerts).toHaveLength(3);
     expect(changeReport.alerts.map((a) => a.kind).sort()).toEqual(
-      ["replacement_available", "scheduled_auto_switch", "upcoming_retirement"].sort(),
+      [
+        "replacement_available",
+        "scheduled_auto_switch",
+        "upcoming_retirement",
+      ].sort(),
     );
     expect(snapshot.alerts).toEqual(changeReport.alerts);
   });
@@ -111,12 +157,24 @@ describe("Admin AI Center payload", () => {
   it("carries exactly the two premium lanes (image and video)", () => {
     const snapshot = getAiControlCenterSnapshot();
     expect(snapshot.premiumLanes).toHaveLength(2);
-    const ideogram = snapshot.premiumLanes.find((lane) => lane.engineId === "ideogram");
-    expect(ideogram).toMatchObject({ surface: "image", creditsProviderId: "ideogram", billing: "credits" });
+    const ideogram = snapshot.premiumLanes.find(
+      (lane) => lane.engineId === "ideogram",
+    );
+    expect(ideogram).toMatchObject({
+      surface: "image",
+      creditsProviderId: "ideogram",
+      billing: "credits",
+    });
     expect(ideogram?.bestFor.length).toBeGreaterThan(0);
 
-    const tsVideo = snapshot.premiumLanes.find((lane) => lane.engineId === "ts-video");
-    expect(tsVideo).toMatchObject({ surface: "video", creditsProviderId: "wavespeed", billing: "credits" });
+    const tsVideo = snapshot.premiumLanes.find(
+      (lane) => lane.engineId === "ts-video",
+    );
+    expect(tsVideo).toMatchObject({
+      surface: "video",
+      creditsProviderId: "wavespeed",
+      billing: "credits",
+    });
   });
 
   describe("buildLocalFallbackAlerts", () => {
@@ -124,7 +182,9 @@ describe("Admin AI Center payload", () => {
       const snapshot = getAiControlCenterSnapshot();
       const alerts = buildLocalFallbackAlerts(snapshot);
       expect(alerts.length).toBeGreaterThan(0);
-      expect(alerts.every((alert) => typeof alert.title === "string")).toBe(true);
+      expect(alerts.every((alert) => typeof alert.title === "string")).toBe(
+        true,
+      );
     });
   });
 
@@ -137,7 +197,9 @@ describe("Admin AI Center payload", () => {
         ...oldSnapshot,
         connectedProviders: oldSnapshot.connectedProviders.map((p) => ({
           ...p,
-          models: p.models.map(({ upstreamProviderSlug, modalities, pricing, ...rest }) => rest),
+          models: p.models.map(
+            ({ upstreamProviderSlug, modalities, pricing, ...rest }) => rest,
+          ),
         })),
       } as Record<string, unknown>;
       delete stripped.internalSources;
@@ -184,7 +246,10 @@ describe("Admin AI Center payload", () => {
 
   describe("routingMatrix normalization", () => {
     it("defaults to an empty array when the field is absent (old snapshot)", () => {
-      const snapshot = getAiControlCenterSnapshot() as unknown as Record<string, unknown>;
+      const snapshot = getAiControlCenterSnapshot() as unknown as Record<
+        string,
+        unknown
+      >;
       const { routingMatrix: _omit, ...withoutRoutingMatrix } = snapshot;
       const normalized = normalizeSnapshot(withoutRoutingMatrix);
       expect(normalized.routingMatrix).toEqual([]);
@@ -206,7 +271,11 @@ describe("Admin AI Center payload", () => {
               detail: "Ruta directa a glm-5.3.",
             },
             upsell: null,
-            trace: ["profile=solo-glm", "surface=chat", "picked connected_provider:glm"],
+            trace: [
+              "profile=solo-glm",
+              "surface=chat",
+              "picked connected_provider:glm",
+            ],
           },
           {
             surface: "chat",
@@ -214,7 +283,11 @@ describe("Admin AI Center payload", () => {
             profileId: "claude-solo",
             profileLabel: "Claude solo",
             selected: {
-              kind: { kind: "internal_routed", sourceId: "openrouter", upstreamModelId: "anthropic/claude-sonnet-4.6" },
+              kind: {
+                kind: "internal_routed",
+                sourceId: "openrouter",
+                upstreamModelId: "anthropic/claude-sonnet-4.6",
+              },
               visibleLabel: "Claude Sonnet 4.6",
               billing: "credits",
               detail: "Ruteado por OpenRouter hacia Anthropic.",
@@ -228,7 +301,11 @@ describe("Admin AI Center payload", () => {
             profileId: "glm-completo",
             profileLabel: "GLM completo",
             selected: {
-              kind: { kind: "managed_engine", engineId: "ts-video", creditsProviderId: "wavespeed" },
+              kind: {
+                kind: "managed_engine",
+                engineId: "ts-video",
+                creditsProviderId: "wavespeed",
+              },
               visibleLabel: "TS Video",
               billing: "premium",
               detail: "",
@@ -252,8 +329,15 @@ describe("Admin AI Center payload", () => {
       expect(normalized.routingMatrix).toHaveLength(4);
 
       const glmEntry = normalized.routingMatrix[0];
-      expect(glmEntry.selected?.kind).toEqual({ kind: "connected_provider", providerId: "glm" });
-      expect(glmEntry.trace).toEqual(["profile=solo-glm", "surface=chat", "picked connected_provider:glm"]);
+      expect(glmEntry.selected?.kind).toEqual({
+        kind: "connected_provider",
+        providerId: "glm",
+      });
+      expect(glmEntry.trace).toEqual([
+        "profile=solo-glm",
+        "surface=chat",
+        "picked connected_provider:glm",
+      ]);
 
       const routedEntry = normalized.routingMatrix[1];
       expect(routedEntry.selected?.kind).toEqual({
@@ -261,14 +345,22 @@ describe("Admin AI Center payload", () => {
         sourceId: "openrouter",
         upstreamModelId: "anthropic/claude-sonnet-4.6",
       });
-      expect(routedEntry.upsell).toBe("Con créditos podés desbloquear Claude directo.");
+      expect(routedEntry.upsell).toBe(
+        "Con créditos podés desbloquear Claude directo.",
+      );
 
       const engineEntry = normalized.routingMatrix[2];
-      expect(engineEntry.selected?.kind).toEqual({ kind: "managed_engine", engineId: "ts-video", creditsProviderId: "wavespeed" });
+      expect(engineEntry.selected?.kind).toEqual({
+        kind: "managed_engine",
+        engineId: "ts-video",
+        creditsProviderId: "wavespeed",
+      });
 
       const noLaneEntry = normalized.routingMatrix[3];
       expect(noLaneEntry.selected).toBeNull();
-      expect(noLaneEntry.upsell).toBe("Activá un perfil con IA para usar automatización.");
+      expect(noLaneEntry.upsell).toBe(
+        "Activá un perfil con IA para usar automatización.",
+      );
     });
 
     it("tolerates a partial/malformed entry without throwing", () => {
@@ -276,7 +368,11 @@ describe("Admin AI Center payload", () => {
         ...getAiControlCenterSnapshot(),
         routingMatrix: [
           {},
-          { surface: "image", profileId: "solo-glm", selected: { kind: { kind: "unknown_future_kind" } } },
+          {
+            surface: "image",
+            profileId: "solo-glm",
+            selected: { kind: { kind: "unknown_future_kind" } },
+          },
           "not-an-object",
           null,
         ],
@@ -284,8 +380,18 @@ describe("Admin AI Center payload", () => {
 
       const normalized = normalizeSnapshot(raw);
       expect(normalized.routingMatrix).toHaveLength(4);
-      expect(normalized.routingMatrix[0]).toMatchObject({ surface: "chat", plan: "", profileId: "", selected: null, trace: [] });
-      expect(normalized.routingMatrix[1]).toMatchObject({ surface: "image", profileId: "solo-glm", selected: null });
+      expect(normalized.routingMatrix[0]).toMatchObject({
+        surface: "chat",
+        plan: "",
+        profileId: "",
+        selected: null,
+        trace: [],
+      });
+      expect(normalized.routingMatrix[1]).toMatchObject({
+        surface: "image",
+        profileId: "solo-glm",
+        selected: null,
+      });
       expect(normalized.routingMatrix[2].profileId).toBe("");
       expect(normalized.routingMatrix[3].selected).toBeNull();
     });
@@ -293,7 +399,10 @@ describe("Admin AI Center payload", () => {
 
   describe("videoLanePricing normalization", () => {
     it("defaults to an empty array when the field is absent (old snapshot)", () => {
-      const snapshot = getAiControlCenterSnapshot() as unknown as Record<string, unknown>;
+      const snapshot = getAiControlCenterSnapshot() as unknown as Record<
+        string,
+        unknown
+      >;
       const { videoLanePricing: _omit, ...withoutVideoLanePricing } = snapshot;
       const normalized = normalizeSnapshot(withoutVideoLanePricing);
       expect(normalized.videoLanePricing).toEqual([]);
@@ -303,15 +412,37 @@ describe("Admin AI Center payload", () => {
       const raw = {
         ...getAiControlCenterSnapshot(),
         videoLanePricing: [
-          { modelId: "wavespeed/ts-video-1", label: "TS Video 1", costUsd5s: 0.2, priceUsd5s: 0.44, multiple: 2.2, withinRule: true },
-          { modelId: "wavespeed/ts-video-fast", label: "TS Video Fast", costUsd5s: 0.1, priceUsd5s: 0.35, multiple: 3.5, withinRule: false },
+          {
+            modelId: "wavespeed/ts-video-1",
+            label: "TS Video 1",
+            costUsd5s: 0.2,
+            priceUsd5s: 0.44,
+            multiple: 2.2,
+            withinRule: true,
+          },
+          {
+            modelId: "wavespeed/ts-video-fast",
+            label: "TS Video Fast",
+            costUsd5s: 0.1,
+            priceUsd5s: 0.35,
+            multiple: 3.5,
+            withinRule: false,
+          },
         ],
       };
 
       const normalized = normalizeSnapshot(raw);
       expect(normalized.videoLanePricing).toHaveLength(2);
-      expect(normalized.videoLanePricing[0]).toMatchObject({ modelId: "wavespeed/ts-video-1", multiple: 2.2, withinRule: true });
-      expect(normalized.videoLanePricing[1]).toMatchObject({ modelId: "wavespeed/ts-video-fast", multiple: 3.5, withinRule: false });
+      expect(normalized.videoLanePricing[0]).toMatchObject({
+        modelId: "wavespeed/ts-video-1",
+        multiple: 2.2,
+        withinRule: true,
+      });
+      expect(normalized.videoLanePricing[1]).toMatchObject({
+        modelId: "wavespeed/ts-video-fast",
+        multiple: 3.5,
+        withinRule: false,
+      });
     });
 
     it("tolerates a partial/malformed entry without throwing", () => {
@@ -319,7 +450,11 @@ describe("Admin AI Center payload", () => {
         ...getAiControlCenterSnapshot(),
         videoLanePricing: [
           { modelId: "wavespeed/ts-video-1" },
-          { modelId: "wavespeed/ts-video-2", costUsd5s: "not-a-number", withinRule: "yes" },
+          {
+            modelId: "wavespeed/ts-video-2",
+            costUsd5s: "not-a-number",
+            withinRule: "yes",
+          },
           {},
           null,
         ],
@@ -327,17 +462,35 @@ describe("Admin AI Center payload", () => {
 
       const normalized = normalizeSnapshot(raw);
       expect(normalized.videoLanePricing).toHaveLength(4);
-      expect(normalized.videoLanePricing[0]).toMatchObject({ modelId: "wavespeed/ts-video-1", label: null, costUsd5s: null, withinRule: false });
-      expect(normalized.videoLanePricing[1]).toMatchObject({ modelId: "wavespeed/ts-video-2", costUsd5s: null, withinRule: true });
-      expect(normalized.videoLanePricing[2]).toMatchObject({ modelId: "", withinRule: false });
+      expect(normalized.videoLanePricing[0]).toMatchObject({
+        modelId: "wavespeed/ts-video-1",
+        label: null,
+        costUsd5s: null,
+        withinRule: false,
+      });
+      expect(normalized.videoLanePricing[1]).toMatchObject({
+        modelId: "wavespeed/ts-video-2",
+        costUsd5s: null,
+        withinRule: true,
+      });
+      expect(normalized.videoLanePricing[2]).toMatchObject({
+        modelId: "",
+        withinRule: false,
+      });
     });
   });
 
   it("buildAiCenterPayload falls back to the heuristic only when the snapshot truly has no alerts", () => {
     const snapshot = getAiControlCenterSnapshot();
-    const emptyAlertsSnapshot = { ...snapshot, alerts: [], changeReport: { ...snapshot.changeReport, alerts: [] } };
+    const emptyAlertsSnapshot = {
+      ...snapshot,
+      alerts: [],
+      changeReport: { ...snapshot.changeReport, alerts: [] },
+    };
     const payload = buildAiCenterPayload({ snapshot: emptyAlertsSnapshot });
     expect(payload.alerts.length).toBeGreaterThan(0);
-    expect(payload.alerts).toEqual(buildLocalFallbackAlerts(normalizeSnapshot(emptyAlertsSnapshot)));
+    expect(payload.alerts).toEqual(
+      buildLocalFallbackAlerts(normalizeSnapshot(emptyAlertsSnapshot)),
+    );
   });
 });
