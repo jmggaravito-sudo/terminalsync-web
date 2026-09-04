@@ -12,8 +12,9 @@
  */
 
 export interface ConversationForCorrection {
-  /** support_conversations.id (uuid) — stored as the soft reference on the
-   *  correction row. Optional so the drawer can still be used ad hoc. */
+  /** support_conversations.id (uuid) — stored as `conversation_id`, a real
+   *  FK with ON DELETE SET NULL (see 0031_support_corrections.sql). Optional
+   *  here so the drawer can still be used ad hoc. */
   id?: string | null;
   question: string;
   answer: string;
