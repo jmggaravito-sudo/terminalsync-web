@@ -20,6 +20,7 @@ export function adminSections(isEs: boolean): AdminSection[] {
     { slug: "ops", label: "Ops" },
     { slug: "integraciones", label: isEs ? "Integraciones" : "Integrations" },
     { slug: "ai-center", label: isEs ? "Centro de IAs" : "AI Center" },
+    { slug: "soporte", label: isEs ? "Soporte" : "Support" },
     { slug: "business-leads", label: isEs ? "Leads B2B" : "B2B Leads" },
     { slug: "leads-linkedin", label: isEs ? "Leads LinkedIn" : "LinkedIn Leads" },
   ];

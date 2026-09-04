@@ -163,6 +163,10 @@ export default function PrivacyPolicyPage() {
         from the email address associated with your account. You may also revoke
         Google access at any time from your Google Account permissions page.
       </p>
+      <p>
+        Conversations you have with the support assistant are stored for up
+        to 90 days for quality control.
+      </p>
 
       <h2>8. Security</h2>
       <p>
