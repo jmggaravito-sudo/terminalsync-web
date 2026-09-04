@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { authedFetch } from "@/lib/supabase/browser";
+import { CorreccionButton } from "@/components/soporte/CorreccionButton";
 import {
   SUPPORT_QUEUE_PAGE_SIZE,
   type SupportConversationSession,
@@ -16,10 +17,11 @@ import {
 // través de /api/admin/soporte/conversations[/[sessionId]], que a su vez
 // usa la service-role key server-side — nunca llega al cliente.
 //
-// Extension point para el tren S3 (support_corrections / "corregir una
-// respuesta"): cada turno del hilo se renderiza en <TurnCard>, un bloque
-// autocontenido por turno — ahí es donde S3 puede enchufar su botón de
-// corrección sin tocar el resto de este archivo. No se toca acá.
+// Cada turno se renderiza en <TurnCard>, que monta <CorreccionButton> del
+// tren S3 (src/components/soporte/CorreccionButton.tsx) — el drawer de
+// "corregir una respuesta" y el POST a /api/admin/soporte/corrections viven
+// enteros ahí; acá solo se le pasa el subset ConversationForCorrection
+// (id/question/answer/locale) del turno.
 // ─────────────────────────────────────────────────────────────
 
 type AuthState = "checking" | "anon" | "forbidden" | "ready";
@@ -404,8 +406,11 @@ function TurnCard({ turn, isEs }: { turn: SupportConversationTurn; isEs: boolean
       </div>
       <p className="text-[13px] font-medium text-[var(--color-fg-strong)]">{turn.question}</p>
       <p className="mt-2 whitespace-pre-wrap text-[13px] text-[var(--color-fg)]">{turn.answer}</p>
-      {/* Punto de extensión S3: acá va el botón "Corregir respuesta" del
-          flujo de support_corrections. No se implementa en este train. */}
+      <div className="mt-3">
+        <CorreccionButton
+          conversation={{ id: turn.id, question: turn.question, answer: turn.answer, locale: turn.locale }}
+        />
+      </div>
     </div>
   );
 }
