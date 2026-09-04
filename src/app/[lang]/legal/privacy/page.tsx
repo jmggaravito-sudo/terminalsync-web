@@ -150,6 +150,10 @@ export default async function PrivacyPage({ params }: Props) {
           aquellos que estamos obligados a retener por ley (registros
           fiscales: 7 años).
         </p>
+        <p>
+          Las conversaciones que tienes con el asistente de soporte se
+          almacenan hasta 90 días para control de calidad.
+        </p>
 
         <h2>8. Cookies</h2>
         <p>
@@ -280,6 +284,10 @@ export default async function PrivacyPage({ params }: Props) {
         We keep your account data while your account is active. If you cancel,
         we delete your personal data within 30 days, except for data we are
         legally required to retain (tax records: 7 years).
+      </p>
+      <p>
+        Conversations you have with the support assistant are stored for up
+        to 90 days for quality control.
       </p>
 
       <h2>8. Cookies</h2>
