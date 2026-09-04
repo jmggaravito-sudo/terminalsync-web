@@ -131,6 +131,15 @@ export function SoporteClient({ lang }: { lang: string }) {
     } catch (e) {
       setError(e instanceof Error ? e.message : "unknown error");
       setSessions([]);
+      // A 500/503 or a network throw here isn't a 401/403, so it never hits
+      // the `setAuth("anon"/"forbidden")` branches above — without this,
+      // `auth` stays "checking" forever (the 3s watchdog in the effect below
+      // only fires once, and its `.finally` clears it as soon as THIS catch
+      // finishes running), so the "Verificando sesión…" banner renders
+      // forever and the error above never becomes visible. Session is
+      // already resolved by this point (we got an HTTP response at all,
+      // just not a 2xx) — flip to "ready" so the `error` banner renders.
+      setAuth((current) => (current === "checking" ? "ready" : current));
     } finally {
       setLoading(false);
     }
