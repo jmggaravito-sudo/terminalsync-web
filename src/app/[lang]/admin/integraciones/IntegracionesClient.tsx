@@ -20,10 +20,20 @@ interface LastLoopRun {
   pr_url: string | null;
 }
 
+interface SetupError {
+  code: "github_workflow_unavailable";
+  message: string;
+  tokenSource: string;
+  workflow: string;
+  repo: string;
+  ref: string;
+}
+
 interface StatusResp {
   run: RunStatus | null;
   lastLoopRun: LastLoopRun | null;
   workflowMissing?: boolean;
+  setupError?: SetupError;
 }
 
 const POLL_MS = 5000;
@@ -36,6 +46,7 @@ export function IntegracionesClient({ lang }: { lang: string }) {
   const [lastLoopRun, setLastLoopRun] = useState<LastLoopRun | null>(null);
   const [workflowMissing, setWorkflowMissing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [setupError, setSetupError] = useState<SetupError | null>(null);
   const [dispatching, setDispatching] = useState(false);
   const [dispatchError, setDispatchError] = useState<string | null>(null);
   const [watching, setWatching] = useState(false);
@@ -58,6 +69,7 @@ export function IntegracionesClient({ lang }: { lang: string }) {
       setRun(json.run ?? null);
       setLastLoopRun(json.lastLoopRun ?? null);
       setWorkflowMissing(Boolean(json.workflowMissing));
+      setSetupError(json.setupError ?? null);
       setLoadError(null);
     } catch (e) {
       // Solo reportamos el error de status — NUNCA tocamos `auth` acá. La
@@ -96,6 +108,7 @@ export function IntegracionesClient({ lang }: { lang: string }) {
         setAuth("anon");
         setRun(null);
         setLastLoopRun(null);
+        setSetupError(null);
       } else {
         setAuth("ready");
         void loadStatus();
@@ -230,6 +243,15 @@ export function IntegracionesClient({ lang }: { lang: string }) {
               </div>
             ) : null}
 
+            {setupError ? (
+              <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-[13px] text-amber-300">
+                <p className="font-semibold">
+                  {isEs ? "Configuración pendiente" : "Setup pending"}
+                </p>
+                <p className="mt-1 leading-relaxed">{setupError.message}</p>
+              </div>
+            ) : null}
+
             {loadError ? (
               <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/5 p-4 text-[13px] text-red-400">
                 {loadError}
@@ -261,9 +283,13 @@ export function IntegracionesClient({ lang }: { lang: string }) {
               ) : (
                 <p className="text-[13px] text-[var(--color-fg-muted)]">
                   {workflowMissing
-                    ? isEs
-                      ? "Todavía no se corrió — el workflow connector-loop.yml está pendiente de desplegar en release."
-                      : "Not run yet — the connector-loop.yml workflow is pending deploy to release."
+                    ? setupError
+                      ? isEs
+                        ? "No puedo leer la última corrida hasta corregir el token de GitHub del servidor."
+                        : "Cannot read the latest run until the server GitHub token is fixed."
+                      : isEs
+                        ? "Todavía no se corrió — el workflow connector-loop.yml está pendiente de desplegar en release."
+                        : "Not run yet — the connector-loop.yml workflow is pending deploy to release."
                     : isEs
                       ? "Todavía no hay corridas registradas."
                       : "No runs recorded yet."}

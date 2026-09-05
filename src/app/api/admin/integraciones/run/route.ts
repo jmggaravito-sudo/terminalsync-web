@@ -38,6 +38,11 @@ const REPO = "terminal-sync";
 const WORKFLOW = "connector-loop.yml";
 const DISPATCH_REF = "release/v0.2.18-lab";
 
+interface GithubToken {
+  value: string;
+  source: "INTEGRATIONS_GH_TOKEN" | "OPS_GITHUB_TOKEN";
+}
+
 async function requireAdmin(req: Request) {
   const user = await authenticate(req);
   if (!user || !isAdmin(user)) {
@@ -46,14 +51,22 @@ async function requireAdmin(req: Request) {
   return null;
 }
 
-function readToken(): string | null {
-  const t = process.env.INTEGRATIONS_GH_TOKEN || process.env.OPS_GITHUB_TOKEN;
-  return t && t.trim() ? t.trim() : null;
+function readToken(): GithubToken | null {
+  const integrationsToken = process.env.INTEGRATIONS_GH_TOKEN?.trim();
+  if (integrationsToken) {
+    return { value: integrationsToken, source: "INTEGRATIONS_GH_TOKEN" };
+  }
+  const opsToken = process.env.OPS_GITHUB_TOKEN?.trim();
+  if (opsToken) {
+    return { value: opsToken, source: "OPS_GITHUB_TOKEN" };
+  }
+  return null;
 }
 
-function baseHeaders(token: string): Record<string, string> {
+function baseHeaders(token: GithubToken | string): Record<string, string> {
+  const value = typeof token === "string" ? token : token.value;
   return {
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${value}`,
     "X-GitHub-Api-Version": "2022-11-28",
     "User-Agent": "terminalsync-web-integraciones",
   };
@@ -83,9 +96,62 @@ export interface IntegracionesRunStatus {
  *  the GET handler still turns into a 502. */
 class WorkflowNotFoundError extends Error {}
 
-async function fetchLatestRun(token: string): Promise<IntegracionesRunStatus | null> {
+interface WorkflowUnavailableDetails {
+  code: "github_workflow_unavailable";
+  message: string;
+  tokenSource: GithubToken["source"];
+  workflow: string;
+  repo: string;
+  ref: string;
+}
+
+class WorkflowUnavailableError extends Error {
+  details: WorkflowUnavailableDetails;
+
+  constructor(token: GithubToken, causeText?: string) {
+    const repo = `${OWNER}/${REPO}`;
+    const message =
+      `GitHub no deja ver/despachar ${WORKFLOW} en ${repo}. ` +
+      `En producción se está usando ${token.source}; para "Correr ahora" ` +
+      `ese token debe tener permiso Actions: Read and write sobre ${repo} ` +
+      `y el workflow debe existir en ${DISPATCH_REF}.`;
+    super(causeText ? `${message} (${causeText.slice(0, 240)})` : message);
+    this.details = {
+      code: "github_workflow_unavailable",
+      message,
+      tokenSource: token.source,
+      workflow: WORKFLOW,
+      repo,
+      ref: DISPATCH_REF,
+    };
+  }
+}
+
+interface GithubWorkflowMetadata {
+  id: number;
+  name: string;
+  path: string;
+  state: string;
+}
+
+async function fetchWorkflowMetadata(token: GithubToken): Promise<GithubWorkflowMetadata> {
   const res = await fetch(
-    `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW}/runs?per_page=1`,
+    `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW}`,
+    {
+      headers: { ...baseHeaders(token), Accept: "application/vnd.github+json" },
+      cache: "no-store",
+    },
+  );
+  if (res.ok) return (await res.json()) as GithubWorkflowMetadata;
+  const text = await res.text().catch(() => "");
+  if (res.status === 404) throw new WorkflowUnavailableError(token, text);
+  throw new Error(`GitHub ${res.status}${text ? `: ${text.slice(0, 300)}` : ""}`);
+}
+
+async function fetchLatestRun(token: GithubToken): Promise<IntegracionesRunStatus | null> {
+  const workflow = await fetchWorkflowMetadata(token);
+  const res = await fetch(
+    `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${workflow.id}/runs?per_page=1`,
     {
       headers: { ...baseHeaders(token), Accept: "application/vnd.github+json" },
       cache: "no-store",
@@ -164,6 +230,15 @@ export async function GET(req: Request) {
     const lastLoopRun = await lastLoopRunPromise;
     return NextResponse.json({ run, lastLoopRun });
   } catch (err) {
+    if (err instanceof WorkflowUnavailableError) {
+      const lastLoopRun = await lastLoopRunPromise;
+      return NextResponse.json({
+        run: null,
+        lastLoopRun,
+        workflowMissing: true,
+        setupError: err.details,
+      });
+    }
     if (err instanceof WorkflowNotFoundError) {
       // connector-loop.yml isn't on release yet (PR #1603 unmerged) — this
       // is "no runs yet", not a failure. 200, not 502, so the client panel
@@ -194,8 +269,9 @@ export async function POST(req: Request) {
   }
 
   try {
+    const workflow = await fetchWorkflowMetadata(token);
     const res = await fetch(
-      `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW}/dispatches`,
+      `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${workflow.id}/dispatches`,
       {
         method: "POST",
         headers: {
@@ -207,17 +283,38 @@ export async function POST(req: Request) {
       },
     );
 
-    // GitHub answers 204 with no body on a successful dispatch.
-    if (res.status === 204) {
-      return NextResponse.json({ ok: true });
+    // GitHub historically answered 204 with no body; newer API versions may
+    // answer 200 and include the run URLs. Treat any 2xx as success.
+    if (res.ok) {
+      const text = await res.text().catch(() => "");
+      let payload: unknown = null;
+      if (text) {
+        try {
+          payload = JSON.parse(text);
+        } catch {
+          payload = null;
+        }
+      }
+      return NextResponse.json({
+        ok: true,
+        workflowId: workflow.id,
+        dispatch: payload,
+      });
     }
 
     const text = await res.text().catch(() => "");
+    if (res.status === 404) throw new WorkflowUnavailableError(token, text);
     return NextResponse.json(
       { error: `GitHub ${res.status}${text ? `: ${text.slice(0, 500)}` : ""}` },
       { status: 502 },
     );
   } catch (err) {
+    if (err instanceof WorkflowUnavailableError) {
+      return NextResponse.json(
+        { error: err.details.message, setupError: err.details },
+        { status: 503 },
+      );
+    }
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Error desconocido" },
       { status: 500 },
