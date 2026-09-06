@@ -1,6 +1,6 @@
 /**
  * Panel B ("Agregar candidato") of /admin/integraciones — builds the
- * markdown file (frontmatter + body) for a new Skill or Connector
+ * markdown file (frontmatter + body) for a new Skill, Connector, Plugin, Kit or CLI tool
  * candidate, in the exact shape the real content loaders expect.
  *
  * Field shapes verified against real files before writing this, not from
@@ -24,12 +24,13 @@
  * exactly this state ("pending evaluation... not retired, just not cleared
  * for launch yet" — see SkillMeta.catalogReady in src/lib/skills.ts). A
  * human flips it to `true` (and adds the slug to that allow-list) as part
- * of actually approving the candidate. Connectors have no `catalogReady`
- * field, so the equivalent here is `hidden: true` (fully suppressed from
+ * of actually approving the candidate. Connectors and Plugins have no public `catalogReady`
+ * gate in every loader, so the equivalent here is `hidden: true` (fully suppressed from
  * `listConnectors`/`getConnector` until a reviewer clears it).
  */
 
-export type CandidateType = "skill" | "connector";
+export type CandidateType =
+  "skill" | "connector" | "plugin" | "kit" | "cli-tool";
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -57,6 +58,39 @@ export const CONNECTOR_CATEGORIES = [
   "dev",
 ] as const;
 export type ConnectorCategoryInput = (typeof CONNECTOR_CATEGORIES)[number];
+
+export const PLUGIN_CATEGORIES = [
+  "marketing",
+  "sales",
+  "productivity",
+  "communication",
+  "operations",
+  "ecommerce",
+  "dev",
+] as const;
+export type PluginCategoryInput = (typeof PLUGIN_CATEGORIES)[number];
+
+export const KIT_CATEGORIES = [
+  "research",
+  "finance",
+  "ecommerce",
+  "sales",
+  "operations",
+  "marketing",
+  "dev",
+  "productivity",
+] as const;
+export type KitCategoryInput = (typeof KIT_CATEGORIES)[number];
+
+export const CLI_TOOL_CATEGORIES = [
+  "dev",
+  "deploy",
+  "database",
+  "payments",
+  "infra",
+  "productivity",
+] as const;
+export type CliToolCategoryInput = (typeof CLI_TOOL_CATEGORIES)[number];
 
 export interface SkillCandidateInput {
   type: "skill";
@@ -97,7 +131,71 @@ export interface ConnectorCandidateInput {
   license?: string;
 }
 
-export type CandidateInput = SkillCandidateInput | ConnectorCandidateInput;
+export interface PluginCandidateInput {
+  type: "plugin";
+  slug: string;
+  name: string;
+  category: PluginCategoryInput;
+  tagline: string;
+  description: string;
+  connectorSlug?: string;
+  skillSlugs?: string[];
+  whenToUse: string;
+  whatItDoes: string;
+  howToUse: string;
+  author?: string;
+  status?: "available" | "soon";
+  license?: string;
+}
+
+export interface KitCandidateItemInput {
+  kind: "connector" | "skill" | "cli-tool";
+  slug: string;
+  reason: string;
+}
+
+export interface KitCandidateInput {
+  type: "kit";
+  slug: string;
+  name: string;
+  category: KitCategoryInput;
+  tagline: string;
+  description: string;
+  items: KitCandidateItemInput[];
+  audience: string;
+  whatItDoes: string;
+  howToUse: string;
+  limits: string;
+  status?: "available" | "soon";
+  license?: string;
+}
+
+export interface CliToolCandidateInput {
+  type: "cli-tool";
+  slug: string;
+  name: string;
+  category: CliToolCategoryInput;
+  tagline: string;
+  description: string;
+  binary: string;
+  installCommand: string;
+  authCommand?: string;
+  vendor: string;
+  homepage: string;
+  repo?: string;
+  whatItDoes: string;
+  terminalSyncAdds: string;
+  commonCommands: string;
+  status?: "available" | "soon";
+  license?: string;
+}
+
+export type CandidateInput =
+  | SkillCandidateInput
+  | ConnectorCandidateInput
+  | PluginCandidateInput
+  | KitCandidateInput
+  | CliToolCandidateInput;
 
 function yamlString(value: string): string {
   // Always double-quote + escape: simplest way to stay valid YAML for any
@@ -116,7 +214,10 @@ export interface BuiltCandidateFile {
   content: string;
 }
 
-export function buildSkillFile(input: SkillCandidateInput, lang = "es"): BuiltCandidateFile {
+export function buildSkillFile(
+  input: SkillCandidateInput,
+  lang = "es",
+): BuiltCandidateFile {
   const author = input.author?.trim() || "TerminalSync";
   const status = input.status ?? "available";
   const license = input.license?.trim() || "proprietary";
@@ -171,7 +272,8 @@ export function buildConnectorFile(
   lang = "es",
 ): BuiltCandidateFile {
   const status = input.status ?? "soon";
-  const license = input.license?.trim() || (input.affiliate ? "proprietary" : "MIT");
+  const license =
+    input.license?.trim() || (input.affiliate ? "proprietary" : "MIT");
   const devTitle = `${input.name} — conector MCP`;
 
   const lines = [
@@ -201,7 +303,9 @@ export function buildConnectorFile(
     lines.push("  mcpServers:");
     lines.push(`    ${input.slug}:`);
     lines.push(`      command: npx`);
-    lines.push(`      args: ${yamlStringArray(["-y", pkg || `${input.slug}-mcp-server`])}`);
+    lines.push(
+      `      args: ${yamlStringArray(["-y", pkg || `${input.slug}-mcp-server`])}`,
+    );
     if (envKeys.length > 0) {
       lines.push("      env:");
       for (const key of envKeys) {
@@ -230,6 +334,185 @@ export function buildConnectorFile(
   };
 }
 
-export function buildCandidateFile(input: CandidateInput, lang = "es"): BuiltCandidateFile {
-  return input.type === "skill" ? buildSkillFile(input, lang) : buildConnectorFile(input, lang);
+export function buildPluginFile(
+  input: PluginCandidateInput,
+  lang = "es",
+): BuiltCandidateFile {
+  const status = input.status ?? "available";
+  const author = input.author?.trim() || "TerminalSync";
+  const skillSlugs = (input.skillSlugs ?? [])
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const connectorSlug = input.connectorSlug?.trim();
+  const frontmatter = [
+    "---",
+    `name: ${yamlString(input.name)}`,
+    `logo: /plugins/${input.slug}.svg`,
+    `category: ${input.category}`,
+    `status: ${status}`,
+    `tagline: ${yamlString(input.tagline)}`,
+    `description: ${yamlString(input.description)}`,
+    `author: ${yamlString(author)}`,
+    `marketplaceSource: "terminalsync"`,
+    `hidden: true`,
+    `catalogReady: false`,
+    connectorSlug ? `connectorSlug: ${connectorSlug}` : "",
+    `skillSlugs: ${yamlStringArray(skillSlugs)}`,
+    input.license?.trim() ? `license: ${yamlString(input.license.trim())}` : "",
+    "---",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  const body = [
+    "## Cuándo usarlo",
+    "",
+    input.whenToUse.trim(),
+    "",
+    "## Qué hace",
+    "",
+    input.whatItDoes.trim(),
+    "",
+    "## Cómo usarlo",
+    "",
+    input.howToUse.trim(),
+    "",
+  ].join("\n");
+
+  return {
+    path: `content/plugins/${lang}/${input.slug}.md`,
+    content: `${frontmatter}\n\n${body}`,
+  };
+}
+
+function yamlKitItems(items: KitCandidateItemInput[]): string[] {
+  const lines = ["items:"];
+  for (const item of items) {
+    lines.push(`  - kind: ${item.kind}`);
+    lines.push(`    slug: ${item.slug}`);
+    lines.push(`    reason: ${yamlString(item.reason)}`);
+  }
+  return lines;
+}
+
+export function buildKitFile(
+  input: KitCandidateInput,
+  lang = "es",
+): BuiltCandidateFile {
+  const status = input.status ?? "soon";
+  const frontmatter = [
+    "---",
+    `name: ${yamlString(input.name)}`,
+    `logo: /logos/ts-kit.svg`,
+    `category: ${input.category}`,
+    `status: ${status}`,
+    `tagline: ${yamlString(input.tagline)}`,
+    `description: ${yamlString(input.description)}`,
+    `marketplaceSource: "terminalsync"`,
+    ...yamlKitItems(input.items),
+    input.license?.trim() ? `license: ${yamlString(input.license.trim())}` : "",
+    "---",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  const body = [
+    "## Para quién es",
+    "",
+    input.audience.trim(),
+    "",
+    "## Qué te ayuda a hacer",
+    "",
+    input.whatItDoes.trim(),
+    "",
+    "## Qué incluye",
+    "",
+    ...input.items.map(
+      (item) => `- **${item.kind}:${item.slug}** — ${item.reason}`,
+    ),
+    "",
+    "## Cómo usarlo",
+    "",
+    input.howToUse.trim(),
+    "",
+    "## Límites",
+    "",
+    input.limits.trim(),
+    "",
+  ].join("\n");
+
+  return {
+    path: `content/kits/${lang}/${input.slug}.md`,
+    content: `${frontmatter}\n\n${body}`,
+  };
+}
+
+export function buildCliToolFile(
+  input: CliToolCandidateInput,
+  lang = "es",
+): BuiltCandidateFile {
+  const status = input.status ?? "soon";
+  const frontmatter = [
+    "---",
+    `name: ${yamlString(input.name)}`,
+    `logo: /cli-tools/${input.slug}.svg`,
+    `hidden: true`,
+    `catalogReady: false`,
+    `binary: ${yamlString(input.binary)}`,
+    `installCommand: ${yamlString(input.installCommand)}`,
+    input.authCommand?.trim()
+      ? `authCommand: ${yamlString(input.authCommand.trim())}`
+      : "",
+    `vendor: ${yamlString(input.vendor)}`,
+    `homepage: ${yamlString(input.homepage)}`,
+    input.repo?.trim() ? `repo: ${yamlString(input.repo.trim())}` : "",
+    `category: ${input.category}`,
+    `tagline: ${yamlString(input.tagline)}`,
+    `description: ${yamlString(input.description)}`,
+    `status: ${status}`,
+    input.license?.trim() ? `license: ${yamlString(input.license.trim())}` : "",
+    "---",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  const body = [
+    "## Qué hace",
+    "",
+    input.whatItDoes.trim(),
+    "",
+    "## Qué le suma TerminalSync",
+    "",
+    input.terminalSyncAdds.trim(),
+    "",
+    "## Comandos típicos",
+    "",
+    "```bash",
+    input.commonCommands.trim(),
+    "```",
+    "",
+  ].join("\n");
+
+  return {
+    path: `content/cli-tools/${lang}/${input.slug}.md`,
+    content: `${frontmatter}\n\n${body}`,
+  };
+}
+
+export function buildCandidateFile(
+  input: CandidateInput,
+  lang = "es",
+): BuiltCandidateFile {
+  switch (input.type) {
+    case "skill":
+      return buildSkillFile(input, lang);
+    case "connector":
+      return buildConnectorFile(input, lang);
+    case "plugin":
+      return buildPluginFile(input, lang);
+    case "kit":
+      return buildKitFile(input, lang);
+    case "cli-tool":
+      return buildCliToolFile(input, lang);
+  }
 }

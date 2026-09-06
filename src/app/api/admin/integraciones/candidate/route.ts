@@ -5,9 +5,16 @@ import {
   isValidSlug,
   SKILL_CATEGORIES,
   CONNECTOR_CATEGORIES,
+  PLUGIN_CATEGORIES,
+  KIT_CATEGORIES,
+  CLI_TOOL_CATEGORIES,
   type CandidateInput,
   type SkillCandidateInput,
   type ConnectorCandidateInput,
+  type PluginCandidateInput,
+  type KitCandidateInput,
+  type CliToolCandidateInput,
+  type KitCandidateItemInput,
 } from "@/lib/marketplace/candidateContent";
 
 export const runtime = "nodejs";
@@ -26,16 +33,16 @@ export const dynamic = "force-dynamic";
  *      adding that one file on a new `candidate/<type>-<slug>` branch off
  *      `main`.
  *
- * Scope (v1, per JM): only "skill" and "connector" candidates. A first-party
- * "MCP con binario propio" candidate is explicitly OUT — that would be Rust
- * code in terminal-sync (cross-repo, needs build:lab), not a markdown PR
- * here. Not implemented; if asked for, say so instead of faking it.
+ * Scope: content candidates for the five catalog pillars JM wants managed
+ * from this panel: skills, connectors, plugins, kits, and CLI tools. A
+ * first-party "MCP con binario propio" candidate is still OUT — that would be
+ * Rust code in terminal-sync (cross-repo, needs build:lab), not a markdown PR
+ * here.
  *
- * No automatic gate: this route does not run the connector-parity /
- * skill-eval supervision against the PR's Vercel preview. The candidate
- * lands as a normal reviewable draft PR (with its own preview URL); wiring
- * the supervision loop to run against `MARKETPLACE_BASE=<preview-url>` is a
- * follow-up, not part of this endpoint.
+ * No automatic publication: the candidate lands as a normal reviewable draft
+ * PR with hidden/catalogReady/status defaults that keep it out of the public
+ * catalog until a reviewer adds EN parity, assets/evals, and intentionally
+ * clears the publication gate.
  *
  * Auth: same Bearer access_token + ADMIN_EMAILS allowlist as every other
  * /api/admin route (see src/lib/marketplace/auth.ts and Panel A's
@@ -80,18 +87,80 @@ function ghHeaders(token: string): Record<string, string> {
 async function ghJson<T>(res: Response): Promise<T> {
   const text = await res.text().catch(() => "");
   if (!res.ok) {
-    throw new Error(`GitHub ${res.status}${text ? `: ${text.slice(0, 500)}` : ""}`);
+    throw new Error(
+      `GitHub ${res.status}${text ? `: ${text.slice(0, 500)}` : ""}`,
+    );
   }
   return text ? (JSON.parse(text) as T) : ({} as T);
 }
 
-function validate(body: unknown): { ok: true; input: CandidateInput } | { ok: false; error: string } {
-  if (!body || typeof body !== "object") return { ok: false, error: "Body vacío o inválido." };
+function stringsArray(value: unknown): string[] {
+  if (Array.isArray(value))
+    return value.map((v) => String(v).trim()).filter(Boolean);
+  if (typeof value === "string")
+    return value
+      .split(",")
+      .map((v) => v.trim())
+      .filter(Boolean);
+  return [];
+}
+
+function parseKitItems(value: unknown): KitCandidateItemInput[] {
+  if (Array.isArray(value)) {
+    return value
+      .map((raw) => {
+        if (!raw || typeof raw !== "object") return null;
+        const row = raw as Record<string, unknown>;
+        const kind = row.kind;
+        const slug = typeof row.slug === "string" ? row.slug.trim() : "";
+        const reason = typeof row.reason === "string" ? row.reason.trim() : "";
+        if (
+          (kind !== "connector" && kind !== "skill" && kind !== "cli-tool") ||
+          !slug ||
+          !reason
+        )
+          return null;
+        return { kind, slug, reason };
+      })
+      .filter((item): item is KitCandidateItemInput => Boolean(item));
+  }
+  if (typeof value !== "string") return [];
+  return value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [kindRaw, slugRaw, ...reasonParts] = line.split("|");
+      const kind = kindRaw?.trim();
+      const slug = slugRaw?.trim();
+      const reason = reasonParts.join("|").trim();
+      if (
+        (kind !== "connector" && kind !== "skill" && kind !== "cli-tool") ||
+        !slug ||
+        !reason
+      )
+        return null;
+      return { kind, slug, reason };
+    })
+    .filter((item): item is KitCandidateItemInput => Boolean(item));
+}
+
+function validate(
+  body: unknown,
+): { ok: true; input: CandidateInput } | { ok: false; error: string } {
+  if (!body || typeof body !== "object")
+    return { ok: false, error: "Body vacío o inválido." };
   const b = body as Record<string, unknown>;
 
   const type = b.type;
-  if (type !== "skill" && type !== "connector") {
-    return { ok: false, error: 'Falta "type": debe ser "skill" o "connector".' };
+  if (
+    !["skill", "connector", "plugin", "kit", "cli-tool"].includes(String(type))
+  ) {
+    return {
+      ok: false,
+      error:
+        'Falta "type": debe ser "skill", "connector", "plugin", "kit" o "cli-tool".',
+    };
   }
 
   const slug = typeof b.slug === "string" ? b.slug.trim().toLowerCase() : "";
@@ -110,17 +179,30 @@ function validate(body: unknown): { ok: true; input: CandidateInput } | { ok: fa
   if (!tagline) return { ok: false, error: 'Falta "tagline".' };
 
   if (type === "skill") {
-    if (!SKILL_CATEGORIES.includes(category as (typeof SKILL_CATEGORIES)[number])) {
-      return { ok: false, error: `"category" inválida para skill. Opciones: ${SKILL_CATEGORIES.join(", ")}.` };
+    if (
+      !SKILL_CATEGORIES.includes(category as (typeof SKILL_CATEGORIES)[number])
+    ) {
+      return {
+        ok: false,
+        error: `"category" inválida para skill. Opciones: ${SKILL_CATEGORIES.join(", ")}.`,
+      };
     }
-    const description = typeof b.description === "string" ? b.description.trim() : "";
+    const description =
+      typeof b.description === "string" ? b.description.trim() : "";
     const whenToUse = typeof b.whenToUse === "string" ? b.whenToUse.trim() : "";
-    const whatItDoes = typeof b.whatItDoes === "string" ? b.whatItDoes.trim() : "";
+    const whatItDoes =
+      typeof b.whatItDoes === "string" ? b.whatItDoes.trim() : "";
     const howToUse = typeof b.howToUse === "string" ? b.howToUse.trim() : "";
     if (!description) return { ok: false, error: 'Falta "description".' };
-    if (!whenToUse) return { ok: false, error: 'Falta "whenToUse" (sección "Cuándo usarlo").' };
-    if (!whatItDoes) return { ok: false, error: 'Falta "whatItDoes" (sección "Qué hace").' };
-    if (!howToUse) return { ok: false, error: 'Falta "howToUse" (sección "Cómo usarlo").' };
+    if (!whenToUse)
+      return {
+        ok: false,
+        error: 'Falta "whenToUse" (sección "Cuándo usarlo").',
+      };
+    if (!whatItDoes)
+      return { ok: false, error: 'Falta "whatItDoes" (sección "Qué hace").' };
+    if (!howToUse)
+      return { ok: false, error: 'Falta "howToUse" (sección "Cómo usarlo").' };
     const status = b.status === "soon" ? "soon" : "available";
 
     const input: SkillCandidateInput = {
@@ -140,15 +222,198 @@ function validate(body: unknown): { ok: true; input: CandidateInput } | { ok: fa
     return { ok: true, input };
   }
 
-  // connector
-  if (!CONNECTOR_CATEGORIES.includes(category as (typeof CONNECTOR_CATEGORIES)[number])) {
-    return { ok: false, error: `"category" inválida para connector. Opciones: ${CONNECTOR_CATEGORIES.join(", ")}.` };
+  if (type === "plugin") {
+    if (
+      !PLUGIN_CATEGORIES.includes(
+        category as (typeof PLUGIN_CATEGORIES)[number],
+      )
+    ) {
+      return {
+        ok: false,
+        error: `"category" inválida para plugin. Opciones: ${PLUGIN_CATEGORIES.join(", ")}.`,
+      };
+    }
+    const description =
+      typeof b.description === "string" ? b.description.trim() : "";
+    const whenToUse = typeof b.whenToUse === "string" ? b.whenToUse.trim() : "";
+    const whatItDoes =
+      typeof b.whatItDoes === "string" ? b.whatItDoes.trim() : "";
+    const howToUse = typeof b.howToUse === "string" ? b.howToUse.trim() : "";
+    const connectorSlug =
+      typeof b.connectorSlug === "string" ? b.connectorSlug.trim() : "";
+    const skillSlugs = stringsArray(b.skillSlugs);
+    if (!description) return { ok: false, error: 'Falta "description".' };
+    if (!connectorSlug && skillSlugs.length === 0)
+      return {
+        ok: false,
+        error: "Un plugin necesita connectorSlug o al menos un skillSlug.",
+      };
+    if (!whenToUse || !whatItDoes || !howToUse)
+      return {
+        ok: false,
+        error: "Completá cuándo usarlo, qué hace y cómo usarlo.",
+      };
+    const input: PluginCandidateInput = {
+      type: "plugin",
+      slug,
+      name,
+      category: category as PluginCandidateInput["category"],
+      tagline,
+      description,
+      connectorSlug: connectorSlug || undefined,
+      skillSlugs,
+      whenToUse,
+      whatItDoes,
+      howToUse,
+      author: typeof b.author === "string" ? b.author : undefined,
+      status: b.status === "soon" ? "soon" : "available",
+      license: typeof b.license === "string" ? b.license : undefined,
+    };
+    return { ok: true, input };
   }
-  const simpleSubtitle = typeof b.simpleSubtitle === "string" ? b.simpleSubtitle.trim() : "";
-  const simpleBody = typeof b.simpleBody === "string" ? b.simpleBody.trim() : "";
+
+  if (type === "kit") {
+    if (!KIT_CATEGORIES.includes(category as (typeof KIT_CATEGORIES)[number])) {
+      return {
+        ok: false,
+        error: `"category" inválida para kit. Opciones: ${KIT_CATEGORIES.join(", ")}.`,
+      };
+    }
+    const description =
+      typeof b.description === "string" ? b.description.trim() : "";
+    const audience = typeof b.audience === "string" ? b.audience.trim() : "";
+    const whatItDoes =
+      typeof b.whatItDoes === "string" ? b.whatItDoes.trim() : "";
+    const howToUse = typeof b.howToUse === "string" ? b.howToUse.trim() : "";
+    const limits = typeof b.limits === "string" ? b.limits.trim() : "";
+    const items = parseKitItems(b.items ?? b.itemsRaw);
+    if (!description || !audience || !whatItDoes || !howToUse || !limits)
+      return {
+        ok: false,
+        error:
+          "Completá descripción, audiencia, qué hace, cómo usarlo y límites.",
+      };
+    if (items.length === 0)
+      return {
+        ok: false,
+        error: 'Agregá items del kit como líneas "connector|github|Razón".',
+      };
+    const input: KitCandidateInput = {
+      type: "kit",
+      slug,
+      name,
+      category: category as KitCandidateInput["category"],
+      tagline,
+      description,
+      items,
+      audience,
+      whatItDoes,
+      howToUse,
+      limits,
+      status: "soon",
+      license: typeof b.license === "string" ? b.license : undefined,
+    };
+    return { ok: true, input };
+  }
+
+  if (type === "cli-tool") {
+    if (
+      !CLI_TOOL_CATEGORIES.includes(
+        category as (typeof CLI_TOOL_CATEGORIES)[number],
+      )
+    ) {
+      return {
+        ok: false,
+        error: `"category" inválida para herramienta CLI. Opciones: ${CLI_TOOL_CATEGORIES.join(", ")}.`,
+      };
+    }
+    const description =
+      typeof b.description === "string" ? b.description.trim() : "";
+    const binary = typeof b.binary === "string" ? b.binary.trim() : "";
+    const installCommand =
+      typeof b.installCommand === "string" ? b.installCommand.trim() : "";
+    const vendor = typeof b.vendor === "string" ? b.vendor.trim() : "";
+    const homepage = typeof b.homepage === "string" ? b.homepage.trim() : "";
+    const whatItDoes =
+      typeof b.whatItDoes === "string" ? b.whatItDoes.trim() : "";
+    const terminalSyncAdds =
+      typeof b.terminalSyncAdds === "string" ? b.terminalSyncAdds.trim() : "";
+    const commonCommands =
+      typeof b.commonCommands === "string" ? b.commonCommands.trim() : "";
+    if (
+      !description ||
+      !binary ||
+      !installCommand ||
+      !vendor ||
+      !homepage ||
+      !whatItDoes ||
+      !terminalSyncAdds ||
+      !commonCommands
+    ) {
+      return {
+        ok: false,
+        error:
+          "Completá descripción, binary, installCommand, vendor, homepage y secciones CLI.",
+      };
+    }
+    try {
+      new URL(homepage);
+    } catch {
+      return { ok: false, error: '"homepage" no es una URL válida.' };
+    }
+    const repo = typeof b.repo === "string" ? b.repo.trim() : "";
+    if (repo) {
+      try {
+        new URL(repo);
+      } catch {
+        return { ok: false, error: '"repo" no es una URL válida.' };
+      }
+    }
+    const input: CliToolCandidateInput = {
+      type: "cli-tool",
+      slug,
+      name,
+      category: category as CliToolCandidateInput["category"],
+      tagline,
+      description,
+      binary,
+      installCommand,
+      authCommand:
+        typeof b.authCommand === "string" ? b.authCommand : undefined,
+      vendor,
+      homepage,
+      repo: repo || undefined,
+      whatItDoes,
+      terminalSyncAdds,
+      commonCommands,
+      status: "soon",
+      license: typeof b.license === "string" ? b.license : undefined,
+    };
+    return { ok: true, input };
+  }
+
+  // connector
+  if (
+    !CONNECTOR_CATEGORIES.includes(
+      category as (typeof CONNECTOR_CATEGORIES)[number],
+    )
+  ) {
+    return {
+      ok: false,
+      error: `"category" inválida para connector. Opciones: ${CONNECTOR_CATEGORIES.join(", ")}.`,
+    };
+  }
+  const simpleSubtitle =
+    typeof b.simpleSubtitle === "string" ? b.simpleSubtitle.trim() : "";
+  const simpleBody =
+    typeof b.simpleBody === "string" ? b.simpleBody.trim() : "";
   const ctaUrl = typeof b.ctaUrl === "string" ? b.ctaUrl.trim() : "";
   if (!simpleSubtitle) return { ok: false, error: 'Falta "simpleSubtitle".' };
-  if (!simpleBody) return { ok: false, error: 'Falta "simpleBody" (descripción para el negocio).' };
+  if (!simpleBody)
+    return {
+      ok: false,
+      error: 'Falta "simpleBody" (descripción para el negocio).',
+    };
   if (!ctaUrl) return { ok: false, error: 'Falta "ctaUrl".' };
   try {
     new URL(ctaUrl);
@@ -157,7 +422,8 @@ function validate(body: unknown): { ok: true; input: CandidateInput } | { ok: fa
   }
   const affiliate = b.affiliate === true;
   if (!affiliate) {
-    const npmPackage = typeof b.npmPackage === "string" ? b.npmPackage.trim() : "";
+    const npmPackage =
+      typeof b.npmPackage === "string" ? b.npmPackage.trim() : "";
     if (!npmPackage) {
       return {
         ok: false,
@@ -184,8 +450,10 @@ function validate(body: unknown): { ok: true; input: CandidateInput } | { ok: fa
     envKeys: Array.isArray(b.envKeys)
       ? b.envKeys.filter((k): k is string => typeof k === "string")
       : undefined,
-    tokenHelpUrl: typeof b.tokenHelpUrl === "string" ? b.tokenHelpUrl : undefined,
-    originalAuthor: typeof b.originalAuthor === "string" ? b.originalAuthor : undefined,
+    tokenHelpUrl:
+      typeof b.tokenHelpUrl === "string" ? b.tokenHelpUrl : undefined,
+    originalAuthor:
+      typeof b.originalAuthor === "string" ? b.originalAuthor : undefined,
     license: typeof b.license === "string" ? b.license : undefined,
   };
   return { ok: true, input };
@@ -210,7 +478,10 @@ export async function POST(req: Request) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Body no es JSON válido." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Body no es JSON válido." },
+      { status: 400 },
+    );
   }
 
   const result = validate(body);
@@ -232,11 +503,14 @@ export async function POST(req: Request) {
     const baseSha = refJson.object.sha;
 
     // 2. Create the candidate branch.
-    const createRefRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/git/refs`, {
-      method: "POST",
-      headers: { ...ghHeaders(token), "Content-Type": "application/json" },
-      body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: baseSha }),
-    });
+    const createRefRes = await fetch(
+      `https://api.github.com/repos/${OWNER}/${REPO}/git/refs`,
+      {
+        method: "POST",
+        headers: { ...ghHeaders(token), "Content-Type": "application/json" },
+        body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: baseSha }),
+      },
+    );
     if (createRefRes.status === 422) {
       // Branch already exists (a previous attempt for this same slug).
       const text = await createRefRes.text().catch(() => "");
@@ -267,20 +541,29 @@ export async function POST(req: Request) {
     // 4. Open the draft PR.
     const title = `Candidato: ${input.type} ${input.slug}`;
     const prBody = buildPrBody(input, file.path);
-    const prRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/pulls`, {
-      method: "POST",
-      headers: { ...ghHeaders(token), "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title,
-        head: branch,
-        base: BASE_BRANCH,
-        body: prBody,
-        draft: true,
-      }),
-    });
+    const prRes = await fetch(
+      `https://api.github.com/repos/${OWNER}/${REPO}/pulls`,
+      {
+        method: "POST",
+        headers: { ...ghHeaders(token), "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          head: branch,
+          base: BASE_BRANCH,
+          body: prBody,
+          draft: true,
+        }),
+      },
+    );
     const pr = await ghJson<{ html_url: string; number: number }>(prRes);
 
-    return NextResponse.json({ ok: true, pr_url: pr.html_url, pr_number: pr.number, branch, path: file.path });
+    return NextResponse.json({
+      ok: true,
+      pr_url: pr.html_url,
+      pr_number: pr.number,
+      branch,
+      path: file.path,
+    });
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Error desconocido" },
@@ -290,20 +573,32 @@ export async function POST(req: Request) {
 }
 
 function buildPrBody(input: CandidateInput, path: string): string {
-  const parityNote =
+  const contentDir =
+    input.type === "cli-tool"
+      ? "cli-tools"
+      : input.type === "kit"
+        ? "kits"
+        : `${input.type}s`;
+  const hiddenField =
     input.type === "skill"
-      ? `- **Paridad ES/EN:** este candidato solo trae \`${path}\` (es). El catálogo hoy exige paridad estricta es/en (ver \`content/skills/RULES.md\`) — antes de sacar \`catalogReady: false\`, sumá el \`.md\` en \`content/skills/en/${input.slug}.md\`.\n- **Gate de la 4 IAs:** \`vendors\`/\`compatibleWith\` ya vienen con \`["claude","codex","gemini"]\` por default (glm hereda de claude) para cumplir la decisión JM 2026-08-07. No los achiques sin evidencia de entrega+eval en cada proveedor.\n- **catalogReady: false a propósito:** \`src/lib/skills.test.ts\` tiene un allow-list exacto de slugs públicos ("keeps only the launch-ready skills..."). Este archivo queda invisible en el catálogo hasta que alguien lo revise y ponga \`catalogReady: true\` — en ese mismo PR de revisión hay que sumar \`"${input.slug}"\` a ese allow-list o el test se rompe en CI.`
-      : `- **Paridad ES/EN:** este candidato solo trae \`${path}\` (es). El catálogo hoy mantiene paridad 1:1 es/en para connectors — sumá \`content/connectors/en/${input.slug}.md\` antes de sacar \`hidden: true\`.\n- **hidden: true a propósito:** así el connector no aparece en \`/connectors\` hasta que alguien lo revise (logo real, manifest correcto, categoría) y saque la línea \`hidden: true\`.\n- **Logo:** referencia \`/connectors/${input.slug}.svg\` — el asset todavía no existe en \`public/connectors/\`; agregalo como parte de la revisión.`;
+      ? "catalogReady: false"
+      : input.type === "kit"
+        ? "status: soon"
+        : "hidden: true / catalogReady: false";
+  const parityNote = `- **Paridad ES/EN:** este candidato solo trae \`${path}\` (es). Sumá \`content/${contentDir}/en/${input.slug}.md\` antes de publicarlo.
+- **No publica solo:** queda con \`${hiddenField}\` para que no aparezca en el catálogo hasta revisión.
+- **Assets:** revisá/agregá el logo referenciado si aplica antes de aprobar.`;
 
   return [
-    `Candidato de **${input.type === "skill" ? "skill" : "connector"}** creado desde el panel admin **Integraciones → Agregar candidato** (\`/admin/integraciones\`, Panel B).`,
+    `Candidato de **${input.type}** creado desde el panel admin **Integraciones → Agregar candidato** (\`/admin/integraciones\`, Panel B).`,
     "",
-    `Este PR es un **dato**, no código: agrega un único \`.md\` (\`${path}\`) con el frontmatter + cuerpo que espera el loader real (\`src/lib/skills.ts\` / \`src/lib/connectors.ts\`).`,
+    `Este PR es un **dato**, no código: agrega un único \`.md\` (\`${path}\`) con el frontmatter + cuerpo que espera el loader real.`,
     "",
-    "## Qué NO hace este flujo (alcance v1)",
+    "## Qué NO hace este flujo",
     "",
-    '- **No corre la supervisión automática** (paridad 4 IAs / evals) contra el preview de Vercel de este PR. Queda como un PR draft normal, revisable a mano, con su propio preview URL. Correr esa supervisión contra `MARKETPLACE_BASE=<preview-url>` de este PR es una mejora posterior, no algo que este endpoint implemente.',
-    '- **No soporta candidatos de "MCP de primera parte con binario propio"** — eso es código Rust en `terminal-sync` (cross-repo, necesita `build:lab`), fuera del alcance de un PR de contenido en este repo. Si hace falta ese tipo de candidato, es un flujo aparte.',
+    "- **No publica directo en el catálogo/app.** Queda como PR draft con defaults ocultos hasta revisión.",
+    "- **No corre la supervisión automática** contra el preview de Vercel de este PR; eso se corre desde el panel de loops o desde CI al preparar la publicación.",
+    "- **No crea binarios ni código Rust** en `terminal-sync`; esto agrega contenido de catálogo en `terminalsync-web`.",
     "",
     "## Notas de esta forma de frontmatter",
     "",
@@ -311,14 +606,9 @@ function buildPrBody(input: CandidateInput, path: string): string {
     "",
     "## Token requerido (`INTEGRATIONS_GH_TOKEN`)",
     "",
-    "El mismo token que usa el Panel A (\"Correr ahora\") para `jmggaravito-sudo/terminal-sync` necesita, ADEMÁS, estos scopes fine-grained sobre `jmggaravito-sudo/terminalsync-web` (este repo) para que este endpoint pueda abrir PRs de candidatos:",
-    "",
-    "- **Contents: Read and write** (crear rama + archivo).",
-    "- **Pull requests: Read and write** (abrir el PR draft).",
-    "",
-    "Un solo Personal Access Token fine-grained puede cubrir ambos repos (`terminal-sync` para Panel A + `terminalsync-web` para Panel B) si se le dan los scopes de ambos al crearlo. Este PR solo documenta el requisito — no crea ni rota el token.",
+    "El token del servidor necesita Contents: Read and write y Pull requests: Read and write sobre `jmggaravito-sudo/terminalsync-web` para abrir este PR draft.",
     "",
     "---",
-    "_Generado automáticamente por `/api/admin/integraciones/candidate`. La supervisión editorial es responsabilidad de quien revisa este PR antes de mergearlo._",
+    "_Generado automáticamente por `/api/admin/integraciones/candidate`._",
   ].join("\n");
 }

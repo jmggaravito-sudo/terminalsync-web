@@ -1,14 +1,27 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { Loader2, PlayCircle, CheckCircle2, XCircle, Clock } from "lucide-react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import {
+  Loader2,
+  PlayCircle,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Ban,
+} from "lucide-react";
 import { authedFetch, getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type AuthState = "checking" | "anon" | "ready" | "forbidden";
 
 interface RunStatus {
-  status: string; // queued | in_progress | completed | ...
-  conclusion: string | null; // success | failure | cancelled | timed_out | null
+  status: string;
+  conclusion: string | null;
   html_url: string;
   created_at: string;
 }
@@ -29,9 +42,27 @@ interface SetupError {
   ref: string;
 }
 
-interface StatusResp {
+interface LoopStatus {
+  id: string;
+  kind: string;
+  title: { es: string; en: string };
+  description: { es: string; en: string };
+  repo: string;
+  workflow: string | null;
+  ref: string;
+  acceptsFocus?: boolean;
+  acceptsDryRun?: boolean;
+  disabledReason?: { es: string; en: string };
   run: RunStatus | null;
   lastLoopRun: LastLoopRun | null;
+  workflowMissing?: boolean;
+  setupError?: SetupError;
+}
+
+interface StatusResp {
+  loops?: LoopStatus[];
+  run?: RunStatus | null;
+  lastLoopRun?: LastLoopRun | null;
   workflowMissing?: boolean;
   setupError?: SetupError;
 }
@@ -42,14 +73,15 @@ export function IntegracionesClient({ lang }: { lang: string }) {
   const isEs = lang !== "en";
 
   const [auth, setAuth] = useState<AuthState>("checking");
-  const [run, setRun] = useState<RunStatus | null>(null);
-  const [lastLoopRun, setLastLoopRun] = useState<LastLoopRun | null>(null);
-  const [workflowMissing, setWorkflowMissing] = useState(false);
+  const [loops, setLoops] = useState<LoopStatus[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [setupError, setSetupError] = useState<SetupError | null>(null);
-  const [dispatching, setDispatching] = useState(false);
-  const [dispatchError, setDispatchError] = useState<string | null>(null);
+  const [dispatching, setDispatching] = useState<string | null>(null);
+  const [dispatchError, setDispatchError] = useState<Record<string, string>>(
+    {},
+  );
   const [watching, setWatching] = useState(false);
+  const [focusByLoop, setFocusByLoop] = useState<Record<string, string>>({});
+  const [dryRunByLoop, setDryRunByLoop] = useState<Record<string, boolean>>({});
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -66,29 +98,38 @@ export function IntegracionesClient({ lang }: { lang: string }) {
       }
       const json = (await res.json()) as StatusResp & { error?: string };
       if (!res.ok) throw new Error(json.error ?? `API ${res.status}`);
-      setRun(json.run ?? null);
-      setLastLoopRun(json.lastLoopRun ?? null);
-      setWorkflowMissing(Boolean(json.workflowMissing));
-      setSetupError(json.setupError ?? null);
+      if (Array.isArray(json.loops)) {
+        setLoops(json.loops);
+      } else if (json.run !== undefined) {
+        // Backward-compatible fallback for older API shape.
+        setLoops([
+          {
+            id: "app-connector-parity",
+            kind: "supervision",
+            title: {
+              es: "Supervisión app: Conectores 4 IAs",
+              en: "App supervision: 4-AI connectors",
+            },
+            description: {
+              es: "Corre connector-loop.yml en terminal-sync.",
+              en: "Runs connector-loop.yml in terminal-sync.",
+            },
+            repo: "terminal-sync",
+            workflow: "connector-loop.yml",
+            ref: "release/v0.2.18-lab",
+            run: json.run ?? null,
+            lastLoopRun: json.lastLoopRun ?? null,
+            workflowMissing: json.workflowMissing,
+            setupError: json.setupError,
+          },
+        ]);
+      }
       setLoadError(null);
     } catch (e) {
-      // Solo reportamos el error de status — NUNCA tocamos `auth` acá. La
-      // sesión ya se resolvió (ver el useEffect de abajo); si este fetch
-      // falla (ej. el workflow todavía no existe en release, o GitHub cae),
-      // el panel se muestra igual con el error visible, en vez de quedarse
-      // colgado en "Verificando sesión…".
       setLoadError(e instanceof Error ? e.message : String(e));
     }
   }, []);
 
-  // Login/session gate, same shape as LoopRunsClient — pero con una
-  // diferencia clave: `auth` pasa a "ready" apenas confirmamos la sesión,
-  // ANTES de esperar loadStatus(). Antes, loadStatus() solo ponía "ready"
-  // en su propio try exitoso, así que un fallo (ej. 404 de GitHub porque
-  // connector-loop.yml no existe todavía en release) dejaba `auth` colgado
-  // en "checking" para siempre — y el loadError, que se renderiza adentro
-  // del bloque auth==="ready", nunca llegaba a mostrarse. loadStatus sigue
-  // pudiendo bajar a "anon"/"forbidden" según el status HTTP.
   useEffect(() => {
     const sb = getSupabaseBrowser();
     if (!sb) {
@@ -106,9 +147,7 @@ export function IntegracionesClient({ lang }: { lang: string }) {
     const { data: sub } = sb.auth.onAuthStateChange((_event, session) => {
       if (!session) {
         setAuth("anon");
-        setRun(null);
-        setLastLoopRun(null);
-        setSetupError(null);
+        setLoops([]);
       } else {
         setAuth("ready");
         void loadStatus();
@@ -117,11 +156,11 @@ export function IntegracionesClient({ lang }: { lang: string }) {
     return () => sub.subscription.unsubscribe();
   }, [loadStatus]);
 
-  // Poll while a run is in flight, or right after "Correr ahora" until the
-  // new run shows up in the GitHub API (which can lag a few seconds behind
-  // the dispatch call).
   useEffect(() => {
-    const running = run?.status === "queued" || run?.status === "in_progress";
+    const running = loops.some(
+      (loop) =>
+        loop.run?.status === "queued" || loop.run?.status === "in_progress",
+    );
     if (auth !== "ready" || (!running && !watching)) {
       if (pollRef.current) {
         clearInterval(pollRef.current);
@@ -133,35 +172,42 @@ export function IntegracionesClient({ lang }: { lang: string }) {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [auth, run, watching, loadStatus]);
+  }, [auth, loops, watching, loadStatus]);
 
-  // Stop "watching for the new run" once it actually completes.
   useEffect(() => {
-    if (watching && run?.status === "completed") setWatching(false);
-  }, [watching, run]);
+    if (watching && loops.some((loop) => loop.run?.status === "completed"))
+      setWatching(false);
+  }, [watching, loops]);
 
-  async function runNow() {
-    setDispatching(true);
-    setDispatchError(null);
+  async function runNow(loop: LoopStatus) {
+    setDispatching(loop.id);
+    setDispatchError((prev) => ({ ...prev, [loop.id]: "" }));
     try {
       const res = await authedFetch("/api/admin/integraciones/run", {
         method: "POST",
+        body: JSON.stringify({
+          loopId: loop.id,
+          focus: focusByLoop[loop.id] ?? "",
+          dryRun: dryRunByLoop[loop.id] === true,
+        }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? `API ${res.status}`);
       setWatching(true);
-      // GitHub Actions takes a beat to register a fresh dispatch as a run.
       setTimeout(() => void loadStatus(), 3000);
     } catch (e) {
-      setDispatchError(e instanceof Error ? e.message : String(e));
+      setDispatchError((prev) => ({
+        ...prev,
+        [loop.id]: e instanceof Error ? e.message : String(e),
+      }));
     } finally {
-      setDispatching(false);
+      setDispatching(null);
     }
   }
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)] text-[var(--color-fg)]">
-      <section className="mx-auto max-w-3xl px-5 md:px-6 py-10">
+      <section className="mx-auto max-w-5xl px-5 py-10 md:px-6">
         <p className="text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-fg-muted)]">
           Admin
         </p>
@@ -170,8 +216,8 @@ export function IntegracionesClient({ lang }: { lang: string }) {
         </h1>
         <p className="mt-1 text-[13px] text-[var(--color-fg-muted)]">
           {isEs
-            ? "Supervisión de paridad de connectors entre las 4 IAs (Claude, Codex, Gemini, GLM)."
-            : "Connector-parity supervision across the 4 AIs (Claude, Codex, Gemini, GLM)."}
+            ? "Centro para correr loops de Conectores, Plugins, Skills, Kits y Herramientas CLI, y supervisar que lleguen bien a la app."
+            : "Control center for Connector, Plugin, Skill, Kit and CLI tool loops, and for supervising app delivery."}
         </p>
 
         {auth === "checking" ? (
@@ -204,53 +250,25 @@ export function IntegracionesClient({ lang }: { lang: string }) {
 
         {auth === "ready" ? (
           <div className="mt-8 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)]/60 p-6">
-            <h2 className="text-[16px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-              {isEs
-                ? "Supervisión de integraciones (paridad 4 IAs)"
-                : "Integration supervision (4-AI parity)"}
-            </h2>
-            <p className="mt-1.5 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
-              {isEs
-                ? "Corre el workflow connector-loop.yml en terminal-sync. Chequea que cada connector funcione igual en Claude, Codex, Gemini y GLM."
-                : "Runs the connector-loop.yml workflow in terminal-sync. Checks that every connector works the same across Claude, Codex, Gemini and GLM."}
-            </p>
-
-            <div className="mt-5 flex items-center gap-3">
-              <button
-                onClick={() => void runNow()}
-                disabled={dispatching}
-                className="inline-flex items-center gap-2 rounded-xl bg-[var(--color-accent)] px-5 py-2.5 text-[14px] font-semibold text-white disabled:opacity-50"
-              >
-                {dispatching ? (
-                  <Loader2 size={15} className="animate-spin" />
-                ) : (
-                  <PlayCircle size={15} />
-                )}
-                {dispatching
-                  ? isEs
-                    ? "Disparando…"
-                    : "Dispatching…"
-                  : isEs
-                    ? "Correr ahora"
-                    : "Run now"}
-              </button>
-              <RunBadge run={run} isEs={isEs} />
-            </div>
-
-            {dispatchError ? (
-              <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/5 p-4 text-[13px] text-red-400">
-                {dispatchError}
-              </div>
-            ) : null}
-
-            {setupError ? (
-              <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-[13px] text-amber-300">
-                <p className="font-semibold">
-                  {isEs ? "Configuración pendiente" : "Setup pending"}
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="text-[16px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
+                  {isEs ? "Loops de integraciones" : "Integration loops"}
+                </h2>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--color-fg-muted)]">
+                  {isEs
+                    ? "Corré cada loop desde acá. Los loops de curación abren PRs draft; nada se publica solo."
+                    : "Run each loop from here. Curation loops open draft PRs; nothing publishes itself."}
                 </p>
-                <p className="mt-1 leading-relaxed">{setupError.message}</p>
               </div>
-            ) : null}
+              <button
+                type="button"
+                onClick={() => void loadStatus()}
+                className="rounded-xl border border-[var(--color-border)] px-4 py-2 text-[12.5px] text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]"
+              >
+                {isEs ? "Refrescar" : "Refresh"}
+              </button>
+            </div>
 
             {loadError ? (
               <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/5 p-4 text-[13px] text-red-400">
@@ -258,76 +276,25 @@ export function IntegracionesClient({ lang }: { lang: string }) {
               </div>
             ) : null}
 
-            <div className="mt-6 border-t border-[var(--color-border)] pt-5">
-              <p className="text-[12px] font-mono uppercase tracking-[0.12em] text-[var(--color-fg-muted)] mb-2">
-                {isEs ? "Última corrida" : "Latest run"}
-              </p>
-              {run ? (
-                <div className="text-[13px] text-[var(--color-fg)] space-y-1">
-                  <p>
-                    {isEs ? "Disparada:" : "Started:"}{" "}
-                    {new Date(run.created_at).toLocaleString(isEs ? "es-CO" : "en-US", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    })}
-                  </p>
-                  <a
-                    href={run.html_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-block text-[13px] font-medium text-[var(--color-accent)] underline-offset-4 hover:underline"
-                  >
-                    {isEs ? "Ver run →" : "View run →"}
-                  </a>
-                </div>
-              ) : (
-                <p className="text-[13px] text-[var(--color-fg-muted)]">
-                  {workflowMissing
-                    ? setupError
-                      ? isEs
-                        ? "No puedo leer la última corrida hasta corregir el token de GitHub del servidor."
-                        : "Cannot read the latest run until the server GitHub token is fixed."
-                      : isEs
-                        ? "Todavía no se corrió — el workflow connector-loop.yml está pendiente de desplegar en release."
-                        : "Not run yet — the connector-loop.yml workflow is pending deploy to release."
-                    : isEs
-                      ? "Todavía no hay corridas registradas."
-                      : "No runs recorded yet."}
-                </p>
-              )}
-
-              {lastLoopRun ? (
-                <p className="mt-3 text-[11.5px] text-[var(--color-fg-dim)]">
-                  {isEs
-                    ? "Refuerzo del historial general (loop_runs): "
-                    : "Reinforcement from the general run history (loop_runs): "}
-                  {new Date(lastLoopRun.ran_at).toLocaleString(isEs ? "es-CO" : "en-US", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
-                  {lastLoopRun.kind ? ` · ${lastLoopRun.kind}` : ""}
-                  {lastLoopRun.pr_url ? (
-                    <>
-                      {" · "}
-                      <a
-                        href={lastLoopRun.pr_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="underline-offset-4 hover:underline"
-                      >
-                        {isEs ? "ver" : "view"}
-                      </a>
-                    </>
-                  ) : null}
-                  {" — "}
-                  <a
-                    href={`/${lang}/admin/ops/loop-runs`}
-                    className="underline-offset-4 hover:underline"
-                  >
-                    {isEs ? "ver historial completo" : "see full history"}
-                  </a>
-                </p>
-              ) : null}
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              {loops.map((loop) => (
+                <LoopCard
+                  key={loop.id}
+                  loop={loop}
+                  isEs={isEs}
+                  focus={focusByLoop[loop.id] ?? ""}
+                  dryRun={dryRunByLoop[loop.id] === true}
+                  dispatching={dispatching === loop.id}
+                  dispatchError={dispatchError[loop.id] || null}
+                  onFocus={(value) =>
+                    setFocusByLoop((prev) => ({ ...prev, [loop.id]: value }))
+                  }
+                  onDryRun={(value) =>
+                    setDryRunByLoop((prev) => ({ ...prev, [loop.id]: value }))
+                  }
+                  onRun={() => void runNow(loop)}
+                />
+              ))}
             </div>
           </div>
         ) : null}
@@ -336,7 +303,166 @@ export function IntegracionesClient({ lang }: { lang: string }) {
   );
 }
 
-function RunBadge({ run, isEs }: { run: RunStatus | null; isEs: boolean }) {
+function LoopCard({
+  loop,
+  isEs,
+  focus,
+  dryRun,
+  dispatching,
+  dispatchError,
+  onFocus,
+  onDryRun,
+  onRun,
+}: {
+  loop: LoopStatus;
+  isEs: boolean;
+  focus: string;
+  dryRun: boolean;
+  dispatching: boolean;
+  dispatchError: string | null;
+  onFocus: (value: string) => void;
+  onDryRun: (value: boolean) => void;
+  onRun: () => void;
+}) {
+  const lang = isEs ? "es" : "en";
+  const disabled = Boolean(loop.disabledReason) || !loop.workflow;
+  return (
+    <article className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)]/35 p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-[14px] font-semibold text-[var(--color-fg-strong)]">
+            {loop.title[lang]}
+          </h3>
+          <p className="mt-1 text-[12.5px] leading-relaxed text-[var(--color-fg-muted)]">
+            {loop.description[lang]}
+          </p>
+        </div>
+        <RunBadge run={loop.run} disabled={disabled} isEs={isEs} />
+      </div>
+
+      <dl className="mt-3 grid grid-cols-2 gap-2 text-[11.5px] text-[var(--color-fg-dim)]">
+        <div>
+          <dt className="font-mono uppercase">Repo</dt>
+          <dd>{loop.repo}</dd>
+        </div>
+        <div>
+          <dt className="font-mono uppercase">Workflow</dt>
+          <dd>{loop.workflow ?? (isEs ? "pendiente" : "pending")}</dd>
+        </div>
+      </dl>
+
+      {loop.acceptsFocus ? (
+        <label className="mt-3 block text-[12px] text-[var(--color-fg-muted)]">
+          {isEs ? "Foco opcional" : "Optional focus"}
+          <input
+            value={focus}
+            onChange={(e) => onFocus(e.target.value)}
+            placeholder={
+              isEs ? "ej: asana, docx, ventas" : "e.g. asana, docx, sales"
+            }
+            className="mt-1 w-full rounded-xl border border-[var(--color-border)] bg-transparent px-3 py-2 text-[13px] text-[var(--color-fg)] outline-none"
+          />
+        </label>
+      ) : null}
+
+      {loop.acceptsDryRun ? (
+        <label className="mt-3 flex items-center gap-2 text-[12px] text-[var(--color-fg-muted)]">
+          <input
+            type="checkbox"
+            checked={dryRun}
+            onChange={(e) => onDryRun(e.target.checked)}
+          />
+          {isEs
+            ? "Dry run: investigar sin abrir PR ni registrar run"
+            : "Dry run: investigate without opening PR or recording run"}
+        </label>
+      ) : null}
+
+      {loop.disabledReason ? (
+        <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-[12.5px] text-amber-300">
+          {loop.disabledReason[lang]}
+        </div>
+      ) : null}
+
+      {loop.setupError ? (
+        <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-[12.5px] text-amber-300">
+          {loop.setupError.message}
+        </div>
+      ) : null}
+
+      {dispatchError ? (
+        <div className="mt-3 rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-[12.5px] text-red-400">
+          {dispatchError}
+        </div>
+      ) : null}
+
+      <div className="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-border)] pt-3">
+        <div className="text-[12px] text-[var(--color-fg-muted)]">
+          {loop.run ? (
+            <>
+              {new Date(loop.run.created_at).toLocaleString(
+                isEs ? "es-CO" : "en-US",
+                { dateStyle: "medium", timeStyle: "short" },
+              )}
+              {" · "}
+              <a
+                href={loop.run.html_url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[var(--color-accent)] underline-offset-4 hover:underline"
+              >
+                {isEs ? "Ver run" : "View run"}
+              </a>
+            </>
+          ) : isEs ? (
+            "Sin corridas registradas"
+          ) : (
+            "No runs recorded"
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={onRun}
+          disabled={dispatching || disabled}
+          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[var(--color-accent)] px-4 py-2 text-[13px] font-semibold text-white disabled:opacity-45"
+        >
+          {dispatching ? (
+            <Loader2 size={14} className="animate-spin" />
+          ) : disabled ? (
+            <Ban size={14} />
+          ) : (
+            <PlayCircle size={14} />
+          )}
+          {dispatching
+            ? isEs
+              ? "Disparando…"
+              : "Dispatching…"
+            : isEs
+              ? "Correr"
+              : "Run"}
+        </button>
+      </div>
+    </article>
+  );
+}
+
+function RunBadge({
+  run,
+  disabled,
+  isEs,
+}: {
+  run: RunStatus | null;
+  disabled?: boolean;
+  isEs: boolean;
+}) {
+  if (disabled) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/5 px-3 py-1.5 text-[12.5px] text-amber-300">
+        <Ban size={13} />
+        {isEs ? "Pendiente" : "Pending"}
+      </span>
+    );
+  }
   if (!run) {
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] px-3 py-1.5 text-[12.5px] text-[var(--color-fg-muted)]">
@@ -345,7 +471,6 @@ function RunBadge({ run, isEs }: { run: RunStatus | null; isEs: boolean }) {
       </span>
     );
   }
-
   if (run.status === "queued" || run.status === "in_progress") {
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-[12.5px] font-medium text-amber-400">
@@ -354,7 +479,6 @@ function RunBadge({ run, isEs }: { run: RunStatus | null; isEs: boolean }) {
       </span>
     );
   }
-
   if (run.status === "completed" && run.conclusion === "success") {
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-[12.5px] font-medium text-emerald-400">
@@ -363,18 +487,17 @@ function RunBadge({ run, isEs }: { run: RunStatus | null; isEs: boolean }) {
       </span>
     );
   }
-
   if (run.status === "completed") {
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-[12.5px] font-medium text-red-400">
         <XCircle size={13} />
-        {isEs ? "Falló" : "Failed"} {run.conclusion ? `(${run.conclusion})` : ""}
+        {isEs ? "Falló" : "Failed"}{" "}
+        {run.conclusion ? `(${run.conclusion})` : ""}
       </span>
     );
   }
-
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border)] px-3 py-1.5 text-[12.5px] text-[var(--color-fg-muted)]">
+    <span className="inline-flex items-center rounded-full border border-[var(--color-border)] px-3 py-1.5 text-[12.5px] text-[var(--color-fg-muted)]">
       {run.status}
     </span>
   );
@@ -384,17 +507,15 @@ function Banner({
   tone,
   children,
 }: {
-  tone: "muted" | "warn" | "error";
+  tone: "muted" | "warn";
   children: ReactNode;
 }) {
   const cls =
-    tone === "error"
-      ? "border-red-500/40 bg-red-500/10 text-red-800 dark:text-red-200"
-      : tone === "warn"
-        ? "border-amber-500/40 bg-amber-500/10 text-amber-900 dark:text-amber-200"
-        : "border-[var(--color-border)] bg-[var(--color-panel)]/60 text-[var(--color-fg-muted)]";
+    tone === "warn"
+      ? "border-amber-500/30 bg-amber-500/5 text-amber-300"
+      : "border-[var(--color-border)] bg-[var(--color-panel)] text-[var(--color-fg-muted)]";
   return (
-    <div className={`mt-6 rounded-2xl border p-5 text-[14px] ${cls}`}>
+    <div className={`mt-6 rounded-xl border px-4 py-3 text-[13px] ${cls}`}>
       {children}
     </div>
   );

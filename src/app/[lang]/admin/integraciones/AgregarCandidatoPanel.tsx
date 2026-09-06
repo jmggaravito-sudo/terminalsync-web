@@ -6,11 +6,14 @@ import { authedFetch, getSupabaseBrowser } from "@/lib/supabase/browser";
 import {
   SKILL_CATEGORIES,
   CONNECTOR_CATEGORIES,
+  PLUGIN_CATEGORIES,
+  KIT_CATEGORIES,
+  CLI_TOOL_CATEGORIES,
   isValidSlug,
 } from "@/lib/marketplace/candidateContent";
 
 type AuthState = "checking" | "anon" | "ready" | "forbidden";
-type CandidateType = "skill" | "connector";
+type CandidateType = "skill" | "connector" | "plugin" | "kit" | "cli-tool";
 
 interface SuccessResult {
   pr_url: string;
@@ -23,23 +26,23 @@ function slugify(value: string): string {
   return value
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "") // strip accents
+    .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 60);
 }
 
-/**
- * Panel B of /admin/integraciones — "Agregar candidato". Sibling of
- * IntegracionesClient (Panel A, "Correr ahora"). Self-contained: owns its
- * own auth gate rather than sharing state with Panel A, since the two
- * panels are independent features that happen to live on the same page.
- *
- * Submits to POST /api/admin/integraciones/candidate, which opens a draft
- * PR in this same repo adding one content/{skills,connectors}/es/<slug>.md
- * file. See that route + src/lib/marketplace/candidateContent.ts for the
- * exact shape and the safety defaults (catalogReady:false / hidden:true).
- */
+const CONTROL_CLASS =
+  "w-full rounded-xl border border-[var(--color-border)] bg-transparent px-3 py-2 text-[13px] text-[var(--color-fg)] outline-none";
+
+const TYPE_LABEL: Record<CandidateType, { es: string; en: string }> = {
+  skill: { es: "Skill", en: "Skill" },
+  connector: { es: "Conector", en: "Connector" },
+  plugin: { es: "Plugin", en: "Plugin" },
+  kit: { es: "Kit", en: "Kit" },
+  "cli-tool": { es: "Herramienta CLI", en: "CLI tool" },
+};
+
 export function AgregarCandidatoPanel({ lang }: { lang: string }) {
   const isEs = lang !== "en";
   const [auth, setAuth] = useState<AuthState>("checking");
@@ -59,31 +62,26 @@ export function AgregarCandidatoPanel({ lang }: { lang: string }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  if (auth !== "ready") return null; // Panel A already shows the sign-in banner for this page.
-
+  if (auth !== "ready") return null;
   return <CandidateForm isEs={isEs} />;
 }
 
 function CandidateForm({ isEs }: { isEs: boolean }) {
   const [type, setType] = useState<CandidateType>("skill");
-
-  // Shared fields
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
   const [category, setCategory] = useState("");
   const [tagline, setTagline] = useState("");
+  const [description, setDescription] = useState("");
   const [status, setStatus] = useState<"available" | "soon">("available");
   const [license, setLicense] = useState("");
 
-  // Skill-only
-  const [description, setDescription] = useState("");
   const [whenToUse, setWhenToUse] = useState("");
   const [whatItDoes, setWhatItDoes] = useState("");
   const [howToUse, setHowToUse] = useState("");
   const [author, setAuthor] = useState("");
 
-  // Connector-only
   const [simpleSubtitle, setSimpleSubtitle] = useState("");
   const [simpleBody, setSimpleBody] = useState("");
   const [devBody, setDevBody] = useState("");
@@ -94,15 +92,38 @@ function CandidateForm({ isEs }: { isEs: boolean }) {
   const [tokenHelpUrl, setTokenHelpUrl] = useState("");
   const [originalAuthor, setOriginalAuthor] = useState("");
 
+  const [connectorSlug, setConnectorSlug] = useState("");
+  const [skillSlugs, setSkillSlugs] = useState("");
+  const [kitItems, setKitItems] = useState("");
+  const [audience, setAudience] = useState("");
+  const [limits, setLimits] = useState("");
+
+  const [binary, setBinary] = useState("");
+  const [installCommand, setInstallCommand] = useState("");
+  const [authCommand, setAuthCommand] = useState("");
+  const [vendor, setVendor] = useState("");
+  const [homepage, setHomepage] = useState("");
+  const [repo, setRepo] = useState("");
+  const [terminalSyncAdds, setTerminalSyncAdds] = useState("");
+  const [commonCommands, setCommonCommands] = useState("");
+
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<SuccessResult | null>(null);
 
-  const categories = type === "skill" ? SKILL_CATEGORIES : CONNECTOR_CATEGORIES;
+  const categories =
+    type === "skill"
+      ? SKILL_CATEGORIES
+      : type === "connector"
+        ? CONNECTOR_CATEGORIES
+        : type === "plugin"
+          ? PLUGIN_CATEGORIES
+          : type === "kit"
+            ? KIT_CATEGORIES
+            : CLI_TOOL_CATEGORIES;
 
   useEffect(() => {
-    // Reset category when switching type if it's not valid for the new type.
-    if (!categories.includes(category as never)) setCategory("");
+    if (!(categories as readonly string[]).includes(category)) setCategory("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
@@ -111,81 +132,89 @@ function CandidateForm({ isEs }: { isEs: boolean }) {
     if (!slugTouched) setSlug(slugify(v));
   }
 
-  const slugValid = slug.length === 0 || isValidSlug(slug);
-
   async function submit() {
     setError(null);
     setResult(null);
+    if (!name.trim())
+      return setError(isEs ? "Falta el nombre." : "Missing name.");
+    if (!slug || !isValidSlug(slug))
+      return setError(isEs ? "Slug inválido." : "Invalid slug.");
+    if (!category)
+      return setError(isEs ? "Elegí una categoría." : "Pick a category.");
+    if (!tagline.trim())
+      return setError(isEs ? "Falta el tagline." : "Missing tagline.");
 
-    if (!name.trim()) return setError(isEs ? "Falta el nombre." : "Missing name.");
-    if (!slug || !isValidSlug(slug)) {
-      return setError(
-        isEs
-          ? 'Slug inválido. Usá minúsculas, números y guiones (ej: "mi-conector").'
-          : 'Invalid slug. Use lowercase letters, numbers and hyphens (e.g. "my-connector").',
-      );
-    }
-    if (!category) return setError(isEs ? "Elegí una categoría." : "Pick a category.");
-    if (!tagline.trim()) return setError(isEs ? "Falta el tagline." : "Missing tagline.");
+    const base = {
+      type,
+      slug,
+      name: name.trim(),
+      category,
+      tagline: tagline.trim(),
+      description: description.trim(),
+      status,
+      license: license.trim() || undefined,
+    };
 
-    const payload: Record<string, unknown> =
-      type === "skill"
-        ? {
-            type,
-            slug,
-            name: name.trim(),
-            category,
-            tagline: tagline.trim(),
-            description: description.trim(),
-            whenToUse: whenToUse.trim(),
-            whatItDoes: whatItDoes.trim(),
-            howToUse: howToUse.trim(),
-            author: author.trim() || undefined,
-            status,
-            license: license.trim() || undefined,
-          }
-        : {
-            type,
-            slug,
-            name: name.trim(),
-            category,
-            tagline: tagline.trim(),
-            simpleSubtitle: simpleSubtitle.trim(),
-            simpleBody: simpleBody.trim(),
-            devBody: devBody.trim() || undefined,
-            ctaUrl: ctaUrl.trim(),
-            affiliate,
-            status,
-            npmPackage: npmPackage.trim() || undefined,
-            envKeys: envKeysRaw
-              .split(",")
-              .map((k) => k.trim().toUpperCase())
-              .filter(Boolean),
-            tokenHelpUrl: tokenHelpUrl.trim() || undefined,
-            originalAuthor: originalAuthor.trim() || undefined,
-            license: license.trim() || undefined,
-          };
-
-    if (type === "skill") {
-      if (!description.trim()) return setError(isEs ? "Falta la descripción." : "Missing description.");
-      if (!whenToUse.trim() || !whatItDoes.trim() || !howToUse.trim()) {
-        return setError(
-          isEs
-            ? 'Completá las 3 secciones: "Cuándo usarlo", "Qué hace", "Cómo usarlo".'
-            : 'Fill in all 3 sections: "When to use", "What it does", "How to use".',
-        );
-      }
+    let payload: Record<string, unknown>;
+    if (type === "connector") {
+      payload = {
+        ...base,
+        simpleSubtitle: simpleSubtitle.trim(),
+        simpleBody: simpleBody.trim(),
+        devBody: devBody.trim() || undefined,
+        ctaUrl: ctaUrl.trim(),
+        affiliate,
+        npmPackage: npmPackage.trim() || undefined,
+        envKeys: envKeysRaw
+          .split(",")
+          .map((k) => k.trim().toUpperCase())
+          .filter(Boolean),
+        tokenHelpUrl: tokenHelpUrl.trim() || undefined,
+        originalAuthor: originalAuthor.trim() || undefined,
+      };
+    } else if (type === "plugin") {
+      payload = {
+        ...base,
+        connectorSlug: connectorSlug.trim() || undefined,
+        skillSlugs: skillSlugs
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        whenToUse: whenToUse.trim(),
+        whatItDoes: whatItDoes.trim(),
+        howToUse: howToUse.trim(),
+        author: author.trim() || undefined,
+      };
+    } else if (type === "kit") {
+      payload = {
+        ...base,
+        audience: audience.trim(),
+        whatItDoes: whatItDoes.trim(),
+        howToUse: howToUse.trim(),
+        limits: limits.trim(),
+        itemsRaw: kitItems,
+      };
+    } else if (type === "cli-tool") {
+      payload = {
+        ...base,
+        binary: binary.trim(),
+        installCommand: installCommand.trim(),
+        authCommand: authCommand.trim() || undefined,
+        vendor: vendor.trim(),
+        homepage: homepage.trim(),
+        repo: repo.trim() || undefined,
+        whatItDoes: whatItDoes.trim(),
+        terminalSyncAdds: terminalSyncAdds.trim(),
+        commonCommands: commonCommands.trim(),
+      };
     } else {
-      if (!simpleSubtitle.trim()) return setError(isEs ? "Falta el subtítulo simple." : "Missing simple subtitle.");
-      if (!simpleBody.trim()) return setError(isEs ? "Falta la descripción para el negocio." : "Missing business description.");
-      if (!ctaUrl.trim()) return setError(isEs ? "Falta la URL del CTA." : "Missing CTA URL.");
-      if (!affiliate && !npmPackage.trim()) {
-        return setError(
-          isEs
-            ? 'Falta el paquete npm (o marcá "solo afiliado" si no se instala).'
-            : 'Missing npm package (or check "affiliate only" if it is not installable).',
-        );
-      }
+      payload = {
+        ...base,
+        whenToUse: whenToUse.trim(),
+        whatItDoes: whatItDoes.trim(),
+        howToUse: howToUse.trim(),
+        author: author.trim() || undefined,
+      };
     }
 
     setBusy(true);
@@ -205,61 +234,53 @@ function CandidateForm({ isEs }: { isEs: boolean }) {
   }
 
   return (
-    <section className="mx-auto max-w-3xl px-5 md:px-6 pb-16">
+    <section className="mx-auto max-w-5xl px-5 pb-16 md:px-6">
       <div className="mt-8 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)]/60 p-6">
         <h2 className="text-[16px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
           {isEs ? "Agregar candidato" : "Add candidate"}
         </h2>
-        <p className="mt-1.5 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
+        <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--color-fg-muted)]">
           {isEs
-            ? "Crea un PR draft en este repo con un nuevo skill o connector, listo para revisión. No publica nada solo: el candidato queda oculto del catálogo (catalogReady:false / hidden:true) hasta que alguien lo revise y lo apruebe al mergear."
-            : "Opens a draft PR in this repo adding a new skill or connector, ready for review. Nothing goes live on its own: the candidate stays hidden from the catalog (catalogReady:false / hidden:true) until someone reviews it and approves it at merge time."}
+            ? "Crea un PR draft para Skill, Conector, Plugin, Kit o Herramienta CLI. Queda oculto/pendiente hasta revisión; no publica nada solo."
+            : "Opens a draft PR for a Skill, Connector, Plugin, Kit or CLI tool. It stays hidden/pending until review; nothing publishes itself."}
         </p>
 
-        <div className="mt-5 inline-flex rounded-xl border border-[var(--color-border)] p-1">
-          {(["skill", "connector"] as const).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setType(t)}
-              className={`rounded-lg px-4 py-1.5 text-[13px] font-medium transition ${
-                type === t
-                  ? "bg-[var(--color-accent)] text-white"
-                  : "text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]"
-              }`}
-            >
-              {t === "skill" ? "Skill" : "Connector"}
-            </button>
-          ))}
+        <div className="mt-5 flex flex-wrap gap-2 rounded-xl border border-[var(--color-border)] p-1">
+          {(["skill", "connector", "plugin", "kit", "cli-tool"] as const).map(
+            (t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setType(t)}
+                className={`rounded-lg px-3 py-1.5 text-[13px] ${type === t ? "bg-[var(--color-accent)] text-white" : "text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]"}`}
+              >
+                {TYPE_LABEL[t][isEs ? "es" : "en"]}
+              </button>
+            ),
+          )}
         </div>
 
-        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field label={isEs ? "Nombre" : "Name"}>
-            <input
-              value={name}
-              onChange={(e) => onNameChange(e.target.value)}
-              placeholder={type === "skill" ? "1099/W-9 Organizer" : "Airtable"}
-              className={inputCls}
-            />
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <Field label="Nombre">
+            <Input value={name} onChange={onNameChange} />
           </Field>
-          <Field label="Slug" hint={slugValid ? undefined : (isEs ? "kebab-case, ej: mi-conector" : "kebab-case, e.g. my-connector")}>
-            <input
+          <Field label="Slug">
+            <Input
               value={slug}
-              onChange={(e) => {
+              onChange={(v) => {
                 setSlugTouched(true);
-                setSlug(slugify(e.target.value));
+                setSlug(v);
               }}
-              placeholder="mi-conector"
-              className={`${inputCls} font-mono`}
             />
           </Field>
-        </div>
-
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field label={isEs ? "Categoría" : "Category"}>
-            <select value={category} onChange={(e) => setCategory(e.target.value)} className={inputCls}>
-              <option value="">{isEs ? "Elegí…" : "Choose…"}</option>
-              {categories.map((c) => (
+          <Field label="Categoría">
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className={CONTROL_CLASS}
+            >
+              <option value="">Elegí…</option>
+              {(categories as readonly string[]).map((c) => (
                 <option key={c} value={c}>
                   {c}
                 </option>
@@ -267,142 +288,154 @@ function CandidateForm({ isEs }: { isEs: boolean }) {
             </select>
           </Field>
           <Field label="Status">
-            <select value={status} onChange={(e) => setStatus(e.target.value as "available" | "soon")} className={inputCls}>
+            <select
+              value={status}
+              onChange={(e) =>
+                setStatus(e.target.value as "available" | "soon")
+              }
+              className={CONTROL_CLASS}
+            >
               <option value="available">available</option>
               <option value="soon">soon</option>
             </select>
           </Field>
-        </div>
-
-        <div className="mt-4">
           <Field label="Tagline">
-            <input
-              value={tagline}
-              onChange={(e) => setTagline(e.target.value)}
-              placeholder={isEs ? "Una línea corta y clara" : "One short, clear line"}
-              className={inputCls}
-            />
+            <Input value={tagline} onChange={setTagline} />
+          </Field>
+          <Field label="Licencia (opcional)">
+            <Input value={license} onChange={setLicense} />
           </Field>
         </div>
 
-        {type === "skill" ? (
-          <>
-            <div className="mt-4">
-              <Field label={isEs ? "Descripción" : "Description"}>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={3}
-                  className={inputCls}
+        <div className="mt-4 grid gap-4">
+          {type !== "connector" ? (
+            <Field label="Descripción">
+              <Textarea value={description} onChange={setDescription} />
+            </Field>
+          ) : null}
+
+          {type === "connector" ? (
+            <ConnectorFields
+              {...{
+                simpleSubtitle,
+                setSimpleSubtitle,
+                simpleBody,
+                setSimpleBody,
+                devBody,
+                setDevBody,
+                ctaUrl,
+                setCtaUrl,
+                affiliate,
+                setAffiliate,
+                npmPackage,
+                setNpmPackage,
+                envKeysRaw,
+                setEnvKeysRaw,
+                tokenHelpUrl,
+                setTokenHelpUrl,
+                originalAuthor,
+                setOriginalAuthor,
+              }}
+            />
+          ) : null}
+
+          {type === "skill" || type === "plugin" ? (
+            <>
+              {type === "plugin" ? (
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Field label="Conector slug (opcional)">
+                    <Input value={connectorSlug} onChange={setConnectorSlug} />
+                  </Field>
+                  <Field label="Skill slugs (coma)">
+                    <Input value={skillSlugs} onChange={setSkillSlugs} />
+                  </Field>
+                </div>
+              ) : null}
+              <Field label="Cuándo usarlo">
+                <Textarea value={whenToUse} onChange={setWhenToUse} />
+              </Field>
+              <Field label="Qué hace">
+                <Textarea value={whatItDoes} onChange={setWhatItDoes} />
+              </Field>
+              <Field label="Cómo usarlo">
+                <Textarea value={howToUse} onChange={setHowToUse} />
+              </Field>
+              <Field label="Autor (opcional)">
+                <Input value={author} onChange={setAuthor} />
+              </Field>
+            </>
+          ) : null}
+
+          {type === "kit" ? (
+            <>
+              <Field label="Items del kit">
+                <Textarea
+                  value={kitItems}
+                  onChange={setKitItems}
+                  placeholder={
+                    "connector|github|Trae PRs y repos\nskill|code-reviewer|Revisa diffs\ncli-tool|github-cli|Permite correr gh"
+                  }
                 />
               </Field>
-            </div>
-            <div className="mt-4">
-              <Field label={isEs ? '"Cuándo usarlo"' : '"When to use"'}>
-                <textarea value={whenToUse} onChange={(e) => setWhenToUse(e.target.value)} rows={3} className={inputCls} />
+              <Field label="Para quién es">
+                <Textarea value={audience} onChange={setAudience} />
               </Field>
-            </div>
-            <div className="mt-4">
-              <Field label={isEs ? '"Qué hace"' : '"What it does"'}>
-                <textarea value={whatItDoes} onChange={(e) => setWhatItDoes(e.target.value)} rows={3} className={inputCls} />
+              <Field label="Qué ayuda a hacer">
+                <Textarea value={whatItDoes} onChange={setWhatItDoes} />
               </Field>
-            </div>
-            <div className="mt-4">
-              <Field label={isEs ? '"Cómo usarlo"' : '"How to use"'}>
-                <textarea value={howToUse} onChange={(e) => setHowToUse(e.target.value)} rows={3} className={inputCls} />
+              <Field label="Cómo usarlo">
+                <Textarea value={howToUse} onChange={setHowToUse} />
               </Field>
-            </div>
-            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field label={isEs ? "Autor (opcional)" : "Author (optional)"}>
-                <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="TerminalSync" className={inputCls} />
+              <Field label="Límites">
+                <Textarea value={limits} onChange={setLimits} />
               </Field>
-              <Field label={isEs ? "Licencia (opcional)" : "License (optional)"}>
-                <input value={license} onChange={(e) => setLicense(e.target.value)} placeholder="proprietary" className={inputCls} />
-              </Field>
-            </div>
-            <p className="mt-3 text-[12px] text-[var(--color-fg-dim)]">
-              {isEs
-                ? 'vendors / compatibleWith: fijo en ["claude", "codex", "gemini"] — la paridad de las 4 IAs (glm hereda de claude) es un requisito, no un default que se pueda achicar acá.'
-                : 'vendors / compatibleWith: fixed to ["claude", "codex", "gemini"] — 4-AI parity (glm inherits from claude) is a requirement, not a default you can shrink here.'}
-            </p>
-          </>
-        ) : (
-          <>
-            <div className="mt-4">
-              <Field label={isEs ? "Subtítulo simple (para el negocio)" : "Simple subtitle (for the business)"}>
-                <input value={simpleSubtitle} onChange={(e) => setSimpleSubtitle(e.target.value)} className={inputCls} />
-              </Field>
-            </div>
-            <div className="mt-4">
-              <Field label={isEs ? "Descripción para el negocio (cuerpo markdown)" : "Business description (markdown body)"}>
-                <textarea value={simpleBody} onChange={(e) => setSimpleBody(e.target.value)} rows={5} className={inputCls} />
-              </Field>
-            </div>
-            <div className="mt-4">
-              <Field label={isEs ? "Notas técnicas (opcional)" : "Technical notes (optional)"}>
-                <textarea value={devBody} onChange={(e) => setDevBody(e.target.value)} rows={3} className={inputCls} />
-              </Field>
-            </div>
-            <div className="mt-4">
-              <Field label="CTA URL">
-                <input value={ctaUrl} onChange={(e) => setCtaUrl(e.target.value)} placeholder="https://…" className={inputCls} />
-              </Field>
-            </div>
-            <label className="mt-3 flex items-center gap-2 text-[13px] text-[var(--color-fg)]">
-              <input type="checkbox" checked={affiliate} onChange={(e) => setAffiliate(e.target.checked)} />
-              {isEs
-                ? "Solo afiliado (abre el CTA, no se instala — sin manifest MCP)"
-                : "Affiliate only (opens the CTA, not installable — no MCP manifest)"}
-            </label>
+            </>
+          ) : null}
 
-            {!affiliate ? (
-              <>
-                <div className="mt-4">
-                  <Field label={isEs ? "Paquete npm (npx -y <paquete>)" : "npm package (npx -y <package>)"}>
-                    <input value={npmPackage} onChange={(e) => setNpmPackage(e.target.value)} placeholder="airtable-mcp-server" className={`${inputCls} font-mono`} />
-                  </Field>
-                </div>
-                <div className="mt-4">
-                  <Field
-                    label={isEs ? "Env keys (coma-separadas, opcional — vacío = OAuth)" : "Env keys (comma-separated, optional — empty = OAuth)"}
-                  >
-                    <input value={envKeysRaw} onChange={(e) => setEnvKeysRaw(e.target.value)} placeholder="AIRTABLE_API_KEY" className={`${inputCls} font-mono`} />
-                  </Field>
-                </div>
-                <div className="mt-4">
-                  <Field label={isEs ? "Token help URL (opcional)" : "Token help URL (optional)"}>
-                    <input value={tokenHelpUrl} onChange={(e) => setTokenHelpUrl(e.target.value)} placeholder="https://…" className={inputCls} />
-                  </Field>
-                </div>
-              </>
-            ) : null}
-
-            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field label={isEs ? "Autor original (opcional)" : "Original author (optional)"}>
-                <input value={originalAuthor} onChange={(e) => setOriginalAuthor(e.target.value)} className={inputCls} />
+          {type === "cli-tool" ? (
+            <>
+              <div className="grid gap-4 md:grid-cols-2">
+                <Field label="Binary">
+                  <Input value={binary} onChange={setBinary} placeholder="gh" />
+                </Field>
+                <Field label="Install command">
+                  <Input
+                    value={installCommand}
+                    onChange={setInstallCommand}
+                    placeholder="brew install gh"
+                  />
+                </Field>
+                <Field label="Auth command (opcional)">
+                  <Input
+                    value={authCommand}
+                    onChange={setAuthCommand}
+                    placeholder="gh auth login"
+                  />
+                </Field>
+                <Field label="Vendor">
+                  <Input value={vendor} onChange={setVendor} />
+                </Field>
+                <Field label="Homepage">
+                  <Input value={homepage} onChange={setHomepage} />
+                </Field>
+                <Field label="Repo (opcional)">
+                  <Input value={repo} onChange={setRepo} />
+                </Field>
+              </div>
+              <Field label="Qué hace">
+                <Textarea value={whatItDoes} onChange={setWhatItDoes} />
               </Field>
-              <Field label={isEs ? "Licencia (opcional)" : "License (optional)"}>
-                <input value={license} onChange={(e) => setLicense(e.target.value)} placeholder={affiliate ? "proprietary" : "MIT"} className={inputCls} />
+              <Field label="Qué le suma TerminalSync">
+                <Textarea
+                  value={terminalSyncAdds}
+                  onChange={setTerminalSyncAdds}
+                />
               </Field>
-            </div>
-          </>
-        )}
-
-        <div className="mt-6 flex items-center gap-3">
-          <button
-            onClick={() => void submit()}
-            disabled={busy}
-            className="inline-flex items-center gap-2 rounded-xl bg-[var(--color-accent)] px-5 py-2.5 text-[14px] font-semibold text-white disabled:opacity-50"
-          >
-            {busy ? <Loader2 size={15} className="animate-spin" /> : <PlusCircle size={15} />}
-            {busy
-              ? isEs
-                ? "Creando…"
-                : "Creating…"
-              : isEs
-                ? "Crear candidato (PR draft)"
-                : "Create candidate (draft PR)"}
-          </button>
+              <Field label="Comandos típicos">
+                <Textarea value={commonCommands} onChange={setCommonCommands} />
+              </Field>
+            </>
+          ) : null}
         </div>
 
         {error ? (
@@ -410,41 +443,154 @@ function CandidateForm({ isEs }: { isEs: boolean }) {
             {error}
           </div>
         ) : null}
-
         {result ? (
-          <div className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 text-[13px] text-emerald-400">
-            <p className="font-medium">
-              {isEs ? `PR #${result.pr_number} creado (draft).` : `PR #${result.pr_number} created (draft).`}
-            </p>
+          <div className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 text-[13px] text-emerald-300">
+            PR draft creado:{" "}
             <a
               href={result.pr_url}
               target="_blank"
               rel="noreferrer"
-              className="mt-1 inline-flex items-center gap-1.5 underline-offset-4 hover:underline"
+              className="inline-flex items-center gap-1 underline"
             >
-              {result.pr_url} <ExternalLink size={13} />
-            </a>
-            <p className="mt-2 text-[12px] text-[var(--color-fg-dim)]">
-              {isEs
-                ? `Archivo: ${result.path} — rama ${result.branch}.`
-                : `File: ${result.path} — branch ${result.branch}.`}
-            </p>
+              <ExternalLink size={13} />#{result.pr_number}
+            </a>{" "}
+            · <code>{result.path}</code>
           </div>
         ) : null}
+
+        <button
+          onClick={() => void submit()}
+          disabled={busy}
+          className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[var(--color-accent)] px-5 py-2.5 text-[14px] font-semibold text-white disabled:opacity-50"
+        >
+          {busy ? (
+            <Loader2 size={15} className="animate-spin" />
+          ) : (
+            <PlusCircle size={15} />
+          )}
+          {busy
+            ? isEs
+              ? "Creando…"
+              : "Creating…"
+            : isEs
+              ? "Crear candidato (PR draft)"
+              : "Create candidate (draft PR)"}
+        </button>
       </div>
     </section>
   );
 }
 
-const inputCls =
-  "mt-1.5 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-[13px] text-[var(--color-fg)] outline-none focus:border-[var(--color-accent)]";
-
-function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
+function ConnectorFields(props: {
+  simpleSubtitle: string;
+  setSimpleSubtitle: (v: string) => void;
+  simpleBody: string;
+  setSimpleBody: (v: string) => void;
+  devBody: string;
+  setDevBody: (v: string) => void;
+  ctaUrl: string;
+  setCtaUrl: (v: string) => void;
+  affiliate: boolean;
+  setAffiliate: (v: boolean) => void;
+  npmPackage: string;
+  setNpmPackage: (v: string) => void;
+  envKeysRaw: string;
+  setEnvKeysRaw: (v: string) => void;
+  tokenHelpUrl: string;
+  setTokenHelpUrl: (v: string) => void;
+  originalAuthor: string;
+  setOriginalAuthor: (v: string) => void;
+}) {
   return (
-    <label className="block text-[12.5px] font-medium text-[var(--color-fg-muted)]">
+    <>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Field label="Subtítulo simple">
+          <Input
+            value={props.simpleSubtitle}
+            onChange={props.setSimpleSubtitle}
+          />
+        </Field>
+        <Field label="CTA URL">
+          <Input value={props.ctaUrl} onChange={props.setCtaUrl} />
+        </Field>
+        <Field label="NPM package">
+          <Input value={props.npmPackage} onChange={props.setNpmPackage} />
+        </Field>
+        <Field label="Env keys (coma)">
+          <Input value={props.envKeysRaw} onChange={props.setEnvKeysRaw} />
+        </Field>
+        <Field label="Token help URL">
+          <Input value={props.tokenHelpUrl} onChange={props.setTokenHelpUrl} />
+        </Field>
+        <Field label="Original author">
+          <Input
+            value={props.originalAuthor}
+            onChange={props.setOriginalAuthor}
+          />
+        </Field>
+      </div>
+      <label className="flex items-center gap-2 text-[12px] text-[var(--color-fg-muted)]">
+        <input
+          type="checkbox"
+          checked={props.affiliate}
+          onChange={(e) => props.setAffiliate(e.target.checked)}
+        />
+        Solo afiliado / no instalable
+      </label>
+      <Field label="Descripción negocio">
+        <Textarea value={props.simpleBody} onChange={props.setSimpleBody} />
+      </Field>
+      <Field label="Descripción dev (opcional)">
+        <Textarea value={props.devBody} onChange={props.setDevBody} />
+      </Field>
+    </>
+  );
+}
+
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <label className="block text-[12px] font-medium text-[var(--color-fg-muted)]">
       {label}
-      {children}
-      {hint ? <span className="mt-1 block text-[11px] font-normal text-amber-500">{hint}</span> : null}
+      <div className="mt-1">{children}</div>
     </label>
+  );
+}
+
+function Input({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <input
+      value={value}
+      placeholder={placeholder}
+      onChange={(e) => onChange(e.target.value)}
+      className={CONTROL_CLASS}
+    />
+  );
+}
+
+function Textarea({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <textarea
+      value={value}
+      placeholder={placeholder}
+      onChange={(e) => onChange(e.target.value)}
+      rows={4}
+      className={`${CONTROL_CLASS} min-h-24`}
+    />
   );
 }
