@@ -12,53 +12,93 @@ interface LoopInfo {
 const LOOPS: LoopInfo[] = [
   {
     title: {
-      es: "Supervisión de integraciones",
-      en: "Integration supervision",
+      es: "Supervisión app: Conectores 4 IAs",
+      en: "App supervision: 4-AI connectors",
     },
     what: {
-      es: 'Es el que corre el botón "Correr ahora": revisa que todo lo instalable —connectors y skills— funcione en las 4 IAs (Claude, Codex, Gemini y GLM) y que el catálogo esté sano.',
-      en: 'This is the one behind the "Run now" button: it checks that everything installable — connectors and skills — works across the 4 AIs (Claude, Codex, Gemini and GLM), and that the catalog is healthy.',
+      es: "Corre connector-loop.yml en terminal-sync y verifica que los Conectores lleguen parejo a Claude, Codex, Gemini y GLM dentro de la app.",
+      en: "Runs connector-loop.yml in terminal-sync and verifies connector parity across Claude, Codex, Gemini and GLM inside the app.",
     },
     steps: {
       es: [
-        "Baja el catálogo que ve la app.",
-        "Chequea que nada prometa una IA a la que en realidad no llega.",
-        "Verifica que todo cubra las 4 IAs; si aparece algo nuevo que no cumple, lo frena.",
-        "Confirma que los plugins apunten a connectors y skills que existen de verdad.",
-        "Muestra la cobertura IA por IA. Verde = todo en orden; rojo = te dice exactamente qué falta.",
+        "Dispara el workflow del repo de la app.",
+        "Revisa paridad por IA.",
+        "Deja el run de GitHub como evidencia.",
       ],
       en: [
-        "Pulls the catalog the app actually sees.",
-        "Checks that nothing promises an AI it doesn't really reach.",
-        "Verifies everything covers all 4 AIs; if something new doesn't, it blocks it.",
-        "Confirms plugins point at connectors and skills that really exist.",
-        "Shows coverage AI by AI. Green = all good; red = tells you exactly what's missing.",
+        "Dispatches the app repo workflow.",
+        "Checks parity per AI.",
+        "Leaves the GitHub run as evidence.",
       ],
     },
   },
   {
     title: {
-      es: "Curación de connectors / skills / plugins / kits",
-      en: "Connector / skill / plugin / kit curation",
+      es: "Supervisión marketplace → app",
+      en: "Marketplace → app supervision",
     },
     what: {
-      es: "Son los loops que descubren candidatos nuevos: cada uno sale a buscar candidatos nuevos de su tipo, los evalúa, y deja listo un PR para revisar. No publica nada solo.",
-      en: "These are the loops that discover new candidates: each one goes out to find new candidates of its type, evaluates them, and leaves a PR ready for review. Nothing goes live on its own.",
+      es: "Corre integration-supervision-loop.yml en terminalsync-web: revisa catálogo servido, paridad ES/EN y consumo desde la app.",
+      en: "Runs integration-supervision-loop.yml in terminalsync-web: checks served catalog, ES/EN parity and app consumption.",
     },
     steps: {
       es: [
-        "Busca fuentes y candidatos.",
-        "Filtra por calidad y criterios.",
-        "Arma el archivo de catálogo (.md).",
-        'Abre un PR draft (y, si hace falta código en la app, su "PR espejo").',
-        "Anota el resultado para que quede registrado.",
+        "Lee el catálogo web publicado.",
+        "Cruza que la app pueda consumir lo mismo.",
+        "Marca faltantes antes de publicar cambios grandes.",
       ],
       en: [
-        "Looks for sources and candidates.",
-        "Filters by quality and criteria.",
+        "Reads the published web catalog.",
+        "Checks that the app can consume the same catalog.",
+        "Flags gaps before big publishing changes.",
+      ],
+    },
+  },
+  {
+    title: {
+      es: "Curación de Conectores, Plugins, Skills y Kits",
+      en: "Connector, Plugin, Skill and Kit curation",
+    },
+    what: {
+      es: "Son los loops que descubren candidatos por tipo, los evalúan y abren PRs draft para revisión. No publican nada solos.",
+      en: "These loops discover candidates by type, evaluate them and open draft PRs for review. Nothing goes live by itself.",
+    },
+    steps: {
+      es: [
+        "Buscan fuentes y candidatos.",
+        "Filtran por calidad y criterios.",
+        "Arma el archivo de catálogo (.md).",
+        "Abren un PR draft.",
+        "Anotan el resultado para que quede registrado.",
+      ],
+      en: [
+        "Look for sources and candidates.",
+        "Filter by quality and criteria.",
         "Builds the catalog file (.md).",
-        'Opens a draft PR (and, if the app needs code too, its "mirror PR").',
-        "Logs the result so it stays on record.",
+        "Open a draft PR.",
+        "Log the result so it stays on record.",
+      ],
+    },
+  },
+  {
+    title: {
+      es: "Herramientas CLI",
+      en: "CLI tools",
+    },
+    what: {
+      es: "Hoy se pueden agregar candidatos de Herramientas CLI por formulario. El loop automático queda visible como pendiente hasta crear cli-curation-loop.yml.",
+      en: "CLI tool candidates can be added through the form today. The automatic loop stays visible as pending until cli-curation-loop.yml exists.",
+    },
+    steps: {
+      es: [
+        "Creás el candidato CLI en el panel.",
+        "El PR queda oculto/pendiente hasta revisión.",
+        "Cuando exista el workflow CLI, el botón de curación se podrá correr desde el mismo panel.",
+      ],
+      en: [
+        "Create the CLI candidate in the panel.",
+        "The PR stays hidden/pending until review.",
+        "Once the CLI workflow exists, its curation button can run from the same panel.",
       ],
     },
   },
@@ -109,9 +149,15 @@ function LoopAccordionItem({ loop, isEs }: { loop: LoopInfo; isEs: boolean }) {
         className="flex w-full items-center gap-2 px-4 py-3 text-left text-[13.5px] font-medium text-[var(--color-fg-strong)]"
       >
         {open ? (
-          <ChevronDown size={14} className="shrink-0 text-[var(--color-fg-muted)]" />
+          <ChevronDown
+            size={14}
+            className="shrink-0 text-[var(--color-fg-muted)]"
+          />
         ) : (
-          <ChevronRight size={14} className="shrink-0 text-[var(--color-fg-muted)]" />
+          <ChevronRight
+            size={14}
+            className="shrink-0 text-[var(--color-fg-muted)]"
+          />
         )}
         {loop.title[lang]}
       </button>

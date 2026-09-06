@@ -90,6 +90,7 @@ async function readFileKit(
   const raw = fs.readFileSync(path.join(dir, file), "utf8");
   const { data, content } = matter(raw);
   const fm = data as Record<string, unknown>;
+  if (fm.hidden === true || fm.catalogReady === false) return null;
   if (stringValue(fm, "status") !== "available") return null;
 
   const refs = parseKitItems(fm.items);

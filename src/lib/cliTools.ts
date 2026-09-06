@@ -24,12 +24,7 @@ import html from "remark-html";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export type CliToolCategory =
-  | "dev"
-  | "deploy"
-  | "database"
-  | "payments"
-  | "infra"
-  | "productivity";
+  "dev" | "deploy" | "database" | "payments" | "infra" | "productivity";
 
 export interface CliToolMeta {
   slug: string;
@@ -108,6 +103,7 @@ function listCliToolsFromFiles(lang: string): CliToolMeta[] {
   for (const file of files) {
     const raw = fs.readFileSync(path.join(dir, file), "utf8");
     const { data } = matter(raw);
+    if (data.hidden === true || data.catalogReady === false) continue;
     metas.push(normalizeMeta(file.replace(/\.md$/, ""), data));
   }
   return metas;
@@ -187,6 +183,7 @@ export async function getCliTool(
   if (!fs.existsSync(file)) return null;
   const raw = fs.readFileSync(file, "utf8");
   const { data, content } = matter(raw);
+  if (data.hidden === true || data.catalogReady === false) return null;
   const bodyHtml = String(await remark().use(html).process(content));
   return { ...normalizeMeta(slug, data), bodyHtml };
 }
@@ -196,11 +193,19 @@ export async function listCliToolSlugs(): Promise<string[]> {
   if (!fs.existsSync(dir)) return [];
   return fs
     .readdirSync(dir)
-    .filter((f: string) => f.endsWith(".md"))
+    .filter((f: string) => {
+      if (!f.endsWith(".md")) return false;
+      const raw = fs.readFileSync(path.join(dir, f), "utf8");
+      const { data } = matter(raw);
+      return data.hidden !== true && data.catalogReady !== false;
+    })
     .map((f: string) => f.replace(/\.md$/, ""));
 }
 
-function normalizeMeta(slug: string, data: Record<string, unknown>): CliToolMeta {
+function normalizeMeta(
+  slug: string,
+  data: Record<string, unknown>,
+): CliToolMeta {
   const get = (k: string, fallback = ""): string =>
     (typeof data[k] === "string" ? (data[k] as string) : fallback).trim();
   const authCommand = get("authCommand") || undefined;
@@ -208,7 +213,7 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): CliToolMeta
     slug,
     name: get("name", slug),
     logo: get("logo", `/cli-tools/${slug}.svg`),
-    category: (get("category", "dev") as CliToolCategory),
+    category: get("category", "dev") as CliToolCategory,
     binary: get("binary", slug),
     installCommand: get("installCommand"),
     authCommand,
@@ -220,7 +225,7 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): CliToolMeta
     vendor: get("vendor", "Unknown"),
     homepage: get("homepage"),
     repo: get("repo") || undefined,
-    status: (get("status", "available") as CliToolMeta["status"]),
+    status: get("status", "available") as CliToolMeta["status"],
     tagline: get("tagline"),
     description: get("description"),
   };

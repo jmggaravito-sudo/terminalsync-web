@@ -3,9 +3,15 @@ import matter from "gray-matter";
 import {
   buildSkillFile,
   buildConnectorFile,
+  buildPluginFile,
+  buildKitFile,
+  buildCliToolFile,
   isValidSlug,
   type SkillCandidateInput,
   type ConnectorCandidateInput,
+  type PluginCandidateInput,
+  type KitCandidateInput,
+  type CliToolCandidateInput,
 } from "./candidateContent";
 import { manifestRequiresEnvSecrets } from "./secrets";
 
@@ -33,6 +39,63 @@ const baseConnector: ConnectorCandidateInput = {
   affiliate: false,
   npmPackage: "example-mcp-server",
   envKeys: ["EXAMPLE_API_KEY"],
+};
+
+const basePlugin: PluginCandidateInput = {
+  type: "plugin",
+  slug: "test-candidate-plugin",
+  name: "Test Candidate Plugin",
+  category: "productivity",
+  tagline: "A plugin tagline",
+  description: "A plugin description.",
+  connectorSlug: "test-candidate-connector",
+  skillSlugs: ["test-candidate-skill"],
+  whenToUse: "When a bundled workflow is better.",
+  whatItDoes: "It bundles a connector and a skill.",
+  howToUse: "Install it from TerminalSync.",
+};
+
+const baseKit: KitCandidateInput = {
+  type: "kit",
+  slug: "test-candidate-kit",
+  name: "Test Candidate Kit",
+  category: "operations",
+  tagline: "A kit tagline",
+  description: "A kit description.",
+  items: [
+    {
+      kind: "connector",
+      slug: "test-candidate-connector",
+      reason: "Reads source data.",
+    },
+    {
+      kind: "skill",
+      slug: "test-candidate-skill",
+      reason: "Turns the data into an action plan.",
+    },
+  ],
+  audience: "Ops teams.",
+  whatItDoes: "Ships a ready workflow.",
+  howToUse: "Open the kit and follow the steps.",
+  limits: "Needs review before launch.",
+};
+
+const baseCliTool: CliToolCandidateInput = {
+  type: "cli-tool",
+  slug: "test-cli",
+  name: "Test CLI",
+  category: "dev",
+  tagline: "A CLI tagline",
+  description: "A CLI description.",
+  binary: "test",
+  installCommand: "brew install test",
+  authCommand: "test login",
+  vendor: "Test Inc.",
+  homepage: "https://example.com",
+  repo: "https://github.com/example/test",
+  whatItDoes: "Runs commands locally.",
+  terminalSyncAdds: "Detects install/auth state.",
+  commonCommands: "test status",
 };
 
 describe("isValidSlug", () => {
@@ -96,7 +159,9 @@ describe("buildConnectorFile", () => {
     expect(data.affiliate).toBe(false);
     // Safety default — hides the candidate from /connectors until reviewed.
     expect(data.hidden).toBe(true);
-    expect(data.manifest?.mcpServers?.["test-candidate-connector"]).toMatchObject({
+    expect(
+      data.manifest?.mcpServers?.["test-candidate-connector"],
+    ).toMatchObject({
       command: "npx",
       args: ["-y", "example-mcp-server"],
       env: { EXAMPLE_API_KEY: "${SECRET:EXAMPLE_API_KEY}" },
@@ -107,7 +172,12 @@ describe("buildConnectorFile", () => {
 
   it("omits the manifest entirely for affiliate-only candidates", () => {
     const file = buildConnectorFile(
-      { ...baseConnector, affiliate: true, npmPackage: undefined, envKeys: undefined },
+      {
+        ...baseConnector,
+        affiliate: true,
+        npmPackage: undefined,
+        envKeys: undefined,
+      },
       "es",
     );
     const { data } = matter(file.content);
@@ -119,7 +189,9 @@ describe("buildConnectorFile", () => {
   it("omits the env block for an OAuth-style manifest (no secrets)", () => {
     const file = buildConnectorFile({ ...baseConnector, envKeys: [] }, "es");
     const { data } = matter(file.content);
-    expect(data.manifest.mcpServers["test-candidate-connector"].env).toBeUndefined();
+    expect(
+      data.manifest.mcpServers["test-candidate-connector"].env,
+    ).toBeUndefined();
     expect(manifestRequiresEnvSecrets(data.manifest)).toBe(false);
   });
 
@@ -129,5 +201,46 @@ describe("buildConnectorFile", () => {
       "es",
     );
     expect(file.content).toContain("\n--- dev ---\n");
+  });
+});
+
+describe("buildPluginFile", () => {
+  it("keeps plugin candidates hidden until reviewed", () => {
+    const file = buildPluginFile(basePlugin, "es");
+    expect(file.path).toBe("content/plugins/es/test-candidate-plugin.md");
+
+    const { data, content } = matter(file.content);
+    expect(data.hidden).toBe(true);
+    expect(data.catalogReady).toBe(false);
+    expect(data.connectorSlug).toBe("test-candidate-connector");
+    expect(data.skillSlugs).toEqual(["test-candidate-skill"]);
+    expect(content).toContain("## Cuándo usarlo");
+  });
+});
+
+describe("buildKitFile", () => {
+  it("creates pending kit candidates with typed items", () => {
+    const file = buildKitFile(baseKit, "es");
+    expect(file.path).toBe("content/kits/es/test-candidate-kit.md");
+
+    const { data, content } = matter(file.content);
+    expect(data.status).toBe("soon");
+    expect(data.items).toEqual(baseKit.items);
+    expect(content).toContain("connector:test-candidate-connector");
+  });
+});
+
+describe("buildCliToolFile", () => {
+  it("keeps CLI tool candidates hidden until reviewed", () => {
+    const file = buildCliToolFile(baseCliTool, "es");
+    expect(file.path).toBe("content/cli-tools/es/test-cli.md");
+
+    const { data, content } = matter(file.content);
+    expect(data.hidden).toBe(true);
+    expect(data.catalogReady).toBe(false);
+    expect(data.binary).toBe("test");
+    expect(data.installCommand).toBe("brew install test");
+    expect(data.authCommand).toBe("test login");
+    expect(content).toContain("```bash\ntest status\n```");
   });
 });

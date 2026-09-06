@@ -5,61 +5,149 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/**
- * Panel A of /admin/integraciones — "Correr loops".
- *
- * POST → dispatches the `connector-loop.yml` GitHub Actions workflow in the
- *        `terminal-sync` repo (the multi-AI connector-parity supervisor:
- *        Claude/Codex/Gemini/GLM — see project memory
- *        "Connectors multi-IA gap"). GitHub answers 204 with no body on
- *        success; we normalize that to { ok: true }.
- * GET  → reads the workflow's latest run (status/conclusion/url/created_at)
- *        so the client can poll without hitting GitHub directly, plus the
- *        most recent `loop_runs` row (if Supabase is configured) as a
- *        secondary reinforcement signal. Both come back best-effort; a
- *        Supabase hiccup never breaks the GitHub Actions status.
- *
- * Auth: same Bearer access_token + ADMIN_EMAILS allowlist as every other
- * /api/admin route (see src/lib/marketplace/auth.ts).
- *
- * Token: INTEGRATIONS_GH_TOKEN if set, else OPS_GITHUB_TOKEN as a fallback
- * (same var src/lib/ops/reports.ts uses for the read-only /admin/ops/reports
- * page). IMPORTANT: OPS_GITHUB_TOKEN today is scoped Contents:Read +
- * Actions:Read only against jmggaravito-sudo/terminal-sync — enough for the
- * GET here, NOT enough for the POST dispatch below, which needs
- * Actions:Read+Write. Until JM either upgrades OPS_GITHUB_TOKEN's scope or
- * creates a dedicated INTEGRATIONS_GH_TOKEN with that scope, "Correr ahora"
- * will fail with a GitHub 403/404. See the PR description for the exact env
- * change needed — this route only documents it, it doesn't create the token.
- */
-
+const WEB_REPO = "terminalsync-web";
+const APP_REPO = "terminal-sync";
 const OWNER = "jmggaravito-sudo";
-const REPO = "terminal-sync";
-const WORKFLOW = "connector-loop.yml";
-const DISPATCH_REF = "release/v0.2.18-lab";
+const DEFAULT_LOOP_ID = "app-connector-parity";
 
 interface GithubToken {
   value: string;
   source: "INTEGRATIONS_GH_TOKEN" | "OPS_GITHUB_TOKEN";
 }
 
+interface LoopConfig {
+  id: string;
+  kind: string;
+  title: { es: string; en: string };
+  description: { es: string; en: string };
+  repo: string;
+  workflow: string | null;
+  ref: string;
+  acceptsFocus?: boolean;
+  acceptsDryRun?: boolean;
+  disabledReason?: { es: string; en: string };
+}
+
+const LOOP_CONFIGS: LoopConfig[] = [
+  {
+    id: "app-connector-parity",
+    kind: "supervision",
+    title: {
+      es: "Supervisión app: Conectores 4 IAs",
+      en: "App supervision: 4-AI connectors",
+    },
+    description: {
+      es: "Corre connector-loop.yml en terminal-sync y verifica paridad Claude/Codex/Gemini/GLM dentro de la app.",
+      en: "Runs connector-loop.yml in terminal-sync and verifies Claude/Codex/Gemini/GLM parity in the app.",
+    },
+    repo: APP_REPO,
+    workflow: "connector-loop.yml",
+    ref: "release/v0.2.18-lab",
+  },
+  {
+    id: "marketplace-supervision",
+    kind: "supervision",
+    title: {
+      es: "Supervisión marketplace → app",
+      en: "Marketplace → app supervision",
+    },
+    description: {
+      es: "Corre integration-supervision-loop.yml: catálogo servido, paridad EN/ES y consumo desde la app.",
+      en: "Runs integration-supervision-loop.yml: served catalog, EN/ES parity and app consumption.",
+    },
+    repo: WEB_REPO,
+    workflow: "integration-supervision-loop.yml",
+    ref: "main",
+  },
+  {
+    id: "connectors-curation",
+    kind: "connectors",
+    title: { es: "Curación de Conectores", en: "Connector curation" },
+    description: {
+      es: "Busca candidatos de Conectores, crea PR draft y registra el resultado en loop_runs.",
+      en: "Finds connector candidates, opens a draft PR and records the result in loop_runs.",
+    },
+    repo: WEB_REPO,
+    workflow: "connector-curation-loop.yml",
+    ref: "main",
+    acceptsFocus: true,
+    acceptsDryRun: true,
+  },
+  {
+    id: "plugins-curation",
+    kind: "plugins",
+    title: { es: "Curación de Plugins", en: "Plugin curation" },
+    description: {
+      es: "Arma Plugins como paquete Conector + Skill(s), crea PR draft y deja evidencia.",
+      en: "Builds plugins as connector + skill(s) packages, opens a draft PR and leaves evidence.",
+    },
+    repo: WEB_REPO,
+    workflow: "plugin-curation-loop.yml",
+    ref: "main",
+    acceptsFocus: true,
+    acceptsDryRun: true,
+  },
+  {
+    id: "skills-curation",
+    kind: "skills",
+    title: { es: "Curación de Skills", en: "Skill curation" },
+    description: {
+      es: "Moldea/evalúa Skills, crea PR draft y registra slugs publicados o diferidos.",
+      en: "Shapes/evaluates skills, opens a draft PR and records shipped or deferred slugs.",
+    },
+    repo: WEB_REPO,
+    workflow: "skill-curation-loop.yml",
+    ref: "main",
+    acceptsFocus: true,
+    acceptsDryRun: true,
+  },
+  {
+    id: "kits-curation",
+    kind: "kits",
+    title: { es: "Curación de Kits", en: "Kit curation" },
+    description: {
+      es: "Crea Kits que combinan Conectores, Skills y Herramientas CLI para un flujo real de negocio.",
+      en: "Creates kits that combine connectors, skills and CLI tools for a real business workflow.",
+    },
+    repo: WEB_REPO,
+    workflow: "kit-curation-loop.yml",
+    ref: "main",
+    acceptsFocus: true,
+    acceptsDryRun: true,
+  },
+  {
+    id: "cli-curation",
+    kind: "cli-tools",
+    title: { es: "Curación de Herramientas CLI", en: "CLI tools curation" },
+    description: {
+      es: "Pendiente: todavía no hay workflow activo cli-curation-loop.yml; sí se pueden agregar candidatos de Herramientas CLI por formulario.",
+      en: "Pending: there is no active cli-curation-loop.yml workflow yet; CLI candidates can still be added through the form.",
+    },
+    repo: WEB_REPO,
+    workflow: null,
+    ref: "main",
+    disabledReason: {
+      es: "No existe un workflow activo de curación CLI. El cron viejo promote-cli está deshabilitado.",
+      en: "No active CLI curation workflow exists. The old promote-cli cron is disabled.",
+    },
+  },
+];
+
 async function requireAdmin(req: Request) {
   const user = await authenticate(req);
-  if (!user || !isAdmin(user)) {
+  if (!user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isAdmin(user))
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
   return null;
 }
 
 function readToken(): GithubToken | null {
   const integrationsToken = process.env.INTEGRATIONS_GH_TOKEN?.trim();
-  if (integrationsToken) {
+  if (integrationsToken)
     return { value: integrationsToken, source: "INTEGRATIONS_GH_TOKEN" };
-  }
   const opsToken = process.env.OPS_GITHUB_TOKEN?.trim();
-  if (opsToken) {
-    return { value: opsToken, source: "OPS_GITHUB_TOKEN" };
-  }
+  if (opsToken) return { value: opsToken, source: "OPS_GITHUB_TOKEN" };
   return null;
 }
 
@@ -89,13 +177,6 @@ export interface IntegracionesRunStatus {
   created_at: string;
 }
 
-/** Thrown only when GitHub answers 404 for the workflow-runs lookup — i.e.
- *  `connector-loop.yml` doesn't exist yet on `DISPATCH_REF` (PR #1603 not
- *  merged into release yet). The GET handler treats this as "no runs yet",
- *  not as an error. Any other non-2xx keeps throwing a plain Error, which
- *  the GET handler still turns into a 502. */
-class WorkflowNotFoundError extends Error {}
-
 interface WorkflowUnavailableDetails {
   code: "github_workflow_unavailable";
   message: string;
@@ -108,21 +189,22 @@ interface WorkflowUnavailableDetails {
 class WorkflowUnavailableError extends Error {
   details: WorkflowUnavailableDetails;
 
-  constructor(token: GithubToken, causeText?: string) {
-    const repo = `${OWNER}/${REPO}`;
+  constructor(loop: LoopConfig, token: GithubToken, causeText?: string) {
+    const repo = `${OWNER}/${loop.repo}`;
+    const workflow = loop.workflow ?? "(sin workflow)";
     const message =
-      `GitHub no deja ver/despachar ${WORKFLOW} en ${repo}. ` +
-      `En producción se está usando ${token.source}; para "Correr ahora" ` +
+      `GitHub no deja ver/despachar ${workflow} en ${repo}. ` +
+      `En producción se está usando ${token.source}; para correr este loop ` +
       `ese token debe tener permiso Actions: Read and write sobre ${repo} ` +
-      `y el workflow debe existir en ${DISPATCH_REF}.`;
+      `y el workflow debe existir en ${loop.ref}.`;
     super(causeText ? `${message} (${causeText.slice(0, 240)})` : message);
     this.details = {
       code: "github_workflow_unavailable",
       message,
       tokenSource: token.source,
-      workflow: WORKFLOW,
+      workflow,
       repo,
-      ref: DISPATCH_REF,
+      ref: loop.ref,
     };
   }
 }
@@ -134,9 +216,14 @@ interface GithubWorkflowMetadata {
   state: string;
 }
 
-async function fetchWorkflowMetadata(token: GithubToken): Promise<GithubWorkflowMetadata> {
+async function fetchWorkflowMetadata(
+  loop: LoopConfig,
+  token: GithubToken,
+): Promise<GithubWorkflowMetadata> {
+  if (!loop.workflow)
+    throw new WorkflowUnavailableError(loop, token, "workflow_not_configured");
   const res = await fetch(
-    `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW}`,
+    `https://api.github.com/repos/${OWNER}/${loop.repo}/actions/workflows/${loop.workflow}`,
     {
       headers: { ...baseHeaders(token), Accept: "application/vnd.github+json" },
       cache: "no-store",
@@ -144,27 +231,33 @@ async function fetchWorkflowMetadata(token: GithubToken): Promise<GithubWorkflow
   );
   if (res.ok) return (await res.json()) as GithubWorkflowMetadata;
   const text = await res.text().catch(() => "");
-  if (res.status === 404) throw new WorkflowUnavailableError(token, text);
-  throw new Error(`GitHub ${res.status}${text ? `: ${text.slice(0, 300)}` : ""}`);
+  if (res.status === 404) throw new WorkflowUnavailableError(loop, token, text);
+  throw new Error(
+    `GitHub ${res.status}${text ? `: ${text.slice(0, 300)}` : ""}`,
+  );
 }
 
-async function fetchLatestRun(token: GithubToken): Promise<IntegracionesRunStatus | null> {
-  const workflow = await fetchWorkflowMetadata(token);
+async function fetchLatestRun(
+  loop: LoopConfig,
+  token: GithubToken,
+): Promise<IntegracionesRunStatus | null> {
+  if (!loop.workflow) return null;
+  const workflow = await fetchWorkflowMetadata(loop, token);
+  const params = new URLSearchParams({ per_page: "1", branch: loop.ref });
   const res = await fetch(
-    `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${workflow.id}/runs?per_page=1`,
+    `https://api.github.com/repos/${OWNER}/${loop.repo}/actions/workflows/${workflow.id}/runs?${params}`,
     {
       headers: { ...baseHeaders(token), Accept: "application/vnd.github+json" },
       cache: "no-store",
     },
   );
-  if (res.status === 404) {
-    throw new WorkflowNotFoundError(
-      `GitHub 404: workflow ${WORKFLOW} not found on ${OWNER}/${REPO} yet`,
-    );
-  }
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`GitHub ${res.status}${text ? `: ${text.slice(0, 300)}` : ""}`);
+    if (res.status === 404)
+      throw new WorkflowUnavailableError(loop, token, text);
+    throw new Error(
+      `GitHub ${res.status}${text ? `: ${text.slice(0, 300)}` : ""}`,
+    );
   }
   const json = (await res.json()) as GhRunsResponse;
   const run = json.workflow_runs?.[0];
@@ -184,24 +277,52 @@ export interface LastLoopRun {
   pr_url: string | null;
 }
 
-/** Best-effort: the connector-loop.yml result may not land in `loop_runs`
- *  at all (that table today tracks the marketplace item-discovery loops +
- *  the landing↔app supervision loop — see supabase/migrations/0022-0026).
- *  We surface whatever the most recent row is as a reinforcement hint, not
- *  as ground truth for this specific workflow. Never throws. */
-async function fetchLatestLoopRun(): Promise<LastLoopRun | null> {
+async function fetchLatestLoopRun(kind?: string): Promise<LastLoopRun | null> {
   const sb = getSupabaseAdmin();
   if (!sb) return null;
   try {
-    const { data, error } = await sb
+    let query = sb
       .from("loop_runs")
       .select("id, ran_at, kind, pr_url")
       .order("ran_at", { ascending: false })
       .limit(1);
+    if (kind && kind !== "supervision") query = query.eq("kind", kind);
+    const { data, error } = await query;
     if (error || !data || data.length === 0) return null;
     return data[0] as LastLoopRun;
   } catch {
     return null;
+  }
+}
+
+interface LoopStatus extends LoopConfig {
+  run: IntegracionesRunStatus | null;
+  lastLoopRun: LastLoopRun | null;
+  workflowMissing?: boolean;
+  setupError?: WorkflowUnavailableDetails;
+}
+
+async function buildLoopStatus(
+  loop: LoopConfig,
+  token: GithubToken,
+): Promise<LoopStatus> {
+  const lastLoopRunPromise = fetchLatestLoopRun(loop.kind);
+  try {
+    const run = await fetchLatestRun(loop, token);
+    const lastLoopRun = await lastLoopRunPromise;
+    return { ...loop, run, lastLoopRun };
+  } catch (err) {
+    const lastLoopRun = await lastLoopRunPromise;
+    if (err instanceof WorkflowUnavailableError) {
+      return {
+        ...loop,
+        run: null,
+        lastLoopRun,
+        workflowMissing: true,
+        setupError: err.details,
+      };
+    }
+    throw err;
   }
 }
 
@@ -220,32 +341,20 @@ export async function GET(req: Request) {
     );
   }
 
-  // Kick off both lookups concurrently; fetchLatestLoopRun() never throws
-  // (best-effort, see its own doc comment) so it's safe to await from
-  // either branch below without a second try/catch.
-  const lastLoopRunPromise = fetchLatestLoopRun();
-
   try {
-    const run = await fetchLatestRun(token);
-    const lastLoopRun = await lastLoopRunPromise;
-    return NextResponse.json({ run, lastLoopRun });
+    const loops = await Promise.all(
+      LOOP_CONFIGS.map((loop) => buildLoopStatus(loop, token)),
+    );
+    const primary =
+      loops.find((loop) => loop.id === DEFAULT_LOOP_ID) ?? loops[0];
+    return NextResponse.json({
+      loops,
+      run: primary.run,
+      lastLoopRun: primary.lastLoopRun,
+      workflowMissing: primary.workflowMissing,
+      setupError: primary.setupError,
+    });
   } catch (err) {
-    if (err instanceof WorkflowUnavailableError) {
-      const lastLoopRun = await lastLoopRunPromise;
-      return NextResponse.json({
-        run: null,
-        lastLoopRun,
-        workflowMissing: true,
-        setupError: err.details,
-      });
-    }
-    if (err instanceof WorkflowNotFoundError) {
-      // connector-loop.yml isn't on release yet (PR #1603 unmerged) — this
-      // is "no runs yet", not a failure. 200, not 502, so the client panel
-      // renders normally instead of showing a load error.
-      const lastLoopRun = await lastLoopRunPromise;
-      return NextResponse.json({ run: null, lastLoopRun, workflowMissing: true });
-    }
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Error desconocido" },
       { status: 502 },
@@ -262,16 +371,43 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         error:
-          "Falta INTEGRATIONS_GH_TOKEN (o OPS_GITHUB_TOKEN) en el servidor. Ese token necesita scope Actions: Read+Write sobre jmggaravito-sudo/terminal-sync — ver la nota del PR.",
+          "Falta INTEGRATIONS_GH_TOKEN (o OPS_GITHUB_TOKEN) en el servidor. Ese token necesita scope Actions: Read+Write sobre los repos de los loops.",
       },
       { status: 500 },
     );
   }
 
+  let body: unknown = null;
   try {
-    const workflow = await fetchWorkflowMetadata(token);
+    body = await req.json();
+  } catch {
+    body = null;
+  }
+  const raw =
+    body && typeof body === "object" ? (body as Record<string, unknown>) : {};
+  const loopId = typeof raw.loopId === "string" ? raw.loopId : DEFAULT_LOOP_ID;
+  const loop = LOOP_CONFIGS.find((candidate) => candidate.id === loopId);
+  if (!loop)
+    return NextResponse.json(
+      { error: `Loop desconocido: ${loopId}` },
+      { status: 400 },
+    );
+  if (!loop.workflow || loop.disabledReason) {
+    return NextResponse.json(
+      { error: loop.disabledReason?.es ?? "Loop no configurado.", loop },
+      { status: 409 },
+    );
+  }
+
+  try {
+    const workflow = await fetchWorkflowMetadata(loop, token);
+    const inputs: Record<string, string | boolean> = {};
+    if (loop.acceptsFocus && typeof raw.focus === "string" && raw.focus.trim())
+      inputs.focus = raw.focus.trim();
+    if (loop.acceptsDryRun) inputs.dry_run = raw.dryRun === true;
+
     const res = await fetch(
-      `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${workflow.id}/dispatches`,
+      `https://api.github.com/repos/${OWNER}/${loop.repo}/actions/workflows/${workflow.id}/dispatches`,
       {
         method: "POST",
         headers: {
@@ -279,12 +415,13 @@ export async function POST(req: Request) {
           Accept: "application/vnd.github+json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ref: DISPATCH_REF }),
+        body: JSON.stringify({
+          ref: loop.ref,
+          ...(Object.keys(inputs).length ? { inputs } : {}),
+        }),
       },
     );
 
-    // GitHub historically answered 204 with no body; newer API versions may
-    // answer 200 and include the run URLs. Treat any 2xx as success.
     if (res.ok) {
       const text = await res.text().catch(() => "");
       let payload: unknown = null;
@@ -297,13 +434,15 @@ export async function POST(req: Request) {
       }
       return NextResponse.json({
         ok: true,
+        loopId: loop.id,
         workflowId: workflow.id,
         dispatch: payload,
       });
     }
 
     const text = await res.text().catch(() => "");
-    if (res.status === 404) throw new WorkflowUnavailableError(token, text);
+    if (res.status === 404)
+      throw new WorkflowUnavailableError(loop, token, text);
     return NextResponse.json(
       { error: `GitHub ${res.status}${text ? `: ${text.slice(0, 500)}` : ""}` },
       { status: 502 },
