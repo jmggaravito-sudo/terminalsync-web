@@ -9,7 +9,11 @@ name: Connector Curation Loop
 # See: https://code.claude.com/docs/en/github-actions
 #
 # Required repo secrets:
-#   ZAI_API_KEY        Direct Claude API key for anthropics/claude-code-action@v1.
+#   Z_AI_API_KEY       API key de Z.ai (modelos GLM), que se le pasa a
+#                      anthropics/claude-code-action@v1 por su entrada
+#                      anthropic_api_key. NO es una key de Anthropic: el
+#                      comentario anterior decía "Direct Claude API key" y
+#                      mandó a más de uno a buscarla en console.anthropic.com.
 #   LOOP_RUNS_WRITE_TOKEN    Shared bearer token accepted by /api/internal/loop-runs.
 #   TS_CROSS_REPO_TOKEN      Optional PAT/app token that can create the required app mirror PR in jmggaravito-sudo/terminal-sync.
 
@@ -62,7 +66,7 @@ jobs:
       - name: Dry-run preflight smoke
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run == true }}
         env:
-          ZAI_API_KEY: ${{ secrets.ZAI_API_KEY }}
+          ZAI_API_KEY: ${{ secrets.Z_AI_API_KEY }}
           LOOP_RUNS_ENDPOINT: https://terminalsync.ai/api/internal/loop-runs
           LOOP_RUNS_WRITE_TOKEN: ${{ secrets.LOOP_RUNS_WRITE_TOKEN }}
           TS_CROSS_REPO_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
@@ -101,7 +105,7 @@ jobs:
           TERMINALSYNC_APP_BASE_BRANCH: release/v0.2.18-lab
           TS_CROSS_REPO_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
         with:
-          anthropic_api_key: ${{ secrets.ZAI_API_KEY }}
+          anthropic_api_key: ${{ secrets.Z_AI_API_KEY }}
           base_branch: main
           branch_prefix: loop/connectors/
           prompt: |
