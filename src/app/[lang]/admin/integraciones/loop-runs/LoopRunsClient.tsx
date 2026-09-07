@@ -139,7 +139,7 @@ export function LoopRunsClient() {
             Tenés que estar logueado para ver este historial.{" "}
             <a
               className="underline"
-              href={`/es/login?next=${encodeURIComponent("/es/admin/ops/loop-runs")}`}
+              href={`/es/login?next=${encodeURIComponent("/es/admin/integraciones/loop-runs")}`}
             >
               Entrar →
             </a>

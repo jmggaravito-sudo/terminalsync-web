@@ -38,13 +38,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * curación, para que JM sepa qué dispara antes de tocar "Correr ahora".
  *
  * Thin server shell; toda la lógica de auth + fetch vive en cada client
- * component, igual que /admin/mercadopago y /admin/ops/loop-runs.
+ * component, igual que /admin/mercadopago y /admin/integraciones/loop-runs.
  */
 export default async function IntegracionesPage({ params }: Props) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
+  const isEs = lang === "es";
   return (
     <>
+      <section className="mx-auto max-w-5xl px-4 sm:px-6 pt-6">
+        <nav className="flex flex-wrap gap-2">
+          <a
+            href={`/${lang}/admin/integraciones/loop-runs`}
+            className="admin-ops-nav-button inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors"
+          >
+            🔁 {isEs ? "Corridas del Loop" : "Loop runs"}
+          </a>
+        </nav>
+      </section>
       <IntegracionesClient lang={lang} />
       <AgregarCandidatoPanel lang={lang} />
       <LoopsInfoSection lang={lang} />

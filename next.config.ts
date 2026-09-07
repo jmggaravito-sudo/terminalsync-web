@@ -117,6 +117,13 @@ const config: NextConfig = {
         destination: "/es/stacks",
         permanent: true,
       },
+      // Loop runs se movió de Ops a Integraciones (2026-09-07) — redirect
+      // 301 para bookmarks y links viejos a /admin/ops/loop-runs.
+      {
+        source: "/:lang/admin/ops/loop-runs",
+        destination: "/:lang/admin/integraciones/loop-runs",
+        permanent: true,
+      },
     ];
   },
 };

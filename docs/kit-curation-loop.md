@@ -34,4 +34,4 @@ node scripts/record_loop_run.mjs \
   --pr "https://github.com/jmggaravito-sudo/terminalsync-web/pull/123"
 ```
 
-`/admin/ops/loop-runs` links kit slugs to `/es/stacks/<slug>`.
+`/admin/integraciones/loop-runs` links kit slugs to `/es/stacks/<slug>`.

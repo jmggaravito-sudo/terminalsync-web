@@ -53,7 +53,7 @@ Number semantics:
 
 - `--found`: plugins added/promoted in this run.
 - `--skipped`: candidate plugins documented as SKIP/deferred in this run.
-- `--items`: landing slugs for the plugins added/promoted, so `/admin/ops/loop-runs` can show direct `/es/plugins/<slug>` links.
+- `--items`: landing slugs for the plugins added/promoted, so `/admin/integraciones/loop-runs` can show direct `/es/plugins/<slug>` links.
 
 ## Landing-first sync gate
 
@@ -119,4 +119,4 @@ Focus input: "TaxBandits, QuickBooks, Odoo, Xero, 1099, W-9, W-2, payroll tax fi
   - `zapier` — the connector exists and is `available`, but it is a many-to-many automation hub (9,000+ apps), not a single product with one usage pattern. No skill in `content/skills/{en,es}` teaches a specific Zapier workflow, and forcing a generic skill (e.g. Internal Comms) onto it would misrepresent a broad automation hub as a one-product Plugin. Deferred: a future Skill Loop candidate could target one concrete Zapier workflow (e.g. "capture a lead into a sheet + task"); until then this is not a Plugin.
   - `notebooklm` — no connector for NotebookLM exists in `content/connectors/{en,es}` or `content/connectors/SOURCES.md`. This is a Connector Loop task first (source the official NotebookLM MCP/API surface, if one exists) — the Plugin Loop does not source new connectors.
 - Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` + `tsc --noEmit`.
-- Landing/web PR and app mirror PR opened per `docs/integration-loop-two-pr-policy.md`; see `/admin/ops/loop-runs` for the recorded run.
+- Landing/web PR and app mirror PR opened per `docs/integration-loop-two-pr-policy.md`; see `/admin/integraciones/loop-runs` for the recorded run.
