@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { Loader2, PlusCircle, ExternalLink } from "lucide-react";
+import { Loader2, PlusCircle, ExternalLink, Sparkles } from "lucide-react";
 import { authedFetch, getSupabaseBrowser } from "@/lib/supabase/browser";
 import {
   SKILL_CATEGORIES,
@@ -111,6 +111,10 @@ function CandidateForm({ isEs }: { isEs: boolean }) {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<SuccessResult | null>(null);
 
+  const [researching, setResearching] = useState(false);
+  const [researchError, setResearchError] = useState<string | null>(null);
+  const [researchSources, setResearchSources] = useState<string[]>([]);
+
   const categories =
     type === "skill"
       ? SKILL_CATEGORIES
@@ -130,6 +134,108 @@ function CandidateForm({ isEs }: { isEs: boolean }) {
   function onNameChange(v: string) {
     setName(v);
     if (!slugTouched) setSlug(slugify(v));
+  }
+
+  /** Aplica la ficha investigada a los campos del formulario. Solo pisa lo
+   *  que la sugerencia trae con contenido: si el modelo no encontró el
+   *  paquete npm, lo que ya hubiera escrito el dueño se queda. */
+  function applySuggestion(s: Record<string, unknown>) {
+    const text = (k: string) => (typeof s[k] === "string" ? (s[k] as string) : "");
+    const put = (v: string, set: (x: string) => void) => {
+      if (v) set(v);
+    };
+
+    put(text("name"), setName);
+    if (text("slug")) {
+      setSlugTouched(true);
+      setSlug(text("slug"));
+    }
+    // La categoría solo entra si es una de las válidas para este tipo — la
+    // ruta ya la filtra, pero el select se rompe visualmente con un valor
+    // que no está en sus opciones.
+    if ((categories as readonly string[]).includes(text("category"))) {
+      setCategory(text("category"));
+    }
+    if (s.status === "available" || s.status === "soon") setStatus(s.status);
+    put(text("tagline"), setTagline);
+    put(text("license"), setLicense);
+    put(text("description"), setDescription);
+
+    put(text("whenToUse"), setWhenToUse);
+    put(text("whatItDoes"), setWhatItDoes);
+    put(text("howToUse"), setHowToUse);
+    put(text("author"), setAuthor);
+
+    put(text("simpleSubtitle"), setSimpleSubtitle);
+    put(text("simpleBody"), setSimpleBody);
+    put(text("devBody"), setDevBody);
+    put(text("ctaUrl"), setCtaUrl);
+    if (typeof s.affiliate === "boolean") setAffiliate(s.affiliate);
+    put(text("npmPackage"), setNpmPackage);
+    if (Array.isArray(s.envKeys) && s.envKeys.length > 0) {
+      setEnvKeysRaw(s.envKeys.filter((k) => typeof k === "string").join(", "));
+    }
+    put(text("tokenHelpUrl"), setTokenHelpUrl);
+    put(text("originalAuthor"), setOriginalAuthor);
+
+    put(text("connectorSlug"), setConnectorSlug);
+    if (Array.isArray(s.skillSlugs) && s.skillSlugs.length > 0) {
+      setSkillSlugs(s.skillSlugs.filter((k) => typeof k === "string").join(", "));
+    }
+    if (Array.isArray(s.items) && s.items.length > 0) {
+      setKitItems(
+        s.items
+          .map((raw) => {
+            const it = raw as { kind?: string; slug?: string; reason?: string };
+            return `${it.kind}|${it.slug}|${it.reason}`;
+          })
+          .join("\n"),
+      );
+    }
+    put(text("audience"), setAudience);
+    put(text("limits"), setLimits);
+
+    put(text("binary"), setBinary);
+    put(text("installCommand"), setInstallCommand);
+    put(text("authCommand"), setAuthCommand);
+    put(text("vendor"), setVendor);
+    put(text("homepage"), setHomepage);
+    put(text("repo"), setRepo);
+    put(text("terminalSyncAdds"), setTerminalSyncAdds);
+    put(text("commonCommands"), setCommonCommands);
+  }
+
+  async function research() {
+    setResearchError(null);
+    setResearchSources([]);
+    if (!name.trim()) {
+      return setResearchError(
+        isEs
+          ? "Escribe el nombre de la herramienta antes de investigar."
+          : "Type the tool name before researching.",
+      );
+    }
+    setResearching(true);
+    try {
+      const res = await authedFetch(
+        "/api/admin/integraciones/candidate/suggest",
+        { method: "POST", body: JSON.stringify({ name: name.trim(), type }) },
+      );
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? `API ${res.status}`);
+      applySuggestion(json.suggestion as Record<string, unknown>);
+      setResearchSources(
+        Array.isArray(json.sources)
+          ? (json.sources as unknown[]).filter(
+              (u): u is string => typeof u === "string",
+            )
+          : [],
+      );
+    } catch (e) {
+      setResearchError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setResearching(false);
+    }
   }
 
   async function submit() {
@@ -258,6 +364,70 @@ function CandidateForm({ isEs }: { isEs: boolean }) {
               </button>
             ),
           )}
+        </div>
+
+        <div className="mt-5 rounded-xl border border-dashed border-[var(--color-border-strong)] p-4">
+          <p className="text-[13px] text-[var(--color-fg-muted)]">
+            {isEs
+              ? "Escribe solo el nombre y deja que la IA investigue el resto: sitio oficial, paquete npm, variables de entorno y descripciones. Pre-llena el formulario; tú revisas antes de crear el PR."
+              : "Type just the name and let the AI research the rest: official site, npm package, env vars and copy. It pre-fills the form; you review before creating the PR."}
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <input
+              value={name}
+              onChange={(e) => onNameChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") void research();
+              }}
+              placeholder={isEs ? "Ej: Dapta" : "e.g. Dapta"}
+              className={`${CONTROL_CLASS} max-w-xs`}
+            />
+            <button
+              type="button"
+              onClick={() => void research()}
+              disabled={researching}
+              className="inline-flex items-center gap-2 rounded-xl border border-[var(--color-accent)] px-4 py-2 text-[13px] font-semibold text-[var(--color-accent)] disabled:opacity-50"
+            >
+              {researching ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Sparkles size={14} />
+              )}
+              {researching
+                ? isEs
+                  ? "Investigando…"
+                  : "Researching…"
+                : isEs
+                  ? "Investigar y pre-llenar con IA"
+                  : "Research and pre-fill with AI"}
+            </button>
+          </div>
+          {researchError ? (
+            <div className="mt-3 rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-[12.5px] text-red-400">
+              {researchError}
+            </div>
+          ) : null}
+          {researchSources.length > 0 ? (
+            <div className="mt-3 text-[12px] text-[var(--color-fg-muted)]">
+              <span className="font-medium">
+                {isEs ? "Fuentes consultadas" : "Sources consulted"}:
+              </span>
+              <ul className="mt-1 space-y-0.5">
+                {researchSources.slice(0, 8).map((u) => (
+                  <li key={u}>
+                    <a
+                      href={u}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline break-all"
+                    >
+                      {u}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
 
         <div className="mt-5 grid gap-4 md:grid-cols-2">
