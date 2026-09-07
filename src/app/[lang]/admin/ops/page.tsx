@@ -37,12 +37,6 @@ export default async function AdminOps({ params }: Props) {
             📇 {isEs ? "Cola de outreach" : "Outreach queue"}
           </a>
           <a
-            href={`/${lang}/admin/ops/loop-runs`}
-            className="admin-ops-nav-button inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors"
-          >
-            🔁 {isEs ? "Corridas del Loop" : "Loop runs"}
-          </a>
-          <a
             href={`/${lang}/admin/ops/reports`}
             className="admin-ops-nav-button inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors"
           >

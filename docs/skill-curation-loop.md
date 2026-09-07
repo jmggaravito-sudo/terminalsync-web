@@ -34,4 +34,4 @@ node scripts/record_loop_run.mjs \
   --pr "https://github.com/jmggaravito-sudo/terminalsync-web/pull/123"
 ```
 
-`/admin/ops/loop-runs` links skill slugs to `/es/skills/<slug>`.
+`/admin/integraciones/loop-runs` links skill slugs to `/es/skills/<slug>`.

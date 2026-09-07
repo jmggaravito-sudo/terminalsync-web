@@ -54,7 +54,7 @@ El body debe incluir:
 - found/skipped counts
 - slugs shipeados/promovidos (`--items`), para que el reporte de ops linkee a
   `/es/connectors`, `/es/plugins`, `/es/stacks` o `/es/skills`
-- dónde aparece la corrida: `/admin/ops/loop-runs`
+- dónde aparece la corrida: `/admin/integraciones/loop-runs`
 - `App PR: <url>` **o** `App PR: no aplica — la app consume el catálogo`
 
 ### 2. PR de la app — solo si hay código
@@ -87,7 +87,7 @@ declarara**; ahora depende de que **sea cierta**.
 
 ## Si la automatización no puede abrir el PR del landing
 
-1. Registrá el bloqueo en el log del loop y en `/admin/ops/loop-runs`.
+1. Registrá el bloqueo en el log del loop y en `/admin/integraciones/loop-runs`.
 2. **No reportes el ítem como listo.** Sin contenido publicado no hay ítem —
    lo que existe es un borrador.
 3. Nunca compenses con un PR de la app que "espeje" contenido inexistente. Eso
@@ -95,5 +95,5 @@ declarara**; ahora depende de que **sea cierta**.
 
 ## Loop report
 
-`/admin/ops/loop-runs` sigue siendo el menú compartido de los cuatro loops:
+`/admin/integraciones/loop-runs` sigue siendo el menú compartido de los cuatro loops:
 Connectors, Plugins, Kits y Skills. Cada corrida registra `--kind` y `--items`.
