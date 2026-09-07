@@ -310,9 +310,9 @@ export default function LinkedinLeadsQueue({ lang }: { lang: string }) {
 
   if (auth === "checking") {
     return (
-      <div style={{ padding: "48px 24px", fontFamily: "system-ui, sans-serif", color: "#000", background: "#fff", minHeight: "60vh" }}>
+      <div style={{ padding: "48px 24px", fontFamily: "system-ui, sans-serif", color: "var(--color-fg)", background: "var(--color-bg)", minHeight: "60vh" }}>
         <p style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Verificando sesión admin…</p>
-        <a href={loginHref} style={{ display: "inline-flex", marginTop: 14, background: "#fff", color: "#000", border: "1px solid #000", padding: "10px 14px", borderRadius: 10, fontWeight: 800, textDecoration: "none" }}>
+        <a href={loginHref} style={{ display: "inline-flex", marginTop: 14, background: "var(--color-bg)", color: "var(--color-fg)", border: "1px solid var(--color-border-strong)", padding: "10px 14px", borderRadius: 10, fontWeight: 800, textDecoration: "none" }}>
           Iniciar sesión y abrir cola
         </a>
       </div>
@@ -320,10 +320,10 @@ export default function LinkedinLeadsQueue({ lang }: { lang: string }) {
   }
   if (auth === "anon") {
     return (
-      <div style={{ padding: "48px 24px", fontFamily: "system-ui, sans-serif", color: "#000", background: "#fff", minHeight: "60vh" }}>
+      <div style={{ padding: "48px 24px", fontFamily: "system-ui, sans-serif", color: "var(--color-fg)", background: "var(--color-bg)", minHeight: "60vh" }}>
         <p style={{ fontSize: 18, fontWeight: 800 }}>Esta cola requiere sesión admin.</p>
         <p style={{ marginTop: 16 }}>
-          <a href={loginHref} style={{ display: "inline-flex", background: "#fff", color: "#000", border: "1px solid #000", padding: "10px 14px", borderRadius: 10, fontWeight: 800, textDecoration: "none" }}>
+          <a href={loginHref} style={{ display: "inline-flex", background: "var(--color-bg)", color: "var(--color-fg)", border: "1px solid var(--color-border-strong)", padding: "10px 14px", borderRadius: 10, fontWeight: 800, textDecoration: "none" }}>
             Iniciar sesión y abrir cola
           </a>
         </p>
@@ -332,7 +332,7 @@ export default function LinkedinLeadsQueue({ lang }: { lang: string }) {
   }
   if (auth === "forbidden") {
     return (
-      <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "#f0b3b3" }}>
+      <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "var(--color-err)" }}>
         Tu cuenta no tiene permisos de admin. Verificá que tu email esté en ADMIN_EMAILS.
       </div>
     );
@@ -341,8 +341,16 @@ export default function LinkedinLeadsQueue({ lang }: { lang: string }) {
   return (
     <div className="ll">
       <style>{`
-        .ll{--bg:#0d1117;--panel:#161b22;--panel2:#1c232c;--line:#2a3340;--ink:#e6edf3;--ink2:#8b98a8;--ink3:#5d6b7a;
-          --acc:#0a66c2;--acc-ink:#ffffff;
+        /* Los alias de esta pantalla derivan de los tokens de tema del sitio
+           (globals.css). Antes eran hex oscuros fijos, así que el panel
+           ignoraba el toggle sol/luna del header y se veía negro también en
+           modo claro. Los colores de canal/estado siguen siendo fijos —no son
+           tokens de tema— pero cuando se usan como TEXTO se mezclan con
+           --color-fg: en oscuro aclara, en claro oscurece, y contrastan en
+           los dos sin duplicar la hoja de estilos. */
+        .ll{--bg:var(--color-bg);--panel:var(--color-panel);--panel2:var(--color-panel-2);
+          --line:var(--color-border);--ink:var(--color-fg);--ink2:var(--color-fg-muted);--ink3:var(--color-fg-dim);
+          --acc:#0a66c2;--acc-ink:#ffffff;--acc-text:color-mix(in oklch, #0a66c2 60%, var(--color-fg));
           --mono:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,monospace;--sans:'Inter',system-ui,sans-serif;
           font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:100vh;}
         .ll *{box-sizing:border-box;}
@@ -354,7 +362,9 @@ export default function LinkedinLeadsQueue({ lang }: { lang: string }) {
           padding:9px 14px;cursor:pointer;border-radius:6px 6px 0 0;}
         .ll-tab[data-on="1"]{color:var(--ink);background:var(--panel);box-shadow:inset 0 -2px 0 var(--acc);}
         .ll-body{padding:22px;max-width:1200px;margin:0 auto;}
-        .errbar{margin:0 22px;padding:10px 18px;background:#3a1c1c;color:#f0b3b3;font-family:var(--mono);font-size:12px;border-radius:8px;}
+        .errbar{margin:0 22px;padding:10px 18px;background:color-mix(in oklch, var(--color-err) 13%, var(--bg));
+          color:color-mix(in oklch, var(--color-err) 68%, var(--color-fg));font-family:var(--mono);font-size:12px;
+          border:1px solid color-mix(in oklch, var(--color-err) 42%, var(--bg));border-radius:8px;}
         .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;}
         .lbl{font-family:var(--mono);font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;display:block;}
         .inp,.sel,.txt{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);
@@ -410,7 +420,7 @@ export default function LinkedinLeadsQueue({ lang }: { lang: string }) {
         .toggle{background:none;border:none;color:var(--acc);font-family:var(--mono);font-size:11px;cursor:pointer;
           padding:0;margin-top:8px;}
         .settings-actions{display:flex;align-items:center;gap:12px;margin-top:6px;}
-        .saved-ok{color:#4ade80;font-family:var(--mono);font-size:12px;}
+        .saved-ok{color:color-mix(in oklch, var(--color-ok) 68%, var(--color-fg));font-family:var(--mono);font-size:12px;}
       `}</style>
 
       <div className="ll-hd">

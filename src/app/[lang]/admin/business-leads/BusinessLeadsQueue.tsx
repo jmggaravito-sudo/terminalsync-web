@@ -179,9 +179,9 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
 
   if (auth === "checking") {
     return (
-      <div style={{ padding: "48px 24px", fontFamily: "system-ui, sans-serif", color: "#000", background: "#fff", minHeight: "60vh" }}>
+      <div style={{ padding: "48px 24px", fontFamily: "system-ui, sans-serif", color: "var(--color-fg)", background: "var(--color-bg)", minHeight: "60vh" }}>
         <p style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Verificando sesión admin…</p>
-        <a href={loginHref} style={{ display: "inline-flex", marginTop: 14, background: "#fff", color: "#000", border: "1px solid #000", padding: "10px 14px", borderRadius: 10, fontWeight: 800, textDecoration: "none" }}>
+        <a href={loginHref} style={{ display: "inline-flex", marginTop: 14, background: "var(--color-bg)", color: "var(--color-fg)", border: "1px solid var(--color-border-strong)", padding: "10px 14px", borderRadius: 10, fontWeight: 800, textDecoration: "none" }}>
           Iniciar sesión y abrir cola
         </a>
       </div>
@@ -189,10 +189,10 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
   }
   if (auth === "anon") {
     return (
-      <div style={{ padding: "48px 24px", fontFamily: "system-ui, sans-serif", color: "#000", background: "#fff", minHeight: "60vh" }}>
+      <div style={{ padding: "48px 24px", fontFamily: "system-ui, sans-serif", color: "var(--color-fg)", background: "var(--color-bg)", minHeight: "60vh" }}>
         <p style={{ fontSize: 18, fontWeight: 800 }}>Esta cola requiere sesión admin.</p>
         <p style={{ marginTop: 16 }}>
-          <a href={loginHref} style={{ display: "inline-flex", background: "#fff", color: "#000", border: "1px solid #000", padding: "10px 14px", borderRadius: 10, fontWeight: 800, textDecoration: "none" }}>
+          <a href={loginHref} style={{ display: "inline-flex", background: "var(--color-bg)", color: "var(--color-fg)", border: "1px solid var(--color-border-strong)", padding: "10px 14px", borderRadius: 10, fontWeight: 800, textDecoration: "none" }}>
             Iniciar sesión y abrir cola
           </a>
         </p>
@@ -201,7 +201,7 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
   }
   if (auth === "forbidden") {
     return (
-      <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "#f0b3b3" }}>
+      <div style={{ padding: "48px 24px", fontFamily: "monospace", color: "var(--color-err)" }}>
         Tu cuenta no tiene permisos de admin. Verificá que tu email esté en ADMIN_EMAILS.
       </div>
     );
@@ -221,8 +221,16 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
   return (
     <div className="bl">
       <style>{`
-        .bl{--bg:#0d1117;--panel:#161b22;--panel2:#1c232c;--line:#2a3340;--ink:#e6edf3;--ink2:#8b98a8;--ink3:#5d6b7a;
-          --acc:#25d366;--acc-ink:#0d1117;
+        /* Los alias de esta pantalla derivan de los tokens de tema del sitio
+           (globals.css). Antes eran hex oscuros fijos, así que el panel
+           ignoraba el toggle sol/luna del header y se veía negro también en
+           modo claro. Los colores de canal/estado siguen siendo fijos —no son
+           tokens de tema— pero cuando se usan como TEXTO se mezclan con
+           --color-fg: en oscuro aclara, en claro oscurece, y contrastan en
+           los dos sin duplicar la hoja de estilos. */
+        .bl{--bg:var(--color-bg);--panel:var(--color-panel);--panel2:var(--color-panel-2);
+          --line:var(--color-border);--ink:var(--color-fg);--ink2:var(--color-fg-muted);--ink3:var(--color-fg-dim);
+          --acc:#25d366;--acc-ink:#0d1117;--acc-text:color-mix(in oklch, #25d366 60%, var(--color-fg));
           --mono:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,monospace;--sans:'Inter',system-ui,sans-serif;
           font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:100vh;display:grid;
           grid-template-columns:1fr 420px;gap:0;}
@@ -248,7 +256,9 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
         .searchbar button{background:var(--acc);color:var(--acc-ink);border:none;font-family:var(--sans);
           font-size:13px;font-weight:600;padding:9px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;}
         .searchbar button:disabled{opacity:.5;cursor:not-allowed;}
-        .searchresult{padding:8px 22px;background:#0d2a16;color:#9ff0b2;font-family:var(--mono);font-size:11.5px;border-bottom:1px solid #1f7a34;}
+        .searchresult{padding:8px 22px;background:color-mix(in oklch, var(--color-ok) 13%, var(--bg));
+          color:color-mix(in oklch, var(--color-ok) 68%, var(--color-fg));font-family:var(--mono);font-size:11.5px;
+          border-bottom:1px solid color-mix(in oklch, var(--color-ok) 42%, var(--bg));}
         .list{flex:1;overflow:auto;}
         .row{display:grid;grid-template-columns:1fr auto;gap:8px;padding:13px 18px;border-bottom:1px solid var(--line);
           cursor:pointer;align-items:center;}
@@ -259,7 +269,9 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
         .pill{font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:5px;border:1px solid var(--line);color:var(--ink2);}
         .rating{font-family:var(--mono);font-size:12px;color:var(--ink2);text-align:right;white-space:nowrap;}
         .empty{padding:60px 24px;text-align:center;color:var(--ink3);font-family:var(--mono);font-size:13px;}
-        .errbar{padding:10px 18px;background:#3a1c1c;color:#f0b3b3;font-family:var(--mono);font-size:12px;border-bottom:1px solid #5a2a2a;}
+        .errbar{padding:10px 18px;background:color-mix(in oklch, var(--color-err) 13%, var(--bg));
+          color:color-mix(in oklch, var(--color-err) 68%, var(--color-fg));font-family:var(--mono);font-size:12px;
+          border-bottom:1px solid color-mix(in oklch, var(--color-err) 42%, var(--bg));}
         .col-detail{background:var(--panel);min-height:100vh;display:flex;flex-direction:column;}
         .dt-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--ink3);
           font-family:var(--mono);font-size:13px;padding:40px;text-align:center;}
@@ -272,7 +284,7 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
         .field{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px;}
         .field .k{color:var(--ink3);font-family:var(--mono);font-size:11.5px;}
         .field .v{color:var(--ink);text-align:right;}
-        .field a{color:var(--acc);text-decoration:none;}
+        .field a{color:var(--acc-text);text-decoration:none;}
         .notes{width:100%;min-height:100px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);
           font-family:var(--sans);font-size:13.5px;line-height:1.5;padding:12px;resize:vertical;margin-top:14px;}
         .notes:focus{outline:2px solid var(--acc);outline-offset:1px;}
@@ -290,8 +302,13 @@ export default function BusinessLeadsQueue({ lang }: { lang: string }) {
         .msgta:focus{outline:2px solid var(--acc);outline-offset:1px;}
         .acts{padding:16px 24px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px;}
         .act-row{display:flex;gap:9px;flex-wrap:wrap;}
+        /* 'transition:.12s' era 'all'. Con los colores ya derivados de tokens de
+           tema, cualquier propiedad de color en transición se queda pegada al
+           valor del tema anterior hasta el siguiente toggle (verificado en el
+           navegador: el fondo del botón seguía claro en modo oscuro). Solo se
+           anima 'filter', que es lo único del hover que no sale de un var(). */
         .btn{flex:1;font-family:var(--sans);font-size:13px;font-weight:600;padding:11px;border-radius:8px;
-          cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--ink);transition:.12s;min-width:120px;}
+          cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--ink);transition:filter .12s;min-width:120px;}
         .btn:hover:not(:disabled){border-color:var(--ink3);}
         .btn:disabled{opacity:.5;cursor:not-allowed;}
         .btn.primary{background:var(--acc);color:var(--acc-ink);border-color:var(--acc);}
