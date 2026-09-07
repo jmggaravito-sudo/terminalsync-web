@@ -4,7 +4,11 @@
 
 import * as Sentry from "@sentry/nextjs";
 
-const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+// Vercel env vars pasted with an accidental line break inside the value
+// produce a DSN with an embedded "\n" — Sentry.init() then throws and, if
+// unguarded, that takes the whole app down. Strip whitespace defensively
+// so a malformed env var degrades to "monitoring disabled", not a 500.
+const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN?.replace(/\s+/g, "");
 
 if (dsn) {
   Sentry.init({
