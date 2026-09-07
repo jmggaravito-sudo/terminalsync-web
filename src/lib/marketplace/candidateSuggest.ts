@@ -455,3 +455,101 @@ ${FIELD_SPEC[type]}`;
 
   return { system, user };
 }
+
+// ── credenciales y endpoint ───────────────────────────────────────────────
+
+/** Endpoint compatible con Anthropic de Z.ai/BigModel. Es el mismo host que
+ *  los workflows de curación usan para validar la key
+ *  (`open.bigmodel.cn/api/paas/v4/models`), con la ruta `/api/anthropic` en
+ *  vez de `/api/paas/v4` — esa distinción es la trampa clásica: la URL de
+ *  PaaS existe y contesta, pero no habla el protocolo de Anthropic. */
+export const ZAI_DEFAULT_BASE_URL = "https://open.bigmodel.cn/api/anthropic";
+
+export const ANTHROPIC_DEFAULT_MODEL = "claude-opus-5";
+
+export interface SuggestRuntimeEnv {
+  ZAI_API_KEY?: string;
+  Z_AI_API_KEY?: string;
+  ANTHROPIC_API_KEY?: string;
+  CANDIDATE_SUGGEST_BASE_URL?: string;
+  CANDIDATE_SUGGEST_MODEL?: string;
+  CANDIDATE_SUGGEST_WEB_SEARCH?: string;
+}
+
+export type SuggestRuntime =
+  | {
+      ok: true;
+      provider: "zai" | "anthropic";
+      apiKey: string;
+      baseURL?: string;
+      model: string;
+      webSearch: boolean;
+    }
+  | { ok: false; error: string };
+
+/**
+ * Decide con qué credencial, endpoint y modelo se llama al modelo.
+ *
+ * La key elegida decide el endpoint, no al revés. Antes las tres variables
+ * eran independientes y se podían combinar mal: poner la base URL de Z.ai
+ * sin su key hacía que la key de Anthropic viajara a Z.ai y devolviera 401,
+ * o sea que una variable suelta rompía un camino que funcionaba. Ahora la
+ * key manda: si hay key de Z.ai se usa su endpoint por defecto, y si no, el
+ * de Anthropic.
+ *
+ * Se aceptan los dos nombres de la key de Z.ai porque en este proyecto
+ * conviven: el secret de GitHub se llama `Z_AI_API_KEY` y los workflows de
+ * curación leen `ZAI_API_KEY`. No es una preferencia de estilo — es un
+ * nombre que ya se escribió de las dos formas, y el que se equivoque no se
+ * entera hasta que algo falla en silencio.
+ */
+export function resolveSuggestRuntime(env: SuggestRuntimeEnv): SuggestRuntime {
+  const trim = (v: string | undefined) => v?.trim() || "";
+  const zaiKey = trim(env.ZAI_API_KEY) || trim(env.Z_AI_API_KEY);
+  const anthropicKey = trim(env.ANTHROPIC_API_KEY);
+  const baseOverride = trim(env.CANDIDATE_SUGGEST_BASE_URL);
+  const modelOverride = trim(env.CANDIDATE_SUGGEST_MODEL);
+  const webSearchSetting = trim(env.CANDIDATE_SUGGEST_WEB_SEARCH).toLowerCase();
+
+  if (zaiKey) {
+    if (!modelOverride) {
+      // No hay default posible: los ids de GLM cambian de nombre entre
+      // versiones y uno inventado da 404 recién al apretar el botón. Mejor
+      // un error que lo dice que una llamada que falla sin explicación.
+      return {
+        ok: false,
+        error:
+          "Hay key de Z.ai configurada pero falta CANDIDATE_SUGGEST_MODEL. Z.ai sirve modelos GLM, no Claude: poné ahí el id exacto del modelo (se listan con: curl https://open.bigmodel.cn/api/paas/v4/models -H \"Authorization: Bearer <key>\").",
+      };
+    }
+    return {
+      ok: true,
+      provider: "zai",
+      apiKey: zaiKey,
+      baseURL: baseOverride || ZAI_DEFAULT_BASE_URL,
+      model: modelOverride,
+      // La búsqueda web es una server tool de Anthropic: un gateway de GLM
+      // no la tiene. Se apaga sola para no gastar el primer intento, y se
+      // puede forzar con CANDIDATE_SUGGEST_WEB_SEARCH=on si algún día la
+      // implementan.
+      webSearch: webSearchSetting === "on",
+    };
+  }
+
+  if (anthropicKey) {
+    return {
+      ok: true,
+      provider: "anthropic",
+      apiKey: anthropicKey,
+      baseURL: baseOverride || undefined,
+      model: modelOverride || ANTHROPIC_DEFAULT_MODEL,
+      webSearch: webSearchSetting !== "off",
+    };
+  }
+
+  return {
+    ok: false,
+    error:
+      "Falta la API key en el servidor: configurá ZAI_API_KEY (o Z_AI_API_KEY) junto con CANDIDATE_SUGGEST_MODEL, o bien ANTHROPIC_API_KEY, en las variables de entorno de Vercel.",
+  };
+}
