@@ -405,6 +405,20 @@ describe("GET /api/marketplace/catalog", () => {
     }
   });
 
+  it("serves TopView MCP as a remote/user-managed catalog item in both languages", async () => {
+    for (const lang of ["en", "es"] as const) {
+      const { body } = await callCatalog(lang);
+      const topview = body.connectors.find((c) => c.slug === "topview");
+      expect(topview, `${lang} topview should be in the catalog`).toBeDefined();
+      expect(topview!.name).toBe("TopView MCP");
+      expect(topview!.ctaUrl).toBe("https://www.topview.ai/mcp");
+      expect(topview!.hasManifest).toBe(false);
+      expect(topview!.requiresEnvSecrets).toBe(false);
+      expect(topview!.description).toContain("https://mcp.topview.ai/mcp");
+      expect(topview!.description).toContain("Campaign Workspace");
+    }
+  });
+
   it("exposes description (markdown body) and tokenHelpUrl on the catalog connector entries", async () => {
     // 2026-06-24: the desktop Lab's detail panel was rendering a near-
     // empty card because the catalog only exposed `tagline` (a 1-liner).
