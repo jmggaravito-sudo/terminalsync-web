@@ -6,6 +6,7 @@ import {
   extractJsonObject,
   isCandidateType,
   normalizeSuggestion,
+  resolveSuggestRuntime,
 } from "@/lib/marketplace/candidateSuggest";
 
 export const runtime = "nodejs";
@@ -42,17 +43,19 @@ export const maxDuration = 300;
  * `https://open.bigmodel.cn/api/paas/v4/models` — es una key de Z.ai/GLM,
  * no de Anthropic, aunque el comentario del workflow diga otra cosa.
  *
- * Así que esto lee ZAI_API_KEY primero (como se pidió) y cae a
- * ANTHROPIC_API_KEY, y deja el endpoint y el modelo como configuración:
+ * Así que la key elegida decide el endpoint (ver `resolveSuggestRuntime` en
+ * `candidateSuggest.ts`, que es donde vive esa decisión y sus tests):
  *
- * - `CANDIDATE_SUGGEST_BASE_URL` — apuntar al gateway compatible de Z.ai si
- *   la key es de Z.ai. Sin esto, la key de Z.ai contra api.anthropic.com da
- *   401.
- * - `CANDIDATE_SUGGEST_MODEL` — por defecto `claude-opus-5`. Un gateway que
- *   no sea Anthropic sirve otros modelos; se cambia acá, sin tocar código.
- * - `CANDIDATE_SUGGEST_WEB_SEARCH=off` — apaga la búsqueda web. La ruta ya
- *   reintenta sola sin herramientas si el endpoint las rechaza, pero si el
- *   gateway no las soporta conviene apagarla y ahorrarse el primer intento.
+ * - Con key de Z.ai (`ZAI_API_KEY` o `Z_AI_API_KEY` — el secret de GitHub se
+ *   llama con guiones bajos y los workflows lo leen sin ellos, así que se
+ *   aceptan los dos): endpoint `https://open.bigmodel.cn/api/anthropic` por
+ *   defecto, `CANDIDATE_SUGGEST_MODEL` obligatoria (Z.ai sirve GLM, no
+ *   Claude, y los ids cambian entre versiones), y búsqueda web apagada
+ *   porque es una server tool de Anthropic que un gateway de GLM no tiene.
+ * - Con `ANTHROPIC_API_KEY`: endpoint de Anthropic, modelo `claude-opus-5`,
+ *   búsqueda web encendida.
+ * - `CANDIDATE_SUGGEST_BASE_URL` y `CANDIDATE_SUGGEST_WEB_SEARCH` siguen
+ *   existiendo para forzar cualquiera de las dos cosas.
  *
  * No se manda `temperature`: está removido en Claude Opus 5 y devuelve 400.
  * El determinismo del formato lo da el contrato de JSON del prompt más la
@@ -60,7 +63,6 @@ export const maxDuration = 300;
  * los enums.
  */
 
-const DEFAULT_MODEL = "claude-opus-5";
 const MAX_TOOL_ROUNDS = 6;
 
 interface ResolvedClient {
@@ -69,20 +71,26 @@ interface ResolvedClient {
   webSearch: boolean;
 }
 
+/** La decisión de credencial/endpoint/modelo vive en `candidateSuggest.ts`
+ *  (pura y con tests); acá solo se construye el cliente con lo que decidió. */
 function resolveClient(): ResolvedClient | { error: string } {
-  const apiKey =
-    process.env.ZAI_API_KEY?.trim() || process.env.ANTHROPIC_API_KEY?.trim();
-  if (!apiKey) {
-    return {
-      error:
-        "Falta ZAI_API_KEY (o ANTHROPIC_API_KEY) en el servidor. Configúrala en las variables de entorno de Vercel para usar la investigación con IA.",
-    };
-  }
-  const baseURL = process.env.CANDIDATE_SUGGEST_BASE_URL?.trim() || undefined;
+  const runtime = resolveSuggestRuntime({
+    ZAI_API_KEY: process.env.ZAI_API_KEY,
+    Z_AI_API_KEY: process.env.Z_AI_API_KEY,
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+    CANDIDATE_SUGGEST_BASE_URL: process.env.CANDIDATE_SUGGEST_BASE_URL,
+    CANDIDATE_SUGGEST_MODEL: process.env.CANDIDATE_SUGGEST_MODEL,
+    CANDIDATE_SUGGEST_WEB_SEARCH: process.env.CANDIDATE_SUGGEST_WEB_SEARCH,
+  });
+  if (!runtime.ok) return { error: runtime.error };
   return {
-    client: new Anthropic(baseURL ? { apiKey, baseURL } : { apiKey }),
-    model: process.env.CANDIDATE_SUGGEST_MODEL?.trim() || DEFAULT_MODEL,
-    webSearch: process.env.CANDIDATE_SUGGEST_WEB_SEARCH?.trim() !== "off",
+    client: new Anthropic(
+      runtime.baseURL
+        ? { apiKey: runtime.apiKey, baseURL: runtime.baseURL }
+        : { apiKey: runtime.apiKey },
+    ),
+    model: runtime.model,
+    webSearch: runtime.webSearch,
   };
 }
 
@@ -260,7 +268,7 @@ export async function POST(req: Request) {
 
 function describeError(err: unknown): string {
   if (err instanceof Anthropic.AuthenticationError) {
-    return "La API key configurada fue rechazada. Si ZAI_API_KEY es una key de Z.ai, configura también CANDIDATE_SUGGEST_BASE_URL apuntando a su endpoint compatible con Anthropic — ver la nota de la ruta.";
+    return "La API key configurada fue rechazada por el endpoint. Si es una key de Z.ai, revisá que CANDIDATE_SUGGEST_BASE_URL apunte a su endpoint compatible con Anthropic (por defecto https://open.bigmodel.cn/api/anthropic) y que la key sea de ese mismo servicio.";
   }
   if (err instanceof Anthropic.RateLimitError) {
     return "El modelo está limitando las llamadas ahora mismo. Espera un momento y prueba de nuevo.";
