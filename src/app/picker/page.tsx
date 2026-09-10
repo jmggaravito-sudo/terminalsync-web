@@ -12,43 +12,47 @@ const pickerDeveloperKey =
 const copy = {
   en: {
     eyebrow: "Secure Google Drive access",
-    title: "Choose a Google Drive folder",
+    title: "Choose Google Drive files",
     subtitle:
-      "Terminal Sync receives access only to the folder you choose. Keep this tab open until Google Drive appears.",
+      "Terminal Sync receives access only to the files you choose. Keep this tab open until Google Drive appears.",
     preparing: "Preparing Google Picker…",
     opening: "Opening Google Drive…",
     open: "Google Drive is open. Choose a folder to continue.",
-    openMultiselect: "Google Drive is open. Click each file or folder you want to import — you can pick more than one. Hold Cmd (or Ctrl) to add items; Shift+click to pick a range.",
+    openMultiselect: "Google Drive is open. Choose one or more files. Folders are only for navigation and cannot be selected here. Hold Cmd (or Ctrl) to add files; Shift+click to pick a range.",
     retry: "Open picker again",
     cancel: "Cancel",
-    selectedTitle: "Folder selected",
+    selectedTitle: "Selection ready",
     selected: "You can return to Terminal Sync.",
-    selectedDetail: "Sending your selection securely…",
+    selectedDetail: "Terminal Sync is receiving your Google Drive selection securely.",
+    returnToApp: "Return to Terminal Sync",
+    filesOnly: "Choose files, not folders. To continue, select one or more files from Google Drive.",
     missingCallback: "Missing callback data from Terminal Sync. Close this tab and try again.",
     missingToken: "Missing Google access token. Return to Terminal Sync and try again.",
     missingConfig: "Google Picker is missing its access key or client id.",
-    noFolder: "Google did not return a folder. Try again.",
+    noFolder: "Google did not return a valid selection. Try again.",
     loadError: "Google Picker failed to load.",
     timeout: "Google Picker timed out.",
   },
   es: {
     eyebrow: "Acceso seguro a Google Drive",
-    title: "Elige una carpeta de Google Drive",
+    title: "Elige archivos de Google Drive",
     subtitle:
-      "Terminal Sync recibe acceso solo a la carpeta que elijas. Mantén esta pestaña abierta hasta que aparezca Google Drive.",
+      "Terminal Sync recibe acceso solo a los archivos que elijas. Mantén esta pestaña abierta hasta que aparezca Google Drive.",
     preparing: "Preparando Google Picker…",
     opening: "Abriendo Google Drive…",
     open: "Google Drive está abierto. Elige una carpeta para continuar.",
-    openMultiselect: "Google Drive está abierto. Hacé click en cada archivo o carpeta que querés importar — podés elegir varios. Mantené Cmd (o Ctrl) presionado para sumar elementos; Shift+click para un rango.",
+    openMultiselect: "Google Drive está abierto. Elige uno o varios archivos. Las carpetas solo sirven para navegar y no se seleccionan en este paso. Mantén Cmd (o Ctrl) para sumar archivos; Shift+click para un rango.",
     retry: "Abrir selector otra vez",
     cancel: "Cancelar",
-    selectedTitle: "Carpeta seleccionada",
+    selectedTitle: "Selección lista",
     selected: "Ya puedes volver a Terminal Sync.",
-    selectedDetail: "Enviando tu selección de forma segura…",
+    selectedDetail: "Terminal Sync está recibiendo tu selección de Google Drive de forma segura.",
+    returnToApp: "Volver a Terminal Sync",
+    filesOnly: "Elige archivos, no carpetas. Para continuar, selecciona uno o varios archivos de Google Drive.",
     missingCallback: "Faltan datos de retorno de Terminal Sync. Cierra esta pestaña e intenta de nuevo.",
     missingToken: "Falta el acceso a Google. Vuelve a Terminal Sync e intenta de nuevo.",
     missingConfig: "Google Picker no tiene access key o client id configurado.",
-    noFolder: "Google no devolvió una carpeta. Intenta de nuevo.",
+    noFolder: "Google no devolvió una selección válida. Intenta de nuevo.",
     loadError: "Google Picker no pudo cargar.",
     timeout: "Google Picker tardó demasiado en cargar.",
   },
@@ -130,6 +134,8 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
             );
           };
 
+          let pendingReturnToTerminalSync = null;
+
           function params() {
             const search = new URLSearchParams(window.location.search);
             const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
@@ -180,20 +186,29 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
             else if (p.redirect) safeRedirect(p.redirect, { state: p.state, error: 'cancelled' });
           }
 
-          function showSelectedAndReturn(p, doc) {
+          function showReturnState(extra) {
             if (titleEl) titleEl.textContent = COPY.selectedTitle;
             if (subtitleEl) subtitleEl.textContent = COPY.selected;
             if (successIconEl) successIconEl.classList.remove('hidden');
             if (successIconEl) successIconEl.classList.add('inline-flex');
-            if (actionsEl) actionsEl.classList.add('hidden');
+            if (actionsEl) actionsEl.classList.remove('hidden');
+            if (retryEl) retryEl.textContent = COPY.returnToApp;
+            if (cancelEl) cancelEl.classList.add('hidden');
             setStatus(COPY.selectedDetail, 'success');
-            window.setTimeout(function () {
-              safeRedirect(p.redirect, {
-                state: p.state,
-                folderId: doc.id,
-                folderName: doc.name || 'Google Drive',
-              });
-            }, 1200);
+          }
+
+          function returnToTerminalSync(p, extra) {
+            safeRedirect(p.redirect, Object.assign({ state: p.state }, extra));
+          }
+
+          function showSelectedAndReturn(p, doc) {
+            const extra = {
+              folderId: doc.id,
+              folderName: doc.name || 'Google Drive',
+            };
+            showReturnState(extra);
+            pendingReturnToTerminalSync = function () { returnToTerminalSync(p, extra); };
+            window.setTimeout(function () { returnToTerminalSync(p, extra); }, 1200);
           }
 
           // Multi-file equivalent of showSelectedAndReturn. Sends the
@@ -202,12 +217,6 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
           // "{id, name, mimeType?, parentId?}" — small enough to fit in
           // a URL even for a few hundred files.
           function showSelectedFilesAndReturn(p, docs) {
-            if (titleEl) titleEl.textContent = COPY.selectedTitle;
-            if (subtitleEl) subtitleEl.textContent = COPY.selected;
-            if (successIconEl) successIconEl.classList.remove('hidden');
-            if (successIconEl) successIconEl.classList.add('inline-flex');
-            if (actionsEl) actionsEl.classList.add('hidden');
-            setStatus(COPY.selectedDetail, 'success');
             const items = docs.map(function (d) {
               return {
                 id: d.id,
@@ -216,12 +225,10 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
                 parentId: (d.parentId || (d.parents && d.parents[0]) || ''),
               };
             });
-            window.setTimeout(function () {
-              safeRedirect(p.redirect, {
-                state: p.state,
-                files: JSON.stringify(items),
-              });
-            }, 1200);
+            const extra = { files: JSON.stringify(items) };
+            showReturnState(extra);
+            pendingReturnToTerminalSync = function () { returnToTerminalSync(p, extra); };
+            window.setTimeout(function () { returnToTerminalSync(p, extra); }, 1200);
           }
 
           function openPicker() {
@@ -252,19 +259,13 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
                   const isFilesMode = p.mode === 'files';
                   const view = isFilesMode
                     ? new picker.DocsView(picker.ViewId.DOCS)
-                        // JM 2026-06-10: en este modo el cliente puede
-                        // elegir archivos sueltos Y/O carpetas enteras (la
-                        // carpeta seleccionada se importa completa). Hasta
-                        // hoy las carpetas eran solo navegacionales; el
-                        // único item seleccionable era un archivo. JM
-                        // reportó que necesitaba poder marcar una carpeta
-                        // sin tener que entrar y elegir cada archivo a mano.
-                        // El callback ya devuelve mimeType por item, así
-                        // que el caller puede distinguir folder de file via
-                        // application/vnd.google-apps.folder.
+                        // In files mode, folders are only for navigation.
+                        // TerminalSync imports explicit files from this step;
+                        // allowing folder selection makes Google accept an item
+                        // that TerminalSync must reject later.
                         .setParent('root')
                         .setIncludeFolders(true)
-                        .setSelectFolderEnabled(true)
+                        .setSelectFolderEnabled(false)
                     : new picker.DocsView(picker.ViewId.FOLDERS)
                         // Start at My Drive root so the user navigates folder hierarchy instead
                         // of seeing every folder flattened into one long list.
@@ -288,6 +289,13 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
                         const docs = data.docs || [];
                         if (docs.length === 0) {
                           setStatus(COPY.noFolder, 'error');
+                          return;
+                        }
+                        const invalid = docs.filter(function (d) {
+                          return d && d.mimeType === 'application/vnd.google-apps.folder';
+                        });
+                        if (invalid.length > 0) {
+                          setStatus(COPY.filesOnly, 'error');
                           return;
                         }
                         showSelectedFilesAndReturn(p, docs);
@@ -322,7 +330,13 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
             });
           }
 
-          retryEl && retryEl.addEventListener('click', openPicker);
+          retryEl && retryEl.addEventListener('click', function () {
+            if (pendingReturnToTerminalSync) {
+              pendingReturnToTerminalSync();
+              return;
+            }
+            openPicker();
+          });
           cancelEl && cancelEl.addEventListener('click', cancel);
           if (window.location.hostname === 'www.terminalsync.ai') {
             window.location.replace('https://terminalsync.ai' + window.location.pathname + window.location.search + window.location.hash);
