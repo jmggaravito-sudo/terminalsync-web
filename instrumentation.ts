@@ -4,7 +4,11 @@
 
 import * as Sentry from "@sentry/nextjs";
 
-const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+// See src/instrumentation-client.ts for why this strips whitespace: a
+// Vercel env var pasted with an embedded line break produces a malformed
+// DSN, and an unguarded Sentry.init() throwing here would take down every
+// request instead of just disabling monitoring.
+const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN?.replace(/\s+/g, "");
 const environment = process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "development";
 
 export async function register() {
