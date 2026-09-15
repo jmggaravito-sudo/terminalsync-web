@@ -199,6 +199,45 @@ export const CASES: UseCase[] = [
     },
   },
   {
+    id: "meta-publicar-oferta", area: "marketing", ai: "Codex", level: "basico", used: true,
+    es: {
+      t: "Publicar en Facebook e Instagram",
+      d: "Prepara texto, caption, hashtags y preview; nada sale sin tu aprobación.",
+      p: "Quiero publicar una oferta en Facebook e Instagram.\n\nMi negocio: [describir].\nLa oferta: [describir].\nPúblico ideal: [describir].\nImagen o link público: [pegar URL si ya existe].\n\nPrepará el texto para Facebook, el caption para Instagram, hashtags, CTA y un preview. No publiques nada hasta que yo apruebe.",
+    },
+    en: {
+      t: "Publish on Facebook and Instagram",
+      d: "Prepare text, caption, hashtags and preview; nothing posts without approval.",
+      p: "I want to publish an offer on Facebook and Instagram.\n\nMy business: [describe].\nThe offer: [describe].\nIdeal audience: [describe].\nImage or public link: [paste URL if available].\n\nPrepare Facebook text, Instagram caption, hashtags, CTA and a preview. Do not publish anything until I approve.",
+    },
+  },
+  {
+    id: "meta-ads-campana", area: "marketing", ai: "Codex", level: "intermedio", used: true,
+    es: {
+      t: "Crear campaña de Meta Ads",
+      d: "Ángulos, copies, creativo, segmentación y métricas antes de gastar.",
+      p: "Quiero crear una campaña de anuncios en Facebook e Instagram.\n\nProducto/servicio: [describir].\nObjetivo: [leads / ventas / mensajes / reconocimiento].\nPresupuesto diario: [monto].\nUbicación y público ideal: [describir].\n\nDame 3 ángulos, copy completo, imagen ideal, segmentación, presupuesto recomendado y métricas a monitorear. No actives ni gastes nada sin mi aprobación.",
+    },
+    en: {
+      t: "Create a Meta Ads campaign",
+      d: "Angles, copy, creative, targeting and metrics before spending.",
+      p: "I want to create a Facebook and Instagram ads campaign.\n\nProduct/service: [describe].\nGoal: [leads / sales / messages / awareness].\nDaily budget: [amount].\nLocation and ideal audience: [describe].\n\nGive me 3 angles, full copy, ideal image, targeting, recommended budget and metrics to monitor. Do not activate or spend anything without my approval.",
+    },
+  },
+  {
+    id: "whatsapp-leads", area: "atencion", ai: "Codex", level: "basico", used: true,
+    es: {
+      t: "Responder leads por WhatsApp",
+      d: "Respuestas rápidas, calificación y seguimiento para convertir mensajes en ventas.",
+      p: "Ayúdame a responder y dar seguimiento a leads que llegan por WhatsApp.\n\nMi negocio: [describir].\nQué preguntan normalmente: [precios / agenda / disponibilidad / ubicación].\nObjetivo: [agendar / cotizar / vender / calificar].\n\nCrea respuestas rápidas, preguntas para calificar el lead, un mensaje de seguimiento a 24 horas y otro a 72 horas. Mantén tono humano y pide mi aprobación antes de enviar mensajes masivos.",
+    },
+    en: {
+      t: "Reply to WhatsApp leads",
+      d: "Quick replies, qualification and follow-up to turn messages into sales.",
+      p: "Help me reply to and follow up with leads coming from WhatsApp.\n\nMy business: [describe].\nWhat they usually ask: [pricing / booking / availability / location].\nGoal: [book / quote / sell / qualify].\n\nCreate quick replies, lead qualification questions, a 24-hour follow-up and a 72-hour follow-up. Keep it human and ask for my approval before any mass messaging.",
+    },
+  },
+  {
     id: "reporte-campanas", area: "marketing", ai: "Gemini", level: "intermedio",
     es: {
       t: "Analizar resultados de campañas",
