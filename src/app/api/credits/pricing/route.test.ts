@@ -5,7 +5,7 @@ vi.mock("@/lib/trm", () => ({
   getTrm: vi.fn(async () => ({ value: 3_204.51, date: "2026-08-05", source: "live" })),
 }));
 
-import { GET } from "./route";
+import { GET, OPTIONS } from "./route";
 
 describe("GET /api/credits/pricing", () => {
   it("serves the peso price from the same place that charges it", async () => {
@@ -34,5 +34,28 @@ describe("GET /api/credits/pricing", () => {
     for (const amount of Object.values(body.packages) as number[]) {
       expect(amount % 100).toBe(0);
     }
+  });
+
+  it("allows the desktop client to read prices cross-origin", async () => {
+    const res = await GET(
+      new Request("https://terminalsync.ai/api/credits/pricing", {
+        headers: { origin: "tauri://localhost" },
+      }),
+    );
+
+    expect(res.headers.get("Access-Control-Allow-Origin")).toBe("tauri://localhost");
+    expect(res.headers.get("Access-Control-Allow-Methods")).toBe("GET, OPTIONS");
+    expect(res.headers.get("Vary")).toBe("Origin");
+  });
+
+  it("answers the desktop client's preflight", async () => {
+    const res = await OPTIONS(
+      new Request("https://terminalsync.ai/api/credits/pricing", {
+        headers: { origin: "tauri://localhost" },
+      }),
+    );
+
+    expect(res.status).toBe(204);
+    expect(res.headers.get("Access-Control-Allow-Origin")).toBe("tauri://localhost");
   });
 });
