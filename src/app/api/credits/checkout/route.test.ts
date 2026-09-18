@@ -151,6 +151,8 @@ describe("POST /api/credits/checkout", () => {
       success_url: "https://terminalsync.ai/en/credits/return?status=success&flavor=lab&session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "https://terminalsync.ai/en/credits/return?status=cancel&flavor=lab",
     }));
+    const stripePayload = mocks.stripeCreate.mock.calls[0]?.[0];
+    expect(stripePayload).not.toHaveProperty("payment_method_collection");
   });
 
   it("creates a COP Mercado Pago preference for the $10 package", async () => {
