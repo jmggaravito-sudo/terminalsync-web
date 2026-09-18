@@ -139,7 +139,6 @@ export async function POST(req: Request) {
         success_url: successUrl,
         cancel_url: cancelUrl,
         locale: lang,
-        payment_method_collection: "always",
         metadata,
         payment_intent_data: { metadata },
       });
