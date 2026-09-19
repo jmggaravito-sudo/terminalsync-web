@@ -177,6 +177,10 @@ export interface BundleSummary {
    *  third-party stacks. When true, the desktop renders the kit with the
    *  "Exclusivo TS" badge + the TS-Kit logo variant. */
   isExclusiveTS?: boolean;
+  /** Derived from the kit's connector items. Missing means every connector is
+   *  still unverified; a known false connector blocks the whole kit. */
+  installableForAi?: boolean;
+  installableForAiReason?: "contains-uninstallable";
 }
 
 /** A plugin as served to the desktop, plus the one derived signal the
@@ -186,6 +190,9 @@ export interface BundleSummary {
  *  no secrets — is auto-installable without asking the owner for anything. */
 export interface PluginSummary extends PluginMeta {
   requiresEnvSecrets: boolean;
+  /** Derived from the plugin's connector. Skill-only plugins omit this. */
+  installableForAi?: boolean;
+  installableForAiReason?: "contains-uninstallable";
 }
 
 export interface CatalogResponse {
@@ -221,11 +228,15 @@ export async function GET(req: Request) {
   const secretByConnector = new Map(
     connectors.map((c) => [c.slug, c.requiresEnvSecrets] as const),
   );
+  const connectorBySlug = new Map(connectors.map((c) => [c.slug, c] as const));
   const plugins: PluginSummary[] = pluginsRaw.map((p) => ({
     ...p,
     requiresEnvSecrets: p.connectorSlug
       ? (secretByConnector.get(p.connectorSlug) ?? false)
       : false,
+    ...deriveInstallabilityForConnector(
+      p.connectorSlug ? connectorBySlug.get(p.connectorSlug) : undefined,
+    ),
   }));
 
   // Drop hidden items from the public response. The lib functions
@@ -239,7 +250,9 @@ export async function GET(req: Request) {
     connectors: visibleConnectors,
     skills: visibleSkills,
     cliTools,
-    bundles,
+    bundles: bundles.map((bundle) =>
+      deriveBundleInstallability(bundle, connectorBySlug),
+    ),
     plugins,
   });
 
@@ -249,6 +262,52 @@ export async function GET(req: Request) {
   // production. CORS headers still go through — they're not in
   // Vercel's "managed cache" path.
   return NextResponse.json(body, { headers: CORS_HEADERS });
+}
+
+type DerivedInstallability = Pick<
+  PluginSummary,
+  "installableForAi" | "installableForAiReason"
+>;
+
+/**
+ * A connector without supervisor fields is deliberately treated as
+ * unverified-but-allowed. Only an explicit `false` blocks a plugin or kit;
+ * this keeps newly published, not-yet-supervised fichas installable while the
+ * desktop can still show their unverified state at the connector level.
+ */
+function deriveInstallabilityForConnector(
+  connector: ConnectorMeta | undefined,
+): DerivedInstallability {
+  if (!connector) return {};
+  if (connector.installableForAi === false) {
+    return {
+      installableForAi: false,
+      installableForAiReason: "contains-uninstallable",
+    };
+  }
+  return { installableForAi: true };
+}
+
+function deriveBundleInstallability(
+  bundle: BundleSummary,
+  connectorsBySlug: ReadonlyMap<string, ConnectorMeta>,
+): BundleSummary {
+  const connectorItems = bundle.items.filter((item) => item.kind === "connector");
+  if (connectorItems.length === 0) return bundle;
+
+  const blocked = connectorItems.some(
+    (item) => connectorsBySlug.get(item.slug)?.installableForAi === false,
+  );
+  if (blocked) {
+    return {
+      ...bundle,
+      installableForAi: false,
+      installableForAiReason: "contains-uninstallable",
+    };
+  }
+  // `undefined` is the documented unverified state. It is safe to include in
+  // a kit; only an explicit supervisor false prevents installation.
+  return { ...bundle, installableForAi: true };
 }
 
 /**

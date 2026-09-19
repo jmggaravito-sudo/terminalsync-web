@@ -62,6 +62,22 @@ export const CONNECTOR_DELIVERY_TARGETS: readonly AiDeliveryTarget[] = [
   "gemini",
 ] as const;
 
+/** Resultado de la supervisión de instalabilidad para la IA integrada. */
+export type ConnectorInstallableForAiReason =
+  | "ok"
+  | "unverified-needs-key"
+  | "no-manifest"
+  | "recipe-not-npx"
+  | "package-invalid"
+  | "install-failed"
+  | "no-entrypoint"
+  | "handshake-timeout"
+  | "no-jsonrpc-id"
+  | "no-usable-tools"
+  | "needs-postinstall"
+  | "env-denied"
+  | "needs-oauth";
+
 export interface ConnectorMeta {
   slug: string;
   name: string;
@@ -116,6 +132,17 @@ export interface ConnectorMeta {
    *  and even then handle the case where the install flow needs OAuth
    *  out-of-band — see docs/browse-zone.md ("Necesita clave" indicator). */
   requiresEnvSecrets: boolean;
+  /** Resultado opcional de la supervisión de arranque del conector para la
+   *  IA propia. La ausencia significa "todavía no supervisado"; no es false. */
+  installableForAi?: boolean;
+  installableForAiReason?: ConnectorInstallableForAiReason;
+  verifiedWithoutKey?: boolean;
+  aiToolsCount?: number;
+  aiReadOnlyTools?: number;
+  verifiedAt?: string;
+  /** Sidecars propios (memory, meta-ads, meta-social) se identifican así y
+   *  no entran en el conteo de supervisión de conectores externos. */
+  firstParty?: boolean;
   /** Where this connector comes from. Drives the "By @publisher" badge. */
   source?: "first-party" | "marketplace";
   /** Original upstream author. For OSS MCPs this is the GitHub user/org
@@ -380,6 +407,7 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMe
     : {};
   const installOverride = readInstallOverrideFromFrontmatter(data);
   const installFields = mergeInstallFields(installDerived, installOverride);
+  const installability = readInstallabilityFields(data);
   return {
     slug,
     name: get("name", slug),
@@ -396,6 +424,7 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMe
     hasManifest,
     deliveredTo: CONNECTOR_DELIVERY_TARGETS,
     requiresEnvSecrets,
+    ...installability,
     originalAuthor: get("originalAuthor") || undefined,
     originalAuthorUrl: get("originalAuthorUrl") || undefined,
     license: get("license") || undefined,
@@ -411,6 +440,64 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMe
     // generic `ctaUrl` if useful; otherwise it just names the token.
     tokenHelpUrl: get("tokenHelpUrl") || undefined,
   };
+}
+
+/**
+ * Preserve the supervisor's optional frontmatter contract without inventing
+ * defaults. In particular, an unsupervised connector must omit
+ * `installableForAi` rather than being reported as false.
+ */
+function readInstallabilityFields(
+  data: Record<string, unknown>,
+): Pick<
+  ConnectorMeta,
+  | "installableForAi"
+  | "installableForAiReason"
+  | "verifiedWithoutKey"
+  | "aiToolsCount"
+  | "aiReadOnlyTools"
+  | "verifiedAt"
+  | "firstParty"
+> {
+  const out: Pick<
+    ConnectorMeta,
+    | "installableForAi"
+    | "installableForAiReason"
+    | "verifiedWithoutKey"
+    | "aiToolsCount"
+    | "aiReadOnlyTools"
+    | "verifiedAt"
+    | "firstParty"
+  > = {};
+  if (typeof data.installableForAi === "boolean") {
+    out.installableForAi = data.installableForAi;
+  }
+  if (
+    typeof data.installableForAiReason === "string" &&
+    data.installableForAiReason.trim().length > 0
+  ) {
+    out.installableForAiReason =
+      data.installableForAiReason as ConnectorInstallableForAiReason;
+  }
+  if (typeof data.verifiedWithoutKey === "boolean") {
+    out.verifiedWithoutKey = data.verifiedWithoutKey;
+  }
+  if (typeof data.aiToolsCount === "number" && Number.isFinite(data.aiToolsCount)) {
+    out.aiToolsCount = data.aiToolsCount;
+  }
+  if (
+    typeof data.aiReadOnlyTools === "number" &&
+    Number.isFinite(data.aiReadOnlyTools)
+  ) {
+    out.aiReadOnlyTools = data.aiReadOnlyTools;
+  }
+  if (typeof data.verifiedAt === "string" && data.verifiedAt.trim().length > 0) {
+    out.verifiedAt = data.verifiedAt.trim();
+  }
+  if (typeof data.firstParty === "boolean") {
+    out.firstParty = data.firstParty;
+  }
+  return out;
 }
 
 export async function listSlugs(): Promise<string[]> {
