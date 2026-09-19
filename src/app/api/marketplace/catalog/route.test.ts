@@ -374,6 +374,67 @@ describe("GET /api/marketplace/catalog", () => {
     }
   });
 
+  it("exposes the connector AI-installability contract without inventing defaults", async () => {
+    const { body } = await callCatalog("en");
+    const firecrawl = body.connectors.find((c) => c.slug === "firecrawl");
+    const monday = body.connectors.find((c) => c.slug === "monday");
+    const gmail = body.connectors.find((c) => c.slug === "gmail");
+    const memory = body.connectors.find((c) => c.slug === "memory");
+
+    expect(firecrawl).toMatchObject({
+      installableForAi: true,
+      installableForAiReason: "ok",
+      aiToolsCount: 27,
+      aiReadOnlyTools: 16,
+    });
+    expect(firecrawl).not.toHaveProperty("verifiedWithoutKey");
+    expect(firecrawl).not.toHaveProperty("firstParty");
+    expect(monday).toMatchObject({
+      installableForAi: true,
+      installableForAiReason: "unverified-needs-key",
+      verifiedWithoutKey: false,
+    });
+    expect(gmail).toMatchObject({
+      installableForAi: false,
+      installableForAiReason: "needs-oauth",
+    });
+    expect(memory).toMatchObject({ firstParty: true });
+    expect(memory).not.toHaveProperty("installableForAi");
+  });
+
+  it("keeps installableForAi boolean or absent for every connector", async () => {
+    const { body } = await callCatalog("es");
+    for (const item of body.connectors) {
+      expect(
+        item.installableForAi === undefined ||
+          typeof item.installableForAi === "boolean",
+        `${item.slug} has a non-boolean installableForAi`,
+      ).toBe(true);
+    }
+  });
+
+  it("derives installability for plugins and kits from their connectors", async () => {
+    const { body } = await callCatalog("en");
+    const seo = body.plugins.find((p) => p.slug === "seo-audit");
+    expect(seo).toMatchObject({ installableForAi: true });
+
+    const gmailPlugin = body.plugins.find((p) => p.slug === "gmail");
+    expect(gmailPlugin).toMatchObject({
+      installableForAi: false,
+      installableForAiReason: "contains-uninstallable",
+    });
+
+    // Ideogram and Higgsfield are explicitly supervised as false, so the
+    // kit is blocked even though its other item is a skill.
+    const creativeKit = body.bundles.find(
+      (b) => b.slug === "social-ad-creative-studio",
+    );
+    expect(creativeKit).toMatchObject({
+      installableForAi: false,
+      installableForAiReason: "contains-uninstallable",
+    });
+  });
+
   it("normalizes connector logos to absolute terminalsync.ai URLs backed by committed assets", async () => {
     // Desktop Lab renders the catalog inside a local WebView. A root-relative
     // `/connectors/<slug>.svg` would resolve against the app origin and 404,
