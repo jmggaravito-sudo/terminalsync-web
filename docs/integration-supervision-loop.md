@@ -22,6 +22,10 @@ For the public `/api/marketplace/catalog` contract:
   shrinks, never grows);
 - the standard marketplace catalog, kit integrity, plugin integrity, skills and
   i18n and logo tests stay green.
+- every local connector manifest passes the TerminalSync AI installability
+  verifier. The run keeps known remote/no-manifest connectors visible as
+  `false` with a reason and uploads the complete JSON evidence; it does not
+  silently promote them.
 
 ## When it runs
 
