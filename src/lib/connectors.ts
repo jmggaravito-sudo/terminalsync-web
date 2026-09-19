@@ -78,6 +78,22 @@ export type ConnectorInstallableForAiReason =
   | "env-denied"
   | "needs-oauth";
 
+const CONNECTOR_INSTALLABLE_FOR_AI_REASONS: readonly ConnectorInstallableForAiReason[] = [
+  "ok",
+  "unverified-needs-key",
+  "no-manifest",
+  "recipe-not-npx",
+  "package-invalid",
+  "install-failed",
+  "no-entrypoint",
+  "handshake-timeout",
+  "no-jsonrpc-id",
+  "no-usable-tools",
+  "needs-postinstall",
+  "env-denied",
+  "needs-oauth",
+] as const;
+
 export interface ConnectorMeta {
   slug: string;
   name: string;
@@ -474,7 +490,9 @@ function readInstallabilityFields(
   }
   if (
     typeof data.installableForAiReason === "string" &&
-    data.installableForAiReason.trim().length > 0
+    (CONNECTOR_INSTALLABLE_FOR_AI_REASONS as readonly string[]).includes(
+      data.installableForAiReason.trim(),
+    )
   ) {
     out.installableForAiReason =
       data.installableForAiReason as ConnectorInstallableForAiReason;
