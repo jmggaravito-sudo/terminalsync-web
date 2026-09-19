@@ -14,6 +14,12 @@ tagline: "Find and share files, hands-free"
 originalAuthor: "Dropbox (API v2) · connector by Terminal Sync"
 originalAuthorUrl: "https://www.dropbox.com/developers/documentation"
 license: "proprietary"
+installableForAi: false
+installableForAiReason: "no-manifest"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: null
 ---
 When the files that run your business live in **Dropbox** — contracts, invoices, proposals, photos — finding the right one is half the job. This connector puts your AI on it: ask for a file in plain words and it searches, finds it, and hands you a link. No digging through folders.
 

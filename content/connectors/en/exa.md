@@ -22,6 +22,12 @@ originalAuthor: "Exa Labs"
 originalAuthorUrl: "https://github.com/exa-labs"
 license: "MIT"
 licenseUrl: "https://github.com/exa-labs/exa-mcp-server/blob/main/LICENSE"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 2
+aiReadOnlyTools: 2
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "3.4.1"
 ---
 **Exa** is a search engine built for AI, not for humans clicking blue links. Its official connector, per the README, is *"a Model Context Protocol server with Exa for web search and web crawling"* that gives real-time results as **clean, ready-to-use content** — so the agent gets the actual text of a page, not a list of links to open. Beyond plain search it can research a company, find people, and run deeper multi-step research tasks.
 

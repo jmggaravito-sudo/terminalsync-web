@@ -22,6 +22,12 @@ license: "proprietary"
 licenseUrl: "https://gusto.com/legal/terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: false
+installableForAiReason: "recipe-not-npx"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: null
 ---
 **Gusto** is the payroll and HR platform many small businesses use to pay employees and contractors, track time off, and handle the paperwork payroll drags along with it. The official Gusto connector reads your account directly — who's on payroll, when the next pay run lands, what a contractor was paid, what payroll taxes and deductions look like — so your AI can answer in plain words instead of you logging in and clicking through tabs.
 

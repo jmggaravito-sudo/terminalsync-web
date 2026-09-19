@@ -25,6 +25,12 @@ license: "MIT"
 licenseUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-slack"
 marketplaceSource: "anthropic"
 marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 8
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "2025.4.25"
 ---
 **Slack** is where team decisions, status updates, incidents, threads and conversations live. The official MCP server connects Claude to the Slack Web API to *"interact with Slack workspaces"*: read channels, fetch threads, list users, inspect profiles, post messages and add reactions.
 

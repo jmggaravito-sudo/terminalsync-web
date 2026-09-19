@@ -22,6 +22,12 @@ license: "proprietary"
 licenseUrl: "https://calendly.com/legal"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: false
+installableForAiReason: "recipe-not-npx"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: null
 ---
 **Calendly** es el link de agendamiento que la gente usa para reservar un horario en tu calendario sin el ida y vuelta de mensajes. El conector oficial de Calendly es un **server MCP hospedado** (`https://mcp.calendly.com`), publicado por Calendly, que le da a tu agente acceso para chequear disponibilidad, ver eventos agendados y gestionar links de reserva usando la configuración de calendario que ya tienes en Calendly.
 

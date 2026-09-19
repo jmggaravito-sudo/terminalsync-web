@@ -25,6 +25,12 @@ originalAuthor: "Enes Cinar"
 originalAuthorUrl: "https://github.com/EnesCinr/twitter-mcp"
 license: "MIT"
 licenseUrl: "https://github.com/EnesCinr/twitter-mcp/blob/main/LICENSE"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 2
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "0.2.0"
 ---
 Keeping a presence on **X** eats time you don't have. This connector lets your AI post for you and listen to what's being said — from the same chat where you run everything else, so a quick update or a "what are people saying about us" check doesn't mean opening yet another app.
 

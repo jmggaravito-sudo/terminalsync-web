@@ -22,6 +22,12 @@ license: "proprietary"
 licenseUrl: "https://asana.com/terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: false
+installableForAiReason: "recipe-not-npx"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: null
 ---
 **Asana** is the project and task tracker teams use to keep work organized: who's doing what, by when, and in which project. The official Asana MCP server lets your agent read and manage that workspace directly — no API key pasted into TerminalSync, just your own Asana account login.
 

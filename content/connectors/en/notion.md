@@ -22,6 +22,12 @@ originalAuthor: "Notion Labs (@makenotion)"
 originalAuthorUrl: "https://github.com/makenotion"
 license: "MIT"
 licenseUrl: "https://github.com/makenotion/notion-mcp-server/blob/main/LICENSE"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 24
+aiReadOnlyTools: 12
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "2.5.1"
 ---
 **Notion** is where many people keep years of work: recipes, client notes, team decisions, links, project plans, internal handbooks. The official connector — maintained by Notion Labs — implements an *"MCP server for the Notion API"* and exposes 22 tools covering data sources (databases), pages, comments, search, and content-to-Markdown conversion.
 

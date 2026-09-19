@@ -24,6 +24,12 @@ tagline: "Blog posts and pages, hands-free"
 originalAuthor: "Utsav Ladani"
 originalAuthorUrl: "https://www.npmjs.com/package/wordpress-mcp"
 license: "ISC"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 5
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "1.0.2"
 ---
 Your website's blog is one of the best ways to get found and to look alive to customers — but writing and posting is the thing that always slips. If your site runs on **WordPress**, this connector lets your AI draft a post and put it up for you, so "we should really post about that" actually happens.
 

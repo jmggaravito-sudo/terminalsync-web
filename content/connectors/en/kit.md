@@ -13,6 +13,12 @@ tagline: "Newsletter without opening the dashboard"
 originalAuthor: "Kit (ex-ConvertKit)"
 originalAuthorUrl: "https://kit.com"
 license: "proprietary"
+installableForAi: false
+installableForAiReason: "no-manifest"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: null
 ---
 Kit (formerly ConvertKit) is where your list lives. But writing a broadcast, segmenting subscribers and scheduling it takes you 30 minutes every time — and you always forget a field.
 

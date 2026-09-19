@@ -22,6 +22,13 @@ originalAuthor: "Stripe"
 originalAuthorUrl: "https://github.com/stripe/ai"
 license: "MIT"
 licenseUrl: "https://github.com/stripe/ai/blob/main/LICENSE"
+installableForAi: true
+installableForAiReason: "unverified-needs-key"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "0.3.3"
+verifiedWithoutKey: false
 ---
 **Stripe** es la plataforma de pagos detrás de millones de negocios — checkout, suscripciones, facturación y todo el lado del dinero de tu producto. El conector oficial, publicado por Stripe, deja que el agente trabaje directo sobre tu cuenta: buscar clientes, leer facturas y pagos, crear productos y precios, administrar suscripciones y emitir reembolsos. La lista completa y siempre actualizada de tools está en la [documentación de Stripe MCP](https://docs.stripe.com/mcp).
 

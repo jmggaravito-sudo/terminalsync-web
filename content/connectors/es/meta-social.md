@@ -13,6 +13,7 @@ tagline: "Una publicación, las dos redes — contigo al mando"
 originalAuthor: "Meta Platforms"
 originalAuthorUrl: "https://about.meta.com"
 license: "proprietary"
+firstParty: true
 ---
 Construido sobre la Graph API oficial de Meta — la misma familia que usa nuestro conector de WhatsApp. Te deja publicar un posteo (imagen + texto) en tu **Instagram** y en tu **Página de Facebook** sin abrir ninguna de las dos apps.
 

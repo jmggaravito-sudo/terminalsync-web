@@ -1,0 +1,639 @@
+{
+  "verifiedAt": "2026-09-19T12:19:33.156Z",
+  "catalogTotal": 60,
+  "firstParty": [
+    "memory",
+    "meta-ads",
+    "meta-social"
+  ],
+  "total": 57,
+  "installable": 28,
+  "unverifiedNeedsKey": 6,
+  "false": [
+    {
+      "slug": "asana",
+      "reason": "recipe-not-npx"
+    },
+    {
+      "slug": "calendly",
+      "reason": "recipe-not-npx"
+    },
+    {
+      "slug": "canva",
+      "reason": "recipe-not-npx"
+    },
+    {
+      "slug": "dropbox",
+      "reason": "no-manifest"
+    },
+    {
+      "slug": "elasticsearch",
+      "reason": "no-jsonrpc-id"
+    },
+    {
+      "slug": "gdrive",
+      "reason": "no-manifest"
+    },
+    {
+      "slug": "gmail",
+      "reason": "needs-oauth"
+    },
+    {
+      "slug": "google-business",
+      "reason": "no-manifest"
+    },
+    {
+      "slug": "google-calendar",
+      "reason": "needs-oauth"
+    },
+    {
+      "slug": "google-sheets",
+      "reason": "needs-oauth"
+    },
+    {
+      "slug": "gusto",
+      "reason": "recipe-not-npx"
+    },
+    {
+      "slug": "higgsfield",
+      "reason": "recipe-not-npx"
+    },
+    {
+      "slug": "ideogram",
+      "reason": "recipe-not-npx"
+    },
+    {
+      "slug": "intercom",
+      "reason": "no-manifest"
+    },
+    {
+      "slug": "kit",
+      "reason": "no-manifest"
+    },
+    {
+      "slug": "klaviyo",
+      "reason": "recipe-not-npx"
+    },
+    {
+      "slug": "posthog",
+      "reason": "recipe-not-npx"
+    },
+    {
+      "slug": "shopify",
+      "reason": "no-manifest"
+    },
+    {
+      "slug": "sqlite",
+      "reason": "no-manifest"
+    },
+    {
+      "slug": "vercel",
+      "reason": "no-manifest"
+    },
+    {
+      "slug": "whatsapp",
+      "reason": "no-manifest"
+    },
+    {
+      "slug": "zapier",
+      "reason": "no-manifest"
+    },
+    {
+      "slug": "zoom",
+      "reason": "recipe-not-npx"
+    }
+  ],
+  "results": [
+    {
+      "slug": "ahrefs",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 40,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.0.11"
+    },
+    {
+      "slug": "airtable",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 16,
+      "aiReadOnlyTools": 7,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "1.14.0"
+    },
+    {
+      "slug": "asana",
+      "installableForAi": false,
+      "installableForAiReason": "recipe-not-npx",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "brave-search",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 2,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.6.2"
+    },
+    {
+      "slug": "calendly",
+      "installableForAi": false,
+      "installableForAiReason": "recipe-not-npx",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "canva",
+      "installableForAi": false,
+      "installableForAiReason": "recipe-not-npx",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "clickup",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 40,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "1.12.0"
+    },
+    {
+      "slug": "context7",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 2,
+      "aiReadOnlyTools": 2,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "4.1.1"
+    },
+    {
+      "slug": "dropbox",
+      "installableForAi": false,
+      "installableForAiReason": "no-manifest",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "elasticsearch",
+      "installableForAi": false,
+      "installableForAiReason": "no-jsonrpc-id",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.3.1"
+    },
+    {
+      "slug": "exa",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 2,
+      "aiReadOnlyTools": 2,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "3.4.1"
+    },
+    {
+      "slug": "filesystem",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 14,
+      "aiReadOnlyTools": 10,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "2026.8.31"
+    },
+    {
+      "slug": "firecrawl",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 27,
+      "aiReadOnlyTools": 16,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "3.24.0"
+    },
+    {
+      "slug": "gdrive",
+      "installableForAi": false,
+      "installableForAiReason": "no-manifest",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "github",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 26,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "2025.4.8"
+    },
+    {
+      "slug": "gitlab",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 9,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "2025.4.25"
+    },
+    {
+      "slug": "gmail",
+      "installableForAi": false,
+      "installableForAiReason": "needs-oauth",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "2.4.0"
+    },
+    {
+      "slug": "google-business",
+      "installableForAi": false,
+      "installableForAiReason": "no-manifest",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "google-calendar",
+      "installableForAi": false,
+      "installableForAiReason": "needs-oauth",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "1.0.9"
+    },
+    {
+      "slug": "google-maps",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 7,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.6.2"
+    },
+    {
+      "slug": "google-sheets",
+      "installableForAi": false,
+      "installableForAiReason": "needs-oauth",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "1.2.1"
+    },
+    {
+      "slug": "gusto",
+      "installableForAi": false,
+      "installableForAiReason": "recipe-not-npx",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "higgsfield",
+      "installableForAi": false,
+      "installableForAiReason": "recipe-not-npx",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "hubspot",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 21,
+      "aiReadOnlyTools": 14,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.4.0"
+    },
+    {
+      "slug": "ideogram",
+      "installableForAi": false,
+      "installableForAiReason": "recipe-not-npx",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "intercom",
+      "installableForAi": false,
+      "installableForAiReason": "no-manifest",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "kit",
+      "installableForAi": false,
+      "installableForAiReason": "no-manifest",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "klaviyo",
+      "installableForAi": false,
+      "installableForAiReason": "recipe-not-npx",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "map",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 2,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "2.0.0"
+    },
+    {
+      "slug": "memory",
+      "firstParty": true
+    },
+    {
+      "slug": "meta-ads",
+      "firstParty": true
+    },
+    {
+      "slug": "meta-social",
+      "firstParty": true
+    },
+    {
+      "slug": "monday",
+      "installableForAi": true,
+      "installableForAiReason": "unverified-needs-key",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "3.3.0",
+      "verifiedWithoutKey": false
+    },
+    {
+      "slug": "mongodb",
+      "installableForAi": true,
+      "installableForAiReason": "unverified-needs-key",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "3.0.3",
+      "verifiedWithoutKey": false
+    },
+    {
+      "slug": "neon",
+      "installableForAi": true,
+      "installableForAiReason": "unverified-needs-key",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.6.5",
+      "verifiedWithoutKey": false
+    },
+    {
+      "slug": "notion",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 24,
+      "aiReadOnlyTools": 12,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "2.5.1"
+    },
+    {
+      "slug": "pdf",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 9,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "2.0.0"
+    },
+    {
+      "slug": "pinecone",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 9,
+      "aiReadOnlyTools": 7,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.3.0"
+    },
+    {
+      "slug": "pipedream",
+      "installableForAi": true,
+      "installableForAiReason": "unverified-needs-key",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.0.1",
+      "verifiedWithoutKey": false
+    },
+    {
+      "slug": "postgres",
+      "installableForAi": true,
+      "installableForAiReason": "unverified-needs-key",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.6.2",
+      "verifiedWithoutKey": false
+    },
+    {
+      "slug": "posthog",
+      "installableForAi": false,
+      "installableForAiReason": "recipe-not-npx",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "puppeteer",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 7,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "2025.5.12"
+    },
+    {
+      "slug": "sentry",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 9,
+      "aiReadOnlyTools": 6,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.39.0"
+    },
+    {
+      "slug": "sequential-thinking",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 1,
+      "aiReadOnlyTools": 1,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "2026.8.31"
+    },
+    {
+      "slug": "shopify",
+      "installableForAi": false,
+      "installableForAiReason": "no-manifest",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "slack",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 8,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "2025.4.25"
+    },
+    {
+      "slug": "sqlite",
+      "installableForAi": false,
+      "installableForAiReason": "no-manifest",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "square",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 3,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.1.2"
+    },
+    {
+      "slug": "stripe",
+      "installableForAi": true,
+      "installableForAiReason": "unverified-needs-key",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.3.3",
+      "verifiedWithoutKey": false
+    },
+    {
+      "slug": "supabase",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 29,
+      "aiReadOnlyTools": 18,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.13.0"
+    },
+    {
+      "slug": "threejs",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 2,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "2.0.0"
+    },
+    {
+      "slug": "todoist",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 40,
+      "aiReadOnlyTools": 20,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "11.0.0"
+    },
+    {
+      "slug": "twitter",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 2,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.2.0"
+    },
+    {
+      "slug": "vercel",
+      "installableForAi": false,
+      "installableForAiReason": "no-manifest",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "webflow",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 40,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "1.0.0"
+    },
+    {
+      "slug": "whatsapp",
+      "installableForAi": false,
+      "installableForAiReason": "no-manifest",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "wordpress",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 5,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "1.0.2"
+    },
+    {
+      "slug": "xero",
+      "installableForAi": true,
+      "installableForAiReason": "ok",
+      "aiToolsCount": 40,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.0.17"
+    },
+    {
+      "slug": "zapier",
+      "installableForAi": false,
+      "installableForAiReason": "no-manifest",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    },
+    {
+      "slug": "zoom",
+      "installableForAi": false,
+      "installableForAiReason": "recipe-not-npx",
+      "aiToolsCount": 0,
+      "aiReadOnlyTools": 0,
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": null
+    }
+  ]
+}

@@ -13,6 +13,12 @@ tagline: "Atención 24/7, contigo al mando"
 originalAuthor: "Meta Platforms"
 originalAuthorUrl: "https://whatsapp.com"
 license: "proprietary"
+installableForAi: false
+installableForAiReason: "no-manifest"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: null
 ---
 Pensado para negocios en LatAm donde WhatsApp es el canal principal. Claude te ayuda a:
 

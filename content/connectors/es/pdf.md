@@ -21,6 +21,12 @@ license: "MIT"
 licenseUrl: "https://github.com/modelcontextprotocol/ext-apps/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 9
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "2.0.0"
 ---
 **PDF** es el formato que la gente usa para papers, reportes, contratos y formularios. El server oficial de `@modelcontextprotocol` abre un visor interactivo de PDFs y soporta archivos locales más URLs remotas de fuentes académicas permitidas, como arXiv, bioRxiv, Zenodo y otras.
 

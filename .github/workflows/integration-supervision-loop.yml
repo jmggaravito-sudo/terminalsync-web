@@ -31,6 +31,9 @@ on:
       - "src/lib/skills*"
       - ".github/workflows/integration-supervision-loop.yml"
       - "docs/integration-supervision-loop.md"
+      - "scripts/verify-connector.mjs"
+      - "scripts/verify-connector.test.mjs"
+      - "docs/connector-installability-supervisor.md"
 
 permissions:
   contents: read
@@ -69,6 +72,19 @@ jobs:
             src/lib/skills.test.ts \
             src/lib/logoAssets.test.ts \
             src/lib/__tests__/voz-neutral-catalogo.test.ts
+
+      - name: Verify connector installability for TerminalSync AI
+        run: |
+          node scripts/verify-connector.mjs --all --json --concurrency 1 > connector-installability-ci.json
+          node -e 'const r=require("./connector-installability-ci.json"); console.log(`Connector installability: ${r.installable} verified, ${r.unverifiedNeedsKey} installable pending key, ${r.false.length} false (${r.total} supervised; ${r.firstParty.length} first-party excluded).`); for (const x of r.false) console.log(`  ${x.slug}: ${x.reason}`)'
+
+      - name: Upload connector installability evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: connector-installability-${{ github.run_id }}
+          path: connector-installability-ci.json
+          if-no-files-found: ignore
 
       - name: Resolve matching app PR or release branch
         id: app_ref

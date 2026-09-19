@@ -21,6 +21,12 @@ license: "MIT"
 licenseUrl: "https://github.com/modelcontextprotocol/servers/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 1
+aiReadOnlyTools: 1
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "2026.8.31"
 ---
 **Sequential Thinking** enables, in the official README's words, *"a detailed, step-by-step thinking process for problem-solving and analysis"*. It's built for tasks *"where the full scope might not be clear initially"* and where you need *"course correction"* — scenarios where the AI tends to jump to the conclusion before looking properly.
 

@@ -22,6 +22,12 @@ license: "proprietary"
 licenseUrl: "https://calendly.com/legal"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: false
+installableForAiReason: "recipe-not-npx"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: null
 ---
 **Calendly** is the scheduling link people use to book time on your calendar without the back-and-forth. The official Calendly connector is a **hosted MCP server** (`https://mcp.calendly.com`), published by Calendly, that lets your agent check availability, look up scheduled events, and manage booking links using the calendar setup you already have in Calendly.
 

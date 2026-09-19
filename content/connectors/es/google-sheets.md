@@ -23,6 +23,12 @@ originalAuthor: "Adam Jones (@domdomegg)"
 originalAuthorUrl: "https://github.com/domdomegg"
 license: "MIT"
 licenseUrl: "https://github.com/domdomegg/google-sheets-mcp/blob/master/LICENSE"
+installableForAi: false
+installableForAiReason: "needs-oauth"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "1.2.1"
 ---
 Casi todo negocio chico corre sobre una planilla. Las ventas del mes, la lista de clientes, el inventario, el control de caja — todo vive en un Google Sheet que alguien mantiene a mano. Este conector deja que tu IA abra esa planilla, la lea y la actualice igual que lo harías tú.
 

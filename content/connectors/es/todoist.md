@@ -22,6 +22,12 @@ originalAuthor: "Doist"
 originalAuthorUrl: "https://github.com/Doist/todoist-mcp"
 license: "MIT"
 licenseUrl: "https://github.com/Doist/todoist-mcp/blob/main/LICENSE"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 40
+aiReadOnlyTools: 20
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "11.0.0"
 ---
 La mitad de llevar un negocio chico es acordarse del próximo paso — devolverle la llamada a este cliente, mandar aquel presupuesto, renovar el seguro. Si eso lo llevas en **Todoist**, este conector deja que tu IA lea tu lista y le agregue, para que nada viva solo en tu cabeza.
 

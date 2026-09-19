@@ -22,6 +22,12 @@ license: "proprietary"
 licenseUrl: "https://higgsfield.ai/terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: false
+installableForAiReason: "recipe-not-npx"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: null
 ---
 **Higgsfield** is a creative AI platform for image and video generation. Its official MCP connector gives your agent access to Higgsfield's creative models from inside your workflow: generate images, create short videos, train or reuse characters, and browse your generation history.
 

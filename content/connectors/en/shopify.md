@@ -15,6 +15,12 @@ originalAuthor: "Terminal Sync"
 originalAuthorUrl: "https://terminalsync.ai"
 license: "proprietary"
 licenseUrl: "https://terminalsync.ai"
+installableForAi: false
+installableForAiReason: "no-manifest"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: null
 ---
 **Shopify** powers millions of online stores. This connector is **built by Terminal Sync**: we talk to Shopify's **official Admin GraphQL API** so your assistant can read your business and answer in plain language — without you opening the admin.
 

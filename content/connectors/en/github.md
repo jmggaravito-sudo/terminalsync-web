@@ -24,6 +24,12 @@ license: "MIT"
 licenseUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-github"
 marketplaceSource: "anthropic"
 marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 26
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "2025.4.8"
 ---
 **GitHub** is the platform where your repos, issues, pull requests and code reviews live. The official `@modelcontextprotocol` MCP server connects Claude to the GitHub API for *"file operations, repository management, search functionality, and more"*, always using the permissions of the Personal Access Token you configure.
 

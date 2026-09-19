@@ -13,6 +13,12 @@ tagline: "Newsletter sin abrir el panel"
 originalAuthor: "Kit (ex-ConvertKit)"
 originalAuthorUrl: "https://kit.com"
 license: "proprietary"
+installableForAi: false
+installableForAiReason: "no-manifest"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: null
 ---
 Kit (antes ConvertKit) es donde vive tu lista. Pero escribir un broadcast, segmentar suscriptores y schedulear te lleva 30 minutos cada vez — y siempre se te olvida un campo.
 

@@ -22,6 +22,12 @@ originalAuthor: "Firecrawl"
 originalAuthorUrl: "https://github.com/firecrawl"
 license: "MIT"
 licenseUrl: "https://github.com/firecrawl/firecrawl-mcp-server/blob/main/LICENSE"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 27
+aiReadOnlyTools: 16
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "3.24.0"
 ---
 **Firecrawl** convierte páginas web desordenadas en contenido limpio y listo para usar — el tipo de texto con el que una IA realmente puede trabajar. Su conector oficial, según el README, es un *"MCP server for Firecrawl — search, scrape, and interact with the web"*, con tools para scrapear una sola página, buscar en la web, recorrer un sitio entero, mapear todas sus URLs y extraer datos estructurados de muchas páginas a la vez.
 

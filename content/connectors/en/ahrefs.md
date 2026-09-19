@@ -21,6 +21,12 @@ tagline: "Rankings, backlinks and keywords at AI reach"
 originalAuthor: "Ahrefs"
 originalAuthorUrl: "https://ahrefs.com"
 license: "MIT"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 40
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "0.0.11"
 ---
 Getting found on Google is half the battle for a small business, but SEO tools are built for specialists and drown you in charts. If you have an **Ahrefs** account, this connector lets your AI read your SEO data and answer the questions that actually matter — in plain words, without you learning the dashboard.
 

@@ -24,6 +24,12 @@ license: "MIT"
 licenseUrl: "https://github.com/PostHog/mcp/blob/main/LICENSE"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: false
+installableForAiReason: "recipe-not-npx"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: null
 ---
 **PostHog** is the product analytics platform your team uses to see how people actually use your app: events and funnels, feature flags, A/B experiments, dashboards, and error tracking, all in one place. The official connector, published by PostHog, is a **hosted MCP server** (`https://mcp.posthog.com/mcp`) that acts as a proxy to your PostHog instance — it turns what you ask into calls against your project and returns the results directly to your AI client.
 

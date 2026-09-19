@@ -15,6 +15,7 @@ originalAuthor: "Terminal Sync"
 originalAuthorUrl: "https://terminalsync.ai"
 license: "proprietary"
 licenseUrl: "https://terminalsync.ai"
+firstParty: true
 ---
 **Meta Ads** son los anuncios de Facebook e Instagram. Este conector es **propio de Terminal Sync**: hablamos con la **Marketing API oficial** de Meta para que tu asistente **mire cómo van tus campañas** y te responda en lenguaje natural — sin que tengas que entrar al Administrador de anuncios.
 
