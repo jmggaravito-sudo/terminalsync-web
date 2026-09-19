@@ -21,6 +21,12 @@ license: "MIT"
 licenseUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-puppeteer"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 7
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "2025.5.12"
 ---
 **Puppeteer** is a tool for controlling a real browser from code. It is useful for pages that load with JavaScript, include forms or require visual interaction.
 

@@ -14,6 +14,12 @@ tagline: "Leer, entender y responder tu soporte"
 originalAuthor: "Intercom (REST API) · conector de Terminal Sync"
 originalAuthorUrl: "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/"
 license: "proprietary"
+installableForAi: false
+installableForAiReason: "no-manifest"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 Cuando tus clientes te escriben por **Intercom** — dudas, reclamos, pedidos — mantenerte al día es un trabajo aparte. Este conector pone a tu IA a ayudarte: pídele que revise tu bandeja en palabras simples y te dice qué conversaciones necesitan atención, encuentra al cliente que buscas y prepara la respuesta por ti.
 

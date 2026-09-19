@@ -21,6 +21,12 @@ license: "MIT"
 licenseUrl: "https://github.com/modelcontextprotocol/ext-apps/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 2
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "2.0.0"
 ---
 **Map** es un conector de globo interactivo para buscar lugares y verlos visualmente. El server oficial de `@modelcontextprotocol` usa CesiumJS con mapas de OpenStreetMap y geocoding de OpenStreetMap Nominatim, así que no necesita una clave comercial de mapas.
 

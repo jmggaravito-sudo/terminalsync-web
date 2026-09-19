@@ -22,6 +22,12 @@ license: "proprietary"
 licenseUrl: "https://www.canva.com/policies/canva-developer-terms/"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: false
+installableForAiReason: "recipe-not-npx"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 **Canva** es la herramienta de diseño que usan los equipos para posts de redes, presentaciones, flyers y assets de marca sin necesitar un diseñador para cada cambio chico. El server MCP oficial de Canva deja que tu agente genere, edite y exporte diseños directamente — sin pegar ninguna API key en TerminalSync, solo con el login de tu propia cuenta de Canva.
 

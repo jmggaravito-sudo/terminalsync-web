@@ -27,6 +27,12 @@ license: "Pipedream Source Available License 1.0"
 licenseUrl: "https://github.com/PipedreamHQ/pipedream/blob/master/LICENSE"
 hidden: true
 marketplaceSource: "official"
+installableForAi: false
+installableForAiReason: "handshake-timeout"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "0.0.1"
 ---
 **Pipedream** conecta apps y APIs para automatizar trabajos que normalmente te obligan a abrir cinco pestañas: mensajes, planillas, tickets, calendarios, bases de datos y herramientas internas.
 

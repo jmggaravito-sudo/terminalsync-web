@@ -14,6 +14,12 @@ tagline: "Read, understand, and answer your support"
 originalAuthor: "Intercom (REST API) · connector by Terminal Sync"
 originalAuthorUrl: "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/"
 license: "proprietary"
+installableForAi: false
+installableForAiReason: "no-manifest"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 When your customers write in through **Intercom** — questions, complaints, requests — keeping up is a job of its own. This connector puts your AI on it: ask it to review your inbox in plain words and it tells you which conversations need attention, finds the customer you're looking for, and drafts the reply for you.
 

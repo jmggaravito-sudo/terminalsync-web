@@ -22,6 +22,12 @@ license: "MIT"
 licenseUrl: "https://github.com/zoom/mcp-registry/blob/main/LICENSE"
 marketplaceSource: "official"
 marketplaceCategory: "productivity"
+installableForAi: false
+installableForAiReason: "recipe-not-npx"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 **Zoom** es la app de videollamadas que usas para tus reuniones de trabajo. El conector oficial de Zoom —el server **Zoom Workspace**, publicado por Zoom— te deja preguntarle en lenguaje natural a todo lo que quedó guardado de esas reuniones: resúmenes generados por IA, transcripciones, grabaciones, el chat del equipo y los documentos de Zoom, sin tener que abrir la app y buscar a mano. Es un **server hospedado** (`https://mcp.zoom.us/mcp/zoom/streamable`): corre en la nube de Zoom y te conectas con tu propia cuenta de Zoom, así que solo ve lo que tú ya puedes ver.
 

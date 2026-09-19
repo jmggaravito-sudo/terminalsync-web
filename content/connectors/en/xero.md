@@ -23,6 +23,12 @@ originalAuthor: "Xero"
 originalAuthorUrl: "https://github.com/XeroAPI/xero-mcp-server"
 license: "MIT"
 licenseUrl: "https://github.com/XeroAPI/xero-mcp-server/blob/master/LICENSE"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 40
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "0.0.17"
 ---
 The part of the business nobody wants to open is the accounting. Who owes you, what you owe, which invoices are overdue, whether last month actually made money. If you keep your books in **Xero**, this connector lets your AI read them and answer those questions in plain words — no reports to build, no columns to hunt through.
 

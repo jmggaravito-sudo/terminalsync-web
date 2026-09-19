@@ -21,6 +21,12 @@ tagline: "Contactos, negocios y seguimientos al alcance de la IA"
 originalAuthor: "HubSpot"
 originalAuthorUrl: "https://developers.hubspot.com/mcp"
 license: "MIT"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 21
+aiReadOnlyTools: 14
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "0.4.0"
 ---
 Tu CRM es donde vive la relación con cada cliente — quién es, qué compró, qué le prometiste, cuándo hablaron por última vez. Si eso lo llevas en **HubSpot**, este conector deja que tu IA lo lea y lo mantenga al día, para que los seguimientos no se te escapen mientras estás ocupado con el negocio.
 

@@ -22,6 +22,12 @@ license: "proprietary"
 licenseUrl: "https://gusto.com/legal/terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: false
+installableForAiReason: "recipe-not-npx"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 **Gusto** es la plataforma de nómina y RR.HH. que muchas pequeñas empresas usan para pagarle a empleados y contratistas, llevar el control de tiempo libre, y manejar el papeleo que arrastra la nómina. El conector oficial de Gusto lee tu cuenta directamente — quién está en nómina, cuándo cae el próximo pago, cuánto se le pagó a un contratista, cómo se ven los impuestos de nómina y las deducciones — así tu IA responde en palabras simples en vez de que tú entres y busques entre pestañas.
 

@@ -23,6 +23,12 @@ originalAuthor: "monday.com"
 originalAuthorUrl: "https://github.com/mondaycom/monday-ai"
 license: "MIT"
 licenseUrl: "https://github.com/mondaycom/monday-ai/blob/master/LICENSE"
+installableForAi: false
+installableForAiReason: "env-denied"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 If your business runs on **monday.com** boards — sales pipeline, projects, orders, whatever you track in those colorful columns — this connector lets your AI read them and update them, so the board stays current without you dragging cards around all day.
 

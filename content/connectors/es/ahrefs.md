@@ -21,6 +21,12 @@ tagline: "Posiciones, backlinks y keywords al alcance de la IA"
 originalAuthor: "Ahrefs"
 originalAuthorUrl: "https://ahrefs.com"
 license: "MIT"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 40
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "0.0.11"
 ---
 Que te encuentren en Google es media batalla para un negocio chico, pero las herramientas de SEO están hechas para especialistas y te ahogan en gráficos. Si tienes una cuenta de **Ahrefs**, este conector deja que tu IA lea tus datos de SEO y responda las preguntas que de verdad importan — en palabras simples, sin que aprendas el panel.
 

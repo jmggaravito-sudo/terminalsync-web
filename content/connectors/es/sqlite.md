@@ -15,6 +15,12 @@ originalAuthorUrl: "https://github.com/modelcontextprotocol/servers"
 license: "MIT"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
+installableForAi: false
+installableForAiReason: "no-manifest"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 Ideal para DBs locales: prototipos, exports, archives. Apuntás al archivo y le pedís a tu IA que lo lea o modifique conversacionalmente.
 

@@ -14,6 +14,12 @@ tagline: "Reseñas vigiladas, respuestas listas"
 originalAuthor: "Google (Business Profile API) · conector de Terminal Sync"
 originalAuthorUrl: "https://developers.google.com/my-business"
 license: "proprietary"
+installableForAi: false
+installableForAiReason: "no-manifest"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 Para un negocio local, tus reseñas de Google *son* tu reputación — lo primero que ve un cliente nuevo. Pero aparecen en cualquier momento, y una reseña sin responder por una semana se lee como "acá no les importa". Este conector pone a tu IA a vigilar: lee tus reseñas, te dice cuáles son nuevas, te marca si baja el puntaje, y te arma una respuesta para cada una — que solo publica cuando tú dices que sí.
 

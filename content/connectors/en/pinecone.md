@@ -24,6 +24,12 @@ license: "Apache-2.0"
 licenseUrl: "https://github.com/pinecone-io/pinecone-mcp/blob/main/LICENSE"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 9
+aiReadOnlyTools: 7
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "0.3.0"
 ---
 **Pinecone** is a vector database — the storage layer that powers semantic search and retrieval for AI apps, holding your data as embeddings so an assistant can find records by meaning rather than exact keywords. The official connector, published by Pinecone, is the *Pinecone Developer MCP Server*: it lets coding assistants and other AI tools connect to your Pinecone projects and documentation. Once connected, the AI can search the Pinecone docs to answer questions accurately, help you configure indexes based on your application's needs, generate code informed by your index configuration and data, and upsert and search records so you can test queries and evaluate results right in your dev environment.
 

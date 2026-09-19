@@ -21,6 +21,12 @@ license: "MIT"
 licenseUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-postgres"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
+installableForAi: false
+installableForAiReason: "handshake-timeout"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "0.6.2"
 ---
 **PostgreSQL** is the open-source relational database that powers critical data for thousands of products. The official MCP server provides *"read-only access to PostgreSQL databases"* so Claude can inspect schemas and run read queries without opening a separate SQL tool.
 

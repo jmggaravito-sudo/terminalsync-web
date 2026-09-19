@@ -23,6 +23,12 @@ tagline: "Turnos y agenda, sin usar las manos"
 originalAuthor: "Yevhen Romanov"
 originalAuthorUrl: "https://www.npmjs.com/package/google-calendar-mcp"
 license: "MIT"
+installableForAi: false
+installableForAiReason: "handshake-timeout"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "1.0.9"
 ---
 Si tu día es una tira de turnos — clientes, entregas, llamadas, visitas — tu Google Calendar es el mapa real de tu semana. Este conector deja que tu IA lo lea y lo maneje por ti, para que dejes de pelearte con la app mientras estás al teléfono con alguien.
 

@@ -14,6 +14,12 @@ tagline: "Reviews watched, replies drafted"
 originalAuthor: "Google (Business Profile API) · connector by Terminal Sync"
 originalAuthorUrl: "https://developers.google.com/my-business"
 license: "proprietary"
+installableForAi: false
+installableForAiReason: "no-manifest"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 For a local business, your Google reviews *are* your reputation — the first thing a new customer sees. But they show up at random, and a review left unanswered for a week reads as "this place doesn't care." This connector puts your AI on watch: it reads your reviews, tells you what's new, flags a dropping rating, and drafts a reply for each one — which it only posts after you say yes.
 

@@ -21,6 +21,12 @@ license: "MIT"
 licenseUrl: "https://github.com/modelcontextprotocol/servers/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 14
+aiReadOnlyTools: 10
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "2026.8.31"
 ---
 **Filesystem** is the simplest and most useful tool in the catalog. In the words of its official README, it's a *"Node.js server implementing Model Context Protocol (MCP) for filesystem operations"* — your AI gains the ability to read, write, list, search, edit and move files directly on your disk.
 

@@ -25,6 +25,12 @@ license: "MIT"
 licenseUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-gitlab"
 marketplaceSource: "anthropic"
 marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 9
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "2025.4.25"
 ---
 **GitLab** is a platform for storing code, organizing technical work and reviewing changes before they ship. It is where many teams keep their projects, issues and merge requests.
 

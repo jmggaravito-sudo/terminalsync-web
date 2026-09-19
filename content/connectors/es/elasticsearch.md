@@ -23,6 +23,12 @@ originalAuthor: "Elastic"
 originalAuthorUrl: "https://github.com/elastic/mcp-server-elasticsearch"
 license: "Apache-2.0"
 licenseUrl: "https://github.com/elastic/mcp-server-elasticsearch/blob/main/LICENSE"
+installableForAi: false
+installableForAiReason: "handshake-timeout"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "0.3.1"
 ---
 **Elasticsearch** es el motor de búsqueda y analítica donde muchos equipos guardan sus logs, catálogos de productos, pedidos y eventos. El conector oficial, publicado por Elastic, conecta al agente con tus datos de Elasticsearch usando el Model Context Protocol para que puedas — en palabras del README — *"interact with your Elasticsearch indices through natural language conversations"* (interactuar con tus índices mediante conversaciones en lenguaje natural).
 

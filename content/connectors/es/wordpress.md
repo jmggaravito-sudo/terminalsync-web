@@ -24,6 +24,12 @@ tagline: "Posts y páginas, sin usar las manos"
 originalAuthor: "Utsav Ladani"
 originalAuthorUrl: "https://www.npmjs.com/package/wordpress-mcp"
 license: "ISC"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 5
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "1.0.2"
 ---
 El blog de tu sitio es una de las mejores formas de que te encuentren y de mostrarte vivo ante los clientes — pero escribir y publicar es lo que siempre se posterga. Si tu sitio corre en **WordPress**, este conector deja que tu IA arme un post y lo suba por ti, así el "deberíamos postear sobre eso" de verdad pasa.
 

@@ -21,6 +21,12 @@ license: "MIT"
 licenseUrl: "https://www.npmjs.com/package/@modelcontextprotocol/server-postgres"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
+installableForAi: false
+installableForAiReason: "handshake-timeout"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "0.6.2"
 ---
 **PostgreSQL** es una de las bases de datos más usadas del mundo: muchas apps guardan ahí sus datos importantes (usuarios, pedidos, facturación). Tradicionalmente, para hacerle una pregunta a esa base hace falta saber SQL y una herramienta tipo TablePlus o pgAdmin.
 

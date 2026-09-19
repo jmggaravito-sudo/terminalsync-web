@@ -24,6 +24,12 @@ license: "FSL-1.1-ALv2"
 licenseUrl: "https://github.com/getsentry/sentry-mcp/blob/master/LICENSE.md"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 9
+aiReadOnlyTools: 6
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "0.39.0"
 ---
 **Sentry** is the tool your team uses to find out about production errors: when an app fails, Sentry receives the alert, gathers the context, and builds an "issue" with the stacktrace, which user hit it, on which version, how many times it happened.
 

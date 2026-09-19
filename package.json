@@ -9,6 +9,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "verify:connectors": "node scripts/verify-connector.mjs --all --write --json --concurrency 1",
     "test:watch": "vitest"
   },
   "dependencies": {

@@ -13,6 +13,12 @@ tagline: "One post, both feeds — with you in charge"
 originalAuthor: "Meta Platforms"
 originalAuthorUrl: "https://about.meta.com"
 license: "proprietary"
+installableForAi: false
+installableForAiReason: "package-invalid"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 Built on Meta's official Graph API — the same family that powers our WhatsApp connector. It lets you publish a post (image + caption) to your **Instagram** and your **Facebook Page** without opening either app.
 

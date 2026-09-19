@@ -13,6 +13,12 @@ tagline: "24/7 support, with you in charge"
 originalAuthor: "Meta Platforms"
 originalAuthorUrl: "https://whatsapp.com"
 license: "proprietary"
+installableForAi: false
+installableForAiReason: "no-manifest"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 Built for LatAm businesses where WhatsApp is the primary channel. Claude helps you:
 

@@ -17,6 +17,12 @@ license: "proprietary"
 licenseUrl: "https://zapier.com/terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: false
+installableForAiReason: "no-manifest"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 **Zapier MCP** is the bridge from your agent to the apps you already use: Gmail, Google Sheets, Slack, Salesforce, HubSpot, Asana, and thousands more. Unlike a single-product connector, Zapier lets you choose exactly which actions are exposed to your AI — send an email, add a spreadsheet row, create a task, update a CRM deal, or trigger one of the tools you have enabled in your Zapier MCP server.
 

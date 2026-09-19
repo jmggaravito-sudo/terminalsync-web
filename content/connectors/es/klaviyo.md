@@ -22,6 +22,12 @@ license: "proprietary"
 licenseUrl: "https://www.klaviyo.com/legal/api-terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: false
+installableForAiReason: "recipe-not-npx"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 **Klaviyo** es la plataforma de marketing por email y SMS que usan los negocios de ecommerce para manejar campañas, flows automáticos y segmentos de clientes. El server MCP oficial de Klaviyo deja que tu agente chequee el rendimiento y arme campañas directamente — sin pegar ninguna API key en TerminalSync, solo con el login de tu propia cuenta de Klaviyo.
 

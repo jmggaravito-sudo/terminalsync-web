@@ -27,6 +27,12 @@ license: "Pipedream Source Available License 1.0"
 licenseUrl: "https://github.com/PipedreamHQ/pipedream/blob/master/LICENSE"
 hidden: true
 marketplaceSource: "official"
+installableForAi: false
+installableForAiReason: "handshake-timeout"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "0.0.1"
 ---
 **Pipedream** connects apps and APIs so you can automate work that usually means opening five tabs: messages, spreadsheets, tickets, calendars, databases and internal tools.
 

@@ -23,6 +23,12 @@ originalAuthor: "monday.com"
 originalAuthorUrl: "https://github.com/mondaycom/monday-ai"
 license: "MIT"
 licenseUrl: "https://github.com/mondaycom/monday-ai/blob/master/LICENSE"
+installableForAi: false
+installableForAiReason: "env-denied"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 Si tu negocio corre sobre tableros de **monday.com** — pipeline de ventas, proyectos, pedidos, lo que sea que lleves en esas columnas de colores — este conector deja que tu IA los lea y los actualice, así el tablero queda al día sin que andes arrastrando tarjetas todo el día.
 

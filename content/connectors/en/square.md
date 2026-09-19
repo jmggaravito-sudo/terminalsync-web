@@ -23,6 +23,12 @@ originalAuthor: "Square (Block, Inc.)"
 originalAuthorUrl: "https://developer.squareup.com"
 license: "Apache-2.0"
 licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 3
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "0.1.2"
 ---
 **Square** is the platform behind payments, point of sale and the catalog for millions of businesses. The official connector, published by Block, lets AI assistants interact with Square's Connect API — so the agent can work directly against your Square account: process payments, manage your catalog of items and categories, handle orders, and look up customers. The full, always-current list of services lives in [Square's API documentation](https://developer.squareup.com/docs).
 

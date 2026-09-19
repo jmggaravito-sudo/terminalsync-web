@@ -22,6 +22,12 @@ license: "proprietary"
 licenseUrl: "https://ideogram.ai/terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: false
+installableForAiReason: "recipe-not-npx"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: null
 ---
 **Ideogram** es el estudio de generación de imágenes que sirve cuando el texto, la tipografía, los mockups, posters, logos y piezas de campaña tienen que verse prolijos y no improvisados. El MCP oficial de Ideogram deja que tu agente genere y revise visuales desde el flujo de trabajo — sin pegar API keys en TerminalSync, usando el login de tu cuenta de Ideogram.
 

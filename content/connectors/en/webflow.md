@@ -24,6 +24,12 @@ license: "MIT"
 licenseUrl: "https://unpkg.com/webflow-mcp-server@1.0.0/LICENSE.md"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 40
+aiReadOnlyTools: 0
+verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedPackageVersion: "1.0.0"
 ---
 **Webflow** is one of the most widely used visual website builders — hand-designed pages, CMS collections, e-commerce, all managed without code. If your site (or a client's) runs on Webflow, this connector lets your AI work against the site directly, without you opening the panel.
 
