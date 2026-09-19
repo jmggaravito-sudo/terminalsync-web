@@ -24,10 +24,10 @@ originalAuthorUrl: "https://github.com/elastic/mcp-server-elasticsearch"
 license: "Apache-2.0"
 licenseUrl: "https://github.com/elastic/mcp-server-elasticsearch/blob/main/LICENSE"
 installableForAi: false
-installableForAiReason: "handshake-timeout"
+installableForAiReason: "no-jsonrpc-id"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "0.3.1"
 ---
 **Elasticsearch** is the search and analytics engine where a lot of teams keep their logs, product catalogs, orders and events. The official connector, published by Elastic, connects the agent to your Elasticsearch data using the Model Context Protocol so you can — in the README's words — *"interact with your Elasticsearch indices through natural language conversations."*

@@ -26,7 +26,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 16
 aiReadOnlyTools: 7
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "1.14.0"
 ---
 **Airtable** es una de las herramientas de base de datos no-código más usadas del mundo: pinta como una hoja de cálculo, funciona como una base relacional. Empresas la usan como CRM, inventario, tracker de pedidos, calendario editorial, pipeline de contenidos — todo sin programar. La descripción oficial del conector en el directorio de Anthropic lo resume así: *"Bring your structured data to Claude"*.

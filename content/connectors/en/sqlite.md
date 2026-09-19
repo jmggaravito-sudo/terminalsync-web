@@ -19,7 +19,7 @@ installableForAi: false
 installableForAiReason: "no-manifest"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
 Ideal for local DBs: prototypes, exports, archives. You point at the file and ask your AI to read or modify it conversationally.

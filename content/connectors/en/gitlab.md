@@ -29,7 +29,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 9
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "2025.4.25"
 ---
 **GitLab** is a platform for storing code, organizing technical work and reviewing changes before they ship. It is where many teams keep their projects, issues and merge requests.

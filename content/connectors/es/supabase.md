@@ -26,7 +26,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 29
 aiReadOnlyTools: 18
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "0.13.0"
 ---
 **Supabase** es la alternativa open-source más popular a Firebase: Postgres administrado, auth, storage, realtime, edge functions — todo bajo un solo panel. El conector oficial expone tools en 8 categorías (Account, Database, Knowledge Base, Development, Edge Functions, Debugging, Branching, Storage), permitiendo al agente leer schemas, ejecutar SQL, aplicar migrations, generar tipos TypeScript y desplegar edge functions.

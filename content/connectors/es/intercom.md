@@ -18,7 +18,7 @@ installableForAi: false
 installableForAiReason: "no-manifest"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
 Cuando tus clientes te escriben por **Intercom** — dudas, reclamos, pedidos — mantenerte al día es un trabajo aparte. Este conector pone a tu IA a ayudarte: pídele que revise tu bandeja en palabras simples y te dice qué conversaciones necesitan atención, encuentra al cliente que buscas y prepara la respuesta por ti.

@@ -24,10 +24,10 @@ originalAuthorUrl: "https://github.com/domdomegg/gmail-mcp"
 license: "MIT"
 licenseUrl: "https://github.com/domdomegg/gmail-mcp/blob/master/LICENSE"
 installableForAi: false
-installableForAiReason: "handshake-timeout"
+installableForAiReason: "needs-oauth"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "2.4.0"
 ---
 Llegás a la mañana con 80 correos sin leer. Le preguntás *"¿qué es urgente hoy?"* y tu IA lee tu inbox y te dice lo que de verdad importa. Le pedís *"resumime lo que mandó el cliente X esta semana"* y trae el hilo y te da la idea. Es el conector que convierte tu inbox de una pila que da miedo en algo que simplemente preguntás — y es del que dependen, sin hacer ruido, la mayoría de tus automatizaciones.

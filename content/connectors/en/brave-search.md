@@ -28,7 +28,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 2
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "0.6.2"
 ---
 **Brave Search** is Brave's search engine. It uses its own index, useful when you want your AI to search the web without depending on Google.

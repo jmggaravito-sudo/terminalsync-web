@@ -18,10 +18,16 @@ node scripts/verify-connector.mjs --all --write --json --concurrency 2 > connect
 El modo completo actualiza en las dos fichas los campos
 `installableForAi`, `installableForAiReason`, `aiToolsCount`,
 `aiReadOnlyTools`, `verifiedAt` y `verifiedPackageVersion` (y agrega
-`verifiedWithoutKey: true` cuando el servidor completa `initialize` pero no
-puede listar herramientas sin una llave real). La salida JSON incluye el
-conteo y la lista de falsos con su razón; el runner de n8n debe conservarla
-como evidencia del run.
+`verifiedWithoutKey: false` cuando la instalación es válida pero el servidor
+necesita una llave real para completar el handshake). Un servidor OAuth que
+abre navegador queda como `needs-oauth`. Las respuestas JSON-RPC tienen que
+traer exactamente el `id` numérico enviado; las que no lo traen quedan como
+`no-jsonrpc-id`.
+
+Los sidecars propios `memory`, `meta-ads` y `meta-social` solo llevan
+`firstParty: true`: no se cuentan ni se les asigna `installableForAi`.
+La salida JSON incluye el conteo y la lista de falsos con su razón; el runner
+de n8n debe conservarla como evidencia del run.
 
 ## Límites de seguridad
 

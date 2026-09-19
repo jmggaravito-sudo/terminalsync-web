@@ -26,7 +26,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 40
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "1.12.0"
 ---
 If your team runs its work in **ClickUp** — the lists, the tasks, the who's-doing-what — this connector lets your AI read it and keep it moving, so you can ask about your projects instead of clicking through them.

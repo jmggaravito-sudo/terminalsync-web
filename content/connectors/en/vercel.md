@@ -17,7 +17,7 @@ installableForAi: false
 installableForAiReason: "no-manifest"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
 If you deploy on Vercel, you can ask Claude for build status, pull error logs, promote preview deploys to prod, or add env vars — all without opening the dashboard.

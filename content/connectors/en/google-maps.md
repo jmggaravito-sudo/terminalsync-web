@@ -28,7 +28,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 7
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "0.6.2"
 ---
 **Google Maps** is Google's mapping platform: addresses, places, routes, travel times and location data. Many teams use it for logistics, area research, travel and customer support.

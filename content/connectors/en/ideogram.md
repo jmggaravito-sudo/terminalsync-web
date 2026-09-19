@@ -26,7 +26,7 @@ installableForAi: false
 installableForAiReason: "recipe-not-npx"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
 **Ideogram** is the image-generation studio teams use when text, typography, product mockups, posters, logos, and campaign visuals need to look polished instead of random. The official Ideogram MCP server lets your agent generate and revise visuals from inside the workflow — no API key pasted into TerminalSync, just your Ideogram account login.

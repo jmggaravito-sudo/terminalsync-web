@@ -26,7 +26,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 24
 aiReadOnlyTools: 12
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "2.5.1"
 ---
 **Notion** es donde mucha gente guarda años de trabajo: recetas, notas de clientes, decisiones de equipo, links, planes de proyectos, manuales internos. El conector oficial — mantenido por Notion Labs — implementa un *"MCP server for the Notion API"* y expone 22 tools cubriendo data sources (databases), páginas, comentarios, búsqueda y conversión de contenido a Markdown.

@@ -26,7 +26,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 16
 aiReadOnlyTools: 7
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "1.14.0"
 ---
 **Airtable** is one of the most widely used no-code database tools in the world: looks like a spreadsheet, works like a relational DB. Companies run their CRM, inventory, order tracker, editorial calendar and content pipeline on it — no code required. Anthropic's directory description sums it up: *"Bring your structured data to Claude"*.

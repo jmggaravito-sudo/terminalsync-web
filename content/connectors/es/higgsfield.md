@@ -26,7 +26,7 @@ installableForAi: false
 installableForAiReason: "recipe-not-npx"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
 **Higgsfield** es una plataforma creativa de IA para generar imágenes y videos. Su conector MCP oficial le da a tu agente acceso a los modelos creativos de Higgsfield desde tu flujo de trabajo: generar imágenes, crear videos cortos, entrenar o reutilizar personajes y consultar tu historial de generaciones.

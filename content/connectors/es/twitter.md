@@ -29,7 +29,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 2
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "0.2.0"
 ---
 Mantener presencia en **X** come tiempo que no tienes. Este conector deja que tu IA publique por ti y escuche lo que se dice — desde el mismo chat donde manejas todo lo demás, así un anuncio rápido o un "¿qué dicen de nosotros?" no significa abrir otra app más.

@@ -76,7 +76,7 @@ jobs:
       - name: Verify connector installability for TerminalSync AI
         run: |
           node scripts/verify-connector.mjs --all --json --concurrency 1 > connector-installability-ci.json
-          node -e 'const r=require("./connector-installability-ci.json"); console.log(`Connector installability: ${r.installable}/${r.total} installable; ${r.false.length} marked false.`); for (const x of r.false) console.log(`  ${x.slug}: ${x.reason}`)'
+          node -e 'const r=require("./connector-installability-ci.json"); console.log(`Connector installability: ${r.installable} verified, ${r.unverifiedNeedsKey} installable pending key, ${r.false.length} false (${r.total} supervised; ${r.firstParty.length} first-party excluded).`); for (const x of r.false) console.log(`  ${x.slug}: ${x.reason}`)'
 
       - name: Upload connector installability evidence
         if: always()

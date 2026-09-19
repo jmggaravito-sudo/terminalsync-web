@@ -26,7 +26,7 @@ installableForAi: false
 installableForAiReason: "recipe-not-npx"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
 **Klaviyo** is the email and SMS marketing platform ecommerce businesses use to run campaigns, automated flows, and customer segments. The official Klaviyo MCP server lets your agent check performance and build campaigns directly — no API key pasted into TerminalSync, just your own Klaviyo account login.

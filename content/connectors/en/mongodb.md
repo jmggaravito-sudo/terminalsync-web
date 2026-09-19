@@ -24,12 +24,13 @@ license: "Apache-2.0"
 licenseUrl: "https://github.com/mongodb-js/mongodb-mcp-server/blob/main/LICENSE"
 marketplaceSource: "official"
 marketplaceCategory: "web"
-installableForAi: false
-installableForAiReason: "handshake-timeout"
+installableForAi: true
+installableForAiReason: "unverified-needs-key"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "3.0.3"
+verifiedWithoutKey: false
 ---
 **MongoDB** is the document database behind countless apps — data stored as flexible JSON-like documents instead of rows and tables. The official connector, published by MongoDB, is *"a Model Context Protocol server for interacting with MongoDB Databases and MongoDB Atlas."* It's the bridge between what you ask and your data: it translates your requests into the queries and Atlas API calls needed to explore collections, run aggregations, and inspect your clusters.
 

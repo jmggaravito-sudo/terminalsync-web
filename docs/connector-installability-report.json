@@ -1,7 +1,14 @@
 {
-  "verifiedAt": "2026-09-19T11:53:03.181Z",
-  "total": 60,
+  "verifiedAt": "2026-09-19T12:19:33.156Z",
+  "catalogTotal": 60,
+  "firstParty": [
+    "memory",
+    "meta-ads",
+    "meta-social"
+  ],
+  "total": 57,
   "installable": 28,
+  "unverifiedNeedsKey": 6,
   "false": [
     {
       "slug": "asana",
@@ -21,7 +28,7 @@
     },
     {
       "slug": "elasticsearch",
-      "reason": "handshake-timeout"
+      "reason": "no-jsonrpc-id"
     },
     {
       "slug": "gdrive",
@@ -29,7 +36,7 @@
     },
     {
       "slug": "gmail",
-      "reason": "handshake-timeout"
+      "reason": "needs-oauth"
     },
     {
       "slug": "google-business",
@@ -37,11 +44,11 @@
     },
     {
       "slug": "google-calendar",
-      "reason": "handshake-timeout"
+      "reason": "needs-oauth"
     },
     {
       "slug": "google-sheets",
-      "reason": "handshake-timeout"
+      "reason": "needs-oauth"
     },
     {
       "slug": "gusto",
@@ -68,38 +75,6 @@
       "reason": "recipe-not-npx"
     },
     {
-      "slug": "memory",
-      "reason": "package-invalid"
-    },
-    {
-      "slug": "meta-ads",
-      "reason": "package-invalid"
-    },
-    {
-      "slug": "meta-social",
-      "reason": "package-invalid"
-    },
-    {
-      "slug": "monday",
-      "reason": "env-denied"
-    },
-    {
-      "slug": "mongodb",
-      "reason": "handshake-timeout"
-    },
-    {
-      "slug": "neon",
-      "reason": "handshake-timeout"
-    },
-    {
-      "slug": "pipedream",
-      "reason": "handshake-timeout"
-    },
-    {
-      "slug": "postgres",
-      "reason": "handshake-timeout"
-    },
-    {
       "slug": "posthog",
       "reason": "recipe-not-npx"
     },
@@ -110,10 +85,6 @@
     {
       "slug": "sqlite",
       "reason": "no-manifest"
-    },
-    {
-      "slug": "stripe",
-      "reason": "handshake-timeout"
     },
     {
       "slug": "vercel",
@@ -139,7 +110,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 40,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "0.0.11"
     },
     {
@@ -148,7 +119,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 16,
       "aiReadOnlyTools": 7,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "1.14.0"
     },
     {
@@ -157,7 +128,7 @@
       "installableForAiReason": "recipe-not-npx",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -166,7 +137,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 2,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "0.6.2"
     },
     {
@@ -175,7 +146,7 @@
       "installableForAiReason": "recipe-not-npx",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -184,7 +155,7 @@
       "installableForAiReason": "recipe-not-npx",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -193,7 +164,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 40,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "1.12.0"
     },
     {
@@ -202,7 +173,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 2,
       "aiReadOnlyTools": 2,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "4.1.1"
     },
     {
@@ -211,16 +182,16 @@
       "installableForAiReason": "no-manifest",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
       "slug": "elasticsearch",
       "installableForAi": false,
-      "installableForAiReason": "handshake-timeout",
+      "installableForAiReason": "no-jsonrpc-id",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "0.3.1"
     },
     {
@@ -229,7 +200,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 2,
       "aiReadOnlyTools": 2,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "3.4.1"
     },
     {
@@ -238,7 +209,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 14,
       "aiReadOnlyTools": 10,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "2026.8.31"
     },
     {
@@ -247,7 +218,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 27,
       "aiReadOnlyTools": 16,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "3.24.0"
     },
     {
@@ -256,7 +227,7 @@
       "installableForAiReason": "no-manifest",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -265,7 +236,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 26,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "2025.4.8"
     },
     {
@@ -274,16 +245,16 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 9,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "2025.4.25"
     },
     {
       "slug": "gmail",
       "installableForAi": false,
-      "installableForAiReason": "handshake-timeout",
+      "installableForAiReason": "needs-oauth",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "2.4.0"
     },
     {
@@ -292,16 +263,16 @@
       "installableForAiReason": "no-manifest",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
       "slug": "google-calendar",
       "installableForAi": false,
-      "installableForAiReason": "handshake-timeout",
+      "installableForAiReason": "needs-oauth",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "1.0.9"
     },
     {
@@ -310,16 +281,16 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 7,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "0.6.2"
     },
     {
       "slug": "google-sheets",
       "installableForAi": false,
-      "installableForAiReason": "handshake-timeout",
+      "installableForAiReason": "needs-oauth",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "1.2.1"
     },
     {
@@ -328,7 +299,7 @@
       "installableForAiReason": "recipe-not-npx",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -337,7 +308,7 @@
       "installableForAiReason": "recipe-not-npx",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -346,7 +317,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 21,
       "aiReadOnlyTools": 14,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "0.4.0"
     },
     {
@@ -355,7 +326,7 @@
       "installableForAiReason": "recipe-not-npx",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -364,7 +335,7 @@
       "installableForAiReason": "no-manifest",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -373,7 +344,7 @@
       "installableForAiReason": "no-manifest",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -382,7 +353,7 @@
       "installableForAiReason": "recipe-not-npx",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -391,62 +362,50 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 2,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "2.0.0"
     },
     {
       "slug": "memory",
-      "installableForAi": false,
-      "installableForAiReason": "package-invalid",
-      "aiToolsCount": 0,
-      "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
-      "verifiedPackageVersion": null
+      "firstParty": true
     },
     {
       "slug": "meta-ads",
-      "installableForAi": false,
-      "installableForAiReason": "package-invalid",
-      "aiToolsCount": 0,
-      "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
-      "verifiedPackageVersion": null
+      "firstParty": true
     },
     {
       "slug": "meta-social",
-      "installableForAi": false,
-      "installableForAiReason": "package-invalid",
-      "aiToolsCount": 0,
-      "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
-      "verifiedPackageVersion": null
+      "firstParty": true
     },
     {
       "slug": "monday",
-      "installableForAi": false,
-      "installableForAiReason": "env-denied",
+      "installableForAi": true,
+      "installableForAiReason": "unverified-needs-key",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
-      "verifiedPackageVersion": null
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "3.3.0",
+      "verifiedWithoutKey": false
     },
     {
       "slug": "mongodb",
-      "installableForAi": false,
-      "installableForAiReason": "handshake-timeout",
+      "installableForAi": true,
+      "installableForAiReason": "unverified-needs-key",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
-      "verifiedPackageVersion": "3.0.3"
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "3.0.3",
+      "verifiedWithoutKey": false
     },
     {
       "slug": "neon",
-      "installableForAi": false,
-      "installableForAiReason": "handshake-timeout",
+      "installableForAi": true,
+      "installableForAiReason": "unverified-needs-key",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
-      "verifiedPackageVersion": "0.6.5"
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.6.5",
+      "verifiedWithoutKey": false
     },
     {
       "slug": "notion",
@@ -454,7 +413,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 24,
       "aiReadOnlyTools": 12,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "2.5.1"
     },
     {
@@ -463,7 +422,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 9,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "2.0.0"
     },
     {
@@ -472,26 +431,28 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 9,
       "aiReadOnlyTools": 7,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "0.3.0"
     },
     {
       "slug": "pipedream",
-      "installableForAi": false,
-      "installableForAiReason": "handshake-timeout",
+      "installableForAi": true,
+      "installableForAiReason": "unverified-needs-key",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
-      "verifiedPackageVersion": "0.0.1"
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.0.1",
+      "verifiedWithoutKey": false
     },
     {
       "slug": "postgres",
-      "installableForAi": false,
-      "installableForAiReason": "handshake-timeout",
+      "installableForAi": true,
+      "installableForAiReason": "unverified-needs-key",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
-      "verifiedPackageVersion": "0.6.2"
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.6.2",
+      "verifiedWithoutKey": false
     },
     {
       "slug": "posthog",
@@ -499,7 +460,7 @@
       "installableForAiReason": "recipe-not-npx",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -508,7 +469,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 7,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "2025.5.12"
     },
     {
@@ -517,7 +478,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 9,
       "aiReadOnlyTools": 6,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "0.39.0"
     },
     {
@@ -526,7 +487,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 1,
       "aiReadOnlyTools": 1,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "2026.8.31"
     },
     {
@@ -535,7 +496,7 @@
       "installableForAiReason": "no-manifest",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -544,7 +505,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 8,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "2025.4.25"
     },
     {
@@ -553,7 +514,7 @@
       "installableForAiReason": "no-manifest",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -562,17 +523,18 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 3,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "0.1.2"
     },
     {
       "slug": "stripe",
-      "installableForAi": false,
-      "installableForAiReason": "handshake-timeout",
+      "installableForAi": true,
+      "installableForAiReason": "unverified-needs-key",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
-      "verifiedPackageVersion": "0.3.3"
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
+      "verifiedPackageVersion": "0.3.3",
+      "verifiedWithoutKey": false
     },
     {
       "slug": "supabase",
@@ -580,7 +542,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 29,
       "aiReadOnlyTools": 18,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "0.13.0"
     },
     {
@@ -589,7 +551,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 2,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "2.0.0"
     },
     {
@@ -598,7 +560,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 40,
       "aiReadOnlyTools": 20,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "11.0.0"
     },
     {
@@ -607,7 +569,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 2,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "0.2.0"
     },
     {
@@ -616,7 +578,7 @@
       "installableForAiReason": "no-manifest",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -625,7 +587,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 40,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "1.0.0"
     },
     {
@@ -634,7 +596,7 @@
       "installableForAiReason": "no-manifest",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -643,7 +605,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 5,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "1.0.2"
     },
     {
@@ -652,7 +614,7 @@
       "installableForAiReason": "ok",
       "aiToolsCount": 40,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": "0.0.17"
     },
     {
@@ -661,7 +623,7 @@
       "installableForAiReason": "no-manifest",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     },
     {
@@ -670,7 +632,7 @@
       "installableForAiReason": "recipe-not-npx",
       "aiToolsCount": 0,
       "aiReadOnlyTools": 0,
-      "verifiedAt": "2026-09-19T11:53:03.181Z",
+      "verifiedAt": "2026-09-19T12:19:33.156Z",
       "verifiedPackageVersion": null
     }
   ]

@@ -25,7 +25,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 9
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "2.0.0"
 ---
 **PDF** is the document format people use for papers, reports, contracts and forms. The official `@modelcontextprotocol` server opens an interactive PDF viewer and supports local files plus remote URLs from approved academic sources such as arXiv, bioRxiv, Zenodo and others.

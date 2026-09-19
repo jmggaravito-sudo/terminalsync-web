@@ -24,10 +24,10 @@ originalAuthor: "Yevhen Romanov"
 originalAuthorUrl: "https://www.npmjs.com/package/google-calendar-mcp"
 license: "MIT"
 installableForAi: false
-installableForAiReason: "handshake-timeout"
+installableForAiReason: "needs-oauth"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "1.0.9"
 ---
 If your day is a string of appointments — clients, deliveries, calls, visits — your Google Calendar is the real map of your week. This connector lets your AI read it and manage it for you, so you stop juggling the app while you're on the phone with someone.

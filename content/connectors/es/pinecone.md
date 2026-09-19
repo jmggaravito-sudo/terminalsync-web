@@ -28,7 +28,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 9
 aiReadOnlyTools: 7
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "0.3.0"
 ---
 **Pinecone** es una base de datos vectorial — la capa de almacenamiento que hace posible la búsqueda semántica y el retrieval para apps de IA, guardando tus datos como embeddings para que un asistente encuentre registros por significado y no por palabras exactas. El conector oficial, publicado por Pinecone, es el *Pinecone Developer MCP Server*: deja que los asistentes de código y otras herramientas de IA se conecten con tus proyectos de Pinecone y con la documentación. Una vez conectado, la IA puede buscar en la doc de Pinecone para responder con precisión, ayudarte a configurar índices según lo que tu aplicación necesita, generar código a partir de la configuración y los datos de tu índice, y subir y buscar registros para que pruebes consultas y evalúes resultados en tu propio entorno de desarrollo.

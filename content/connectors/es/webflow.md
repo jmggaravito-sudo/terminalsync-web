@@ -28,7 +28,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 40
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "1.0.0"
 ---
 **Webflow** es uno de los constructores de sitios web visuales más usados — páginas diseñadas a mano, colecciones de CMS, e-commerce, todo manejado sin código. Si tu sitio (o el de un cliente) corre en Webflow, este conector hace que tu IA pueda trabajar contra el sitio directamente, sin que tú abras el panel.

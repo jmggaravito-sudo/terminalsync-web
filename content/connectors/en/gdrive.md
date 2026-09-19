@@ -19,7 +19,7 @@ installableForAi: false
 installableForAiReason: "no-manifest"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
 Note: this is the Anthropic first-party connector for Drive — different from the TerminalSync curated Google Drive connector. Both work; this one is the official Anthropic implementation included in the marketplace as a multi-IA alternative.

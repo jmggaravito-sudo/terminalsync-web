@@ -21,7 +21,7 @@ installableForAi: false
 installableForAiReason: "no-manifest"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
 **Zapier MCP** es el puente entre tu agente y las apps que ya usas: Gmail, Google Sheets, Slack, Salesforce, HubSpot, Asana y miles más. A diferencia de un conector de un solo producto, Zapier te deja elegir exactamente qué acciones le expones a la IA: enviar un email, agregar una fila a una planilla, crear una tarea, actualizar un negocio del CRM o disparar una de las herramientas que habilitaste en tu servidor MCP de Zapier.

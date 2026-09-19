@@ -28,7 +28,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 26
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "2025.4.8"
 ---
 **GitHub** es donde viven el código y las conversaciones técnicas de cualquier proyecto de software: los archivos del repo, las tareas pendientes (issues), las propuestas de cambio (pull requests) y las discusiones del equipo. Es la plataforma estándar para guardar y revisar código.

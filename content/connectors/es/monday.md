@@ -16,19 +16,19 @@ manifest:
       args: ["-y", "@mondaydotcomorg/monday-api-mcp", "-m", "atp"]
       env:
         monday_token: "${SECRET:MONDAY_TOKEN}"
-        NODE_OPTIONS: "--no-node-snapshot"
 affiliate: false
 tagline: "Boards e items al alcance de la IA"
 originalAuthor: "monday.com"
 originalAuthorUrl: "https://github.com/mondaycom/monday-ai"
 license: "MIT"
 licenseUrl: "https://github.com/mondaycom/monday-ai/blob/master/LICENSE"
-installableForAi: false
-installableForAiReason: "env-denied"
+installableForAi: true
+installableForAiReason: "unverified-needs-key"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
-verifiedPackageVersion: null
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "3.3.0"
+verifiedWithoutKey: false
 ---
 Si tu negocio corre sobre tableros de **monday.com** — pipeline de ventas, proyectos, pedidos, lo que sea que lleves en esas columnas de colores — este conector deja que tu IA los lea y los actualice, así el tablero queda al día sin que andes arrastrando tarjetas todo el día.
 
@@ -53,7 +53,7 @@ El token queda guardado cifrado en tu Keychain y sincronizado entre tus máquina
 
 `@mondaydotcomorg/monday-api-mcp` (publicado por **monday.com**, oficial) habla la monday.com API. Expone la superficie central de work-management — boards, items, columnas, groups, updates y users — lectura y escritura. El conector corre en modo `atp` (API-tools).
 
-La auth es la env var `monday_token` (un token personal de la API de monday.com). El server setea `NODE_OPTIONS=--no-node-snapshot` según la config oficial. Terminal Sync mapea el token desde el secreto `MONDAY_TOKEN` en tu Keychain.
+La auth es la env var `monday_token` (un token personal de la API de monday.com). Terminal Sync mapea el token desde el secreto `MONDAY_TOKEN` en tu Keychain.
 
 Terminal Sync guarda el token en tu Keychain, sincronizado cifrado entre máquinas con AES-256-GCM. Como los tools de create/update mutan datos reales del tablero, el escritorio los pasa por un paso de confirmación.
 

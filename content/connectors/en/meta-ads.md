@@ -15,12 +15,7 @@ originalAuthor: "Terminal Sync"
 originalAuthorUrl: "https://terminalsync.ai"
 license: "proprietary"
 licenseUrl: "https://terminalsync.ai"
-installableForAi: false
-installableForAiReason: "package-invalid"
-aiToolsCount: 0
-aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
-verifiedPackageVersion: null
+firstParty: true
 ---
 **Meta Ads** are Facebook and Instagram ads. This connector is **built by Terminal Sync**: we talk to Meta's **official Marketing API** so your assistant can **watch how your campaigns are doing** and answer in plain language — without you opening Ads Manager.
 

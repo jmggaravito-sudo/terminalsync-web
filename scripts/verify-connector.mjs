@@ -16,7 +16,8 @@ import matter from "gray-matter";
 
 export const REASONS = new Set([
   "ok", "no-manifest", "recipe-not-npx", "package-invalid", "install-failed",
-  "no-entrypoint", "handshake-timeout", "no-usable-tools", "needs-postinstall", "env-denied",
+  "no-entrypoint", "handshake-timeout", "no-jsonrpc-id", "no-usable-tools",
+  "needs-postinstall", "env-denied", "unverified-needs-key", "needs-oauth",
 ]);
 const SLUG_RE = /^[a-z0-9-]{1,40}$/;
 const TOOL_RE = /^[A-Za-z0-9_-]{1,64}$/;
@@ -24,6 +25,9 @@ const DENIED_ENV_RE = /^(PATH|NODE_OPTIONS|NPM_CONFIG_.*|LD_.*|DYLD_.*)$/i;
 const PACKAGE_RE = /^(?:@[a-z0-9][a-z0-9._~-]*\/)?[a-z0-9][a-z0-9._~-]*$/;
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONNECTOR_DIRS = ["content/connectors/en", "content/connectors/es"];
+const FIRST_PARTY = new Set(["memory", "meta-ads", "meta-social"]);
+const OAUTH_CONNECTORS = new Set(["gmail", "google-calendar", "google-sheets"]);
+const KEY_REQUIRED_CONNECTORS = new Set(["postgres", "neon", "mongodb", "stripe", "todoist", "elasticsearch", "pipedream", "monday"]);
 
 function parseArgs(argv) {
   const out = { all: false, write: false, json: false, file: [], concurrency: 2 };
@@ -120,32 +124,42 @@ function jsonRpc(id, method, params = {}) { return `${JSON.stringify({ jsonrpc: 
 async function handshake(entry, args, env, allowAuthFailure, timeoutMs = 5000) {
   return new Promise((resolve) => {
     const child = spawn(process.execPath, [entry, ...args], { cwd: path.dirname(entry), env, stdio: ["pipe", "pipe", "pipe"], shell: false });
-    let buffer = ""; let initialized = false; let tools = null; let authFailure = false; let settled = false;
+    let buffer = ""; let stderr = ""; let expectedId = 1; let initialized = false; let tools = null; let authFailure = false; let settled = false;
     const finish = (result) => { if (settled) return; settled = true; clearTimeout(timer); child.kill("SIGTERM"); setTimeout(() => child.kill("SIGKILL"), 100).unref(); resolve(result); };
-    const timer = setTimeout(() => finish({ reason: "handshake-timeout" }), timeoutMs);
-    child.stdin.on("error", () => finish({ reason: "handshake-timeout" }));
+    const timer = setTimeout(() => finish({ reason: allowAuthFailure ? "unverified-needs-key" : "handshake-timeout", stderr }), timeoutMs);
+    child.stdin.on("error", () => finish({ reason: allowAuthFailure ? "unverified-needs-key" : "handshake-timeout", stderr }));
     const consume = () => {
       while (buffer.includes("\n")) {
         const line = buffer.slice(0, buffer.indexOf("\n")).trim(); buffer = buffer.slice(buffer.indexOf("\n") + 1);
         if (!line || line.startsWith("event:")) continue;
         let message; try { message = JSON.parse(line); } catch { continue; }
-        const responseId = message.id ?? (initialized ? 2 : 1);
+        if (!("id" in message)) return finish({ reason: "no-jsonrpc-id", stderr });
+        const responseId = message.id;
+        if (responseId !== expectedId) continue;
         if (responseId === 1 && ("result" in message || "error" in message)) {
           if (message.error) return finish({ reason: "handshake-timeout", detail: message.error.message });
-          initialized = true;
-          try { child.stdin.write(jsonRpc(2, "tools/list")); } catch { finish({ reason: "handshake-timeout" }); }
+          initialized = true; expectedId = 2;
+          try { child.stdin.write(jsonRpc(2, "tools/list")); } catch { finish({ reason: allowAuthFailure ? "unverified-needs-key" : "handshake-timeout", stderr }); }
         } else if (responseId === 2 && ("result" in message || "error" in message)) {
           if (message.error) { authFailure = /auth|token|key|unauthor|forbidden|credential/i.test(String(message.error.message)); tools = []; }
           else tools = Array.isArray(message.result?.tools) ? message.result.tools : [];
-          if (authFailure && allowAuthFailure) return finish({ tools: [], verifiedWithoutKey: true });
+          if (authFailure && allowAuthFailure) return finish({ tools: [], unverifiedNeedsKey: true, stderr });
           if (!initialized || !tools) return finish({ reason: "handshake-timeout" });
           return finish({ tools });
         }
       }
     };
     child.stdout.on("data", (chunk) => { buffer += chunk.toString(); consume(); });
-    child.on("error", () => finish({ reason: "handshake-timeout" }));
-    try { child.stdin.write(jsonRpc(1, "initialize", { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "terminalsync-supervisor", version: "1.0.0" } })); } catch { finish({ reason: "handshake-timeout" }); }
+    child.stderr.on("data", (chunk) => { stderr += chunk.toString(); });
+    child.on("error", () => finish({ reason: allowAuthFailure ? "unverified-needs-key" : "handshake-timeout", stderr }));
+    child.on("close", () => {
+      if (settled) return;
+      const text = stderr.toLowerCase();
+      if (/oauth|authorize|authorization|browser|login/.test(text)) return finish({ reason: "needs-oauth", stderr });
+      if (allowAuthFailure && /secret|token|key|credential|api[_ -]?key|environment|env\./.test(text)) return finish({ reason: "unverified-needs-key", stderr });
+      finish({ reason: "handshake-timeout", stderr });
+    });
+    try { child.stdin.write(jsonRpc(1, "initialize", { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "terminalsync-supervisor", version: "1.0.0" } })); } catch { finish({ reason: allowAuthFailure ? "unverified-needs-key" : "handshake-timeout", stderr }); }
   });
 }
 
@@ -154,12 +168,13 @@ function usableTools(slug, tools) {
   return { count: accepted.length, readOnly: accepted.filter(({ tool }) => tool?.annotations?.readOnlyHint === true).length };
 }
 
-function baseResult(slug, reason, verifiedAt) {
-  return { slug, installableForAi: false, installableForAiReason: reason, aiToolsCount: 0, aiReadOnlyTools: 0, verifiedAt, verifiedPackageVersion: null };
+function baseResult(slug, reason, verifiedAt, packageVersion = null) {
+  return { slug, installableForAi: false, installableForAiReason: reason, aiToolsCount: 0, aiReadOnlyTools: 0, verifiedAt, verifiedPackageVersion: packageVersion };
 }
 
 export async function verifyFile(file, { verifiedAt = new Date().toISOString(), npmCommand = "npm" } = {}) {
   const slug = slugFromFile(file); const parsed = matter(fs.readFileSync(file, "utf8"));
+  if (FIRST_PARTY.has(slug)) return { slug, firstParty: true };
   if (!validateSlug(slug)) return baseResult(slug, "package-invalid", verifiedAt);
   const server = getStdioServer(parsed.data); if (!server) return baseResult(slug, "no-manifest", verifiedAt);
   const recipe = parseRecipe(server); if (recipe.reason) return baseResult(slug, recipe.reason, verifiedAt);
@@ -180,21 +195,27 @@ export async function verifyFile(file, { verifiedAt = new Date().toISOString(), 
     const args = recipe.runtimeArgs.map(replaceSecrets);
     const allowAuthFailure = secretNames({ ...server, secrets: parsed.data.secrets }).size > 0;
     const result = await handshake(entry, args, env, allowAuthFailure);
-    if (result.reason) return { ...baseResult(slug, result.reason, verifiedAt), verifiedPackageVersion: packageJson.version || null };
+    if (OAUTH_CONNECTORS.has(slug) && ["handshake-timeout", "unverified-needs-key"].includes(result.reason)) return { ...baseResult(slug, "needs-oauth", verifiedAt), verifiedPackageVersion: packageJson.version || null };
+    if (KEY_REQUIRED_CONNECTORS.has(slug) && result.reason !== "no-jsonrpc-id" && ["handshake-timeout", "needs-oauth", "unverified-needs-key"].includes(result.reason)) return { slug, installableForAi: true, installableForAiReason: "unverified-needs-key", aiToolsCount: 0, aiReadOnlyTools: 0, verifiedAt, verifiedPackageVersion: packageJson.version || null, verifiedWithoutKey: false };
+    if (result.reason === "unverified-needs-key" || (result.reason === "handshake-timeout" && allowAuthFailure)) return { slug, installableForAi: true, installableForAiReason: "unverified-needs-key", aiToolsCount: 0, aiReadOnlyTools: 0, verifiedAt, verifiedPackageVersion: packageJson.version || null, verifiedWithoutKey: false };
+    if (result.reason) {
+      return { ...baseResult(slug, result.reason, verifiedAt), verifiedPackageVersion: packageJson.version || null };
+    }
     const counts = usableTools(slug, result.tools || []);
-    if (!counts.count && !result.verifiedWithoutKey) return { ...baseResult(slug, "no-usable-tools", verifiedAt), verifiedPackageVersion: packageJson.version || null };
-    return { slug, installableForAi: true, installableForAiReason: "ok", aiToolsCount: counts.count, aiReadOnlyTools: counts.readOnly, verifiedAt, verifiedPackageVersion: packageJson.version || null, ...(result.verifiedWithoutKey ? { verifiedWithoutKey: true } : {}) };
+    if (result.unverifiedNeedsKey) return { slug, installableForAi: true, installableForAiReason: "unverified-needs-key", aiToolsCount: counts.count, aiReadOnlyTools: counts.readOnly, verifiedAt, verifiedPackageVersion: packageJson.version || null, verifiedWithoutKey: false };
+    if (!counts.count) return { ...baseResult(slug, "no-usable-tools", verifiedAt), verifiedPackageVersion: packageJson.version || null };
+    return { slug, installableForAi: true, installableForAiReason: "ok", aiToolsCount: counts.count, aiReadOnlyTools: counts.readOnly, verifiedAt, verifiedPackageVersion: packageJson.version || null };
   } finally { fs.rmSync(temp, { recursive: true, force: true }); }
 }
 
 function writeResult(file, result) {
   const raw = fs.readFileSync(file, "utf8");
   const keys = ["installableForAi", "installableForAiReason", "aiToolsCount", "aiReadOnlyTools", "verifiedAt", "verifiedPackageVersion", "verifiedWithoutKey"];
-  const values = Object.fromEntries(keys.filter((key) => key in result).map((key) => [key, result[key]]));
+  const values = result.firstParty ? { firstParty: true } : Object.fromEntries(keys.filter((key) => key in result).map((key) => [key, result[key]]));
   const rendered = Object.entries(values).map(([key, value]) => `${key}: ${JSON.stringify(value)}`).join("\n");
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
   if (!match) { fs.writeFileSync(file, `---\n${rendered}\n---\n${raw}`); return; }
-  const front = match[1].split(/\r?\n/).filter((line) => !keys.some((key) => line.startsWith(`${key}:`)));
+  const front = match[1].split(/\r?\n/).filter((line) => !keys.concat("firstParty").some((key) => line.startsWith(`${key}:`)));
   fs.writeFileSync(file, `---\n${front.join("\n")}\n${rendered}\n---\n${raw.slice(match[0].length)}`);
 }
 
@@ -224,7 +245,9 @@ export async function run(argv = process.argv.slice(2)) {
     if (options.write) for (const file of slugFiles) writeResult(file, result);
   }
   const results = [...grouped.values()];
-  const report = { verifiedAt, total: results.length, installable: results.filter((r) => r.installableForAi).length, false: results.filter((r) => !r.installableForAi).map((r) => ({ slug: r.slug, reason: r.installableForAiReason })), results };
+  const firstParty = results.filter((r) => r.firstParty);
+  const supervised = results.filter((r) => !r.firstParty);
+  const report = { verifiedAt, catalogTotal: results.length, firstParty: firstParty.map((r) => r.slug), total: supervised.length, installable: supervised.filter((r) => r.installableForAi && r.installableForAiReason === "ok").length, unverifiedNeedsKey: supervised.filter((r) => r.installableForAiReason === "unverified-needs-key").length, false: supervised.filter((r) => !r.installableForAi).map((r) => ({ slug: r.slug, reason: r.installableForAiReason })), results };
   if (options.json) console.log(JSON.stringify(report, null, 2));
   else { console.log(`Verified ${report.total} connector fichas (${report.installable} installable).`); for (const item of report.false) console.log(`- ${item.slug}: ${item.reason}`); }
   return report;

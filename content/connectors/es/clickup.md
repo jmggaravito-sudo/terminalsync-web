@@ -26,7 +26,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 40
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "1.12.0"
 ---
 Si tu equipo lleva el trabajo en **ClickUp** — las listas, las tareas, el quién-hace-qué — este conector deja que tu IA lo lea y lo mantenga en movimiento, para que preguntes por tus proyectos en vez de andar clickeando entre ellos.

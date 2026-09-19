@@ -21,12 +21,7 @@ license: "MIT"
 licenseUrl: "https://github.com/modelcontextprotocol/servers/blob/main/LICENSE"
 marketplaceSource: "anthropic"
 marketplaceCategory: "desktop"
-installableForAi: false
-installableForAiReason: "package-invalid"
-aiToolsCount: 0
-aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
-verifiedPackageVersion: null
+firstParty: true
 ---
 **Memory** es, en palabras del README oficial, *"a basic implementation of persistent memory using a local knowledge graph. This lets Claude remember information about the user across chats."* Resuelve uno de los dolores más viejos de trabajar con IA: que cada conversación arranque de cero.
 

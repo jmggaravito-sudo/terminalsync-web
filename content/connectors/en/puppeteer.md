@@ -25,7 +25,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 7
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "2025.5.12"
 ---
 **Puppeteer** is a tool for controlling a real browser from code. It is useful for pages that load with JavaScript, include forms or require visual interaction.

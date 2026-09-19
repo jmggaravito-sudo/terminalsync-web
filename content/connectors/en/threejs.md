@@ -25,7 +25,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 2
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "2.0.0"
 ---
 **Three.js** is a JavaScript library for building 3D scenes in the browser. The official `@modelcontextprotocol` server gives your AI an interactive preview canvas where it can render and adjust small Three.js examples.

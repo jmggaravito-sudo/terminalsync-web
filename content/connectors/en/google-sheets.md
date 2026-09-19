@@ -24,10 +24,10 @@ originalAuthorUrl: "https://github.com/domdomegg"
 license: "MIT"
 licenseUrl: "https://github.com/domdomegg/google-sheets-mcp/blob/master/LICENSE"
 installableForAi: false
-installableForAiReason: "handshake-timeout"
+installableForAiReason: "needs-oauth"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "1.2.1"
 ---
 Almost every small business runs on a spreadsheet. Sales for the month, the client list, inventory, the cash-flow tracker — it all lives in a Google Sheet somebody keeps by hand. This connector lets your AI open that sheet, read it, and update it the same way you would.

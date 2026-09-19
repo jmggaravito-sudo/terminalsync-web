@@ -19,7 +19,7 @@ installableForAi: false
 installableForAiReason: "no-manifest"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
 Nota: este es el conector first-party de Anthropic para Drive — distinto del conector curado de TerminalSync. Ambos funcionan; éste es la implementación oficial de Anthropic incluida en el marketplace como alternativa multi-IA.

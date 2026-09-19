@@ -18,7 +18,7 @@ installableForAi: false
 installableForAiReason: "no-manifest"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
 When your customers write in through **Intercom** — questions, complaints, requests — keeping up is a job of its own. This connector puts your AI on it: ask it to review your inbox in plain words and it tells you which conversations need attention, finds the customer you're looking for, and drafts the reply for you.

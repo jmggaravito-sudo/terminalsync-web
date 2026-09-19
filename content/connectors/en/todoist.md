@@ -26,7 +26,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 40
 aiReadOnlyTools: 20
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "11.0.0"
 ---
 Half of running a small business is remembering the next step — call this client back, send that quote, renew the insurance. If you keep those in **Todoist**, this connector lets your AI read your list and add to it, so nothing lives only in your head.

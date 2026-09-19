@@ -25,7 +25,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 21
 aiReadOnlyTools: 14
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "0.4.0"
 ---
 Your CRM is where the relationship with every client lives — who they are, what they bought, what you promised, when you last talked. If you run that on **HubSpot**, this connector lets your AI read it and keep it up to date, so the follow-ups don't fall through the cracks while you're busy running the business.

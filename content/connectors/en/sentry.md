@@ -28,7 +28,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 9
 aiReadOnlyTools: 6
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "0.39.0"
 ---
 **Sentry** is the tool your team uses to find out about production errors: when an app fails, Sentry receives the alert, gathers the context, and builds an "issue" with the stacktrace, which user hit it, on which version, how many times it happened.

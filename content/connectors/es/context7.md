@@ -23,7 +23,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 2
 aiReadOnlyTools: 2
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "4.1.1"
 ---
 **Context7** resuelve un problema silencioso pero constante: los modelos de IA se entrenan con una foto del pasado, así que cuando les preguntas por una librería o framework muchas veces responden con **APIs viejas y funciones que ya no existen**. Context7, hecho por Upstash, trae **documentación actual y por versión, con ejemplos de código reales**, directo de la fuente y la mete en el prompt — así la respuesta coincide con la versión que estás usando de verdad.

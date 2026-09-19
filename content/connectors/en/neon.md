@@ -20,12 +20,13 @@ originalAuthor: "Neon"
 originalAuthorUrl: "https://github.com/neondatabase/mcp-server-neon"
 license: "MIT"
 licenseUrl: "https://github.com/neondatabase/mcp-server-neon/blob/main/LICENSE"
-installableForAi: false
-installableForAiReason: "handshake-timeout"
+installableForAi: true
+installableForAiReason: "unverified-needs-key"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "0.6.5"
+verifiedWithoutKey: false
 ---
 **Neon** is serverless Postgres — databases with branching, so you can spin up a copy of your data the way you branch code. The official connector, published by Neon, is *"an open-source tool that lets you interact with your Neon Postgres databases in natural language."* It acts as a bridge between what you ask and the [Neon API](https://api-docs.neon.tech/reference/getting-started-with-neon-api), translating your requests into the calls needed to create projects and branches, run queries, and perform database migrations.
 

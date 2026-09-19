@@ -26,7 +26,7 @@ installableForAi: false
 installableForAiReason: "recipe-not-npx"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
 **Asana** es el gestor de tareas y proyectos que usan los equipos para organizar el trabajo: quién hace qué, para cuándo, y en qué proyecto. El server MCP oficial de Asana deja que tu agente lea y gestione ese workspace directamente — sin pegar ninguna API key en TerminalSync, solo con el login de tu propia cuenta de Asana.

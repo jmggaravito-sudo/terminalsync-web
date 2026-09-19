@@ -25,7 +25,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 2
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "2.0.0"
 ---
 **Map** is an interactive globe connector for looking up places and showing them visually. The official `@modelcontextprotocol` server uses CesiumJS with OpenStreetMap tiles and OpenStreetMap Nominatim geocoding, so it does not need a commercial map API key.

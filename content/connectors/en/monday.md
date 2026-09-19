@@ -16,19 +16,19 @@ manifest:
       args: ["-y", "@mondaydotcomorg/monday-api-mcp", "-m", "atp"]
       env:
         monday_token: "${SECRET:MONDAY_TOKEN}"
-        NODE_OPTIONS: "--no-node-snapshot"
 affiliate: false
 tagline: "Boards and items at AI reach"
 originalAuthor: "monday.com"
 originalAuthorUrl: "https://github.com/mondaycom/monday-ai"
 license: "MIT"
 licenseUrl: "https://github.com/mondaycom/monday-ai/blob/master/LICENSE"
-installableForAi: false
-installableForAiReason: "env-denied"
+installableForAi: true
+installableForAiReason: "unverified-needs-key"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
-verifiedPackageVersion: null
+verifiedAt: "2026-09-19T12:19:33.156Z"
+verifiedPackageVersion: "3.3.0"
+verifiedWithoutKey: false
 ---
 If your business runs on **monday.com** boards — sales pipeline, projects, orders, whatever you track in those colorful columns — this connector lets your AI read them and update them, so the board stays current without you dragging cards around all day.
 
@@ -53,7 +53,7 @@ The token is stored encrypted in your Keychain and synced across your machines.
 
 `@mondaydotcomorg/monday-api-mcp` (published by **monday.com**, official) speaks the monday.com API. It exposes the core work-management surface — boards, items, columns, groups, updates and users — read and write. The connector runs in `atp` (API-tools) mode.
 
-Auth is the `monday_token` env var (a monday.com personal API token). The server sets `NODE_OPTIONS=--no-node-snapshot` per the official config. Terminal Sync maps the token from the `MONDAY_TOKEN` secret in your Keychain.
+Auth is the `monday_token` env var (a monday.com personal API token). Terminal Sync maps the token from the `MONDAY_TOKEN` secret in your Keychain.
 
 Terminal Sync keeps the token in your Keychain, synced encrypted across machines with AES-256-GCM. Because create/update tools mutate real board data, the desktop gates those behind a confirmation step.
 

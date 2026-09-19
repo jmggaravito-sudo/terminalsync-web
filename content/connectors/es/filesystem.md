@@ -25,7 +25,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 14
 aiReadOnlyTools: 10
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "2026.8.31"
 ---
 **Filesystem** es la herramienta más simple y más útil del catálogo. En palabras del propio README oficial, es un *"Node.js server implementing Model Context Protocol (MCP) for filesystem operations"* — tu IA pasa a poder leer, escribir, listar, buscar, editar y mover archivos directamente en tu disco.

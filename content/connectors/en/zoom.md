@@ -26,7 +26,7 @@ installableForAi: false
 installableForAiReason: "recipe-not-npx"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
 **Zoom** is the video-calling app you use for work meetings. The official Zoom connector — the **Zoom Workspace** server, published by Zoom — lets you ask, in plain language, about everything those meetings leave behind: AI-generated summaries, transcripts, recordings, your Team Chat, and Zoom Docs, without opening the app and digging by hand. It's a **hosted server** (`https://mcp.zoom.us/mcp/zoom/streamable`): it runs in Zoom's cloud and you connect with your own Zoom account, so it only sees what you can already see.

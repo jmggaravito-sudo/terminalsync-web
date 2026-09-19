@@ -26,7 +26,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 27
 aiReadOnlyTools: 16
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "3.24.0"
 ---
 **Firecrawl** turns messy web pages into clean, ready-to-use content — the kind of text an AI can actually work with. Its official connector, per the README, is an *"MCP server for Firecrawl — search, scrape, and interact with the web"*, with tools to scrape a single page, search the web, crawl an entire site, map all its URLs, and extract structured data from many pages at once.

@@ -29,7 +29,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 8
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "2025.4.25"
 ---
 **Slack** es donde el equipo conversa: canales por tema, threads en los mensajes importantes, decisiones que quedan ahí escritas, incidentes que se gestionan en vivo. Con el tiempo se acumula mucha información valiosa — y mucho ruido también.

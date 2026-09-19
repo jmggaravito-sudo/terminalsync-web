@@ -25,7 +25,7 @@ installableForAi: true
 installableForAiReason: "ok"
 aiToolsCount: 1
 aiReadOnlyTools: 1
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "2026.8.31"
 ---
 **Sequential Thinking** habilita, en palabras del README oficial, *"a detailed, step-by-step thinking process for problem-solving and analysis"*. Está pensado para tareas *"where the full scope might not be clear initially"* y donde necesitas *"course correction"* — escenarios en los que la IA tiende a saltar a la conclusión antes de mirar bien.

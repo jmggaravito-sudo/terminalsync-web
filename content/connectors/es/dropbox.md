@@ -18,7 +18,7 @@ installableForAi: false
 installableForAiReason: "no-manifest"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
 Cuando los archivos que hacen andar tu negocio viven en **Dropbox** — contratos, facturas, propuestas, fotos — encontrar el que buscas es la mitad del laburo. Este conector pone a tu IA a hacerlo: pídele un archivo en palabras simples y busca, lo encuentra y te pasa el link. Sin escarbar entre carpetas.

@@ -24,10 +24,10 @@ originalAuthorUrl: "https://github.com/domdomegg/gmail-mcp"
 license: "MIT"
 licenseUrl: "https://github.com/domdomegg/gmail-mcp/blob/master/LICENSE"
 installableForAi: false
-installableForAiReason: "handshake-timeout"
+installableForAiReason: "needs-oauth"
 aiToolsCount: 0
 aiReadOnlyTools: 0
-verifiedAt: "2026-09-19T11:53:03.181Z"
+verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: "2.4.0"
 ---
 You arrive in the morning to 80 unread emails. You ask *"what's urgent today?"* and your AI reads your inbox and tells you what actually matters. You ask *"summarize what client X sent this week"* and it pulls the thread and gives you the gist. It's the connector that turns your inbox from a pile you dread into something you can just ask about — and it's the one most of your automations quietly rely on.
