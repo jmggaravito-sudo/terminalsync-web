@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseRecipe, validateSlug } from "./verify-connector.mjs";
+import { parseRecipe, responseMatchesId, validateSlug } from "./verify-connector.mjs";
 
 describe("connector installability contract", () => {
   it("accepts the npx recipe and preserves runtime args", () => {
@@ -20,5 +20,11 @@ describe("connector installability contract", () => {
     expect(validateSlug("bad__name")).toBe(false);
     expect(validateSlug("meta-ads")).toBe(false);
     expect(validateSlug("UPPER")).toBe(false);
+  });
+
+  it("requires the exact JSON-RPC id instead of pairing by response order", () => {
+    expect(responseMatchesId({ result: {} }, 1)).toBe(false);
+    expect(responseMatchesId({ id: 2, result: {} }, 1)).toBe(false);
+    expect(responseMatchesId({ id: 1, result: {} }, 1)).toBe(true);
   });
 });

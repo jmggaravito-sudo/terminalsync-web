@@ -120,6 +120,7 @@ function resolveEntry(packageDir, packageJson) {
 }
 
 function jsonRpc(id, method, params = {}) { return `${JSON.stringify({ jsonrpc: "2.0", id, method, params })}\n`; }
+export function responseMatchesId(message, expectedId) { return Object.prototype.hasOwnProperty.call(message, "id") && message.id === expectedId; }
 
 async function handshake(entry, args, env, allowAuthFailure, timeoutMs = 5000) {
   return new Promise((resolve) => {
@@ -135,7 +136,7 @@ async function handshake(entry, args, env, allowAuthFailure, timeoutMs = 5000) {
         let message; try { message = JSON.parse(line); } catch { continue; }
         if (!("id" in message)) return finish({ reason: "no-jsonrpc-id", stderr });
         const responseId = message.id;
-        if (responseId !== expectedId) continue;
+        if (!responseMatchesId(message, expectedId)) continue;
         if (responseId === 1 && ("result" in message || "error" in message)) {
           if (message.error) return finish({ reason: "handshake-timeout", detail: message.error.message });
           initialized = true; expectedId = 2;
