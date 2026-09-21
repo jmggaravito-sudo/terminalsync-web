@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { authenticate, isAdmin } from "@/lib/marketplace/auth";
+import {
+  grantIncludedAi,
+  revokeIncludedAiForUser,
+} from "@/lib/subscriptionState";
 
 /**
  * Admin-only "comp account" grants — give an influencer (or anyone) a free
@@ -130,6 +134,7 @@ export async function POST(req: Request) {
     stripe_subscription_id: sentinelSub,
     plan: body.plan,
     status: "active" as const,
+    ai_included: true,
     current_period_start: new Date().toISOString(),
     current_period_end: periodEnd,
     cancel_at_period_end: false,
@@ -142,6 +147,18 @@ export async function POST(req: Request) {
   if (error) {
     return NextResponse.json(
       { error: `grant failed: ${error.message}` },
+      { status: 500 },
+    );
+  }
+
+  // A comp is a paid-tier entitlement for the account, so it must use the
+  // same included-AI gate as a normal Pro/Max subscription. Without this,
+  // comped users fall back to the courtesy pool even though their plan is
+  // active.
+  const includedAiGranted = await grantIncludedAi({ userId: target.id });
+  if (!includedAiGranted) {
+    return NextResponse.json(
+      { error: "included AI entitlement grant failed" },
       { status: 500 },
     );
   }
@@ -274,6 +291,7 @@ export async function DELETE(req: Request) {
         stripe_customer_id: COMP_CUSTOMER,
         plan: "free",
         status: "canceled",
+        ai_included: false,
         cancel_at_period_end: false,
         updated_at: new Date().toISOString(),
       },
@@ -281,6 +299,14 @@ export async function DELETE(req: Request) {
     );
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  const includedAiRevoked = await revokeIncludedAiForUser(target.id);
+  if (!includedAiRevoked) {
+    return NextResponse.json(
+      { error: "included AI entitlement revoke failed" },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ ok: true, email: target.email, plan: "free" });
