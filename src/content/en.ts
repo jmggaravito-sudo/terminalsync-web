@@ -523,7 +523,7 @@ const en: Dict = {
         cta: "Download free",
       },
       pro: {
-        name: "Pro",
+        name: "Pro · bring your own AI",
         badge: "7 days free",
         price: "$19",
         priceNote: "/mo",
@@ -543,7 +543,7 @@ const en: Dict = {
         cta: "Start 7-day free trial",
       },
       proAi: {
-        name: "Pro + AI",
+        name: "Pro",
         badge: "7 days free",
         price: "$34",
         priceNote: "/mo",
@@ -559,7 +559,7 @@ const en: Dict = {
         cta: "Start 7-day free trial",
       },
       max: {
-        name: "Max",
+        name: "Max · bring your own AI",
         badge: "7 days free",
         price: "$39",
         priceNote: "/mo",
@@ -577,7 +577,7 @@ const en: Dict = {
         cta: "Start 7-day free trial",
       },
       maxAi: {
-        name: "Max + AI",
+        name: "Max",
         badge: "7 days free",
         price: "$54",
         priceNote: "/mo",

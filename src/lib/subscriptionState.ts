@@ -30,6 +30,8 @@ export interface SubscriptionUpsertParams {
   status: SubscriptionStatus;
   providerCustomerId?: string | null;
   providerSubscriptionId?: string | null;
+  /** Paid AI entitlement; deliberately separate from the plan enum. */
+  aiIncluded?: boolean;
   /** ISO strings; omit (undefined) to leave the existing column untouched. */
   currentPeriodStart?: string | null;
   currentPeriodEnd?: string | null;
@@ -60,6 +62,7 @@ export async function upsertSubscription(
     provider: params.provider,
     provider_customer_id: params.providerCustomerId ?? null,
     provider_subscription_id: params.providerSubscriptionId ?? null,
+    ai_included: params.aiIncluded ?? false,
     plan: params.plan,
     status: params.status,
     updated_at: new Date().toISOString(),
@@ -95,13 +98,18 @@ export async function upsertSubscription(
     // new columns, and retry with the legacy shape (the Stripe stripe_*
     // columns are still written, so Stripe keeps working). MP writes just
     // lose the provider tag until the migration lands.
-    if (isMissingProviderColumn(error)) {
+    const missingProviderColumn = isMissingProviderColumn(error);
+    const missingAiIncludedColumn = isMissingAiIncludedColumn(error);
+    if (missingProviderColumn || missingAiIncludedColumn) {
       console.warn(
-        "[subscriptions] provider columns missing — retrying without them. APPLY migration 0024 (supabase db push).",
+        "[subscriptions] optional subscription columns missing — retrying without them.",
       );
-      delete row.provider;
-      delete row.provider_customer_id;
-      delete row.provider_subscription_id;
+      if (missingProviderColumn) {
+        delete row.provider;
+        delete row.provider_customer_id;
+        delete row.provider_subscription_id;
+      }
+      if (missingAiIncludedColumn) delete row.ai_included;
       // A pure Mercado Pago row has no legacy columns to fall back on; skip
       // rather than write a Stripe-less row that can't be linked to a rail.
       if (params.provider !== "stripe") {
@@ -147,13 +155,26 @@ function isMissingProviderColumn(error: {
   message?: string;
 }): boolean {
   const code = error.code ?? "";
-  if (code === "PGRST204" || code === "42703") return true;
   const msg = (error.message ?? "").toLowerCase();
   return (
+    (code === "PGRST204" || code === "42703") &&
     msg.includes("column") &&
     (msg.includes("provider") ||
       msg.includes("provider_customer_id") ||
       msg.includes("provider_subscription_id"))
+  );
+}
+
+function isMissingAiIncludedColumn(error: {
+  code?: string;
+  message?: string;
+}): boolean {
+  const code = error.code ?? "";
+  const msg = (error.message ?? "").toLowerCase();
+  return (
+    (code === "PGRST204" || code === "42703") &&
+    msg.includes("column") &&
+    msg.includes("ai_included")
   );
 }
 
@@ -172,6 +193,7 @@ export async function downgradeToFree(input: {
     status: "canceled",
     providerSubscriptionId: input.providerSubscriptionId ?? null,
     cancelAtPeriodEnd: false,
+    aiIncluded: false,
   });
 }
 

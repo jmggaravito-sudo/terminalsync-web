@@ -523,7 +523,7 @@ const es: Dict = {
         cta: "Descargar gratis",
       },
       pro: {
-        name: "Pro",
+        name: "Pro · traes tu IA",
         badge: "7 días gratis",
         price: "$19",
         priceNote: "/mes",
@@ -543,7 +543,7 @@ const es: Dict = {
         cta: "Probar 7 días gratis",
       },
       proAi: {
-        name: "Pro + IA",
+        name: "Pro",
         badge: "7 días gratis",
         price: "$34",
         priceNote: "/mes",
@@ -559,7 +559,7 @@ const es: Dict = {
         cta: "Probar 7 días gratis",
       },
       max: {
-        name: "Max",
+        name: "Max · traes tu IA",
         badge: "7 días gratis",
         price: "$39",
         priceNote: "/mes",
@@ -577,7 +577,7 @@ const es: Dict = {
         cta: "Probar 7 días gratis",
       },
       maxAi: {
-        name: "Max + IA",
+        name: "Max",
         badge: "7 días gratis",
         price: "$54",
         priceNote: "/mes",

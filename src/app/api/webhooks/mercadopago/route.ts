@@ -253,14 +253,15 @@ export async function POST(req: Request) {
   }
 
   const status = mpStatusToSubscriptionStatus(pre.status);
+  const includedAi = mpIncludesAi(pre);
   const ok = await upsertSubscription({
     userId,
     provider: "mercadopago",
     plan,
     status,
     providerSubscriptionId: pre.id,
+    aiIncluded: includedAi,
   });
-  const includedAi = mpIncludesAi(pre);
   let includedAiWritten = false;
   if (includedAi && status === "active") {
     includedAiWritten = await grantIncludedAi({ userId });
