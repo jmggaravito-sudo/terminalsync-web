@@ -34,30 +34,18 @@ export const maxDuration = 300;
  *
  * ## Credenciales — leer antes de tocar esto
  *
- * El pedido original decía "usar ZAI_API_KEY, no ANTHROPIC_API_KEY, porque
- * el proyecto ya migró". La migración (commit 45033a6) fue de los **loops de
- * curación en GitHub Actions**, no del runtime de Next: el único otro código
- * de la app que llama a Anthropic
- * (`src/lib/linkedinLeads/messageGenerator.ts`) sigue leyendo
- * ANTHROPIC_API_KEY, y `ZAI_API_KEY` se valida en los workflows contra
- * `https://open.bigmodel.cn/api/paas/v4/models` — es una key de Z.ai/GLM,
- * no de Anthropic, aunque el comentario del workflow diga otra cosa.
+ * Esta ruta usa exclusivamente la IA de TerminalSync vía Z.ai/GLM. La key
+ * (`ZAI_API_KEY` o `Z_AI_API_KEY`) se valida en los workflows contra
+ * `https://open.bigmodel.cn/api/paas/v4/models`, y el runtime usa el endpoint
+ * compatible con Anthropic `https://open.bigmodel.cn/api/anthropic`.
+ * `CANDIDATE_SUGGEST_MODEL` es obligatoria porque los ids de GLM cambian entre
+ * versiones. No hay fallback silencioso a otro proveedor/modelo: si falta la
+ * configuración de Z.ai, la ruta devuelve un error explícito.
  *
- * Así que la key elegida decide el endpoint (ver `resolveSuggestRuntime` en
- * `candidateSuggest.ts`, que es donde vive esa decisión y sus tests):
+ * `CANDIDATE_SUGGEST_BASE_URL` y `CANDIDATE_SUGGEST_WEB_SEARCH` siguen
+ * existiendo para configurar el endpoint compatible y la búsqueda web.
  *
- * - Con key de Z.ai (`ZAI_API_KEY` o `Z_AI_API_KEY` — el secret de GitHub se
- *   llama con guiones bajos y los workflows lo leen sin ellos, así que se
- *   aceptan los dos): endpoint `https://open.bigmodel.cn/api/anthropic` por
- *   defecto, `CANDIDATE_SUGGEST_MODEL` obligatoria (Z.ai sirve GLM, no
- *   Claude, y los ids cambian entre versiones), y búsqueda web apagada
- *   porque es una server tool de Anthropic que un gateway de GLM no tiene.
- * - Con `ANTHROPIC_API_KEY`: endpoint de Anthropic, modelo `claude-opus-5`,
- *   búsqueda web encendida.
- * - `CANDIDATE_SUGGEST_BASE_URL` y `CANDIDATE_SUGGEST_WEB_SEARCH` siguen
- *   existiendo para forzar cualquiera de las dos cosas.
- *
- * No se manda `temperature`: está removido en Claude Opus 5 y devuelve 400.
+ * No se manda `temperature`: el endpoint compatible de Z.ai no lo necesita.
  * El determinismo del formato lo da el contrato de JSON del prompt más la
  * normalización de `candidateSuggest.ts`, que nunca confía en el modelo para
  * los enums.
@@ -77,7 +65,6 @@ function resolveClient(): ResolvedClient | { error: string } {
   const runtime = resolveSuggestRuntime({
     ZAI_API_KEY: process.env.ZAI_API_KEY,
     Z_AI_API_KEY: process.env.Z_AI_API_KEY,
-    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     CANDIDATE_SUGGEST_BASE_URL: process.env.CANDIDATE_SUGGEST_BASE_URL,
     CANDIDATE_SUGGEST_MODEL: process.env.CANDIDATE_SUGGEST_MODEL,
     CANDIDATE_SUGGEST_WEB_SEARCH: process.env.CANDIDATE_SUGGEST_WEB_SEARCH,
