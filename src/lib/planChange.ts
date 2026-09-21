@@ -196,6 +196,7 @@ export async function changeMercadoPagoSubscription(input: {
     plan: input.plan === "max" ? "max" : "pro",
     status: (input.current.status as SubscriptionStatus) || "active",
     providerSubscriptionId: preapprovalId,
+    aiIncluded: input.includedAi,
   });
   if (input.includedAi) await grantIncludedAi({ userId: input.userId });
   else await revokeIncludedAiForMercadoPagoUser(input.userId);

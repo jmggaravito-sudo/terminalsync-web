@@ -220,6 +220,7 @@ export async function syncSubscriptionToSupabase(
     trialEnd: sub.trial_end
       ? new Date(sub.trial_end * 1000).toISOString()
       : null,
+    aiIncluded: subscriptionHasIncludedAi(sub),
   });
 
   if (subscriptionHasIncludedAi(sub)) {

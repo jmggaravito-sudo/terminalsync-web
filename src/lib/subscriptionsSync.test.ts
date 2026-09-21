@@ -107,6 +107,28 @@ afterEach(() => {
 });
 
 describe("syncSubscriptionToSupabase — account linking", () => {
+  it("persists the paid AI entitlement independently of the plan", async () => {
+    process.env.STRIPE_PRICE_MAX_MONTHLY = "price_max_monthly";
+    const sub = fakeSub({
+      metadata: { supabase_user_id: "user-max-ai", included_ai: "1" },
+      items: {
+        data: [
+          {
+            price: { id: "price_max_monthly" },
+            current_period_start: 1_700_000_000,
+            current_period_end: 1_700_600_000,
+          },
+        ],
+      } as Stripe.Subscription["items"],
+    });
+
+    const ok = await syncSubscriptionToSupabase(sub);
+
+    expect(ok).toBe(true);
+    expect(upsertCalls[0].row.plan).toBe("max");
+    expect(upsertCalls[0].row.ai_included).toBe(true);
+  });
+
   it("links by supabase_user_id when present in metadata (desktop-app purchase)", async () => {
     const sub = fakeSub({ metadata: { supabase_user_id: "user-meta" } });
     const ok = await syncSubscriptionToSupabase(sub);

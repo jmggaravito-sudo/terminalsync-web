@@ -43,6 +43,21 @@ afterEach(() => {
 });
 
 describe("upsertSubscription — provider-neutral write", () => {
+  it("persists the AI entitlement separately from the plan", async () => {
+    const ok = await upsertSubscription({
+      userId: "user-max-ai",
+      provider: "stripe",
+      plan: "max",
+      status: "active",
+      providerCustomerId: "cus_ai",
+      providerSubscriptionId: "sub_ai",
+      aiIncluded: true,
+    });
+    expect(ok).toBe(true);
+    expect(upsertCalls[0].row.plan).toBe("max");
+    expect(upsertCalls[0].row.ai_included).toBe(true);
+  });
+
   it("stamps provider + generic id columns for a Mercado Pago row", async () => {
     const ok = await upsertSubscription({
       userId: "user-1",
