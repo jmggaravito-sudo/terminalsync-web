@@ -173,18 +173,56 @@ jobs:
             --max-turns ${{ inputs.max_turns || '80' }}
             --allowedTools Read,Write,Edit,MultiEdit,Bash,WebFetch,Grep,Glob
 
-      - name: Guardar el detalle de la corrida del agente
-        # El JSON que la accion deja siempre, con cada turno y cada herramienta.
-        # Va como artifact y no al log: el log es texto plano de la corrida y la
-        # propia accion esconde ahi la salida del agente a proposito. El
-        # artifact lo ve solo quien entra al repo, y a los 7 dias se borra.
-        # Sin esto, una corrida que muere por max-turns no deja forma de saber
-        # en que gasto los turnos (corrida 35731317631: 81 turnos, USD 7.73,
-        # cero pistas).
+      - name: Redactar el detalle de la corrida del agente
+        # El JSON trae el transcripto completo del agente, y el prompt lo deja
+        # correr comandos: si alguna vez corre `env`, el archivo queda con los
+        # secretos en claro. GitHub enmascara los secrets en el LOG, no dentro
+        # de un archivo que se sube como artifact. Paso exactamente eso en la
+        # corrida 35742964885, que subio tokens de Actions legibles.
+        #
+        # Se redactan los valores que ESTE job inyecta, que son los unicos que
+        # el agente puede leer, y despues se verifica de nuevo: si alguno
+        # sobrevivio, el paso falla y no se sube nada. Falla cerrado a proposito
+        # — es preferible quedarse sin diagnostico que publicar una credencial.
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LOOP_RUNS_WRITE_TOKEN: ${{ secrets.LOOP_RUNS_WRITE_TOKEN }}
+          TS_CROSS_REPO_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
+          ZAI_API_KEY: ${{ secrets.Z_AI_API_KEY }}
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, sys
+
+          tmp = pathlib.Path(os.environ["RUNNER_TEMP"])
+          src = tmp / "claude-execution-output.json"
+          if not src.exists():
+              print("No hay detalle de corrida que guardar.")
+              sys.exit(0)
+
+          nombres = ("GH_TOKEN", "LOOP_RUNS_WRITE_TOKEN", "TS_CROSS_REPO_TOKEN", "ZAI_API_KEY")
+          # El corte de 8 evita que un valor corto o vacio redacte medio archivo.
+          secretos = [v for v in (os.environ.get(n, "").strip() for n in nombres) if len(v) >= 8]
+
+          datos = src.read_text(encoding="utf-8", errors="surrogateescape")
+          for s in secretos:
+              datos = datos.replace(s, "***REDACTADO***")
+
+          quedaron = [n for n, v in zip(nombres, (os.environ.get(n, "").strip() for n in nombres)) if len(v) >= 8 and v in datos]
+          if quedaron:
+              print("::error::Quedaron secretos sin redactar en el detalle de la corrida (%s). No se sube nada." % ", ".join(quedaron))
+              sys.exit(1)
+
+          destino = tmp / "claude-execution-output.redacted.json"
+          destino.write_text(datos, encoding="utf-8", errors="surrogateescape")
+          print("Detalle redactado: %d valores cubiertos, %d bytes." % (len(secretos), len(datos)))
+          PY
+
+      - name: Guardar el detalle redactado de la corrida del agente
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: claude-execution-output
-          path: ${{ runner.temp }}/claude-execution-output.json
+          path: ${{ runner.temp }}/claude-execution-output.redacted.json
           retention-days: 7
           if-no-files-found: warn
