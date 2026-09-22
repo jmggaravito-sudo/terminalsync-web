@@ -16,6 +16,12 @@ name: Connector Curation Loop
 #                      mandó a más de uno a buscarla en console.anthropic.com.
 #   LOOP_RUNS_WRITE_TOKEN    Shared bearer token accepted by /api/internal/loop-runs.
 #   TS_CROSS_REPO_TOKEN      Optional PAT/app token that can create the required app mirror PR in jmggaravito-sudo/terminal-sync.
+#
+# Required repo variables (Settings -> Secrets and variables -> Actions -> Variables):
+#   ZAI_MODEL          Id exacto del modelo GLM que sirve esa key (el mismo
+#                      valor que CANDIDATE_SUGGEST_MODEL en Vercel). No hay
+#                      default posible: los ids de GLM cambian entre versiones
+#                      y uno inventado falla recien al llamar al modelo.
 
 on:
   schedule:
@@ -91,6 +97,21 @@ jobs:
           GH_TOKEN="$TS_CROSS_REPO_TOKEN" gh repo view "$TERMINALSYNC_APP_REPO" --json nameWithOwner >/tmp/app-repo.json
           echo 'Cross-repo token: OK'
 
+      - name: Verificar credencial y modelo de Z.ai
+        env:
+          ZAI_API_KEY: ${{ secrets.Z_AI_API_KEY }}
+          ZAI_MODEL: ${{ vars.ZAI_MODEL }}
+        run: |
+          set -euo pipefail
+          missing=()
+          [ -z "${ZAI_API_KEY:-}" ] && missing+=("el secret Z_AI_API_KEY")
+          [ -z "${ZAI_MODEL:-}" ] && missing+=("la variable ZAI_MODEL")
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::error::Falta ${missing[*]}. El secret va en Settings -> Secrets and variables -> Actions -> Secrets; el id del modelo va en la pestana Variables, con el mismo valor que CANDIDATE_SUGGEST_MODEL en Vercel. Z.ai sirve modelos GLM, no Claude."
+            exit 1
+          fi
+          echo "OK - key presente, modelo pedido: $ZAI_MODEL"
+
       - name: Run marketplace connector curation loop
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run != true }}
         uses: anthropics/claude-code-action@v1
@@ -104,6 +125,7 @@ jobs:
           TERMINALSYNC_APP_REPO: jmggaravito-sudo/terminal-sync
           TERMINALSYNC_APP_BASE_BRANCH: release/v0.2.18-lab
           TS_CROSS_REPO_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
+          ANTHROPIC_BASE_URL: https://open.bigmodel.cn/api/anthropic
         with:
           anthropic_api_key: ${{ secrets.Z_AI_API_KEY }}
           base_branch: main
@@ -143,6 +165,6 @@ jobs:
             - landing connector links visible in /admin/ops/loop-runs
             - where results are visible: /admin/ops/loop-runs
           claude_args: |
-            --model claude-sonnet-5
+            --model ${{ vars.ZAI_MODEL }}
             --max-turns 80
-            --allowedTools Read,Write,Edit,MultiEdit,Bash,WebFetch,WebSearch,Grep,Glob
+            --allowedTools Read,Write,Edit,MultiEdit,Bash,WebFetch,Grep,Glob
