@@ -5,6 +5,7 @@ import { Hero } from "@/components/landing/Hero";
 import { MemoryPersistent } from "@/components/landing/MemoryPersistent";
 import { MultiAI } from "@/components/landing/MultiAI";
 import { ChromeExtensionTeaser } from "@/components/landing/ChromeExtensionTeaser";
+import { CHROME_EXTENSION_PUBLIC } from "@/lib/launchFlags";
 import { DemosGrid } from "@/components/landing/DemosGrid";
 import { IntegrationsDiscovery } from "@/components/landing/IntegrationsDiscovery";
 import { MetaBusiness } from "@/components/landing/MetaBusiness";
@@ -80,7 +81,7 @@ export default async function Landing({ params }: Props) {
       <CategoryBlock lang={lang} />
       <Comparison dict={d} />
       <Testimonials lang={lang} />
-      <ChromeExtensionTeaser dict={d} />
+      {CHROME_EXTENSION_PUBLIC && <ChromeExtensionTeaser dict={d} />}
       <Pricing dict={d} />
       <Trust dict={d} />
       <FAQ dict={d} />
