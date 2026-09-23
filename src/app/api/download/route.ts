@@ -49,7 +49,39 @@ async function manifestVersion(arch: Arch): Promise<string | null> {
   }
 }
 
+/**
+ * ¿El pedido viene de una Windows?
+ *
+ * Se mira el User-Agent y no `navigator`, porque esto corre en el servidor:
+ * cuando el visitante llega acá ya salió de la página. `Windows NT` es la
+ * marca que ponen Chrome, Edge y Firefox en Windows desde siempre; `Win64`
+ * cubre alguno viejo. No se intenta adivinar nada más: cualquier otra cosa
+ * sigue por el camino de Mac, que es el que hay.
+ */
+function vieneDeWindows(req: Request): boolean {
+  const ua = req.headers.get("user-agent") ?? "";
+  return /windows nt|win64|windows/i.test(ua);
+}
+
 export async function GET(req: Request) {
+  // Hasta el 2026-09-23 esto le servía un DMG a TODO el mundo, Windows
+  // incluido: el visitante leía "macOS · Linux · Windows" abajo del botón,
+  // apretaba "Empieza gratis", y se bajaba un archivo que su computadora no
+  // sabe abrir. No hay instalador de Windows para entregar todavía —el .exe
+  // existe pero no está firmado, y sin firma Windows lo bloquea con una
+  // pantalla azul— así que el destino honesto es la lista de espera, que ya
+  // estaba escrita y no se pintaba en ninguna parte.
+  //
+  // Decisión de JM del 2026-09-23: el lanzamiento es de Mac; Windows junta
+  // correos hasta que el instalador esté firmado. El día que lo esté, este
+  // bloque se reemplaza por el redirect al .exe y la lista de espera se
+  // convierte en el aviso de que ya está.
+  if (vieneDeWindows(req)) {
+    const url = new URL(req.url);
+    const lang = url.searchParams.get("lang") === "en" ? "en" : "es";
+    return NextResponse.redirect(new URL(`/${lang}#windows`, url.origin), 302);
+  }
+
   const archParam = new URL(req.url).searchParams.get("arch");
   const arch: Arch =
     archParam === "x86_64" || archParam === "intel" ? "x86_64" : "aarch64";
