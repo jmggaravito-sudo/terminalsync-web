@@ -8,6 +8,8 @@ async function pedirSalud() {
   const res = GET();
   return { res, body: (await res.json()) as {
     ok: boolean;
+    cobro: string;
+    webhook: boolean;
     precios: Record<string, boolean>;
     faltan: string[];
   } };
@@ -17,6 +19,8 @@ beforeEach(() => {
   process.env.STRIPE_PRICE_PRO_MONTHLY = "price_pro";
   process.env.STRIPE_PRICE_MAX_MONTHLY = "price_max";
   process.env.STRIPE_INCLUDED_AI_PRICE_ID = "price_ai";
+  process.env.STRIPE_SECRET_KEY = "sk_live_nunca_se_publica";
+  process.env.STRIPE_WEBHOOK_SECRET = "whsec_nunca_se_publica";
   delete process.env.STRIPE_PRICE_DEV_MONTHLY;
   delete process.env.STRIPE_PRICE_AGENCY;
 });
@@ -59,9 +63,47 @@ describe("/api/checkout/health", () => {
     expect(body.ok).toBe(true);
   });
 
-  it("no publica ningún identificador de precio, solo si está o no", async () => {
+  it("no publica ningún identificador de precio ni ninguna llave", async () => {
     const { body } = await pedirSalud();
-    expect(JSON.stringify(body)).not.toContain("price_pro");
-    expect(JSON.stringify(body)).not.toContain("price_ai");
+    const crudo = JSON.stringify(body);
+    expect(crudo).not.toContain("price_pro");
+    expect(crudo).not.toContain("price_ai");
+    expect(crudo).not.toContain("nunca_se_publica");
+  });
+
+  // La diferencia entre cobrar de verdad y no cobrar nada es invisible desde
+  // afuera, y desde Colombia ni siquiera se llega a esta pasarela: el cobro va
+  // por Mercado Pago. Un lanzamiento entero podía salir en modo prueba sin que
+  // ninguna prueba física lo notara.
+  describe("modo de cobro", () => {
+    it("con la llave real dice que cobra de verdad", async () => {
+      const { body } = await pedirSalud();
+      expect(body.cobro).toBe("real");
+      expect(body.ok).toBe(true);
+    });
+
+    it("con la llave de prueba lo dice y se pone en rojo", async () => {
+      process.env.STRIPE_SECRET_KEY = "sk_test_nunca_se_publica";
+      const { res, body } = await pedirSalud();
+      expect(body.cobro).toBe("prueba");
+      expect(body.ok).toBe(false);
+      expect(res.status).toBe(503);
+      expect(body.faltan).toContain("cobro:prueba");
+    });
+
+    it("sin llave tampoco pasa por verde", async () => {
+      delete process.env.STRIPE_SECRET_KEY;
+      const { body } = await pedirSalud();
+      expect(body.cobro).toBe("sin-llave");
+      expect(body.ok).toBe(false);
+    });
+
+    it("sin el webhook, un pago no se convertiría en plan: rojo", async () => {
+      delete process.env.STRIPE_WEBHOOK_SECRET;
+      const { body } = await pedirSalud();
+      expect(body.webhook).toBe(false);
+      expect(body.ok).toBe(false);
+      expect(body.faltan).toContain("webhook");
+    });
   });
 });

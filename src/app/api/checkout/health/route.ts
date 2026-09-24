@@ -25,6 +25,28 @@ import { includedAiPriceId, priceIdFor } from "@/lib/stripe";
  */
 export const dynamic = "force-dynamic";
 
+/**
+ * ¿Con qué llave de Stripe cobra este ambiente?
+ *
+ * `"real"` cobra plata de verdad; `"prueba"` acepta tarjetas de juguete y no
+ * mueve un peso. Las dos empiezan distinto (`sk_live_` / `sk_test_`), así que
+ * el modo se lee del prefijo sin tocar el resto de la llave.
+ *
+ * Existe porque la diferencia es invisible desde afuera —el cobro parece
+ * funcionar igual— y desde Colombia ni siquiera se llega a esta pasarela: el
+ * cobro va por Mercado Pago. O sea que un lanzamiento entero podía salir en
+ * modo prueba sin que ninguna prueba física lo notara.
+ *
+ * Nunca se devuelve la llave: solo cuál de los dos mundos es.
+ */
+function modoDeCobro(): "real" | "prueba" | "sin-llave" | "desconocido" {
+  const llave = process.env.STRIPE_SECRET_KEY?.trim();
+  if (!llave) return "sin-llave";
+  if (llave.startsWith("sk_live_") || llave.startsWith("rk_live_")) return "real";
+  if (llave.startsWith("sk_test_") || llave.startsWith("rk_test_")) return "prueba";
+  return "desconocido";
+}
+
 export function GET() {
   const precios = {
     pro: Boolean(priceIdFor("pro")),
@@ -36,15 +58,31 @@ export function GET() {
   // Agency se vende por correo, no por este camino, así que su ausencia no
   // rompe a nadie y no cuenta para `ok`. Los otros tres SÍ: son los tres
   // botones que la aplicación le puede mostrar a un cliente.
-  const ok = precios.pro && precios.max && precios.includedAi;
+  const cobro = modoDeCobro();
+  // El webhook es lo que convierte un pago en un plan activo. Sin él el
+  // cliente paga y la aplicación nunca se entera.
+  const webhookConfigurado = Boolean(process.env.STRIPE_WEBHOOK_SECRET?.trim());
+
+  const ok =
+    precios.pro &&
+    precios.max &&
+    precios.includedAi &&
+    cobro === "real" &&
+    webhookConfigurado;
 
   return NextResponse.json(
     {
       ok,
+      cobro,
+      webhook: webhookConfigurado,
       precios,
-      faltan: Object.entries(precios)
-        .filter(([clave, cargado]) => !cargado && clave !== "agency")
-        .map(([clave]) => clave),
+      faltan: [
+        ...Object.entries(precios)
+          .filter(([clave, cargado]) => !cargado && clave !== "agency")
+          .map(([clave]) => clave),
+        ...(cobro === "real" ? [] : [`cobro:${cobro}`]),
+        ...(webhookConfigurado ? [] : ["webhook"]),
+      ],
     },
     { status: ok ? 200 : 503 },
   );
