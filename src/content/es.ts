@@ -1,4 +1,5 @@
 import type { Dict } from "./types";
+import { getHomeFaq } from "./faq";
 
 const es: Dict = {
   locale: "es",
@@ -276,40 +277,7 @@ const es: Dict = {
     eyebrow: "Preguntas frecuentes",
     title: "Lo que la gente nos pregunta primero",
     subtitle: "Si te queda alguna duda, escríbenos a support@terminalsync.ai",
-    items: [
-      {
-        q: "¿En qué se diferencia de guardar mi carpeta en Drive o iCloud?",
-        a: "Guardar una carpeta en Drive no guarda tu TRABAJO: pierdes las sesiones de IA, la memoria, los secretos y la configuración. TerminalSync hace portable todo eso entre tus computadoras, y lo sensible — secretos, credenciales, memoria y conversaciones con la IA — viaja cifrado (AES-256): ni Google ni nosotros podemos leerlo. Tus archivos de proyecto quedan en tu propia nube, bajo tu cuenta y tu control.",
-      },
-      {
-        q: "¿Mis archivos quedan en su servidor?",
-        a: "No. Tus archivos van directo de tu computadora a TU nube (tu Drive) — nunca pasan por nuestros servidores ni podemos verlos. Y lo sensible (secretos, credenciales, conversaciones con la IA) sube cifrado, con una llave que solo tienes tú.",
-      },
-      {
-        q: "¿Funciona si solo tengo una computadora?",
-        a: "Sí, pero rinde más con dos. Con una te sirve de respaldo seguro y para cuando sumes otra. La magia real aparece desde la segunda.",
-      },
-      {
-        q: "¿Qué pasa si cancelo mi suscripción?",
-        a: "La app sigue funcionando en el plan gratis. Tus archivos siguen en tu nube — tú sigues siendo el dueño. Puedes exportar todo cuando quieras.",
-      },
-      {
-        q: "¿Puedo confiar en su seguridad?",
-        a: "Sí. Usamos AES-256, el estándar de la industria, para cifrar tus secretos, credenciales y conversaciones con la IA antes de que salgan de tu computadora — la llave la tienes solo tú. Tus archivos de proyecto no pasan por nuestros servidores: van directo a tu propia nube, bajo tu cuenta.",
-      },
-      {
-        q: "¿Funciona con cualquier IA o solo con Claude y Codex?",
-        a: "Hoy funciona muy bien con Claude y Codex, y Gemini para documentos largos. Vamos sumando otras según lo que más nos pidan. Si quieres una en particular, escríbenos.",
-      },
-      {
-        q: "¿En qué se diferencia de usar Claude o Codex por separado?",
-        a: "Por separado no se hablan: cada una tiene su propio contexto y su memoria. TerminalSync las conecta en un solo flujo. Le pides a una que analice y a otra que lo haga, sin re-explicar nada — comparten el mismo proyecto y la misma memoria.",
-      },
-      {
-        q: "¿Necesito configurar algo?",
-        a: "No. Abres la app y tus espacios de trabajo, herramientas y memoria ya están listos desde la primera sesión. Nada que configurar.",
-      },
-    ],
+    items: getHomeFaq("es").map(({ question, answer }) => ({ q: question, a: answer })),
   },
   comparison: {
     eyebrow: "El comparativo honesto",

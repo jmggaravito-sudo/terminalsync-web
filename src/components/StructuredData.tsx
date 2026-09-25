@@ -1,4 +1,5 @@
 import type { Dict, Locale } from "@/content";
+import { getHomeFaq } from "@/content/faq";
 
 interface Props {
   dict: Dict;
@@ -89,12 +90,12 @@ export function StructuredData({ dict, lang }: Props) {
   const faq = {
     "@type": "FAQPage",
     "@id": `${BASE}#faq`,
-    mainEntity: dict.faq.items.map((item) => ({
+    mainEntity: getHomeFaq(lang).map((item) => ({
       "@type": "Question",
-      name: item.q,
+      name: item.question,
       acceptedAnswer: {
         "@type": "Answer",
-        text: item.a,
+        text: item.answer,
       },
     })),
   };
