@@ -42,4 +42,25 @@ describe("public FAQ projection", () => {
       expect(item?.answer).not.toMatch(/\$\d|\d+\s*(?:USD|days|días)/i);
     }
   });
+
+  it("keeps platform and privacy answers client-safe and legally bounded", () => {
+    const platformAnswers = new Map<string, string>();
+    for (const locale of ["es", "en"] as const) {
+      const faq = getPublicFaq(locale);
+      const platform = faq.find((item) => item.id === "platforms.launch_scope")?.answer;
+      const privacy = faq.find((item) => item.id === "privacy.what_is_encrypted")?.answer;
+      expect(platform).toBeDefined();
+      expect(privacy).toBeDefined();
+      platformAnswers.set(locale, platform ?? "");
+
+      expect(platform).toMatch(/macOS/i);
+      expect(platform).toMatch(/Windows/i);
+      expect(platform).toMatch(/Linux/i);
+      expect(platform).not.toMatch(/dirección|anuncies|release direction|do not present|signing is completed/i);
+      expect(privacy).toMatch(locale === "es" ? /IA incluida|proveedor de IA|material de Contexto|cifran/i : /included AI|AI provider|Context material|encrypted/i);
+      expect(privacy).not.toMatch(/ni nosotros podemos|neither we nor|never pass through our servers/i);
+    }
+    expect(platformAnswers.get("es")).toContain("en preparación");
+    expect(platformAnswers.get("en")).toContain("in preparation");
+  });
 });
