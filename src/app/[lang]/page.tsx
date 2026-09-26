@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import dynamic from "next/dynamic";
 import { getDict, isLocale } from "@/content";
+import { getHomeFaq } from "@/content/faq";
 import { Hero } from "@/components/landing/Hero";
 import { MemoryPersistent } from "@/components/landing/MemoryPersistent";
 import { MultiAI } from "@/components/landing/MultiAI";
@@ -94,7 +95,10 @@ export default async function Landing({ params }: Props) {
       {CHROME_EXTENSION_PUBLIC && <ChromeExtensionTeaser dict={d} />}
       <Pricing dict={d} />
       <Trust dict={d} />
-      <FAQ dict={d} />
+      <FAQ
+        copy={{ eyebrow: d.faq.eyebrow, title: d.faq.title, subtitle: d.faq.subtitle }}
+        items={getHomeFaq(lang)}
+      />
       <Affiliates dict={d} />
       <MidCta dict={d} />
       <Footer dict={d} />

@@ -47,6 +47,11 @@ export function Footer({ dict }: { dict: Dict }) {
         { key: "features", label: dict.footer.links.features, href: `/${lang}#how-it-works` },
         { key: "demos", label: dict.footer.links.demos, href: `/${lang}#demos` },
         { key: "pricing", label: dict.footer.links.pricing, href: `/${lang}#pricing` },
+        {
+          key: "faq",
+          label: lang === "es" ? "FAQ completa" : "Full FAQ",
+          href: `/${lang}/faq`,
+        },
         { key: "download", label: dict.footer.links.download, href: "/api/download" },
         // La extensión de Chrome está apagada en el sitio
         // (`CHROME_EXTENSION_PUBLIC`): el enlace llevaba a una sección de la
