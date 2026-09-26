@@ -1,4 +1,5 @@
 import type { Dict } from "./types";
+import { getHomeFaq } from "./faq";
 
 const en: Dict = {
   locale: "en",
@@ -276,40 +277,7 @@ const en: Dict = {
     eyebrow: "Frequently asked",
     title: "What people ask first",
     subtitle: "Still got questions? Email support@terminalsync.ai",
-    items: [
-      {
-        q: "How is this different from keeping my folder in Drive or iCloud?",
-        a: "Putting a folder in Drive doesn't save your WORK: you lose the AI sessions, the memory, the secrets and the configuration. TerminalSync makes all of that portable between your computers, and the sensitive parts — secrets, credentials, memory and AI conversations — travel encrypted (AES-256): neither Google nor we can read them. Your project files stay in your own cloud, under your account and your control.",
-      },
-      {
-        q: "Do my files end up on your servers?",
-        a: "No. Your files go straight from your computer to YOUR cloud (your Drive) — they never pass through our servers and we can't see them. And the sensitive parts (secrets, credentials, AI conversations) upload encrypted, with a key only you hold.",
-      },
-      {
-        q: "Does it work with just one computer?",
-        a: "Yes, but it shines with two. With one it's a secure backup and gets you set up for when you add another. The real magic kicks in from the second.",
-      },
-      {
-        q: "What happens if I cancel my subscription?",
-        a: "The app keeps running on the free plan. Your files stay in your cloud — you remain the owner. You can export everything anytime.",
-      },
-      {
-        q: "Can I trust its security?",
-        a: "Yes. We use AES-256, the industry standard, to encrypt your secrets, credentials and AI conversations before they leave your computer — only you hold the key. Your project files never pass through our servers: they go straight to your own cloud, under your account.",
-      },
-      {
-        q: "Does it work with any AI or just Claude and Codex?",
-        a: "Today it works great with Claude and Codex, plus Gemini for long documents. We add others based on what people ask for most. Want a specific one? Write us.",
-      },
-      {
-        q: "How is this different from using Claude or Codex on their own?",
-        a: "On their own they don't talk to each other: each has its own context and memory. TerminalSync connects them in a single flow. You ask one to analyze and another to do it, without re-explaining anything — they share the same project and the same memory.",
-      },
-      {
-        q: "Do I need to configure anything?",
-        a: "No. You open the app and your workspaces, tools and memory are ready from the first session. Nothing to configure.",
-      },
-    ],
+    items: getHomeFaq("en").map(({ question, answer }) => ({ q: question, a: answer })),
   },
   comparison: {
     eyebrow: "The honest comparison",
