@@ -10,6 +10,12 @@ name: Plugin Curation Loop
 #                      mandó a más de uno a buscarla en console.anthropic.com.
 #   LOOP_RUNS_WRITE_TOKEN    Shared bearer token accepted by /api/internal/loop-runs.
 #   TS_CROSS_REPO_TOKEN      Optional PAT/app token that can create the required app mirror PR in jmggaravito-sudo/terminal-sync.
+#
+# Required repo variables (Settings -> Secrets and variables -> Actions -> Variables):
+#   ZAI_MODEL          Id exacto del modelo GLM que sirve esa key (el mismo
+#                      valor que CANDIDATE_SUGGEST_MODEL en Vercel). No hay
+#                      default posible: los ids de GLM cambian entre versiones
+#                      y uno inventado falla recien al llamar al modelo.
 
 on:
   schedule:
@@ -26,6 +32,10 @@ on:
         required: false
         default: false
         type: boolean
+      max_turns:
+        description: "Tope de turnos del agente (vacio = 80). Bajalo a 15 o 20 para diagnosticar barato: la corrida de 81 turnos costo USD 7.73."
+        required: false
+        type: string
 
 concurrency:
   group: plugin-curation-loop
@@ -85,6 +95,21 @@ jobs:
           GH_TOKEN="$TS_CROSS_REPO_TOKEN" gh repo view "$TERMINALSYNC_APP_REPO" --json nameWithOwner >/tmp/app-repo.json
           echo 'Cross-repo token: OK'
 
+      - name: Verificar credencial y modelo de Z.ai
+        env:
+          ZAI_API_KEY: ${{ secrets.Z_AI_API_KEY }}
+          ZAI_MODEL: ${{ vars.ZAI_MODEL }}
+        run: |
+          set -euo pipefail
+          missing=()
+          [ -z "${ZAI_API_KEY:-}" ] && missing+=("el secret Z_AI_API_KEY")
+          [ -z "${ZAI_MODEL:-}" ] && missing+=("la variable ZAI_MODEL")
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::error::Falta ${missing[*]}. El secret va en Settings -> Secrets and variables -> Actions -> Secrets; el id del modelo va en la pestana Variables, con el mismo valor que CANDIDATE_SUGGEST_MODEL en Vercel. Z.ai sirve modelos GLM, no Claude."
+            exit 1
+          fi
+          echo "OK - key presente, modelo pedido: $ZAI_MODEL"
+
       - name: Run marketplace plugin curation loop
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run != true }}
         uses: anthropics/claude-code-action@v1
@@ -98,6 +123,7 @@ jobs:
           TERMINALSYNC_APP_REPO: jmggaravito-sudo/terminal-sync
           TERMINALSYNC_APP_BASE_BRANCH: release/v0.2.18-lab
           TS_CROSS_REPO_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
+          ANTHROPIC_BASE_URL: https://open.bigmodel.cn/api/anthropic
         with:
           anthropic_api_key: ${{ secrets.Z_AI_API_KEY }}
           base_branch: main
@@ -140,6 +166,60 @@ jobs:
             - landing plugin links visible in /admin/ops/loop-runs
             - where results are visible: /admin/ops/loop-runs
           claude_args: |
-            --model claude-sonnet-5
-            --max-turns 80
-            --allowedTools Read,Write,Edit,MultiEdit,Bash,WebFetch,WebSearch,Grep,Glob
+            --model ${{ vars.ZAI_MODEL }}
+            --max-turns ${{ inputs.max_turns || '80' }}
+            --allowedTools Read,Write,Edit,MultiEdit,Bash,WebFetch,Grep,Glob
+
+      - name: Redactar el detalle de la corrida del agente
+        # El JSON trae el transcripto completo del agente, y el prompt lo deja
+        # correr comandos: si alguna vez corre `env`, el archivo queda con los
+        # secretos en claro. GitHub enmascara los secrets en el LOG, no dentro
+        # de un archivo que se sube como artifact. Paso exactamente eso en la
+        # corrida 35742964885, que subio tokens de Actions legibles.
+        #
+        # Se redactan los valores que ESTE job inyecta, que son los unicos que
+        # el agente puede leer, y despues se verifica de nuevo: si alguno
+        # sobrevivio, el paso falla y no se sube nada. Falla cerrado a proposito
+        # — es preferible quedarse sin diagnostico que publicar una credencial.
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LOOP_RUNS_WRITE_TOKEN: ${{ secrets.LOOP_RUNS_WRITE_TOKEN }}
+          TS_CROSS_REPO_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
+          ZAI_API_KEY: ${{ secrets.Z_AI_API_KEY }}
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, sys
+
+          tmp = pathlib.Path(os.environ["RUNNER_TEMP"])
+          src = tmp / "claude-execution-output.json"
+          if not src.exists():
+              print("No hay detalle de corrida que guardar.")
+              sys.exit(0)
+
+          nombres = ("GH_TOKEN", "LOOP_RUNS_WRITE_TOKEN", "TS_CROSS_REPO_TOKEN", "ZAI_API_KEY")
+          # El corte de 8 evita que un valor corto o vacio redacte medio archivo.
+          secretos = [v for v in (os.environ.get(n, "").strip() for n in nombres) if len(v) >= 8]
+
+          datos = src.read_text(encoding="utf-8", errors="surrogateescape")
+          for s in secretos:
+              datos = datos.replace(s, "***REDACTADO***")
+
+          quedaron = [n for n, v in zip(nombres, (os.environ.get(n, "").strip() for n in nombres)) if len(v) >= 8 and v in datos]
+          if quedaron:
+              print("::error::Quedaron secretos sin redactar en el detalle de la corrida (%s). No se sube nada." % ", ".join(quedaron))
+              sys.exit(1)
+
+          destino = tmp / "claude-execution-output.redacted.json"
+          destino.write_text(datos, encoding="utf-8", errors="surrogateescape")
+          print("Detalle redactado: %d valores cubiertos, %d bytes." % (len(secretos), len(datos)))
+          PY
+
+      - name: Guardar el detalle redactado de la corrida del agente
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-execution-output
+          path: ${{ runner.temp }}/claude-execution-output.redacted.json
+          retention-days: 7
+          if-no-files-found: warn

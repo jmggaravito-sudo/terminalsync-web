@@ -465,12 +465,9 @@ ${FIELD_SPEC[type]}`;
  *  PaaS existe y contesta, pero no habla el protocolo de Anthropic. */
 export const ZAI_DEFAULT_BASE_URL = "https://open.bigmodel.cn/api/anthropic";
 
-export const ANTHROPIC_DEFAULT_MODEL = "claude-opus-5";
-
 export interface SuggestRuntimeEnv {
   ZAI_API_KEY?: string;
   Z_AI_API_KEY?: string;
-  ANTHROPIC_API_KEY?: string;
   CANDIDATE_SUGGEST_BASE_URL?: string;
   CANDIDATE_SUGGEST_MODEL?: string;
   CANDIDATE_SUGGEST_WEB_SEARCH?: string;
@@ -479,7 +476,7 @@ export interface SuggestRuntimeEnv {
 export type SuggestRuntime =
   | {
       ok: true;
-      provider: "zai" | "anthropic";
+      provider: "zai";
       apiKey: string;
       baseURL?: string;
       model: string;
@@ -506,7 +503,6 @@ export type SuggestRuntime =
 export function resolveSuggestRuntime(env: SuggestRuntimeEnv): SuggestRuntime {
   const trim = (v: string | undefined) => v?.trim() || "";
   const zaiKey = trim(env.ZAI_API_KEY) || trim(env.Z_AI_API_KEY);
-  const anthropicKey = trim(env.ANTHROPIC_API_KEY);
   const baseOverride = trim(env.CANDIDATE_SUGGEST_BASE_URL);
   const modelOverride = trim(env.CANDIDATE_SUGGEST_MODEL);
   const webSearchSetting = trim(env.CANDIDATE_SUGGEST_WEB_SEARCH).toLowerCase();
@@ -536,20 +532,9 @@ export function resolveSuggestRuntime(env: SuggestRuntimeEnv): SuggestRuntime {
     };
   }
 
-  if (anthropicKey) {
-    return {
-      ok: true,
-      provider: "anthropic",
-      apiKey: anthropicKey,
-      baseURL: baseOverride || undefined,
-      model: modelOverride || ANTHROPIC_DEFAULT_MODEL,
-      webSearch: webSearchSetting !== "off",
-    };
-  }
-
   return {
     ok: false,
     error:
-      "Falta la API key en el servidor: configurá ZAI_API_KEY (o Z_AI_API_KEY) junto con CANDIDATE_SUGGEST_MODEL, o bien ANTHROPIC_API_KEY, en las variables de entorno de Vercel.",
+      "Falta la configuración de Z.ai en el servidor: configurá ZAI_API_KEY (o Z_AI_API_KEY) junto con CANDIDATE_SUGGEST_MODEL en las variables de entorno de Vercel.",
   };
 }

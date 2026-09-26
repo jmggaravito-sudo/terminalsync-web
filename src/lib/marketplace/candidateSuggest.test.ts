@@ -6,7 +6,6 @@ import {
   normalizeSuggestion,
   resolveSuggestRuntime,
   slugifyName,
-  ANTHROPIC_DEFAULT_MODEL,
   ZAI_DEFAULT_BASE_URL,
   type ConnectorSuggestion,
   type CliToolSuggestion,
@@ -254,20 +253,16 @@ describe("resolveSuggestRuntime", () => {
     expect(r.ok).toBe(false);
     if (!r.ok) {
       expect(r.error).toContain("ZAI_API_KEY");
-      expect(r.error).toContain("ANTHROPIC_API_KEY");
+      expect(r.error).toContain("CANDIDATE_SUGGEST_MODEL");
     }
   });
 
-  it("con ANTHROPIC_API_KEY usa el endpoint de Anthropic, opus-5 y búsqueda web", () => {
-    const r = resolveSuggestRuntime({ ANTHROPIC_API_KEY: "sk-ant-x" });
-    expect(r).toMatchObject({
-      ok: true,
-      provider: "anthropic",
-      apiKey: "sk-ant-x",
-      baseURL: undefined,
-      model: ANTHROPIC_DEFAULT_MODEL,
-      webSearch: true,
+  it("sin Z.ai no activa ningún fallback de modelo", () => {
+    const r = resolveSuggestRuntime({
+      CANDIDATE_SUGGEST_MODEL: "glm-x",
     });
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error).toContain("ZAI_API_KEY");
   });
 
   it("acepta los dos nombres de la key de Z.ai", () => {
@@ -280,10 +275,9 @@ describe("resolveSuggestRuntime", () => {
     }
   });
 
-  it("la key de Z.ai gana sobre la de Anthropic y trae su endpoint por defecto", () => {
+  it("con key de Z.ai trae su endpoint por defecto", () => {
     const r = resolveSuggestRuntime({
       ZAI_API_KEY: "z-1",
-      ANTHROPIC_API_KEY: "sk-ant-x",
       CANDIDATE_SUGGEST_MODEL: "glm-x",
     });
     expect(r).toMatchObject({
@@ -309,13 +303,14 @@ describe("resolveSuggestRuntime", () => {
     ).toMatchObject({ webSearch: true });
   });
 
-  it("CANDIDATE_SUGGEST_WEB_SEARCH=off apaga la búsqueda en Anthropic", () => {
+  it("CANDIDATE_SUGGEST_WEB_SEARCH=off apaga la búsqueda en Z.ai", () => {
     expect(
       resolveSuggestRuntime({
-        ANTHROPIC_API_KEY: "sk-ant-x",
+        ZAI_API_KEY: "z-1",
+        CANDIDATE_SUGGEST_MODEL: "glm-x",
         CANDIDATE_SUGGEST_WEB_SEARCH: "off",
       }),
-    ).toMatchObject({ webSearch: false });
+    ).toMatchObject({ provider: "zai", webSearch: false });
   });
 
   it("una base URL explícita pisa el default de cada proveedor", () => {
@@ -331,9 +326,8 @@ describe("resolveSuggestRuntime", () => {
   it("ignora variables vacías o con solo espacios", () => {
     const r = resolveSuggestRuntime({
       ZAI_API_KEY: "   ",
-      ANTHROPIC_API_KEY: "sk-ant-x",
       CANDIDATE_SUGGEST_BASE_URL: "  ",
     });
-    expect(r).toMatchObject({ ok: true, provider: "anthropic", baseURL: undefined });
+    expect(r).toMatchObject({ ok: false });
   });
 });
