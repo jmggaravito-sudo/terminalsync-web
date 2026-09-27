@@ -12,7 +12,7 @@ describe("public FAQ projection", () => {
   it("keeps only the public fields in both locales", () => {
     for (const locale of ["es", "en"] as const) {
       const items = getPublicFaq(locale);
-      expect(items.length).toBe(15);
+      expect(items.length).toBe(18);
       for (const item of items) {
         expect(Object.keys(item).sort()).toEqual([
           "aliases",
@@ -40,6 +40,29 @@ describe("public FAQ projection", () => {
       const item = getPublicFaq(locale).find((entry) => entry.id === "plans.current_pricing");
       expect(item?.answer).toBeDefined();
       expect(item?.answer).not.toMatch(/\$\d|\d+\s*(?:USD|days|días)/i);
+    }
+  });
+
+  it("states verified Context limits without inventing a universal source count", () => {
+    for (const locale of ["es", "en"] as const) {
+      const sourceCount = getPublicFaq(locale).find((entry) => entry.id === "context.source_count")?.answer;
+      const sourceLimits = getPublicFaq(locale).find((entry) => entry.id === "context.source_limits")?.answer;
+      const turnInclusion = getPublicFaq(locale).find((entry) => entry.id === "context.turn_inclusion")?.answer;
+      expect(sourceCount).toBeDefined();
+      expect(sourceLimits).toBeDefined();
+      expect(turnInclusion).toBeDefined();
+      expect(sourceCount).toMatch(locale === "es" ? /No tenemos aún un máximo documentado por categoría/ : /do not yet have a documented maximum by category/i);
+      expect(sourceCount).toMatch(locale === "es" ? /no significa que sea ilimitado/ : /does not mean unlimited/i);
+      for (const value of locale === "es"
+        ? ["60.000 caracteres", "16 MiB", "5 MiB", "20.000 caracteres"]
+        : ["60,000 characters", "16 MiB", "5 MiB", "20,000 characters"]) {
+        expect(sourceLimits).toContain(value);
+      }
+      expect(sourceLimits).toMatch(locale === "es" ? /no el tamaño total admitido del archivo/ : /not the total file size accepted/i);
+      expect(turnInclusion).toContain(locale === "es" ? "24.000 tokens" : "24,000 tokens");
+      expect(turnInclusion).toMatch(locale === "es" ? /presupuesto estimado/ : /estimated budget/i);
+      expect(turnInclusion).toMatch(locale === "es" ? /no un límite universal de la ventana del modelo ni del plan/ : /not a universal limit for the model window or plan/i);
+      expect(turnInclusion).toMatch(locale === "es" ? /Guardar o indexar.*no significa/ : /Saving or indexing.*does not mean/i);
     }
   });
 
