@@ -12,7 +12,7 @@ describe("public FAQ projection", () => {
   it("keeps only the public fields in both locales", () => {
     for (const locale of ["es", "en"] as const) {
       const items = getPublicFaq(locale);
-      expect(items.length).toBe(15);
+      expect(items.length).toBe(16);
       for (const item of items) {
         expect(Object.keys(item).sort()).toEqual([
           "aliases",
@@ -40,6 +40,17 @@ describe("public FAQ projection", () => {
       const item = getPublicFaq(locale).find((entry) => entry.id === "plans.current_pricing");
       expect(item?.answer).toBeDefined();
       expect(item?.answer).not.toMatch(/\$\d|\d+\s*(?:USD|days|días)/i);
+    }
+  });
+
+  it("states verified Context limits without inventing a universal source count", () => {
+    for (const locale of ["es", "en"] as const) {
+      const item = getPublicFaq(locale).find((entry) => entry.id === "context.limits");
+      expect(item?.answer).toBeDefined();
+      expect(item?.answer).toMatch(locale === "es" ? /60\.000|16 MiB|5 MiB|20\.000|24\.000 tokens/i : /60,000|16 MiB|5 MiB|20,000|24,000-token/i);
+      expect(item?.answer).toMatch(locale === "es" ? /No hay una cifra pública única|no publicamos aquí un límite numérico único/i : /no single public source-count limit|do not publish one universal numeric source or size limit/i);
+      expect(item?.answer).toMatch(locale === "es" ? /Guardar o indexar.*no significa/i : /Saving or indexing.*does not mean/i);
+      expect(item?.answer).not.toMatch(/ilimitad|unlimited|sin límite|no limit/i);
     }
   });
 
