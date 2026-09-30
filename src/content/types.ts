@@ -138,6 +138,10 @@ export interface Dict {
     title: string;
     subtitle: string;
     items: Array<{ q: string; a: string }>;
+    /** "Ver más preguntas" / "See more questions" — used by FAQ with `initial` prop. */
+    more?: string;
+    /** "Ver menos" / "See less" */
+    less?: string;
   };
   comparison: {
     eyebrow: string;
@@ -434,6 +438,61 @@ export interface Dict {
           };
         };
       };
+    };
+  };
+  /** Copy exclusivo del Landing B (portada IA única). */
+  landingB?: {
+    announceBar: {
+      text: string;
+      cta: string;
+      /** Anchor destino del CTA — debe coincidir con el id de la sección Meta. */
+      ctaHref: string;
+    };
+    header: {
+      talk: string;
+      download: string;
+    };
+    hero: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      ctaPrimary: string;
+      trustLine: string;
+    };
+    subNav: {
+      demos: string;
+      integrations: string;
+      meta: string;
+      files: string;
+      pricing: string;
+    };
+    demos: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      items: Array<{ title: string; src: string }>;
+    };
+    integrations: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+    };
+    meta: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+    };
+    files: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+    };
+    finalCta: {
+      eyebrow: string;
+      title: string;
+      subtitle: string;
+      ctaTalk: string;
+      ctaDownload: string;
     };
   };
   checkout: {

@@ -8,6 +8,7 @@ import type { Dict, Locale } from "@/content";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Logo } from "@/components/Logo";
+import { LANDING_B } from "@/lib/launchFlags";
 
 interface Props {
   dict: Dict;
@@ -28,6 +29,12 @@ export function Nav({ dict, lang }: Props) {
   const pathname = usePathname();
   const marketplace = isMarketplaceContext(pathname);
   const [open, setOpen] = useState(false);
+
+  // Landing B brings its own header (HeaderB). Hide the shared Nav only on
+  // the homepage so all internal pages keep their navigation.
+  const isHome =
+    pathname === `/${lang}` || pathname === `/${lang}/`;
+  if (LANDING_B && isHome) return null;
 
   // Una sola fuente de items para desktop y móvil.
   const items: NavItem[] = marketplace
