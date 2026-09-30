@@ -8,10 +8,11 @@ App contract reviewed at merge commit `05f636ff8639cde6be337f2597ebc7b4559c01e3`
 
 | FAQ topic | Claim in `src/content/faq.ts` | Code-backed evidence | Boundary |
 | --- | --- | --- | --- |
-| Open library | `View all` / `Library` opens the source library; missing button means the version may not include it. | `ContextPanel.tsx` opens `ContextLibraryModal`; `ContextLibraryModal.tsx` owns the dialog. | No claim that the installed build has PR #2220. |
+| Open library | `Choose sources` opens the source library; older builds may show `View all`; missing both means the version may not include it. | PR #2239 adds the `chooseSources` access label; `ContextPanel.tsx` opens `ContextLibraryModal`. | No claim that the installed build has PR #2220/#2236/#2239. |
 | Search and pages | Search matches title/URI; type/status filters; 50 rows per page. | `ContextLibraryModal.tsx`: query/kind/status filters, `PAGE_SIZE = 50`. | Search/filter alone does not apply a selection. |
-| Mark sources | Selectable rows use checkboxes; detected-only rows are not selectable. | `ContextLibraryModal.tsx`: `source.selectable`, draft IDs, `detectedOnly`. | A draft selection does not change the next turn until Apply. |
-| Apply versus share | Apply changes selected sources in this workspace; Share sends compatible sources as copies to another owned workspace. | `apply()` adds/removes selection; `onShare()` dispatches workspace-share flow; `SHAREABLE_KINDS` limits sharing. | Do not say every source is shareable or that sharing moves the original. |
+| Mark sources | Selectable rows use checkboxes; detected-only rows are not selectable; current enabled count and unapplied draft are shown. | PR #2236: `appliedCount`, `draft`, `notSelectable`; `ContextLibraryModal.tsx`: `source.selectable`, draft IDs. | A draft selection does not change the next turn until Apply. |
+| Available/included/used/cited | Available is inventory/readiness; included is applied workspace scope; used is actual per-turn content; cited is an answer pointer. | PR #2234 copy: status shows available content, not what the AI used in a reply; citation UI supplies `View this source`. | Do not imply every available or included source is used or cited. |
+| Apply versus share | Apply changes included sources in this workspace; Share opens a review and sends compatible sources as copies to another owned workspace. | PR #2236 review panel, `apply()` add/remove ordering, `onShare()` dispatch, `SHAREABLE_KINDS` limits sharing. | Do not say every source is shareable or that sharing moves the original. |
 | Retention/change/isolation | Source state is shown; retry/remove/pause controls exist only when backend supplies them; selection is scoped to the workspace. | `ContextLibraryModal.tsx` receives `terminalId`, `workspacePath`, `retryable`, `removable`, `pausable`; `ContextPanel.tsx` owns snapshot per terminal. | No promise of automatic reread or cross-workspace inheritance. |
 | Reading status | `Reading not confirmed` means detected without confirmed usable reading; for an image it is not an OCR claim. | `sourceStatusLabel()` maps `name_only` to `detectedOnly`; panel does not infer OCR. | Do not say image processed, OCR'd, or readable by default. |
 | Citations | `View this source` locates the source row; exact fragment jump is not promised. | Existing citation reveal opens the library/group and scrolls to the row, not a guaranteed source fragment. | Do not promise exact-fragment navigation or all broken citations fixed. |
@@ -30,7 +31,7 @@ App contract reviewed at merge commit `05f636ff8639cde6be337f2597ebc7b4559c01e3`
 ## Vigente versus pendiente
 
 - **Vigente in the public copy:** Context source states, verified limits, existing Context selection/reading concepts, and the distinction between applying and sharing.
-- **Pending deploy/installation:** The new scalable library UI from PR #2220, including `View all`, search, filters, pagination, page selection, and library-level Apply/Share controls.
+- **Pending deploy/installation:** The scalable library UI and follow-ups from PR #2220, #2236, #2239, and #2234, including `Choose sources`, details/review before share, current-versus-draft counts, search, filters, pagination, page selection, and library-level Apply/Share controls.
 - **Explicitly unsupported/not certified:** remote repository indexing, strict repos in Solo Contexto, automatic OCR claims, exact citation-fragment jumps, universal support for every Context type, and installed-build behavior before the physical smoke.
 
 ## Required evidence for future physical smoke
