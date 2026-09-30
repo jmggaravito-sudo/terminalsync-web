@@ -12,7 +12,7 @@ describe("public FAQ projection", () => {
   it("keeps only the public fields in both locales", () => {
     for (const locale of ["es", "en"] as const) {
       const items = getPublicFaq(locale);
-      expect(items.length).toBe(18);
+      expect(items.length).toBe(26);
       for (const item of items) {
         expect(Object.keys(item).sort()).toEqual([
           "aliases",
@@ -62,7 +62,39 @@ describe("public FAQ projection", () => {
       expect(turnInclusion).toContain(locale === "es" ? "24.000 tokens" : "24,000 tokens");
       expect(turnInclusion).toMatch(locale === "es" ? /presupuesto estimado/ : /estimated budget/i);
       expect(turnInclusion).toMatch(locale === "es" ? /no un límite universal de la ventana del modelo ni del plan/ : /not a universal limit for the model window or plan/i);
-      expect(turnInclusion).toMatch(locale === "es" ? /Guardar o indexar.*no significa/ : /Saving or indexing.*does not mean/i);
+      expect(turnInclusion).toMatch(locale === "es" ? /disponible o incluida.*no prueba/i : /available or included.*does not.*prove/i);
+    }
+  });
+
+  it("explains the new library without claiming installation or unsupported citation behavior", () => {
+    const requiredIds = [
+      "context.library_open",
+      "context.library_search",
+      "context.library_marking",
+      "context.library_statuses",
+      "context.library_apply_share",
+      "context.library_state_lifecycle",
+      "context.library_citations",
+      "context.library_availability",
+    ];
+    for (const locale of ["es", "en"] as const) {
+      const faq = getPublicFaq(locale);
+      for (const id of requiredIds) {
+        expect(faq.some((item) => item.id === id)).toBe(true);
+      }
+      const answers = requiredIds.map(
+        (id) => faq.find((item) => item.id === id)?.answer ?? "",
+      );
+      const text = answers.join(" ");
+      expect(text).toMatch(locale === "es" ? /hasta 50|50 resultados/ : /up to 50|50 results/i);
+      expect(text).toMatch(locale === "es" ? /no cambia.*IA|IA no cambia/i : /does not change.*AI|AI does not change/i);
+      expect(text).toMatch(locale === "es" ? /no garantiza.*fragmento exacto/i : /does not guarantee.*exact fragment/i);
+      expect(text).toMatch(locale === "es" ? /instalación.*comprobación/i : /installation.*verification/i);
+      expect(text).toMatch(locale === "es" ? /disponible.*incluida.*usada.*citada/i : /available.*included.*used.*cited/i);
+      expect(text).toMatch(locale === "es" ? /Elegir fuentes/i : /Choose sources/i);
+      expect(text).not.toMatch(/todos los tipos|every context type|all context types/i);
+      expect(text).toMatch(locale === "es" ? /no significa OCR/i : /does not mean OCR/i);
+      expect(text).toMatch(locale === "es" ? /no des por hecho.*selección.*aplicada/i : /do not assume.*selection was applied/i);
     }
   });
 
