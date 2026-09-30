@@ -28,6 +28,16 @@ App contract reviewed at merge commit `05f636ff8639cde6be337f2597ebc7b4559c01e3`
 | Skills | Add a guided way of working or instructions for a task. | Integrations / Skills catalog. | Skill must be available and may have its own inputs or connected tools. | Instructions are not the same as external write access; any action follows the tool/connector contract. | Existing catalog source. | Per-skill execution and result smoke; do not imply every skill is installed. |
 | CLI tools | Cover technical tasks that require installation and sign-in. | Integrations / CLI Tools catalog. | Installation and account/authentication as shown by the tool. | May read/write/run commands; confirmation and safe scope are tool-specific. | Existing public FAQ wording. | Installation, auth, and platform smoke; not part of the Context Library certification. |
 
+## Practical evidence boundary
+
+The supplied Context evidence packet associated with `315c63ed6` is recorded as bounded evidence, not as a blanket feature certification:
+
+| Case | Status | FAQ consequence |
+| --- | --- | --- |
+| Editing a pasted source, clicking a citation, and workspace isolation | **PASS (supplied targeted evidence)** | It is safe to explain the tested path only; do not generalize to every source family or every citation target. |
+| Applying a paused source | **FAIL / open** | The FAQ explicitly says not to assume Apply succeeded when the source is paused or an error is shown. No “paused Apply works” claim. |
+| Long partial-content source in the UI | **PENDING** | Keep the partial-content limit in copy, but do not claim the full long-source UI flow is physically verified. |
+
 ## Vigente versus pendiente
 
 - **Vigente in the public copy:** Context source states, verified limits, existing Context selection/reading concepts, and the distinction between applying and sharing.

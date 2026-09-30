@@ -94,6 +94,7 @@ describe("public FAQ projection", () => {
       expect(text).toMatch(locale === "es" ? /Elegir fuentes/i : /Choose sources/i);
       expect(text).not.toMatch(/todos los tipos|every context type|all context types/i);
       expect(text).toMatch(locale === "es" ? /no significa OCR/i : /does not mean OCR/i);
+      expect(text).toMatch(locale === "es" ? /no des por hecho.*selección.*aplicada/i : /do not assume.*selection was applied/i);
     }
   });
 
