@@ -278,6 +278,8 @@ const es: Dict = {
     title: "Lo que la gente nos pregunta primero",
     subtitle: "Si te queda alguna duda, escríbenos a support@terminalsync.ai",
     items: getHomeFaq("es").map(({ question, answer }) => ({ q: question, a: answer })),
+    more: "Ver más preguntas",
+    less: "Ver menos",
   },
   comparison: {
     eyebrow: "El comparativo honesto",
@@ -804,6 +806,74 @@ const es: Dict = {
       body: "Cancelaste el pago — no se cobró nada. Puedes intentar de nuevo cuando quieras, o escribirnos si necesitas ayuda.",
       ctaRetry: "Probar de nuevo",
       ctaContact: "Hablar con el equipo",
+    },
+  },
+  landingB: {
+    announceBar: {
+      text: "Ya puedes conectar Facebook, Instagram y WhatsApp a tu espacio de trabajo.",
+      cta: "Ver cómo →",
+      ctaHref: "#meta",
+    },
+    header: {
+      talk: "Hablar con nosotros",
+      download: "Descargar",
+    },
+    hero: {
+      eyebrow: "IA para tu negocio",
+      title: "Tu espacio de trabajo con IA,\nsiempre donde lo dejaste",
+      subtitle:
+        "TerminalSync guarda el contexto de tu negocio, lo sincroniza entre tus equipos y lo pone a disposición de la IA para que puedas trabajar sin repetirte.",
+      ctaPrimary: "Descargar para Mac",
+      trustLine: "macOS · Gratis para empezar",
+    },
+    subNav: {
+      demos: "Cómo funciona",
+      integrations: "Integraciones",
+      meta: "Meta",
+      files: "Tus archivos",
+      pricing: "Precios",
+    },
+    demos: {
+      eyebrow: "Una IA diseñada para tu forma de trabajar",
+      title: "Mira cómo TerminalSync\ncambia tu día a día",
+      subtitle:
+        "Elige el escenario más parecido a lo que hacés y ve cómo funciona en la práctica.",
+      items: [
+        { title: "Tu espacio de trabajo en un vistazo", src: "/demos/demo-home.html" },
+        { title: "Cambia de IA sin perder el hilo", src: "/demos/demo-cambio-ia.html" },
+        { title: "Conecta tus herramientas", src: "/demos/demo-conectores.html" },
+        { title: "Mensajería en tu espacio", src: "/demos/demo-mensajeria.html" },
+        { title: "Sincroniza entre dispositivos", src: "/demos/demo-sync-dispositivos.html" },
+        { title: "Resultados en segundos", src: "/demos/demo-resultados.html" },
+        { title: "Asistente con tus prompts", src: "/demos/demo-asistente-prompts.html" },
+        { title: "IA como director de equipo", src: "/demos/demo-ai-director.html" },
+      ],
+    },
+    integrations: {
+      eyebrow: "Integraciones",
+      title: "Conecta los servicios\nque ya usas",
+      subtitle:
+        "TerminalSync se conecta con las herramientas de tu negocio para que la IA tenga el contexto que necesita, sin que tengas que copiarlo a mano.",
+    },
+    meta: {
+      eyebrow: "Meta para negocios",
+      title: "Facebook, Instagram y WhatsApp\ndentro de tu espacio de trabajo",
+      subtitle:
+        "Atiende mensajes, revisa campañas y crea contenido sin salir de donde trabajas.",
+    },
+    files: {
+      eyebrow: "Tus archivos",
+      title: "Tu información siempre\nen el lugar correcto",
+      subtitle:
+        "Sube documentos, conecta carpetas y deja que la IA los use cuando los necesites, sin volver a buscarlos.",
+    },
+    finalCta: {
+      eyebrow: "Empieza hoy",
+      title: "Tu trabajo con IA,\norganizado de una vez",
+      subtitle:
+        "Descarga TerminalSync y crea tu primer espacio de trabajo en menos de dos minutos.",
+      ctaTalk: "Hablar con nosotros",
+      ctaDownload: "Descargar para Mac",
     },
   },
 };

@@ -81,7 +81,7 @@ const FAQ_BY_LOCALE: Record<Locale, readonly PublicFaqItem[]> = {
   ],
 };
 
-const HOME_IDS = new Set(["core.what_is","core.get_started","sync.move_between_devices","context.what_is","memory.persistent","context.web_and_youtube","context.share_to_workspace","privacy.what_is_encrypted","catalog.what_are_connectors","platforms.launch_scope"]);
+export const HOME_IDS = new Set(["core.what_is","core.get_started","sync.move_between_devices","context.what_is","memory.persistent","context.web_and_youtube","context.share_to_workspace","privacy.what_is_encrypted","catalog.what_are_connectors","platforms.launch_scope"]);
 
 export function getPublicFaq(locale: Locale): readonly PublicFaqItem[] {
   return FAQ_BY_LOCALE[locale];
@@ -89,4 +89,12 @@ export function getPublicFaq(locale: Locale): readonly PublicFaqItem[] {
 
 export function getHomeFaq(locale: Locale): readonly PublicFaqItem[] {
   return FAQ_BY_LOCALE[locale].filter((item) => HOME_IDS.has(item.id));
+}
+
+/** FAQ para el Landing B: los 10 de HOME_IDS primero (en su orden), luego el resto. */
+export function getLandingBFaq(locale: Locale): readonly PublicFaqItem[] {
+  const all = FAQ_BY_LOCALE[locale];
+  const home = all.filter((i) => HOME_IDS.has(i.id));
+  const rest = all.filter((i) => !HOME_IDS.has(i.id));
+  return [...home, ...rest];
 }
