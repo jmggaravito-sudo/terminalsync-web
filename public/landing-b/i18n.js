@@ -49,7 +49,6 @@
     "Cada cliente, proyecto o área": "Every client, project, or team",
     "conserva su propio contexto.": "keeps its own context.",
     "La IA nunca pierde el contexto de ese trabajo.": "AI never loses the context of that work.",
-    "En TS, la IA viene incluida: no necesitas pagar otra IA aparte para manejar tu empresa.": "TS includes AI: no need to pay for another AI subscription to run your business.",
     "Explora los demos": "Explore the demos",
     "TS — Espacios de trabajo": "TS — Workspaces",
     "Contexto": "Context",
