@@ -36,7 +36,7 @@ export function HeaderB({ dict, lang }: Props) {
           <a
             href="/api/download"
             data-cta="header-b-download"
-            className="inline-flex items-center h-8 px-3.5 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[12.5px] font-semibold transition-all shadow-[0_6px_20px_-8px_var(--color-accent-glow)]"
+            className="inline-flex items-center h-8 px-3.5 rounded-full bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-[12.5px] font-semibold transition-all shadow-[0_6px_20px_-8px_rgba(124,58,237,0.45)]"
           >
             {c?.download ?? "Descargar"}
           </a>

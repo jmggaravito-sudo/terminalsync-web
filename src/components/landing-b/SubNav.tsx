@@ -76,7 +76,7 @@ export function SubNav({ dict }: Props) {
               onClick={() => handleClick(id)}
               className={`shrink-0 rounded-full text-[13px] font-medium px-3.5 py-1.5 my-2 transition-colors ${
                 isActive
-                  ? "bg-[var(--color-accent-soft)] text-[var(--color-accent)]"
+                  ? "bg-[#ede9fe] text-[#6d28d9]"
                   : "text-[var(--color-fg-muted)] hover:bg-[var(--color-panel)] hover:text-[var(--color-fg-strong)]"
               }`}
             >

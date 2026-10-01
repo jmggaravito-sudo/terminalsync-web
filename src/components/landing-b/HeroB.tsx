@@ -22,7 +22,7 @@ export function HeroB({ dict }: Props) {
           {c.titlePre ? (
             <>
               {c.titlePre} {" "}
-              <span className="text-[var(--color-accent)]">{c.titleHighlight}</span>
+              <span className="text-[#7c3aed]">{c.titleHighlight}</span>
               {c.titlePost}
             </>
           ) : c.title}
@@ -34,13 +34,13 @@ export function HeroB({ dict }: Props) {
           <a
             href="/api/download"
             data-cta="hero-b-primary"
-            className="inline-flex items-center h-11 px-6 rounded-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[14px] font-semibold transition-all shadow-[0_8px_24px_-8px_var(--color-accent-glow)] hover:shadow-[0_12px_32px_-8px_var(--color-accent-glow)]"
+            className="inline-flex items-center h-11 px-6 rounded-full bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-[14px] font-semibold transition-all shadow-[0_8px_24px_-8px_rgba(124,58,237,0.45)] hover:shadow-[0_12px_32px_-8px_rgba(124,58,237,0.5)]"
           >
             {c.ctaPrimary}
           </a>
           <a
             href={c.ctaSecondaryHref}
-            className="inline-flex items-center h-11 px-6 rounded-full border border-[var(--color-border)] text-[var(--color-fg-strong)] text-[14px] font-semibold hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
+            className="inline-flex items-center h-11 px-6 rounded-full border border-[var(--color-border)] text-[var(--color-fg-strong)] text-[14px] font-semibold hover:border-[#7c3aed] hover:text-[#7c3aed] transition-colors"
           >
             {c.ctaSecondary}
           </a>
