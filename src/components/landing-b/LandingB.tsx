@@ -35,13 +35,12 @@ export function LandingB({ dict, lang, faq }: Props) {
       <StructuredData dict={dict} lang={lang} />
       <AnnounceBar dict={dict} />
       <HeaderB dict={dict} lang={lang} />
+      <SubNav dict={dict} />
       <HeroB dict={dict} />
       {/* Windows wait-list — hidden for Mac users; the anchor is used by /api/download */}
       <div id="windows">
         <WindowsEarlyAccess dict={dict} />
       </div>
-      <SubNav dict={dict} />
-
       <DemosB dict={dict} />
 
       <section

@@ -29,7 +29,7 @@ export function HeaderB({ dict, lang }: Props) {
           <LanguageSwitcher current={lang} />
           <a
             href="mailto:hola@terminalsync.ai"
-            className="hidden sm:inline-flex text-[13px] text-[var(--color-fg-muted)] hover:text-[var(--color-fg-strong)] transition-colors"
+            className="hidden sm:inline-flex items-center h-8 px-3.5 rounded-full border border-[var(--color-border)] text-[13px] text-[var(--color-fg-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-fg-strong)] transition-colors"
           >
             {c?.talk ?? "Hablar con nosotros"}
           </a>

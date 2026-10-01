@@ -19,7 +19,13 @@ export function HeroB({ dict }: Props) {
           className="mt-5 font-semibold tracking-tight text-[var(--color-fg-strong)] leading-[1.06] whitespace-pre-line"
           style={{ fontSize: "clamp(2rem, 5vw, 3.25rem)" }}
         >
-          {c.title}
+          {c.titlePre ? (
+            <>
+              {c.titlePre} {" "}
+              <span className="text-[var(--color-accent)]">{c.titleHighlight}</span>
+              {c.titlePost}
+            </>
+          ) : c.title}
         </h1>
         <p className="mt-5 text-[16px] text-[var(--color-fg-muted)] leading-relaxed max-w-lg">
           {c.subtitle}
@@ -32,19 +38,32 @@ export function HeroB({ dict }: Props) {
           >
             {c.ctaPrimary}
           </a>
+          <a
+            href={c.ctaSecondaryHref}
+            className="inline-flex items-center h-11 px-6 rounded-full border border-[var(--color-border)] text-[var(--color-fg-strong)] text-[14px] font-semibold hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
+          >
+            {c.ctaSecondary}
+          </a>
         </div>
         <p className="mt-4 text-[12px] text-[var(--color-fg-dim)]">{c.trustLine}</p>
       </div>
 
-      <div className="relative rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-[0_20px_60px_-12px_rgba(0,0,0,0.18)]">
-        <Image
-          src="/landing-b/app-home-cover-v3.png"
-          alt="TerminalSync workspace"
-          width={1200}
-          height={800}
-          className="w-full h-auto"
-          priority
-        />
+      <div className="relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-2 shadow-[0_20px_60px_-12px_rgba(0,0,0,0.22)]">
+        <div className="flex h-7 items-center gap-1.5 px-2" aria-hidden="true">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+        </div>
+        <div className="overflow-hidden rounded-xl border border-[var(--color-border)]">
+          <Image
+            src="/landing-b/app-home-cover-v3.png"
+            alt="TerminalSync workspace"
+            width={1200}
+            height={800}
+            className="w-full h-auto"
+            priority
+          />
+        </div>
       </div>
     </section>
   );
