@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>TerminalSync — IA incluida para tu empresa</title>
-<meta name="description" content="Trabaja en tu empresa con IA sin pagar otra herramienta de IA aparte. TerminalSync reúne tus archivos y herramientas, y te pide permiso antes de actuar. Para Mac." />
+<title>TerminalSync — un espacio para cada proyecto, con IA incluida</title>
+<meta name="description" content="Separa cada cliente, proyecto o área en su propio espacio, con sus archivos y contexto. TerminalSync incluye IA, sin pagar otra suscripción de IA. Para Mac." />
 <template id="__bundler_thumbnail"><svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#6a48e8"/><rect x="26" y="34" width="68" height="52" rx="8" fill="#fff"/><rect x="34" y="44" width="38" height="5" rx="2.5" fill="#6a48e8"/><rect x="34" y="55" width="52" height="4" rx="2" fill="#c8e6da"/><rect x="34" y="64" width="44" height="4" rx="2" fill="#c8e6da"/></svg></template>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -80,7 +80,17 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .hero h1{font-size:clamp(34px,4.3vw,60px);line-height:1.08;font-weight:600;letter-spacing:-.03em;max-width:15ch}
 .hero h1 em{font-style:normal;color:var(--violet)}
 .hero .lede{margin-top:19px;font-size:clamp(16px,1.35vw,17.5px);line-height:1.58;color:var(--fg-2);max-width:40ch}
-.hero-cta{display:flex;gap:11px;margin-top:30px;flex-wrap:wrap}
+.hero-benefit{margin-top:22px;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--violet);border-radius:var(--r);background:var(--surface-2);min-height:164px}
+.hero-benefit strong{display:block;font-size:15px;line-height:1.4;font-weight:600;color:var(--fg)}
+.hero-benefit p{margin-top:5px;font-size:13px;line-height:1.5;color:var(--fg-2)}
+.hero-benefit-controls{display:flex;align-items:center;gap:6px;margin-top:11px}
+.hero-benefit-controls button{height:28px;min-width:28px;padding:0 7px;border:1px solid var(--line-2);border-radius:7px;background:var(--surface);font-size:13px;line-height:1;color:var(--fg-2)}
+.hero-benefit-controls button:hover{border-color:var(--violet);color:var(--violet-ink)}
+.hero-benefit-controls button:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
+.hero-benefit-controls .toggle{margin-left:auto;padding:0 10px;font-size:12px}
+.hero-benefit-count{font-family:var(--mono);font-size:11px;color:var(--fg-3);min-width:32px;text-align:center}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.hero-cta{display:flex;gap:11px;margin-top:24px;flex-wrap:wrap}
 .hero-plat{margin-top:16px;font-size:13.5px;color:var(--fg-2)}
 .hero-plat a{color:var(--fg-2);text-decoration:underline;text-underline-offset:3px}
 
@@ -291,6 +301,10 @@ html.var-dark .theme-toggle .ic-moon{display:block}
   .hero-grid,.split{grid-template-columns:1fr}
   .split.rev>.split-tx{order:0}
 }
+@media (max-width:600px){
+  .nav-right>a.btn{display:none}
+  .hero-benefit{min-height:150px}
+}
 </style>
 </head>
 <body>
@@ -322,8 +336,19 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 <section class="hero">
   <div class="wrap hero-grid">
     <div>
-      <h1>Tu empresa con IA, <em>sin pagar otra IA aparte</em>.</h1>
-      <p class="lede">TerminalSync reúne los archivos y herramientas de tu negocio en una sola app. La IA ya viene incluida: no necesitas otra suscripción de IA. Pide lo que necesitas con tus palabras y aprueba antes de que actúe.</p>
+      <h1>Un espacio para cada trabajo. <em>La IA recuerda el contexto</em>.</h1>
+      <p class="lede">Cada cliente, proyecto o departamento tiene su propio espacio, con archivos, conversaciones y decisiones. TerminalSync recuerda lo importante para que no empieces de cero. La IA viene incluida: no pagas otra IA aparte.</p>
+      <div class="hero-benefit" id="heroBenefit" aria-label="Más formas de trabajar con TerminalSync">
+        <strong id="heroBenefitTitle">Cada espacio sabe de lo suyo.</strong>
+        <p id="heroBenefitText">Archivos, conversaciones y decisiones quedan juntos y separados de los demás.</p>
+        <div class="hero-benefit-controls">
+          <button type="button" id="heroBenefitPrev" aria-label="Mensaje anterior">←</button>
+          <span class="hero-benefit-count" id="heroBenefitCount" aria-hidden="true">1 / 3</span>
+          <button type="button" id="heroBenefitNext" aria-label="Mensaje siguiente">→</button>
+          <button type="button" class="toggle" id="heroBenefitToggle" aria-label="Pausar rotación">Pausar</button>
+        </div>
+        <span class="sr-only" id="heroBenefitAnnouncement" aria-live="polite"></span>
+      </div>
       <div class="hero-cta">
         <a class="btn btn-primary" href="/api/download" data-cta="hero-b-primary">⤓ Descargar para Mac</a>
         <a class="btn btn-ghost" href="#capacidades">Míralo funcionando</a>
@@ -710,6 +735,51 @@ html.var-dark .theme-toggle .ic-moon{display:block}
   });
 })();
 if('scrollRestoration' in history)history.scrollRestoration='manual';
+/* The primary promise stays fixed; short product benefits rotate below it. */
+(function(){
+  const benefits={
+    es:[
+      ['Cada espacio sabe de lo suyo.','Archivos, conversaciones y decisiones quedan juntos y separados de los demás.'],
+      ['La IA trabaja donde ya están tus archivos.','No lleves tus archivos a la IA. Lleva la IA hasta ellos.'],
+      ['No es otro chat. Es tu oficina digital con IA.','Porque trabajar es mucho más que conversar.']
+    ],
+    en:[
+      ['Each workspace keeps its own context.','Files, conversations, and decisions stay together, separate from other work.'],
+      ['AI works where your files already live.',"Don’t bring your files to the AI. Bring the AI to them."],
+      ["It’s not another chat. It’s your digital office with AI.",'Because work is much more than a conversation.']
+    ]
+  };
+  const box=document.getElementById('heroBenefit');
+  const title=document.getElementById('heroBenefitTitle'),text=document.getElementById('heroBenefitText');
+  const count=document.getElementById('heroBenefitCount'),announcement=document.getElementById('heroBenefitAnnouncement');
+  const prev=document.getElementById('heroBenefitPrev'),next=document.getElementById('heroBenefitNext'),toggle=document.getElementById('heroBenefitToggle');
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let index=0,paused=reduced,timer=null;
+  const language=()=>window.TS_getLang?window.TS_getLang():'es';
+  function render(manual){
+    const en=language()==='en',pair=benefits[en?'en':'es'][index];
+    title.textContent=pair[0];text.textContent=pair[1];count.textContent=(index+1)+' / '+benefits.es.length;
+    toggle.textContent=paused?(en?'Play':'Reanudar'):(en?'Pause':'Pausar');
+    toggle.setAttribute('aria-label',paused?(en?'Resume rotation':'Reanudar rotación'):(en?'Pause rotation':'Pausar rotación'));
+    prev.setAttribute('aria-label',en?'Previous message':'Mensaje anterior');
+    next.setAttribute('aria-label',en?'Next message':'Mensaje siguiente');
+    box.setAttribute('aria-label',en?'More ways to work with TerminalSync':'Más formas de trabajar con TerminalSync');
+    announcement.textContent=manual?pair.join(' '):'';
+  }
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  function start(){
+    if(timer||paused||document.hidden||box.matches(':hover')||box.contains(document.activeElement))return;
+    timer=setInterval(()=>{index=(index+1)%benefits.es.length;render(false)},8000);
+  }
+  function move(step){index=(index+step+benefits.es.length)%benefits.es.length;render(true);stop();start()}
+  prev.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>move(1));
+  toggle.addEventListener('click',()=>{paused=!paused;render(false);stop();if(!paused)start()});
+  box.addEventListener('mouseenter',stop);box.addEventListener('mouseleave',start);
+  box.addEventListener('focusin',stop);box.addEventListener('focusout',()=>setTimeout(start,0));
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();else start()});
+  addEventListener('ts-lang',()=>render(false));
+  render(false);start();
+})();
 const stickyNav=document.querySelector('.nav'),stickySubnav=document.querySelector('.subnav');
 document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{
   const id=a.getAttribute('href').slice(1);
