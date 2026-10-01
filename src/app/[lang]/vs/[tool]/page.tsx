@@ -31,12 +31,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title =
     lang === "es"
-      ? `${t.name} vs TerminalSync — comparativa honesta`
-      : `${t.name} vs TerminalSync — honest comparison`;
+      ? `${t.name} vs TS — comparativa honesta`
+      : `${t.name} vs TS — honest comparison`;
   const description =
     lang === "es"
-      ? `Comparativa side-by-side entre ${t.name} y TerminalSync. Persistencia, cifrado AES-256, sesión en cualquier dispositivo, notificaciones. Sin trampas — si algo es parcial, lo decimos.`
-      : `Side-by-side comparison between ${t.name} and TerminalSync. Persistence, AES-256 encryption, Anywhere Access, notifications. No tricks — if something is partial, we say so.`;
+      ? `Comparativa side-by-side entre ${t.name} y TS. Persistencia, cifrado AES-256, sesión en cualquier dispositivo, notificaciones. Sin trampas — si algo es parcial, lo decimos.`
+      : `Side-by-side comparison between ${t.name} and TS. Persistence, AES-256 encryption, Anywhere Access, notifications. No tricks — if something is partial, we say so.`;
   return {
     title,
     description,
@@ -147,7 +147,7 @@ export default async function VsPage({ params }: Props) {
           style={{ fontSize: "clamp(1.875rem, 5vw, 3rem)" }}
         >
           {t.name} <span className="text-[var(--color-fg-dim)]">vs</span>{" "}
-          <span className="text-[var(--color-accent)]">TerminalSync</span>
+          <span className="text-[var(--color-accent)]">TS</span>
         </h1>
         <p className="mt-3 text-[15.5px] text-[var(--color-fg-muted)] leading-relaxed">
           {isEs ? "Categoría: " : "Category: "}
@@ -181,8 +181,8 @@ export default async function VsPage({ params }: Props) {
       <section className="mx-auto max-w-3xl px-5 md:px-6 pb-10">
         <h2 className="text-[18px] font-semibold text-[var(--color-fg-strong)] mb-4">
           {isEs
-            ? `Por qué TerminalSync es mejor para persistencia, privacidad y movilidad`
-            : `Why TerminalSync wins on persistence, privacy, and mobility`}
+            ? `Por qué TS es mejor para persistencia, privacidad y movilidad`
+            : `Why TS wins on persistence, privacy, and mobility`}
         </h2>
         <ul className="space-y-2.5">
           {t.whyTS[lang].map((s, i) => (
@@ -217,7 +217,7 @@ export default async function VsPage({ params }: Props) {
                   {t.name}
                 </th>
                 <th className="px-3 py-3 text-center text-[12.5px] font-semibold text-[var(--color-accent)]">
-                  TerminalSync
+                  TS
                 </th>
               </tr>
             </thead>
@@ -263,8 +263,8 @@ export default async function VsPage({ params }: Props) {
           <div className="flex-1">
             <h3 className="text-[19px] font-semibold text-[var(--color-fg-strong)]">
               {isEs
-                ? `¿Probás TerminalSync 7 días?`
-                : `Try TerminalSync for 7 days?`}
+                ? `¿Probás TS 7 días?`
+                : `Try TS for 7 days?`}
             </h3>
             <p className="mt-2 text-[14px] text-[var(--color-fg-muted)] leading-relaxed">
               {isEs
@@ -303,7 +303,7 @@ export default async function VsPage({ params }: Props) {
                 href={`/${lang}/vs/${s}`}
                 className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-[var(--color-border)] text-[12.5px] text-[var(--color-fg)] hover:bg-[var(--color-panel)] transition-colors"
               >
-                {TOOLS[s].name} vs TerminalSync
+                {TOOLS[s].name} vs TS
               </Link>
             ))}
             <Link

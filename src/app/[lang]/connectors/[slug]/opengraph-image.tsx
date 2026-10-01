@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { getConnector } from "@/lib/connectors";
 
 export const runtime = "nodejs";
-export const alt = "Connector · Terminal Sync";
+export const alt = "Connector · TS";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -68,7 +68,7 @@ export default async function ConnectorOG({ params }: Props) {
                 style={{ width: 8, height: 8, borderRadius: 2, background: "#f5b391" }}
               />
             </div>
-            <div style={{ fontSize: 24, fontWeight: 600 }}>Terminal Sync</div>
+            <div style={{ fontSize: 24, fontWeight: 600 }}>TS</div>
             <div
               style={{
                 fontSize: 14,

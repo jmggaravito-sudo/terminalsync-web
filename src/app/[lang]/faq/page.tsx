@@ -41,11 +41,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params;
   if (!isLocale(lang)) return {};
   return {
-    title: lang === "es" ? "Preguntas frecuentes | TerminalSync" : "FAQ | TerminalSync",
+    title: lang === "es" ? "Preguntas frecuentes | TS" : "FAQ | TS",
     description:
       lang === "es"
-        ? "Respuestas sobre espacios de trabajo, Contexto, sincronización, privacidad e integraciones de TerminalSync."
-        : "Answers about TerminalSync workspaces, Context, sync, privacy, and integrations.",
+        ? "Respuestas sobre espacios de trabajo, Contexto, sincronización, privacidad e integraciones de TS."
+        : "Answers about TS workspaces, Context, sync, privacy, and integrations.",
   };
 }
 

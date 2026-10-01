@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Terminal Sync · Misma sesión en todos tus dispositivos</title>
+<title>TS · Misma sesión en todos tus dispositivos</title>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   :root{
@@ -142,7 +142,7 @@
             <div class="mini-tabs"><span data-i18n="tab-work">Trabajo</span><span data-i18n="tab-ideas">Ideas</span><span data-i18n="tab-files">Archivos</span></div>
             <div class="mini-work"><div class="mini-chat">
               <div class="mu"><span data-i18n="question">Dame un plan de campaña de 90 días para el cliente de skincare</span><span class="cursor" id="cur"></span></div>
-              <div class="mc"><div class="mc-h">TERMINALSYNC</div><b data-i18n="plan">Plan de campaña: 90 días</b><div class="ln m"></div><div class="ln"></div><div class="ln s"></div></div>
+              <div class="mc"><div class="mc-h">TS</div><b data-i18n="plan">Plan de campaña: 90 días</b><div class="ln m"></div><div class="ln"></div><div class="ln s"></div></div>
             </div><aside class="mini-context"><strong data-i18n="context">Contexto</strong><span data-i18n="recipes">Recetas</span><span data-i18n="folders">Carpetas</span><span data-i18n="documents">Documentos</span><span data-i18n="conversation">Conversación</span><span data-i18n="books">Libros</span><span data-i18n="webs">Webs y videos</span><span data-i18n="memory">Memoria</span><span class="mini-cta" data-i18n="add">Agregar información y herramientas</span></aside></div>
           </div>
         </div>
@@ -170,7 +170,7 @@
             <div class="mini-tabs"><span data-i18n="tab-work">Trabajo</span><span data-i18n="tab-ideas">Ideas</span><span data-i18n="tab-files">Archivos</span></div>
             <div class="mini-work"><div class="mini-chat">
               <div class="mu"><span data-i18n="question">Dame un plan de campaña de 90 días para el cliente de skincare</span></div>
-              <div class="mc"><div class="mc-h">TERMINALSYNC</div><b data-i18n="plan">Plan de campaña: 90 días</b><div class="ln m"></div><div class="ln"></div><div class="ln s"></div></div>
+              <div class="mc"><div class="mc-h">TS</div><b data-i18n="plan">Plan de campaña: 90 días</b><div class="ln m"></div><div class="ln"></div><div class="ln s"></div></div>
             </div><aside class="mini-context"><strong data-i18n="context">Contexto</strong><span data-i18n="recipes">Recetas</span><span data-i18n="folders">Carpetas</span><span data-i18n="documents">Documentos</span><span data-i18n="conversation">Conversación</span><span data-i18n="books">Libros</span><span data-i18n="webs">Webs y videos</span><span data-i18n="memory">Memoria</span><span class="mini-cta" data-i18n="add">Agregar información y herramientas</span></aside></div>
           </div>
           <div class="ov" id="ovOff"></div>
@@ -212,7 +212,7 @@
   document.documentElement.lang=lang;
   document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.getAttribute('data-i18n');if(text[key])el.textContent=text[key];});
   document.getElementById('illustrative').textContent=text.illustrative;
-  document.title=lang==='en'?'Terminal Sync · Same session on all your devices':'Terminal Sync · Misma sesión en todos tus dispositivos';
+  document.title=lang==='en'?'TS · Same session on all your devices':'TS · Misma sesión en todos tus dispositivos';
   let timers=[];
   const at=(ms,fn)=>timers.push(setTimeout(fn,ms));
   function say(html,phase){cap.style.opacity=0;setTimeout(()=>{cap.innerHTML=html;phaseLabel.textContent=phase;cap.style.opacity=1;},250);}

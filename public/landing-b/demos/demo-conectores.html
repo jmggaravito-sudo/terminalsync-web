@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Terminal Sync · Conectores</title>
+<title>TS · Conectores</title>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   :root{--ink:#1d2127;--ink2:#5b616b;--ink3:#9aa0aa;--line:#e9eaee;--line2:#dfe1e6;--hover:#f4f5f7;
@@ -128,7 +128,7 @@
 </head>
 <body>
   <div class="win" id="win">
-    <div class="win-bar"><div class="dots"><i></i><i></i><i></i></div><span class="t"><b>Terminal Sync</b> · <span data-i18n="integrations">Integraciones</span></span><span class="demo-note" id="demoNote">Demostración ilustrativa</span></div>
+    <div class="win-bar"><div class="dots"><i></i><i></i><i></i></div><span class="t"><b>TS</b> · <span data-i18n="integrations">Integraciones</span></span><span class="demo-note" id="demoNote">Demostración ilustrativa</span></div>
     <div class="grid">
       <aside class="panel" id="panel">
         <div class="ptitle"><svg viewBox="0 0 24 24"><path d="m12 3 1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/></svg><span data-i18n="integrations">Integraciones</span></div>
@@ -151,8 +151,8 @@
   const params=new URLSearchParams(location.search);
   const lang=params.get('lang')==='en'?'en':'es';
   const words={
-    es:{integrations:'Integraciones',installed:'Instalados',explore:'Explorar',search:'Buscar kits, asistentes, conectores…',kits:'KITS',connectors:'CONECTORES',assistants:'ASISTENTES',cli:'HERRAMIENTAS CLI',replay:'Reproducir de nuevo',example:'Ejemplo',note:'Demostración ilustrativa',pageTitle:'Terminal Sync · Conectores',drag:'Arrastra un conector a una sesión (demo; instalación simulada).',agency:'Agencia',marketing:'Marketing-Site',agencyBody:'Plan de campaña · investigación de cliente',marketingBody:'Landing + automatización de emails',trust:'Modo confianza',empty:'Sin conectores · arrastra uno aquí',drop:'Suelta para simular la instalación',dragTag:'Arrastra →',installedToast:' añadido (simulación) a ',startNotion:'<b>Notion</b> → sesión <b>Agencia</b> (simulación).',startGmail:'<b>Gmail</b> → sesión <b>Marketing-Site</b> (simulación).',end:'En el workspace, <b>Conectar</b> es una acción disponible para añadir conectores. Esta escena ilustra la instalación; no ejecuta una conexión real.'},
-    en:{integrations:'Integrations',installed:'Installed',explore:'Explore',search:'Search kits, assistants, connectors…',kits:'KITS',connectors:'CONNECTORS',assistants:'ASSISTANTS',cli:'CLI TOOLS',replay:'Replay',example:'Example',note:'Illustrative demo',pageTitle:'Terminal Sync · Connectors',drag:'Drag a connector to a session (demo; simulated installation).',agency:'Agency',marketing:'Marketing-Site',agencyBody:'Campaign plan · customer research',marketingBody:'Landing page + email automation',trust:'Trust mode',empty:'No connectors · drag one here',drop:'Release to simulate installation',dragTag:'Drag →',installedToast:' added (simulation) to ',startNotion:'<b>Notion</b> → <b>Agency</b> session (simulated).',startGmail:'<b>Gmail</b> → <b>Marketing-Site</b> session (simulated).',end:'In the workspace, <b>Connect</b> is an available action for adding connectors. This scene illustrates installation; it does not make a real connection.'}
+    es:{integrations:'Integraciones',installed:'Instalados',explore:'Explorar',search:'Buscar kits, asistentes, conectores…',kits:'KITS',connectors:'CONECTORES',assistants:'ASISTENTES',cli:'HERRAMIENTAS CLI',replay:'Reproducir de nuevo',example:'Ejemplo',note:'Demostración ilustrativa',pageTitle:'TS · Conectores',drag:'Arrastra un conector a una sesión (demo; instalación simulada).',agency:'Agencia',marketing:'Marketing-Site',agencyBody:'Plan de campaña · investigación de cliente',marketingBody:'Landing + automatización de emails',trust:'Modo confianza',empty:'Sin conectores · arrastra uno aquí',drop:'Suelta para simular la instalación',dragTag:'Arrastra →',installedToast:' añadido (simulación) a ',startNotion:'<b>Notion</b> → sesión <b>Agencia</b> (simulación).',startGmail:'<b>Gmail</b> → sesión <b>Marketing-Site</b> (simulación).',end:'En el workspace, <b>Conectar</b> es una acción disponible para añadir conectores. Esta escena ilustra la instalación; no ejecuta una conexión real.'},
+    en:{integrations:'Integrations',installed:'Installed',explore:'Explore',search:'Search kits, assistants, connectors…',kits:'KITS',connectors:'CONNECTORS',assistants:'ASSISTANTS',cli:'CLI TOOLS',replay:'Replay',example:'Example',note:'Illustrative demo',pageTitle:'TS · Connectors',drag:'Drag a connector to a session (demo; simulated installation).',agency:'Agency',marketing:'Marketing-Site',agencyBody:'Campaign plan · customer research',marketingBody:'Landing page + email automation',trust:'Trust mode',empty:'No connectors · drag one here',drop:'Release to simulate installation',dragTag:'Drag →',installedToast:' added (simulation) to ',startNotion:'<b>Notion</b> → <b>Agency</b> session (simulated).',startGmail:'<b>Gmail</b> → <b>Marketing-Site</b> session (simulated).',end:'In the workspace, <b>Connect</b> is an available action for adding connectors. This scene illustrates installation; it does not make a real connection.'}
   }[lang];
   document.documentElement.lang=lang;
   document.title=words.pageTitle;

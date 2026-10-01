@@ -11,14 +11,14 @@ const T = {
   es: {
     eyebrow: "Resultados visibles",
     title: "La IA construye. Tú lo ves.",
-    subtitle: "No es solo una conversación. Es trabajo real que aparece frente a ti — sin salir de TerminalSync.",
+    subtitle: "No es solo una conversación. Es trabajo real que aparece frente a ti — sin salir de TS.",
     closing: "Esto no es IA que responde. Es IA que produce.",
     labels: ["Sitios web", "Dashboards", "Portales de clientes", "PDFs y documentos", "Imágenes", "Reportes y entregables"],
   },
   en: {
     eyebrow: "Visible results",
     title: "The AI builds. You see it.",
-    subtitle: "It's not just a conversation. It's real work that appears in front of you — without leaving TerminalSync.",
+    subtitle: "It's not just a conversation. It's real work that appears in front of you — without leaving TS.",
     closing: "This isn't AI that answers. It's AI that produces.",
     labels: ["Websites", "Dashboards", "Client portals", "PDFs & documents", "Images", "Reports & deliverables"],
   },

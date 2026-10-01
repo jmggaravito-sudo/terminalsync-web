@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Terminal Sync · Asistente de prompts</title>
+<title>TS · Asistente de prompts</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
@@ -209,7 +209,7 @@
 <div class="app">
   <header class="top">
     <button class="menu"><svg class="ic" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
-	    <div class="brand"><span class="logo"><img src="/landing-b/assets/logo.png" alt=""></span>Terminal Sync</div>
+	    <div class="brand"><span class="logo"><img src="/landing-b/assets/logo.png" alt=""></span>TS</div>
     <div class="search">
       <svg class="ic sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
       <input data-i="search" placeholder="Buscar una sesión, archivo o computadora…" />
@@ -376,8 +376,8 @@
 	      ask:{es:'<p>Para la integración con <strong>Figma</strong> podemos extender <strong>FilePreview</strong> (unos 3 días) o crear una vista previa propia. Recomiendo extenderlo. ¿Lo trato como hito separado o ligado al de Diseño?</p>',
 	            en:'<p>For the <strong>Figma</strong> integration, we can extend <strong>FilePreview</strong> (about 3 days) or build a custom preview. I recommend extending it. Should I make it a separate milestone or tie it to Design?</p>'},
       raw:{es:'quisiera que hicieras otras czas mas importantes',en:'i\u2019d like u to do other more importat thigs'},
-	      prompt:{es:'Sobre la integración de Figma y su vista previa en TerminalSync, ¿cuáles son los puntos más importantes y las próximas acciones clave?',
-	              en:'For the Figma integration and its TerminalSync preview, what are the most important points and key next actions?'},
+	      prompt:{es:'Sobre la integración de Figma y su vista previa en TS, ¿cuáles son los puntos más importantes y las próximas acciones clave?',
+	              en:'For the Figma integration and its TS preview, what are the most important points and key next actions?'},
       spell:{es:['czas','cosas'],en:['importat thigs','important things']},
 	      note:{es:'El prompt concreta la tarea y corrige «czas» por «cosas».',
 	            en:'The prompt focuses the task and fixes “importat thigs” to “important things.”'} },
@@ -409,7 +409,7 @@
     document.getElementById('b-es').classList.toggle('on',lang==='es');
     document.getElementById('b-en').classList.toggle('on',lang==='en');
   }
-  function aiCard(html){const r=document.createElement('div');r.className='row fadein';r.innerHTML='<div class="ai-card"><div class="ai-head"><span class="dot"></span>TERMINALSYNC</div><div class="ai-body">'+html+'</div></div>';chat.appendChild(r);chat.scrollTop=chat.scrollHeight;return r;}
+  function aiCard(html){const r=document.createElement('div');r.className='row fadein';r.innerHTML='<div class="ai-card"><div class="ai-head"><span class="dot"></span>TS</div><div class="ai-body">'+html+'</div></div>';chat.appendChild(r);chat.scrollTop=chat.scrollHeight;return r;}
 
   let timers=[],typing=null,coachOpen=false;
   function sleep(ms){return new Promise(res=>{timers.push(setTimeout(res,ms));});}

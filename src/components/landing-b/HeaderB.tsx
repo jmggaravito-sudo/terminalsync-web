@@ -20,7 +20,7 @@ export function HeaderB({ dict, lang }: Props) {
         <Link href={`/${lang}`} className="flex items-center gap-2 shrink-0">
           <Logo size={28} />
           <span className="text-[15px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-            TerminalSync
+            TS
           </span>
         </Link>
 

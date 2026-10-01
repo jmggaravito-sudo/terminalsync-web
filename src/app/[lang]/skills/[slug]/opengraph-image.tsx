@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { getSkill } from "@/lib/skills";
 
 export const runtime = "nodejs";
-export const alt = "Skill · Terminal Sync";
+export const alt = "Skill · TS";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -86,7 +86,7 @@ export default async function SkillOG({ params }: Props) {
                 }}
               />
             </div>
-            <div style={{ fontSize: 24, fontWeight: 600 }}>Terminal Sync</div>
+            <div style={{ fontSize: 24, fontWeight: 600 }}>TS</div>
             <div
               style={{
                 fontSize: 14,

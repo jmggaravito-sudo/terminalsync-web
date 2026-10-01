@@ -4,7 +4,7 @@ import { Download } from "lucide-react";
 
 /**
  * Stack Pack CTA. Kits son gratis e incluidos en el plan — no hay
- * cobro per-pack. El CTA invita a descargar/abrir TerminalSync; el
+ * cobro per-pack. El CTA invita a descargar/abrir TS; el
  * pack aparece en el cajón Explorar del Lab listo para arrastrar a
  * una sesión.
  *
@@ -28,7 +28,7 @@ export function BuyButton({ lang, slug: _slug }: { lang: string; slug: string })
         className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] text-white text-[14px] font-semibold px-5 py-3 transition-colors glow-accent"
       >
         <Download size={15} strokeWidth={2.4} />
-        {isEs ? "Descargar TerminalSync" : "Download TerminalSync"}
+        {isEs ? "Descargar TS" : "Download TS"}
       </a>
       <p className="text-[11.5px] text-[var(--color-fg-dim)] text-center leading-relaxed">
         {isEs

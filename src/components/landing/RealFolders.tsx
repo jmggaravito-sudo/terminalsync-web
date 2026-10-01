@@ -6,7 +6,7 @@ const T = {
     eyebrow: "Tus archivos, donde ya viven",
     title: "No vuelvas a subir un archivo dos veces.",
     p1: "Conecta la carpeta de tu proyecto una sola vez. La IA entiende tus documentos, recuerda el contexto y trabaja siempre sobre la versión más reciente — sin que subas nada.",
-    p2: "No llevas tus archivos a la IA. TerminalSync lleva la IA hasta donde ya trabajas.",
+    p2: "No llevas tus archivos a la IA. TS lleva la IA hasta donde ya trabajas.",
     chips: ["Conecta una sola vez", "Siempre la última versión", "Nunca pierde el contexto"],
     folderName: "/proyectos/Martínez",
     files: [
@@ -22,7 +22,7 @@ const T = {
     eyebrow: "Your files, where they already live",
     title: "Never upload a file twice.",
     p1: "Connect your project folder once. The AI understands your documents, remembers the context and always works on the latest version — without you uploading anything.",
-    p2: "You don't bring your files to the AI. TerminalSync brings the AI to where you already work.",
+    p2: "You don't bring your files to the AI. TS brings the AI to where you already work.",
     chips: ["Connect once", "Always the latest version", "Never loses context"],
     folderName: "/projects/Martinez",
     files: [

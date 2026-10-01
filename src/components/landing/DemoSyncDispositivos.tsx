@@ -72,7 +72,7 @@ export function DemoSyncDispositivos({ lang }: { lang: Locale }) {
   return (
     <div ref={ref} className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] overflow-hidden" style={{ boxShadow: "var(--shadow-floating)" }}>
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--color-border)] bg-[var(--color-panel-2)]">
-        <span className="text-[12px] font-mono text-[var(--color-fg-muted)]">Terminal Sync · {t.title}</span>
+        <span className="text-[12px] font-mono text-[var(--color-fg-muted)]">TS · {t.title}</span>
         <button onClick={play} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--color-accent)]">
           <RefreshCw size={13} strokeWidth={2.2} /> {t.replay}
         </button>

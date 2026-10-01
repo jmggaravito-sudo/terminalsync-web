@@ -57,7 +57,7 @@ export function HeroB({ dict }: Props) {
         <div className="overflow-hidden rounded-xl border border-[var(--color-border)]">
           <Image
             src="/landing-b/app-home-cover-v3.png"
-            alt="TerminalSync workspace"
+            alt="TS workspace"
             width={1200}
             height={800}
             className="w-full h-auto"

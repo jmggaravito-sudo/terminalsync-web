@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, slug } = await params;
   const doc = await getConnector(lang, slug);
   if (!doc) return { title: "Connector not found" };
-  const title = `${doc.name} · Terminal Sync Connectors`;
+  const title = `${doc.name} · TS Connectors`;
   return {
     title,
     description: doc.simpleSubtitle,
@@ -57,7 +57,7 @@ export default async function ConnectorDetail({ params }: Props) {
     ctaFree:
       lang === "es" ? `Abrir ${doc.name}` : `Open ${doc.name}`,
     ctaInstall:
-      lang === "es" ? "Agregar a Terminal Sync" : "Add to Terminal Sync",
+      lang === "es" ? "Agregar a TS" : "Add to TS",
     ctaInstallSub:
       lang === "es"
         ? "Abrimos la app y lo dejamos listo en Claude Code y tus otras computadoras."
@@ -66,24 +66,24 @@ export default async function ConnectorDetail({ params }: Props) {
       lang === "es" ? `Ver ${doc.name}` : `View ${doc.name}`,
     noApp:
       lang === "es"
-        ? "¿No tenés Terminal Sync todavía?"
-        : "Don't have Terminal Sync yet?",
+        ? "¿No tenés TS todavía?"
+        : "Don't have TS yet?",
     download: lang === "es" ? "Descargar" : "Download",
     affiliateNote:
       lang === "es"
-        ? "Si te registrás por este link nos ayudás a mantener Terminal Sync sin cobrar más."
-        : "Signing up through this link helps us keep Terminal Sync running without raising prices.",
+        ? "Si te registrás por este link nos ayudás a mantener TS sin cobrar más."
+        : "Signing up through this link helps us keep TS running without raising prices.",
     soon: lang === "es" ? "Próximamente" : "Coming soon",
     soonBody:
       lang === "es"
         ? "Este conector está en beta privada. Suscribite a la lista de espera desde el dashboard."
         : "This connector is in private beta. Join the waitlist from the dashboard.",
     howItWorks:
-      lang === "es" ? "Cómo funciona con Terminal Sync" : "How it works with Terminal Sync",
+      lang === "es" ? "Cómo funciona con TS" : "How it works with TS",
     howItWorksBody:
       lang === "es"
-        ? "Configurá el conector una vez en una máquina. Terminal Sync sincroniza tu claude_desktop_config.json cifrado en tu Drive, así que en cualquier otra máquina donde abras Claude Code, el conector ya está listo."
-        : "Set up the connector once on one machine. Terminal Sync keeps your claude_desktop_config.json encrypted in your Drive, so on any other machine where you open Claude Code, the connector is already there.",
+        ? "Configurá el conector una vez en una máquina. TS sincroniza tu claude_desktop_config.json cifrado en tu Drive, así que en cualquier otra máquina donde abras Claude Code, el conector ya está listo."
+        : "Set up the connector once on one machine. TS keeps your claude_desktop_config.json encrypted in your Drive, so on any other machine where you open Claude Code, the connector is already there.",
   };
 
   // Deep link into the desktop app. The app registers the `terminalsync://`
@@ -101,7 +101,7 @@ export default async function ConnectorDetail({ params }: Props) {
     description: doc.tagline,
     applicationCategory: "DeveloperApplication",
     operatingSystem: "macOS, Windows, Linux",
-    author: { "@type": "Organization", name: "Terminal Sync" },
+    author: { "@type": "Organization", name: "TS" },
     url: `https://terminalsync.ai/${lang}/connectors/${doc.slug}`,
     image: `https://terminalsync.ai/${lang}/connectors/${doc.slug}/opengraph-image`,
     softwareRequirements: "Claude Code, Claude Desktop, or OpenAI Codex",

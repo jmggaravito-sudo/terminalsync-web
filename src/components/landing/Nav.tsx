@@ -103,7 +103,7 @@ export function Nav({ dict, lang }: Props) {
         >
           <Logo size={28} />
           <span className="text-[15px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-            TerminalSync
+            TS
           </span>
         </Link>
 

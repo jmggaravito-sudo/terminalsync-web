@@ -20,23 +20,23 @@ export default async function CreditReturnPage({
   const copy = lang === "en"
     ? {
         successTitle: "Payment received",
-        successBody: "Your balance will be added after the payment provider confirms it. You can return to Terminal Sync now.",
+        successBody: "Your balance will be added after the payment provider confirms it. You can return to TS now.",
         pendingTitle: "Payment pending",
         pendingBody: "No balance is added until the payment provider confirms the payment.",
         cancelTitle: "Top-up canceled",
         cancelBody: "No charge was made. Your previous balance stays unchanged.",
-        back: "Return to Terminal Sync",
-        support: "If the balance does not update after confirmation, open Help → Suggestions in Terminal Sync and include your payment receipt.",
+        back: "Return to TS",
+        support: "If the balance does not update after confirmation, open Help → Suggestions in TS and include your payment receipt.",
       }
     : {
         successTitle: "Pago recibido",
-        successBody: "El saldo se acreditará cuando el medio de pago lo confirme. Ya puedes volver a Terminal Sync.",
+        successBody: "El saldo se acreditará cuando el medio de pago lo confirme. Ya puedes volver a TS.",
         pendingTitle: "Pago pendiente",
         pendingBody: "No se acredita saldo hasta que el medio de pago confirme la operación.",
         cancelTitle: "Recarga cancelada",
         cancelBody: "No se realizó ningún cobro. Tu saldo anterior queda igual.",
-        back: "Volver a Terminal Sync",
-        support: "Si el saldo no se actualiza después de la confirmación, abre Ayuda → Sugerencias en Terminal Sync e incluye el comprobante.",
+        back: "Volver a TS",
+        support: "Si el saldo no se actualiza después de la confirmación, abre Ayuda → Sugerencias en TS e incluye el comprobante.",
       };
 
   const isSuccess = status === "success";

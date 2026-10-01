@@ -34,7 +34,7 @@ export function LegalShell({
             className="flex items-center gap-2 text-[13px] font-semibold text-[var(--color-fg-strong)]"
           >
             <Logo size={24} />
-            TerminalSync
+            TS
           </Link>
           <Link
             href={backHref ?? `/${lang}`}

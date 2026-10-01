@@ -33,7 +33,7 @@ export default async function GeoGuidePage({ params }: Props) {
   const page = getGeoPage(slug as GeoPageSlug, lang as Locale);
   const isEs = lang === "es";
   const faqJson = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: page.faqs.map((item) => ({ "@type": "Question", name: item.q, acceptedAnswer: { "@type": "Answer", text: item.a } })) };
-  const articleJson = { "@context": "https://schema.org", "@type": "Article", headline: page.h1, description: page.description, author: { "@type": "Organization", name: "TerminalSync" }, mainEntityOfPage: `${BASE}/${lang}/guides/${slug}` };
+  const articleJson = { "@context": "https://schema.org", "@type": "Article", headline: page.h1, description: page.description, author: { "@type": "Organization", name: "TS" }, mainEntityOfPage: `${BASE}/${lang}/guides/${slug}` };
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)]">
