@@ -1,10 +1,28 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { defaultLocale, locales } from "@/content";
+import { LANDING_B } from "@/lib/launchFlags";
 
 // Redirect bare "/" to /es or /en based on Accept-Language.
 // Any other path is either already localized (/es/..., /en/...) or an asset.
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  // Landing B is the approved standalone landing. Keep /es and /en as the
+  // public URLs while serving the static design bundle without routing its
+  // visual system through the legacy landing components.
+  if (LANDING_B && /^\/(?:es|en)\/?$/.test(pathname)) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/landing-b/index.html";
+    const res = NextResponse.rewrite(url);
+    if (!req.cookies.get("tsync_landing")) {
+      res.cookies.set("tsync_landing", "consumer", {
+        maxAge: 60 * 60 * 24 * 30,
+        sameSite: "lax",
+        path: "/",
+      });
+    }
+    return res;
+  }
 
   // Kill switch — when NEW_SIGNUPS_DISABLED=true, send first-time visitors to
   // /at-capacity instead of the login form. Existing users (any cookie that

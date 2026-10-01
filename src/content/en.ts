@@ -810,8 +810,9 @@ const en: Dict = {
   },
   landingB: {
     announceBar: {
-      text: "You can now connect Facebook, Instagram, and WhatsApp to your workspace.",
-      cta: "See how →",
+      badge: "NEW",
+      text: "You can now connect Facebook, Instagram, and Meta Ads.",
+      cta: "See how it works →",
       ctaHref: "#meta",
     },
     header: {
@@ -820,10 +821,15 @@ const en: Dict = {
     },
     hero: {
       eyebrow: "AI for your business",
-      title: "Your AI workspace,\nalways where you left it",
+      title: "Your digital office, with AI already included.",
+      titlePre: "Your digital office, with",
+      titleHighlight: "AI already included",
+      titlePost: ".",
       subtitle:
-        "TerminalSync keeps your business context, syncs it across your devices, and makes it available to the AI so you can work without repeating yourself.",
-      ctaPrimary: "Download for Mac",
+        "TerminalSync brings your files, conversations, and tools together so the AI can help you work without starting from scratch.",
+      ctaPrimary: "↓ Download for Mac",
+      ctaSecondary: "See it in action",
+      ctaSecondaryHref: "#demos",
       trustLine: "macOS · Free to start",
     },
     subNav: {

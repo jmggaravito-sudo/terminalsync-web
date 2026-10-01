@@ -443,6 +443,7 @@ export interface Dict {
   /** Copy exclusivo del Landing B (portada IA única). */
   landingB?: {
     announceBar: {
+      badge: string;
       text: string;
       cta: string;
       /** Anchor destino del CTA — debe coincidir con el id de la sección Meta. */
@@ -455,8 +456,13 @@ export interface Dict {
     hero: {
       eyebrow: string;
       title: string;
+      titlePre: string;
+      titleHighlight: string;
+      titlePost: string;
       subtitle: string;
       ctaPrimary: string;
+      ctaSecondary: string;
+      ctaSecondaryHref: string;
       trustLine: string;
     };
     subNav: {

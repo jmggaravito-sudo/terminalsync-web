@@ -53,4 +53,4 @@ export const CHROME_EXTENSION_PUBLIC = false;
  * Qué corta: la portada `/es` y `/en`. Todo lo demás — login, admin,
  * checkout, conectores, legales — queda intacto con su Nav.
  */
-export const LANDING_B = false;
+export const LANDING_B = true;

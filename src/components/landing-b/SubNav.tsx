@@ -74,10 +74,10 @@ export function SubNav({ dict }: Props) {
               key={id}
               type="button"
               onClick={() => handleClick(id)}
-              className={`shrink-0 text-[13px] font-medium px-3 py-3 border-b-2 transition-colors ${
+              className={`shrink-0 rounded-full text-[13px] font-medium px-3.5 py-1.5 my-2 transition-colors ${
                 isActive
-                  ? "border-[var(--color-accent)] text-[var(--color-accent)]"
-                  : "border-transparent text-[var(--color-fg-muted)] hover:text-[var(--color-fg-strong)]"
+                  ? "bg-[#ede9fe] text-[#6d28d9]"
+                  : "text-[var(--color-fg-muted)] hover:bg-[var(--color-panel)] hover:text-[var(--color-fg-strong)]"
               }`}
             >
               {label}
