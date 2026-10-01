@@ -14,16 +14,19 @@
   *{box-sizing:border-box;}
   html,body{margin:0;}
   body{font-family:var(--sans);color:var(--ink);background:radial-gradient(70% 60% at 50% 0%,#fff,transparent 70%),linear-gradient(180deg,#f7f5f1,#eef0ee);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px 14px;min-height:100vh;-webkit-font-smoothing:antialiased;}
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px 14px;min-height:100vh;-webkit-font-smoothing:antialiased;}
   svg{display:block;}
 
-  .stage{position:relative;width:100%;max-width:1320px;}
+  .stage{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:1320px;}
+  .question-band{width:100%;display:flex;justify-content:center;}
+  .question-band .ts-demo-caption{font-size:16px;}
   .win{flex:none;position:relative;width:100%;max-width:1320px;background:#fff;border:1px solid var(--line2);border-radius:14px;overflow:hidden;box-shadow:0 40px 100px -55px rgba(20,22,28,.45);}
   .tbar{display:flex;align-items:center;gap:9px;padding:0 13px;height:52px;background:#e9ebf0;border-bottom:1px solid var(--line);}
   .tbar .dots{display:flex;gap:7px;}
   .tbar .dots i{width:11px;height:11px;border-radius:50%;}
   .tbar .dots i:nth-child(1){background:#ff5f57;}.tbar .dots i:nth-child(2){background:#febc2e;}.tbar .dots i:nth-child(3){background:#28c840;}
   .tbar .t{font-family:var(--mono);font-size:11.5px;color:var(--ink2);margin-left:5px;white-space:nowrap;}
+  .tbar .demo-tag{margin-left:4px;padding:4px 8px;border-radius:999px;background:#f7f7fa;color:var(--ink2);font-size:10px;white-space:nowrap;}
   .tbar .lg{margin-left:auto;display:flex;gap:2px;font-family:var(--mono);font-size:11px;}
   .tbar .lg button{border:none;background:none;color:var(--ink2);padding:2px 7px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:inherit;}
   .tbar .lg button.on{background:#fff;color:var(--violet-ink);font-weight:600;}
@@ -33,9 +36,7 @@
   .abar .ib{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex:none;}
   .abar .ib svg{width:16px;height:16px;stroke:var(--ink2);stroke-width:1.9;fill:none;}
   .abar .bm{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;flex:none;}
-  .abar .bm .lg4{display:grid;grid-template-columns:1fr 1fr;gap:1.5px;width:15px;flex:none;}
-  .abar .bm .lg4 i{width:6.5px;height:6.5px;border-radius:1.5px;background:var(--violet);}
-  .abar .bm .lg4 i:nth-child(2){background:#8b6cf0;}.abar .bm .lg4 i:nth-child(3){background:#a894f7;}
+  .abar .bm img{width:18px;height:18px;object-fit:contain;flex:none;}
   .srch{flex:1;max-width:560px;display:flex;align-items:center;gap:8px;height:32px;padding:0 12px;border:1px solid var(--line2);border-radius:999px;font-size:12.5px;color:var(--ink3);}
   .srch svg{width:13px;height:13px;stroke:var(--ink3);stroke-width:2;fill:none;flex:none;}
   .abar .sy{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);flex:none;}
@@ -56,14 +57,15 @@
   .wstabs .fs{margin-left:auto;font-size:11.5px;color:var(--ink3);display:inline-flex;align-items:center;gap:5px;}
   .wstabs .fs svg{width:11px;height:11px;stroke:currentColor;stroke-width:2;fill:none;}
 
-  .grid{display:grid;grid-template-columns:196px 1fr 336px;background:var(--canvas);}
+  .grid{display:grid;grid-template-columns:58px minmax(0,1fr) 336px;background:var(--canvas);}
 
   /* ── riel de navegación ── */
-  .rail{border-right:1px solid var(--line);background:#fff;padding:9px 9px 11px;display:flex;flex-direction:column;gap:2px;}
-  .nv{display:flex;align-items:center;gap:10px;height:32px;padding:0 9px;border-radius:9px;font-size:12.5px;font-weight:550;color:var(--ink2);white-space:nowrap;}
-  .nv svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.8;fill:none;flex:none;}
+  .rail{border-right:1px solid var(--line);background:#fff;padding:9px 6px 11px;display:flex;flex-direction:column;gap:3px;}
+  .nv{display:flex;align-items:center;justify-content:center;height:36px;padding:0;border-radius:9px;font-size:12.5px;font-weight:550;color:var(--ink2);white-space:nowrap;}
+  .nv svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.8;fill:none;flex:none;}
   .nv .tx{flex:1;overflow:hidden;text-overflow:ellipsis;}
   .nv .ct{font-family:var(--mono);font-size:9.5px;color:var(--ink3);}
+  .nv .tx,.nv .ct{display:none;}
   .nv.on{background:var(--green-soft);color:#0b7a55;font-weight:680;}
   .rail .gap{flex:1;}
 
@@ -83,7 +85,7 @@
   .chat-hd .tb svg{width:12px;height:12px;stroke:currentColor;stroke-width:2;fill:none;}
 
   .thread{flex:1;min-height:210px;padding:15px 18px;display:flex;flex-direction:column;gap:11px;overflow:hidden;}
-  .msg{max-width:84%;font-size:13.5px;line-height:1.62;padding:11px 14px;border-radius:14px;opacity:0;transform:translateY(7px);transition:opacity .34s,transform .34s;}
+  .msg{max-width:84%;font-size:16px;line-height:1.5;padding:11px 14px;border-radius:14px;opacity:0;transform:translateY(7px);transition:opacity .34s,transform .34s;}
   .msg.in{opacity:1;transform:none;}
   .msg.me{align-self:flex-end;background:var(--violet);color:#fff;border-bottom-right-radius:5px;}
   .msg.ai{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:5px;}
@@ -132,11 +134,12 @@
   .ctx-hd .tt span{display:block;font-size:10.5px;color:#6b5a9e;margin-top:1px;}
   .ctx-hd .ib{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;flex:none;}
   .ctx-hd .ib svg{width:13px;height:13px;stroke:#7c6bb0;stroke-width:2;fill:none;}
-  .ctx-add{display:flex;align-items:center;justify-content:center;gap:7px;margin:11px 12px 0;height:36px;border:1px solid color-mix(in srgb,var(--violet) 38%,transparent);border-radius:999px;font-size:12px;font-weight:650;color:var(--violet);}
+  .ctx-add{display:flex;align-items:center;justify-content:center;gap:7px;margin:0 10px;height:34px;padding:0 13px;border:1px solid var(--violet);border-radius:999px;background:var(--violet);font-size:11px;font-weight:650;color:#fff;white-space:nowrap;flex:none;}
   .ctx-add span.p{font-size:15px;line-height:1;}
+  .ctx-add--mobile{display:none;}
   .ctx-sum{display:flex;align-items:center;gap:6px;padding:9px 13px;margin-top:11px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--hover);font-size:11.5px;color:var(--ink2);}
   .ctx-sum b{color:var(--ink);font-weight:650;}
-  .ctx-list{overflow:hidden;}
+  .ctx-list{overflow:auto;flex:1;min-height:0;}
   .grp{display:flex;align-items:center;gap:8px;padding:9px 13px;border-bottom:1px solid var(--line);transition:background .2s;}
   .grp.lit{background:var(--violet-soft);}
   .grp .cv{color:var(--ink3);font-size:9px;transition:transform .2s;flex:none;width:9px;}
@@ -169,6 +172,7 @@
   .md2-hd .tt{flex:1;min-width:0;}
   .md2-hd .tt b{display:block;font-size:15px;font-weight:700;}
   .md2-hd .tt span{display:block;font-size:12px;color:var(--ink2);margin-top:2px;}
+  .md2-hd .tt .demo-note{display:inline-block;margin-top:7px;padding:4px 7px;border-radius:6px;background:var(--violet-soft);color:var(--violet-ink);font-size:10px;line-height:1.3;}
   .md2-hd .x{color:var(--ink3);font-size:15px;flex:none;line-height:1;}
   .md2-bd{display:grid;grid-template-columns:186px 1fr;min-height:280px;}
   .kinds{border-right:1px solid var(--line);padding:9px;display:flex;flex-direction:column;gap:1px;}
@@ -190,29 +194,80 @@
   .form .go{align-self:flex-end;margin-top:auto;height:34px;padding:0 15px;border-radius:9px;background:#b9a3f7;color:#fff;font-size:12.5px;font-weight:650;display:inline-flex;align-items:center;transition:background .2s;}
   .form .go.live{background:var(--violet);}
 
-  .cap{position:absolute;left:50%;top:6px;transform:translateX(-50%);z-index:11;max-width:min(62ch,80%);
-    padding:5px 14px;border-radius:7px;background:#16181d;color:#fff;
-    font-size:clamp(12.5px,1.15vw,14.5px);font-weight:500;line-height:1.34;
-    text-align:center;text-wrap:pretty;transition:opacity .22s;}
-  .cap b{color:#c9b6ff;font-weight:650;}
-  .cap i{font-style:normal;color:#f6c87a;font-weight:650;}
-  .cap:empty{opacity:0;}
   .replay{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--ink2);border:1px solid var(--line);background:#fff;padding:8px 15px;border-radius:999px;cursor:pointer;}
   .replay:hover{border-color:var(--violet);color:var(--violet);}
   .replay svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;}
   @media(max-width:1080px){.grid{grid-template-columns:1fr 320px;}.rail{display:none;}}
-  @media(max-width:820px){.grid{grid-template-columns:1fr;}.ctx{border-left:none;border-top:1px solid var(--line);}}
+  @media(max-width:820px){.grid{grid-template-columns:1fr;}.ctx{border-left:none;border-top:1px solid var(--line);}.chat-hd>.ctx-add{display:none;}.ctx-add--mobile{display:flex;margin:11px 12px 0;}}
+  @media(max-width:600px){
+    body{justify-content:flex-start;gap:8px;padding:8px 8px 10px;}
+    .stage{gap:7px;}
+    .question-band .ts-demo-caption{width:100%;max-width:100%;font-size:14px;}
+    .win{border-radius:10px;}
+    .tbar{height:32px;padding:0 9px;justify-content:flex-end;}
+    .tbar .dots{display:none;}
+    .tbar .demo-tag{font-size:9px;padding:3px 7px;}
+    .tbar .lg button{padding:3px 7px;font-size:11px;}
+    .abar{height:40px;padding:0 10px;gap:8px;}
+    .abar>.ib,.abar .srch,.abar .sy,.abar .nw,.abar .av{display:none;}
+    .abar .bm{font-size:14px;}
+    .wstabs{height:28px;padding:0 8px;}
+    .wstabs .home,.wstabs .fs,.wstabs .wstab:not(.on){display:none;}
+    .wstab.on{height:23px;padding:0 9px;font-size:11.5px;}
+    .chat{margin:5px;border-radius:9px;}
+    .chat-hd{height:34px;padding:0 10px;gap:6px;}
+    .chat-hd .nm{font-size:12.5px;}
+    .chat-hd .md,.chat-hd .ctx-add,.chat-hd .ib,.chat-hd .tb{display:none;}
+    .thread{min-height:0;padding:7px 8px;gap:7px;}
+    .msg{max-width:96%;font-size:14px;line-height:1.35;padding:7px 9px;border-radius:11px;}
+    .msg .who{font-size:9px;margin-bottom:3px;}
+    .cited{gap:4px;margin-top:6px;padding-top:6px;}
+    .cited .ch{font-size:11.5px;padding:3px 7px;}
+    .typing{padding:8px 11px;}
+    .cmp{display:none;}
+    .cmp .box{height:36px;padding:0 10px;gap:7px;}
+    .cmp .box .ph{font-size:14px;}
+    .cmp .sd{width:24px;height:24px;}
+    .cmp .st{margin-top:5px;font-size:11px;}
+    .cmp .st .mono{font-size:10px;}
+    .cmp .acts{display:none;}
+    .ctx-hd{gap:7px;padding:7px 9px;}
+    .ctx-hd .ic{width:26px;height:26px;border-radius:8px;}
+    .ctx-hd .tt b{font-size:13px;}
+    .ctx-hd .tt span{font-size:10.5px;}
+    .ctx-hd .ib{width:21px;height:21px;}
+    .ctx-add--mobile{height:29px;margin:6px 9px 0;padding:0 10px;font-size:12px;}
+    .ctx-sum{padding:5px 9px;margin-top:6px;font-size:11.5px;}
+    .ctx-list{flex:initial;overflow:visible;}
+    .grp{min-height:23px;padding:3px 9px;gap:6px;}
+    .grp .gl{font-size:9.5px;letter-spacing:.1em;}
+    .grp .hint{display:none;}
+    .grp .gn{font-size:9.5px;}
+    .src .it{padding:5px 9px 5px 25px;gap:6px;}
+    .src .nm{font-size:11.5px;line-height:1.3;}
+    .src .nm em{font-size:9px;}
+    .ctx-foot{display:none;}
+    .md2{width:calc(100% - 18px);max-height:90%;overflow:auto;}
+    .md2-bd{grid-template-columns:112px minmax(0,1fr);min-height:0;}
+    .kinds{padding:5px;}
+    .kind{height:27px;padding:0 6px;gap:6px;font-size:10.5px;}
+    .form{padding:10px;}
+    .form .ta{min-height:62px;padding:8px;font-size:13px;}
+    .replay{padding:7px 12px;font-size:11.5px;}
+  }
 </style>
+<link rel="stylesheet" href="/landing-b/demos/demo-captions.css">
 </head>
 <body>
   <div class="stage">
+  <div class="question-band"><div class="ts-demo-caption"><span class="ts-demo-caption__label" data-i="questionLabel">PREGUNTA</span><span class="ts-demo-caption__text" id="questionText"></span></div></div>
   <div class="win">
-    <div class="tbar"><div class="dots"><i></i><i></i><i></i></div>
+    <div class="tbar"><div class="dots"><i></i><i></i><i></i></div><span class="demo-tag" data-i="demoTag">Demostración ilustrativa</span>
       <span class="lg"><button id="bes" class="on">ES</button><button id="ben">EN</button></span></div>
 
     <div class="abar">
       <span class="ib"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>
-      <span class="bm"><span class="lg4"><i></i><i></i><i></i><i></i></span>Terminal Sync</span>
+      <span class="bm"><img src="/landing-b/assets/logo.png" alt="" />Terminal Sync</span>
       <span class="srch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span data-i="srch">Buscar una sesión, archivo o computadora…</span></span>
       <span class="sy"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 3v6h-6"/></svg><span data-i="sync">Sincronizar</span></span>
       <span class="ib"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span>
@@ -238,6 +293,7 @@
         <div class="chat-hd">
           <span class="nm" id="wsname">cliente-martinez</span>
           <span class="md"><i class="on"></i><i></i></span>
+          <div class="ctx-add"><span class="p">+</span><span data-i="add">Agregar información y herramientas</span></div>
           <span class="gap"></span>
           <span class="ib"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 19h2"/></svg></span>
           <span class="ib"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
@@ -261,8 +317,7 @@
             <span class="act a2"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H8l-5 3 1.5-5A8 8 0 1 1 21 12z"/></svg><span data-i="act2">Pregunta a otro espacio</span></span>
             <span class="act a3"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg><span data-i="act3">Casos de uso</span></span>
             <span class="act a4"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.3"/><circle cx="15" cy="10" r="1.3"/><path d="M9 15h6"/></svg><span data-i="act4">Diseño</span></span>
-            <span class="act a5"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/></svg><span data-i="act5">Controla mi equipo</span></span>
-            <span class="act a6"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z"/></svg><span data-i="act6">Conectar WhatsApp / Telegram</span></span>
+            <span class="act a5"><svg viewBox="0 0 24 24"><path d="M9 3v6M15 3v6M7 9h10v3a5 5 0 0 1-10 0zM12 17v4"/></svg><span data-i="act5">Conectar</span></span>
           </div>
         </div>
       </section>
@@ -274,7 +329,7 @@
           <span class="ib"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 3v6h-6"/></svg></span>
           <span class="ib"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
         </div>
-        <div class="ctx-add"><span class="p">+</span><span data-i="add">Agregar contexto y herramientas</span></div>
+        <div class="ctx-add ctx-add--mobile"><span class="p">+</span><span data-i="add">Agregar información y herramientas</span></div>
         <div class="ctx-sum" id="sum"></div>
         <div class="ctx-list" id="list"></div>
         <div class="ctx-foot"><span data-i="foot">Lo que dice <b>Solo nombre</b> no entró al texto: la IA sabe que existe y lo lee si lo necesita.</span></div>
@@ -285,7 +340,7 @@
       <div class="md2">
         <div class="md2-hd">
           <span class="ic">+</span>
-          <span class="tt"><b data-i="add">Agregar contexto y herramientas</b><span data-i="mdS">Todo lo que agregues acá lo va a conocer la IA de este espacio.</span></span>
+          <span class="tt"><b data-i="add">Agregar información y herramientas</b><span data-i="mdS">Todo lo que agregues acá lo va a conocer la IA de este espacio.</span><span class="demo-note" data-i="modalDemo">Animación ilustrativa · no interactiva; no agrega fuentes reales.</span></span>
           <span class="x">✕</span>
         </div>
         <div class="md2-bd">
@@ -303,7 +358,6 @@
       </div>
     </div>
   </div>
-    <div class="cap" id="cap"></div>
   </div>
   <button class="replay" id="replay"><svg viewBox="0 0 24 24"><path d="M3 2v6h6"/><path d="M3 13a9 9 0 1 0 3-7.7L3 8"/></svg><span data-i="replay">Reproducir de nuevo</span></button>
 
@@ -326,138 +380,126 @@
     icloud:'<path d="M7 18h10a4 4 0 0 0 .5-8 5.5 5.5 0 0 0-10.6 1.2A3.4 3.4 0 0 0 7 18z"/>',
     made:'<path d="m12 3 1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/>'
   };
-  const KINDS=['doc','img','fold','repo','web','paste','rule','note','drive','icloud','book','|','plug'];
+  const KINDS=['note','fold','doc','conv','book','web','mem'];
 
   const T={
     es:{
-      ph:'Escribe tu mensaje…', ready:'Listo', replay:'Reproducir de nuevo', auto:'Automático',
+      ph:'Escribe tu mensaje…', ready:'Listo', replay:'Reproducir de nuevo', auto:'Automático', demoTag:'Demostración ilustrativa', questionLabel:'PREGUNTA', modalDemo:'Animación ilustrativa · no interactiva; no agrega fuentes reales.',
       srch:'Buscar una sesión, archivo o computadora…', sync:'Sincronizar', newws:'Nuevo espacio de trabajo',
       popout:'Extraer', shrink:'Reducir', home:'Inicio', full:'Pantalla completa',
       rail1:'Espacios de Trabajo', rail2:'Secretos', rail3:'Integraciones', rail4:'Extensión de Chrome',
       rail5:'Ayuda', rail6:'Sugerencias', rail7:'Ajustes',
-      act1:'Asistente de ideas · listo', act2:'Pregunta a otro espacio', act3:'Casos de uso',
-      act4:'Diseño', act5:'Controla mi equipo', act6:'Conectar WhatsApp / Telegram',
-      ctxT:'Contexto', ctxS:'Lo que la IA puede usar en este espacio.', add:'Agregar contexto y herramientas',
+      act1:'Asistente de ideas', act2:'Pregunta a otro espacio', act3:'Casos de uso',
+      act4:'Diseño', act5:'Conectar',
+      ctxT:'Contexto', ctxS:'Lo que la IA puede usar en este espacio.', add:'Agregar información y herramientas',
       mdS:'Todo lo que agregues acá lo va a conocer la IA de este espacio.',
       foot:'Lo que dice <b>Solo nombre</b> no entró al texto: la IA sabe que existe y lo lee si lo necesita.',
-      kinds:{doc:'Documentos',img:'Imágenes',fold:'Carpeta',repo:'Repositorio',web:'Websites',paste:'Texto copiado',rule:'Regla',note:'Nota',drive:'Google Drive',icloud:'iCloud',book:'Libros',plug:'Integraciones'},
+      kinds:{note:'Recetas',fold:'Carpetas',doc:'Documentos',conv:'Conversación',book:'Libros',web:'Webs y videos',mem:'Memoria'},
       ws:['cliente-martinez','nuevo-landing'],
       sumEmpty:'<b>0 fuentes</b> · el espacio está vacío',
       sum:n=>'<b>'+n+(n===1?' fuente':' fuentes')+'</b>',
       sumWarn:'<b>3 fuentes</b> · 1 necesita atención',
-      sum2:'<b>3 fuentes · 2 herramientas</b>',
+      sum2:'<b>1 fuente</b>',
       groups:[
-        ['conv','Conversación','',0],['repo','Repositorios','busca en el código',0],
-        ['rule','Reglas','se aplican siempre',0],['note','Notas','solo si las citas',0],
-        ['fold','Carpetas','la IA lee lo que necesite',0],['doc','Documentos','',0],
-        ['book','Libros','',0],['web','Webs','',0],['paste','Texto pegado','',0],
-        ['mem','Memoria','',0],['plug','Integraciones','de tu cuenta',0],['made','Producido acá','',0]
+        ['note','Recetas','',0],['fold','Carpetas','',0],['doc','Documentos','',0],
+        ['conv','Conversación','',0],['book','Libros','',0],['web','Webs y videos','',0],['mem','Memoria','',0]
       ],
       groups2:[
-        ['conv','Conversación','',1],['repo','Repositorios','busca en el código',1],
-        ['rule','Reglas','se aplican siempre',1],['note','Notas','solo si las citas',0],
-        ['fold','Carpetas','la IA lee lo que necesite',0],['doc','Documentos','',0],
-        ['book','Libros','',0],['web','Webs','',0],['paste','Texto pegado','',0],
-        ['mem','Memoria','',0],['plug','Integraciones','de tu cuenta',2],['made','Producido acá','',0]
+        ['note','Recetas','',0],['fold','Carpetas','',0],['doc','Documentos','',1],
+        ['conv','Conversación','',0],['book','Libros','',0],['web','Webs y videos','',0],['mem','Memoria','',0]
       ],
       forms:{
-        fold:{fl:'Carpeta',ph:'Elige una carpeta de tu equipo…',val:'/Clientes/Martinez',sub:'Se sincroniza en vivo: si cambias un archivo, la IA ya lo sabe.'},
-        web:{fl:'Website',ph:'https://…',val:'martinez.com/tienda',sub:'Se vuelve a leer cada vez que preguntas por ella.'},
-        rule:{fl:'Regla',ph:'Escribe una regla… la IA la cumple siempre',val:'No prometer fechas de entrega sin confirmar conmigo.',sub:'',segLabel:'Vigencia',seg:['Siempre','Hasta una fecha']}
+        fold:{fl:'Carpeta',ph:'Elige una carpeta de tu equipo…',val:'/Clientes/Martinez',sub:'Ejemplo de una carpeta asociada al contexto del espacio.'},
+        web:{fl:'Web',ph:'https://…',val:'martinez.com/tienda',sub:'Ejemplo de una página web asociada a este espacio.'},
+        doc:{fl:'Documento',ph:'Elige un documento…',val:'Plan de campaña',sub:'Ejemplo de documento asociado a este espacio.'}
       },
       go:'Agregar al contexto', cntTxt:n=>n+' caracteres disponibles',
       rows:{
-        fold:[['/Clientes/Martinez','12 archivos leídos','ok','Completo']],
-        foldWarn:[['/Clientes/Martinez','no se puede leer — reconectar','warn','Falla']],
-        web:[['martinez.com/tienda','leída hace 2 min','ok','Completo']],
-        rule:[['No prometer fechas de entrega sin confirmar conmigo.','vigencia: siempre','ok','Activa']],
-        repo2:[['terminalsync/landing','rama main · 214 archivos','ok','Completo']]
+        fold:[['/Clientes/Martinez','Ejemplo · 12 archivos','ok','Completo']],
+        foldWarn:[['/Clientes/Martinez','Ejemplo · fuente no disponible; revisar','warn','Atención']],
+        web:[['martinez.com/tienda','Ejemplo · página web','ok','Completo']],
+        doc:[['Plan de campaña','Ejemplo · documento de este espacio','ok','Completo']],
+        doc2:[['Brief de landing','Ejemplo · solo en este espacio','ok','Completo']]
       },
       caps:[
-        'Un espacio de trabajo nuevo <b>no sabe nada</b> de tu negocio. El contexto está en cero.',
-        'Todo entra por un botón: <b>Agregar contexto y herramientas</b>.',
-        'Lo primero suele ser una <b>carpeta</b> — la que ya usas para ese cliente.',
-        'No es una copia: <b>se sincroniza en vivo</b>. Cambias el archivo y la IA ya lo sabe.',
-        'Listo. Una fuente, con su estado real: <b>Completo, 12 archivos</b>.',
-        'Después una <b>página web</b> — la tienda del cliente, por ejemplo.',
-        'Y si quieres, una <b>regla</b>: eso no se consulta, <b>se cumple siempre</b>.',
-        'Tres fuentes. <b>Ahora sí tiene sentido escribirle.</b>',
-        'La respuesta <b>cita lo que usó</b>. Nada de adivinar de dónde salió el dato.',
-        'Y si algo se rompe, lo dice: <i>no se puede leer — reconectar</i>. En ámbar, con el verbo de qué hacer.',
-        'Cambias de espacio y <b>el contexto cambia con él</b>: acá no hay carpetas de cliente, hay un repositorio.',
-        '<b>Cada espacio de trabajo tiene su propio contexto.</b> Lo que sabe uno no se filtra al otro.'
+        'En este ejemplo, un espacio nuevo <b>empieza sin contexto</b>.',
+        'La demostración muestra una opción: <b>Agregar información y herramientas</b>.',
+        'Primero, una <b>carpeta</b> asociada al espacio del cliente.',
+        'La carpeta se muestra como una fuente que puede <b>sincronizarse</b>.',
+        'Ejemplo de estado de fuente: <b>Completo · 12 archivos</b>.',
+        'También se puede asociar una <b>página web</b> al contexto.',
+        'Y un <b>documento</b> con información del proyecto.',
+        'Tres fuentes de ejemplo. <b>Ahora, una pregunta sobre el plan.</b>',
+        'La respuesta de muestra <b>cita las fuentes usadas</b>.',
+        'Ejemplo de estado: si una fuente no está disponible, se señala para revisar.',
+        'Al cambiar de espacio, <b>cambia también el contexto</b>: este ejemplo muestra un brief distinto.',
+        '<b>Cada espacio tiene su propio contexto.</b> La demostración no comparte fuentes entre ellos.'
       ],
-      q:'¿Cómo va la campaña de Martínez este mes?',
-      a:'El alcance va bien: <b>CTR 1.36%</b>, dentro del rango que acordamos. Pero la campaña tiene objetivo de <i>engagement</i>, así que Meta no reporta ROAS — para medir retorno habría que cambiar el objetivo. Te dejo el borrador del correo, sin fecha de entrega, como pediste.',
-      cl:'Usó', chips:['/Clientes/Martinez','martinez.com/tienda','Meta Ads','Regla 1']
+      q:'¿Qué dice el plan sobre la tienda?',
+      a:'En este ejemplo, el plan recomienda destacar la tienda y comparar dos versiones del mensaje antes de ajustar el presupuesto.',
+      cl:'Fuentes del ejemplo', chips:['/Clientes/Martinez','Plan de campaña','martinez.com/tienda']
     },
     en:{
-      ph:'Type your message…', ready:'Ready', replay:'Play again', auto:'Automatic',
+      ph:'Type your message…', ready:'Ready', replay:'Play again', auto:'Automatic', demoTag:'Illustrative demo', questionLabel:'QUESTION', modalDemo:'Illustrative animation · not interactive; no real sources are added.',
       srch:'Search a session, file or computer…', sync:'Sync', newws:'New workspace',
       popout:'Pop out', shrink:'Shrink', home:'Home', full:'Fullscreen',
       rail1:'Workspaces', rail2:'Secrets', rail3:'Integrations', rail4:'Chrome Extension',
       rail5:'Help', rail6:'Feedback', rail7:'Settings',
-      act1:'Idea assistant · ready', act2:'Ask another space', act3:'Use cases',
-      act4:'Design', act5:'Control my computer', act6:'Connect WhatsApp / Telegram',
-      ctxT:'Context', ctxS:'What the AI can use in this workspace.', add:'Add context and tools',
+      act1:'Idea assistant', act2:'Ask another space', act3:'Use cases',
+      act4:'Design', act5:'Connect',
+      ctxT:'Context', ctxS:'What the AI can use in this workspace.', add:'Add information and tools',
       mdS:'Everything you add here is known by this workspace’s AI.',
-      foot:'What says <b>Name only</b> did not go into the text: the AI knows it exists and reads it if needed.',
-      kinds:{doc:'Documents',img:'Images',fold:'Folder',repo:'Repository',web:'Websites',paste:'Pasted text',rule:'Rule',note:'Note',drive:'Google Drive',icloud:'iCloud',book:'Books',plug:'Integrations'},
+      foot:'Items marked <b>Name only</b> are not included in the text: the AI knows the source exists and reads it if needed.',
+      kinds:{note:'Recipes',fold:'Folders',doc:'Documents',conv:'Conversation',book:'Books',web:'Web & videos',mem:'Memory'},
       ws:['client-martinez','new-landing'],
       sumEmpty:'<b>0 sources</b> · this workspace is empty',
       sum:n=>'<b>'+n+(n===1?' source':' sources')+'</b>',
       sumWarn:'<b>3 sources</b> · 1 needs attention',
-      sum2:'<b>3 sources · 2 tools</b>',
+      sum2:'<b>1 source</b>',
       groups:[
-        ['conv','Conversation','',0],['repo','Repositories','searches the code',0],
-        ['rule','Rules','always applied',0],['note','Notes','only if you cite them',0],
-        ['fold','Folders','the AI reads what it needs',0],['doc','Documents','',0],
-        ['book','Books','',0],['web','Websites','',0],['paste','Pasted text','',0],
-        ['mem','Memory','',0],['plug','Integrations','from your account',0],['made','Made here','',0]
+        ['note','Recipes','',0],['fold','Folders','',0],['doc','Documents','',0],
+        ['conv','Conversation','',0],['book','Books','',0],['web','Web & videos','',0],['mem','Memory','',0]
       ],
       groups2:[
-        ['conv','Conversation','',1],['repo','Repositories','searches the code',1],
-        ['rule','Rules','always applied',1],['note','Notes','only if you cite them',0],
-        ['fold','Folders','the AI reads what it needs',0],['doc','Documents','',0],
-        ['book','Books','',0],['web','Websites','',0],['paste','Pasted text','',0],
-        ['mem','Memory','',0],['plug','Integrations','from your account',2],['made','Made here','',0]
+        ['note','Recipes','',0],['fold','Folders','',0],['doc','Documents','',1],
+        ['conv','Conversation','',0],['book','Books','',0],['web','Web & videos','',0],['mem','Memory','',0]
       ],
       forms:{
-        fold:{fl:'Folder',ph:'Pick a folder from your computer…',val:'/Clients/Martinez',sub:'It syncs live: change a file and the AI already knows.'},
-        web:{fl:'Website',ph:'https://…',val:'martinez.com/store',sub:'Re-read every time you ask about it.'},
-        rule:{fl:'Rule',ph:'Write a rule… the AI always follows it',val:'Never promise delivery dates without confirming with me.',sub:'',segLabel:'Validity',seg:['Always','Until a date']}
+        fold:{fl:'Folder',ph:'Pick a folder from your computer…',val:'/Clients/Martinez',sub:'Example folder associated with this workspace’s context.'},
+        web:{fl:'Web',ph:'https://…',val:'martinez.com/store',sub:'Example web page associated with this workspace.'},
+        doc:{fl:'Document',ph:'Choose a document…',val:'Campaign plan',sub:'Example document associated with this workspace.'}
       },
       go:'Add to context', cntTxt:n=>n+' characters left',
       rows:{
-        fold:[['/Clients/Martinez','12 files read','ok','Complete']],
-        foldWarn:[['/Clients/Martinez','can’t be read — reconnect','warn','Failing']],
-        web:[['martinez.com/store','read 2 min ago','ok','Complete']],
-        rule:[['Never promise delivery dates without confirming with me.','validity: always','ok','Active']],
-        repo2:[['terminalsync/landing','main branch · 214 files','ok','Complete']]
+        fold:[['/Clients/Martinez','Example · 12 files','ok','Complete']],
+        foldWarn:[['/Clients/Martinez','Example · source unavailable; review','warn','Attention']],
+        web:[['martinez.com/store','Example · web page','ok','Complete']],
+        doc:[['Campaign plan','Example · document in this workspace','ok','Complete']],
+        doc2:[['Landing brief','Example · this workspace only','ok','Complete']]
       },
       caps:[
-        'A brand-new workspace <b>knows nothing</b> about your business. Context is at zero.',
-        'Everything comes in through one button: <b>Add context and tools</b>.',
-        'The first thing is usually a <b>folder</b> — the one you already use for that client.',
-        'It’s not a copy: <b>it syncs live</b>. Change the file and the AI already knows.',
-        'Done. One source, with its real state: <b>Complete, 12 files</b>.',
-        'Then a <b>web page</b> — the client’s store, for instance.',
-        'And if you want, a <b>rule</b>: that one isn’t consulted, <b>it’s always obeyed</b>.',
-        'Three sources. <b>Now it makes sense to write to it.</b>',
-        'The answer <b>cites what it used</b>. No guessing where a number came from.',
-        'And if something breaks, it says so: <i>can’t be read — reconnect</i>. In amber, with the verb for what to do.',
-        'Switch workspace and <b>the context switches with it</b>: no client folders here, a repository instead.',
-        '<b>Every workspace has its own context.</b> What one knows never leaks into the other.'
+        'In this example, a new workspace <b>starts without context</b>.',
+        'The demo shows one option: <b>Add information and tools</b>.',
+        'First, a <b>folder</b> associated with the client workspace.',
+        'The folder is shown as a source that can <b>sync</b>.',
+        'Example source status: <b>Complete · 12 files</b>.',
+        'A <b>web page</b> can also be associated with the context.',
+        'And a <b>document</b> with project information.',
+        'Three example sources. <b>Now, a question about the plan.</b>',
+        'The sample answer <b>cites its sources</b>.',
+        'Example status: if a source is unavailable, it is flagged for review.',
+        'Switching spaces <b>also changes the context</b>: this example shows a different brief.',
+        '<b>Each space has its own context.</b> This demo keeps their sources separate.'
       ],
-      q:'How is the Martínez campaign doing this month?',
-      a:'Reach looks good: <b>CTR 1.36%</b>, within the range we agreed. But the campaign’s objective is <i>engagement</i>, so Meta reports no ROAS — measuring return would mean changing the objective. Here’s the email draft, with no delivery date, as you asked.',
-      cl:'Used', chips:['/Clients/Martinez','martinez.com/store','Meta Ads','Rule 1']
+      q:'What does the plan say about the store?',
+      a:'In this example, the plan recommends highlighting the store and comparing two message versions before adjusting the budget.',
+      cl:'Example sources', chips:['/Clients/Martinez','Campaign plan','martinez.com/store']
     }
   };
 
   let lang='es', timers=[], counts={};
   const $=id=>document.getElementById(id);
-  const thread=$('thread'), list=$('list'), cap=$('cap'), sum=$('sum'), wstabs=$('wstabs'), ov=$('ov'), kindsBox=$('kinds');
+  const thread=$('thread'), list=$('list'), sum=$('sum'), wstabs=$('wstabs'), ov=$('ov'), kindsBox=$('kinds');
   const after=(ms,fn)=>timers.push(setTimeout(fn,ms));
   const clear=()=>{timers.forEach(clearTimeout);timers=[];};
 
@@ -510,7 +552,7 @@
     $('fl1').textContent=f.fl;
     const ta=$('ta');ta.textContent=f.ph;ta.className='ta ph2';
     $('sub').textContent=f.sub||'';
-    $('cnt').textContent=kind==='rule'?T[lang].cntTxt(280):'';
+    $('cnt').textContent='';
     const seg=$('seg'), fl2=$('fl2');
     if(f.seg){
       seg.innerHTML=f.seg.map((s,i)=>'<span'+(i===0?' class="on"':'')+'>'+s+'</span>').join('');
@@ -522,12 +564,11 @@
   function typeIn(kind){
     const f=T[lang].forms[kind], ta=$('ta');
     ta.className='ta';ta.textContent=f.val;
-    if(kind==='rule')$('cnt').textContent=T[lang].cntTxt(280-f.val.length);
     $('go').classList.add('live');
   }
   function modal(on){ov.classList.toggle('on',on);}
 
-  function say(i){cap.innerHTML=T[lang].caps[i];}
+  function say(i){/* The example question stays fixed and legible in the reserved band. */}
   function bubble(cls,html){
     const d=document.createElement('div');
     d.className='msg '+cls;d.innerHTML=html;thread.appendChild(d);
@@ -540,6 +581,8 @@
     const t=T[lang];
     buildTabs(0);buildList(t.groups);buildKinds('fold');
     thread.innerHTML='';modal(false);
+    $('questionText').textContent=t.q;
+    bubble('me',t.q);
     sum.innerHTML=t.sumEmpty;$('ph').innerHTML=t.ph;
     say(0);
 
@@ -558,15 +601,15 @@
       modal(false);unlit();
       bump('web',1);sum.innerHTML=t.sum(2);open('web',t.rows.web);
     });
-    /* 4 · regla */
-    after(14300,()=>{say(6);modal(true);buildKinds('rule');form('rule');after(900,()=>typeIn('rule'));});
+    /* 4 · documento */
+    after(14300,()=>{say(6);modal(true);buildKinds('doc');form('doc');after(900,()=>typeIn('doc'));});
     after(16600,()=>{
       modal(false);unlit();
-      bump('rule',1);sum.innerHTML=t.sum(3);open('rule',t.rows.rule);
+      bump('doc',1);sum.innerHTML=t.sum(3);open('doc',t.rows.doc);
     });
     /* 5 · ahora sí, el chat */
     after(18400,()=>{unlit();say(7);$('ph').innerHTML='<b>'+t.q+'</b>';});
-    after(19600,()=>{bubble('me',t.q);$('ph').innerHTML=t.ph;bump('conv',1);});
+    after(19600,()=>{$('ph').innerHTML=t.ph;bump('conv',1);});
     after(20400,()=>{const d=document.createElement('div');d.className='typing';d.id='tp';d.innerHTML='<i></i><i></i><i></i>';thread.appendChild(d);});
     after(22200,()=>{
       const tp=$('tp');if(tp)tp.remove();
@@ -578,17 +621,7 @@
     });
     /* 6 · estados honestos */
     after(25400,()=>{say(9);sum.innerHTML=t.sumWarn;open('fold',t.rows.foldWarn);});
-    /* 7 · cada espacio, su contexto */
-    after(28200,()=>{
-      say(10);
-      wstabs.querySelectorAll('.wstab')[2].classList.add('flash');
-      after(500,()=>{
-        buildTabs(1);buildList(t.groups2);
-        thread.innerHTML='';sum.innerHTML=t.sum2;
-        open('repo',t.rows.repo2);
-      });
-    });
-    after(31200,()=>say(11));
+    /* Leave the finished example conversation and its supporting context on screen. */
   }
 
   $('bes').onclick=()=>{lang='es';statics();run();};

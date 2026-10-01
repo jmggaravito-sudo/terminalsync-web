@@ -45,6 +45,8 @@
 
   .dash{position:absolute;inset:0;background:#fff;transition:opacity .3s ease;overflow:hidden;font-size:12px;}
   .dash.hidden{opacity:0;pointer-events:none;}
+  .dash .home-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;display:none;pointer-events:none;}
+  .dash .home-poster.active{display:block;}
   .dash .dabar{height:15%;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 3%;}
   .dash .dabar .logo2{display:flex;align-items:center;gap:6px;font-size:1.1em;font-weight:700;color:#1a1d21;flex:none;}
   .dash .dabar .logo2 i{width:1.5em;height:1.5em;border-radius:6px;background:linear-gradient(135deg,var(--accent),#0a8f66);display:inline-block;}
@@ -73,6 +75,29 @@
   .docked{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:3;}
   .docked.show{opacity:1;}
   .docked .body2{height:100%;}
+  .docked .main2{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 26%;grid-template-rows:30px minmax(0,1fr) auto;}
+  .docked .tabsrow{grid-column:1/-1;grid-row:1;height:30px;}
+  .docked .tabsrow .tb{padding:7px 9px;font-size:8px;}
+  .docked .tabsrow .ex{margin-left:auto;margin-right:5px;padding:3px 7px;border:1px solid var(--line2);border-radius:6px;background:#fff;color:var(--fg2);font-size:7px;white-space:nowrap;}
+  .docked .tabsrow .ex.hot{color:var(--violet);border-color:#c9b8fb;background:#f7f3ff;}
+  .docked .thread{grid-column:1;grid-row:2;padding:8px 9px;gap:6px;}
+  .docked .bubble{font-size:9px;line-height:1.4;}
+  .docked .badge{font-size:7px;padding:2px 6px;}
+  .context-panel{grid-column:2;grid-row:2;min-width:0;min-height:0;overflow:hidden;border-left:1px solid var(--line);background:#fbfbfc;padding:7px 6px;display:flex;flex-direction:column;gap:5px;color:#4b515a;}
+  .ctx-head{font-size:9px;font-weight:700;color:var(--fg);padding-bottom:4px;border-bottom:1px solid var(--line);}
+  .ctx-list{display:flex;flex-direction:column;gap:4px;}
+  .ctx-item,.ctx-memory{font-size:7px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ctx-icon{display:inline-block;width:12px;text-align:center;color:#8a70df;}
+  .ctx-memory{margin-top:auto;border-top:1px solid var(--line);padding-top:5px;color:#3d17b8;font-weight:650;}
+  .ctx-cta{background:var(--violet);color:#fff;border-radius:5px;padding:5px 5px;text-align:center;font-size:6.5px;font-weight:650;line-height:1.25;}
+  .docked .composer{grid-column:1/-1;grid-row:3;padding:5px 8px 6px;}
+  .docked .comp-top{margin-bottom:4px;}
+  .docked .aiSel{font-size:8px;padding:3px 6px;}
+  .docked .comp-mid{gap:5px;}
+  .docked .ib,.docked .send{width:22px;height:22px;font-size:10px;}
+  .docked .in-box{font-size:9px;padding:5px 7px;min-height:22px;}
+  .docked .quick{gap:4px;margin-top:5px;}
+  .docked .q{font-size:7px;padding:3px 6px;}
 
   /* extracted floating window (outside the monitor, on the "desk") */
   .float{position:fixed;background:#fff;border-radius:11px;overflow:hidden;box-shadow:0 40px 90px -30px rgba(0,0,0,.6);z-index:50;
@@ -162,46 +187,115 @@
   .cap b{color:#5eead4;}
 
   .lang-pill{position:fixed;right:18px;top:14px;z-index:90;display:inline-flex;gap:3px;padding:4px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:999px;backdrop-filter:blur(10px);}
+  .demo-note{position:fixed;left:18px;top:18px;z-index:90;font-size:10px;letter-spacing:.01em;color:rgba(231,233,238,.72);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:5px 9px;backdrop-filter:blur(8px);white-space:nowrap;}
   .lang-pill button{font-family:var(--mono);font-size:12px;padding:5px 12px;border-radius:999px;color:#cfd3db;background:none;border:0;}
   .lang-pill button.on{background:#fff;color:#1d2127;font-weight:600;}
   .replay-btn{position:fixed;left:50%;bottom:48px;transform:translateX(-50%);z-index:90;display:none;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:#e7e9ee;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);backdrop-filter:blur(10px);padding:6px 13px;border-radius:999px;cursor:pointer;white-space:nowrap;}
   .replay-btn:hover{border-color:#5eead4;color:#5eead4;}
   .replay-btn svg{width:12px;height:12px;stroke:currentColor;stroke-width:2;fill:none;}
+
+  /* Persistent customer prompt plus a compact, animated narration line. */
+  .cap-wrap{top:14px;width:min(760px,calc(100vw - 32px));z-index:40;}
+  .cap{width:100%;min-height:44px;display:flex;align-items:flex-start;justify-content:flex-start;gap:11px;color:#fff;text-align:left;transition:opacity .3s;}
+  .cap-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px;}
+  .cap-prompt{font-size:inherit;font-weight:650;line-height:1.3;}
+  .cap-status{font-size:12px;line-height:1.3;color:#c6cbd5;font-weight:450;}
+  .cap-status b{color:#5eead4;}
+  .bubble{font-size:16px;line-height:1.4;}
+  .docked .bubble{font-size:16px;line-height:1.38;}
+
+  @media(max-width:600px){
+    html,body{height:100%;min-height:100%;overflow:hidden;}
+    .room{height:100vh;height:100svh;min-height:0;padding:0;}
+    .rig{width:100vw;height:min(54svh,470px);aspect-ratio:auto;}
+    .bezel{padding:8px 8px 18px;border-radius:14px;}
+    .screendesk{border-radius:7px;}
+    .screen{left:1.5%;right:1.5%;top:3%;bottom:12%;border-radius:8px;}
+    .screen .dash{font-size:14px;}
+    .stand{width:155px;height:16px;bottom:-25px;}
+    .stand::after{width:min(88vw,300px);height:8px;bottom:-8px;}
+    .cap-wrap{top:60px;width:calc(100vw - 24px);}
+    .cap{min-height:40px;align-items:flex-start;gap:7px;text-align:left;}
+    .cap-prompt{font-size:14px;line-height:1.3;}
+    .cap-status{font-size:12px;line-height:1.3;}
+    .demo-note{left:10px;top:10px;font-size:9px;padding:4px 7px;}
+    .lang-pill{right:10px;top:8px;padding:3px;}
+    .lang-pill button{font-size:11px;padding:4px 8px;}
+    .docked .main2{grid-template-columns:minmax(0,1fr);grid-template-rows:32px minmax(0,1fr) auto;}
+    .docked .tabsrow{grid-column:1/-1;grid-row:1;height:32px;}
+    .docked .tabsrow .tb{display:none;}
+    .docked .tabsrow .tb.on{display:block;padding:8px 10px;font-size:12px;}
+    .docked .tabsrow .ex{font-size:11px;padding:4px 8px;margin-right:6px;}
+    .docked .thread{grid-column:1;grid-row:2;min-height:0;overflow:hidden;padding:12px;gap:9px;}
+    .docked .context-panel{display:none;}
+    .docked .bubble,.bubble{font-size:14px;line-height:1.35;}
+    .docked .badge{font-size:10px;padding:3px 6px;}
+    .docked .composer{padding:7px 9px 9px;}
+    .docked .comp-top{margin-bottom:5px;}
+    .docked .aiSel{font-size:11px;padding:4px 7px;}
+    .docked .comp-mid{gap:5px;}
+    .docked .ib,.docked .send{width:28px;height:28px;font-size:13px;}
+    .docked .in-box{font-size:14px;padding:6px 8px;min-height:30px;}
+    .docked .quick{display:none;}
+    .float{border-radius:9px;}
+    .float .chatbar{padding:5px 6px;min-height:29px;gap:4px;}
+    .float .chatbar .dots i{width:6px;height:6px;margin-right:2px;}
+    .float .chatbar .t{font-size:8px;}
+    .float .titlerow{display:none;}
+    .float .thread{flex:1;min-height:0;overflow:hidden;padding:7px;gap:6px;}
+    .float .badge{font-size:9px;padding:3px 5px;}
+    .float .bubble{font-size:14px;line-height:1.32;}
+    .float .bubble.me,.float .bubble.ai{max-width:100%;padding:7px 8px;}
+    .float .composer{padding:5px 6px;}
+    .float .comp-top{display:none;}
+    .float .comp-mid{gap:4px;}
+    .float .ib,.float .send{width:28px;height:28px;font-size:13px;}
+    .float .in-box{font-size:14px;min-height:28px;padding:5px 6px;}
+    .float .quick{display:none;}
+    #floatThreadA,#floatThreadB{min-height:0;overflow:hidden;}
+    .replay-btn{bottom:12px;font-size:12px;padding:7px 14px;}
+  }
 </style>
+<link rel="stylesheet" href="/landing-b/demos/demo-captions.css">
 </head>
 <body>
 <div class="room" id="room">
-  <div class="cap-wrap"><div class="cap" id="cap" data-i="cap0">Tu escritorio real, con varios agentes trabajando a la vez.</div></div>
+  <div class="cap-wrap">
+    <div class="cap ts-demo-caption" id="cap">
+      <span class="ts-demo-caption__label" data-i="promptLabel">CLIENTE</span>
+      <span class="cap-copy">
+        <span class="ts-demo-caption__text cap-prompt" id="promptText" data-i="msgA">Prepara el copy de la campaña Q3.</span>
+        <span class="cap-status" id="capStatus" data-i="cap0">Tu escritorio, con varios agentes trabajando a la vez.</span>
+      </span>
+    </div>
+  </div>
 
   <div class="rig">
     <div class="bezel">
       <div class="screendesk" id="screendesk">
       <div class="taskbar"><i></i><i></i><i></i><i></i></div>
       <div class="screen" id="screen">
-        <div class="dash" id="dash"><iframe data-l="es" src="../app-cover-v2.html" style="border:0;pointer-events:none;transform-origin:top left;" scrolling="no"></iframe><iframe data-l="en" src="../app-cover-v2-en.html" style="border:0;pointer-events:none;transform-origin:top left;display:none;" scrolling="no"></iframe></div>
+        <div class="dash" id="dash"><img class="home-poster active" data-l="es" src="../assets/dashboard-workspaces-video-poster-es.png" alt="" aria-hidden="true"><img class="home-poster" data-l="en" src="../assets/dashboard-workspaces-video-poster-en.png" alt="" aria-hidden="true"></div>
 
         <div class="docked" id="dockA">
           <div class="body2">
-            <div class="side">
-              <div class="nv on">🏠 Inicio</div>
-              <div class="nv">📁 Espacios</div>
-              <div class="nv">⚡ Acciones</div>
-              <div class="nv">🔐 Secretos</div>
-              <div class="nv">🧩 Integraciones</div>
-            </div>
             <div class="main2">
-              <div class="abar"><div class="srch">🔍 Buscar…</div><div class="sp"></div><div class="act">↻ Sincronizar</div></div>
-              <div class="tabsrow"><span class="tb">Inicio</span><span class="tb on">marketing-y-publicidad</span></div>
-              <div class="crumb2"><span class="nm">marketing-y-publicidad</span><span class="tools"><i></i><i></i><i></i></span><span class="sp"></span><span class="flag">🚩 12</span><button class="ex" id="exA">↗ Extraer</button><span class="x">✕</span></div>
+              <div class="tabsrow"><span class="tb on">Marketing y Publicidad</span><span class="tb">Ventas y CRM</span><span class="tb">Analítica y Reportes</span><button class="ex" id="exA">↗ Extraer</button></div>
               <div class="thread th-ag1">
                 <span class="badge ag1"><span class="dot"></span>AGENTE · MARKETING</span>
                 <div class="bubble me" id="msgA"></div>
                 <div class="bubble ai" id="replyA"></div>
               </div>
+              <aside class="context-panel">
+                <div class="ctx-head">Contexto</div>
+                <div class="ctx-list"><div class="ctx-item"><span class="ctx-icon">✧</span>Recetas</div><div class="ctx-item"><span class="ctx-icon">▣</span>Carpetas</div><div class="ctx-item"><span class="ctx-icon">▤</span>Documentos</div><div class="ctx-item"><span class="ctx-icon">◷</span>Conversación</div><div class="ctx-item"><span class="ctx-icon">▥</span>Libros</div><div class="ctx-item"><span class="ctx-icon">◎</span>Webs y videos</div></div>
+                <div class="ctx-memory"><span class="ctx-icon">◉</span>Memoria</div>
+                <div class="ctx-cta">Agregar información y herramientas</div>
+              </aside>
               <div class="composer">
                 <div class="comp-top"><span class="aiSel"><span class="d" style="background:var(--ag1)"></span>Modo: <b>Experto</b><span class="dn">▼</span></span></div>
                 <div class="comp-mid"><span class="ib">📎</span><div class="in-box"></div><span class="send"><svg viewBox="0 0 24 24"><path d="m3 20 18-8L3 4v6l12 2-12 2z"/></svg></span></div>
-                <div class="quick"><span class="q hl">✨ Asistente de ideas</span><span class="q">🌐 Contexto</span><span class="q">📖 Casos de uso</span></div>
+                <div class="quick"><span class="q hl">✨ Asistente de ideas</span><span class="q">⇆ Pregunta a otro espacio</span><span class="q">📖 Casos de uso</span><span class="q">🎨 Diseño</span><span class="q">🔌 Conectar</span></div>
               </div>
             </div>
           </div>
@@ -209,26 +303,23 @@
 
         <div class="docked" id="dockB">
           <div class="body2">
-            <div class="side">
-              <div class="nv on">🏠 Inicio</div>
-              <div class="nv">📁 Espacios</div>
-              <div class="nv">⚡ Acciones</div>
-              <div class="nv">🔐 Secretos</div>
-              <div class="nv">🧩 Integraciones</div>
-            </div>
             <div class="main2">
-              <div class="abar"><div class="srch">🔍 Buscar…</div><div class="sp"></div><div class="act">↻ Sincronizar</div></div>
-              <div class="tabsrow"><span class="tb">Inicio</span><span class="tb on">cliente-acme-corp</span></div>
-              <div class="crumb2"><span class="nm">cliente-acme-corp</span><span class="tools"><i></i><i></i><i></i></span><span class="sp"></span><span class="flag">🚩 12</span><button class="ex" id="exB">↗ Extraer</button><span class="x">✕</span></div>
+              <div class="tabsrow"><span class="tb">Marketing y Publicidad</span><span class="tb on">Ventas y CRM</span><span class="tb">Analítica y Reportes</span><button class="ex" id="exB">↗ Extraer</button></div>
               <div class="thread th-ag2">
                 <span class="badge ag2"><span class="dot"></span>AGENTE · VENTAS</span>
                 <div class="bubble me" id="msgB"></div>
                 <div class="bubble ai" id="replyB"></div>
               </div>
+              <aside class="context-panel">
+                <div class="ctx-head">Contexto</div>
+                <div class="ctx-list"><div class="ctx-item"><span class="ctx-icon">✧</span>Recetas</div><div class="ctx-item"><span class="ctx-icon">▣</span>Carpetas</div><div class="ctx-item"><span class="ctx-icon">▤</span>Documentos</div><div class="ctx-item"><span class="ctx-icon">◷</span>Conversación</div><div class="ctx-item"><span class="ctx-icon">▥</span>Libros</div><div class="ctx-item"><span class="ctx-icon">◎</span>Webs y videos</div></div>
+                <div class="ctx-memory"><span class="ctx-icon">◉</span>Memoria</div>
+                <div class="ctx-cta">Agregar información y herramientas</div>
+              </aside>
               <div class="composer">
                 <div class="comp-top"><span class="aiSel"><span class="d" style="background:var(--ag2)"></span>Modo: <b>Confianza</b><span class="dn">▼</span></span></div>
                 <div class="comp-mid"><span class="ib">📎</span><div class="in-box"></div><span class="send"><svg viewBox="0 0 24 24"><path d="m3 20 18-8L3 4v6l12 2-12 2z"/></svg></span></div>
-                <div class="quick"><span class="q hl">✨ Asistente de ideas</span><span class="q">🌐 Contexto</span><span class="q">📖 Casos de uso</span></div>
+                <div class="quick"><span class="q hl">✨ Asistente de ideas</span><span class="q">⇆ Pregunta a otro espacio</span><span class="q">📖 Casos de uso</span><span class="q">🎨 Diseño</span><span class="q">🔌 Conectar</span></div>
               </div>
             </div>
           </div>
@@ -236,25 +327,22 @@
 
         <div class="docked" id="dockC">
           <div class="body2">
-            <div class="side">
-              <div class="nv on">🏠 Inicio</div>
-              <div class="nv">📁 Espacios</div>
-              <div class="nv">⚡ Acciones</div>
-              <div class="nv">🔐 Secretos</div>
-              <div class="nv">🧩 Integraciones</div>
-            </div>
             <div class="main2">
-              <div class="abar"><div class="srch">🔍 Buscar…</div><div class="sp"></div><div class="act">↻ Sincronizar</div></div>
-              <div class="tabsrow"><span class="tb">Inicio</span><span class="tb on">analitica-y-reportes</span></div>
-              <div class="crumb2"><span class="nm">analitica-y-reportes</span><span class="tools"><i></i><i></i><i></i></span><span class="sp"></span><span class="flag">🚩 12</span><button class="ex">↗ Extraer</button><span class="x">✕</span></div>
+              <div class="tabsrow"><span class="tb">Marketing y Publicidad</span><span class="tb">Ventas y CRM</span><span class="tb on">Analítica y Reportes</span></div>
               <div class="thread th-ag3">
                 <span class="badge" style="background:#faf8ff;color:#5a2ee0"><span class="dot"></span>AGENTE · ANALÍTICA</span>
                 <div class="bubble ai" id="replyC"></div>
               </div>
+              <aside class="context-panel">
+                <div class="ctx-head">Contexto</div>
+                <div class="ctx-list"><div class="ctx-item"><span class="ctx-icon">✧</span>Recetas</div><div class="ctx-item"><span class="ctx-icon">▣</span>Carpetas</div><div class="ctx-item"><span class="ctx-icon">▤</span>Documentos</div><div class="ctx-item"><span class="ctx-icon">◷</span>Conversación</div><div class="ctx-item"><span class="ctx-icon">▥</span>Libros</div><div class="ctx-item"><span class="ctx-icon">◎</span>Webs y videos</div></div>
+                <div class="ctx-memory"><span class="ctx-icon">◉</span>Memoria</div>
+                <div class="ctx-cta">Agregar información y herramientas</div>
+              </aside>
               <div class="composer">
                 <div class="comp-top"><span class="aiSel"><span class="d" style="background:#8b6cf0"></span>Modo: <b>Experto</b><span class="dn">▼</span></span></div>
                 <div class="comp-mid"><span class="ib">📎</span><div class="in-box"></div><span class="send"><svg viewBox="0 0 24 24"><path d="m3 20 18-8L3 4v6l12 2-12 2z"/></svg></span></div>
-                <div class="quick"><span class="q hl">✨ Asistente de ideas</span><span class="q">🌐 Contexto</span><span class="q">📖 Casos de uso</span></div>
+                <div class="quick"><span class="q hl">✨ Asistente de ideas</span><span class="q">⇆ Pregunta a otro espacio</span><span class="q">📖 Casos de uso</span><span class="q">🎨 Diseño</span><span class="q">🔌 Conectar</span></div>
               </div>
             </div>
           </div>
@@ -268,7 +356,7 @@
 
   <div class="float" id="floatA">
     <div class="chatbar">
-      <div class="row1"><span class="dots"><i></i><i></i><i></i></span><span class="t">marketing-y-publicidad — Terminal Sync</span><span class="redock">Re-dock</span></div>
+      <div class="row1"><span class="dots"><i></i><i></i><i></i></span><span class="t">marketing-y-publicidad — Terminal Sync</span></div>
       <div class="titlerow"><b>marketing-y-publicidad</b><span>Chat nativo extraído</span></div>
     </div>
     <div id="floatThreadA" style="flex:1;display:flex;flex-direction:column;min-height:90px;"></div>
@@ -280,7 +368,7 @@
   </div>
   <div class="float" id="floatB">
     <div class="chatbar">
-      <div class="row1"><span class="dots"><i></i><i></i><i></i></span><span class="t">cliente-acme-corp — Terminal Sync</span><span class="redock">Re-dock</span></div>
+      <div class="row1"><span class="dots"><i></i><i></i><i></i></span><span class="t">cliente-acme-corp — Terminal Sync</span></div>
       <div class="titlerow"><b>cliente-acme-corp</b><span>Chat nativo extraído</span></div>
     </div>
     <div id="floatThreadB" style="flex:1;display:flex;flex-direction:column;min-height:90px;"></div>
@@ -295,6 +383,7 @@
   <div class="click-ring" id="ring"></div>
 </div>
 
+<div class="demo-note" data-i="demoNote">Demostración ilustrativa</div>
 <div class="lang-pill"><button id="b-es" class="on">ES</button><button id="b-en">EN</button></div>
 <button class="replay-btn" id="replay"><svg viewBox="0 0 24 24"><path d="M3 2v6h6"/><path d="M3 13a9 9 0 1 0 3-7.7L3 8"/></svg><span data-i="replayLbl">Reproducir de nuevo</span></button>
 
@@ -302,13 +391,16 @@
 (function(){
   const T = {
     es: {
+      demoNote:'Demostración ilustrativa',
       replayLbl:'Reproducir de nuevo',
-      cap0:'Tu escritorio real, con varios agentes trabajando a la vez.',
+      promptLabel:'CLIENTE',
+      mobileEnd:'Dos agentes en ventanas extraídas. Borradores ilustrativos listos; nada se envió.',
+      cap0:'Tu escritorio, con varios agentes trabajando a la vez.',
       cap1:'Le das clic a un espacio de trabajo…',
       cap2:'…y se abre el chat completo, con su propio cuadro de mensaje.',
       msgA:'Prepara el copy de la campaña Q3.',
       cap3:'El agente de Marketing escribe la respuesta.',
-      outA:'Listo. Escribí 3 variantes del copy y las dejé en el documento compartido.\n\n<b>Variantes:</b> 3 · <b>Estado:</b> Lista para revisar',
+      outA:'Borrador ilustrativo con 3 variantes, listo para revisar.\n\n<b>Variantes:</b> 3 · <b>Estado:</b> Borrador',
       cap4:'Extraes esta ventana para abrir otro proyecto — el agente sigue trabajando solo.',
       cap5:'…y la ventana sale del monitor, a tu escritorio.',
       cap6:'Abres otro chat — mientras el primero sigue trabajando afuera.',
@@ -318,17 +410,20 @@
       cap7b:'La extraes también — y vuelves al dashboard.',
       cap9:'Corres las dos ventanas a los lados…',
       cap10:'…y abres un tercer espacio, con su propio agente.',
-      outB:'La cotización ya fue enviada al cliente.\n\n<b>Enviada:</b> hace 2 min · <b>Estado:</b> Esperando respuesta',
+      outB:'Ejemplo de seguimiento para la cotización, listo para revisar.\n\n<b>Estado:</b> Borrador · <b>Acción:</b> No enviado',
       cap8:'Tres agentes trabajando a la vez. En un solo monitor.'
     },
     en: {
+      demoNote:'Illustrative demo',
       replayLbl:'Play again',
-      cap0:'Your real desktop, with two AI working in turns.',
+      promptLabel:'CUSTOMER',
+      mobileEnd:'Two agents in popped-out windows. Sample drafts ready; nothing was sent.',
+      cap0:'Your desktop, with multiple AI agents working at once.',
       cap1:'You click on a workspace…',
       cap2:'…and the full chat opens, with its own composer.',
       msgA:'Prepare the Q3 campaign copy.',
       cap3:'The Marketing agent writes the reply.',
-      outA:'Done. I wrote 3 copy variants and left them in the shared doc.\n\n<b>Variants:</b> 3 · <b>Status:</b> Ready to review',
+      outA:'Illustrative draft with 3 variants, ready for review.\n\n<b>Variants:</b> 3 · <b>Status:</b> Draft',
       cap4:'You pop out this window to open another project — the agent keeps working on its own.',
       cap5:'…and the window leaves the monitor, onto your desk.',
       cap6:'You open another chat — while the first keeps working outside.',
@@ -338,7 +433,7 @@
       cap7b:'You pop it out too — and you are back at the dashboard.',
       cap9:'You slide both windows to the sides…',
       cap10:'…and open a third space, with its own agent.',
-      outB:'The quote has already been sent to the client.\n\n<b>Sent:</b> 2 min ago · <b>Status:</b> Awaiting reply',
+      outB:'Example follow-up for the quote, ready for review.\n\n<b>Status:</b> Draft · <b>Action:</b> Not sent',
       cap8:'Three agents working at once. On a single monitor.'
     }
   };
@@ -349,7 +444,7 @@
   const RECORD=p.get('record')==='1'; // modo grabación: el demo TERMINA (las IA paran ~2.5s después del cierre)
   const DELAY=parseInt(p.get('delay'),10)||0; // ms de espera antes de arrancar (para grabación: ?delay=1500)
 
-  const room=document.getElementById('room'), screen=document.getElementById('screen'), dash=document.getElementById('dash'), cap=document.getElementById('cap');
+  const room=document.getElementById('room'), screen=document.getElementById('screen'), dash=document.getElementById('dash'), cap=document.getElementById('cap'), capStatus=document.getElementById('capStatus');
   const dockA=document.getElementById('dockA'), dockB=document.getElementById('dockB'), dockC=document.getElementById('dockC'), replyC=document.getElementById('replyC');
   const floatA=document.getElementById('floatA'), floatB=document.getElementById('floatB'), floatThreadA=document.getElementById('floatThreadA');
   const msgA=document.getElementById('msgA'), replyA=document.getElementById('replyA');
@@ -362,46 +457,73 @@
     document.getElementById('b-es').classList.toggle('on',lang==='es');
     document.getElementById('b-en').classList.toggle('on',lang==='en');
     // UI chrome translation (text-node walker)
-    const MAP={'🏠 Inicio':'🏠 Home','📁 Espacios':'📁 Workspaces','⚡ Acciones':'⚡ Actions','🔐 Secretos':'🔐 Secrets','🧩 Integraciones':'🧩 Integrations','🔍 Buscar…':'🔍 Search…','↻ Sincronizar':'↻ Sync','Inicio':'Home','↗ Extraer':'↗ Pop out','Re-dock':'Re-dock','Chat nativo extraído':'Native chat popped out','✨ Asistente de ideas':'✨ Idea assistant','⇆ Cambiar de IA':'⇆ Work with your AI','📖 Casos de uso':'📖 Use cases','Modo:':'Mode:','Experto':'Expert','Confianza':'Trust'};
+    const MAP={'🏠 Inicio':'🏠 Home','📁 Espacios':'📁 Workspaces','⚡ Acciones':'⚡ Actions','🔐 Secretos':'🔐 Secrets','🧩 Integraciones':'🧩 Integrations','🔍 Buscar…':'🔍 Search…','↻ Sincronizar':'↻ Sync','Inicio':'Home','↗ Extraer':'↗ Pop out','Chat nativo extraído':'Native chat popped out','✨ Asistente de ideas':'✨ Idea assistant','⇆ Pregunta a otro espacio':'⇆ Ask another workspace','📖 Casos de uso':'📖 Use cases','🎨 Diseño':'🎨 Design','🔌 Conectar':'🔌 Connect','Agregar información y herramientas':'Add information & tools','Recetas':'Recipes','Carpetas':'Folders','Documentos':'Documents','Conversación':'Conversation','Libros':'Books','Webs y videos':'Websites & videos','Memoria':'Memory','Contexto':'Context','Marketing y Publicidad':'Marketing & Advertising','Ventas y CRM':'Sales & CRM','Analítica y Reportes':'Analytics & Reports','Modo:':'Mode:','Experto':'Expert','Confianza':'Trust'};
     const REV={};Object.keys(MAP).forEach(k=>REV[MAP[k]]=k);
     const dict=lang==='en'?MAP:REV;
     const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
     let n;while(n=walker.nextNode()){const s=n.textContent.trim();if(dict[s])n.textContent=n.textContent.replace(s,dict[s]);}
-    // dashboard cover per language (both inlined; toggle visibility)
-    dash.querySelectorAll('iframe').forEach(f=>{f.style.display=(f.dataset.l===lang)?'':'none';});
+    // Current Home poster per language; images use contain so every card stays visible.
+    dash.querySelectorAll('.home-poster').forEach(img=>img.classList.toggle('active',img.dataset.l===lang));
     if(embed){const lp=document.querySelector('.lang-pill');if(lp)lp.style.display='none';const rb=document.getElementById('replay');if(rb)rb.style.display='none';}
-    fitDash();
   }
-  function fitDash(){
-    const w=screen.clientWidth,h=screen.clientHeight;
-    const s=Math.max(w/1525,h/909);
-    dash.querySelectorAll('iframe').forEach(ifr=>{ifr.style.width='1525px';ifr.style.height='909px';ifr.style.transform='scale('+s+')';});
+  function posterPoint(xRatio,yRatio){
+    const r=screen.getBoundingClientRect();
+    const img=dash.querySelector('.home-poster.active');
+    const iw=(img&&img.naturalWidth)||1600, ih=(img&&img.naturalHeight)||1273;
+    const scale=Math.min(r.width/iw,r.height/ih), w=iw*scale, h=ih*scale;
+    return {x:r.left+(r.width-w)/2+w*xRatio,y:r.top+(r.height-h)/2+h*yRatio};
   }
-  window.addEventListener('resize',fitDash);
 
-  let timers=[]; const sleep=ms=>new Promise(r=>timers.push(setTimeout(r,ms/SPEED)));
-  const clearAll=()=>timers.forEach(clearTimeout);
+  let sequence=0; const CANCELLED={}; const timers=new Set();
+  const sleep=ms=>new Promise((resolve,reject)=>{
+    const job={id:0,run:sequence,reject};
+    job.id=setTimeout(()=>{timers.delete(job);if(job.run===sequence)resolve();else reject(CANCELLED);},ms/SPEED);
+    timers.add(job);
+  });
+  const clearAll=()=>{for(const job of timers){clearTimeout(job.id);job.reject(CANCELLED);}timers.clear();};
 
   async function typeLoop(el,lines,speed){
-    const scroller = el.closest('.thread');
-    el.innerHTML='';
-    let i=0;
-    while(!el.dataset.stop){
-      const line=lines[i%lines.length];
-      const span=document.createElement('div'); el.appendChild(span);
-      const cur=document.createElement('span'); cur.className='cursor';
-      for(let c=0;c<line.length;c++){
-        if(el.dataset.stop)break;
-        span.innerHTML=line.slice(0,c+1); span.appendChild(cur);
-        if(scroller)scroller.scrollTop=scroller.scrollHeight;
-        await sleep(speed||45);
+    try{
+      if(window.matchMedia('(max-width: 600px)').matches){
+        const compactResults={
+          replyA:lang==='es'?'Borrador: 3 variantes · listo para revisar.':'Draft: 3 variants · ready for review.',
+          replyB:lang==='es'?'Seguimiento en borrador · no enviado.':'Follow-up draft · not sent.',
+          replyC:lang==='es'?'Resumen de ventas de ejemplo listo para revisar.':'Sample sales summary ready for review.'
+        };
+        const result=compactResults[el.id]||lines[lines.length-1];
+        el.innerHTML='';
+        const resultLine=document.createElement('div');el.appendChild(resultLine);
+        const cursor=document.createElement('span');cursor.className='cursor';resultLine.appendChild(cursor);
+        for(let i=0;i<result.length;i++){
+          if(el.dataset.stop)break;
+          resultLine.textContent=result.slice(0,i+1);resultLine.appendChild(cursor);
+          await sleep(speed||45);
+        }
+        while(!el.dataset.stop)await sleep(300);
+        cursor.remove();
+        return;
       }
-      cur.remove();
-      i++;
-      await sleep(400);
-    }
+      const scroller = el.closest('.thread');
+      el.innerHTML='';
+      let i=0;
+      while(!el.dataset.stop){
+        const line=lines[i%lines.length];
+        const span=document.createElement('div'); el.appendChild(span);
+        const cur=document.createElement('span'); cur.className='cursor';
+        for(let c=0;c<line.length;c++){
+          if(el.dataset.stop)break;
+          span.innerHTML=line.slice(0,c+1); span.appendChild(cur);
+          if(scroller)scroller.scrollTop=scroller.scrollHeight;
+          await sleep(speed||45);
+        }
+        cur.remove();
+        i++;
+        await sleep(400);
+      }
+    }catch(err){if(err!==CANCELLED)console.error('demo typeLoop failed:',err);}
   }
-  function say(html){cap.style.opacity='0';setTimeout(()=>{cap.innerHTML=html;cap.style.opacity='1';},180);}
+  let capTimer;
+  function say(html){clearTimeout(capTimer);capStatus.style.opacity='0';capTimer=setTimeout(()=>{capStatus.innerHTML=html;capStatus.style.opacity='1';},180);}
   async function clickAt(x,y){
     ring.style.left=x+'px';ring.style.top=y+'px';ring.classList.remove('go');void ring.offsetWidth;ring.classList.add('go');
     await sleep(200);
@@ -409,10 +531,11 @@
   async function moveGhost(x,y){ghost.style.opacity='1';ghost.style.left=x+'px';ghost.style.top=y+'px';await sleep(480);}
 
   let playing=false;
-  async function play(){
-    if(playing)return; playing=true; clearAll();
+  async function play(restart=false){
+    if(playing&&!restart)return;
+    clearAll();sequence++;const run=sequence;playing=true;clearTimeout(capTimer);
     try{
-    replyA.innerHTML='';replyB.innerHTML='';
+    document.querySelectorAll('[id^=reply]').forEach(el=>{el.dataset.stop='1';el.innerHTML='';});
     msgA.textContent='';msgB.textContent='';
     // restore the thread into its docked home in case a previous run left it inside the floated window
     const dockAMain = dockA.querySelector('.main2');
@@ -421,19 +544,18 @@
     const dockBMain = dockB.querySelector('.main2');
     const threadB = document.getElementById('replyB').closest('.thread');
     if(dockBMain && threadB && !dockBMain.contains(threadB)) dockBMain.insertBefore(threadB, dockBMain.querySelector('.composer'));
-    dockA.classList.remove('show');dockB.classList.remove('show');dockC.classList.remove('show');replyC.innerHTML='';
+    dockA.classList.remove('show');dockB.classList.remove('show');dockC.classList.remove('show');
     floatA.classList.remove('show');floatB.classList.remove('show');
     floatA.style.pointerEvents='none';floatB.style.pointerEvents='none';
     dash.classList.remove('hidden');
     ghost.style.opacity='0';
     const sr=screen.getBoundingClientRect();
-    const you = lang==='es'?'Tú':'You';
 
     // ---- workspace A ----
     say(t().cap1);
     await sleep(700);
-    // first card of the dashboard grid (positions relative to the app-cover layout)
-    const cAx=sr.left+sr.width*0.24, cAy=sr.top+sr.height*0.35;
+    // Card centers are measured inside the complete contain-fitted Home poster.
+    const pA=posterPoint(.167,.235), cAx=pA.x, cAy=pA.y;
     await moveGhost(cAx,cAy);
     await clickAt(cAx,cAy);
     await sleep(500);
@@ -447,8 +569,8 @@
 
     say(t().cap3);
     const workLines = lang==='es'
-      ? ['Revisando el historial de la campaña anterior…','Escribiendo la variante 1 del copy…','Ajustando el tono para el público objetivo…','Escribiendo la variante 2 del copy…','Comparando métricas de la campaña Q2…','Escribiendo la variante 3 del copy…','Dejando todo listo en el documento compartido…']
-      : ['Reviewing the previous campaign history…','Writing copy variant 1…','Adjusting the tone for the target audience…','Writing copy variant 2…','Comparing Q2 campaign metrics…','Writing copy variant 3…','Finishing up in the shared doc…'];
+      ? ['Revisando el contexto de la campaña…','Preparando un borrador de copy, variante 1…','Ajustando el tono para el público objetivo…','Preparando la variante 2…','Comparando métricas de ejemplo…','Preparando la variante 3…','Borrador ilustrativo listo para revisar…']
+      : ['Reviewing the campaign context…','Preparing copy draft, variant 1…','Adjusting the tone for the target audience…','Preparing variant 2…','Comparing sample metrics…','Preparing variant 3…','Illustrative draft ready for review…'];
     replyA.dataset.stop='';
     typeLoop(replyA, workLines, 45);
     await sleep(1600);
@@ -470,9 +592,11 @@
     await sleep(40);
     floatA.classList.add('show');
     await sleep(60);
-    const fw = Math.min(420, Math.max(230, roomR.width*0.245)), fh = Math.min(420, Math.max(290, roomR.height*0.62));
-    floatA.style.left = (roomR.left + roomR.width*0.008)+'px';
-    floatA.style.top = (roomR.top + roomR.height*0.10)+'px';
+    const compactView=window.matchMedia('(max-width: 600px)').matches;
+    const fw = compactView ? Math.min(180,Math.max(156,(window.innerWidth-34)/2)) : Math.min(420, Math.max(230, roomR.width*0.245));
+    const fh = compactView ? Math.min(330,Math.max(285,roomR.height*0.72)) : Math.min(420, Math.max(290, roomR.height*0.62));
+    floatA.style.left = (roomR.left + (compactView?10:roomR.width*0.008))+'px';
+    floatA.style.top = (roomR.top + roomR.height*(compactView?0.10:0.10))+'px';
     floatA.style.width = fw+'px';
     floatA.style.height = fh+'px';
     dash.classList.remove('hidden');
@@ -480,7 +604,7 @@
 
     // ---- workspace B: open another card INSIDE the dashboard while A keeps typing outside ----
     say(t().cap6);
-    const cBx=sr.left+sr.width*0.62, cBy=sr.top+sr.height*0.35;
+    const pB=posterPoint(.62,.235), cBx=pB.x, cBy=pB.y;
     await moveGhost(cBx,cBy);
     await clickAt(cBx,cBy);
     await sleep(500);
@@ -505,8 +629,8 @@
     // the Sales agent starts replying (typewriter, keeps going)
     say(t().cap7);
     const workLinesB = lang==='es'
-      ? ['Buscando la cotización del cliente…','Verificando el estado del envío…','La cotización fue enviada hace 2 min ✅','Preparando el seguimiento automático…','Redactando el recordatorio para el cliente…']
-      : ['Looking up the client quote…','Checking delivery status…','The quote was sent 2 min ago ✅','Setting up the automatic follow-up…','Drafting the client reminder…'];
+      ? ['Revisando los datos de ejemplo de la cotización…','Verificando la información disponible…','Preparando un seguimiento como borrador…','Organizando los puntos para revisar…','Borrador listo; no se ha enviado nada.']
+      : ['Reviewing sample quote details…','Checking the available information…','Preparing a follow-up draft…','Organizing points for review…','Draft ready; nothing has been sent.'];
     replyB.dataset.stop='';
     typeLoop(replyB, workLinesB, 45);
     await sleep(2600);
@@ -526,7 +650,7 @@
     await sleep(40);
     floatB.classList.add('show');
     await sleep(60);
-    floatB.style.left = (roomR.left + roomR.width*0.992-fw)+'px';
+    floatB.style.left = (compactView ? window.innerWidth-10-fw : roomR.left + roomR.width*0.992-fw)+'px';
     floatB.style.top = (roomR.top + roomR.height*0.10)+'px';
     floatB.style.width = fw+'px';
     floatB.style.height = fh+'px';
@@ -538,13 +662,22 @@
     const fy=Math.min(roomR.top+roomR.height*0.18, window.innerHeight-fh-46);
     floatA.style.left=(roomR.left+roomR.width*0.008)+'px';
     floatA.style.top=fy+'px';
-    floatB.style.left=(roomR.left+roomR.width*0.992-fw)+'px';
+    floatB.style.left=(compactView ? window.innerWidth-10-fw : roomR.left+roomR.width*0.992-fw)+'px';
     floatB.style.top=fy+'px';
     await sleep(1100);
 
+    // On a phone, keep the representative two-agent view spacious instead of stacking a third window over it.
+    if(compactView){
+      say(t().mobileEnd);
+      await sleep(3000);
+      document.querySelectorAll('[id^=reply]').forEach(el=>el.dataset.stop='1');
+      playing=false;
+      return;
+    }
+
     // open a THIRD card inside the dashboard (third agent)
     say(t().cap10);
-    const cCx=sr.left+sr.width*0.24, cCy=sr.top+sr.height*0.55;
+    const pC=posterPoint(.394,.655), cCx=pC.x, cCy=pC.y;
     await moveGhost(cCx,cCy);
     await clickAt(cCx,cCy);
     await sleep(500);
@@ -553,8 +686,8 @@
     dockC.classList.add('show');
     await sleep(600);
     const workLinesC = lang==='es'
-      ? ['Leyendo los reportes de ventas del mes…','Cruzando datos con el inventario…','Detectando los productos con mejor margen…','Armando el resumen ejecutivo…']
-      : ['Reading this month\'s sales reports…','Cross-checking with inventory…','Finding the highest-margin products…','Building the executive summary…'];
+      ? ['Revisando reportes de ventas de ejemplo…','Contrastando datos con el inventario…','Detectando productos con mejor margen…','Preparando un resumen ejecutivo de muestra…']
+      : ['Reviewing sample sales reports…','Cross-checking inventory data…','Finding the highest-margin products…','Preparing a sample executive summary…'];
     replyC.dataset.stop='';
     typeLoop(replyC, workLinesC, 45);
     await sleep(2400);
@@ -563,13 +696,13 @@
     await sleep(3000);
     document.querySelectorAll('[id^=reply]').forEach(el=>el.dataset.stop='1');
     playing=false;
-    }catch(err){console.error('demo play() failed:',err);playing=false;}
+    }catch(err){if(err!==CANCELLED)console.error('demo play() failed:',err);if(run===sequence)playing=false;}
   }
 
   document.getElementById('replay').style.display='inline-flex';
-  document.getElementById('replay').addEventListener('click',()=>play());
-  document.getElementById('b-es').addEventListener('click',()=>{lang='es';applyStatic();play();});
-  document.getElementById('b-en').addEventListener('click',()=>{lang='en';applyStatic();play();});
+  document.getElementById('replay').addEventListener('click',()=>play(true));
+  document.getElementById('b-es').addEventListener('click',()=>{lang='es';applyStatic();play(true);});
+  document.getElementById('b-en').addEventListener('click',()=>{lang='en';applyStatic();play(true);});
 
   applyStatic();
   let started=false;
