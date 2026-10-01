@@ -49,12 +49,12 @@
     "Un espacio para cada trabajo.": "A workspace for every part of your business.",
     "La IA recuerda el contexto": "AI remembers the context",
     "Cada cliente, proyecto o departamento tiene su propio espacio, con archivos, conversaciones y decisiones. TerminalSync recuerda lo importante para que no empieces de cero. La IA viene incluida: no pagas otra IA aparte.": "Each client, project, or department gets its own workspace for files, conversations, and decisions. TerminalSync remembers what matters so you don't start over. AI is included: no need to pay for another AI.",
-    "Míralo funcionando": "See it working",
+    "Explora los demos": "Explore the demos",
     "TerminalSync — Espacios de trabajo": "TerminalSync — Workspaces",
     "Contexto": "Context",
     "Tus archivos": "Your files",
-    "Una IA diseñada para tu forma de trabajar": "An AI designed for the way you work",
-    "No es un video: es TerminalSync funcionando. Abre cualquiera y pruébalo.": "This isn't a video: it's TerminalSync running. Open any of them and try it.",
+    "Espacios separados, cada uno con su contexto": "Separate workspaces, each with its own context",
+    "Explora estos recorridos interactivos de ejemplo para ver cómo se organiza el trabajo.": "Explore these interactive example walkthroughs to see how work is organized.",
     "Continuidad": "Continuity",
     "Mensajería": "Messaging",
     "Asistente de ideas": "Idea assistant",
@@ -926,9 +926,14 @@
     });
     // re-render hero rotator / dynamic bits
     window.dispatchEvent(new CustomEvent('ts-lang', { detail: { lang: lang } }));
-    // swap hero cover image (ES/EN)
+    // Reuse the current dashboard image as both hero cover and future video poster.
     var cov = document.querySelector('.hero-shot img');
-    if (cov) cov.src = lang === 'en' ? '/landing-b/assets/app-home-cover-v3-en.png' : '/landing-b/assets/app-home-cover-v3.png';
+    if (cov) {
+      cov.src = '/landing-b/assets/dashboard-workspaces-video-poster-' + lang + '.png';
+      cov.alt = lang === 'en'
+        ? 'TerminalSync dashboard with separate workspaces for clients, projects, and departments.'
+        : 'Dashboard de TerminalSync con espacios separados para clientes, proyectos y departamentos.';
+    }
   }
 
   window.TS_setLang = apply;

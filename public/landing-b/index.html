@@ -103,6 +103,9 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .win-bar .ctx-pill::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--violet)}
 .win-shot{aspect-ratio:1525/909;background:#fff}
 .win-shot img{width:100%;height:100%;object-fit:cover;object-position:top center}
+.hero-preview{background:#d4d5d8}
+.hero-shot{aspect-ratio:1600/1273;background:#d4d5d8}
+.hero-shot img{object-fit:contain}
 
 /* ── barra de secciones pegajosa ── */
 .subnav{position:sticky;top:66px;z-index:30;background:var(--pane-2);backdrop-filter:blur(12px);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -315,7 +318,7 @@ html.var-dark .theme-toggle .ic-moon{display:block}
   <div class="wrap nav-in">
     <a href="#" class="logo"><img src="/landing-b/assets/logo.png" alt="" />TerminalSync</a>
     <nav class="nav-links">
-      <a href="#capacidades">Míralo funcionando</a>
+      <a href="#capacidades">Explora los demos</a>
       <a href="#meta">Meta Ads</a>
       <a href="/es/casos-de-uso" data-lhref="/casos-de-uso">Casos de uso</a>
       <a href="#precios">Precios</a>
@@ -351,13 +354,12 @@ html.var-dark .theme-toggle .ic-moon{display:block}
       </div>
       <div class="hero-cta">
         <a class="btn btn-primary" href="/api/download" data-cta="hero-b-primary">⤓ Descargar para Mac</a>
-        <a class="btn btn-ghost" href="#capacidades">Míralo funcionando</a>
+        <a class="btn btn-ghost" href="#capacidades">Explora los demos</a>
       </div>
       <p class="hero-plat">Apple Silicon e Intel · macOS 13+ · <a href="#windows">Windows en lista de espera</a></p>
     </div>
-    <div class="win">
-      <div class="win-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">TerminalSync — Espacios de trabajo</span><span class="ctx-pill">Contexto</span></div>
-      <div class="win-shot hero-shot"><img src="/landing-b/assets/app-home-cover-v3.png" alt="El panel de TerminalSync: espacios de trabajo por área, con su chat y su contexto." /></div>
+    <div class="win hero-preview">
+      <div class="win-shot hero-shot"><img src="/landing-b/assets/dashboard-workspaces-video-poster-es.png" alt="Dashboard de TerminalSync con espacios separados para clientes, proyectos y departamentos." fetchpriority="high" /></div>
     </div>
   </div>
 </section>
@@ -365,7 +367,7 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 <div class="subnav">
   <div class="wrap subnav-in">
     <div class="subnav-scroll">
-    <a href="#capacidades" class="on">Míralo funcionando</a>
+    <a href="#capacidades" class="on">Explora los demos</a>
     <a href="#integraciones">Integraciones</a>
     <a href="#meta">Meta Ads</a>
     <a href="#archivos">Tus archivos</a>
@@ -380,19 +382,19 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 <section class="sec first" id="capacidades">
   <div class="wrap">
     <div class="head">
-      <h2 class="head-mark"><span class="mk"><i data-lucide="sparkles" width="22" height="22"></i></span>Una IA diseñada para tu forma de trabajar</h2>
-      <p class="sub">No es un video: es TerminalSync funcionando. Abre cualquiera y pruébalo.</p>
+      <h2 class="head-mark"><span class="mk"><i data-lucide="sparkles" width="22" height="22"></i></span>Espacios separados, cada uno con su contexto</h2>
+      <p class="sub">Explora estos recorridos interactivos de ejemplo para ver cómo se organiza el trabajo.</p>
     </div>
     <div class="dgrid">
-      <a class="dcard" href="/landing-b/demos/demo-resultados.html">
-        <span class="dcard-win"><iframe src="/landing-b/demos/demo-resultados.html" title="No es un chat. Es trabajo terminado." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
-        <h3>No es un chat. Es trabajo terminado.</h3>
-        <span class="dcard-pill"><i data-lucide="file-check-2" width="13" height="13"></i>Trabajo terminado</span>
-      </a>
       <a class="dcard" href="/landing-b/demos/demo-contexto.html">
         <span class="dcard-win dcard-win--tall"><iframe src="/landing-b/demos/demo-contexto.html" title="Cada espacio de trabajo tiene su propio contexto." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
         <h3>Cada espacio sabe de lo suyo.</h3>
         <span class="dcard-pill"><i data-lucide="globe" width="13" height="13"></i>Contexto</span>
+      </a>
+      <a class="dcard" href="/landing-b/demos/demo-resultados.html">
+        <span class="dcard-win"><iframe src="/landing-b/demos/demo-resultados.html" title="No es un chat. Es trabajo terminado." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+        <h3>No es un chat. Es trabajo terminado.</h3>
+        <span class="dcard-pill"><i data-lucide="file-check-2" width="13" height="13"></i>Trabajo terminado</span>
       </a>
       <a class="dcard" href="/landing-b/demos/demo-varios-agentes.html">
         <span class="dcard-win"><iframe src="/landing-b/demos/demo-varios-agentes.html" title="La IA trabaja en varias tareas a la vez." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
