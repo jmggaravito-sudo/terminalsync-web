@@ -19,6 +19,7 @@ html.var-dark{--bg:#08090b;--bg-2:#0c0e12;--surface:#111419;--surface-2:#161a20;
 html,body{margin:0}
 html{scrollbar-gutter:stable}
 html.lb-open{overflow:hidden}
+body.lb-lock{position:fixed;width:100%;left:0;right:0;overflow:hidden}
 [id]{scroll-margin-top:132px}
 
 /* el hueco del icono se reserva ANTES de que lucide lo reemplace:
@@ -369,9 +370,9 @@ html.var-dark .theme-toggle .ic-moon{display:block}
         <span class="dcard-pill"><i data-lucide="globe" width="13" height="13"></i>Contexto</span>
       </a>
       <a class="dcard" href="/landing-b/demos/demo-varios-agentes.html">
-        <span class="dcard-win"><iframe src="/landing-b/demos/demo-varios-agentes.html" title="Varios agentes trabajando a la vez." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
-        <h3>Varios agentes trabajando a la vez.</h3>
-        <span class="dcard-pill"><i data-lucide="users" width="13" height="13"></i>Varios agentes</span>
+        <span class="dcard-win"><iframe src="/landing-b/demos/demo-varios-agentes.html" title="La IA trabaja en varias tareas a la vez." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+        <h3>La IA trabaja en varias tareas a la vez.</h3>
+        <span class="dcard-pill"><i data-lucide="users" width="13" height="13"></i>La IA</span>
       </a>
       <a class="dcard" href="/landing-b/demos/demo-sync-dispositivos.html">
         <span class="dcard-win"><iframe src="/landing-b/demos/demo-sync-dispositivos.html" title="Empieza en el portátil. Sigue en la oficina." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
@@ -718,9 +719,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',
   scrollTo({top,behavior:smooth?'smooth':'auto'});
 }));
 const lb=document.getElementById('lb'),lbFrame=document.getElementById('lbFrame'),lbCap=document.getElementById('lbCap');
-let lbPrev=null;
-function openDemo(src,cap){lbFrame.src=src;lbCap.textContent=cap||'';lb.hidden=false;document.documentElement.classList.add('lb-open');document.getElementById('lbClose').focus()}
-function closeDemo(){lb.hidden=true;lbFrame.src='about:blank';document.documentElement.classList.remove('lb-open');if(lbPrev)lbPrev.focus()}
+let lbPrev=null,lbScrollY=0;
+function openDemo(src,cap){lbScrollY=window.scrollY;document.body.style.top=(-lbScrollY)+'px';document.body.classList.add('lb-lock');lbFrame.src=src;lbCap.textContent=cap||'';lb.hidden=false;document.documentElement.classList.add('lb-open');document.getElementById('lbClose').focus()}
+function closeDemo(){lb.hidden=true;lbFrame.src='about:blank';document.documentElement.classList.remove('lb-open');document.body.classList.remove('lb-lock');document.body.style.top='';window.scrollTo(0,lbScrollY);if(lbPrev)lbPrev.focus()}
 document.querySelectorAll('.dcard').forEach(c=>c.addEventListener('click',e=>{
   e.preventDefault();lbPrev=c;
   openDemo(c.getAttribute('href'),c.querySelector('h3').textContent);

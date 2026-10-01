@@ -323,7 +323,7 @@
     },
     en: {
       replayLbl:'Play again',
-      cap0:'Your real desktop, with two AIs working in turns.',
+      cap0:'Your real desktop, with two AI working in turns.',
       cap1:'You click on a workspace…',
       cap2:'…and the full chat opens, with its own composer.',
       msgA:'Prepare the Q3 campaign copy.',
@@ -346,7 +346,7 @@
   const p=new URLSearchParams(location.search);
   const embed=p.get('embed')==='1';
   const SPEED=parseFloat(p.get('speed'))||1; // >1 = más rápido (ej. ?speed=1.4)
-  const RECORD=p.get('record')==='1'; // modo grabación: el demo TERMINA (las IAs paran ~2.5s después del cierre)
+  const RECORD=p.get('record')==='1'; // modo grabación: el demo TERMINA (las IA paran ~2.5s después del cierre)
   const DELAY=parseInt(p.get('delay'),10)||0; // ms de espera antes de arrancar (para grabación: ?delay=1500)
 
   const room=document.getElementById('room'), screen=document.getElementById('screen'), dash=document.getElementById('dash'), cap=document.getElementById('cap');
@@ -362,7 +362,7 @@
     document.getElementById('b-es').classList.toggle('on',lang==='es');
     document.getElementById('b-en').classList.toggle('on',lang==='en');
     // UI chrome translation (text-node walker)
-    const MAP={'🏠 Inicio':'🏠 Home','📁 Espacios':'📁 Workspaces','⚡ Acciones':'⚡ Actions','🔐 Secretos':'🔐 Secrets','🧩 Integraciones':'🧩 Integrations','🔍 Buscar…':'🔍 Search…','↻ Sincronizar':'↻ Sync','Inicio':'Home','↗ Extraer':'↗ Pop out','Re-dock':'Re-dock','Chat nativo extraído':'Native chat popped out','✨ Asistente de ideas':'✨ Idea assistant','⇆ Cambiar de IA':'⇆ Switch AI','📖 Casos de uso':'📖 Use cases','Modo:':'Mode:','Experto':'Expert','Confianza':'Trust'};
+    const MAP={'🏠 Inicio':'🏠 Home','📁 Espacios':'📁 Workspaces','⚡ Acciones':'⚡ Actions','🔐 Secretos':'🔐 Secrets','🧩 Integraciones':'🧩 Integrations','🔍 Buscar…':'🔍 Search…','↻ Sincronizar':'↻ Sync','Inicio':'Home','↗ Extraer':'↗ Pop out','Re-dock':'Re-dock','Chat nativo extraído':'Native chat popped out','✨ Asistente de ideas':'✨ Idea assistant','⇆ Cambiar de IA':'⇆ Work with your AI','📖 Casos de uso':'📖 Use cases','Modo:':'Mode:','Experto':'Expert','Confianza':'Trust'};
     const REV={};Object.keys(MAP).forEach(k=>REV[MAP[k]]=k);
     const dict=lang==='en'?MAP:REV;
     const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
@@ -511,7 +511,7 @@
     typeLoop(replyB, workLinesB, 45);
     await sleep(2600);
 
-    // extract B too — dashboard visible again, both AIs typing outside
+    // extract B too — dashboard visible again, both AI typing outside
     say(t().cap7b);
     const btnB=document.getElementById('exB'); btnB.classList.add('hot');
     const bB=btnB.getBoundingClientRect();
