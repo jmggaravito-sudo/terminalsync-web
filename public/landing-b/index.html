@@ -17,7 +17,7 @@ html.var-dark .ann{background:var(--surface-2);border-bottom:1px solid var(--lin
 html.var-dark{--bg:#08090b;--bg-2:#0c0e12;--surface:#111419;--surface-2:#161a20;--line:rgb(255 255 255/.09);--line-2:rgb(255 255 255/.17);--fg:#f3f5f7;--fg-2:#aab2bd;--fg-3:#7d848f;--accent:#a894f7;--accent-2:#b9a8fa;--accent-ink:#17093d;--accent-soft:rgb(168 148 247/.16);--violet:#8b6cf0;--violet-2:#7c4df8;--violet-soft:rgb(139 108 240/.17);--violet-ink:#c9b6ff;--amber:#f0a339;--amber-soft:rgb(240 163 57/.16);--block:#111419;--pane:rgb(12 14 18/.9);--pane-2:rgb(12 14 18/.95)}
 *{box-sizing:border-box}
 html,body{margin:0}
-html{scrollbar-gutter:stable}
+html{scrollbar-gutter:stable;scroll-behavior:auto}
 html.lb-open{overflow:hidden}
 body.lb-lock{position:fixed;width:100%;left:0;right:0;overflow:hidden}
 [id]{scroll-margin-top:132px}
@@ -708,7 +708,6 @@ html.var-dark .theme-toggle .ic-moon{display:block}
   });
 })();
 if('scrollRestoration' in history)history.scrollRestoration='manual';
-const smooth=!matchMedia('(prefers-reduced-motion: reduce)').matches;
 const stickyNav=document.querySelector('.nav'),stickySubnav=document.querySelector('.subnav');
 document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{
   const id=a.getAttribute('href').slice(1);
@@ -722,7 +721,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',
   const bars=(stickyNav?.getBoundingClientRect().height||0)+(stickySubnav?.getBoundingClientRect().height||0);
   const top=Math.max(0,t.getBoundingClientRect().top+scrollY-bars-1);
   history.replaceState(null,'','#'+id);
-  scrollTo({top,behavior:smooth?'smooth':'auto'});
+  /* Keep section changes stable: the animated scroll was the remaining
+     visible “saltico” on slower pages and when the sticky bar settled. */
+  scrollTo({top,behavior:'auto'});
 }));
 const lb=document.getElementById('lb'),lbFrame=document.getElementById('lbFrame'),lbCap=document.getElementById('lbCap');
 let lbPrev=null,lbScrollY=0;
