@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Terminal Sync · Tu trabajo te sigue hasta el chat</title>
+<title>TS · Tu trabajo te sigue hasta el chat</title>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   :root{
@@ -112,16 +112,31 @@
   .fadein{animation:fd .4s ease;}
   @keyframes fd{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 
-  .caption{font-family:var(--mono);font-size:11px;color:var(--ink2);text-align:center;max-width:520px;line-height:1.5;min-height:32px;transition:opacity .3s;}
-  .caption b{color:var(--ink);font-weight:600;}
+	  .caption{position:relative;z-index:1;max-width:760px;transition:opacity .3s;}
+	  .caption b{color:#fff;font-weight:700;}
+	  .demo-note{position:fixed;left:16px;top:16px;z-index:60;font-family:var(--mono);font-size:10px;color:var(--ink2);background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:999px;padding:6px 10px;}
+	  .mu.assistant{align-self:flex-start;background:var(--a1-bg);color:var(--a1-tx);border:1px solid #e4ddff;}
 
   .lang-pill{position:fixed;right:16px;top:14px;z-index:60;display:inline-flex;gap:3px;padding:4px;background:#fff;border:1px solid var(--line);border-radius:999px;box-shadow:0 10px 28px -14px rgba(20,22,28,.4);}
   .lang-pill button{font-family:var(--mono);font-size:12px;padding:5px 12px;border-radius:999px;color:var(--ink2);border:none;background:none;cursor:pointer;}
   .lang-pill button.on{background:var(--bezel);color:#fff;font-weight:600;}
   .replay-btn{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--ink2);border:1px solid var(--line);background:#fff;padding:8px 15px;border-radius:999px;cursor:pointer;z-index:60;box-shadow:0 10px 30px -12px rgba(20,22,28,.3);}
-  .replay-btn:hover{border-color:var(--accent);color:var(--accent);}
-  .replay-btn svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;}
+	  .replay-btn:hover{border-color:var(--accent);color:var(--accent);}
+	  .replay-btn svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;}
+	  @media(max-width:600px){
+	    body{gap:12px;padding:58px 12px 72px;min-height:100svh;}
+	    .scene{display:grid;grid-template-columns:minmax(0,1fr);width:100%;max-width:100%;gap:0;}
+	    .deskwrap,.flow{display:none;}
+	    .phonewrap{gap:8px;}
+	    .phone{width:204px;max-width:calc(100vw - 40px);}
+	    .dev-label{max-width:calc(100vw - 32px);font-size:10px;line-height:1.4;}
+	    .caption{max-width:calc(100vw - 24px);}
+	    .demo-note{left:10px;top:10px;font-size:9px;padding:5px 8px;}
+	    .lang-pill{right:10px;top:10px;}
+	    .replay-btn{bottom:10px;}
+	  }
 </style>
+<link rel="stylesheet" href="/landing-b/demos/demo-captions.css">
 </head>
 <body>
 <div class="scene">
@@ -130,16 +145,16 @@
     <div class="desk">
       <div class="lid">
         <div class="screen">
-          <div class="mini-bar"><span class="mb-dot"></span><span data-i="proj">Proyecto · Cotizaciones</span><span class="mb-sync" id="mbSync" data-i="sync">Sincronizado</span></div>
+	      <div class="mini-bar"><span class="mb-dot"></span><span data-i="proj">Proyecto · Cotizaciones</span><span class="mb-sync" id="mbSync" data-i="sync">Vista de ejemplo</span></div>
           <div class="mini-chat" id="miniChat">
             <div class="mu" data-i="d_u">Hazme la cotización para el cliente Martínez.</div>
-            <div class="mc"><div class="mc-h">TERMINALSYNC</div><div class="tx" data-i="d_a">Lista. ¿Te la envío por correo o ajustamos el precio primero?</div></div>
+            <div class="mc"><div class="mc-h">TS</div><div class="tx" data-i="d_a">Lista. ¿Te la envío por correo o ajustamos el precio primero?</div></div>
           </div>
         </div>
       </div>
       <div class="base"></div>
     </div>
-    <div class="dev-label"><b data-i="lbl_desk">TerminalSync</b> · <span data-i="lbl_desk2">en tu computador</span></div>
+    <div class="dev-label"><b data-i="lbl_desk">TS</b> · <span data-i="lbl_desk2">en tu computador</span></div>
   </div>
 
   <!-- MIDDLE: handoff -->
@@ -156,7 +171,7 @@
       <div class="pscreen">
         <div class="chead ts" id="chead">
           <span class="av" id="cheadAv"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></span>
-          <span class="who"><b id="cheadName">TerminalSync</b><span id="cheadStat" data-i="online">en línea</span></span>
+          <span class="who"><b id="cheadName">TS</b><span id="cheadStat" data-i="online">en línea</span></span>
           <span class="plat" id="cheadPlat" data-i="platTs">App</span>
         </div>
         <div class="pbody ts" id="pbody"></div>
@@ -170,7 +185,8 @@
   </div>
 </div>
 
-<div class="caption" id="caption"></div>
+		<div class="caption ts-demo-caption" id="caption" aria-live="polite"></div>
+	<div class="demo-note" data-i="demoNote">Demostración ilustrativa</div>
 
 <div class="lang-pill"><button id="b-es" class="on">ES</button><button id="b-en">EN</button></div>
 <button class="replay-btn" id="reset"><svg viewBox="0 0 24 24"><path d="M3 2v6h6"/><path d="M3 13a9 9 0 1 0 3-7.7L3 8"/></svg><span data-i="replay">Reproducir de nuevo</span></button>
@@ -190,9 +206,11 @@
   const deskwrap=document.getElementById('deskwrap');
   const miniChat=document.getElementById('miniChat');
   const mbSync=document.getElementById('mbSync');
-  function mirrorToDesk(text, plat){
-    const m=document.createElement('div'); m.className='mu fadein';
-    m.innerHTML='<span class="src">'+plat+' →</span>'+text;
+	  function mirrorToDesk(text, plat, speaker){
+	    const m=document.createElement('div'); m.className='mu fadein'+(speaker==='assistant'?' assistant':'');
+	    const src=document.createElement('span'); src.className='src'; src.textContent=plat+(speaker==='assistant'?' ←':' →');
+	    const body=document.createElement('span'); body.textContent=text;
+	    m.append(src,body);
     miniChat.appendChild(m);
     mbSync.classList.remove('flash'); void mbSync.offsetWidth; mbSync.classList.add('flash');
   }
@@ -205,44 +223,46 @@
 
   const T={
     es:{
-      proj:'Proyecto · Cotizaciones',sync:'Sincronizado',
+	      proj:'Proyecto · Cotizaciones',sync:'Vista de ejemplo',demoNote:'Demostración ilustrativa',
       d_u:'Hazme la cotización para el cliente Martínez.',
       d_a:'Lista. ¿Te la envío por correo o ajustamos el precio primero?',
-      lbl_desk:'TerminalSync',lbl_desk2:'en tu computador',lbl_phone:'En tu celular',
+      lbl_desk:'TS',lbl_desk2:'en tu computador',lbl_phone:'En tu celular',
       online:'en línea',ph:'Mensaje',replay:'Reproducir de nuevo',
       platTs:'App',platWa:'WhatsApp',platTg:'Telegram',flowcap:'Misma conversación',
-      capStart:'Empezaste la conversación en <b>TerminalSync</b>, en tu computador.',
+	      capStory:'HISTORIA',capClient:'MENSAJE DEL CLIENTE',capAssistant:'RESPUESTA · TS',
+	      capStart:'Empezaste la conversación en <b>TS</b>, en tu computador.',
       capWa:'Saliste de la oficina. La conversación <b>sigue en WhatsApp</b> — la misma, con todo el contexto.',
-      capTg:'Más tarde, desde <b>Telegram</b>: respondes un mensaje y TerminalSync sigue trabajando.',
+      capTg:'Más tarde, desde <b>Telegram</b>: respondes un mensaje y TS sigue trabajando.',
       capEnd:'<b>Tu trabajo te sigue hasta el chat.</b> Si puedes escribir un mensaje, puedes seguir dirigiendo.',
       // WhatsApp thread
-      wa_sys:'TerminalSync necesita tu OK para enviar la cotización de <b>Martínez</b>.',
-      wa_me:'Sí, envíala y avísame cuando responda.',
-      wa_ai:'Enviada, con el PDF adjunto. Quedo pendiente de su respuesta. 👍',
+	      wa_sys:'TS necesita tu OK para preparar el correo con la cotización de <b>Martínez</b>.',
+	      wa_me:'Déjala lista y avísame antes de enviarla.',
+	      wa_ai:'Lista para revisar. El correo no se ha enviado. 👍',
       // Telegram thread
       tg_me:'¿Cómo va la cotización?',
       tg_ai:'✅ Terminé. Cotización de Martínez lista: $4.820. ¿La envío por correo?',
-      tg_me2:'Envíala.',
-      tg_ai2:'Enviada al correo del cliente. ✅ Te aviso cuando responda.'
+	      tg_me2:'Déjala lista para enviar.',
+	      tg_ai2:'Quedó lista para revisión. No se ha enviado ningún correo. ✅'
     },
     en:{
-      proj:'Project · Quotes',sync:'Synced',
-      d_u:'Make the quote for client Martínez.',
+	      proj:'Project · Quotes',sync:'Illustrative view',demoNote:'Illustrative demo',
+	      d_u:'Prepare a quote for client Martínez.',
       d_a:'Done. Should I email it or adjust the price first?',
-      lbl_desk:'TerminalSync',lbl_desk2:'on your computer',lbl_phone:'On your phone',
+      lbl_desk:'TS',lbl_desk2:'on your computer',lbl_phone:'On your phone',
       online:'online',ph:'Message',replay:'Play again',
       platTs:'App',platWa:'WhatsApp',platTg:'Telegram',flowcap:'Same conversation',
-      capStart:'You started the conversation in <b>TerminalSync</b>, on your computer.',
+	      capStory:'STORY',capClient:'CLIENT MESSAGE',capAssistant:'TS REPLY',
+	      capStart:'You started the conversation in <b>TS</b>, on your computer.',
       capWa:'You left the office. The conversation <b>continues on WhatsApp</b> — the same one, with all the context.',
-      capTg:'Later, from <b>Telegram</b>: you reply a message and TerminalSync keeps working.',
+	      capTg:'Later, from <b>Telegram</b>: you reply to a message and TS keeps working.',
       capEnd:'<b>Your work follows you into the chat.</b> If you can write a message, you can keep directing.',
-      wa_sys:'TerminalSync needs your OK to send <b>Martínez</b>\u2019s quote.',
-      wa_me:'Yes, send it and tell me when they reply.',
-      wa_ai:'Sent, with the PDF attached. I\u2019ll watch for their reply. 👍',
+	      wa_sys:'TS needs your OK to prepare the email with <b>Martínez</b>\u2019s quote.',
+	      wa_me:'Get it ready and ask me before sending.',
+	      wa_ai:'Ready for review. The email has not been sent. 👍',
       tg_me:'How\u2019s the quote going?',
       tg_ai:'✅ Done. Martínez\u2019s quote ready: $4,820. Email it?',
-      tg_me2:'Send it.',
-      tg_ai2:'Sent to the client\u2019s email. ✅ I\u2019ll tell you when they reply.'
+	      tg_me2:'Get it ready to send.',
+	      tg_ai2:'Ready for review. No email has been sent. ✅'
     }
   };
   let lang='es';
@@ -258,21 +278,23 @@
   let timers=[],playing=false;
   function sleep(ms){return new Promise(res=>timers.push(setTimeout(res,ms)));}
   function clearAll(){timers.forEach(clearTimeout);timers=[];}
-  function cap(html){caption.style.opacity='0';return new Promise(res=>{timers.push(setTimeout(()=>{caption.innerHTML=html;caption.style.opacity='1';res();},220));});}
+	  function cap(html,label){caption.style.opacity='0';return new Promise(res=>{timers.push(setTimeout(()=>{caption.innerHTML='';const l=document.createElement('span');l.className='ts-demo-caption__label';l.textContent=label||t().capStory;const text=document.createElement('span');text.className='ts-demo-caption__text';text.innerHTML=html;caption.append(l,text);caption.style.opacity='1';res();},220));});}
+	  function capMessage(message,label){caption.style.opacity='0';return new Promise(res=>{timers.push(setTimeout(()=>{caption.innerHTML='';const l=document.createElement('span');l.className='ts-demo-caption__label';l.textContent=label;const text=document.createElement('span');text.className='ts-demo-caption__text';text.textContent='“'+message+'”';caption.append(l,text);caption.style.opacity='1';res();},220));});}
 
   const SURF_BG={
     ts:{head:'#1b1f26',body:'#f4f5f7',snd:'#0f9d6e'},
     wa:{head:'#075e54',body:'#e5ddd5',snd:'#25d366'},
     tg:{head:'#1c93d8',body:'#cfe6f2',snd:'#2aabee'}
   };
-  function setSurface(s){
-    chead.className='chead '+s; pbody.className='pbody '+s; pcomp.className='pcomp '+s;
+	  function setSurface(s){
+	    if(s==='tg'&&window.matchMedia('(max-width: 600px)').matches)pbody.innerHTML='';
+	    chead.className='chead '+s; pbody.className='pbody '+s; pcomp.className='pcomp '+s;
     const c=SURF_BG[s];
     chead.style.backgroundColor=c.head;
     pbody.style.backgroundColor=c.body;
     const snd=pcomp.querySelector('.snd'); if(snd) snd.style.backgroundColor=c.snd;
     cheadAv.innerHTML=AV[s];
-    cheadName.textContent = s==='ts'?'TerminalSync':(s==='wa'?'TerminalSync':'TerminalSync');
+    cheadName.textContent = s==='ts'?'TS':(s==='wa'?'TS':'TS');
     cheadStat.textContent = t().online;
     cheadPlat.textContent = s==='ts'?t().platTs:(s==='wa'?t().platWa:t().platTg);
   }
@@ -284,7 +306,7 @@
   function sys(html){const b=document.createElement('div');b.className='b sys fadein';b.innerHTML=html;pbody.appendChild(b);pbody.scrollTop=pbody.scrollHeight;return b;}
   function handoff(label){const d=document.createElement('div');d.className='handoff fadein';d.innerHTML='<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'+label;pbody.appendChild(d);pbody.scrollTop=pbody.scrollHeight;}
   function nowTime(){return '';}
-  function aiName(){return 'TERMINALSYNC';}
+  function aiName(){return 'TS';}
 
   async function typeField(text){
     pfield.innerHTML=''; let i=0;
@@ -301,10 +323,12 @@
     if(playing)return; playing=true;
     clearAll(); pbody.innerHTML=''; deskwrap.classList.remove('dim');
     miniChat.innerHTML=miniChatHTML;
-    setSurface('ts'); resetField();
-    await cap(t().capStart);
+	    applyStatic();
+	    setSurface('ts'); resetField();
+	    await capMessage(t().d_u,t().capClient);
     add('me', t().d_u, true); await sleep(700);
-    add('ai', '<span class="nm">TERMINALSYNC</span>'+t().d_a, true);
+	    await capMessage(t().d_a,t().capAssistant);
+	    add('ai', '<span class="nm">TS</span>'+t().d_a, true);
     await sleep(1500);
 
     // --- hand off to WhatsApp ---
@@ -312,28 +336,36 @@
     setSurface('wa');
     handoff(t().platWa);
     await sleep(500);
-    sys(t().wa_sys); await sleep(1300);
-    // client types from phone
-    await typeField(t().wa_me); await sleep(450);
-    add('me', t().wa_me, true); mirrorToDesk(t().wa_me, t().platWa); resetField(); await sleep(700);
-    await showTyping();
-    add('ai gem', '<span class="nm">TERMINALSYNC</span>'+t().wa_ai, true);
+	    sys(t().wa_sys); await sleep(1300);
+	    // client types from phone
+	    await capMessage(t().wa_me,t().capClient);
+	    await typeField(t().wa_me); await sleep(450);
+	    add('me', t().wa_me, true); mirrorToDesk(t().wa_me, t().platWa); resetField(); await sleep(700);
+	    await showTyping();
+	    await capMessage(t().wa_ai,t().capAssistant);
+		    add('ai gem', '<span class="nm">TS</span>'+t().wa_ai, true); mirrorToDesk(t().wa_ai, t().platWa, 'assistant');
     await sleep(1800);
 
     // --- continue on Telegram ---
     await cap(t().capTg);
-    setSurface('tg');
-    handoff(t().platTg);
-    await sleep(500);
-    await typeField(t().tg_me); await sleep(400);
-    add('me', t().tg_me, true); mirrorToDesk(t().tg_me, t().platTg); resetField(); await sleep(650);
-    await showTyping();
-    add('ai gem', '<span class="nm">TERMINALSYNC</span>'+t().tg_ai, true);
-    await sleep(1500);
-    await typeField(t().tg_me2); await sleep(350);
-    add('me', t().tg_me2, true); mirrorToDesk(t().tg_me2, t().platTg); resetField(); await sleep(600);
-    await showTyping();
-    add('ai gem', '<span class="nm">TERMINALSYNC</span>'+t().tg_ai2, true);
+	    setSurface('tg');
+	    handoff(t().platTg);
+	    await sleep(500);
+	    if(!window.matchMedia('(max-width: 600px)').matches){
+	      await capMessage(t().tg_me,t().capClient);
+	      await typeField(t().tg_me); await sleep(400);
+	      add('me', t().tg_me, true); mirrorToDesk(t().tg_me, t().platTg); resetField(); await sleep(650);
+	      await showTyping();
+	      await capMessage(t().tg_ai,t().capAssistant);
+		      add('ai gem', '<span class="nm">TS</span>'+t().tg_ai, true); mirrorToDesk(t().tg_ai, t().platTg, 'assistant');
+	      await sleep(1500);
+	    }
+	    await capMessage(t().tg_me2,t().capClient);
+	    await typeField(t().tg_me2); await sleep(350);
+	    add('me', t().tg_me2, true); mirrorToDesk(t().tg_me2, t().platTg); resetField(); await sleep(600);
+	    await showTyping();
+	    await capMessage(t().tg_ai2,t().capAssistant);
+	    add('ai gem', '<span class="nm">TS</span>'+t().tg_ai2, true); mirrorToDesk(t().tg_ai2, t().platTg, 'assistant');
     await sleep(1200);
     await cap(t().capEnd);
     playing=false;

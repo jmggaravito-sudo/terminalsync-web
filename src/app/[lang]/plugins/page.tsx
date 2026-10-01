@@ -13,7 +13,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params;
   const isEs = lang === "es";
-  const title = "Plugins · Terminal Sync";
+  const title = "Plugins · TS";
   const description = isEs
     ? "Plugins: el conector de un producto + la skill para usarlo bien, en un solo install. Se sincronizan en todas tus máquinas."
     : "Plugins: a product's connector + the skill to use it well, in one install. Synced across every machine.";

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- @dsCard group="Brand" name="Demo · Resultados (trabajo terminado)" subtitle="TerminalSync entrega el trabajo en tres pasos · rota verticales · ES/EN" viewport="1280x820" -->
+<!-- @dsCard group="Brand" name="Demo · Resultados (trabajo terminado)" subtitle="TS entrega el trabajo en tres pasos · rota verticales · ES/EN" viewport="1280x820" -->
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Terminal Sync · Resultados</title>
+<title>TS · Resultados</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
@@ -29,22 +29,22 @@
 
   .top{height:54px;flex:none;display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:1px solid var(--line);}
   .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15.5px;}
-  .brand .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#8b6cf0,#6d3bf5);display:grid;place-items:center;}
-  .brand .logo i{width:11px;height:11px;border-radius:3px;background:rgba(255,255,255,.9);}
+  .brand .logo{width:26px;height:26px;object-fit:contain;flex:none;}
   .top .menu{color:var(--ink2);}
   .search{flex:1;max-width:560px;margin:0 auto;display:flex;align-items:center;gap:9px;height:38px;padding:0 14px;border:1px solid var(--line2);border-radius:999px;color:var(--ink3);background:var(--bg);}
   .search input{border:none;outline:none;flex:1;font-family:inherit;font-size:13.5px;color:var(--ink);background:transparent;}
   .top-right{display:flex;align-items:center;gap:14px;}
   .sync{display:flex;align-items:center;gap:7px;color:var(--ink2);font-size:13.5px;}
-  .btn-navy{display:flex;align-items:center;gap:8px;background:var(--navy);color:#fff;font-weight:500;font-size:13.5px;padding:9px 15px;border-radius:999px;}
+  .btn-navy{display:flex;align-items:center;gap:8px;background:#168653;color:#fff;font-weight:600;font-size:13.5px;padding:9px 15px;border-radius:999px;}
   .avatar{width:30px;height:30px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;color:var(--ink2);}
 
   .body{flex:1;display:flex;min-height:0;}
-  .side{width:224px;flex:none;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:14px 12px;gap:3px;}
-  .nav-i{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r);color:var(--ink2);font-weight:500;font-size:14px;}
+  .side{width:64px;flex:none;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:14px 7px;gap:5px;}
+  .nav-i{position:relative;display:flex;align-items:center;justify-content:center;width:46px;height:44px;padding:10px;border-radius:var(--r);color:var(--ink2);font-weight:500;font-size:14px;}
+  .nav-i>span:not(.badge){position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
   .nav-i:hover{background:var(--hover);}
   .nav-i.on{background:var(--active);color:var(--ink);font-weight:600;}
-  .nav-i .badge{margin-left:auto;font-size:12px;color:var(--ink3);}
+  .nav-i .badge{display:none;}
   .side .spacer{flex:1;}
 
   .content{flex:1;display:flex;flex-direction:column;min-width:0;}
@@ -57,13 +57,15 @@
   .subhead{height:58px;flex:none;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid var(--line);}
   .subhead .back{color:var(--ink2);}
   .subhead .ph{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);}
-  .proj-switch{margin-left:auto;display:flex;gap:4px;background:var(--hover);border:1px solid var(--line);border-radius:999px;padding:4px;}
+  .demo-note{margin-left:auto;display:inline-flex;align-items:center;gap:7px;color:var(--ink2);font-size:11.5px;white-space:nowrap;}
+  .demo-note .d{width:7px;height:7px;border-radius:50%;background:#a0a5ae;}
+  .proj-switch{display:flex;gap:4px;background:var(--hover);border:1px solid var(--line);border-radius:999px;padding:4px;}
   .proj-switch button{font-size:12.5px;font-weight:500;color:var(--ink2);padding:6px 13px;border-radius:999px;}
   .proj-switch button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(20,22,28,.12);}
 
-  .stage{flex:1;overflow-y:auto;padding:30px clamp(20px,7vw,110px);}
+  .stage{flex:1;min-height:0;overflow:visible;padding:24px clamp(20px,7vw,110px) 68px;}
   .ask{display:flex;justify-content:flex-end;margin-bottom:26px;}
-  .ask .bubble{background:var(--indigo);color:#fff;border-radius:14px;padding:13px 18px;max-width:560px;font-size:14.5px;line-height:1.5;box-shadow:0 6px 18px -8px rgba(91,86,230,.5);}
+  .ask .bubble{background:var(--indigo);color:#fff;border-radius:14px;padding:13px 18px;max-width:560px;font-size:16px;line-height:1.45;box-shadow:0 6px 18px -8px rgba(91,86,230,.5);}
 
   .board-head{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
   .board-head .pj{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;background:var(--navy);color:#fff;flex:none;}
@@ -106,7 +108,7 @@
   .deliver .big svg{width:26px;height:26px;stroke:#fff;stroke-width:2.6;fill:none;}
   .deliver .tx .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--green-tx);margin-bottom:4px;}
   .deliver .tx h4{font-size:19px;margin:0;font-weight:600;letter-spacing:-.02em;}
-  .deliver .tx p{margin:5px 0 0;font-size:13.5px;color:var(--ink2);}
+  .deliver .tx p{margin:5px 0 0;font-size:14.5px;color:var(--ink2);}
   .deliver .doc{margin-left:auto;display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600;color:#fff;background:var(--green);padding:10px 16px;border-radius:10px;flex:none;}
   .deliver .doc svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none;}
 
@@ -117,20 +119,65 @@
   .replay-btn:hover{border-color:var(--green);color:var(--green);}
   .replay-btn svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;}
   @media(max-width:920px){.side{display:none;} .search{display:none;}}
+  @media(max-width:600px){
+    .app{min-height:0;height:100dvh;}
+    .top{gap:7px;padding:0 8px;}
+    .brand{gap:6px;font-size:14px;}
+    .top-right{gap:6px;}
+    .sync{font-size:12px;}
+    .btn-navy{font-size:12px;padding:7px 9px;}
+    .avatar{display:none;}
+    .tabs{padding:0 8px;}
+    .tabs .exit{font-size:11px;gap:3px;}
+    .subhead{height:54px;gap:6px;padding:0 8px;}
+    .subhead .ph,.demo-note{display:none;}
+    .proj-switch{margin-left:auto;gap:1px;padding:3px;}
+    .proj-switch button{font-size:12px;padding:6px 10px;}
+    .stage{padding:12px 14px 72px;}
+    .ask{margin-bottom:12px;}
+    .ask .bubble{max-width:100%;padding:10px 13px;font-size:14.5px;line-height:1.35;}
+    .board-head{gap:9px;margin-bottom:10px;}
+    .board-head .pj{width:36px;height:36px;border-radius:9px;}
+    .board-head .pj svg{width:18px;height:18px;}
+    .board-head .tt{min-width:0;}
+    .board-head .tt .lbl{font-size:10px;margin-bottom:2px;}
+    .board-head .tt h3{font-size:16px;line-height:1.15;}
+    .board-head .status{gap:5px;padding:6px 8px;font-size:11px;white-space:nowrap;}
+    .board-head .status .d{width:7px;height:7px;}
+    .tasks{gap:6px;}
+    .task{gap:9px;padding:8px 10px;border-radius:12px;}
+    .task .ava{width:32px;height:32px;border-radius:9px;font-size:12px;}
+    .task .meta .who{font-size:10px;letter-spacing:.07em;margin-bottom:2px;}
+    .task .meta .role{font-size:14px;line-height:1.2;}
+    .task .state{gap:5px;min-width:0;font-size:11px;}
+    .task .state .chk{width:17px;height:17px;}
+    .flow{display:none;}
+    .deliver{margin-top:10px;padding:11px 12px;gap:10px;border-radius:13px;align-items:flex-start;flex-wrap:wrap;}
+    .deliver .big{width:34px;height:34px;}
+    .deliver .big svg{width:20px;height:20px;}
+    .deliver .tx{flex:1;min-width:0;}
+    .deliver .tx .k{font-size:10px;margin-bottom:2px;}
+    .deliver .tx h4{font-size:16px;line-height:1.2;}
+    .deliver .tx p{font-size:14px;line-height:1.25;margin-top:3px;}
+    .deliver .doc{margin:0 0 0 44px;padding:7px 10px;font-size:12px;border-radius:8px;}
+    .replay-btn{bottom:12px;padding:7px 13px;}
+    .lang-pill{right:8px;top:60px;}
+  }
 </style>
+<link rel="stylesheet" href="/landing-b/demos/demo-captions.css">
 </head>
 <body>
 <div class="app">
   <header class="top">
     <button class="menu"><svg class="ic" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
-    <div class="brand"><span class="logo"><i></i></span>Terminal Sync</div>
+    <div class="brand"><img class="logo" src="/landing-b/assets/logo.png" alt="" />TS</div>
     <div class="search">
       <svg class="ic sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
       <input data-i="search" placeholder="Buscar una sesión, archivo o computadora…" />
     </div>
     <div class="top-right">
       <span class="sync"><svg class="ic sm" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg><span data-i="sync">Sincronizar</span></span>
-      <button class="btn-navy"><svg class="ic sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span data-i="newws">Nuevo espacio</span></button>
+      <button class="btn-navy"><svg class="ic sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span data-i="newws">Nuevo espacio de trabajo</span></button>
       <span class="avatar"><svg class="ic sm" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
     </div>
   </header>
@@ -162,6 +209,7 @@
           <button data-p="1" data-i="vAgencia">Agencia</button>
           <button data-p="2" data-i="vEcom">Ecommerce</button>
         </div>
+        <div class="demo-note"><span class="d"></span><span data-i="demoNote">Demostración ilustrativa</span></div>
       </div>
 
       <div class="stage" id="stage"></div>
@@ -179,16 +227,16 @@
   const tabName=document.getElementById('tabName');
 
   const T={
-    es:{search:'Buscar una sesión, archivo o computadora…',sync:'Sincronizar',newws:'Nuevo espacio',
+    es:{search:'Buscar una sesión, archivo o computadora…',sync:'Sincronizar',newws:'Nuevo espacio de trabajo',
       inicio:'Inicio',ws:'Espacios de Trabajo',acciones:'Acciones',secretos:'Secretos',integr:'Integraciones',
       ayuda:'Ayuda',ajustes:'Ajustes',exit:'Pantalla completa',phLabel:'Espacio de trabajo',replay:'Ver de nuevo',
       vBroker:'Broker',vAgencia:'Agencia',vEcom:'Ecommerce',
-      working:'Trabajando…',waiting:'En espera',done:'Listo',running:'En curso',finished:'Entregado'},
-    en:{search:'Search a session, file or computer…',sync:'Sync',newws:'New space',
+      working:'Trabajando…',waiting:'En espera',done:'Listo',running:'En curso',finished:'Demo completa',simulated:'Resultado simulado',demoNote:'Demostración ilustrativa'},
+    en:{search:'Search a session, file or computer…',sync:'Sync',newws:'New workspace',
       inicio:'Home',ws:'Workspaces',acciones:'Actions',secretos:'Secrets',integr:'Integrations',
       ayuda:'Help',ajustes:'Settings',exit:'Full screen',phLabel:'Workspace',replay:'Watch again',
       vBroker:'Broker',vAgencia:'Agency',vEcom:'Ecommerce',
-      working:'Working…',waiting:'Queued',done:'Done',running:'Running',finished:'Delivered'}
+      working:'Working…',waiting:'Queued',done:'Done',running:'Running',finished:'Demo complete',simulated:'Simulated result',demoNote:'Illustrative demo'}
   };
   let lang='es';
   const t=()=>T[lang];
@@ -204,31 +252,31 @@
         {ai:'codex', role:{es:'Arma el <b>documento</b> de cotización con precios',en:'Builds the <b>quote document</b> with pricing'}},
         {ai:'gemini',role:{es:'Revisa la <b>propuesta</b> y ajusta el tono',en:'Reviews the <b>proposal</b> and adjusts the tone'}}
       ],
-      done:{es:'Cotización enviada',en:'Quote sent'},
-      sub:{es:'Correo + documento listos en la bandeja del cliente.',en:'Email + document ready in the client\u2019s inbox.'},
-      doc:{es:'Cotizacion.pdf',en:'Quote.pdf'} },
+      done:{es:'Cotización preparada',en:'Quote prepared'},
+      sub:{es:'Correo y documento de ejemplo; no se enviaron.',en:'Example email and document; nothing was sent.'},
+      doc:{es:'Cotizacion-demo.pdf',en:'Quote-demo.pdf'} },
     { tab:{es:'Campaña Facebook',en:'Facebook Campaign'},
       ask:{es:'Lancemos la campaña de este mes. Déjenla lista.',en:'Let\u2019s launch this month\u2019s campaign. Get it ready.'},
       title:{es:'Campaña · Facebook Ads',en:'Campaign · Facebook Ads'},
       tasks:[
         {ai:'claude',role:{es:'Escribe los <b>copies</b> de los anuncios',en:'Writes the ad <b>copy</b>'}},
-        {ai:'codex', role:{es:'Construye la <b>landing</b> de la campaña',en:'Builds the campaign <b>landing page</b>'}},
+        {ai:'codex', role:{es:'Prepara la <b>landing</b> de la campaña',en:'Prepares the campaign <b>landing page</b>'}},
         {ai:'gemini',role:{es:'Revisa <b>mensaje y enlaces</b> antes de publicar',en:'Reviews <b>message and links</b> before publishing'}}
       ],
-      done:{es:'Campaña lista',en:'Campaign ready'},
-      sub:{es:'Anuncios, landing y revisión — listos para publicar.',en:'Ads, landing and review — ready to publish.'},
-      doc:{es:'Campaña.zip',en:'Campaign.zip'} },
+      done:{es:'Campaña preparada',en:'Campaign prepared'},
+      sub:{es:'Anuncios, landing y revisión de ejemplo; no se publicaron.',en:'Example ads, landing page and review; nothing was published.'},
+      doc:{es:'Campaña-demo.zip',en:'Campaign-demo.zip'} },
     { tab:{es:'Colección Verano',en:'Summer Collection'},
       ask:{es:'Subamos la colección nueva a la tienda. Encárguense.',en:'Let\u2019s put the new collection live. Handle it.'},
       title:{es:'Colección · Verano',en:'Collection · Summer'},
       tasks:[
         {ai:'claude',role:{es:'Escribe las <b>descripciones</b> de producto',en:'Writes the product <b>descriptions</b>'}},
-        {ai:'codex', role:{es:'<b>Carga los productos</b> a la tienda',en:'<b>Uploads the products</b> to the store'}},
+        {ai:'codex', role:{es:'Prepara la <b>carga de productos</b> a la tienda',en:'Prepares a <b>store product upload</b>'}},
         {ai:'gemini',role:{es:'Optimiza el <b>SEO</b> de cada ficha',en:'Optimizes the <b>SEO</b> of each listing'}}
       ],
-      done:{es:'Publicado',en:'Published'},
-      sub:{es:'Colección visible en la tienda, con SEO listo.',en:'Collection live in the store, SEO done.'},
-      doc:{es:'Ver tienda',en:'View store'} },
+      done:{es:'Vista previa lista',en:'Preview ready'},
+      sub:{es:'Productos y SEO de ejemplo; no se cargaron a la tienda.',en:'Example products and SEO; nothing was uploaded to the store.'},
+      doc:{es:'Ver ejemplo',en:'View example'} },
   ];
   let pIdx=0;
 
@@ -265,7 +313,7 @@
       '<div class="tasks" id="tasks">'+tasksHtml+'</div>'+
       '<div class="deliver" id="deliver">'+
         '<div class="big"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>'+
-        '<div class="tx"><div class="k">'+t().finished+'</div><h4>'+p.done[lang]+'</h4><p>'+p.sub[lang]+'</p></div>'+
+        '<div class="tx"><div class="k">'+t().simulated+'</div><h4>'+p.done[lang]+'</h4><p>'+p.sub[lang]+'</p></div>'+
         '<div class="doc"><svg viewBox="0 0 24 24"><path d="M14 3v5h5"/><path d="M7 3h7l5 5v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/></svg>'+p.doc[lang]+'</div>'+
       '</div>';
   }
@@ -294,9 +342,6 @@
     await sleep(350);
     status.className='status done'; status.querySelector('.lab').textContent=t().finished;
     document.getElementById('deliver').classList.add('show');
-    document.getElementById('deliver').scrollIntoView({block:'nearest'});
-    await sleep(2600);
-    pIdx=(pIdx+1)%PROJ.length; syncSwitch(); play();
   }
   function syncSwitch(){
     document.querySelectorAll('#projSwitch button').forEach(b=>b.classList.toggle('on',+b.dataset.p===pIdx));

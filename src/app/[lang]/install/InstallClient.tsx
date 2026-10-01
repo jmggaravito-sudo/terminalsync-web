@@ -38,7 +38,7 @@ type Props =
  * fill, then fire `terminalsync://install?type=connector&slug=...&env=...`.
  *
  * Fallback: if TS isn't installed, deep-link silently fails — we surface a
- * "Download Terminal Sync first" hint after a 3s timeout.
+ * "Download TS first" hint after a 3s timeout.
  */
 export function InstallClient(props: Props) {
   const { lang } = props;
@@ -51,12 +51,12 @@ export function InstallClient(props: Props) {
     back: lang === "es" ? "Volver" : "Back",
     intro:
       lang === "es"
-        ? `Vamos a instalar ${props.name} en tu Terminal Sync.`
-        : `We're about to install ${props.name} in your Terminal Sync.`,
+        ? `Vamos a instalar ${props.name} en tu TS.`
+        : `We're about to install ${props.name} in your TS.`,
     introBody:
       lang === "es"
-        ? "Tu Terminal Sync se va a abrir, vas a confirmar la instalación, y la skill quedará disponible en todas tus máquinas. Cifrada en tu Drive."
-        : "Terminal Sync will open, you confirm the install, and the skill is available on every machine. Encrypted in your Drive.",
+        ? "Tu TS se va a abrir, vas a confirmar la instalación, y la skill quedará disponible en todas tus máquinas. Cifrada en tu Drive."
+        : "TS will open, you confirm the install, and the skill is available on every machine. Encrypted in your Drive.",
     introBodyConn:
       lang === "es"
         ? "Necesitamos que ingreses el token de autenticación. Una vez instalado, el conector queda disponible en todas tus máquinas. Cifrado end-to-end."
@@ -66,14 +66,14 @@ export function InstallClient(props: Props) {
     download: lang === "es" ? "Bajar standalone" : "Download standalone",
     notInstalled:
       lang === "es"
-        ? "Parece que Terminal Sync no se abrió. ¿Lo tenés instalado?"
-        : "Looks like Terminal Sync didn't open. Do you have it installed?",
+        ? "Parece que TS no se abrió. ¿Lo tenés instalado?"
+        : "Looks like TS didn't open. Do you have it installed?",
     getTs:
-      lang === "es" ? "Bajar Terminal Sync" : "Download Terminal Sync",
+      lang === "es" ? "Bajar TS" : "Download TS",
     launching:
       lang === "es"
-        ? "Abriendo Terminal Sync…"
-        : "Launching Terminal Sync…",
+        ? "Abriendo TS…"
+        : "Launching TS…",
     launchingBody:
       lang === "es"
         ? "Si la app no se abre en unos segundos, asegurate de tenerla instalada."
@@ -81,14 +81,14 @@ export function InstallClient(props: Props) {
     done: lang === "es" ? "Listo." : "All set.",
     doneBody:
       lang === "es"
-        ? "Terminal Sync recibió la instalación. Confirmá adentro de la app."
-        : "Terminal Sync received the install. Confirm inside the app.",
+        ? "TS recibió la instalación. Confirmá adentro de la app."
+        : "TS received the install. Confirm inside the app.",
     envHeader:
       lang === "es" ? "Datos del conector" : "Connector credentials",
     envBody:
       lang === "es"
-        ? "Estos valores se cifran y nunca tocan nuestros servidores — viajan directo del navegador a Terminal Sync."
-        : "These values are encrypted and never touch our servers — they go straight from your browser to Terminal Sync.",
+        ? "Estos valores se cifran y nunca tocan nuestros servidores — viajan directo del navegador a TS."
+        : "These values are encrypted and never touch our servers — they go straight from your browser to TS.",
   };
 
   function fireSkillInstall() {
@@ -281,8 +281,8 @@ export function InstallClient(props: Props) {
               </h3>
               <p className="mt-1 text-[12.5px] text-[var(--color-fg-muted)] leading-relaxed">
                 {lang === "es"
-                  ? "El payload viaja del navegador → Terminal Sync vía un deep-link. Tus credenciales nunca tocan nuestros servidores. Una vez confirmás dentro de TS, todo queda en tu Drive cifrado."
-                  : "The payload goes browser → Terminal Sync via a deep-link. Your credentials never touch our servers. Once you confirm inside TS, everything sits in your Drive encrypted."}
+                  ? "El payload viaja del navegador → TS vía un deep-link. Tus credenciales nunca tocan nuestros servidores. Una vez confirmás dentro de TS, todo queda en tu Drive cifrado."
+                  : "The payload goes browser → TS via a deep-link. Your credentials never touch our servers. Once you confirm inside TS, everything sits in your Drive encrypted."}
               </p>
             </div>
           </div>

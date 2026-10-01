@@ -30,7 +30,7 @@ export function CheckoutButton({ plan, label, featured }: Props) {
       e.preventDefault();
       window.location.href =
         "mailto:ventas@terminalsync.ai?subject=" +
-        encodeURIComponent("TerminalSync Agency — cotización");
+        encodeURIComponent("TS Agency — cotización");
       return;
     }
     // starter / pro / max → let the anchor navigate to /api/download,

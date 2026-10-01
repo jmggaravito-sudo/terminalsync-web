@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- @dsCard group="Brand" name="Demo · Asistente de prompts (Sugerencia del coach)" subtitle="Mejora el prompt + corrige ortografía · ES/EN" viewport="1280x820" -->
+<!-- @dsCard group="Brand" name="Demo · Asistente de prompts (Sugerencia del coach)" subtitle="Mejora el prompt + corrige ortografía · ES/EN" viewport="1280x800" -->
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Terminal Sync · Asistente de prompts</title>
+<title>TS · Asistente de prompts</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
@@ -26,33 +26,39 @@
   .ic.sm{width:15px;height:15px;}
   .app{display:flex;flex-direction:column;height:100vh;min-height:600px;overflow:hidden;}
 
-  .top{height:54px;flex:none;display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:1px solid var(--line);}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15.5px;}
-  .brand .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#8b6cf0,#6d3bf5);display:grid;place-items:center;}
-  .brand .logo i{width:11px;height:11px;border-radius:3px;background:rgba(255,255,255,.9);}
+  .top{height:48px;flex:none;display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:1px solid var(--line);}
+	  .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15.5px;}
+	  .brand .logo{width:26px;height:26px;border-radius:7px;background:transparent;display:grid;place-items:center;}
+	  .brand .logo img{display:block;width:100%;height:100%;object-fit:contain;border-radius:6px;}
   .top .menu{color:var(--ink2);}
   .search{flex:1;max-width:560px;margin:0 auto;display:flex;align-items:center;gap:9px;height:38px;padding:0 14px;border:1px solid var(--line2);border-radius:999px;color:var(--ink3);background:var(--bg);}
   .search input{border:none;outline:none;flex:1;font-family:inherit;font-size:13.5px;color:var(--ink);background:transparent;}
   .top-right{display:flex;align-items:center;gap:14px;}
   .sync{display:flex;align-items:center;gap:7px;color:var(--ink2);font-size:13.5px;}
   .btn-navy{display:flex;align-items:center;gap:8px;background:var(--navy);color:#fff;font-weight:500;font-size:13.5px;padding:9px 15px;border-radius:999px;}
+  .top .btn-navy{display:none;}
   .avatar{width:30px;height:30px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;color:var(--ink2);}
 
   .body{flex:1;display:flex;min-height:0;}
-  .side{width:224px;flex:none;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:14px 12px;gap:3px;}
+  .side{width:66px;flex:none;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:12px 7px;gap:5px;background:#fcfcfd;}
   .nav-i{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r);color:var(--ink2);font-weight:500;font-size:14px;}
   .nav-i:hover{background:var(--hover);}
   .nav-i.on{background:var(--active);color:var(--ink);font-weight:600;}
   .nav-i .badge{margin-left:auto;font-size:12px;color:var(--ink3);}
   .nav-i .chev{color:var(--ink3);}
   .side .spacer{flex:1;}
+  .side .nav-i{width:44px;height:42px;justify-content:center;padding:0;gap:0;}
+  .side .nav-i span,.side .nav-i .chev{display:none;}
 
   .content{flex:1;display:flex;flex-direction:column;min-width:0;}
-  .tabs{height:42px;flex:none;display:flex;align-items:center;gap:4px;padding:0 14px;border-bottom:1px solid var(--line);}
+  .tabs{height:44px;flex:none;display:flex;align-items:center;gap:4px;padding:0 14px;border-bottom:1px solid var(--line);}
   .tab{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:8px 8px 0 0;color:var(--ink2);font-size:13px;}
   .tab.on{background:var(--bg);color:var(--ink);font-weight:600;box-shadow:inset 0 -2px 0 var(--ink);}
   .tab .x{color:var(--ink3);width:14px;height:14px;}
   .tabs .exit{margin-left:auto;display:flex;align-items:center;gap:7px;color:var(--ink2);font-size:13px;}
+  .demo-tag{font-size:11px;color:var(--ink3);padding:5px 9px;border:1px solid var(--line);border-radius:999px;white-space:nowrap;}
+  .workspace-main{display:flex;flex:1;min-height:0;}
+  .conversation{flex:1;min-width:0;display:flex;flex-direction:column;}
 
   .subhead{height:54px;flex:none;display:flex;align-items:center;gap:14px;padding:0 18px;border-bottom:1px solid var(--line);}
   .subhead .back{color:var(--ink2);}
@@ -64,8 +70,10 @@
   .mode-pill b{color:var(--ink);font-weight:600;}
   .subhead-right{margin-left:auto;display:flex;align-items:center;gap:14px;color:var(--ink2);}
   .subhead-right .reduce{display:flex;align-items:center;gap:6px;font-size:13px;}
+  .prompt-line{align-self:center;margin:10px 12px 0;flex:none;}
+  .prompt-line[hidden]{display:none;}
 
-  .chat{flex:1;overflow-y:auto;padding:26px clamp(18px,6vw,90px);display:flex;flex-direction:column;gap:20px;background:var(--bg);scroll-behavior:smooth;}
+  .chat{flex:1;overflow-y:auto;padding:24px clamp(18px,4.5vw,64px);display:flex;flex-direction:column;gap:20px;background:var(--bg);scroll-behavior:smooth;}
   .row{display:flex;}
   .row.user{justify-content:flex-end;}
   .user-bubble{background:var(--indigo);color:#fff;border-radius:14px;padding:13px 17px;max-width:620px;font-size:14.5px;line-height:1.55;white-space:pre-wrap;box-shadow:0 6px 18px -8px rgba(91,86,230,.5);}
@@ -79,18 +87,18 @@
   .ai-body strong{font-weight:600;}
 
   /* composer */
-  .composer-wrap{flex:none;border-top:1px solid var(--line);padding:14px clamp(18px,6vw,90px) 10px;position:relative;}
+  .composer-wrap{flex:none;border-top:1px solid var(--line);padding:12px clamp(18px,4.5vw,64px) 0;position:relative;}
   .composer{display:flex;align-items:flex-end;gap:10px;}
   .comp-btn{width:42px;height:42px;flex:none;border:1px solid var(--line2);border-radius:11px;display:grid;place-items:center;color:var(--ink2);background:var(--bg);}
   .comp-input{flex:1;display:flex;align-items:center;gap:10px;border:1px solid var(--line2);border-radius:13px;padding:0 8px 0 14px;min-height:48px;transition:border-color .25s,box-shadow .25s;}
   .comp-input.assist{border-color:var(--green-bd);box-shadow:0 0 0 3px rgba(52,184,122,.14);}
-  .comp-input textarea{flex:1;border:none;outline:none;resize:none;font-family:inherit;font-size:14.5px;color:var(--ink);background:transparent;padding:13px 0;max-height:160px;line-height:1.55;}
+	  .comp-input textarea{flex:1;border:none;outline:none;resize:none;font-family:inherit;font-size:16px;color:var(--ink);background:transparent;padding:13px 0;max-height:160px;line-height:1.45;}
   .comp-input textarea::placeholder{color:var(--ink3);}
   .clearx{color:var(--ink3);width:30px;height:30px;display:grid;place-items:center;border-radius:8px;flex:none;}
   .clearx:hover{background:var(--hover);color:var(--ink2);}
   .send{display:flex;align-items:center;gap:8px;background:var(--green);color:#fff;font-weight:600;font-size:14px;padding:11px 20px;border-radius:11px;align-self:center;}
 
-  .assist-row{display:flex;align-items:center;gap:10px;margin-top:10px;}
+  .assist-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
   .assist-btn{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--green-tx);border:1px solid var(--green-bd);background:var(--green-bg);padding:8px 14px;border-radius:999px;transition:transform .12s,background .2s,box-shadow .2s;}
   .assist-btn svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.9;fill:none;}
   .assist-btn:hover{background:#e7f7ee;}
@@ -99,52 +107,109 @@
   .assist-btn.working{color:var(--ink3);background:var(--hover);border-color:var(--line2);}
   .assist-btn .sp{width:13px;height:13px;border-radius:50%;border:2px solid var(--line2);border-top-color:var(--green);animation:spin .7s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg)}}
-  .hist{text-align:right;color:var(--ink3);font-size:12px;margin-top:8px;}
+  .hist{text-align:right;color:var(--ink3);font-size:11px;margin-top:5px;}
+  .action-dock{height:50px;margin:9px calc(clamp(18px,4.5vw,64px) * -1) 0;padding:0 14px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:clamp(8px,2.4vw,32px);background:#fff;}
+  .dock-item{display:flex;align-items:center;gap:7px;color:var(--ink2);font-size:12px;padding:8px 10px;border-radius:9px;white-space:nowrap;}
+  .dock-item svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.8;fill:none;}
+  .dock-item.active{color:var(--ts-tx);background:#f4f0ff;font-weight:600;}
+  .context-panel{width:286px;flex:none;border-left:1px solid var(--line);padding:18px 16px 14px;display:flex;flex-direction:column;min-height:0;background:#fff;}
+  .context-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .context-head h3{margin:0;font-size:15px;font-weight:600;}
+  .context-head .context-count{font-size:11px;color:var(--ink3);}
+  .context-cta{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--ts);color:#fff;font-size:12.5px;font-weight:600;padding:11px 10px;border-radius:10px;box-shadow:0 8px 18px -12px rgba(109,59,245,.8);}
+  .context-cta:hover{filter:brightness(1.05);}
+  .context-section-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin:20px 0 8px;}
+  .context-list{display:flex;flex-direction:column;gap:2px;}
+  .context-row{height:37px;display:flex;align-items:center;gap:10px;padding:0 9px;border-radius:8px;color:var(--ink2);font-size:12.5px;}
+  .context-row svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.8;fill:none;color:#858b96;}
+  .context-row:hover{background:var(--hover);}
+  .memory-card{margin-top:auto;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#fcfcfd;}
+  .memory-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--ink2);}
+  .memory-title svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.8;fill:none;color:var(--ts);}
+  .memory-copy{font-size:11.5px;line-height:1.45;color:var(--ink3);margin:7px 0 0;}
 
   /* Coach popover */
-  .coach{position:absolute;left:clamp(18px,6vw,90px);bottom:70px;width:min(420px,calc(100% - 36px));background:#fff;border:1px solid var(--line2);border-radius:16px;box-shadow:0 30px 70px -28px rgba(20,22,28,.5);overflow:hidden;opacity:0;transform:translateY(10px) scale(.985);transform-origin:bottom left;transition:opacity .24s var(--ease,ease),transform .24s var(--ease,ease);pointer-events:none;z-index:30;}
+	  .coach{position:absolute;left:clamp(18px,4.5vw,64px);bottom:calc(100% - 8px);width:min(420px,calc(100% - 36px));max-height:min(340px,calc(100vh - 344px));overflow:auto;background:#fff;border:1px solid var(--line2);border-radius:16px;box-shadow:0 30px 70px -28px rgba(20,22,28,.5);opacity:0;transform:translateY(10px) scale(.985);transform-origin:bottom left;transition:opacity .24s var(--ease,ease),transform .24s var(--ease,ease);pointer-events:none;z-index:30;}
   .coach.show{opacity:1;transform:none;pointer-events:auto;}
-  .coach-head{display:flex;align-items:center;gap:9px;padding:14px 16px;border-bottom:1px solid var(--line);}
+	  .coach-head{display:flex;align-items:center;gap:9px;padding:12px 16px;border-bottom:1px solid var(--line);}
   .coach-head .ci{width:24px;height:24px;border-radius:7px;background:var(--green-bg);border:1px solid var(--green-bd);display:grid;place-items:center;color:var(--green-tx);flex:none;}
   .coach-head .ci svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;}
   .coach-head h4{font-size:14px;margin:0;font-weight:600;flex:1;}
   .coach-head .cx{color:var(--ink3);width:26px;height:26px;display:grid;place-items:center;border-radius:7px;}
   .coach-head .cx:hover{background:var(--hover);color:var(--ink2);}
-  .coach-sect{padding:14px 16px;}
+	  .coach-sect{padding:10px 16px;}
   .coach-sect + .coach-sect{border-top:1px solid var(--line);}
   .coach-lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:9px;}
-  .coach-box{border:1px solid var(--line);border-radius:10px;background:var(--hover);padding:11px 13px;font-size:13.5px;line-height:1.5;color:var(--ink);}
+	  .coach-box{border:1px solid var(--line);border-radius:10px;background:var(--hover);padding:9px 11px;font-size:13.5px;line-height:1.4;color:var(--ink);}
   .sp-fix{display:flex;align-items:center;gap:10px;font-size:13.5px;}
   .sp-old{color:var(--red);text-decoration:line-through;}
   .sp-arrow{color:var(--ink3);}
   .sp-new{color:var(--green-tx);font-weight:600;}
-  .coach-note{font-size:12.5px;color:var(--ink2);font-style:italic;line-height:1.5;margin-top:11px;}
-  .coach-actions{display:flex;align-items:center;gap:9px;padding:13px 16px;border-top:1px solid var(--line);background:var(--bg);}
-  .cbtn{font-size:13px;font-weight:600;padding:9px 14px;border-radius:9px;transition:transform .12s,filter .2s,background .2s;}
+	  .coach-note{font-size:12px;color:var(--ink2);font-style:italic;line-height:1.4;margin-top:7px;}
+	  .coach-actions{display:flex;align-items:center;gap:9px;padding:9px 16px;border-top:1px solid var(--line);background:var(--bg);}
+	  .cbtn{font-size:13px;font-weight:600;padding:8px 12px;border-radius:9px;transition:transform .12s,filter .2s,background .2s;}
   .cbtn.primary{background:var(--green);color:#fff;box-shadow:0 8px 18px -10px rgba(52,184,122,.9);}
   .cbtn.primary:hover{filter:brightness(1.04);} .cbtn:active{transform:scale(.97);}
   .cbtn.ghost{background:#fff;border:1px solid var(--line2);color:var(--ink);font-weight:500;}
   .cbtn.ghost:hover{background:var(--hover);}
   .cbtn.text{color:var(--ink3);font-weight:500;}
 
-  .fab{position:fixed;right:22px;bottom:96px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#4f7dfb,#9b5cf6);box-shadow:0 14px 34px -10px rgba(124,92,246,.6);display:grid;place-items:center;color:#fff;}
+  .fab{display:none;}
   .fab .stat{position:absolute;top:4px;right:4px;width:10px;height:10px;border-radius:50%;background:#34b87a;border:2px solid #fff;}
-  .lang-pill{position:fixed;right:22px;top:64px;z-index:60;display:inline-flex;gap:3px;padding:4px;background:#fff;border:1px solid var(--line2);border-radius:999px;box-shadow:0 10px 28px -14px rgba(20,22,28,.4);}
+  .lang-pill{position:static;z-index:auto;display:inline-flex;gap:3px;padding:3px;background:#fff;border:1px solid var(--line2);border-radius:999px;box-shadow:none;flex:none;}
   .lang-pill button{font-family:var(--mono);font-size:12px;padding:5px 12px;border-radius:999px;color:var(--ink2);}
   .lang-pill button.on{background:var(--navy);color:#fff;font-weight:600;}
-  .replay-btn{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--ink2);border:1px solid var(--line2);background:#fff;padding:8px 15px;border-radius:999px;cursor:pointer;z-index:60;box-shadow:0 10px 30px -12px rgba(20,22,28,.3);}
+  .replay-btn{position:fixed;left:50%;bottom:62px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--ink2);border:1px solid var(--line2);background:#fff;padding:8px 15px;border-radius:999px;cursor:pointer;z-index:60;box-shadow:0 10px 30px -12px rgba(20,22,28,.3);}
   .replay-btn:hover{border-color:var(--green);color:var(--green);}
   .replay-btn svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;}
+  .demo-action-group{position:fixed;left:50%;bottom:62px;transform:translateX(-50%);z-index:60;display:flex;gap:7px;white-space:nowrap;}
+  .demo-action-group .replay-btn{position:static;left:auto;bottom:auto;transform:none;}
   .fadein{animation:fade .4s ease;}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  @media(max-width:920px){.side{display:none;} .search{display:none;}}
-</style>
+  @media(max-width:920px){.side{display:none;} .search{display:none;} .context-panel{width:246px;padding-left:12px;padding-right:12px;} .dock-item{font-size:11px;gap:5px;padding:7px 6px;}}
+	  @media(max-width:720px){.context-panel{display:none;} .tabs{padding:0 8px;} .tab{padding:7px 8px;font-size:12px;} .tabs .exit,.demo-tag{display:none;} .mode-tools,.subhead-right{display:none;} .subhead{padding:0 10px;} .composer-wrap{padding-left:12px;padding-right:12px;} .chat{padding-left:12px;padding-right:12px;} .action-dock{justify-content:flex-start;overflow-x:auto;gap:4px;padding:0 8px;} .dock-item{flex:none;font-size:10.5px;padding:7px 6px;} .coach{left:12px;width:calc(100% - 24px);} .replay-btn{bottom:58px;}}
+	  @media(max-width:720px){
+	    html,body{width:100%;overflow:hidden;}
+	    .app{height:100vh;height:100dvh;min-height:0;}
+	    .workspace-main,.conversation,.content{min-height:0;}
+	    .chat{min-height:0;overflow:hidden;padding-top:14px;padding-bottom:12px;}
+	    .ai-card{padding:12px 14px;}
+	    .ai-head{font-size:10px;margin-bottom:7px;}
+	    .ai-body{font-size:14px;line-height:1.32;}
+	    .ai-body p{margin:5px 0;}
+	    .ai-body ul{margin:5px 0;padding-left:18px;}
+	    .ai-body li{margin:3px 0;}
+	    .composer{min-width:0;gap:7px;}
+	    .comp-btn:nth-child(2),.comp-btn:nth-child(3){display:none;}
+	    .comp-btn:first-child{width:36px;height:40px;}
+	    .comp-input{min-width:0;min-height:44px;gap:4px;padding-left:10px;}
+	    .comp-input textarea{min-width:0;font-size:14px;line-height:1.35;padding:9px 0;}
+	    .clearx{width:24px;}
+	    .send{width:40px;height:44px;flex:none;justify-content:center;padding:0;}
+	    .send span{display:none;}
+	    .assist-row{justify-content:space-between;gap:8px;}
+	    .assist-btn{font-size:11px;padding:7px 8px;white-space:nowrap;}
+	    .demo-action-group{position:static;left:auto;bottom:auto;transform:none;gap:4px;}
+	    .demo-action-group .replay-btn{padding:7px 6px;font-size:10px;gap:4px;}
+	    .action-dock,.hist{display:none;}
+	    .coach{max-height:min(320px,calc(100dvh - 380px));overflow:hidden;}
+	    .coach-head{padding:9px 12px;}
+	    .coach-sect{padding:8px 12px;}
+	    .coach-lbl{margin-bottom:6px;}
+	    .coach-box{padding:8px 10px;font-size:13px;line-height:1.35;}
+	    .coach-note{font-size:11.5px;line-height:1.35;margin-top:6px;}
+	    .coach-actions{gap:6px;padding:8px 10px;}
+	    .cbtn{font-size:12px;padding:7px 9px;}
+	    .replay-btn{position:static;left:auto;bottom:auto;transform:none;flex:none;box-shadow:none;padding:8px 10px;font-size:11px;}
+	  }
+	</style>
+	<link rel="stylesheet" href="/landing-b/demos/demo-captions.css">
 </head>
 <body>
 <div class="app">
   <header class="top">
     <button class="menu"><svg class="ic" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
-    <div class="brand"><span class="logo"><i></i></span>Terminal Sync</div>
+	    <div class="brand"><span class="logo"><img src="/landing-b/assets/logo.png" alt=""></span>TS</div>
     <div class="search">
       <svg class="ic sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
       <input data-i="search" placeholder="Buscar una sesión, archivo o computadora…" />
@@ -173,8 +238,12 @@
         <div class="tab"><svg class="ic sm" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg><span data-i="inicio">Inicio</span></div>
         <div class="tab on"><svg class="ic sm" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg>terminal-sync-reparaciones<svg class="ic x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></div>
         <span class="exit"><svg class="ic sm" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"/></svg><span data-i="exit">Pantalla completa</span></span>
+        <span class="demo-tag" data-i="demoTag">Demostración ilustrativa</span>
+        <div class="lang-pill"><button id="b-es" class="on">ES</button><button id="b-en">EN</button></div>
       </div>
 
+      <div class="workspace-main">
+      <section class="conversation">
       <div class="subhead">
         <button class="back"><svg class="ic" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
         <h2>terminal-sync-reparaciones</h2>
@@ -189,6 +258,7 @@
         </div>
       </div>
 
+      <div class="ts-demo-caption prompt-line" id="promptLine"><span class="ts-demo-caption__label" id="promptLabel">Tú escribes</span><span class="ts-demo-caption__text" id="promptText">quisiera que hicieras otras czas mas importantes</span></div>
       <div class="chat" id="chat"></div>
 
       <div class="composer-wrap">
@@ -221,23 +291,46 @@
           <div class="comp-input" id="compInput"><textarea id="input" rows="1" data-i="ph" placeholder="Escribe un mensaje… (Enter para enviar, Shift+Enter salto de línea)"></textarea><button class="clearx" id="clearx"><svg class="ic sm" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
           <button class="send"><svg class="ic sm" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg><span data-i="enviar">Enviar</span></button>
         </div>
-        <div class="assist-row" id="assistRow">
-          <button class="assist-btn" id="assistBtn">
-            <span class="ico"></span>
-            <span class="lbl" id="assistLbl">Responde por mí</span>
-          </button>
-        </div>
+	        <div class="assist-row" id="assistRow">
+	          <button class="assist-btn" id="assistBtn">
+	            <span class="ico"></span>
+	            <span class="lbl" id="assistLbl">Responde por mí</span>
+	          </button>
+	          <div class="demo-action-group">
+	            <button class="replay-btn" id="replayCurrent" type="button"><svg viewBox="0 0 24 24"><path d="M3 2v6h6"/><path d="M3 13a9 9 0 1 0 3-7.7L3 8"/></svg><span data-i="replayCurrent">Repetir</span></button>
+	            <button class="replay-btn" id="reset" type="button"><span data-i="replay">Otro ejemplo</span></button>
+	          </div>
+	        </div>
         <div class="hist" data-i="hist">Historial de cambios</div>
+        <nav class="action-dock" aria-label="Acciones del espacio">
+          <button class="dock-item active" type="button"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg><span data-i="dockIdeas">Asistente de ideas</span></button>
+          <button class="dock-item" type="button"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg><span data-i="dockAsk">Pregunta a otro espacio</span></button>
+          <button class="dock-item" type="button"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span data-i="dockUseCases">Casos de uso</span></button>
+          <button class="dock-item" type="button"><svg viewBox="0 0 24 24"><path d="M4 17.5 14.5 7a3.5 3.5 0 0 1 5 5L9 22H4z"/><path d="m12 9 5 5M4 22h16"/></svg><span data-i="dockDesign">Diseño</span></button>
+          <button class="dock-item" type="button"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"/><path d="M14 11a5 5 0 0 0-7.1 0l-2 2a5 5 0 0 0 7.1 7.1l1.1-1.1"/></svg><span data-i="dockConnect">Conectar</span></button>
+        </nav>
+      </div>
+      </section>
+      <aside class="context-panel" aria-label="Contexto">
+        <div class="context-head"><h3 data-i="contextTitle">Contexto</h3><span class="context-count">···</span></div>
+        <button class="context-cta" type="button"><svg class="ic sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span data-i="contextCta">Agregar información y herramientas</span></button>
+        <div class="context-list">
+          <div class="context-row"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg><span data-i="ctxRecipes">Recetas</span></div>
+          <div class="context-row"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3z"/></svg><span data-i="ctxFolders">Carpetas</span></div>
+          <div class="context-row"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h4M9 12h7M9 16h7"/></svg><span data-i="ctxDocuments">Documentos</span></div>
+          <div class="context-row"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg><span data-i="ctxConversation">Conversación</span></div>
+          <div class="context-row"><svg viewBox="0 0 24 24"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"/><path d="M5 18a2 2 0 0 1 2-2h12M9 8h6M9 11h6"/></svg><span data-i="ctxBooks">Libros</span></div>
+          <div class="context-row"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span data-i="ctxWeb">Webs y videos</span></div>
+          <div class="context-row"><svg viewBox="0 0 24 24"><path d="M12 3a7 7 0 0 0-4 12.7V19h8v-3.3A7 7 0 0 0 12 3zM9 22h6"/><path d="M9.5 10.5c.2-1.2 1.1-2 2.5-2"/></svg><span data-i="ctxMemory">Memoria</span></div>
+        </div>
+      </aside>
       </div>
     </div>
   </div>
 </div>
 
 <div class="fab"><span class="stat"></span><svg class="ic" viewBox="0 0 24 24"><path d="m12 3 1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/></svg></div>
-<div class="lang-pill"><button id="b-es" class="on">ES</button><button id="b-en">EN</button></div>
-<button class="replay-btn" id="reset"><svg viewBox="0 0 24 24"><path d="M3 2v6h6"/><path d="M3 13a9 9 0 1 0 3-7.7L3 8"/></svg><span data-i="replay">Otro ejemplo</span></button>
-
-<script>
+	<script>
 (function(){
   'use strict';
   const chat=document.getElementById('chat');
@@ -254,20 +347,24 @@
     es:{search:'Buscar una sesión, archivo o computadora…',sync:'Sincronizar',newws:'Nuevo espacio de trabajo',
       inicio:'Inicio',ws:'Espacios de Trabajo',acciones:'Acciones',secretos:'Secretos',integr:'Integraciones',
       ayuda:'Ayuda',ajustes:'Ajustes',exit:'Pantalla completa',modo:'Modo:',reducir:'Reducir',
-      ph:'Escribe un mensaje… (Enter para enviar, Shift+Enter salto de línea)',enviar:'Enviar',hist:'Historial de cambios',
-      replay:'Otro ejemplo',analizando:'Analizando…',
+	      ph:'Escribe un mensaje…',enviar:'Enviar',hist:'Historial de cambios',
+	      replay:'Otro ejemplo',replayCurrent:'Repetir',analizando:'Analizando…',demoTag:'Demostración ilustrativa',
       btnArregla:'Arregla mi respuesta',btnResponde:'Responde por mí',
-      coachTitle:'Sugerencia del coach',lblPrompt:'Prompt mejorado',lblSpell:'Ortografía y gramática',
-      useImproved:'Usar mejorado',onlySpell:'Solo ortografía',cerrar:'Cerrar'
+      coachTitle:'Sugerencia del coach',lblPrompt:'Prompt mejorado',lblReply:'Respuesta sugerida',lblSpell:'Ortografía y gramática',
+      useImproved:'Usar mejorado',useReply:'Usar respuesta',onlySpell:'Solo ortografía',cerrar:'Cerrar',
+      contextTitle:'Contexto',contextCta:'Agregar información y herramientas',ctxRecipes:'Recetas',ctxFolders:'Carpetas',ctxDocuments:'Documentos',ctxConversation:'Conversación',ctxBooks:'Libros',ctxWeb:'Webs y videos',ctxMemory:'Memoria',
+      dockIdeas:'Asistente de ideas',dockAsk:'Pregunta a otro espacio',dockUseCases:'Casos de uso',dockDesign:'Diseño',dockConnect:'Conectar'
     },
     en:{search:'Search a session, file or computer…',sync:'Sync',newws:'New workspace',
       inicio:'Home',ws:'Workspaces',acciones:'Actions',secretos:'Secrets',integr:'Integrations',
       ayuda:'Help',ajustes:'Settings',exit:'Full screen',modo:'Mode:',reducir:'Reduce',
-      ph:'Type a message… (Enter to send, Shift+Enter for a new line)',enviar:'Send',hist:'Change history',
-      replay:'Another example',analizando:'Analyzing…',
+	      ph:'Type a message…',enviar:'Send',hist:'Change history',
+	      replay:'Another example',replayCurrent:'Replay',analizando:'Analyzing…',demoTag:'Illustrative demo',
       btnArregla:'Fix my reply',btnResponde:'Reply for me',
-      coachTitle:'Coach suggestion',lblPrompt:'Improved prompt',lblSpell:'Spelling & grammar',
-      useImproved:'Use improved',onlySpell:'Spelling only',cerrar:'Close'
+      coachTitle:'Coach suggestion',lblPrompt:'Improved prompt',lblReply:'Suggested reply',lblSpell:'Spelling & grammar',
+      useImproved:'Use improved',useReply:'Use reply',onlySpell:'Spelling only',cerrar:'Close',
+      contextTitle:'Context',contextCta:'Add information and tools',ctxRecipes:'Recipes',ctxFolders:'Folders',ctxDocuments:'Documents',ctxConversation:'Conversation',ctxBooks:'Books',ctxWeb:'Web & videos',ctxMemory:'Memory',
+      dockIdeas:'Idea assistant',dockAsk:'Ask another workspace',dockUseCases:'Use cases',dockDesign:'Design',dockConnect:'Connect'
     }
   };
   let lang='es';
@@ -276,14 +373,14 @@
   // Two scenarios alternated by "Otro ejemplo"
   const SC=[
     { mode:'arregla',
-      ask:{es:'<p>Para la integración con <strong>Figma</strong> veo dos caminos:</p><ul><li><strong>A</strong> — extender <strong>FilePreview</strong> para abrir los formatos que exporta (HTML, PDF, ZIP).</li><li><strong>B</strong> — construir un preview propio para generación en vivo.</li></ul><p>Recomiendo A: es trabajo chico (~3 días) y sirve para todo el producto. ¿Lo trato como hito separado o atado al de Diseño?</p>',
-            en:'<p>For the <strong>Figma</strong> integration I see two paths:</p><ul><li><strong>A</strong> — extend <strong>FilePreview</strong> to open the formats it exports (HTML, PDF, ZIP).</li><li><strong>B</strong> — build a custom preview for live generation.</li></ul><p>I recommend A: it\u2019s small (~3 days) and benefits the whole product. Should I treat it as a separate milestone or tie it to Design?</p>'},
+	      ask:{es:'<p>Para la integración con <strong>Figma</strong> podemos extender <strong>FilePreview</strong> (unos 3 días) o crear una vista previa propia. Recomiendo extenderlo. ¿Lo trato como hito separado o ligado al de Diseño?</p>',
+	            en:'<p>For the <strong>Figma</strong> integration, we can extend <strong>FilePreview</strong> (about 3 days) or build a custom preview. I recommend extending it. Should I make it a separate milestone or tie it to Design?</p>'},
       raw:{es:'quisiera que hicieras otras czas mas importantes',en:'i\u2019d like u to do other more importat thigs'},
-      prompt:{es:'Considerando la discusión reciente sobre la integración de Figma y el preview de TerminalSync, ¿cuáles son los puntos más importantes o las próximas acciones clave que deberíamos abordar?',
-              en:'Considering the recent discussion about the Figma integration and the TerminalSync preview, what are the most important points or key next actions we should tackle?'},
+	      prompt:{es:'Sobre la integración de Figma y su vista previa en TS, ¿cuáles son los puntos más importantes y las próximas acciones clave?',
+	              en:'For the Figma integration and its TS preview, what are the most important points and key next actions?'},
       spell:{es:['czas','cosas'],en:['importat thigs','important things']},
-      note:{es:'El prompt mejorado es más específico y orienta la tarea del asistente hacia los puntos clave de la discusión previa, además de corregir un error ortográfico.',
-            en:'The improved prompt is more specific and steers the assistant toward the key points of the previous discussion, while also fixing a spelling error.'} },
+	      note:{es:'El prompt concreta la tarea y corrige «czas» por «cosas».',
+	            en:'The prompt focuses the task and fixes “importat thigs” to “important things.”'} },
     { mode:'responde',
       ask:{es:'<p>Listo el plan de campaña. Para los <strong>anuncios</strong>, ¿qué tono quieres: cercano y directo, o más corporativo? ¿Y a qué público apuntamos primero — agencias o emprendedores?</p>',
             en:'<p>Campaign plan ready. For the <strong>ads</strong>, what tone do you want: warm and direct, or more corporate? And which audience first — agencies or founders?</p>'},
@@ -294,7 +391,14 @@
       note:{es:'No sabías qué responder: el asistente redacta una respuesta completa a partir del contexto del chat, lista para enviar o editar.',
             en:'You weren\u2019t sure what to say: the assistant drafts a full reply from the chat context, ready to send or edit.'} }
   ];
-  let scIdx=1; // start on "Responde por mí" (empty composer), then auto-advances to "Arregla mi respuesta"
+	  let scIdx=0; // open on the visible draft-correction example; Replay switches to the suggested-reply scenario
+	  const promptLine=document.getElementById('promptLine');
+	  function updatePromptLine(){
+	    const sc=SC[scIdx];
+	    promptLine.hidden=sc.mode!=='arregla';
+	    document.getElementById('promptLabel').textContent=lang==='en'?'You write':'Tú escribes';
+	    document.getElementById('promptText').textContent=sc.raw[lang]||'';
+	  }
 
   function applyStatic(){
     document.documentElement.lang=lang;
@@ -305,7 +409,7 @@
     document.getElementById('b-es').classList.toggle('on',lang==='es');
     document.getElementById('b-en').classList.toggle('on',lang==='en');
   }
-  function aiCard(html){const r=document.createElement('div');r.className='row fadein';r.innerHTML='<div class="ai-card"><div class="ai-head"><span class="dot"></span>TERMINALSYNC</div><div class="ai-body">'+html+'</div></div>';chat.appendChild(r);chat.scrollTop=chat.scrollHeight;return r;}
+  function aiCard(html){const r=document.createElement('div');r.className='row fadein';r.innerHTML='<div class="ai-card"><div class="ai-head"><span class="dot"></span>TS</div><div class="ai-body">'+html+'</div></div>';chat.appendChild(r);chat.scrollTop=chat.scrollHeight;return r;}
 
   let timers=[],typing=null,coachOpen=false;
   function sleep(ms){return new Promise(res=>{timers.push(setTimeout(res,ms));});}
@@ -330,6 +434,8 @@
   }
   function buildCoach(sc){
     document.getElementById('coachPrompt').textContent=sc.prompt[lang];
+    document.querySelector('[data-i="lblPrompt"]').textContent=sc.mode==='responde'?t().lblReply:t().lblPrompt;
+    document.getElementById('useImproved').textContent=sc.mode==='responde'?t().useReply:t().useImproved;
     const spellSect=document.getElementById('coachSpellSect');
     const onlyBtn=document.getElementById('onlySpell');
     if(sc.spell){
@@ -349,6 +455,7 @@
   async function play(){
     clearAll(); hideCoach();
     const sc=SC[scIdx];
+    updatePromptLine();
     chat.innerHTML='';
     compInput.classList.remove('assist'); input.value=''; autoSize();
     setAssist(sc);
@@ -356,16 +463,14 @@
     await sleep(800);
 
     if(sc.mode==='responde'){
-      // empty composer → "Responde por mí" → drafts a full reply into the composer
+      // Show a suggested reply in the coach; only the user's explicit choice inserts it.
       assistBtn.classList.add('pulse');
       await sleep(900);
       assistBtn.classList.remove('pulse');
       assistBtn.classList.add('working'); assistIco.innerHTML='<span class="sp"></span>'; assistLbl.textContent=t().analizando;
       await sleep(1400);
-      assistBtn.classList.remove('working');
-      compInput.classList.add('assist');
-      await typeReply(sc.prompt[lang]);
-      updateAssistByInput();
+      assistBtn.classList.remove('working'); updateAssistByInput();
+      buildCoach(sc); showCoach();
     } else {
       // type a rough draft → button switches to "Arregla mi respuesta" → coach popover
       await typeInto(sc.raw[lang]);
@@ -377,27 +482,21 @@
       await sleep(1300);
       assistBtn.classList.remove('working'); updateAssistByInput();
       buildCoach(sc); showCoach();
-      await sleep(2800);
-      if(coachOpen) applyImproved();
     }
-    // auto-advance to the OTHER functionality so both are always shown
-    timers.push(setTimeout(()=>restart(true), 3400));
+    // Replay advances to the other scenario; leave the suggestion visible until the user chooses.
   }
-  function typeReply(text){return new Promise(res=>{ input.value=''; let i=0;
-    typing=setInterval(()=>{ input.value=text.slice(0,++i); autoSize(); if(i>=text.length){clearInterval(typing);typing=null;res();} },20);
-  });}
   function applyImproved(){
     const sc=SC[scIdx];
     hideCoach();
     compInput.classList.add('assist');
-    input.value=sc.prompt[lang]; autoSize(); input.focus();
+    input.value=sc.prompt[lang]; autoSize(); updateAssistByInput(); input.focus();
   }
   function applySpellOnly(){
     const sc=SC[scIdx]; if(!sc.spell) return;
     hideCoach();
     compInput.classList.add('assist');
     let v=sc.raw[lang]||''; v=v.replace(sc.spell[lang][0],sc.spell[lang][1]);
-    input.value=v; autoSize();
+    input.value=v; autoSize(); updateAssistByInput();
   }
 
   document.getElementById('useImproved').addEventListener('click',applyImproved);
@@ -405,15 +504,15 @@
   document.getElementById('onlySpell').addEventListener('click',applySpellOnly);
   document.getElementById('coachClose').addEventListener('click',hideCoach);
   document.getElementById('coachX').addEventListener('click',hideCoach);
-  document.getElementById('clearx').addEventListener('click',()=>{input.value='';autoSize();compInput.classList.remove('assist');});
+  document.getElementById('clearx').addEventListener('click',()=>{input.value='';autoSize();compInput.classList.remove('assist');updateAssistByInput();});
   assistBtn.addEventListener('click',()=>{
     if(assistBtn.classList.contains('working'))return;
     const sc=SC[scIdx];
-    if((assistBtn.dataset.mode||'responde')==='arregla'){ buildCoach(sc); showCoach(); }
-    else { compInput.classList.add('assist'); input.value=sc.prompt[lang]; autoSize(); updateAssistByInput(); input.focus(); }
+    buildCoach(sc); showCoach();
   });
   input.addEventListener('input',updateAssistByInput);
   function restart(advance){ clearAll(); if(advance) scIdx=(scIdx+1)%SC.length; compInput.classList.remove('assist'); input.value=''; autoSize(); play(); }
+  document.getElementById('replayCurrent').addEventListener('click',()=>restart(false));
   document.getElementById('reset').addEventListener('click',()=>restart(true));
   document.getElementById('b-es').addEventListener('click',()=>{lang='es';applyStatic();restart(false);});
   document.getElementById('b-en').addEventListener('click',()=>{lang='en';applyStatic();restart(false);});

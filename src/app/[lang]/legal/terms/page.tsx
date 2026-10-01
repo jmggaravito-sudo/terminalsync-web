@@ -66,7 +66,7 @@ export default async function TermsPage({ params }: Props) {
         <h2>4. Planes, prueba gratis, pagos y cancelación</h2>
         <ul>
           <li><strong>Free</strong>: gratis, con un límite de espacios y de computadoras, y con una IA de cortesía limitada (sección 6).</li>
-          <li><strong>Pro + IA</strong> y <strong>Max + IA</strong>: planes mensuales que incluyen la IA de TerminalSync. Los precios vigentes están en <a href="/es#pricing">terminalsync.ai/#pricing</a>. En Colombia el precio se muestra y se cobra en pesos a través de Mercado Pago; en el resto del mundo, en dólares a través de Stripe. Los impuestos aplicables se agregan según tu país.</li>
+          <li><strong>Pro</strong> y <strong>Max</strong>: planes mensuales que incluyen la IA de TerminalSync. Los precios vigentes están en <a href="/es#pricing">terminalsync.ai/#pricing</a>. En Colombia el precio se muestra y se cobra en pesos a través de Mercado Pago; en el resto del mundo, en dólares a través de Stripe. Los impuestos aplicables se agregan según tu país.</li>
           <li><strong>Prueba gratis</strong>: al contratar un plan pago desde el sitio por primera vez, los primeros 7 días no se cobran. Si cancelás antes del día 7, no pagás nada. La prueba es una sola por cuenta.</li>
           <li><strong>Renovación</strong>: el plan se renueva cada mes de forma automática hasta que lo cancelés.</li>
           <li><strong>Cancelación</strong>: cancelás cuando quieras desde Ajustes → Cuenta → Administrar suscripción o desde <a href="/es/billing">terminalsync.ai/billing</a>. El acceso al plan sigue hasta el fin del período ya pagado, y después la cuenta pasa a Free sin perder tus archivos.</li>
@@ -158,7 +158,7 @@ export default async function TermsPage({ params }: Props) {
       <h2>4. Plans, free trial, payments and cancellation</h2>
       <ul>
         <li><strong>Free</strong>: no charge, with a limit on workspaces and computers, and a limited courtesy AI (section 6).</li>
-        <li><strong>Pro + AI</strong> and <strong>Max + AI</strong>: monthly plans that include the TerminalSync AI. Current prices are at <a href="/en#pricing">terminalsync.ai/#pricing</a>. In Colombia the price is shown and charged in pesos through Mercado Pago; elsewhere, in US dollars through Stripe. Applicable taxes are added according to your country.</li>
+        <li><strong>Pro</strong> and <strong>Max</strong>: monthly plans that include the TerminalSync AI. Current prices are at <a href="/en#pricing">terminalsync.ai/#pricing</a>. In Colombia the price is shown and charged in pesos through Mercado Pago; elsewhere, in US dollars through Stripe. Applicable taxes are added according to your country.</li>
         <li><strong>Free trial</strong>: when you take a paid plan from the website for the first time, the first 7 days are not charged. If you cancel before day 7 you pay nothing. One trial per account.</li>
         <li><strong>Renewal</strong>: the plan renews automatically every month until you cancel.</li>
         <li><strong>Cancellation</strong>: cancel any time from Settings → Account → Manage subscription or at <a href="/en/billing">terminalsync.ai/billing</a>. Access to the plan continues until the end of the period already paid, then the account moves to Free without losing your files.</li>

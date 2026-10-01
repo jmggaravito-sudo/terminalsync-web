@@ -22,7 +22,7 @@ const COPY: Record<
     eyebrow: "Historias reales",
     title: "Equipos que dejaron de empezar de cero.",
     subtitle:
-      "Empresas de todos los tamaños ya trabajan con su equipo de IAs en TerminalSync.",
+      "Empresas de todos los tamaños ya trabajan con su equipo de IAs en TS.",
     soloPill: "Empresarios que trabajan solos",
     items: [
       {
@@ -44,7 +44,7 @@ const COPY: Record<
         author: "Markus Villig",
         initials: "MV",
         quote:
-          "Conectamos WhatsApp a TerminalSync y la IA ya conoce el historial completo de cada cliente. Las respuestas son mucho más rápidas y el equipo dejó de copiar y pegar información todo el día.",
+          "Conectamos WhatsApp a TS y la IA ya conoce el historial completo de cada cliente. Las respuestas son mucho más rápidas y el equipo dejó de copiar y pegar información todo el día.",
       },
       {
         company: "ShipBob",
@@ -65,7 +65,7 @@ const COPY: Record<
         author: "Christian Reber",
         initials: "CR",
         quote:
-          "Durante años fui yo haciendo ventas, propuestas, marketing y soporte. Con TerminalSync siento que por primera vez tengo un equipo digital que me ayuda a sacar trabajo adelante sin contratar más personas.",
+          "Durante años fui yo haciendo ventas, propuestas, marketing y soporte. Con TS siento que por primera vez tengo un equipo digital que me ayuda a sacar trabajo adelante sin contratar más personas.",
         highlighted: true,
       },
       {
@@ -88,7 +88,7 @@ const COPY: Record<
     eyebrow: "Real stories",
     title: "Teams that stopped starting from scratch.",
     subtitle:
-      "Companies of every size already work with their AI team on TerminalSync.",
+      "Companies of every size already work with their AI team on TS.",
     soloPill: "Solo entrepreneurs",
     items: [
       {
@@ -110,7 +110,7 @@ const COPY: Record<
         author: "Markus Villig",
         initials: "MV",
         quote:
-          "We connected WhatsApp to TerminalSync and the AI already knows the full history of every client. Replies are much faster and the team stopped copying and pasting information all day.",
+          "We connected WhatsApp to TS and the AI already knows the full history of every client. Replies are much faster and the team stopped copying and pasting information all day.",
       },
       {
         company: "ShipBob",
@@ -131,7 +131,7 @@ const COPY: Record<
         author: "Christian Reber",
         initials: "CR",
         quote:
-          "For years it was just me doing sales, proposals, marketing and support. With TerminalSync I feel that, for the first time, I have a digital team that helps me get work done without hiring more people.",
+          "For years it was just me doing sales, proposals, marketing and support. With TS I feel that, for the first time, I have a digital team that helps me get work done without hiring more people.",
         highlighted: true,
       },
       {

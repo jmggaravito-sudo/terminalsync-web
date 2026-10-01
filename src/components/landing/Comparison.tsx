@@ -5,7 +5,7 @@ import { HelpTip } from "@/components/ui/HelpTip";
 type Cell = "yes" | "no" | "partial" | "soon";
 
 // Column keys must match `dict.comparison.columns`. Order = visual order
-// of the rendered table (left to right). Terminal Sync first, then the
+// of the rendered table (left to right). TS first, then the
 // four tools the audience compares against: Vercel cloud workspace,
 // and the three raw AI agent CLIs (Claude Code, Codex, Gemini CLI).
 const COLUMN_KEYS = [

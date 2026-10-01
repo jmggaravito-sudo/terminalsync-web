@@ -20,7 +20,8 @@ export function StructuredData({ dict, lang }: Props) {
   const org = {
     "@type": "Organization",
     "@id": `${BASE}#organization`,
-    name: "TerminalSync",
+    name: "TS",
+    alternateName: "TerminalSync",
     url: BASE,
     logo: `${BASE}/brand/logo-square.svg`,
     sameAs: [
@@ -42,7 +43,8 @@ export function StructuredData({ dict, lang }: Props) {
     "@type": "WebSite",
     "@id": `${BASE}#website`,
     url: BASE,
-    name: "TerminalSync",
+    name: "TS",
+    alternateName: "TerminalSync",
     description: dict.meta.description,
     inLanguage: lang === "es" ? "es-ES" : "en-US",
     publisher: { "@id": `${BASE}#organization` },
@@ -58,9 +60,10 @@ export function StructuredData({ dict, lang }: Props) {
   const software = {
     "@type": "SoftwareApplication",
     "@id": `${BASE}#software`,
-    name: "TerminalSync",
-    applicationCategory: "DeveloperApplication",
-    operatingSystem: "macOS, Windows, Linux",
+    name: "TS",
+    alternateName: "TerminalSync",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "macOS",
     description: dict.meta.description,
     offers: plans.map((p) => {
       const plan = dict.pricing.plans[p.id];
