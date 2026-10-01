@@ -709,13 +709,19 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 })();
 if('scrollRestoration' in history)history.scrollRestoration='manual';
 const smooth=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+const stickyNav=document.querySelector('.nav'),stickySubnav=document.querySelector('.subnav');
 document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{
   const id=a.getAttribute('href').slice(1);
   if(!id)return;
   const t=document.getElementById(id);
   if(!t)return;
   e.preventDefault();
-  const top=t.getBoundingClientRect().top+scrollY-parseFloat(getComputedStyle(t).scrollMarginTop)||0;
+  /* Measure the two sticky bars instead of using a fixed offset.  A fixed
+     offset was a few pixels off at each breakpoint, which looked like a
+     small second jump after the smooth scroll settled. */
+  const bars=(stickyNav?.getBoundingClientRect().height||0)+(stickySubnav?.getBoundingClientRect().height||0);
+  const top=Math.max(0,t.getBoundingClientRect().top+scrollY-bars-1);
+  history.replaceState(null,'','#'+id);
   scrollTo({top,behavior:smooth?'smooth':'auto'});
 }));
 const lb=document.getElementById('lb'),lbFrame=document.getElementById('lbFrame'),lbCap=document.getElementById('lbCap');
