@@ -77,18 +77,17 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 /* ── hero ── */
 .hero{padding:clamp(48px,6vw,84px) 0 clamp(36px,4vw,56px)}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:clamp(32px,4vw,60px);align-items:center}
-.hero h1{font-size:clamp(34px,4.3vw,60px);line-height:1.08;font-weight:600;letter-spacing:-.03em;max-width:15ch}
+.hero-copy{min-width:0}
+.hero h1{font-size:clamp(34px,4vw,55px);line-height:1.08;font-weight:600;letter-spacing:-.03em}
 .hero h1 em{font-style:normal;color:var(--violet)}
 .hero .lede{margin-top:19px;font-size:clamp(16px,1.35vw,17.5px);line-height:1.58;color:var(--fg-2);max-width:40ch}
-.hero-benefit{margin-top:22px;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--violet);border-radius:var(--r);background:var(--surface-2);min-height:164px}
-.hero-benefit strong{display:block;font-size:15px;line-height:1.4;font-weight:600;color:var(--fg)}
-.hero-benefit p{margin-top:5px;font-size:13px;line-height:1.5;color:var(--fg-2)}
-.hero-benefit-controls{display:flex;align-items:center;gap:6px;margin-top:11px}
-.hero-benefit-controls button{height:28px;min-width:28px;padding:0 7px;border:1px solid var(--line-2);border-radius:7px;background:var(--surface);font-size:13px;line-height:1;color:var(--fg-2)}
-.hero-benefit-controls button:hover{border-color:var(--violet);color:var(--violet-ink)}
-.hero-benefit-controls button:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
-.hero-benefit-controls .toggle{margin-left:auto;padding:0 10px;font-size:12px}
-.hero-benefit-count{font-family:var(--mono);font-size:11px;color:var(--fg-3);min-width:32px;text-align:center}
+.hero-included{margin-top:14px;font-size:14px;line-height:1.55;font-weight:600;color:var(--violet-ink);max-width:48ch}
+.hero-rotation-controls{display:flex;align-items:center;gap:6px;margin-top:16px}
+.hero-rotation-controls button{height:28px;min-width:28px;padding:0 7px;border:1px solid var(--line-2);border-radius:7px;background:var(--surface);font-size:13px;line-height:1;color:var(--fg-2)}
+.hero-rotation-controls button:hover{border-color:var(--violet);color:var(--violet-ink)}
+.hero-rotation-controls button:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
+.hero-rotation-controls .toggle{padding:0 10px;font-size:12px}
+.hero-rotation-count{font-family:var(--mono);font-size:11px;color:var(--fg-3);min-width:32px;text-align:center}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .hero-cta{display:flex;gap:11px;margin-top:24px;flex-wrap:wrap}
 .hero-plat{margin-top:16px;font-size:13.5px;color:var(--fg-2)}
@@ -306,7 +305,6 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 }
 @media (max-width:600px){
   .nav-right>a.btn{display:none}
-  .hero-benefit{min-height:150px}
 }
 </style>
 </head>
@@ -338,20 +336,17 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 
 <section class="hero">
   <div class="wrap hero-grid">
-    <div>
-      <h1>Un espacio para cada trabajo. <em>La IA recuerda el contexto</em>.</h1>
-      <p class="lede">Cada cliente, proyecto o departamento tiene su propio espacio, con archivos, conversaciones y decisiones. TS recuerda lo importante para que no empieces de cero. La IA viene incluida: no pagas otra IA aparte.</p>
-      <div class="hero-benefit" id="heroBenefit" aria-label="Más formas de trabajar con TS">
-        <strong id="heroBenefitTitle">Cada espacio sabe de lo suyo.</strong>
-        <p id="heroBenefitText">Archivos, conversaciones y decisiones quedan juntos y separados de los demás.</p>
-        <div class="hero-benefit-controls">
-          <button type="button" id="heroBenefitPrev" aria-label="Mensaje anterior">←</button>
-          <span class="hero-benefit-count" id="heroBenefitCount" aria-hidden="true">1 / 3</span>
-          <button type="button" id="heroBenefitNext" aria-label="Mensaje siguiente">→</button>
-          <button type="button" class="toggle" id="heroBenefitToggle" aria-label="Pausar rotación">Pausar</button>
-        </div>
-        <span class="sr-only" id="heroBenefitAnnouncement" aria-live="polite"></span>
+    <div class="hero-copy" id="heroCopy">
+      <h1 id="heroHeadline"><span id="heroHeadlineLead">Cada cliente, proyecto o área</span> <em id="heroHeadlineAccent">conserva su propio contexto.</em></h1>
+      <p class="lede" id="heroSubtitle">La IA nunca pierde el contexto de ese trabajo.</p>
+      <p class="hero-included">En TS, la IA viene incluida: no necesitas pagar otra IA aparte para manejar tu empresa.</p>
+      <div class="hero-rotation-controls" id="heroRotationControls" role="group" aria-label="Cambiar mensaje principal">
+        <button type="button" id="heroRotationPrev" aria-label="Mensaje anterior">←</button>
+        <span class="hero-rotation-count" id="heroRotationCount" aria-hidden="true">1 / 5</span>
+        <button type="button" id="heroRotationNext" aria-label="Mensaje siguiente">→</button>
+        <button type="button" class="toggle" id="heroRotationToggle" aria-label="Pausar rotación">Pausar</button>
       </div>
+      <span class="sr-only" id="heroRotationAnnouncement" aria-live="polite"></span>
       <div class="hero-cta">
         <a class="btn btn-primary" href="/api/download" data-cta="hero-b-primary">⤓ Descargar para Mac</a>
         <a class="btn btn-ghost" href="#capacidades">Explora los demos</a>
@@ -737,50 +732,78 @@ html.var-dark .theme-toggle .ic-moon{display:block}
   });
 })();
 if('scrollRestoration' in history)history.scrollRestoration='manual';
-/* The primary promise stays fixed; short product benefits rotate below it. */
+/* Rotate the actual H1 and its companion sentence, not a separate card. */
 (function(){
-  const benefits={
+  const messages={
     es:[
-      ['Cada espacio sabe de lo suyo.','Archivos, conversaciones y decisiones quedan juntos y separados de los demás.'],
-      ['La IA trabaja donde ya están tus archivos.','No lleves tus archivos a la IA. Lleva la IA hasta ellos.'],
-      ['No es otro chat. Es tu oficina digital con IA.','Porque trabajar es mucho más que conversar.']
+      ['Cada cliente, proyecto o área','conserva su propio contexto.','La IA nunca pierde el contexto de ese trabajo.'],
+      ['Tu trabajo continúa,','aunque cierres el computador.','TS sigue trabajando mientras tú haces otras cosas.'],
+      ['No es otro chat.','Es tu oficina digital con IA.','Porque trabajar es mucho más que conversar.'],
+      ['La IA trabaja','donde ya están tus archivos.','No lleves tus archivos a la IA. Lleva la IA hasta ellos.'],
+      ['La IA cambia cada pocos meses.','El trabajo de tu empresa permanece.','Diseñado para que tu empresa evolucione con cualquier IA.']
     ],
     en:[
-      ['Each workspace keeps its own context.','Files, conversations, and decisions stay together, separate from other work.'],
-      ['AI works where your files already live.',"Don’t bring your files to the AI. Bring the AI to them."],
-      ["It’s not another chat. It’s your digital office with AI.",'Because work is much more than a conversation.']
+      ['Every client, project, or team','keeps its own context.','AI never loses the context of that work.'],
+      ['Your work keeps going,','even after you close your laptop.','TS keeps working while you do other things.'],
+      ["It's not another chat.","It's your digital office with AI.",'Because work is much more than a conversation.'],
+      ['AI works','where your files already live.',"Don't bring your files to the AI. Bring the AI to them."],
+      ['AI changes every few months.',"Your company's work stays.",'Built so your business evolves with any AI.']
     ]
   };
-  const box=document.getElementById('heroBenefit');
-  const title=document.getElementById('heroBenefitTitle'),text=document.getElementById('heroBenefitText');
-  const count=document.getElementById('heroBenefitCount'),announcement=document.getElementById('heroBenefitAnnouncement');
-  const prev=document.getElementById('heroBenefitPrev'),next=document.getElementById('heroBenefitNext'),toggle=document.getElementById('heroBenefitToggle');
+  const box=document.getElementById('heroCopy'),controls=document.getElementById('heroRotationControls');
+  const title=document.getElementById('heroHeadline'),lead=document.getElementById('heroHeadlineLead');
+  const accent=document.getElementById('heroHeadlineAccent'),text=document.getElementById('heroSubtitle');
+  const count=document.getElementById('heroRotationCount'),announcement=document.getElementById('heroRotationAnnouncement');
+  const prev=document.getElementById('heroRotationPrev'),next=document.getElementById('heroRotationNext'),toggle=document.getElementById('heroRotationToggle');
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   let index=0,paused=reduced,timer=null;
   const language=()=>window.TS_getLang?window.TS_getLang():'es';
+  function reserveHeight(){
+    const slides=messages[language()],headlineProbe=document.createElement('h1'),textProbe=document.createElement('p');
+    headlineProbe.innerHTML='<span></span> <em></em>';
+    textProbe.className='lede';
+    box.append(headlineProbe,textProbe);
+    for(const [probe,original] of [[headlineProbe,title],[textProbe,text]]){
+      probe.style.cssText='position:absolute;visibility:hidden;pointer-events:none;min-height:0;height:auto;width:'+original.getBoundingClientRect().width+'px';
+    }
+    let maxHeadline=0,maxText=0;
+    for(const [first,highlight,subtitle] of slides){
+      headlineProbe.firstElementChild.textContent=first;
+      headlineProbe.lastElementChild.textContent=highlight;
+      textProbe.textContent=subtitle;
+      maxHeadline=Math.max(maxHeadline,headlineProbe.getBoundingClientRect().height);
+      maxText=Math.max(maxText,textProbe.getBoundingClientRect().height);
+    }
+    headlineProbe.remove();textProbe.remove();
+    title.style.minHeight=Math.ceil(maxHeadline)+'px';
+    text.style.minHeight=Math.ceil(maxText)+'px';
+  }
   function render(manual){
-    const en=language()==='en',pair=benefits[en?'en':'es'][index];
-    title.textContent=pair[0];text.textContent=pair[1];count.textContent=(index+1)+' / '+benefits.es.length;
+    const en=language()==='en',[first,highlight,subtitle]=messages[en?'en':'es'][index];
+    lead.textContent=first;accent.textContent=highlight;text.textContent=subtitle;
+    count.textContent=(index+1)+' / '+messages.es.length;
     toggle.textContent=paused?(en?'Play':'Reanudar'):(en?'Pause':'Pausar');
     toggle.setAttribute('aria-label',paused?(en?'Resume rotation':'Reanudar rotación'):(en?'Pause rotation':'Pausar rotación'));
     prev.setAttribute('aria-label',en?'Previous message':'Mensaje anterior');
     next.setAttribute('aria-label',en?'Next message':'Mensaje siguiente');
-    box.setAttribute('aria-label',en?'More ways to work with TS':'Más formas de trabajar con TS');
-    announcement.textContent=manual?pair.join(' '):'';
+    controls.setAttribute('aria-label',en?'Change main headline':'Cambiar mensaje principal');
+    announcement.textContent=manual?[first,highlight,subtitle].join(' '):'';
   }
   function stop(){if(timer){clearInterval(timer);timer=null;}}
   function start(){
-    if(timer||paused||document.hidden||box.matches(':hover')||box.contains(document.activeElement))return;
-    timer=setInterval(()=>{index=(index+1)%benefits.es.length;render(false)},8000);
+    if(timer||paused||document.hidden||controls.matches(':hover')||box.contains(document.activeElement))return;
+    timer=setInterval(()=>{index=(index+1)%messages.es.length;render(false)},8000);
   }
-  function move(step){index=(index+step+benefits.es.length)%benefits.es.length;render(true);stop();start()}
+  function move(step){index=(index+step+messages.es.length)%messages.es.length;render(true);stop();start()}
   prev.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>move(1));
   toggle.addEventListener('click',()=>{paused=!paused;render(false);stop();if(!paused)start()});
-  box.addEventListener('mouseenter',stop);box.addEventListener('mouseleave',start);
+  controls.addEventListener('mouseenter',stop);controls.addEventListener('mouseleave',start);
   box.addEventListener('focusin',stop);box.addEventListener('focusout',()=>setTimeout(start,0));
   document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();else start()});
-  addEventListener('ts-lang',()=>render(false));
-  render(false);start();
+  addEventListener('ts-lang',()=>{render(false);reserveHeight()});
+  addEventListener('resize',()=>requestAnimationFrame(reserveHeight),{passive:true});
+  if(document.fonts)document.fonts.ready.then(reserveHeight);
+  render(false);reserveHeight();start();
 })();
 const stickyNav=document.querySelector('.nav'),stickySubnav=document.querySelector('.subnav');
 document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{
