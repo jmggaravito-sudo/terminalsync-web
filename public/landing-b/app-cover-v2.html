@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>App Cover v2 — Terminal Sync</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --panel:#ffffff; --ink:#16181d; --muted:#565b64; --faint:#9aa0aa;
+    --line:#ecedef; --line2:#e3e4e7;
+    --work:#7c3aed; --work-bg:#f4f0ff; --work-bd:#e6dcff; --work-tog:#8b5cf6;
+    --ok:#d97706;   --ok-bg:#fdf6e9;   --ok-bd:#f7e6c8;   --ok-tog:#f59e0b;
+    --done:#10b981; --done-bg:#e9f7f1; --done-bd:#cdeee0; --done-tog:#34d399;
+    --idle:#9aa0aa; --idle-bg:#f8f9fa; --idle-bd:#eaebee; --idle-tog:#c3c7ce;
+    --indigo:#2e2b6e; --violet:#7c3aed;
+    --sans:'Geist',system-ui,-apple-system,sans-serif;
+    --mono:'Geist Mono',ui-monospace,SFMono-Regular,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--sans);background:#c9ccd2;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+  .win{width:1525px;height:909px;background:var(--panel);overflow:hidden;position:relative;}
+
+  /* titlebar */
+  .tbar{height:30px;background:#ececee;border-bottom:1px solid #dcdde0;display:flex;align-items:center;gap:8px;padding:0 13px;}
+  .tbar .dot{width:12px;height:12px;border-radius:50%;}
+  .tbar .r{background:#ff5f57;} .tbar .y{background:#febc2e;} .tbar .g{background:#28c840;}
+  .tbar .brand{display:flex;align-items:center;gap:7px;margin-left:8px;}
+  .tbar .brand b{font-size:13px;color:#3b3f45;font-weight:600;}
+
+  .app{display:flex;height:calc(909px - 30px);}
+
+  /* sidebar */
+  .side{width:220px;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 14px;}
+  .brandrow{display:flex;align-items:center;gap:10px;padding:2px 6px 20px;}
+  .burger{display:flex;flex-direction:column;gap:3px;}
+  .burger i{width:16px;height:2px;background:#8b929c;border-radius:2px;}
+  .brandrow .lg2{width:22px;height:22px;border-radius:6px;display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:3px;}
+  .lg2 i{border-radius:2px;}
+  .lg2 i:nth-child(1){background:#d97757;} .lg2 i:nth-child(2){background:#12a074;}
+  .lg2 i:nth-child(3){background:#5b8def;} .lg2 i:nth-child(4){background:#e0b23c;}
+  .brandrow b{font-size:16px;font-weight:650;letter-spacing:-.02em;color:#1c1e23;}
+
+  .nav{display:flex;flex-direction:column;gap:4px;}
+  .nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:#2f343b;text-decoration:none;font-size:14px;font-weight:550;}
+  .nav a.on{background:#fff;border:1px solid #e6e7ea;box-shadow:0 1px 2px rgba(20,22,28,.05);font-weight:600;}
+  .nav a svg{width:18px;height:18px;color:#8b929c;flex:none;stroke-width:1.9;}
+  .nav a.on svg{color:#16181d;}
+  .nav a .cnt{margin-left:auto;font-size:12px;color:var(--faint);font-weight:600;}
+  .nav a .chev{margin-left:auto;width:16px;height:16px;color:#c3c7cd;}
+  .side .sp{flex:1;}
+  .side .foot{display:flex;flex-direction:column;gap:2px;}
+  .foot a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:#3f454d;text-decoration:none;font-size:14px;font-weight:500;}
+  .foot a svg{width:17px;height:17px;color:#9aa0aa;stroke-width:1.9;}
+
+  /* main */
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;background:#fff;}
+  .top{height:60px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 20px;}
+  .search{flex:1;max-width:660px;display:flex;align-items:center;gap:10px;background:#f3f4f6;border-radius:11px;padding:10px 14px;color:#9aa0aa;font-size:13.5px;}
+  .search svg{width:16px;height:16px;color:#a7adb6;stroke-width:2;}
+  .top .sp{flex:1;}
+  .top .act{display:flex;align-items:center;gap:7px;color:#4b515a;font-size:13.5px;font-weight:500;}
+  .top .act svg{width:16px;height:16px;color:#7b828c;stroke-width:2;}
+  .top .icobtn{color:#8b929c;}
+  .top .icobtn svg{width:18px;height:18px;stroke-width:2;}
+  .newbtn{background:var(--indigo);color:#fff;border-radius:10px;padding:10px 16px;font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .newbtn svg{width:15px;height:15px;color:#fff;stroke-width:2.4;}
+  .avatar{width:32px;height:32px;border-radius:50%;background:#e3e6ea;border:1px solid #d5d9de;display:grid;place-items:center;color:#8b929c;}
+  .avatar svg{width:17px;height:17px;stroke-width:2;}
+
+  .content{flex:1;overflow:hidden;padding:20px 24px;}
+
+  /* breadcrumb */
+  .crumb{display:flex;align-items:center;gap:10px;font-size:13px;color:#6b7079;margin-bottom:20px;}
+  .crumb .c1{display:flex;align-items:center;gap:6px;color:#3f454d;font-weight:500;}
+  .crumb svg{width:14px;height:14px;stroke-width:2;}
+  .crumb .tab{display:flex;align-items:center;gap:6px;background:#f3f4f6;border:1px solid #e8e9ec;border-radius:8px;padding:5px 11px;color:#3f454d;font-size:12.5px;}
+  .crumb .full{margin-left:auto;display:flex;align-items:center;gap:6px;color:#8b929c;font-size:12.5px;}
+
+  /* cards grid */
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .card{border-radius:15px;padding:18px 18px 16px;min-height:150px;display:flex;flex-direction:column;}
+  .card.work{background:var(--work-bg);border:1px solid var(--work-bd);}
+  .card.ok{background:var(--ok-bg);border:1px solid var(--ok-bd);}
+  .card.done{background:var(--done-bg);border:1px solid var(--done-bd);}
+  .card.idle{background:var(--idle-bg);border:1px solid var(--idle-bd);}
+  .card .ch{display:flex;align-items:center;gap:7px;margin-bottom:18px;}
+  .card .who{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;}
+  .card .who .d{width:8px;height:8px;border-radius:50%;}
+  .card.work .who{color:#5b21b6;} .card.work .d{background:var(--work);}
+  .card.ok .who{color:#92400e;} .card.ok .d{background:var(--ok);}
+  .card.done .who{color:#047857;} .card.done .d{background:var(--done);}
+  .card.idle .who{color:#6b7280;} .card.idle .d{background:var(--idle);}
+  .card .ch .sp{flex:1;}
+  .card .ch .ico{color:#a8adb5;opacity:.75;}
+  .card .ch .ico svg{width:15px;height:15px;stroke-width:2;fill:none;}
+  .card .name{font-size:16.5px;font-weight:600;color:#1e2126;letter-spacing:-.01em;margin-bottom:6px;}
+  .card .time{font-size:13px;color:#989ea7;}
+  .card .cf{display:flex;align-items:center;gap:9px;margin-top:auto;padding-top:14px;}
+  .card .cf .mi{display:flex;align-items:center;gap:7px;color:#b5bac2;}
+  .card .cf .mi svg{width:14px;height:14px;stroke-width:2;fill:none;}
+  .card .cf .sp{flex:1;}
+  .card .cf .mc{font-size:12px;color:#7d838c;font-weight:500;}
+  .tog{width:34px;height:20px;border-radius:11px;position:relative;}
+  .tog i{position:absolute;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);}
+  .tog.on i{right:2px;} .tog.off i{left:2px;}
+  .card.work .tog.on{background:var(--work-tog);} .card.ok .tog.on{background:var(--ok-tog);}
+  .card.done .tog.on{background:var(--done-tog);} .card.idle .tog.on{background:var(--idle-tog);}
+  .tog.off{background:#d9d6d1;}
+  .star{color:#bfc4cb;}
+  .star svg{width:16px;height:16px;stroke-width:1.9;fill:none;}
+  .dots{color:#bfc4cb;display:flex;flex-direction:column;gap:2px;}
+  .dots i{width:3px;height:3px;border-radius:50%;background:currentColor;}
+  .mini-bars{display:flex;align-items:flex-end;gap:1.5px;height:12px;}
+  .mini-bars i{width:2.5px;background:var(--work);border-radius:1px;}
+</style>
+</head>
+<body>
+<div class="win" id="win">
+  <div class="tbar">
+    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <span class="brand"><b>Terminal Sync Lab</b></span>
+  </div>
+
+  <div class="app">
+    <!-- sidebar -->
+    <aside class="side">
+      <div class="brandrow">
+        <div class="burger"><i></i><i></i><i></i></div>
+        <div class="lg2"><i></i><i></i><i></i><i></i></div>
+        <b>Terminal Sync</b>
+      </div>
+      <nav class="nav">
+        <a class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11h14V9"/></svg>Inicio</a>
+        <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 7h6l2 2h10v10H3z"/></svg>Espacios de Trabajo<span class="cnt">19</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 6 6 6-6 6"/></svg></a>
+        <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>Acciones<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 6 6 6-6 6"/></svg></a>
+        <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="5" y="11" width="14" height="10" rx="2"/></svg>Secretos</a>
+        <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>Integraciones</a>
+      </nav>
+      <div class="sp"></div>
+      <div class="foot">
+        <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .8-1 1.7"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>Ayuda</a>
+        <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 1 4 10.5c-.6.6-1 1.2-1 2H9c0-.8-.4-1.4-1-2A6 6 0 0 1 12 3Z"/></svg>Sugerencias</a>
+        <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.5-2.3 1a7 7 0 0 0-1.7-1l-.4-2.5h-4l-.4 2.5a7 7 0 0 0-1.7 1l-2.3-1-2 3.5 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.5 2.3-1a7 7 0 0 0 1.7 1l.4 2.5h4l.4-2.5a7 7 0 0 0 1.7-1l2.3 1 2-3.5-2-1.5c.1-.3.1-.7.1-1Z"/></svg>Ajustes</a>
+      </div>
+    </aside>
+
+    <!-- main -->
+    <div class="main">
+      <div class="top">
+        <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Buscar una sesión, archivo o computadora...</div>
+        <div class="sp"></div>
+        <div class="act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>Sincronizar</div>
+        <div class="icobtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></svg></div>
+        <div class="newbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Nuevo espacio de trabajo</div>
+        <div class="avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+      </div>
+
+      <div class="content">
+        <div class="crumb">
+          <span class="c1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11h14V9"/></svg>Inicio</span>
+          <span class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 5h16v14H4z"/><path d="M4 9h16"/></svg>marketing-campaña-q3</span>
+          <span class="full"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></svg>Pantalla completa</span>
+        </div>
+
+        <div class="grid" id="grid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // estado del espacio, nombre, última actividad, trust(on/off), extra(drive/bars/'')
+  const cards = [
+    ['work','Marketing y Publicidad','hace 1 min','on','bars'],
+    ['ok','Cliente · Acme Corp','hace 37 min','on',''],
+    ['done','Ventas y CRM','hace 1 h','on',''],
+    ['work','Proyecto · App Móvil','hace 3 h','on',''],
+
+    ['done','Finanzas y Contabilidad','ayer','on','drive'],
+    ['ok','Servicio al Cliente','ayer','on','drive'],
+    ['done','Recursos Humanos','ayer','on','drive'],
+    ['done','Cliente · Grupo Andes','ayer','on',''],
+
+    ['idle','Operaciones y Logística','nunca','on',''],
+    ['idle','Proyecto · Campaña Navidad','nunca','on',''],
+    ['idle','Cliente · Clínica Vida','nunca','on',''],
+    ['idle','Legal y Contratos','nunca','on',''],
+
+    ['idle','Proyecto · Rediseño Web','nunca','on','drive'],
+    ['idle','Cliente · Retail Norte','nunca','on',''],
+    ['idle','Analítica y Reportes','nunca','on',''],
+    ['idle','Soporte Técnico','nunca','on',''],
+  ];
+  const label = {work:'Trabajando',ok:'Espera tu OK',done:'Listo',idle:'Sin abrir'};
+  const dots = '<span class="dots"><i></i><i></i><i></i></span>';
+  const starSvg = '<span class="star"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m12 3 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 18.3 6.1 21.4l1.1-6.5L2.5 9.8l6.5-.9z"/></svg></span>';
+  const clock = '<span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>';
+  const bolt = '<span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg></span>';
+  const key = '<span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="8" cy="8" r="4"/><path d="m11 11 8 8M16 16l2-2M19 19l1.5-1.5"/></svg></span>';
+  const drive = '<span class="mi"><img src="https://cdn.simpleicons.org/googledrive/1FA463" style="width:13px;height:13px"></span>';
+  const grid = document.getElementById('grid');
+  grid.innerHTML = cards.map(([ai,name,time,tr,extra])=>{
+    const barsHtml = extra==='bars' ? '<span class="mini-bars"><i style="height:5px"></i><i style="height:9px"></i><i style="height:6px"></i><i style="height:12px"></i></span>' : '';
+    const third = extra==='drive' ? drive : key;
+    return `<div class="card ${ai}">
+      <div class="ch"><span class="who"><span class="d"></span>${label[ai]}</span><span class="sp"></span>${barsHtml}${starSvg}${dots}</div>
+      <div class="name">${name}</div>
+      <div class="time">${time}</div>
+      <div class="cf">${clock}${bolt}${third}<span class="sp"></span><span class="mc">Modo confianza</span><span class="tog ${tr}"><i></i></span></div>
+    </div>`;
+  }).join('');
+</script>
+</body>
+</html>

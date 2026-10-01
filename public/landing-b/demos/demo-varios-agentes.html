@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Brand" name="Demo · Varios agentes al mismo tiempo" subtitle="Card → chat completo → extraer fuera del monitor → vuelve → otro agente · ES/EN" viewport="1280x780" -->
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Terminal Sync · Varios agentes al mismo tiempo</title>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#10b981"/><rect x="30" y="34" width="40" height="26" rx="3" fill="#fff"/><rect x="44" y="60" width="12" height="4" fill="#fff"/><rect x="36" y="64" width="28" height="3" rx="1.5" fill="#fff"/></svg></template>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ag1:#6d3bf5; --ag1-bg:#f3f0ff;
+    --ag2:#4a1fd0; --ag2-bg:#ece6ff;
+    --accent:#10b981; --violet:#6d3bf5;
+    --line:#ecedef; --line2:#e3e4e7; --fg:#1a1d21; --fg2:#6b7280; --fg3:#9aa2ad;
+    --sans:'Geist',system-ui,sans-serif; --mono:'Geist Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{font-family:var(--sans);overflow:hidden;background:#05070c;}
+
+  /* ---------- room / monitor rig ---------- */
+  .room{position:relative;width:100%;height:100vh;min-height:460px;
+    background:linear-gradient(180deg,#0a0d14,#05070c 60%);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;padding-bottom:26px;}
+  .taskbar{position:absolute;left:0;right:0;bottom:0;height:38px;background:rgba(20,22,30,.35);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;gap:14px;z-index:1;}
+  .taskbar i{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.85);opacity:.8;}
+  .taskbar i:nth-child(1){background:#10b981;} .taskbar i:nth-child(2){background:#8b6cf0;} .taskbar i:nth-child(3){background:#4a1fd0;} .taskbar i:nth-child(4){background:#fff;opacity:.5;}
+
+  .rig{position:relative;width:min(97vw,calc((100vh - 100px) * 2.1));aspect-ratio:21/10;}
+  .bezel{position:absolute;inset:0;background:#0e0f12;border-radius:12px;padding:8px 8px 22px;box-shadow:0 60px 120px -40px rgba(0,0,0,.75),0 0 0 1px #23262c;}
+  .screendesk{position:relative;width:100%;height:100%;border-radius:5px;overflow:hidden;
+    background:
+      radial-gradient(1400px 900px at 20% -10%, #6da8e8 0%, transparent 55%),
+      radial-gradient(1200px 800px at 85% 100%, #9c7fe0 0%, transparent 55%),
+      linear-gradient(160deg,#4a7fd1,#7a5fc4 55%,#54339e);
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.4);}
+  .screendesk .taskbar{position:absolute;left:0;right:0;bottom:0;height:30px;background:rgba(20,22,30,.35);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;gap:12px;z-index:1;}
+  .screendesk .taskbar i{width:17px;height:17px;border-radius:5px;background:rgba(255,255,255,.85);opacity:.8;}
+  .screendesk .taskbar i:nth-child(1){background:#10b981;} .screendesk .taskbar i:nth-child(2){background:#8b6cf0;} .screendesk .taskbar i:nth-child(3){background:#4a1fd0;} .screendesk .taskbar i:nth-child(4){background:#fff;opacity:.5;}
+  .screen{position:absolute;left:26%;right:26%;top:5%;bottom:12%;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 30px 70px -20px rgba(0,0,0,.5);z-index:2;}
+  .stand{position:absolute;left:50%;bottom:-30px;transform:translateX(-50%);width:220px;height:20px;background:linear-gradient(180deg,#1b1d21,#101114);border-radius:0 0 9px 9px;z-index:2;}
+  .stand::after{content:"";position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);width:380px;height:9px;background:#101114;border-radius:7px;}
+  .cam{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:#000;box-shadow:0 0 0 2px #24262b;z-index:2;}
+
+  .dash{position:absolute;inset:0;background:#fff;transition:opacity .3s ease;overflow:hidden;font-size:12px;}
+  .dash.hidden{opacity:0;pointer-events:none;}
+  .dash .dabar{height:15%;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 3%;}
+  .dash .dabar .logo2{display:flex;align-items:center;gap:6px;font-size:1.1em;font-weight:700;color:#1a1d21;flex:none;}
+  .dash .dabar .logo2 i{width:1.5em;height:1.5em;border-radius:6px;background:linear-gradient(135deg,var(--accent),#0a8f66);display:inline-block;}
+  .dash .dabar .srch{flex:1;max-width:36%;display:flex;align-items:center;gap:6px;background:#f3f4f6;border-radius:8px;padding:0.5em 0.8em;color:#9aa0aa;font-size:0.85em;margin-left:3%;}
+  .dash .dabar .sp{flex:1;}
+  .dash .dabar .new{background:var(--accent);color:#fff;font-size:0.85em;font-weight:650;border-radius:7px;padding:0.5em 1em;white-space:nowrap;}
+  .dash .dbody{display:flex;height:85%;}
+  .dash .dside{width:16%;background:#fbfbfc;border-right:1px solid var(--line);padding:5% 4%;display:flex;flex-direction:column;gap:2%;}
+  .dash .dside .nv{display:flex;align-items:center;gap:6px;padding:0.5em 0.6em;border-radius:7px;font-size:0.85em;color:#2f343b;font-weight:550;}
+  .dash .dside .nv.on{background:#e7f7f0;color:#0b7a55;font-weight:680;}
+  .dash .dmain{flex:1;padding:3% 3%;display:flex;flex-direction:column;gap:3%;}
+  .dash .dcomp{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:2% 3%;background:#fafbfc;}
+  .dash .dcomp .avs{display:flex;}
+  .dash .dcomp .avs i{width:1.8em;height:1.8em;border-radius:50%;border:2px solid #fff;margin-left:-0.5em;display:inline-block;}
+  .dash .dcomp .cta{margin-left:auto;background:var(--violet);color:#fff;font-size:0.8em;font-weight:650;border-radius:8px;padding:0.5em 1em;white-space:nowrap;}
+  .dash .dgrid{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:3%;}
+  .dash .dcard{border:1px solid var(--line);border-radius:11px;padding:8% 9%;display:flex;flex-direction:column;gap:6%;cursor:pointer;position:relative;background:#fff;}
+  .dash .dcard.pick{outline:2px solid var(--violet);}
+  .dash .dcard .tag{font-size:0.72em;font-weight:700;letter-spacing:.04em;padding:0.25em 0.6em;border-radius:5px;width:fit-content;}
+  .dash .dcard .tag.ag1{background:var(--ag1-bg);color:#4a1fd0;}
+  .dash .dcard .tag.ag2{background:var(--ag2-bg);color:#3d17b8;}
+  .dash .dcard .nm2{font-size:0.95em;font-weight:650;color:#1a1d21;}
+  .dash .dcard .ago{font-size:0.78em;color:var(--fg3);}
+
+  /* chat that fills the whole screen (docked, pre-extract) */
+  .docked{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:3;}
+  .docked.show{opacity:1;}
+  .docked .body2{height:100%;}
+
+  /* extracted floating window (outside the monitor, on the "desk") */
+  .float{position:fixed;background:#fff;border-radius:11px;overflow:hidden;box-shadow:0 40px 90px -30px rgba(0,0,0,.6);z-index:50;
+    opacity:0;transform:scale(.94);pointer-events:none;
+    transition:left .55s cubic-bezier(.22,.9,.3,1),top .55s cubic-bezier(.22,.9,.3,1),width .55s cubic-bezier(.22,.9,.3,1),height .55s cubic-bezier(.22,.9,.3,1),opacity .32s ease,transform .32s ease;
+    display:flex;flex-direction:column;}
+  .float.show{opacity:1;transform:scale(1);}
+
+  /* shared chat chrome */
+  .chatbar{display:flex;align-items:center;gap:8px;padding:9px 13px;border-bottom:1px solid var(--line);flex:none;background:#fbfbfc;}
+  .chatbar .dots i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;}
+  .chatbar .dots i:nth-child(1){background:#ff5f57;}.chatbar .dots i:nth-child(2){background:#febc2e;}.chatbar .dots i:nth-child(3){background:#28c840;}
+  .chatbar .t{font-family:var(--mono);font-size:11px;color:#5b616b;margin-left:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .chatbar .ex{margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:600;color:var(--fg2);border:1px solid var(--line2);background:#fff;border-radius:7px;padding:4px 9px;white-space:nowrap;flex:none;transition:color .15s,border-color .15s,background .15s;}
+  .chatbar .ex.hot{color:var(--violet);border-color:#c9b8fb;background:#f7f3ff;}
+
+  .abar{height:52px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 14px;flex:none;background:#fff;}
+  .abar .logo2{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:#1a1d21;flex:none;}
+  .abar .logo2 i{width:20px;height:20px;border-radius:6px;background:linear-gradient(135deg,var(--accent),#0a8f66);display:inline-block;}
+  .abar .srch{flex:1;max-width:340px;display:flex;align-items:center;gap:6px;background:#f3f4f6;border-radius:8px;padding:6px 9px;color:#9aa0aa;font-size:9.5px;margin-left:14px;}
+  .abar .sp{flex:1;}
+  .abar .act{display:flex;align-items:center;gap:5px;color:#4b515a;font-size:9.5px;font-weight:500;margin-right:10px;white-space:nowrap;}
+  .abar .new{background:var(--accent);color:#fff;font-size:9.5px;font-weight:650;border-radius:7px;padding:5px 10px;white-space:nowrap;}
+  .side{width:150px;background:#fbfbfc;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:10px 8px;flex:none;gap:2px;}
+  .side .nv{display:flex;align-items:center;gap:7px;padding:6px 7px;border-radius:7px;font-size:9.5px;color:#2f343b;font-weight:550;}
+  .side .nv.on{background:#e7f7f0;color:#0b7a55;font-weight:680;}
+  .body2{flex:1;display:flex;min-height:0;height:100%;}
+  .main2{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .tabsrow{display:flex;align-items:center;border-bottom:1px solid var(--line);flex:none;overflow:hidden;background:#fbfbfc;}
+  .tabsrow .tb{padding:8px 12px;font-size:9px;color:#9aa0aa;white-space:nowrap;border-right:1px solid var(--line);}
+  .tabsrow .tb.on{color:var(--fg);font-weight:650;background:#fff;}
+  .crumb2{display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid var(--line);flex:none;background:#fff;min-width:0;}
+  .crumb2 .nm{font-size:10.5px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:0 1 auto;}
+  .crumb2 .tools{display:flex;gap:5px;margin-left:8px;flex:none;}
+  @media (max-width:1100px){.crumb2 .tools,.crumb2 .flag{display:none;}}
+  .crumb2 .tools i{width:20px;height:20px;border-radius:6px;background:#f3f4f6;display:inline-block;}
+  .crumb2 .tools i.on{background:#ffe2c9;}
+  .crumb2 .sp{flex:1;}
+  .crumb2 .ex{font-family:var(--mono);font-size:clamp(10px,1.3vw,13px);font-weight:750;color:#fff;border:1px solid var(--accent);background:var(--accent);border-radius:7px;padding:5px clamp(8px,1.4vw,14px);white-space:nowrap;flex:none;transition:transform .15s,box-shadow .15s;}
+  .crumb2 .ex.hot{transform:scale(1.08);box-shadow:0 4px 14px rgba(16,185,129,.5);}
+  .crumb2 .x{color:#9aa0aa;font-size:12px;margin-left:4px;}
+
+  .thread{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px;}
+  .badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;letter-spacing:.05em;font-weight:700;padding:3px 8px;border-radius:5px;width:fit-content;}
+  .badge.ag1{background:var(--ag1-bg);color:#4a1fd0;}
+  .badge.ag2{background:var(--ag2-bg);color:#3d17b8;}
+  .badge .dot{width:5px;height:5px;border-radius:50%;background:currentColor;margin-right:2px;}
+  .bubble{font-size:12px;line-height:1.5;color:var(--fg);}
+  .bubble.me{align-self:flex-end;background:var(--violet);color:#fff;border-radius:12px;padding:8px 12px;max-width:78%;}
+  .bubble.ai{max-width:88%;border-radius:12px;padding:9px 12px;border:1px solid;}
+  .thread.th-ag1 .bubble.ai{background:#f7f4ff;border-color:#e0d6ff;}
+  .thread.th-ag2 .bubble.ai{background:#f4efff;border-color:#d8c9ff;}
+  .thread.th-ag3 .bubble.ai{background:#faf8ff;border-color:#e8e0ff;}
+  .bubble b{font-weight:650;}
+  .cursor{display:inline-block;width:1.5px;height:1em;background:var(--fg);vertical-align:-2px;animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  /* composer (realistic, matches app design) */
+  .composer{flex:none;border-top:1px solid var(--line);padding:10px 14px 12px;}
+  .comp-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .aiSel{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fafafa;border-radius:8px;padding:4px 9px;font-size:10.5px;font-weight:500;color:var(--fg2);white-space:nowrap;flex-wrap:nowrap;flex:none;}
+  .aiSel .d{width:7px;height:7px;border-radius:2px;}
+  .aiSel b{color:var(--fg);font-weight:680;}
+  .aiSel .dn{color:var(--fg3);font-size:8px;}
+  .comp-mid{display:flex;align-items:center;gap:7px;}
+  .ib{display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:#fff;border-radius:8px;width:26px;height:26px;color:var(--fg3);flex:none;font-size:12px;}
+  .in-box{flex:1;font-size:11px;color:var(--fg3);border:1px solid var(--line2);border-radius:8px;padding:7px 10px;min-height:1.2em;}
+  .in-box span{color:var(--fg);}
+  .send{width:26px;height:26px;border-radius:8px;background:var(--accent);display:grid;place-items:center;flex:none;}
+  .send svg{width:11px;height:11px;stroke:#fff;stroke-width:2.6;fill:none;}
+  .quick{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
+  .q{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:3px 8px;font-size:9.5px;font-weight:560;color:var(--fg2);white-space:nowrap;}
+  .q.hl{border-color:#c9b8fb;background:#f7f3ff;color:var(--violet);}
+
+  .float .composer{padding:6px 10px 8px;}
+  .float .composer .quick{display:none;}
+  .float .titlerow{padding-top:2px;}
+
+  .ghost{position:fixed;z-index:80;opacity:0;transition:left .5s cubic-bezier(.3,.9,.4,1),top .5s cubic-bezier(.3,.9,.4,1),opacity .2s;pointer-events:none;}
+  .ghost svg{width:20px;height:20px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.4));}
+  .click-ring{position:fixed;z-index:79;width:28px;height:28px;border-radius:50%;border:2px solid var(--violet);opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(.4);}
+  .click-ring.go{animation:ring .5s ease-out;}
+  @keyframes ring{0%{opacity:.9;transform:translate(-50%,-50%) scale(.4);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.5);}}
+
+  .cap-wrap{position:absolute;left:50%;top:16px;transform:translateX(-50%);z-index:40;text-align:center;width:min(600px,88vw);}
+  .cap{font-size:clamp(13px,1.6vw,15.5px);font-weight:500;color:#e7e9ee;min-height:2.3em;display:flex;align-items:center;justify-content:center;transition:opacity .3s;}
+  .cap b{color:#5eead4;}
+
+  .lang-pill{position:fixed;right:18px;top:14px;z-index:90;display:inline-flex;gap:3px;padding:4px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:999px;backdrop-filter:blur(10px);}
+  .lang-pill button{font-family:var(--mono);font-size:12px;padding:5px 12px;border-radius:999px;color:#cfd3db;background:none;border:0;}
+  .lang-pill button.on{background:#fff;color:#1d2127;font-weight:600;}
+  .replay-btn{position:fixed;left:50%;bottom:48px;transform:translateX(-50%);z-index:90;display:none;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:#e7e9ee;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);backdrop-filter:blur(10px);padding:6px 13px;border-radius:999px;cursor:pointer;white-space:nowrap;}
+  .replay-btn:hover{border-color:#5eead4;color:#5eead4;}
+  .replay-btn svg{width:12px;height:12px;stroke:currentColor;stroke-width:2;fill:none;}
+</style>
+</head>
+<body>
+<div class="room" id="room">
+  <div class="cap-wrap"><div class="cap" id="cap" data-i="cap0">Tu escritorio real, con varios agentes trabajando a la vez.</div></div>
+
+  <div class="rig">
+    <div class="bezel">
+      <div class="screendesk" id="screendesk">
+      <div class="taskbar"><i></i><i></i><i></i><i></i></div>
+      <div class="screen" id="screen">
+        <div class="dash" id="dash"><iframe data-l="es" src="../app-cover-v2.html" style="border:0;pointer-events:none;transform-origin:top left;" scrolling="no"></iframe><iframe data-l="en" src="../app-cover-v2-en.html" style="border:0;pointer-events:none;transform-origin:top left;display:none;" scrolling="no"></iframe></div>
+
+        <div class="docked" id="dockA">
+          <div class="body2">
+            <div class="side">
+              <div class="nv on">🏠 Inicio</div>
+              <div class="nv">📁 Espacios</div>
+              <div class="nv">⚡ Acciones</div>
+              <div class="nv">🔐 Secretos</div>
+              <div class="nv">🧩 Integraciones</div>
+            </div>
+            <div class="main2">
+              <div class="abar"><div class="srch">🔍 Buscar…</div><div class="sp"></div><div class="act">↻ Sincronizar</div></div>
+              <div class="tabsrow"><span class="tb">Inicio</span><span class="tb on">marketing-y-publicidad</span></div>
+              <div class="crumb2"><span class="nm">marketing-y-publicidad</span><span class="tools"><i></i><i></i><i></i></span><span class="sp"></span><span class="flag">🚩 12</span><button class="ex" id="exA">↗ Extraer</button><span class="x">✕</span></div>
+              <div class="thread th-ag1">
+                <span class="badge ag1"><span class="dot"></span>AGENTE · MARKETING</span>
+                <div class="bubble me" id="msgA"></div>
+                <div class="bubble ai" id="replyA"></div>
+              </div>
+              <div class="composer">
+                <div class="comp-top"><span class="aiSel"><span class="d" style="background:var(--ag1)"></span>Modo: <b>Experto</b><span class="dn">▼</span></span></div>
+                <div class="comp-mid"><span class="ib">📎</span><div class="in-box"></div><span class="send"><svg viewBox="0 0 24 24"><path d="m3 20 18-8L3 4v6l12 2-12 2z"/></svg></span></div>
+                <div class="quick"><span class="q hl">✨ Asistente de ideas</span><span class="q">🌐 Contexto</span><span class="q">📖 Casos de uso</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="docked" id="dockB">
+          <div class="body2">
+            <div class="side">
+              <div class="nv on">🏠 Inicio</div>
+              <div class="nv">📁 Espacios</div>
+              <div class="nv">⚡ Acciones</div>
+              <div class="nv">🔐 Secretos</div>
+              <div class="nv">🧩 Integraciones</div>
+            </div>
+            <div class="main2">
+              <div class="abar"><div class="srch">🔍 Buscar…</div><div class="sp"></div><div class="act">↻ Sincronizar</div></div>
+              <div class="tabsrow"><span class="tb">Inicio</span><span class="tb on">cliente-acme-corp</span></div>
+              <div class="crumb2"><span class="nm">cliente-acme-corp</span><span class="tools"><i></i><i></i><i></i></span><span class="sp"></span><span class="flag">🚩 12</span><button class="ex" id="exB">↗ Extraer</button><span class="x">✕</span></div>
+              <div class="thread th-ag2">
+                <span class="badge ag2"><span class="dot"></span>AGENTE · VENTAS</span>
+                <div class="bubble me" id="msgB"></div>
+                <div class="bubble ai" id="replyB"></div>
+              </div>
+              <div class="composer">
+                <div class="comp-top"><span class="aiSel"><span class="d" style="background:var(--ag2)"></span>Modo: <b>Confianza</b><span class="dn">▼</span></span></div>
+                <div class="comp-mid"><span class="ib">📎</span><div class="in-box"></div><span class="send"><svg viewBox="0 0 24 24"><path d="m3 20 18-8L3 4v6l12 2-12 2z"/></svg></span></div>
+                <div class="quick"><span class="q hl">✨ Asistente de ideas</span><span class="q">🌐 Contexto</span><span class="q">📖 Casos de uso</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="docked" id="dockC">
+          <div class="body2">
+            <div class="side">
+              <div class="nv on">🏠 Inicio</div>
+              <div class="nv">📁 Espacios</div>
+              <div class="nv">⚡ Acciones</div>
+              <div class="nv">🔐 Secretos</div>
+              <div class="nv">🧩 Integraciones</div>
+            </div>
+            <div class="main2">
+              <div class="abar"><div class="srch">🔍 Buscar…</div><div class="sp"></div><div class="act">↻ Sincronizar</div></div>
+              <div class="tabsrow"><span class="tb">Inicio</span><span class="tb on">analitica-y-reportes</span></div>
+              <div class="crumb2"><span class="nm">analitica-y-reportes</span><span class="tools"><i></i><i></i><i></i></span><span class="sp"></span><span class="flag">🚩 12</span><button class="ex">↗ Extraer</button><span class="x">✕</span></div>
+              <div class="thread th-ag3">
+                <span class="badge" style="background:#faf8ff;color:#5a2ee0"><span class="dot"></span>AGENTE · ANALÍTICA</span>
+                <div class="bubble ai" id="replyC"></div>
+              </div>
+              <div class="composer">
+                <div class="comp-top"><span class="aiSel"><span class="d" style="background:#8b6cf0"></span>Modo: <b>Experto</b><span class="dn">▼</span></span></div>
+                <div class="comp-mid"><span class="ib">📎</span><div class="in-box"></div><span class="send"><svg viewBox="0 0 24 24"><path d="m3 20 18-8L3 4v6l12 2-12 2z"/></svg></span></div>
+                <div class="quick"><span class="q hl">✨ Asistente de ideas</span><span class="q">🌐 Contexto</span><span class="q">📖 Casos de uso</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="stand"></div>
+    <div class="cam"></div>
+  </div>
+
+  <div class="float" id="floatA">
+    <div class="chatbar">
+      <div class="row1"><span class="dots"><i></i><i></i><i></i></span><span class="t">marketing-y-publicidad — Terminal Sync</span><span class="redock">Re-dock</span></div>
+      <div class="titlerow"><b>marketing-y-publicidad</b><span>Chat nativo extraído</span></div>
+    </div>
+    <div id="floatThreadA" style="flex:1;display:flex;flex-direction:column;min-height:90px;"></div>
+    <div class="composer">
+      <div class="comp-top"><span class="aiSel"><span class="d" style="background:var(--ag1)"></span>Modo: <b>Experto</b><span class="dn">▼</span></span></div>
+      <div class="comp-mid"><span class="ib">📎</span><div class="in-box"></div><span class="send"><svg viewBox="0 0 24 24"><path d="m3 20 18-8L3 4v6l12 2-12 2z"/></svg></span></div>
+      <div class="quick"><span class="q hl">✨ Asistente de ideas</span><span class="q">🌐 Contexto</span><span class="q">📖 Casos de uso</span></div>
+    </div>
+  </div>
+  <div class="float" id="floatB">
+    <div class="chatbar">
+      <div class="row1"><span class="dots"><i></i><i></i><i></i></span><span class="t">cliente-acme-corp — Terminal Sync</span><span class="redock">Re-dock</span></div>
+      <div class="titlerow"><b>cliente-acme-corp</b><span>Chat nativo extraído</span></div>
+    </div>
+    <div id="floatThreadB" style="flex:1;display:flex;flex-direction:column;min-height:90px;"></div>
+    <div class="composer">
+      <div class="comp-top"><span class="aiSel"><span class="d" style="background:var(--ag2)"></span>Modo: <b>Confianza</b><span class="dn">▼</span></span></div>
+      <div class="comp-mid"><span class="ib">📎</span><div class="in-box"></div><span class="send"><svg viewBox="0 0 24 24"><path d="m3 20 18-8L3 4v6l12 2-12 2z"/></svg></span></div>
+      <div class="quick"><span class="q hl">✨ Asistente de ideas</span><span class="q">🌐 Contexto</span><span class="q">📖 Casos de uso</span></div>
+    </div>
+  </div>
+
+  <div class="ghost" id="ghost"><svg viewBox="0 0 24 24" fill="#fff"><path d="M5 3l15 9-6 1.5L17 20l-3 1-3-6.5L6 18z"/></svg></div>
+  <div class="click-ring" id="ring"></div>
+</div>
+
+<div class="lang-pill"><button id="b-es" class="on">ES</button><button id="b-en">EN</button></div>
+<button class="replay-btn" id="replay"><svg viewBox="0 0 24 24"><path d="M3 2v6h6"/><path d="M3 13a9 9 0 1 0 3-7.7L3 8"/></svg><span data-i="replayLbl">Reproducir de nuevo</span></button>
+
+<script>
+(function(){
+  const T = {
+    es: {
+      replayLbl:'Reproducir de nuevo',
+      cap0:'Tu escritorio real, con varios agentes trabajando a la vez.',
+      cap1:'Le das clic a un espacio de trabajo…',
+      cap2:'…y se abre el chat completo, con su propio cuadro de mensaje.',
+      msgA:'Prepara el copy de la campaña Q3.',
+      cap3:'El agente de Marketing escribe la respuesta.',
+      outA:'Listo. Escribí 3 variantes del copy y las dejé en el documento compartido.\n\n<b>Variantes:</b> 3 · <b>Estado:</b> Lista para revisar',
+      cap4:'Extraes esta ventana para abrir otro proyecto — el agente sigue trabajando solo.',
+      cap5:'…y la ventana sale del monitor, a tu escritorio.',
+      cap6:'Abres otro chat — mientras el primero sigue trabajando afuera.',
+      cap6b:'Le escribes algo en el cuadro de mensaje…',
+      msgB:'¿Cómo va la cotización del cliente?',
+      cap7:'…y el agente de Ventas empieza a responder. Dos agentes a la vez.',
+      cap7b:'La extraes también — y vuelves al dashboard.',
+      cap9:'Corres las dos ventanas a los lados…',
+      cap10:'…y abres un tercer espacio, con su propio agente.',
+      outB:'La cotización ya fue enviada al cliente.\n\n<b>Enviada:</b> hace 2 min · <b>Estado:</b> Esperando respuesta',
+      cap8:'Tres agentes trabajando a la vez. En un solo monitor.'
+    },
+    en: {
+      replayLbl:'Play again',
+      cap0:'Your real desktop, with two AIs working in turns.',
+      cap1:'You click on a workspace…',
+      cap2:'…and the full chat opens, with its own composer.',
+      msgA:'Prepare the Q3 campaign copy.',
+      cap3:'The Marketing agent writes the reply.',
+      outA:'Done. I wrote 3 copy variants and left them in the shared doc.\n\n<b>Variants:</b> 3 · <b>Status:</b> Ready to review',
+      cap4:'You pop out this window to open another project — the agent keeps working on its own.',
+      cap5:'…and the window leaves the monitor, onto your desk.',
+      cap6:'You open another chat — while the first keeps working outside.',
+      cap6b:'You type something in the composer…',
+      msgB:'How is the client quote going?',
+      cap7:'…and the Sales agent starts replying. Two agents at once.',
+      cap7b:'You pop it out too — and you are back at the dashboard.',
+      cap9:'You slide both windows to the sides…',
+      cap10:'…and open a third space, with its own agent.',
+      outB:'The quote has already been sent to the client.\n\n<b>Sent:</b> 2 min ago · <b>Status:</b> Awaiting reply',
+      cap8:'Three agents working at once. On a single monitor.'
+    }
+  };
+  let lang='es'; const t=()=>T[lang];
+  const p=new URLSearchParams(location.search);
+  const embed=p.get('embed')==='1';
+  const SPEED=parseFloat(p.get('speed'))||1; // >1 = más rápido (ej. ?speed=1.4)
+  const RECORD=p.get('record')==='1'; // modo grabación: el demo TERMINA (las IAs paran ~2.5s después del cierre)
+  const DELAY=parseInt(p.get('delay'),10)||0; // ms de espera antes de arrancar (para grabación: ?delay=1500)
+
+  const room=document.getElementById('room'), screen=document.getElementById('screen'), dash=document.getElementById('dash'), cap=document.getElementById('cap');
+  const dockA=document.getElementById('dockA'), dockB=document.getElementById('dockB'), dockC=document.getElementById('dockC'), replyC=document.getElementById('replyC');
+  const floatA=document.getElementById('floatA'), floatB=document.getElementById('floatB'), floatThreadA=document.getElementById('floatThreadA');
+  const msgA=document.getElementById('msgA'), replyA=document.getElementById('replyA');
+  const msgB=document.getElementById('msgB'), replyB=document.getElementById('replyB');
+  const ghost=document.getElementById('ghost'), ring=document.getElementById('ring');
+
+  function applyStatic(){
+    document.documentElement.lang=lang;
+    document.querySelectorAll('[data-i]').forEach(el=>{const v=t()[el.dataset.i];if(typeof v==='string')el.textContent=v;});
+    document.getElementById('b-es').classList.toggle('on',lang==='es');
+    document.getElementById('b-en').classList.toggle('on',lang==='en');
+    // UI chrome translation (text-node walker)
+    const MAP={'🏠 Inicio':'🏠 Home','📁 Espacios':'📁 Workspaces','⚡ Acciones':'⚡ Actions','🔐 Secretos':'🔐 Secrets','🧩 Integraciones':'🧩 Integrations','🔍 Buscar…':'🔍 Search…','↻ Sincronizar':'↻ Sync','Inicio':'Home','↗ Extraer':'↗ Pop out','Re-dock':'Re-dock','Chat nativo extraído':'Native chat popped out','✨ Asistente de ideas':'✨ Idea assistant','⇆ Cambiar de IA':'⇆ Switch AI','📖 Casos de uso':'📖 Use cases','Modo:':'Mode:','Experto':'Expert','Confianza':'Trust'};
+    const REV={};Object.keys(MAP).forEach(k=>REV[MAP[k]]=k);
+    const dict=lang==='en'?MAP:REV;
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+    let n;while(n=walker.nextNode()){const s=n.textContent.trim();if(dict[s])n.textContent=n.textContent.replace(s,dict[s]);}
+    // dashboard cover per language (both inlined; toggle visibility)
+    dash.querySelectorAll('iframe').forEach(f=>{f.style.display=(f.dataset.l===lang)?'':'none';});
+    if(embed){const lp=document.querySelector('.lang-pill');if(lp)lp.style.display='none';const rb=document.getElementById('replay');if(rb)rb.style.display='none';}
+    fitDash();
+  }
+  function fitDash(){
+    const w=screen.clientWidth,h=screen.clientHeight;
+    const s=Math.max(w/1525,h/909);
+    dash.querySelectorAll('iframe').forEach(ifr=>{ifr.style.width='1525px';ifr.style.height='909px';ifr.style.transform='scale('+s+')';});
+  }
+  window.addEventListener('resize',fitDash);
+
+  let timers=[]; const sleep=ms=>new Promise(r=>timers.push(setTimeout(r,ms/SPEED)));
+  const clearAll=()=>timers.forEach(clearTimeout);
+
+  async function typeLoop(el,lines,speed){
+    const scroller = el.closest('.thread');
+    el.innerHTML='';
+    let i=0;
+    while(!el.dataset.stop){
+      const line=lines[i%lines.length];
+      const span=document.createElement('div'); el.appendChild(span);
+      const cur=document.createElement('span'); cur.className='cursor';
+      for(let c=0;c<line.length;c++){
+        if(el.dataset.stop)break;
+        span.innerHTML=line.slice(0,c+1); span.appendChild(cur);
+        if(scroller)scroller.scrollTop=scroller.scrollHeight;
+        await sleep(speed||45);
+      }
+      cur.remove();
+      i++;
+      await sleep(400);
+    }
+  }
+  function say(html){cap.style.opacity='0';setTimeout(()=>{cap.innerHTML=html;cap.style.opacity='1';},180);}
+  async function clickAt(x,y){
+    ring.style.left=x+'px';ring.style.top=y+'px';ring.classList.remove('go');void ring.offsetWidth;ring.classList.add('go');
+    await sleep(200);
+  }
+  async function moveGhost(x,y){ghost.style.opacity='1';ghost.style.left=x+'px';ghost.style.top=y+'px';await sleep(480);}
+
+  let playing=false;
+  async function play(){
+    if(playing)return; playing=true; clearAll();
+    try{
+    replyA.innerHTML='';replyB.innerHTML='';
+    msgA.textContent='';msgB.textContent='';
+    // restore the thread into its docked home in case a previous run left it inside the floated window
+    const dockAMain = dockA.querySelector('.main2');
+    const threadA = document.getElementById('replyA').closest('.thread');
+    if(dockAMain && threadA && !dockAMain.contains(threadA)) dockAMain.insertBefore(threadA, dockAMain.querySelector('.composer'));
+    const dockBMain = dockB.querySelector('.main2');
+    const threadB = document.getElementById('replyB').closest('.thread');
+    if(dockBMain && threadB && !dockBMain.contains(threadB)) dockBMain.insertBefore(threadB, dockBMain.querySelector('.composer'));
+    dockA.classList.remove('show');dockB.classList.remove('show');dockC.classList.remove('show');replyC.innerHTML='';
+    floatA.classList.remove('show');floatB.classList.remove('show');
+    floatA.style.pointerEvents='none';floatB.style.pointerEvents='none';
+    dash.classList.remove('hidden');
+    ghost.style.opacity='0';
+    const sr=screen.getBoundingClientRect();
+    const you = lang==='es'?'Tú':'You';
+
+    // ---- workspace A ----
+    say(t().cap1);
+    await sleep(700);
+    // first card of the dashboard grid (positions relative to the app-cover layout)
+    const cAx=sr.left+sr.width*0.24, cAy=sr.top+sr.height*0.35;
+    await moveGhost(cAx,cAy);
+    await clickAt(cAx,cAy);
+    await sleep(500);
+    ghost.style.opacity='0';
+
+    say(t().cap2);
+    dash.classList.add('hidden');
+    dockA.classList.add('show');
+    msgA.textContent = t().msgA;
+    await sleep(700);
+
+    say(t().cap3);
+    const workLines = lang==='es'
+      ? ['Revisando el historial de la campaña anterior…','Escribiendo la variante 1 del copy…','Ajustando el tono para el público objetivo…','Escribiendo la variante 2 del copy…','Comparando métricas de la campaña Q2…','Escribiendo la variante 3 del copy…','Dejando todo listo en el documento compartido…']
+      : ['Reviewing the previous campaign history…','Writing copy variant 1…','Adjusting the tone for the target audience…','Writing copy variant 2…','Comparing Q2 campaign metrics…','Writing copy variant 3…','Finishing up in the shared doc…'];
+    replyA.dataset.stop='';
+    typeLoop(replyA, workLines, 45);
+    await sleep(1600);
+
+    say(t().cap4);
+    const btnA=document.getElementById('exA'); btnA.classList.add('hot');
+    const bA=btnA.getBoundingClientRect();
+    await moveGhost(bA.left+bA.width-8, bA.top+bA.height/2);
+    await clickAt(bA.left+bA.width-8, bA.top+bA.height/2);
+    ghost.style.opacity='0'; btnA.classList.remove('hot');
+
+    // pop the SAME live thread out into its own floating window — AI keeps typing inside it
+    const deskR=document.getElementById('screendesk').getBoundingClientRect();
+    const roomR=deskR;
+    floatA.style.left=sr.left+'px'; floatA.style.top=sr.top+'px';
+    floatA.style.width=sr.width+'px'; floatA.style.height=sr.height+'px';
+    floatThreadA.appendChild(replyA.closest('.thread') || replyA);
+    dockA.classList.remove('show');
+    await sleep(40);
+    floatA.classList.add('show');
+    await sleep(60);
+    const fw = Math.min(420, Math.max(230, roomR.width*0.245)), fh = Math.min(420, Math.max(290, roomR.height*0.62));
+    floatA.style.left = (roomR.left + roomR.width*0.008)+'px';
+    floatA.style.top = (roomR.top + roomR.height*0.10)+'px';
+    floatA.style.width = fw+'px';
+    floatA.style.height = fh+'px';
+    dash.classList.remove('hidden');
+    await sleep(900);
+
+    // ---- workspace B: open another card INSIDE the dashboard while A keeps typing outside ----
+    say(t().cap6);
+    const cBx=sr.left+sr.width*0.62, cBy=sr.top+sr.height*0.35;
+    await moveGhost(cBx,cBy);
+    await clickAt(cBx,cBy);
+    await sleep(500);
+    ghost.style.opacity='0';
+
+    dash.classList.add('hidden');
+    dockB.classList.add('show');
+    await sleep(600);
+
+    // you type in the composer of B
+    say(t().cap6b);
+    const inB=dockB.querySelector('.in-box');
+    inB.innerHTML='';const spanB=document.createElement('span');inB.appendChild(spanB);
+    const curB=document.createElement('span');curB.className='cursor';inB.appendChild(curB);
+    const q=t().msgB;
+    for(let i=0;i<q.length;i++){spanB.textContent=q.slice(0,i+1);await sleep(46);}
+    curB.remove();
+    await sleep(400);
+    msgB.textContent=q; inB.innerHTML='';
+    await sleep(500);
+
+    // the Sales agent starts replying (typewriter, keeps going)
+    say(t().cap7);
+    const workLinesB = lang==='es'
+      ? ['Buscando la cotización del cliente…','Verificando el estado del envío…','La cotización fue enviada hace 2 min ✅','Preparando el seguimiento automático…','Redactando el recordatorio para el cliente…']
+      : ['Looking up the client quote…','Checking delivery status…','The quote was sent 2 min ago ✅','Setting up the automatic follow-up…','Drafting the client reminder…'];
+    replyB.dataset.stop='';
+    typeLoop(replyB, workLinesB, 45);
+    await sleep(2600);
+
+    // extract B too — dashboard visible again, both AIs typing outside
+    say(t().cap7b);
+    const btnB=document.getElementById('exB'); btnB.classList.add('hot');
+    const bB=btnB.getBoundingClientRect();
+    await moveGhost(bB.left+bB.width-8, bB.top+bB.height/2);
+    await clickAt(bB.left+bB.width-8, bB.top+bB.height/2);
+    ghost.style.opacity='0'; btnB.classList.remove('hot');
+
+    floatB.style.left=sr.left+'px'; floatB.style.top=sr.top+'px';
+    floatB.style.width=sr.width+'px'; floatB.style.height=sr.height+'px';
+    document.getElementById('floatThreadB').appendChild(replyB.closest('.thread'));
+    dockB.classList.remove('show');
+    await sleep(40);
+    floatB.classList.add('show');
+    await sleep(60);
+    floatB.style.left = (roomR.left + roomR.width*0.992-fw)+'px';
+    floatB.style.top = (roomR.top + roomR.height*0.10)+'px';
+    floatB.style.width = fw+'px';
+    floatB.style.height = fh+'px';
+    dash.classList.remove('hidden');
+    await sleep(900);
+
+    // play with the two floating windows: slide them to the sides
+    say(t().cap9);
+    const fy=Math.min(roomR.top+roomR.height*0.18, window.innerHeight-fh-46);
+    floatA.style.left=(roomR.left+roomR.width*0.008)+'px';
+    floatA.style.top=fy+'px';
+    floatB.style.left=(roomR.left+roomR.width*0.992-fw)+'px';
+    floatB.style.top=fy+'px';
+    await sleep(1100);
+
+    // open a THIRD card inside the dashboard (third agent)
+    say(t().cap10);
+    const cCx=sr.left+sr.width*0.24, cCy=sr.top+sr.height*0.55;
+    await moveGhost(cCx,cCy);
+    await clickAt(cCx,cCy);
+    await sleep(500);
+    ghost.style.opacity='0';
+    dash.classList.add('hidden');
+    dockC.classList.add('show');
+    await sleep(600);
+    const workLinesC = lang==='es'
+      ? ['Leyendo los reportes de ventas del mes…','Cruzando datos con el inventario…','Detectando los productos con mejor margen…','Armando el resumen ejecutivo…']
+      : ['Reading this month\'s sales reports…','Cross-checking with inventory…','Finding the highest-margin products…','Building the executive summary…'];
+    replyC.dataset.stop='';
+    typeLoop(replyC, workLinesC, 45);
+    await sleep(2400);
+
+    say('<b>'+t().cap8+'</b>');
+    await sleep(3000);
+    document.querySelectorAll('[id^=reply]').forEach(el=>el.dataset.stop='1');
+    playing=false;
+    }catch(err){console.error('demo play() failed:',err);playing=false;}
+  }
+
+  document.getElementById('replay').style.display='inline-flex';
+  document.getElementById('replay').addEventListener('click',()=>play());
+  document.getElementById('b-es').addEventListener('click',()=>{lang='es';applyStatic();play();});
+  document.getElementById('b-en').addEventListener('click',()=>{lang='en';applyStatic();play();});
+
+  applyStatic();
+  let started=false;
+  function startOnce(){if(!started){started=true;setTimeout(()=>play(),DELAY);}}
+  new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)startOnce();}),{threshold:0}).observe(room);
+  if(document.readyState==='complete'){setTimeout(startOnce,400);}else{window.addEventListener('load',()=>setTimeout(startOnce,400));}
+})();
+</script>
+</body>
+</html>
