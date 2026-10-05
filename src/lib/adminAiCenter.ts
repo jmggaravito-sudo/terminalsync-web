@@ -40,11 +40,12 @@ export interface ProviderCatalogSourceMetadata {
   endpoint: string | null;
 }
 
-/** Mirrors `ProviderCatalogModelPricing` (ai_provider_catalog.rs). Populated
- *  only for internal-source (OpenRouter) models discovered from the live
- *  provider API — the seed data ships with `null` until a real fetch runs. */
+/** Mirrors `ProviderCatalogModelPricing` (ai_provider_catalog.rs). Values are
+ * USD per 1M tokens unless `image` is the only populated field, in which case
+ * it is the provider's per-image price. */
 export interface ProviderCatalogModelPricing {
   prompt: string | null;
+  cachedPrompt: string | null;
   completion: string | null;
   image: string | null;
 }
@@ -122,7 +123,8 @@ export type CatalogAlertKind =
   | "upcoming_retirement"
   | "replacement_available"
   | "scheduled_auto_switch"
-  | "new_capability";
+  | "new_capability"
+  | "price_changed";
 
 export type CatalogAlertSeverity = "info" | "warning" | "critical";
 
@@ -367,6 +369,88 @@ const GLM_CAPABILITIES = [
   "image_generation",
 ];
 
+const GLM_TEXT_CAPABILITIES = [
+  "chat",
+  "code",
+  "reasoning",
+  "tool_calling",
+  "streaming",
+  "context_caching",
+  "structured_output",
+];
+const GLM_MULTIMODAL_CAPABILITIES = [
+  ...GLM_TEXT_CAPABILITIES,
+  "image_input",
+  "video_input",
+  "file_input",
+];
+const GLM_VISION_CAPABILITIES = [
+  "chat",
+  "reasoning",
+  "image_input",
+  "video_input",
+  "file_input",
+];
+const GLM_IMAGE_CAPABILITIES = ["image_generation"];
+
+function glmPricing(
+  prompt: string,
+  cachedPrompt: string | null,
+  completion: string,
+  image: string | null = null,
+): ProviderCatalogModelPricing {
+  return { prompt, cachedPrompt, completion, image };
+}
+
+function glmModel(
+  modelId: string,
+  visibleLabel: string,
+  capabilities: string[],
+  pricing: ProviderCatalogModelPricing,
+  modalities: string[],
+  isDefault = false,
+): ProviderCatalogModelEntry {
+  return {
+    modelId,
+    visibleLabel,
+    capabilities,
+    lifecycle: "active",
+    retiresAt: null,
+    replacementModelId: null,
+    replacementVisibleLabel: null,
+    migrationMode: null,
+    isDefault,
+    upstreamProviderSlug: null,
+    modalities,
+    pricing,
+  };
+}
+
+const GLM_MODELS: ProviderCatalogModelEntry[] = [
+  glmModel("glm-5.3-flash", "GLM-5.3 Flash", GLM_MULTIMODAL_CAPABILITIES, glmPricing("0.15", "0.03", "0.50"), ["text", "image", "video", "file"]),
+  glmModel("glm-5.3-flashx", "GLM-5.3 FlashX", GLM_MULTIMODAL_CAPABILITIES, glmPricing("0.37", "0.075", "1.25"), ["text", "image", "video", "file"]),
+  glmModel("glm-5.3", "GLM-5.3", GLM_TEXT_CAPABILITIES, glmPricing("1.4", "0.26", "4.4"), ["text"], true),
+  glmModel("glm-5.2", "GLM-5.2", GLM_TEXT_CAPABILITIES, glmPricing("1.4", "0.26", "4.4"), ["text"]),
+  glmModel("glm-5.1", "GLM-5.1", GLM_TEXT_CAPABILITIES, glmPricing("1.4", "0.26", "4.4"), ["text"]),
+  glmModel("glm-5", "GLM-5", GLM_TEXT_CAPABILITIES, glmPricing("1", "0.2", "3.2"), ["text"]),
+  glmModel("glm-4.7", "GLM-4.7", GLM_TEXT_CAPABILITIES, glmPricing("0.6", "0.11", "2.2"), ["text"]),
+  glmModel("glm-4.7-flashx", "GLM-4.7 FlashX", GLM_TEXT_CAPABILITIES, glmPricing("0.07", "0.01", "0.4"), ["text"]),
+  glmModel("glm-4.6", "GLM-4.6", GLM_TEXT_CAPABILITIES, glmPricing("0.6", "0.11", "2.2"), ["text"]),
+  glmModel("glm-4.5", "GLM-4.5", GLM_TEXT_CAPABILITIES, glmPricing("0.6", "0.11", "2.2"), ["text"]),
+  glmModel("glm-4.5-x", "GLM-4.5-X", GLM_TEXT_CAPABILITIES, glmPricing("2.2", "0.45", "8.9"), ["text"]),
+  glmModel("glm-4.5-air", "GLM-4.5-Air", GLM_TEXT_CAPABILITIES, glmPricing("0.2", "0.03", "1.1"), ["text"]),
+  glmModel("glm-4.5-airx", "GLM-4.5-AirX", GLM_TEXT_CAPABILITIES, glmPricing("1.1", "0.22", "4.5"), ["text"]),
+  glmModel("glm-4-32b-0414-128k", "GLM-4-32B-0414-128K", GLM_TEXT_CAPABILITIES, glmPricing("0.1", null, "0.1"), ["text"]),
+  glmModel("glm-4.7-flash", "GLM-4.7 Flash", GLM_TEXT_CAPABILITIES, glmPricing("0", "0", "0"), ["text"]),
+  glmModel("glm-4.5-flash", "GLM-4.5 Flash", GLM_TEXT_CAPABILITIES, glmPricing("0", "0", "0"), ["text"]),
+  glmModel("glm-4.6v", "GLM-4.6V", GLM_VISION_CAPABILITIES, glmPricing("0.3", "0.05", "0.9"), ["text", "image"]),
+  glmModel("glm-ocr", "GLM-OCR", GLM_VISION_CAPABILITIES, glmPricing("0.03", null, "0.03"), ["image"]),
+  glmModel("glm-4.6v-flashx", "GLM-4.6V FlashX", GLM_VISION_CAPABILITIES, glmPricing("0.04", "0.004", "0.4"), ["text", "image"]),
+  glmModel("glm-4.5v", "GLM-4.5V", GLM_VISION_CAPABILITIES, glmPricing("0.6", "0.11", "1.8"), ["text", "image"]),
+  glmModel("glm-4.6v-flash", "GLM-4.6V Flash", GLM_VISION_CAPABILITIES, glmPricing("0", "0", "0"), ["text", "image"]),
+  glmModel("glm-image", "GLM Image", GLM_IMAGE_CAPABILITIES, glmPricing("0", null, "0", "0.015"), ["image_generation"]),
+];
+
 function source(
   label: string,
   kind: AiCatalogSourceKind = "seed_snapshot",
@@ -431,50 +515,7 @@ const connectedProviders: ProviderCatalogViewEntry[] = [
     capabilities: GLM_CAPABILITIES,
     defaultModelId: "glm-5.3",
     modelIds: [],
-    models: [
-      {
-        modelId: "glm-5.3",
-        visibleLabel: "GLM-5.3",
-        capabilities: GLM_CAPABILITIES,
-        lifecycle: "active",
-        retiresAt: null,
-        replacementModelId: null,
-        replacementVisibleLabel: null,
-        migrationMode: null,
-        isDefault: true,
-        upstreamProviderSlug: null,
-        modalities: [],
-        pricing: null,
-      },
-      {
-        modelId: "glm-4.5",
-        visibleLabel: "GLM 4.5",
-        capabilities: GLM_CAPABILITIES,
-        lifecycle: "active",
-        retiresAt: null,
-        replacementModelId: null,
-        replacementVisibleLabel: null,
-        migrationMode: null,
-        isDefault: false,
-        upstreamProviderSlug: null,
-        modalities: [],
-        pricing: null,
-      },
-      {
-        modelId: "glm-image",
-        visibleLabel: "GLM Image",
-        capabilities: GLM_CAPABILITIES,
-        lifecycle: "active",
-        retiresAt: null,
-        replacementModelId: null,
-        replacementVisibleLabel: null,
-        migrationMode: null,
-        isDefault: false,
-        upstreamProviderSlug: null,
-        modalities: [],
-        pricing: null,
-      },
-    ],
+    models: GLM_MODELS,
   }),
   provider({
     providerId: "claude",
@@ -936,7 +977,7 @@ const openRouterModels: ProviderCatalogModelEntry[] = [
     upstreamProviderSlug: "black-forest-labs",
     modalities: ["text", "image"],
     // Illustrative sample only (see the block comment above `openRouterModels`).
-    pricing: { prompt: "0.00004", completion: "0.00004", image: "0.055" },
+    pricing: { prompt: "0.00004", cachedPrompt: null, completion: "0.00004", image: "0.055" },
   },
 ];
 
@@ -1326,6 +1367,9 @@ function normalizeModelEntry(model: unknown): ProviderCatalogModelEntry {
   const raw = (
     model && typeof model === "object" ? model : {}
   ) as Partial<ProviderCatalogModelEntry>;
+  const rawPricing = raw.pricing && typeof raw.pricing === "object"
+    ? (raw.pricing as Partial<ProviderCatalogModelPricing>)
+    : null;
   return {
     modelId: typeof raw.modelId === "string" ? raw.modelId : "",
     visibleLabel: typeof raw.visibleLabel === "string" ? raw.visibleLabel : "",
@@ -1338,7 +1382,14 @@ function normalizeModelEntry(model: unknown): ProviderCatalogModelEntry {
     isDefault: Boolean(raw.isDefault),
     upstreamProviderSlug: raw.upstreamProviderSlug ?? null,
     modalities: Array.isArray(raw.modalities) ? raw.modalities : [],
-    pricing: raw.pricing ?? null,
+    pricing: rawPricing
+      ? {
+          prompt: typeof rawPricing.prompt === "string" ? rawPricing.prompt : null,
+          cachedPrompt: typeof rawPricing.cachedPrompt === "string" ? rawPricing.cachedPrompt : null,
+          completion: typeof rawPricing.completion === "string" ? rawPricing.completion : null,
+          image: typeof rawPricing.image === "string" ? rawPricing.image : null,
+        }
+      : null,
   };
 }
 
@@ -1346,9 +1397,27 @@ function normalizeProviderEntry(entry: unknown): ProviderCatalogViewEntry {
   const raw = (
     entry && typeof entry === "object" ? entry : {}
   ) as Partial<ProviderCatalogViewEntry>;
-  const models = Array.isArray(raw.models)
+  const rawModels = Array.isArray(raw.models)
     ? raw.models.map(normalizeModelEntry)
     : [];
+  const models = raw.providerId === "glm"
+    ? [...GLM_MODELS, ...rawModels.filter((model) => !GLM_MODELS.some((seed) => seed.modelId === model.modelId))]
+        .map((model) => {
+          const seed = GLM_MODELS.find((candidate) => candidate.modelId === model.modelId);
+          if (!seed || !rawModels.some((candidate) => candidate.modelId === model.modelId)) return model;
+          return {
+            ...seed,
+            ...model,
+            capabilities: seed.capabilities,
+            modalities: seed.modalities,
+            pricing: model.pricing ?? seed.pricing,
+          };
+        })
+    : rawModels;
+  const modelIds = Array.from(new Set([
+    ...(Array.isArray(raw.modelIds) ? raw.modelIds : []),
+    ...models.map((model) => model.modelId),
+  ]));
   return {
     providerId: typeof raw.providerId === "string" ? raw.providerId : "",
     visibleLabel: typeof raw.visibleLabel === "string" ? raw.visibleLabel : "",
@@ -1360,9 +1429,7 @@ function normalizeProviderEntry(entry: unknown): ProviderCatalogViewEntry {
     surfaces: Array.isArray(raw.surfaces) ? raw.surfaces : [],
     capabilities: Array.isArray(raw.capabilities) ? raw.capabilities : [],
     defaultModelId: raw.defaultModelId ?? null,
-    modelIds: Array.isArray(raw.modelIds)
-      ? raw.modelIds
-      : models.map((m) => m.modelId),
+    modelIds,
     models,
     lifecycleSummary: raw.lifecycleSummary ?? summarizeLifecycle(models),
   };

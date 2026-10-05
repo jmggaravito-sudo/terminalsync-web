@@ -20,6 +20,7 @@ import {
   type CatalogAlertSeverity,
   type CatalogChangeReport,
   type PremiumLaneDefinition,
+  type ProviderCatalogModelPricing,
   type ProviderCatalogModelEntry,
   type ProviderCatalogViewEntry,
   type VideoLanePricingEntry,
@@ -61,6 +62,7 @@ const alertKindCopy: Record<AiCenterAlertKind, { es: string; en: string }> = {
   replacement_available: { es: "Reemplazo disponible", en: "Replacement available" },
   scheduled_auto_switch: { es: "Cambio automático programado", en: "Scheduled auto-switch" },
   new_capability: { es: "Capacidad nueva", en: "New capability" },
+  price_changed: { es: "Cambio de precio", en: "Price change" },
   provider_degraded: { es: "Catálogo desactualizado", en: "Catalog degraded" },
 };
 
@@ -106,6 +108,50 @@ function LifecycleBadge({ lifecycle, isEs }: { lifecycle: AiCatalogModelLifecycl
 
 function CodePill({ children }: { children: ReactNode }) {
   return <code className="rounded-md border border-black bg-white px-1.5 py-0.5 text-[11px] font-semibold text-black">{children}</code>;
+}
+
+const capabilityLabels: Record<string, { es: string; en: string }> = {
+  chat: { es: "Chat", en: "Chat" },
+  code: { es: "Código", en: "Code" },
+  reasoning: { es: "Razonamiento", en: "Reasoning" },
+  tool_calling: { es: "Uso de herramientas", en: "Tool calling" },
+  streaming: { es: "Streaming", en: "Streaming" },
+  context_caching: { es: "Caché de contexto", en: "Context caching" },
+  structured_output: { es: "Salida estructurada", en: "Structured output" },
+  image_input: { es: "Entrada de imagen", en: "Image input" },
+  video_input: { es: "Entrada de video", en: "Video input" },
+  file_input: { es: "Entrada de archivos", en: "File input" },
+  image_generation: { es: "Generación de imágenes", en: "Image generation" },
+};
+
+function CapabilityChips({ capabilities, isEs }: { capabilities: string[]; isEs: boolean }) {
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {capabilities.map((capability) => (
+        <span key={capability} className="rounded-full border border-[var(--color-border)] bg-white px-2 py-0.5 text-[11px] font-semibold text-[var(--color-fg-strong)]">
+          {capabilityLabels[capability] ? (isEs ? capabilityLabels[capability].es : capabilityLabels[capability].en) : capability}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function ModelPricing({ pricing, isEs }: { pricing: ProviderCatalogModelPricing | null; isEs: boolean }) {
+  if (!pricing) {
+    return <p className="text-[12px] text-[var(--color-fg-muted)]">{isEs ? "Precio no disponible" : "Pricing unavailable"}</p>;
+  }
+  const hasTokenPricing = [pricing.prompt, pricing.cachedPrompt, pricing.completion].some((value) => value !== null && value !== "0");
+  const isFree = !hasTokenPricing && pricing.image === null;
+  return (
+    <div className="text-[12px] text-[var(--color-fg-muted)]">
+      <p className="font-semibold text-[var(--color-fg-strong)]">{isEs ? "Precio actual (USD)" : "Current price (USD)"}</p>
+      {isFree ? <p>{isEs ? "Gratis" : "Free"}</p> : null}
+      {pricing.prompt !== null && pricing.prompt !== "0" && hasTokenPricing ? <p>{isEs ? "Entrada" : "Input"}: ${pricing.prompt} / 1M tokens</p> : null}
+      {pricing.cachedPrompt !== null && pricing.cachedPrompt !== "0" && hasTokenPricing ? <p>{isEs ? "Entrada cacheada" : "Cached input"}: ${pricing.cachedPrompt} / 1M tokens</p> : null}
+      {pricing.completion !== null && pricing.completion !== "0" && hasTokenPricing ? <p>{isEs ? "Salida" : "Output"}: ${pricing.completion} / 1M tokens</p> : null}
+      {pricing.image !== null ? <p>{isEs ? "Imagen" : "Image"}: ${pricing.image} / {isEs ? "imagen" : "image"}</p> : null}
+    </div>
+  );
 }
 
 function InternalOnlyBanner({ isEs }: { isEs: boolean }) {
@@ -170,6 +216,14 @@ function CatalogTab({ isEs, snapshot }: { isEs: boolean; snapshot: AiControlCent
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 className="text-[18px] font-semibold text-[var(--color-fg-strong)]">{provider.visibleLabel}</h2>
+              {provider.providerId === "glm" ? (
+                <p className="mt-1 text-[12px] text-[var(--color-fg-muted)]">
+                  {isEs ? "Precios Z.ai verificados en USD; el refresh del catálogo alerta cambios." : "Z.ai prices verified in USD; catalog refresh alerts on changes."}{" "}
+                  <a className="font-semibold underline" href="https://docs.z.ai/guides/overview/pricing" target="_blank" rel="noreferrer">
+                    {isEs ? "Fuente oficial" : "Official source"}
+                  </a>
+                </p>
+              ) : null}
               <div className="mt-1 flex flex-wrap gap-2 text-[12px] text-[var(--color-fg-muted)]">
                 <span>provider_id: <CodePill>{provider.providerId}</CodePill></span>
                 <span>{isEs ? "default_model_id" : "default_model_id"}: <CodePill>{provider.defaultModelId ?? "—"}</CodePill></span>
@@ -210,6 +264,23 @@ function CatalogTab({ isEs, snapshot }: { isEs: boolean; snapshot: AiControlCent
                   <p>migration_mode: <CodePill>{model.migrationMode ?? "—"}</CodePill></p>
                   <p>replacement_model_id: <CodePill>{model.replacementModelId ?? "—"}</CodePill></p>
                   <p>replacement_visible_label: <CodePill>{model.replacementVisibleLabel ?? "—"}</CodePill></p>
+                </div>
+                <div className="mt-3 grid grid-cols-1 gap-3 border-t border-[var(--color-border)] pt-3 md:grid-cols-[1fr_1fr_220px]">
+                  <div>
+                    <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--color-fg-muted)]">
+                      {isEs ? "Capacidades" : "Capabilities"}
+                    </p>
+                    <CapabilityChips capabilities={model.capabilities} isEs={isEs} />
+                  </div>
+                  <div>
+                    <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--color-fg-muted)]">
+                      {isEs ? "Modalidades" : "Modalities"}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {model.modalities.length > 0 ? model.modalities.map((modality) => <CodePill key={modality}>{modality}</CodePill>) : <span className="text-[12px] text-[var(--color-fg-muted)]">—</span>}
+                    </div>
+                  </div>
+                  <ModelPricing pricing={model.pricing} isEs={isEs} />
                 </div>
               </article>
             ))}
