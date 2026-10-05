@@ -61,6 +61,28 @@ Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first,
 
 ## Run log
 
+### 2026-10-05 — automated run, no focus input given
+
+**Shipped 1 Plugin**, pairing an already-published, `available` connector with an already-evaluated, `available` skill (eval fixture + evidence on disk: `scripts/skills-eval/fixtures/rfm-segmentacion.json`, `docs/skills-evals/rfm-segmentacion.md`):
+
+- **airtable** (`marketing`) — Airtable connector + RFM Segmentation. Same shape as the shipped `google-sheets` Plugin (a data store the owner already keeps + the skill that organizes exactly that data): the connector's real tools (`list_records`, `search_records`, `get_record`) read the customer/order base — its own doc's canonical examples are literally *"which clients haven't bought in 60 days?"* — and the skill scores those customers on Recency/Frequency/Monetary, sizes each segment, and names one action per group. Chosen over stacking `ltv-cohortes` in as well: a second analytics skill on the same product is the product→role blur the 2026-08-02 run rejected for Shopify-adjacent skills — that's Kit material.
+
+**Deferred / SKIP, documented for the other Loops (and for the coordinator):**
+
+- **gusto / square / meta-social** — the three strongest remaining candidates are **already claimed by open draft PR #362** (`loop/plugins-2026-09-28`, checks green, awaiting review): `gusto` + 1099/W-9 Organizer, `square` + Ask for Reviews, `meta-social` + Social Content Batch. This run did **not** re-ship those slugs: two open PRs adding the same `content/plugins/{en,es}/<slug>.md` is the exact same-slug collision that hit `xero` on 2026-08-02 (two runs working the same slug without seeing each other). The `gusto` + Tax Prep Checklist pairing this run had drafted was set aside for the same reason — the `gusto` slug belongs to #362 until that PR is resolved. **Action for the coordinator:** review #362; these three products are done there, not here.
+- **klaviyo** — `lifecycle-email` still `catalogReady: false` (re-checked 2026-10-05; unchanged since 2026-08-10). Skill Loop task first.
+- **zoom** — `meeting-notes` still `catalogReady: false` **and** `compatibleWith: ["claude"]` only. Skill Loop task.
+- **canva** — `brand-guidelines` and `brand-voice` both still `catalogReady: false` (+ 2 vendors). Skill Loop task.
+- **intercom** — `email-drafter` still `status: soon` + `hidden: true`. Skill Loop task.
+- **asana / todoist / clickup / monday** — task/project products with no publishable skill that teaches a specific workflow on them (unchanged since 2026-08-10 for asana; same gap for the other three). Skill Loop candidates: a task-triage or status-digest skill would make these pairings real.
+- **calendly** — connector `available`, but its natural pairing (`meeting-notes`) is staged; connector-only rejected for low marginal value (same criterion as Intercom in 2026-08-02).
+- **kit** — email-marketing connector whose natural skills (`lifecycle-email`, `copywriter`) are staged/hidden. Blocked on the Skill Loop.
+- **twitter / wordpress** — `contenido-social`'s own body scopes to Instagram/Facebook/LinkedIn/TikTok; it does not claim X or WordPress blogs (unchanged since 2026-08-10 — and the Instagram/Facebook half of that skill now has its product home in #362's `meta-social`).
+- **ahrefs** — would re-bundle `seo-auditor`, already shipped inside the `seo-audit` Plugin; a second SEO pack would duplicate that job. Deferred until the SEO surface wants a dedicated Ahrefs data pack.
+- **dropbox** — the connector's real surface is read + share-link only (`files_list_folder`, `files_search_v2`, `files_get_temporary_link`, `sharing_create_shared_link_with_settings`); it cannot receive or upload documents, so a "draft docs into Dropbox" pack would overclaim capability. Its natural skill (`doc-coauthoring`) is already bundled with `gdrive` and `notion`.
+
+Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` + `tsc --noEmit` + the supervision set (`route.test.ts`, `voz-neutral-catalogo.test.ts`) — see PR. The new plugin reuses its connector's committed logo, vendored at `public/plugins/airtable.svg` (copy of `public/connectors/airtable.svg`, same as `higgsfield`/`ideogram`).
+
 ### 2026-08-10 — automated run, no focus input given
 
 **Shipped 2 Plugins**, both pairing an already-published, `available` connector with an already-evaluated, `available` skill (evals + fixtures on disk for both):
