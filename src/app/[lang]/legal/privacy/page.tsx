@@ -45,7 +45,7 @@ export default async function PrivacyPage({ params }: Props) {
         lang="es"
         title="Política de Privacidad"
         subtitle="Esta política describe qué datos recolectamos, por qué, cómo los protegemos y cómo podés ejercer tus derechos sobre ellos."
-        lastUpdated="Última actualización: 23 de septiembre de 2026"
+        lastUpdated="Última actualización: 6 de octubre de 2026"
       >
         <h2>1. Quiénes somos</h2>
         <p>
@@ -140,8 +140,8 @@ export default async function PrivacyPage({ params }: Props) {
             contactemos, y el contenido de las notificaciones que elegís recibir.</li>
         </ul>
         <p>
-          Y, si usás la <strong>IA incluida</strong> en tu plan, lo que le
-          escribís pasa además por estos dos:
+          Y, si usás la <strong>IA de TerminalSync</strong>, lo que le
+          escribís pasa además por estos proveedores:
         </p>
         <ul>
           <li><strong>Z.ai (Zhipu AI)</strong>, empresa china: recibe tu mensaje,
@@ -158,6 +158,13 @@ export default async function PrivacyPage({ params }: Props) {
             modelo se usó, cuánto texto entró y salió, y cuánto costó — nunca el
             texto de tu mensaje, la respuesta, el contenido de tus documentos,
             las rutas de tus archivos ni tu correo.</li>
+          <li><strong>SearchApi</strong> (EE. UU.): solo cuando le pedís a la IA
+            que busque negocios o reseñas en Google Maps, o cuando un video de
+            YouTube que agregaste al Contexto no se puede leer de otra forma.
+            Recibe el texto de esa búsqueda (o el enlace del video), el país y el
+            idioma, y devuelve resultados públicos. No recibe tu nombre, tu correo
+            ni tus documentos. Contamos cuántas búsquedas hiciste en el mes, pero{" "}
+            <strong>no guardamos qué buscaste</strong>.</li>
         </ul>
         <p>
           No vendemos tus datos a terceros. Nunca hemos. Nunca vamos a hacerlo.
@@ -222,7 +229,7 @@ export default async function PrivacyPage({ params }: Props) {
       lang="en"
       title="Privacy Policy"
       subtitle="This policy describes what data we collect, why, how we protect it, and how you can exercise your rights over it."
-      lastUpdated="Last updated: September 23, 2026"
+      lastUpdated="Last updated: October 6, 2026"
     >
       <h2>1. Who we are</h2>
       <p>
@@ -317,8 +324,8 @@ export default async function PrivacyPage({ params }: Props) {
           contacted, and the content of notifications you opt into.</li>
       </ul>
       <p>
-        And, if you use the <strong>AI included</strong> in your plan, what you
-        write also passes through these two:
+        And, if you use <strong>TerminalSync's AI</strong>, what you
+        write also passes through these providers:
       </p>
       <ul>
         <li><strong>Z.ai (Zhipu AI)</strong>, a Chinese company: receives your
@@ -335,6 +342,13 @@ export default async function PrivacyPage({ params }: Props) {
           account, which model was used, how much text went in and out, and what
           it cost — never the text of your message, the answer, the contents of
           your documents, your file paths or your email address.</li>
+        <li><strong>SearchApi</strong> (US): only when you ask the AI to look up
+          businesses or reviews on Google Maps, or when a YouTube video you added
+          to Context can't be read any other way. It receives the text of that
+          search (or the video link), the country and the language, and returns
+          public results. It does not receive your name, your email or your
+          documents. We count how many searches you made this month, but{" "}
+          <strong>we don't store what you searched for</strong>.</li>
       </ul>
       <p>We don't sell your data. We never have. We never will.</p>
 
