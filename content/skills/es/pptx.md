@@ -6,7 +6,7 @@ vendors: ["claude"]
 author: "Anthropic"
 status: available
 tagline: "PowerPoint a velocidad de prompt"
-description: "Arma y edita presentaciones PowerPoint (.pptx/.potx) con layouts de slide reales, charts nativos, notas de speaker y reuso de templates — en vez de un esquema de viñetas disfrazado de deck. Viene nativo con Claude; no hay nada que instalar."
+description: "Arma y edita presentaciones PowerPoint (.pptx/.potx) con layouts de slide reales, charts nativos, notas de speaker y reuso de templates — en vez de un esquema de viñetas disfrazado de deck. Ya viene incluido: no hay nada que instalar."
 license: "proprietary"
 licenseUrl: "https://github.com/anthropics/skills/blob/main/skills/pptx/LICENSE.txt"
 marketplaceSource: "anthropic"

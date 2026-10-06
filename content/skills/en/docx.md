@@ -6,7 +6,7 @@ vendors: ["claude"]
 author: "Anthropic"
 status: available
 tagline: "Word docs without the fight"
-description: "Creates, edits, and reads Word documents (.docx/.dotx) with real formatting — headings, tables of contents, page numbers, tables, tracked changes — instead of plain text pretending to be a document. Ships natively with Claude; nothing to install."
+description: "Creates, edits, and reads Word documents (.docx/.dotx) with real formatting — headings, tables of contents, page numbers, tables, tracked changes — instead of plain text pretending to be a document. Included by default; nothing to install."
 license: "proprietary"
 licenseUrl: "https://github.com/anthropics/skills/blob/main/skills/docx/LICENSE.txt"
 marketplaceSource: "anthropic"

@@ -6,7 +6,7 @@ vendors: ["claude"]
 author: "Anthropic"
 status: available
 tagline: "Docs Word sin pelea"
-description: "Crea, edita y lee documentos Word (.docx/.dotx) con formato real — headings, tabla de contenidos, números de página, tablas, control de cambios — en vez de texto plano disfrazado de documento. Viene nativo con Claude; no hay nada que instalar."
+description: "Crea, edita y lee documentos Word (.docx/.dotx) con formato real — headings, tabla de contenidos, números de página, tablas, control de cambios — en vez de texto plano disfrazado de documento. Ya viene incluido: no hay nada que instalar."
 license: "proprietary"
 licenseUrl: "https://github.com/anthropics/skills/blob/main/skills/docx/LICENSE.txt"
 marketplaceSource: "anthropic"

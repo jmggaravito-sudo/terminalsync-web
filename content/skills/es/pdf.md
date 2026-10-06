@@ -6,7 +6,7 @@ vendors: ["claude"]
 author: "Anthropic"
 status: available
 tagline: "PDFs editables directo desde un prompt"
-description: "Lee, llena, combina, divide, marca con watermark y genera PDFs — incluyendo detectar y llenar campos AcroForm reales en vez de retipear un formulario como texto en el chat. Viene nativo con Claude; no hay nada que instalar."
+description: "Lee, llena, combina, divide, marca con watermark y genera PDFs — incluyendo detectar y llenar campos AcroForm reales en vez de retipear un formulario como texto en el chat. Ya viene incluido: no hay nada que instalar."
 license: "proprietary"
 licenseUrl: "https://github.com/anthropics/skills/blob/main/skills/pdf/LICENSE.txt"
 marketplaceSource: "anthropic"

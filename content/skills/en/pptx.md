@@ -6,7 +6,7 @@ vendors: ["claude"]
 author: "Anthropic"
 status: available
 tagline: "PowerPoint at the speed of prompt"
-description: "Builds and edits PowerPoint decks (.pptx/.potx) with real slide layouts, native charts, speaker notes, and template reuse — instead of a bullet-point outline pretending to be a deck. Ships natively with Claude; nothing to install."
+description: "Builds and edits PowerPoint decks (.pptx/.potx) with real slide layouts, native charts, speaker notes, and template reuse — instead of a bullet-point outline pretending to be a deck. Included by default; nothing to install."
 license: "proprietary"
 licenseUrl: "https://github.com/anthropics/skills/blob/main/skills/pptx/LICENSE.txt"
 marketplaceSource: "anthropic"
