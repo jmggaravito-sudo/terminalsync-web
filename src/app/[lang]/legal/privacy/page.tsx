@@ -152,7 +152,8 @@ export default async function PrivacyPage({ params }: Props) {
             empresa, no lo pongas en Contexto:{" "}
             <a href="https://z.ai/terms/privacy-policy">su política</a>.</li>
           <li><strong>Cloudflare</strong>: el servidor intermedio por el que ese
-            pedido viaja hacia Z.ai. Verifica que tu plan esté al día y cuenta
+            pedido viaja hacia Z.ai (y, si la IA busca negocios o reseñas, hacia
+            SearchApi). Verifica que tu plan esté al día y cuenta
             cuánto usaste. <strong>No guarda el contenido</strong> de lo que
             pasa por ahí: del uso registramos un identificador de tu cuenta, qué
             modelo se usó, cuánto texto entró y salió, y cuánto costó — nunca el
@@ -336,7 +337,8 @@ export default async function PrivacyPage({ params }: Props) {
           don't put it in Context:{" "}
           <a href="https://z.ai/terms/privacy-policy">their policy</a>.</li>
         <li><strong>Cloudflare</strong>: the middle server that request travels
-          through on its way to Z.ai. It checks that your plan is current and
+          through on its way to Z.ai (and, when the AI looks up businesses or
+          reviews, to SearchApi). It checks that your plan is current and
           counts how much you used. <strong>It does not store the content</strong>{" "}
           that passes through it: of your usage we record an identifier for your
           account, which model was used, how much text went in and out, and what
