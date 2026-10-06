@@ -36,6 +36,15 @@ import { join } from "node:path";
  *  metadatos de la ficha y no se miran: lo que se mira es el copy. */
 const PROVEEDOR = /\b(Claude|ChatGPT|GPT-?\d|Gemini|OpenAI|Anthropic|GLM|Copilot)\b/;
 
+/** Solo los ASISTENTES — el que le contesta al cliente. Se separa de
+ *  `PROVEEDOR` porque los subtítulos sí pueden nombrar a una EMPRESA cuando
+ *  distinguen de qué variante es el conector: la ficha de Drive dice
+ *  "(versión Anthropic)" para separar el conector oficial de Anthropic del
+ *  curado por TerminalSync, y borrar eso volvería indistinguibles a los dos.
+ *  Nombrar la empresa que publica un paquete no le dice al cliente quién le
+ *  contesta; nombrar el asistente, sí — y para la mayoría sería falso. */
+const ASISTENTE = /\b(Claude Code|Claude|ChatGPT|GPT-?\d|Gemini|Copilot|Codex|GLM)\b/;
+
 /** Palabras de programador que no van en copy para un director. En español
  *  se suman las intrusiones del inglés; en inglés, "charts" o "slides" son
  *  palabras normales y no entran. */
@@ -43,6 +52,24 @@ const JERGA: Record<string, RegExp> = {
   es: /\b(workbooks?|charts?|inputs?|outputs?|deck|layouts?|templates?|speaker|slides?|headers?|endpoints?|webhooks?|shippear|parsear|deployar|hardcodead\w*)\b/i,
   en: /\b(hardcoded|endpoints?|webhooks?|SDK|stdout|regex)\b/i,
 };
+
+/** Todo lo que el explorador muestra en la tarjeta. `tagline` y
+ *  `description` son la vista principal; los cuatro `simple*`/`dev*` son las
+ *  vistas simple y técnica de la misma tarjeta. Se olvidaron en la primera
+ *  versión de este guardia y ahí seguían escondidos seis "Claude": el
+ *  subtítulo de Airtable decía "ahora Claude los lee también". */
+const CAMPOS_TARJETA = [
+  "tagline",
+  "description",
+  "simpleTitle",
+  "simpleSubtitle",
+  "devTitle",
+  "devSubtitle",
+] as const;
+
+/** `author` y `originalAuthor` quedan FUERA a propósito: ahí "Anthropic" es
+ *  la autoría real del paquete. Cambiarlo no sería limpiar copy, sería
+ *  falsear quién lo escribió. */
 
 type Tarjeta = { archivo: string; idioma: string; campo: string; texto: string };
 
@@ -60,7 +87,7 @@ function tarjetas(): Tarjeta[] {
         const crudo = readFileSync(archivo, "utf8");
         const fm = /^---\n([\s\S]*?)\n---\n/.exec(crudo);
         if (!fm) continue;
-        for (const campo of ["tagline", "description"]) {
+        for (const campo of CAMPOS_TARJETA) {
           const v = new RegExp(`^${campo}:\\s*"(.*)"\\s*$`, "m").exec(fm[1]);
           if (v) out.push({ archivo, idioma, campo, texto: v[1] });
         }
@@ -77,8 +104,20 @@ describe("el texto de las tarjetas del catálogo", () => {
     expect(TARJETAS.length).toBeGreaterThan(100);
   });
 
-  it("no le nombra ningún modelo ni proveedor de IA al cliente", () => {
-    const h = TARJETAS.filter((t) => PROVEEDOR.test(t.texto)).map(
+  it("no le nombra ningún asistente de IA al cliente, en ningún campo de la tarjeta", () => {
+    const h = TARJETAS.filter((t) => ASISTENTE.test(t.texto)).map(
+      (t) => `${t.archivo} [${t.campo}] «${ASISTENTE.exec(t.texto)?.[0]}» — ${t.texto.slice(0, 70)}`,
+    );
+    expect(
+      h,
+      `El catálogo no nombra al asistente: el cliente con la IA incluida no está usando lo que la tarjeta dice.\n` +
+        `"tu IA" en vez del nombre de un producto.\n${h.join("\n")}`,
+    ).toEqual([]);
+  });
+
+  it("el titular y la descripción tampoco nombran a la empresa proveedora", () => {
+    const principal = TARJETAS.filter((t) => t.campo === "tagline" || t.campo === "description");
+    const h = principal.filter((t) => PROVEEDOR.test(t.texto)).map(
       (t) => `${t.archivo} [${t.campo}] «${PROVEEDOR.exec(t.texto)?.[0]}» — ${t.texto.slice(0, 70)}`,
     );
     expect(
@@ -88,8 +127,16 @@ describe("el texto de las tarjetas del catálogo", () => {
     ).toEqual([]);
   });
 
-  it("no usa jerga de programador", () => {
-    const h = TARJETAS.filter((t) => JERGA[t.idioma]?.test(t.texto)).map(
+  it("no usa jerga de programador en la vista simple", () => {
+    // Solo la vista que lee el cliente no técnico. Los campos `dev*` son la
+    // vista para desarrolladores — están escritos a propósito en su
+    // vocabulario, y a veces en inglés dentro de una ficha en español.
+    // Aplicarles esta regla da falsos positivos que además son correctos:
+    // "Slides" en la ficha de Drive es Google Slides, y "templates" en la de
+    // WhatsApp son las plantillas de mensaje de WhatsApp Business. Ninguna
+    // de las dos es jerga: son los nombres de las cosas.
+    const simples = TARJETAS.filter((t) => !t.campo.startsWith("dev"));
+    const h = simples.filter((t) => JERGA[t.idioma]?.test(t.texto)).map(
       (t) => `${t.archivo} [${t.campo}] «${JERGA[t.idioma].exec(t.texto)?.[0]}» — ${t.texto.slice(0, 70)}`,
     );
     expect(

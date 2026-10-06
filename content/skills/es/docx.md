@@ -33,9 +33,9 @@ No la uses para PDFs, planillas, presentaciones o Google Docs — para eso está
 ## Cómo usarlo
 
 1. Pedí el entregable directamente: *"Armá una propuesta de una página para Acme basada en los wins del trimestre pasado, formato nuestro de 4 páginas."*
-2. Compartí el contenido fuente — notas, un export del CRM, un doc existente — para que Claude trabaje con contenido real en vez de inventar números o afirmaciones.
+2. Compartí el contenido fuente — notas, un export del CRM, un doc existente — para que la IA trabaje con contenido real en vez de inventar números o afirmaciones.
 3. Para editar un archivo que ya tenés, compartilo y decí exactamente qué debe cambiar: un buscar-y-reemplazar, la reescritura de una sección, o qué cambios controlados aceptar o rechazar.
-4. Abrí el archivo exportado en Word, Pages o Google Docs para una última lectura. Claude revisa su propio render por roturas de formato, pero el tono y las decisiones de negocio siguen siendo tuyas.
+4. Abrí el archivo exportado en Word, Pages o Google Docs para una última lectura. La IA revisa su propio render por roturas de formato, pero el tono y las decisiones de negocio siguen siendo tuyas.
 
 ## Ideal para
 

@@ -33,9 +33,9 @@ Do not use it for PDFs, spreadsheets, slide decks, or Google Docs — that's the
 ## How to use
 
 1. Ask for the deliverable directly: *"Draft a one-page proposal for Acme based on last quarter's wins, use our standard 4-page format."*
-2. Share the source material — notes, a CRM export, an existing doc — so Claude works from real content instead of inventing numbers or claims.
+2. Share the source material — notes, a CRM export, an existing doc — so the AI works from real content instead of inventing numbers or claims.
 3. To edit a file you already have, share it and say exactly what should change: a find-and-replace, a section rewrite, or which tracked changes to accept or reject.
-4. Open the exported file in Word, Pages, or Google Docs for a final read. Claude checks its own render for formatting breakage, but tone and business judgment calls are still yours.
+4. Open the exported file in Word, Pages, or Google Docs for a final read. The AI checks its own render for formatting breakage, but tone and business judgment calls are still yours.
 
 ## Best for
 

@@ -4,7 +4,7 @@ logo: /connectors/meta-social.svg
 category: messaging
 status: available
 simpleTitle: "Post to Instagram and Facebook without opening either app"
-simpleSubtitle: "Write the caption, pick the picture — Claude posts it to your feeds. You approve, it posts."
+simpleSubtitle: "Write the caption, pick the picture — your AI posts it to your feeds. You approve, it posts."
 devTitle: "Instagram + Facebook publishing (via Meta Graph API)"
 devSubtitle: "OAuth page + IG tokens, two-step IG media publish, direct Page feed posts — behind a mandatory approval gate."
 ctaUrl: "https://developers.facebook.com/docs/instagram-platform/content-publishing"
@@ -17,7 +17,7 @@ firstParty: true
 ---
 Built on Meta's official Graph API — the same family that powers our WhatsApp connector. It lets you publish a post (image + caption) to your **Instagram** and your **Facebook Page** without opening either app.
 
-Claude drafts the caption in your tone, attaches the image, and shows you exactly what will go out — to which account. Nothing publishes until you say yes. Posting is public and can't be undone, so the approval step is not optional: **you approve, it posts.**
+The AI drafts the caption in your tone, attaches the image, and shows you exactly what will go out — to which account. Nothing publishes until you say yes. Posting is public and can't be undone, so the approval step is not optional: **you approve, it posts.**
 
 ### What you can ask
 

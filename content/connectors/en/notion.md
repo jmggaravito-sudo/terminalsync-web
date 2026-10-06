@@ -46,7 +46,7 @@ With this connector, the agent reads your workspace directly (with your permissi
 You need a Notion **Internal Integration**, which generates a `secret_xxx`-style token.
 
 1. Go to [notion.so/profile/integrations](https://www.notion.so/profile/integrations).
-2. Click "+ New integration". Name it something like "Terminal Sync — Claude". Capabilities: leave the defaults (Read content, Update content, Insert content) or adjust to taste.
+2. Click "+ New integration". Name it something like "Terminal Sync". Capabilities: leave the defaults (Read content, Update content, Insert content) or adjust to taste.
 3. Save and copy the "Internal Integration Secret".
 4. **Important** — Notion requires you to explicitly share each page or database with the integration. Two ways: (a) in your integration's Access tab pick pages/databases; (b) per page, open the "..." menu → Connect to integration → pick yours. What you don't share, it can't see.
 5. Paste the token when the Lab asks for `NOTION_API_KEY`. Encrypted in your Keychain.
