@@ -5,8 +5,8 @@ category: productivity
 vendors: ["claude"]
 author: "Anthropic"
 status: available
-tagline: "PowerPoint a velocidad de prompt"
-description: "Arma y edita presentaciones PowerPoint (.pptx/.potx) con layouts de slide reales, charts nativos, notas de speaker y reuso de templates — en vez de un esquema de viñetas disfrazado de deck. Ya viene incluido: no hay nada que instalar."
+tagline: "Presentaciones listas para proyectar"
+description: "Crea y edita presentaciones de PowerPoint (.pptx y .potx) con diseños de diapositiva de verdad, gráficos propios de PowerPoint, notas para quien expone y reuso de tus plantillas — en vez de una lista de viñetas disfrazada de presentación. Ya viene incluido: no hay nada que instalar."
 license: "proprietary"
 licenseUrl: "https://github.com/anthropics/skills/blob/main/skills/pptx/LICENSE.txt"
 marketplaceSource: "anthropic"
