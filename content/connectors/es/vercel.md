@@ -20,7 +20,7 @@ aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
-Si deployas en Vercel, puedes preguntarle a Claude el status de builds, revisar logs de errores, promover deploys de preview a producción, o agregar variables de entorno — todo sin abrir el dashboard.
+Si deployas en Vercel, puedes preguntarle a la IA el estado de los builds, revisar logs de errores, promover deploys de preview a producción, o agregar variables de entorno — todo sin abrir el dashboard.
 
 --- dev ---
 

@@ -5,8 +5,8 @@ category: productivity
 vendors: ["claude"]
 author: "Anthropic"
 status: available
-tagline: "Excel without the formula hunt"
-description: "Builds and edits Excel workbooks (.xlsx/.xlsm) with real formulas, conditional formatting, and charts — the sheet recalculates when inputs change, instead of shipping hardcoded numbers that look like formulas. Ships natively with Claude; nothing to install."
+tagline: "Excel that recalculates itself"
+description: "Creates and edits Excel files (.xlsx and .xlsm) with real formulas, conditional formatting, and charts. Change a number and the sheet recalculates on its own — these are not fixed values typed in by hand that only look like formulas. Included by default; nothing to install."
 license: "proprietary"
 licenseUrl: "https://github.com/anthropics/skills/blob/main/skills/xlsx/LICENSE.txt"
 marketplaceSource: "anthropic"

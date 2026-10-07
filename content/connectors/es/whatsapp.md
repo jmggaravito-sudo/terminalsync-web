@@ -4,7 +4,7 @@ logo: /connectors/whatsapp.svg
 category: messaging
 status: soon
 simpleTitle: "Tu WhatsApp Business, con IA que responde"
-simpleSubtitle: "Claude contesta tus clientes automáticamente mientras duermes. Tú apruebas, él envía."
+simpleSubtitle: "Tu IA contesta tus clientes automáticamente mientras duermes. Tú apruebas, él envía."
 devTitle: "WhatsApp Business MCP (via Meta Cloud API)"
 devSubtitle: "Programmatic access to conversations, templates, and outbound sends."
 ctaUrl: "https://business.whatsapp.com"
@@ -20,7 +20,7 @@ aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
-Pensado para negocios en LatAm donde WhatsApp es el canal principal. Claude te ayuda a:
+Pensado para negocios en LatAm donde WhatsApp es el canal principal. La IA te ayuda a:
 
 - Responder preguntas frecuentes con tu tono
 - Triagear qué conversaciones necesitan humano
@@ -32,7 +32,7 @@ Viene con tu approval layer: ningún mensaje sale sin que lo autorices (o puedes
 
 --- dev ---
 
-Bridges to Meta's WhatsApp Business Cloud API. Claude gets tools for: `list_conversations`, `read_thread`, `send_template`, `send_free_form` (within 24h window), `react`, `mark_read`.
+Bridges to Meta's WhatsApp Business Cloud API. The AI gets tools for: `list_conversations`, `read_thread`, `send_template`, `send_free_form` (within 24h window), `react`, `mark_read`.
 
 Terminal Sync syncs your WABA phone_number_id + access_token across machines. Rate limits and template approval handled at the MCP server level.
 

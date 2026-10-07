@@ -46,7 +46,7 @@ Con este conector, el agente lee tu workspace directamente (con tu permiso) y te
 Necesitas una **Internal Integration** de Notion, que te genera un token al estilo `secret_xxx`.
 
 1. Ve a [notion.so/profile/integrations](https://www.notion.so/profile/integrations).
-2. Click "+ New integration". Ponle un nombre tipo "Terminal Sync — Claude". Capacities: deja las defaults (Read content, Update content, Insert content) o ajusta según quieras.
+2. Click "+ New integration". Ponle un nombre tipo "Terminal Sync". Capacities: deja las defaults (Read content, Update content, Insert content) o ajusta según quieras.
 3. Guarda y copia el "Internal Integration Secret".
 4. **Importante** — Notion exige que tú compartas explícitamente cada página o database con la integration. Dos formas: (a) en la pestaña Access de tu integration eliges páginas/databases; (b) por página, abres el menú "..." → Connect to integration → buscas la tuya. Lo que no compartas, no se ve.
 5. Pega el token cuando el Lab te pida `NOTION_API_KEY`. Cifrado en tu Keychain.

@@ -50,7 +50,7 @@ To enable it, pass `--read-only` to the server or use a read-only Postgres role 
 You need a Supabase **Personal Access Token (PAT)** — the server operates *"under the context of your developer permissions"* via this PAT. Different from the `service_role` or `anon` key of your project.
 
 1. Go to [supabase.com/dashboard/account/tokens](https://supabase.com/dashboard/account/tokens).
-2. Click "Generate new token". Name it something like "Terminal Sync — Claude".
+2. Click "Generate new token". Name it something like "Terminal Sync".
 3. Copy it (you only see it once) and paste it when the Lab asks for `SUPABASE_ACCESS_TOKEN`. Encrypted in your Keychain.
 
 The PAT's scope is your **Supabase account**: the agent can see every project where you're owner/member. For critical production, we recommend a separate Supabase project as an "agent sandbox", or a dedicated account.
