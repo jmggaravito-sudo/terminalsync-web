@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  *
  * The /api/download CTA still points at the desktop installer —
  * the dev landing is positioning, not a separate product. The
- * differentiator is the Dev plan ($39/mo) which gets natural
+ * differentiator is the Max plan ($54/mo) which gets natural
  * spotlight via the Pricing card flow.
  */
 export default async function DevLanding({ params }: Props) {
