@@ -64,6 +64,7 @@
     "Control por Telegram": "Telegram control",
     "Las herramientas que ya usas,": "The tools you already use,",
     "ahora con la IA adentro": "now with the AI inside",
+    "Terminal Sync organiza documentos y correos en espacios de trabajo con IA. Conecta Gmail en modo solo lectura y elige qué mensajes usar como contexto.": "Terminal Sync organizes documents and emails in AI workspaces. Connect Gmail in read-only mode and choose which messages to use as context.",
     "Conecta lo que tu empresa ya tiene abierto": "Connect what your company already has open",
     "Meta, Facebook, Instagram y WhatsApp. Gmail, Drive, Sheets, Notion, Stripe y decenas más en el": "Meta, Facebook, Instagram and WhatsApp. Gmail, Drive, Sheets, Notion, Stripe and dozens more in the",
     "catálogo": "catalog",
