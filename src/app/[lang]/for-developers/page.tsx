@@ -12,6 +12,7 @@ import { DevComparison } from "@/components/dev-landing/DevComparison";
 import { DevAffiliates } from "@/components/dev-landing/DevAffiliates";
 import { DevFAQ } from "@/components/dev-landing/DevFAQ";
 import { getDevCopy } from "@/components/dev-landing/copy";
+import { MULTI_AI_PUBLIC } from "@/lib/launchFlags";
 
 export const revalidate = 3600;
 
@@ -51,6 +52,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function DevLanding({ params }: Props) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
+  // JM 2026-10-07: esta página es, de punta a punta, "memoria compartida
+  // entre Claude, Codex y Gemini" — el título, el eyebrow, el titular y la
+  // FAQ. No es copy suelta que se pueda reescribir: es el tema. La primera
+  // etapa no lo menciona, así que sale de la vista entera, con su entrada
+  // del sitemap. Vuelve con MULTI_AI_PUBLIC en `true`.
+  if (!MULTI_AI_PUBLIC) notFound();
   const dict = getDict(lang);
   const copy = getDevCopy(lang);
 

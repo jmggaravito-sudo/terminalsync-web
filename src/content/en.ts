@@ -94,8 +94,8 @@ const en: Dict = {
         body: "It lives on your own computer, not our servers. No one else can read it. If you want it on all your machines, we sync it encrypted to your own cloud.",
       },
       {
-        title: "Works with any AI",
-        body: "One memory for your whole AI team — Claude, Codex and whatever comes next. You don't repeat it for each one.",
+        title: "One memory, across every workspace",
+        body: "What your business learns in one workspace it knows in all of them. You don't repeat it for each one.",
       },
       {
         title: "Finds what matters",
@@ -618,7 +618,7 @@ const en: Dict = {
     tagline: "Sales & support · Online",
     close: "Close",
     greeting:
-      "Hi! I'm your TS assistant. I can help with Claude Code, Codex, Gemini, memory, connectors, plans or technical issues. What are you trying to do?",
+      "Hi! I'm your TS assistant. I can help with workspaces, memory, connectors, plans or technical issues. What are you trying to do?",
     placeholder: "Type your message…",
     send: "Send",
     you: "You",
@@ -630,7 +630,7 @@ const en: Dict = {
     ],
     replies: {
       install:
-        "Download TS, create a workspace and choose the AI you want to use: Claude Code, Codex, Gemini CLI or No AI. In Integrations you can configure connectors, skills and workspace tools. Tell me your use case and I can recommend the best starting point.",
+        "Download TS and create a workspace: the AI is included and ready, nothing to choose and nothing to connect. In Integrations you can configure connectors, skills and workspace tools. Tell me your use case and I can recommend the best starting point.",
       pricing:
         "There are plans for trying the product, power users and technical users/teams. Starter is for getting started; Pro adds advanced capabilities like memory/integrations; Max is for Git-native sync, secrets vault and our most complete workflows. Check Pricing for the current details. Want me to recommend a plan for your use case?",
       security:

@@ -54,3 +54,37 @@ export const CHROME_EXTENSION_PUBLIC = false;
  * checkout, conectores, legales — queda intacto con su Nav.
  */
 export const LANDING_B = true;
+
+/**
+ * ¿El sitio menciona que se trabaja con varias IAs (Claude, Codex, Gemini)?
+ *
+ * **Apagado el 2026-10-07 por decisión de JM** ("saca lo de las 3 IAs
+ * también… en esta primera etapa no quiero mencionar nada de eso"). Mismo
+ * criterio que `CHROME_EXTENSION_PUBLIC`: apagar es cambiar a `false`, las
+ * páginas y su copy siguen enteras, y volver a mostrarlas es un `true`.
+ *
+ * El motivo de fondo es que hoy la promesa no es cierta: la app **no permite**
+ * conectar una cuenta propia de Claude, Codex o Gemini. El modo avanzado
+ * arranca apagado en la build de cliente y no hay forma de prenderlo — la
+ * función que lo prende no la llama nadie y la pantalla de opciones avanzadas
+ * no está construida. Quien llegue por "las 3 IAs" se instala otra cosa.
+ *
+ * Qué corta: las páginas cuyo TEMA es trabajar con varias IAs —
+ * `/[lang]/ai-terminal`, `/[lang]/casos-de-uso` y las tres guías
+ * `sync-claude-code-between-macs`, `sync-codex-between-macs` y
+ * `sync-gemini-cli-between-macs` — y sus entradas en el sitemap.
+ *
+ * Qué NO corta, a propósito:
+ *
+ * - Las páginas `/[lang]/vs/<herramienta>`. Son comparativas con
+ *   competidores; nombrar a Cursor, Copilot o Gemini ahí es normal y no es
+ *   ofrecer traer tu cuenta. Las frases que SÍ lo ofrecían ("corre TU Claude,
+ *   Codex o Gemini", "las 3 IAs en una, con tu cuenta") se reescribieron en
+ *   el mismo cambio, así que esas páginas ya no prometen nada falso.
+ * - La página de privacidad de la extensión y los legales.
+ *
+ * 🚨 Apagar esto saca de circulación URLs que ya están indexadas. Es el costo
+ * aceptado de no prometer lo que el producto no hace; volver a prenderlo las
+ * devuelve, pero el ranking tarda en recuperarse.
+ */
+export const MULTI_AI_PUBLIC = false;

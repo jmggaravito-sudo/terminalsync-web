@@ -94,8 +94,8 @@ const es: Dict = {
         body: "Vive en tu propia computadora, no en nuestros servidores. Nadie más la puede leer. Si quieres tenerla en todos tus equipos, la sincronizamos cifrada a tu propia nube.",
       },
       {
-        title: "Funciona con cualquier IA",
-        body: "Una sola memoria para todo tu equipo de IAs — Claude, Codex y las que vengan. No la repites en cada una.",
+        title: "Una sola memoria, en todos tus espacios",
+        body: "Lo que tu empresa aprende en un espacio de trabajo lo sabe en todos. No lo repites en cada uno.",
       },
       {
         title: "Encuentra lo que importa",
@@ -618,7 +618,7 @@ const es: Dict = {
     tagline: "Ventas y soporte · En línea",
     close: "Cerrar",
     greeting:
-      "¡Hola! Soy tu asistente de TS. Puedo ayudarte con Claude Code, Codex, Gemini, memoria, conectores, planes o problemas técnicos. ¿Qué quieres hacer?",
+      "¡Hola! Soy tu asistente de TS. Puedo ayudarte con espacios de trabajo, memoria, conectores, planes o problemas técnicos. ¿Qué quieres hacer?",
     placeholder: "Escribe tu mensaje…",
     send: "Enviar",
     you: "Tú",
@@ -630,7 +630,7 @@ const es: Dict = {
     ],
     replies: {
       install:
-        "Descarga TS, crea un espacio de trabajo y elige la IA que quieres usar: Claude Code, Codex, Gemini CLI o Sin IA. Desde Integraciones puedes configurar conectores, skills y herramientas del espacio de trabajo. Si me dices tu caso de uso, te recomiendo por dónde empezar.",
+        "Descarga TS y crea un espacio de trabajo: la IA viene incluida y lista, no tienes que elegir ni conectar nada. Desde Integraciones puedes configurar conectores, skills y herramientas del espacio de trabajo. Si me dices tu caso de uso, te recomiendo por dónde empezar.",
       pricing:
         "Tenemos planes para probar, power users y usuarios técnicos/equipos. Starter sirve para empezar; Pro agrega capacidades avanzadas como memoria/integraciones; Max está pensado para Git-native sync, vault de secretos y workflows más completos. Mira la sección de Precios para el detalle actualizado. ¿Quieres que te recomiende un plan según tu uso?",
       security:
