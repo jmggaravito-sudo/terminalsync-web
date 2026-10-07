@@ -871,6 +871,8 @@
     "Primero revisa el aviso de la aplicación y vuelve a intentar solo si la acción lo indica. Si hay riesgo de perder datos, un cobro, un problema de seguridad o un fallo repetido de sincronización, pide ayuda humana y conserva el mensaje de error sin compartir secretos.": "First read the app's notice and retry only if the action tells you to. If there is a risk of data loss, a charge, a security problem, or repeated sync failure, ask for human help and keep the error message without sharing secrets.",
     "Ver más preguntas": "See more questions",
     "Ver menos": "See less",
+    "Ideas prácticas para el trabajo de todos los días": "Practical ideas for everyday work",
+    "Elige un área y explora ejemplos concretos que puedes adaptar a tu negocio.": "Choose an area and explore concrete examples you can adapt to your business.",
     "Claro": "Light",
     "Oscuro": "Dark"
   };
