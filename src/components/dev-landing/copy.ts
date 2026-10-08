@@ -158,12 +158,12 @@ const en: DevCopy = {
       "If your audience codes, they need this. Refer once, get paid every month they stay subscribed.",
     items: [
       {
-        kicker: "$19 / mo",
-        body: "Pro plan — $5.70/mo per active referral, every month they stay.",
+        kicker: "$34 / mo",
+        body: "Pro plan — $10.20/mo per active referral, every month they stay.",
       },
       {
-        kicker: "$39 / mo",
-        body: "Max plan — $11.70/mo per active referral, every month they stay.",
+        kicker: "$54 / mo",
+        body: "Max plan — $16.20/mo per active referral, every month they stay.",
       },
       {
         kicker: "Stripe direct",
@@ -194,7 +194,7 @@ const en: DevCopy = {
       },
       {
         q: "Why pay for Pro tier specifically?",
-        a: "Pro unlocks Git-native sync (commits memory alongside your repo), the .env vault, 10 active terminals, persistent memory across AIs, the Chrome Extension with the 3-AIs-side-by-side mode, and pre-built MCP connectors for GitHub, Postgres, Supabase, and Slack. If you're shipping prod code with AI assistance, Pro pays for itself the first time it saves you from re-explaining your stack. Max ($39) is for power users who need unlimited terminals and 10 devices.",
+        a: "Pro unlocks Git-native sync (commits memory alongside your repo), the .env vault, 10 active terminals, persistent memory across AIs, the Chrome Extension with the 3-AIs-side-by-side mode, and pre-built MCP connectors for GitHub, Postgres, Supabase, and Slack. If you're shipping prod code with AI assistance, Pro pays for itself the first time it saves you from re-explaining your stack. Max ($54) is for power users who need unlimited workspaces and 10 devices.",
       },
     ],
   },
@@ -285,12 +285,12 @@ const es: DevCopy = {
       "Si tu audiencia escribe código, esto les hace falta. Referís una vez, cobrás cada mes que estén suscriptos.",
     items: [
       {
-        kicker: "$19 / mes",
-        body: "Plan Pro — $5.70/mes por referido activo, cada mes que sigan pagando.",
+        kicker: "$34 / mes",
+        body: "Plan Pro — $10.20/mes por referido activo, cada mes que sigan pagando.",
       },
       {
-        kicker: "$39 / mes",
-        body: "Plan Max — $11.70/mes por referido activo, cada mes que sigan pagando.",
+        kicker: "$54 / mes",
+        body: "Plan Max — $16.20/mes por referido activo, cada mes que sigan pagando.",
       },
       {
         kicker: "Stripe directo",
@@ -321,7 +321,7 @@ const es: DevCopy = {
       },
       {
         q: "¿Por qué pagar específicamente por el plan Pro?",
-        a: "Pro habilita Git-native sync (commit de memoria al lado del repo), el .env vault, 10 terminales activas, memoria persistente entre IAs, la Extensión Chrome con el modo 3-IAs en paralelo, y connectors MCP pre-armados para GitHub, Postgres, Supabase y Slack. Si shippeás código a producción con IA, Pro se paga solo la primera vez que te evita re-explicar tu stack. Max ($39) es para power users que necesitan terminales ilimitadas y 10 dispositivos.",
+        a: "Pro habilita Git-native sync (commit de memoria al lado del repo), el .env vault, 10 terminales activas, memoria persistente entre IAs, la Extensión Chrome con el modo 3-IAs en paralelo, y connectors MCP pre-armados para GitHub, Postgres, Supabase y Slack. Si shippeás código a producción con IA, Pro se paga solo la primera vez que te evita re-explicar tu stack. Max ($54) es para power users que necesitan espacios de trabajo ilimitados y 10 dispositivos.",
       },
     ],
   },

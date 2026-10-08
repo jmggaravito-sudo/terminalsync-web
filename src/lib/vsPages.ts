@@ -104,13 +104,13 @@ export const TOOLS: Record<string, VsTool> = {
       es: [
         "Persistencia real: tu sesión sigue corriendo aunque cierres VS Code o reinicies macOS. Cline se reinicia con cada apertura.",
         "Vault de secretos integrado — tus API keys cifradas con AES-256, no en archivos planos en el repo.",
-        "Sync entre dispositivos: Cline no roamea su estado. TerminalSync mueve tu Cline (y tu Claude, y tu Codex) a cualquier Mac.",
+        "Sync entre dispositivos: Cline no roamea su estado. TerminalSync mueve tu espacio de trabajo entero a cualquier computadora.",
         "Tu sesión en cualquier dispositivo desde el celular — Cline solo vive en el VS Code de tu Mac.",
       ],
       en: [
         "Real persistence: your session keeps running even if you close VS Code or restart macOS. Cline restarts on every open.",
         "Built-in secrets vault — your API keys encrypted with AES-256, not in plain files in the repo.",
-        "Cross-device sync: Cline doesn't roam its state. TerminalSync moves your Cline (and Claude, and Codex) to any Mac.",
+        "Cross-device sync: Cline doesn't roam its state. TerminalSync moves your whole workspace to any computer.",
         "Anywhere Access from your phone — Cline only lives in your Mac's VS Code.",
       ],
     },
@@ -194,13 +194,13 @@ export const TOOLS: Record<string, VsTool> = {
     },
     whyTS: {
       es: [
-        "Corre TU Claude, Codex o Gemini sobre TUS archivos locales — ChatGPT es cloud y solo trabaja sobre lo que le pegás.",
+        "Trabaja sobre TUS archivos locales, con la IA incluida — ChatGPT es nube y solo ve lo que le pegas.",
         "Tu data queda local y cifrada AES-256 antes de salir de tu Mac — ChatGPT procesa todo en los servidores de OpenAI.",
         "Las 3 IAs en una sola app y con tu propia cuenta (BYOK) — ChatGPT te ata a OpenAI.",
         "Tu sesión de trabajo (archivos + contexto) te sigue a cualquier equipo — ChatGPT sincroniza el historial de chat, no tu entorno de trabajo.",
       ],
       en: [
-        "Runs YOUR Claude, Codex, or Gemini on YOUR local files — ChatGPT is cloud and only works on what you paste in.",
+        "Works on YOUR local files, with the AI included — ChatGPT is cloud and only sees what you paste in.",
         "Your data stays local and AES-256 encrypted before it leaves your Mac — ChatGPT processes everything on OpenAI's servers.",
         "All three AIs in one app, with your own account (BYOK) — ChatGPT locks you to OpenAI.",
         "Your working session (files + context) follows you to any device — ChatGPT syncs chat history, not your working environment.",
@@ -241,13 +241,13 @@ export const TOOLS: Record<string, VsTool> = {
     whyTS: {
       es: [
         "Corre tu IA sobre tus archivos locales, no solo dentro de Office — no te ata a Microsoft 365.",
-        "Las 3 IAs (Claude, Codex, Gemini) en una, con tu cuenta — Copilot es el modelo de Microsoft y nada más.",
+        "Una IA incluida que trabaja sobre tus archivos y recuerda tu empresa — Copilot vive dentro del editor y nada más.",
         "Tu data queda local y cifrada antes de salir de tu Mac — Copilot procesa en la nube de Microsoft.",
         "Sin vendor lock-in: te llevás tu setup y tu sesión a cualquier lado.",
       ],
       en: [
         "Runs your AI on your local files, not just inside Office — it doesn't lock you to Microsoft 365.",
-        "All three AIs (Claude, Codex, Gemini) in one, with your account — Copilot is Microsoft's model and nothing else.",
+        "One included AI that works on your files and remembers your business — Copilot lives inside the editor and nothing else.",
         "Your data stays local and encrypted before it leaves your Mac — Copilot processes in Microsoft's cloud.",
         "No vendor lock-in: take your setup and your session anywhere.",
       ],
@@ -286,13 +286,13 @@ export const TOOLS: Record<string, VsTool> = {
     },
     whyTS: {
       es: [
-        "TerminalSync también corre Gemini — pero local, sobre tus archivos, y junto a Claude y Codex en la misma app.",
+        "TerminalSync trabaja local, sobre tus archivos, con su IA incluida y sin que conectes ninguna cuenta.",
         "Tu data queda local y cifrada — Gemini procesa todo en los servidores de Google.",
         "No te ata a Google: elegís la IA por tarea y traés tu propia cuenta.",
         "Tu sesión de trabajo te sigue a cualquier equipo, con aviso cuando la IA te necesita.",
       ],
       en: [
-        "TerminalSync runs Gemini too — but local, on your files, and alongside Claude and Codex in the same app.",
+        "TerminalSync works locally, on your files, with its included AI and no account to connect.",
         "Your data stays local and encrypted — Gemini processes everything on Google's servers.",
         "It doesn't lock you to Google: pick the AI per task and bring your own account.",
         "Your working session follows you to any device, with a ping when the AI needs you.",

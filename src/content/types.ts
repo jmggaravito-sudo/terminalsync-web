@@ -277,14 +277,16 @@ export interface Dict {
     plans: {
       // Después del kill-yearly (2026-05-29) los planes tienen el mismo
       // shape: precio único + features. Pro/Max llevan `badge` que Free no.
-      // proAi/maxAi son Pro/Max con la IA de TerminalSync incluida (sin
-      // cuenta propia de Claude/Codex/Gemini) — mismo tier de terminales,
-      // solo cambia quién paga la IA.
+      //
+      // 2026-10-07: eran cinco. `pro`/`max` eran $19/$39 "traes tu IA" y
+      // `proAi`/`maxAi` eran $34/$54 con la IA incluida. JM retiró las dos
+      // variantes de traer la propia cuenta ("yo por ahora no quiero
+      // ofrecer eso") porque la app no permite conectarla: el interruptor
+      // de opciones avanzadas no se puede prender desde ninguna pantalla.
+      // Quedan tres planes y `pro`/`max` son los que traen la IA incluida.
       starter: Plan;
       pro: PaidPlan;
-      proAi: PaidPlan;
       max: PaidPlan;
-      maxAi: PaidPlan;
     };
   };
   trust: {

@@ -5,18 +5,38 @@ import { ArrowRight, CheckCircle2, HelpCircle, Sparkles } from "lucide-react";
 import { getDict, isLocale, type Locale } from "@/content";
 import { Footer } from "@/components/landing/Footer";
 import { GEO_PAGE_SLUGS, getGeoPage, type GeoPageSlug } from "@/lib/geoPages";
+import { MULTI_AI_PUBLIC } from "@/lib/launchFlags";
 
 const BASE = "https://terminalsync.ai";
+
+/**
+ * Las tres guías cuyo tema entero es sincronizar la IA de otro proveedor.
+ * JM 2026-10-07: la primera etapa no menciona eso. No se borran — salen de
+ * la vista con `MULTI_AI_PUBLIC`, y el set tiene que quedar igual al de
+ * `src/app/sitemap.ts`, que las saca del sitemap por el mismo motivo.
+ */
+const MULTI_AI_GUIDE_SLUGS = new Set([
+  "sync-claude-code-between-macs",
+  "sync-codex-between-macs",
+  "sync-gemini-cli-between-macs",
+]);
+
+function guiaOculta(slug: string): boolean {
+  return !MULTI_AI_PUBLIC && MULTI_AI_GUIDE_SLUGS.has(slug);
+}
 
 interface Props { params: Promise<{ lang: string; slug: string }> }
 
 export async function generateStaticParams() {
-  return ["es", "en"].flatMap((lang) => GEO_PAGE_SLUGS.map((slug) => ({ lang, slug })));
+  return ["es", "en"].flatMap((lang) =>
+    GEO_PAGE_SLUGS.filter((slug) => !guiaOculta(slug)).map((slug) => ({ lang, slug })),
+  );
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, slug } = await params;
   if (!isLocale(lang) || !GEO_PAGE_SLUGS.includes(slug as GeoPageSlug)) return {};
+  if (guiaOculta(slug)) return {};
   const page = getGeoPage(slug as GeoPageSlug, lang as Locale);
   return {
     title: page.title,
@@ -29,6 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function GeoGuidePage({ params }: Props) {
   const { lang, slug } = await params;
   if (!isLocale(lang) || !GEO_PAGE_SLUGS.includes(slug as GeoPageSlug)) notFound();
+  if (guiaOculta(slug)) notFound();
   const d = getDict(lang);
   const page = getGeoPage(slug as GeoPageSlug, lang as Locale);
   const isEs = lang === "es";

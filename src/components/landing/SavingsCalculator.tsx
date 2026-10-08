@@ -40,7 +40,7 @@ const MIX_HEAVY_PREMIUM = 2; // USD/h extra at 100% heavy
 const TIME_SAVING_BASE = 0.30; // 30% saved at all-light
 const TIME_SAVING_HEAVY = 0.20; // 20% saved at all-heavy
 
-const TS_PRO_ANNUAL = 228; // USD — Pro plan @ $19/mo × 12
+const TS_PRO_ANNUAL = 408; // USD — Pro plan @ $34/mo × 12
 
 export function SavingsCalculator({ dict }: { dict: Dict }) {
   // The schema marks this block optional so older translations don't
