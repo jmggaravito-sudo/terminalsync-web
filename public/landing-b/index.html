@@ -229,6 +229,17 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .tile:hover{transform:translateY(-3px);border-color:var(--fg-3)}
 .tile.edge{opacity:.38}
 @media (max-width:720px){.tile.edge{display:none}.tile{width:52px;height:52px;border-radius:13px}.tile img{width:23px;height:23px}.tiles-row{flex-wrap:wrap}}
+/* búsqueda en vivo: fila propia, no son integraciones (lista en src/lib/liveSearchSources.ts) */
+.live-src{max-width:760px;margin:44px auto 0;padding-top:30px;border-top:1px solid var(--line);text-align:center}
+.live-src-h{margin:0;font-size:16px;font-weight:600;letter-spacing:-.01em;color:var(--fg)}
+.live-src-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:18px}
+/* cada fuente es su nombre; el logo solo va si la marca permite usarlo */
+.src-chip{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px;border-radius:13px;background:var(--surface);border:1px solid var(--line);font-size:14.5px;font-weight:550;color:var(--fg);white-space:nowrap}
+.src-chip[hidden]{display:none}
+.src-chip img{width:18px;height:18px;display:block}
+html.var-dark .src-chip.dark-logo img{background:#e8eaee;border-radius:4px;padding:2px}
+.live-src-note{margin:16px auto 0;max-width:62ch;font-size:12px;line-height:1.55;color:var(--fg-3)}
+@media (max-width:720px){.live-src-row{gap:8px}.src-chip{height:36px;padding:0 12px;font-size:13.5px}}
 
 /* ── precios ── */
 .prices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:22px;max-width:800px;margin:44px auto 0}
@@ -458,6 +469,30 @@ html.var-dark .theme-toggle .ic-moon{display:block}
       </div>
     </div>
     <p style="text-align:center;margin-top:30px"><a class="btn btn-ghost btn-sm" href="/es/connectors" data-lhref="/connectors">Ver todas las integraciones</a></p>
+    <!-- Búsqueda en vivo: debe coincidir con LIVE_SEARCH_SOURCES (src/lib/liveSearchSources.ts); lo verifica liveSearchSources.test.ts.
+         Cada fuente va con su nombre; logo solo si la marca permite usarlo (hoy solo Perplexity, ver docs/live-search-sources.md).
+         Las del lote 3 van con hidden y solo aparecen si /api/live-search-sources dice lote3:true (NEXT_PUBLIC_LIVE_SEARCH_LOTE3=1). -->
+    <div class="live-src" data-live-search>
+      <h3 class="live-src-h">La IA de TS busca en vivo en…</h3>
+      <div class="live-src-row" role="list">
+        <span class="src-chip" role="listitem">Google</span>
+        <span class="src-chip" role="listitem">Google Maps</span>
+        <span class="src-chip" role="listitem">YouTube</span>
+        <span class="src-chip" role="listitem">Biblioteca de anuncios de Meta</span>
+        <span class="src-chip" role="listitem">ChatGPT</span>
+        <span class="src-chip" role="listitem"><img src="/sources/perplexity.svg" alt="Perplexity" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">Perplexity</span></span>
+        <span class="src-chip" role="listitem">Yelp</span>
+        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>TikTok</span>
+        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>Instagram</span>
+        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>Facebook</span>
+        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>Tripadvisor</span>
+        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>Amazon</span>
+        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>Walmart</span>
+        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>eBay</span>
+        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>Airbnb</span>
+      </div>
+      <p class="live-src-note">Las marcas pertenecen a sus respectivos dueños. TS consulta información pública; no implica afiliación.</p>
+    </div>
   </div>
 </section>
 
@@ -703,6 +738,19 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 </div>
 
 <script src="/landing-b/i18n.js"></script>
+<script>
+/* Búsqueda en vivo: las fuentes del lote 3 vienen ocultas. Solo se muestran si
+   el build se hizo con NEXT_PUBLIC_LIVE_SEARCH_LOTE3=1; esta página es estática
+   y no lee env vars, así que se lo pregunta a /api/live-search-sources. Si la
+   llamada falla, quedan ocultas (la rama segura). */
+(function(){
+  var later=document.querySelectorAll('[data-live-search] [data-live-search-lote="3"]');
+  if(!later.length||!window.fetch)return;
+  fetch('/api/live-search-sources').then(function(r){return r.ok?r.json():null}).then(function(d){
+    if(d&&d.lote3===true)later.forEach(function(el){el.hidden=false});
+  }).catch(function(){});
+})();
+</script>
 <script>
 (function(){
   const root=document.documentElement, sysDark=matchMedia('(prefers-color-scheme: dark)');
