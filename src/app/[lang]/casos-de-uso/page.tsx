@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/content";
-import { UseCasesExplorer } from "@/components/landing/UseCasesExplorer";
+import { LiveSearchCasesPage } from "@/components/landing/LiveSearchCasesPage";
 
 interface Props {
   params: Promise<{ lang: string }>;
@@ -12,11 +12,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!isLocale(lang)) return {};
   const isEs = lang === "es";
   const title = isEs
-    ? "Casos de uso — TS"
-    : "Use cases — TS";
+    ? "Casos de uso: mercado y competencia — TerminalSync"
+    : "Use cases: market and competitors — TerminalSync";
   const description = isEs
-    ? "28 formas concretas de usar TS para tu negocio. Filtrá por área, IA y nivel."
-    : "28 concrete ways to use TS for your business. Filter by area, AI, and level.";
+    ? "Siete casos prácticos de búsqueda en vivo para entender tu negocio, tus competidores y tu mercado."
+    : "Seven practical live-search use cases to understand your business, competitors, and market.";
   return {
     title,
     description,
@@ -39,5 +39,5 @@ export default async function UseCasesPage({ params }: Props) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
 
-  return <UseCasesExplorer lang={lang} />;
+  return <LiveSearchCasesPage lang={lang} />;
 }

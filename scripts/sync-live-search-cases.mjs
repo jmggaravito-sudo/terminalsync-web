@@ -5,10 +5,10 @@ import path from "node:path";
 import ts from "typescript";
 
 const APP_REPO = "jmggaravito-sudo/terminal-sync";
-const DEFAULT_REF = "release/v0.2.18-lab";
+const DEFAULT_REF = "e04d25d9d63414452fcaa2760e483266e8231ebd";
 const APP_DATA_PATH = "src/data/useCases.ts";
 const LOCALE_PATH = (locale) => `public/locales/${locale}/translation.json`;
-const OUTPUT_PATH = path.resolve("public/landing-b/use-cases-data.js");
+const OUTPUT_PATH = path.resolve("src/content/liveSearchCases.generated.ts");
 const args = process.argv.slice(2);
 const checkOnly = args.includes("--check");
 const sourceRef = args.find((arg) => arg !== "--check") || DEFAULT_REF;
@@ -248,14 +248,14 @@ if (/asistentes de IA|AI assistants/i.test(serializedPayload)) {
 
 const output =
   `/* Generated from ${APP_REPO}@${sourceCommit}; do not edit by hand. */\n` +
-  `window.TS_LIVE_SEARCH_CASES = ${serializedPayload};\n`;
+  `export const LIVE_SEARCH_CASES = ${serializedPayload} as const;\n`;
 
 if (checkOnly) {
   const current = readFileSync(OUTPUT_PATH, "utf8");
   if (current !== output) {
     throw new Error(`${OUTPUT_PATH} is stale; run npm run sync:live-search-cases -- ${sourceRef}.`);
   }
-  console.log(`Live-search landing data is current at ${sourceCommit} (${exportedCases.length} cases).`);
+  console.log(`Standalone live-search cases are current at ${sourceCommit} (${exportedCases.length} cases).`);
 } else {
   writeFileSync(OUTPUT_PATH, output);
   console.log(`Wrote ${OUTPUT_PATH} from ${APP_REPO}@${sourceCommit} (${exportedCases.length} cases).`);
