@@ -40,7 +40,7 @@ Pregúntale *"Muéstrame las facturas que le emitimos al NIT 900123456 este mes"
 Siigo se conecta con **credenciales de API** de tu propia cuenta de Siigo Nube:
 
 1. En Siigo Nube abre **Alianzas** en el menú izquierdo y pulsa **Mi Credencial API** para obtener tu usuario y tu clave de acceso ([cómo lo explica Siigo](https://developers.siigo.com/docs/siigoapi/autenticacion/autenticacion)).
-2. Pégalas cuando el Lab te pida `SIIGO_USERNAME` y `SIIGO_ACCESS_KEY`. Quedan guardadas cifradas en tu Keychain — nunca se escriben en el chat.
+2. Pégalas cuando el Lab te pida `SIIGO_USERNAME` y `SIIGO_ACCESS_KEY`. Quedan guardadas cifradas en Secretos de la app — nunca se escriben en el chat.
 
 **Divulgación honesta:** este conector es un **build de la comunidad**, **no está publicado ni avalado por Siigo**, y está en **beta**: se probó con respuestas simuladas, todavía no contra una cuenta real de Siigo. Cada request identifica el software ante Siigo con el header `Partner-Id` que Siigo exige. Siigo puede bloquear temporalmente a un usuario API cuyos requests fallan en su mayoría, así que el conector nunca reintenta a ciegas. Puede leer lo que tu credencial de API pueda leer en tu empresa.
 
@@ -48,7 +48,7 @@ Siigo se conecta con **credenciales de API** de tu propia cuenta de Siigo Nube:
 
 `siigo-mcp` es un servidor MCP stdio (Node ≥ 20) sobre la API oficial de Siigo en `https://api.siigo.com`. Se autentica con `POST /auth` (`username` + `access_key`), guarda el token Bearer de 24 horas y lo renueva 5 minutos antes, y envía el header obligatorio `Partner-Id` (por defecto `TerminalSync`, configurable con `SIIGO_PARTNER_ID`).
 
-Herramientas (todas `readOnlyHint`): `siigo_list_customers` (`GET /v1/customers`), `siigo_list_invoices` (`GET /v1/invoices`), `siigo_get_invoice` (`GET /v1/invoices/{id}`), `siigo_list_products` (`GET /v1/products`), `siigo_get_product` (`GET /v1/products/{id}`). Las de listado aceptan `page` y `page_size` (tope 100) más los filtros que documenta Siigo.
+Herramientas (todas `readOnlyHint`): `list_customers` (`GET /v1/customers`), `list_invoices` (`GET /v1/invoices`), `get_invoice` (`GET /v1/invoices/{id}`), `list_products` (`GET /v1/products`), `get_product` (`GET /v1/products/{id}`). Las de listado aceptan `page` y `page_size` (tope 100) más los filtros que documenta Siigo.
 
 Un `401` dispara una reautenticación y un reintento; nada más se reintenta.
 

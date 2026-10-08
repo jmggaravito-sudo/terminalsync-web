@@ -40,7 +40,7 @@ Ask *"Show me the invoices we issued to NIT 900123456 this month"* and it lists 
 Siigo connects with **API credentials** from your own Siigo Nube account:
 
 1. In Siigo Nube, open **Alianzas** in the left menu and press **Mi Credencial API** to get your username and access key ([how Siigo describes it](https://developers.siigo.com/docs/siigoapi/autenticacion/autenticacion)).
-2. Paste them when the Lab asks for `SIIGO_USERNAME` and `SIIGO_ACCESS_KEY`. They are stored encrypted in your Keychain — never typed into the chat.
+2. Paste them when the Lab asks for `SIIGO_USERNAME` and `SIIGO_ACCESS_KEY`. They are saved encrypted in the app's Secrets vault — never typed into the chat.
 
 **Honest disclosure:** this is a **community-built** connector, **not published or endorsed by Siigo**, and it is **beta**: it has been tested against simulated responses, not yet against a live Siigo account. Every request identifies the software to Siigo with the `Partner-Id` header Siigo requires. Siigo may temporarily block an API user whose requests mostly fail, so the connector never retries blindly. It can read whatever your API credential can read in your company.
 
@@ -48,7 +48,7 @@ Siigo connects with **API credentials** from your own Siigo Nube account:
 
 `siigo-mcp` is a stdio MCP server (Node ≥ 20) over the official Siigo API at `https://api.siigo.com`. It authenticates with `POST /auth` (`username` + `access_key`), caches the 24-hour Bearer token and renews it 5 minutes early, and sends the mandatory `Partner-Id` header (default `TerminalSync`, overridable with `SIIGO_PARTNER_ID`).
 
-Tools (all `readOnlyHint`): `siigo_list_customers` (`GET /v1/customers`), `siigo_list_invoices` (`GET /v1/invoices`), `siigo_get_invoice` (`GET /v1/invoices/{id}`), `siigo_list_products` (`GET /v1/products`), `siigo_get_product` (`GET /v1/products/{id}`). List tools accept `page` and `page_size` (capped at 100) plus the filters Siigo documents.
+Tools (all `readOnlyHint`): `list_customers` (`GET /v1/customers`), `list_invoices` (`GET /v1/invoices`), `get_invoice` (`GET /v1/invoices/{id}`), `list_products` (`GET /v1/products`), `get_product` (`GET /v1/products/{id}`). List tools accept `page` and `page_size` (capped at 100) plus the filters Siigo documents.
 
 A `401` triggers one re-authentication and one retry; nothing else is retried.
 
