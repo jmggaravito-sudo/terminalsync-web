@@ -35,12 +35,12 @@ const LOOP_CONFIGS: LoopConfig[] = [
     id: "app-connector-parity",
     kind: "supervision",
     title: {
-      es: "Supervisión app: Conectores 4 IAs",
-      en: "App supervision: 4-AI connectors",
+      es: "Supervisión app: Conectores GLM",
+      en: "App supervision: GLM connectors",
     },
     description: {
-      es: "Corre connector-loop.yml en terminal-sync y verifica paridad Claude/Codex/Gemini/GLM dentro de la app.",
-      en: "Runs connector-loop.yml in terminal-sync and verifies Claude/Codex/Gemini/GLM parity in the app.",
+      es: "Corre connector-loop.yml en terminal-sync y verifica que los conectores funcionen con GLM dentro de la app.",
+      en: "Runs connector-loop.yml in terminal-sync and verifies connectors work with GLM in the app.",
     },
     repo: APP_REPO,
     workflow: "connector-loop.yml",

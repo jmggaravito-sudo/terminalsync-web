@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import {
   evidenciaInvalida,
   decideVerdict,
@@ -12,6 +12,10 @@ import {
   aggregate,
   renderMarkdown,
   runFixture,
+  anthropicUrl,
+  resolveApiKey,
+  SUBJECT_PROVIDERS,
+  DEFAULT_SUBJECT_PROVIDER,
 } from "./run-evals.mjs";
 import fs from "node:fs";
 import path from "node:path";
@@ -381,5 +385,58 @@ describe("evidenciaInvalida", () => {
 
   it("deja medir el fixture si se pide a propósito", () => {
     expect(evidenciaInvalida(null, ["--allow-fixture-prompt"])).toBe(false);
+  });
+});
+
+describe("GLM (Z.ai) as the subject and the judge", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("GLM is the default subject provider and is a valid choice", () => {
+    expect(DEFAULT_SUBJECT_PROVIDER).toBe("glm");
+    expect(SUBJECT_PROVIDERS).toContain("glm");
+  });
+
+  it("builds the Anthropic-format URL from a base URL, with or without a trailing slash", () => {
+    expect(anthropicUrl({})).toBe("https://api.anthropic.com/v1/messages");
+    expect(anthropicUrl({ ANTHROPIC_BASE_URL: "https://open.bigmodel.cn/api/anthropic" })).toBe(
+      "https://open.bigmodel.cn/api/anthropic/v1/messages",
+    );
+    expect(anthropicUrl({ ANTHROPIC_BASE_URL: "https://open.bigmodel.cn/api/anthropic///" })).toBe(
+      "https://open.bigmodel.cn/api/anthropic/v1/messages",
+    );
+    // the harness-specific override wins over the generic SDK variable
+    expect(anthropicUrl({ SKILLS_EVAL_BASE_URL: "https://x.test", ANTHROPIC_BASE_URL: "https://y.test" })).toBe("https://x.test/v1/messages");
+  });
+
+  it("prefers the Z.ai key, then falls back, then null", () => {
+    expect(resolveApiKey({ ZAI_API_KEY: "z", ANTHROPIC_API_KEY: "a" })).toBe("z");
+    expect(resolveApiKey({ SKILLS_EVAL_API_KEY: "s", ZAI_API_KEY: "z" })).toBe("s");
+    expect(resolveApiKey({ ANTHROPIC_API_KEY: "a" })).toBe("a");
+    expect(resolveApiKey({})).toBeNull();
+  });
+
+  it("answers with the subject model (twice per case) and judges with the judge model", async () => {
+    const calls = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url, init) => {
+        const body = JSON.parse(init.body);
+        calls.push(body.model);
+        const judgeJson = JSON.stringify({ baselineScore: 4, skillScore: 9, skillMeetsExpected: true, beatsBaseline: true, notes: "ok" });
+        const text = calls.length % 3 === 0 ? judgeJson : "an answer";
+        return { ok: true, status: 200, json: async () => ({ content: [{ type: "text", text }] }) };
+      }),
+    );
+    const fixture = validateFixture(loadCodeReviewer());
+    const one = { ...fixture, cases: fixture.cases.slice(0, 1) };
+    const results = await runFixture(one, {
+      dryRun: false,
+      apiKey: "k",
+      model: "judge-model",
+      subjectModel: "subject-model",
+      skillPrompt: "skill prompt",
+    });
+    expect(results[0].error).toBeUndefined();
+    expect(calls).toEqual(["subject-model", "subject-model", "judge-model"]);
   });
 });
