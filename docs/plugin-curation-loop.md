@@ -61,6 +61,27 @@ Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first,
 
 ## Run log
 
+### 2026-09-28 — automated run, no focus input given
+
+**Shipped 3 Plugins**, each an already-published, `available` connector paired with an already-evaluated, `available` skill, picked so the connector's real tools feed the skill's actual input (no invented capability):
+
+- **gusto** (`operations`) — Gusto connector (official hosted MCP, OAuth login, read-only) + 1099/W-9 Organizer. Gusto's contractor tools (`list_company_contractors`, `list_company_contractor_payments`) supply exactly the payee list and payment totals the skill sorts; the skill's "unresolved" bucket absorbs whatever the read-only surface doesn't expose (entity type, W-9-on-file) instead of guessing. Same pairing shape as `google-sheets` + the same skill, pointed at the account the payments actually came from.
+- **square** (`marketing`) — Square connector (official, published by Block) + Ask for Reviews. Square's `payments`/`orders`/`customers` services are the "recently had a good experience" signal the skill targets (completed order, repeat purchase); the body discloses that the ask itself is sent by the owner from their own email/WhatsApp/SMS. Chosen over `cotizaciones`: claiming the quote skill "sends through Square Invoices" would be a capability claim the skill doesn't make.
+- **meta-social** (`marketing`) — Meta Social connector (first-party Instagram + Facebook Page publishing, mandatory approval gate) + Social Content Batch. The skill's own platform scope names Instagram and Facebook — exactly the two surfaces the connector publishes to — so this is the in-scope version of the pairing the 2026-08-10 run rejected for twitter/wordpress. The body discloses that the batch's LinkedIn/TikTok copy and short-form video script outlines stay with the owner.
+
+**Deferred / SKIP, documented for the other Loops:**
+
+- **klaviyo** — reconfirmed: `lifecycle-email` still carries `catalogReady: false`. Skill Loop task first.
+- **zoom** — reconfirmed: `meeting-notes` still `catalogReady: false` and `compatibleWith: ["claude"]` only.
+- **intercom** — reconfirmed: `email-drafter` is still `status: soon` + `hidden: true`.
+- **asana** — reconfirmed: no skill in `content/skills/{en,es}` teaches a specific Asana workflow.
+- **calendly** — connector is `available` (official hosted MCP, OAuth) but no skill covers scheduling/booking. Connector-only was rejected for the same low-marginal-value reason as Intercom in the 2026-08-02 run. Skill Loop candidate: a booking follow-up / no-show recovery skill.
+- **canva** — connector is `available` (official hosted MCP, OAuth), but no skill produces Canva-ready briefs: `contenido-social`'s format notes are per-post guidance rather than design briefs, and `ideogram-creative-director` is explicitly Ideogram-specific. Pairing either would repeat the twitter/`contenido-social` overclaim documented on 2026-08-10. Skill Loop candidate: a design-brief skill that names Canva's real limits.
+
+Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` (17/17 pass) + `tsc --noEmit` (clean). Each new plugin ships its own logo at `/plugins/<slug>.svg` (a copy of the connector's committed mark, same as `higgsfield`/`ideogram`).
+
+App PR: no aplica — la app consume el catálogo. All three reuse shapes the desktop already renders: `gusto` is a remote/OAuth connector bridged with `mcp-remote` (like `ideogram`/`higgsfield`), `square` is an npx+secret connector (like `firecrawl` in `seo-audit`), and `meta-social` is a first-party connector (like `meta-ads`).
+
 ### 2026-10-05 — automated run, no focus input given
 
 **Shipped 1 Plugin**, pairing an already-published, `available` connector with an already-evaluated, `available` skill (eval fixture + evidence on disk: `scripts/skills-eval/fixtures/rfm-segmentacion.json`, `docs/skills-evals/rfm-segmentacion.md`):

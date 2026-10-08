@@ -124,6 +124,9 @@ describe("plugins — catalog (Fase 1: first pilot)", () => {
       { slug: "notion", connector: "notion", skill: "doc-coauthoring" },
       { slug: "github", connector: "github", skill: "code-reviewer" },
       { slug: "stripe", connector: "stripe", skill: "internal-comms" },
+      { slug: "gusto", connector: "gusto", skill: "1099-w9-organizer" },
+      { slug: "square", connector: "square", skill: "pedir-resenas" },
+      { slug: "meta-social", connector: "meta-social", skill: "contenido-social" },
       { slug: "airtable", connector: "airtable", skill: "rfm-segmentacion" },
     ] as const;
 
