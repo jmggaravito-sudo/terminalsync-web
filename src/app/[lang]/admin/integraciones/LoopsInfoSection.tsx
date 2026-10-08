@@ -12,12 +12,12 @@ interface LoopInfo {
 const LOOPS: LoopInfo[] = [
   {
     title: {
-      es: "Supervisión app: Conectores 4 IAs",
-      en: "App supervision: 4-AI connectors",
+      es: "Supervisión app: Conectores GLM",
+      en: "App supervision: GLM connectors",
     },
     what: {
-      es: "Corre connector-loop.yml en terminal-sync y verifica que los Conectores lleguen parejo a Claude, Codex, Gemini y GLM dentro de la app.",
-      en: "Runs connector-loop.yml in terminal-sync and verifies connector parity across Claude, Codex, Gemini and GLM inside the app.",
+      es: "Corre connector-loop.yml en terminal-sync y verifica que los Conectores funcionen con GLM dentro de la app.",
+      en: "Runs connector-loop.yml in terminal-sync and verifies connectors work with GLM inside the app.",
     },
     steps: {
       es: [
