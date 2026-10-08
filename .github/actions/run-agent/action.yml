@@ -1,0 +1,103 @@
+name: Run pipeline agent (GLM)
+description: >
+  Runs one agent stage of the integration pipeline with Z.ai GLM through
+  claude-code-action, then redacts the secrets this job injected from the
+  execution trace and uploads it as an artifact.
+
+inputs:
+  prompt:
+    description: Task prompt for the agent
+    required: true
+  label:
+    description: Short stage label, used in the trace artifact name
+    required: true
+  max-turns:
+    description: Hard cap of agent turns
+    default: "40"
+  allowed-tools:
+    description: Comma separated claude-code allowedTools list
+    default: "Read,Grep,Glob,WebFetch,Write"
+  zai-api-key:
+    description: Z.ai API key (secret Z_AI_API_KEY)
+    required: true
+  zai-model:
+    description: Exact GLM model id (variable ZAI_MODEL)
+    required: true
+  github-token:
+    description: GITHUB_TOKEN, exposed to the agent as GH_TOKEN for gh
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Check Z.ai credentials
+      shell: bash
+      env:
+        ZAI_API_KEY: ${{ inputs.zai-api-key }}
+        ZAI_MODEL: ${{ inputs.zai-model }}
+      run: |
+        missing=()
+        [ -z "${ZAI_API_KEY:-}" ] && missing+=("the secret Z_AI_API_KEY")
+        [ -z "${ZAI_MODEL:-}" ] && missing+=("the variable ZAI_MODEL")
+        if [ "${#missing[@]}" -gt 0 ]; then
+          echo "::error::Missing ${missing[*]}. Z.ai serves GLM models, not Claude; ZAI_MODEL must be the exact model id the key serves."
+          exit 1
+        fi
+        echo "OK - key present, model: $ZAI_MODEL"
+
+    - name: Run agent (${{ inputs.label }})
+      uses: anthropics/claude-code-action@v1
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        ANTHROPIC_BASE_URL: https://open.bigmodel.cn/api/anthropic
+      with:
+        anthropic_api_key: ${{ inputs.zai-api-key }}
+        base_branch: main
+        prompt: ${{ inputs.prompt }}
+        claude_args: |
+          --model ${{ inputs.zai-model }}
+          --max-turns ${{ inputs.max-turns }}
+          --allowedTools "${{ inputs.allowed-tools }}"
+
+    - name: Redact the agent trace
+      if: always()
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        ZAI_API_KEY: ${{ inputs.zai-api-key }}
+      run: |
+        python3 - <<'PY'
+        import os, pathlib, sys
+
+        tmp = pathlib.Path(os.environ["RUNNER_TEMP"])
+        src = tmp / "claude-execution-output.json"
+        if not src.exists():
+            print("No agent trace to keep.")
+            sys.exit(0)
+
+        names = ("GH_TOKEN", "ZAI_API_KEY")
+        # A value shorter than 8 chars would redact half the file.
+        secrets = [v for v in (os.environ.get(n, "").strip() for n in names) if len(v) >= 8]
+
+        data = src.read_text(encoding="utf-8", errors="surrogateescape")
+        for s in secrets:
+            data = data.replace(s, "***REDACTED***")
+
+        left = [n for n in names if len(os.environ.get(n, "").strip()) >= 8 and os.environ[n].strip() in data]
+        if left:
+            print("::error::Secrets survived redaction (%s). Nothing is uploaded." % ", ".join(left))
+            sys.exit(1)
+
+        (tmp / "agent-trace.redacted.json").write_text(data, encoding="utf-8", errors="surrogateescape")
+        print("Trace redacted: %d values covered, %d bytes." % (len(secrets), len(data)))
+        PY
+
+    - name: Upload the redacted trace
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: agent-trace-${{ inputs.label }}
+        path: ${{ runner.temp }}/agent-trace.redacted.json
+        retention-days: 7
+        if-no-files-found: ignore

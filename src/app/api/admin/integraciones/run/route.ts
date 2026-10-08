@@ -24,6 +24,8 @@ interface LoopConfig {
   workflow: string | null;
   ref: string;
   acceptsFocus?: boolean;
+  /** The focus is not a hint but the input (e.g. the integration name). */
+  requiresFocus?: boolean;
   acceptsDryRun?: boolean;
   disabledReason?: { es: string; en: string };
 }
@@ -58,6 +60,24 @@ const LOOP_CONFIGS: LoopConfig[] = [
     repo: WEB_REPO,
     workflow: "integration-supervision-loop.yml",
     ref: "main",
+  },
+  {
+    id: "integration-pipeline",
+    kind: "pipeline",
+    title: {
+      es: "Integración completa (solo el nombre)",
+      en: "Full integration (name only)",
+    },
+    description: {
+      es: "Escribe el nombre de una integración y el pipeline la investiga, la construye, la revisa con agentes independientes, corre la supervisión y deja el reporte. Todo con GLM. Solo mergea solo si INTEGRATION_AUTOMERGE está activo.",
+      en: "Type an integration name and the pipeline researches it, builds it, has independent agents review it, runs supervision and leaves a report. All on GLM. It only merges by itself when INTEGRATION_AUTOMERGE is on.",
+    },
+    repo: WEB_REPO,
+    workflow: "integration-pipeline.yml",
+    ref: "main",
+    acceptsFocus: true,
+    requiresFocus: true,
+    acceptsDryRun: true,
   },
   {
     id: "connectors-curation",
@@ -397,6 +417,20 @@ export async function POST(req: Request) {
       { error: loop.disabledReason?.es ?? "Loop no configurado.", loop },
       { status: 409 },
     );
+  }
+
+  const focus = typeof raw.focus === "string" ? raw.focus.trim() : "";
+  if (loop.requiresFocus) {
+    // Same shape the pipeline workflow enforces before the name reaches an agent prompt.
+    if (!/^[A-Za-z0-9][A-Za-z0-9 ._&+-]{0,59}$/.test(focus)) {
+      return NextResponse.json(
+        {
+          error:
+            "Escribe el nombre de la integración (letras, números, espacios, . _ & + -; máximo 60).",
+        },
+        { status: 400 },
+      );
+    }
   }
 
   try {
