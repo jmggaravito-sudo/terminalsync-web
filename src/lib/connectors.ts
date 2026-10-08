@@ -76,7 +76,8 @@ export type ConnectorInstallableForAiReason =
   | "no-usable-tools"
   | "needs-postinstall"
   | "env-denied"
-  | "needs-oauth";
+  | "needs-oauth"
+  | "remote-needs-login";
 
 const CONNECTOR_INSTALLABLE_FOR_AI_REASONS: readonly ConnectorInstallableForAiReason[] = [
   "ok",
@@ -92,6 +93,7 @@ const CONNECTOR_INSTALLABLE_FOR_AI_REASONS: readonly ConnectorInstallableForAiRe
   "needs-postinstall",
   "env-denied",
   "needs-oauth",
+  "remote-needs-login",
 ] as const;
 
 export interface ConnectorMeta {

@@ -424,15 +424,12 @@ describe("GET /api/marketplace/catalog", () => {
       installableForAiReason: "contains-uninstallable",
     });
 
-    // Ideogram and Higgsfield are explicitly supervised as false, so the
-    // kit is blocked even though its other item is a skill.
+    // Ideogram and Higgsfield are remote (mcp-remote) connectors: the app logs
+    // the person in once on install, so the kit is installable.
     const creativeKit = body.bundles.find(
       (b) => b.slug === "social-ad-creative-studio",
     );
-    expect(creativeKit).toMatchObject({
-      installableForAi: false,
-      installableForAiReason: "contains-uninstallable",
-    });
+    expect(creativeKit).toMatchObject({ installableForAi: true });
   });
 
   it("normalizes connector logos to absolute terminalsync.ai URLs backed by committed assets", async () => {
