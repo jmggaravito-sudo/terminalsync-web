@@ -1,6 +1,6 @@
 import type Stripe from "stripe";
 import { getSupabaseAdmin } from "./supabaseAdmin";
-import { includedAiPriceId, priceIdFor, stripe, type PlanId } from "./stripe";
+import { bundledPriceIdFor, includedAiPriceId, priceIdFor, stripe, type PlanId } from "./stripe";
 import { mpAmountFor, updatePreapproval } from "./mercadopago";
 import {
   grantIncludedAi,
@@ -89,16 +89,7 @@ function stripeCustomerId(sub: CurrentSubscription): string | null {
 }
 
 function basePriceIds(): string[] {
-  return [priceIdFor("pro"), priceIdFor("max")].filter(Boolean) as string[];
-}
-
-function findBaseItem(
-  sub: Stripe.Subscription,
-): Stripe.SubscriptionItem | undefined {
-  const base = new Set(basePriceIds());
-  return sub.items.data.find(
-    (item) => item.price?.id && base.has(item.price.id),
-  );
+  return [priceIdFor("pro"), priceIdFor("max"), bundledPriceIdFor("pro"), bundledPriceIdFor("max")].filter(Boolean) as string[];
 }
 
 function findIncludedAiItem(
@@ -120,27 +111,29 @@ export async function changeStripeSubscription(input: {
   if (!subId)
     throw new Error("No active Stripe subscription found for this account");
 
-  const price = priceIdFor(input.plan);
+  const includedAi = input.plan === "pro" || input.plan === "max";
+  const price = includedAi ? bundledPriceIdFor(input.plan) : priceIdFor(input.plan);
   if (!price) throw new Error(`Missing Stripe price for plan "${input.plan}"`);
-  const addOnPrice = input.includedAi ? includedAiPriceId() : null;
-  if (input.includedAi && !addOnPrice) {
-    throw new Error("Missing Stripe price for TerminalSync AI");
-  }
 
   const existing = await stripe.subscriptions.retrieve(subId, {
     expand: ["items.data.price"],
   });
-  const baseItem = findBaseItem(existing);
+  const baseItems = existing.items.data.filter((item) =>
+    item.price?.id && basePriceIds().includes(item.price.id),
+  );
+  if (baseItems.length !== 1) {
+    throw new Error("Cannot safely change a subscription without exactly one known plan item");
+  }
+  const baseItem = baseItems[0];
   const aiItem = findIncludedAiItem(existing);
+  if (existing.items.data.some((item) => item.id !== baseItem.id && item.id !== aiItem?.id)) {
+    throw new Error("Cannot safely change a subscription with unknown items");
+  }
 
-  const items: Stripe.SubscriptionUpdateParams.Item[] = [];
-  if (baseItem) items.push({ id: baseItem.id, price, quantity: 1 });
-  else items.push({ price, quantity: 1 });
-
-  if (addOnPrice) {
-    if (aiItem) items.push({ id: aiItem.id, price: addOnPrice, quantity: 1 });
-    else items.push({ price: addOnPrice, quantity: 1 });
-  } else if (aiItem) {
+  const items: Stripe.SubscriptionUpdateParams.Item[] = [
+    { id: baseItem.id, price, quantity: 1 },
+  ];
+  if (aiItem) {
     items.push({ id: aiItem.id, deleted: true });
   }
 
@@ -151,9 +144,9 @@ export async function changeStripeSubscription(input: {
     source: "app.terminalsync/plan-change",
     supabase_user_id: input.userId,
   };
-  if (input.includedAi) {
+  if (includedAi) {
     metadata.included_ai = "1";
-    metadata.add_ons = "included_ai";
+    metadata.add_ons = "";
   } else {
     metadata.included_ai = "0";
     metadata.add_ons = "";
@@ -168,7 +161,7 @@ export async function changeStripeSubscription(input: {
   });
   await syncSubscriptionToSupabase(updated);
 
-  if (!input.includedAi) await revokeIncludedAiForUser(input.userId);
+  if (!includedAi) await revokeIncludedAiForUser(input.userId);
   return updated;
 }
 

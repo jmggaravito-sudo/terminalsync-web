@@ -45,6 +45,14 @@ export function includedAiPriceId(): string | null {
   return envId("STRIPE_INCLUDED_AI_PRICE_ID", "STRIPE_PRICE_INCLUDED_AI_MONTHLY");
 }
 
+/** One Stripe line item per new Pro/Max purchase. Legacy base and AI prices
+ * remain configured solely to recognize subscriptions that already exist. */
+export function bundledPriceIdFor(plan: PlanId): string | null {
+  if (plan === "pro") return envId("STRIPE_PRICE_PRO_WITH_AI_MONTHLY");
+  if (plan === "max") return envId("STRIPE_PRICE_MAX_WITH_AI_MONTHLY");
+  return null;
+}
+
 export function priceIdFor(plan: PlanId): string | null {
   if (plan === "pro") {
     return envId("STRIPE_PRICE_PRO_MONTHLY");

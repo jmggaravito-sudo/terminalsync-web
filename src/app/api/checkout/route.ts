@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   TRIAL_DAYS,
-  includedAiPriceId,
+  bundledPriceIdFor,
   normalizePlanId,
   priceIdFor,
   siteUrl,
@@ -50,12 +50,6 @@ interface Body {
 // `tauri://` scheme origin on macOS/Linux; browsers use the literal origin.
 // We allow-list both terminalsync.ai and all tauri origins since the anon
 // endpoint below doesn't expose any secrets beyond publishable info.
-function wantsIncludedAi(body: Body): boolean {
-  return (
-    body.includedAi === true || body.addOns?.includes("included_ai") === true
-  );
-}
-
 export function shouldApplyCheckoutTrial(
   plan: PlanId,
   supabaseUserId?: string | null,
@@ -114,15 +108,17 @@ export async function POST(req: Request) {
       { status: 400, headers: cors },
     );
   }
-  const price = priceIdFor(plan);
-  const includedAi = wantsIncludedAi(body);
-  const includedAiPrice = includedAi ? includedAiPriceId() : null;
+  // New Pro/Max purchases always include AI at the combined price. Ignore
+  // older clients' add-on flags so they cannot create a two-line invoice or
+  // silently buy a base plan without AI.
+  const includedAi = plan === "pro" || plan === "max";
+  const price = includedAi ? bundledPriceIdFor(plan) : priceIdFor(plan);
   if (!price) {
     const envVar =
       plan === "max"
-        ? "STRIPE_PRICE_MAX_MONTHLY"
+        ? "STRIPE_PRICE_MAX_WITH_AI_MONTHLY"
         : plan === "pro"
-          ? "STRIPE_PRICE_PRO_MONTHLY"
+          ? "STRIPE_PRICE_PRO_WITH_AI_MONTHLY"
           : "STRIPE_PRICE_AGENCY";
     return NextResponse.json(
       {
@@ -131,16 +127,6 @@ export async function POST(req: Request) {
       { status: 503, headers: cors },
     );
   }
-  if (includedAi && !includedAiPrice) {
-    return NextResponse.json(
-      {
-        error:
-          "Missing Stripe price for TerminalSync AI. Set STRIPE_INCLUDED_AI_PRICE_ID in the environment.",
-      },
-      { status: 503, headers: cors },
-    );
-  }
-
   const lang: "es" | "en" = body.lang === "en" ? "en" : "es";
   const base = siteUrl();
 
@@ -160,7 +146,6 @@ export async function POST(req: Request) {
   };
   if (includedAi) {
     sharedMetadata.included_ai = "1";
-    sharedMetadata.add_ons = "included_ai";
   }
   if (body.supabaseUserId) {
     sharedMetadata.supabase_user_id = body.supabaseUserId;
@@ -190,10 +175,7 @@ export async function POST(req: Request) {
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
-      line_items: [
-        { price, quantity: 1 },
-        ...(includedAiPrice ? [{ price: includedAiPrice, quantity: 1 }] : []),
-      ],
+      line_items: [{ price, quantity: 1 }],
       allow_promotion_codes: true,
       customer_email: body.email,
       client_reference_id: body.referral,

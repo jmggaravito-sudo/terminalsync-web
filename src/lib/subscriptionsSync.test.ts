@@ -97,6 +97,8 @@ beforeEach(() => {
   retrievedCustomer = null;
   // The pro price env must map for plan resolution; set it for these tests.
   process.env.STRIPE_PRICE_PRO_MONTHLY = "price_pro_monthly";
+  process.env.STRIPE_PRICE_PRO_WITH_AI_MONTHLY = "price_pro_ai";
+  process.env.STRIPE_PRICE_MAX_WITH_AI_MONTHLY = "price_max_ai";
   vi.spyOn(console, "warn").mockImplementation(() => {});
   vi.spyOn(console, "log").mockImplementation(() => {});
   vi.spyOn(console, "error").mockImplementation(() => {});
@@ -107,6 +109,16 @@ afterEach(() => {
 });
 
 describe("syncSubscriptionToSupabase — account linking", () => {
+  it("maps a bundled Pro price and grants included AI without add-on metadata", async () => {
+    const sub = fakeSub({
+      metadata: { supabase_user_id: "user-bundled" },
+      items: { data: [{ price: { id: "price_pro_ai" } }] } as Stripe.ApiList<Stripe.SubscriptionItem>,
+    });
+    expect(await syncSubscriptionToSupabase(sub)).toBe(true);
+    expect(upsertCalls.find((call) => call.table === "subscriptions")?.row.plan).toBe("pro");
+    expect(upsertCalls.find((call) => call.table === "courtesy_entitlement")?.row.tier).toBe("included_ai");
+  });
+
   it("persists the paid AI entitlement independently of the plan", async () => {
     process.env.STRIPE_PRICE_MAX_MONTHLY = "price_max_monthly";
     const sub = fakeSub({
