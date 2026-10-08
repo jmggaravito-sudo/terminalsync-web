@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, slug } = await params;
   const skill = await getSkill(lang, slug);
   if (!skill) return { title: "Skill not found" };
-  const title = `${skill.name} · TerminalSync Skill`;
+  const title = `${skill.name} · TS Skill`;
   return {
     title,
     description: skill.description,
@@ -129,7 +129,7 @@ export default async function SkillDetail({ params }: Props) {
               className="inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] glow-accent transition-all hover:-translate-y-px"
             >
               <Download size={14} strokeWidth={2.4} />
-              {isEs ? "Instalar en TerminalSync" : "Install in TerminalSync"}
+              {isEs ? "Instalar en TS" : "Install in TS"}
             </a>
           )}
           <button
@@ -176,20 +176,20 @@ export default async function SkillDetail({ params }: Props) {
           {skill.included ? (
             isEs ? (
               <>
-                <strong className="text-[var(--color-fg-strong)]">¿Hay que instalar algo?</strong> No. Esta capacidad ya viene con Terminal Sync (la trae Claude Code por dentro), así que está lista para usar en cuanto abrís la app — no hay nada que instalar ni configurar.
+                <strong className="text-[var(--color-fg-strong)]">¿Hay que instalar algo?</strong> No. Esta capacidad ya viene con TS (la trae Claude Code por dentro), así que está lista para usar en cuanto abrís la app — no hay nada que instalar ni configurar.
               </>
             ) : (
               <>
-                <strong className="text-[var(--color-fg-strong)]">Anything to install?</strong> No. This capability already ships with Terminal Sync (Claude Code provides it under the hood), so it's ready the moment you open the app — nothing to install or set up.
+                <strong className="text-[var(--color-fg-strong)]">Anything to install?</strong> No. This capability already ships with TS (Claude Code provides it under the hood), so it's ready the moment you open the app — nothing to install or set up.
               </>
             )
           ) : isEs ? (
             <>
-              <strong className="text-[var(--color-fg-strong)]">¿Cómo funciona la instalación?</strong> El botón de arriba abre TerminalSync (la app desktop) y baja el <code>SKILL.md</code> a <code>~/.claude/skills/{skill.slug}/</code>. Si tenés Codex, también lo escribe en <code>~/.codex/skills/{skill.slug}/</code>. Skills Sync lo replica en todas tus máquinas automáticamente.
+              <strong className="text-[var(--color-fg-strong)]">¿Cómo funciona la instalación?</strong> El botón de arriba abre TS (la app desktop) y baja el <code>SKILL.md</code> a <code>~/.claude/skills/{skill.slug}/</code>. Si tenés Codex, también lo escribe en <code>~/.codex/skills/{skill.slug}/</code>. Skills Sync lo replica en todas tus máquinas automáticamente.
             </>
           ) : (
             <>
-              <strong className="text-[var(--color-fg-strong)]">How does the install work?</strong> The button above opens TerminalSync (the desktop app) and downloads <code>SKILL.md</code> into <code>~/.claude/skills/{skill.slug}/</code>. If you have Codex, it also writes to <code>~/.codex/skills/{skill.slug}/</code>. Skills Sync replicates it across every machine automatically.
+              <strong className="text-[var(--color-fg-strong)]">How does the install work?</strong> The button above opens TS (the desktop app) and downloads <code>SKILL.md</code> into <code>~/.claude/skills/{skill.slug}/</code>. If you have Codex, it also writes to <code>~/.codex/skills/{skill.slug}/</code>. Skills Sync replicates it across every machine automatically.
             </>
           )}
         </div>

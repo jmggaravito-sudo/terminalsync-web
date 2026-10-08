@@ -15,11 +15,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params;
   const isEs = lang === "es";
   const title = isEs
-    ? "CLI Tools · Terminal Sync"
-    : "CLI Tools · Terminal Sync";
+    ? "CLI Tools · TS"
+    : "CLI Tools · TS";
   const description = isEs
-    ? "Los CLIs oficiales que un dev usa todo el día — gh, supabase, vercel, stripe, wrangler. Guías de instalación, comandos útiles y secretos de proyecto protegidos por TerminalSync."
-    : "The official CLIs a dev uses every day — gh, supabase, vercel, stripe, wrangler. Install guides, useful commands and project secrets protected by TerminalSync.";
+    ? "Los CLIs oficiales que un dev usa todo el día — gh, supabase, vercel, stripe, wrangler. Guías de instalación, comandos útiles y secretos de proyecto protegidos por TS."
+    : "The official CLIs a dev uses every day — gh, supabase, vercel, stripe, wrangler. Install guides, useful commands and project secrets protected by TS.";
   return {
     title,
     description,
@@ -60,8 +60,8 @@ export default async function CliToolsIndex({ params }: Props) {
         </div>
         <h1 className="text-[40px] md:text-[56px] font-semibold tracking-tight leading-[1.05]">
           {isEs
-            ? "Los CLIs que usás todos los días, listos para trabajar dentro de TerminalSync."
-            : "The CLIs you use every day, ready to work inside TerminalSync."}
+            ? "Los CLIs que usás todos los días, listos para trabajar dentro de TS."
+            : "The CLIs you use every day, ready to work inside TS."}
         </h1>
         <p className="mt-4 text-[16px] text-[var(--color-fg-muted)] max-w-2xl leading-relaxed">
           {isEs

@@ -4,9 +4,9 @@ import { getHomeFaq } from "./faq";
 const es: Dict = {
   locale: "es",
   meta: {
-    title: "TerminalSync — Memoria, privacidad y movilidad para tu IA",
+    title: "TS — espacios de trabajo con IA para tu empresa",
     description:
-      "Tus IAs siguen trabajando aunque se caiga el internet o cambies de computadora. Tus secretos y conversaciones viajan cifrados; tus archivos viven en TU nube, no en la nuestra. Acceso desde cualquier dispositivo.",
+      "Organiza cada cliente, proyecto o departamento en su propio espacio. TS recuerda el contexto y trae IA incluida, sin pagar otra suscripción de IA.",
   },
   nav: {
     features: "Funciones",
@@ -38,7 +38,7 @@ const es: Dict = {
       body: "Tu sesión en cualquier dispositivo — ábrela desde el celular sin instalar nada. Un solo flujo entre Claude y Codex con el mismo contexto. Bóveda de secretos por espacio de trabajo.",
     },
     mockup: {
-      appName: "Terminal Sync",
+      appName: "TS",
       statusOk: "Todo está seguro y guardado",
       bannerTitle: "Tu IA lista en segundos",
       bannerBody: "Configuramos todo por ti — solo abre y empieza a pedir.",
@@ -52,7 +52,7 @@ const es: Dict = {
   demos: {
     title: "Tres momentos en los que dices ‘wow’",
     subtitle:
-      "Por qué la gente que prueba TerminalSync deja sus herramientas viejas a los 30 segundos.",
+      "Por qué la gente que prueba TS deja sus herramientas viejas a los 30 segundos.",
     items: {
       context: {
         kicker: "Demo · Persistencia",
@@ -104,8 +104,8 @@ const es: Dict = {
     ],
     timeline: {
       heading: "Sin memoria persistente vs. con memoria persistente",
-      withoutLabel: "Sin TerminalSync Memory",
-      withLabel: "Con TerminalSync Memory",
+      withoutLabel: "Sin TS Memory",
+      withLabel: "Con TS Memory",
       withoutItems: [
         { when: "Día 1", line: "Le explicas cómo es tu negocio y cómo te gusta trabajar." },
         { when: "Día 3", line: "“¿A qué te dedicas?” — explicas todo otra vez." },
@@ -131,7 +131,7 @@ const es: Dict = {
     subtitle:
       "Por primera vez puedes aumentar la capacidad de tu empresa sin contratar más personas. Tú decides y apruebas; tu equipo digital ejecuta en paralelo. Y si un especialista se detiene, otro continúa.",
     problem: {
-      title: "Sin TerminalSync",
+      title: "Sin TS",
       items: [
         "Una IA en una ventana",
         "Otra en otra",
@@ -142,7 +142,7 @@ const es: Dict = {
       ],
     },
     solution: {
-      title: "Con TerminalSync",
+      title: "Con TS",
       items: [
         "Un solo lugar de trabajo",
         "Contexto compartido",
@@ -246,7 +246,7 @@ const es: Dict = {
     subtitle:
       "Antes: mañanas perdidas y conversaciones que arrancan de cero. Después: el trabajo de tu empresa sigue donde lo dejaste, hagas lo que hagas.",
     before: {
-      heading: "Sin Terminal Sync",
+      heading: "Sin TS",
       items: [
         "Cierras la aplicación y el trabajo se pierde",
         "Cada conversación arranca explicando tu negocio de cero",
@@ -256,7 +256,7 @@ const es: Dict = {
       ],
     },
     after: {
-      heading: "Con Terminal Sync",
+      heading: "Con TS",
       items: [
         "Cierras todo, abres de nuevo y el trabajo sigue donde iba",
         "Cada área conserva su contexto: nunca explicas de cero",
@@ -278,6 +278,8 @@ const es: Dict = {
     title: "Lo que la gente nos pregunta primero",
     subtitle: "Si te queda alguna duda, escríbenos a support@terminalsync.ai",
     items: getHomeFaq("es").map(({ question, answer }) => ({ q: question, a: answer })),
+    more: "Ver más preguntas",
+    less: "Ver menos",
   },
   comparison: {
     eyebrow: "El comparativo honesto",
@@ -285,10 +287,10 @@ const es: Dict = {
     subtitle:
       "Comparado con las herramientas que ya usas todos los días. Si algo es parcial o todavía está en progreso, lo decimos en la tabla.",
     pitch:
-      "Las IAs solas (Claude, Codex, Gemini) son potentes pero olvidadizas: cada vez que cierras, pierden el contexto, no te siguen entre computadoras, no guardan tus claves a salvo y no te avisan cuando se traban. TerminalSync les agrega memoria, privacidad y movilidad — sin pagar nube y sin entregarle tu trabajo a nadie.",
+      "Las IAs solas (Claude, Codex, Gemini) son potentes pero olvidadizas: cada vez que cierras, pierden el contexto, no te siguen entre computadoras, no guardan tus claves a salvo y no te avisan cuando se traban. TS les agrega memoria, privacidad y movilidad — sin pagar nube y sin entregarle tu trabajo a nadie.",
     columns: {
       feature: "Funcionalidad",
-      terminalSync: "Terminal Sync",
+      terminalSync: "TS",
       vercel: "ChatGPT (web)",
       claudeCode: "Claude Code",
       codex: "Codex CLI",
@@ -338,7 +340,7 @@ const es: Dict = {
       results: {
         soloLabel: "Solo con una IA",
         soloHint: "Pagas contexto largo y tools que no necesitas todo el tiempo.",
-        withTsLabel: "Con TerminalSync",
+        withTsLabel: "Con TS",
         withTsHint: "Cada tarea va al modelo más barato que la resuelve bien.",
         savingsLabel: "Ahorras",
         perYear: "/año",
@@ -352,7 +354,7 @@ const es: Dict = {
         apiCostMix: "Costo API mix (≈ $1.50/h)",
         devTimeSolo: "Tu tiempo a tarifa plena",
         devTimeWithTs: "Tu tiempo, 25 % menos horas",
-        subscription: "TerminalSync Pro (12 × $19 = $228)",
+        subscription: "TS Pro (12 × $19 = $228)",
         timeSaving:
           "El 25 % de ahorro de tiempo viene de no esperar rate limits, no swappear contexto entre tools, y mandar cada tarea al modelo más barato y rápido.",
       },
@@ -384,9 +386,9 @@ const es: Dict = {
       replyInjection:
         "Desde tu celular puedes inyectar respuestas a un agente que está esperando input en tu computadora. Ideal para desbloquear un comando cuando estás afuera.",
       whatsAppContinue:
-        "La misma conversación que empezaste en TerminalSync continúa en WhatsApp o Telegram. Respondes desde el chat y tus IAs siguen trabajando, sin abrir la app ni el navegador.",
+        "La misma conversación que empezaste en TS continúa en WhatsApp o Telegram. Respondes desde el chat y tus IAs siguen trabajando, sin abrir la app ni el navegador.",
       noVendorLockIn:
-        "Tus archivos viven en tu propio Google Drive (iCloud, S3, Dropbox próximamente). Si te vas de Terminal Sync, te llevas todo. Sin export-fee.",
+        "Tus archivos viven en tu propio Google Drive (iCloud, S3, Dropbox próximamente). Si te vas de TS, te llevas todo. Sin export-fee.",
       zeroRuntime:
         "No corremos tus agentes en nuestros servidores. Todo se ejecuta en tu computadora, así que el costo de runtime es cero — solo pagas el modelo IA al provider que elijas.",
       zeroStorage:
@@ -400,11 +402,11 @@ const es: Dict = {
   personas: {
     title: "¿Esto es para ti?",
     subtitle:
-      "Tres perfiles que ya no entienden cómo trabajaban sin Terminal Sync.",
+      "Tres perfiles que ya no entienden cómo trabajaban sin TS.",
     items: {
       nomad: {
         title: "El que vive en su agente IA",
-        body: "Pasas horas con Claude o Codex armando proyectos. Cuando se traba la app, internet se cae, o cierras sin querer, pierdes todo el contexto. Con TerminalSync tu agente sigue corriendo y vuelves exactamente donde quedaste.",
+        body: "Pasas horas con Claude o Codex armando proyectos. Cuando se traba la app, internet se cae, o cierras sin querer, pierdes todo el contexto. Con TS tu agente sigue corriendo y vuelves exactamente donde quedaste.",
         tag: "Power User IA",
       },
       beginner: {
@@ -422,7 +424,7 @@ const es: Dict = {
   pricing: {
     title: "Simple, como debe ser",
     subtitle:
-      "Empieza gratis. 7 días con todas las funciones de Max — cancelas antes del día 7 y no se cobra nada. Las IAs se usan con tu propia suscripción (o sus planes gratuitos): TerminalSync no te revende tokens.",
+      "Empieza gratis. 7 días con todas las funciones de Max — cancelas antes del día 7 y no se cobra nada. Las IAs se usan con tu propia suscripción (o sus planes gratuitos): TS no te revende tokens.",
     perMonth: "/mes",
     free: "Gratis",
     trial: {
@@ -517,10 +519,10 @@ const es: Dict = {
         priceNote: "/mes",
         priceCop: "$139.000",
         priceNoteCop: "COP/mes",
-        tagline: "Pro con la IA de TerminalSync incluida — sin cuenta propia.",
+        tagline: "Pro con la IA de TS incluida — sin cuenta propia.",
         features: [
           "Todo lo de Pro — espacios, memoria y celular",
-          "IA de TerminalSync incluida — sin cuenta propia",
+          "IA de TS incluida — sin cuenta propia",
           "Después de la prueba, sigues con nuestra IA",
           "Ideal para empezar rápido — menos configuración",
         ],
@@ -551,10 +553,10 @@ const es: Dict = {
         priceNote: "/mes",
         priceCop: "$219.000",
         priceNoteCop: "COP/mes",
-        tagline: "Max con la IA de TerminalSync incluida — sin cuenta propia.",
+        tagline: "Max con la IA de TS incluida — sin cuenta propia.",
         features: [
           "Todo lo de Max — ilimitado, equipo y soporte",
-          "IA de TerminalSync incluida — sin cuenta propia",
+          "IA de TS incluida — sin cuenta propia",
           "Cero fricción para equipos — menos configuración",
           "Costo simple — plataforma + IA",
         ],
@@ -625,10 +627,10 @@ const es: Dict = {
       dataDeletion: "Eliminar mis datos",
     },
     tagline: "Separa tu trabajo de tu máquina.",
-    copyright: "© {{year}} TerminalSync. Todos los derechos reservados.",
+    copyright: "© {{year}} TS. Todos los derechos reservados.",
   },
   windowsEarlyAccess: {
-    title: "TerminalSync para Windows — próximamente",
+    title: "TS para Windows — próximamente",
     body: "Detectamos que estás en Windows. La app Mac sale ahora; la versión Windows está en desarrollo. Deja tu correo y te avisamos el día que esté lista.",
     cta: "Avisame cuando esté",
     ctaSubmitting: "Guardando…",
@@ -645,11 +647,11 @@ const es: Dict = {
   },
   agent: {
     open: "Abrir asistente",
-    name: "Asistente TerminalSync",
+    name: "Asistente TS",
     tagline: "Ventas y soporte · En línea",
     close: "Cerrar",
     greeting:
-      "¡Hola! Soy tu asistente de TerminalSync. Puedo ayudarte con Claude Code, Codex, Gemini, memoria, conectores, planes o problemas técnicos. ¿Qué quieres hacer?",
+      "¡Hola! Soy tu asistente de TS. Puedo ayudarte con Claude Code, Codex, Gemini, memoria, conectores, planes o problemas técnicos. ¿Qué quieres hacer?",
     placeholder: "Escribe tu mensaje…",
     send: "Enviar",
     you: "Tú",
@@ -661,7 +663,7 @@ const es: Dict = {
     ],
     replies: {
       install:
-        "Descarga TerminalSync, crea un espacio de trabajo y elige la IA que quieres usar: Claude Code, Codex, Gemini CLI o Sin IA. Desde Integraciones puedes configurar conectores, skills y herramientas del espacio de trabajo. Si me dices tu caso de uso, te recomiendo por dónde empezar.",
+        "Descarga TS, crea un espacio de trabajo y elige la IA que quieres usar: Claude Code, Codex, Gemini CLI o Sin IA. Desde Integraciones puedes configurar conectores, skills y herramientas del espacio de trabajo. Si me dices tu caso de uso, te recomiendo por dónde empezar.",
       pricing:
         "Tenemos planes para probar, power users y usuarios técnicos/equipos. Starter sirve para empezar; Pro agrega capacidades avanzadas como memoria/integraciones; Max está pensado para Git-native sync, vault de secretos y workflows más completos. Mira la sección de Precios para el detalle actualizado. ¿Quieres que te recomiende un plan según tu uso?",
       security:
@@ -683,10 +685,10 @@ const es: Dict = {
       pageTitle: "Acuerdo de Partners",
       title: "Acuerdo de Partners",
       subtitle:
-        "Términos y condiciones para participar en el Programa de Afiliados de TerminalSync.",
+        "Términos y condiciones para participar en el Programa de Afiliados de TS.",
       updated: "Última actualización: 22 de abril de 2026",
       intro:
-        "Este acuerdo describe los términos y condiciones para participar en el Programa de Afiliados de TerminalSync. Al registrarte, aceptas los siguientes puntos:",
+        "Este acuerdo describe los términos y condiciones para participar en el Programa de Afiliados de TS. Al registrarte, aceptas los siguientes puntos:",
       readFullTerms: "Leer términos completos",
       back: "Volver a Afiliados",
       acceptance:
@@ -697,7 +699,7 @@ const es: Dict = {
           items: {
             percent: {
               label: "Porcentaje",
-              body: "Recibirás una comisión del 30% recurrente sobre el valor neto de cada suscripción TerminalSync Pro que sea referida a través de tu enlace único.",
+              body: "Recibirás una comisión del 30% recurrente sobre el valor neto de cada suscripción TS Pro que sea referida a través de tu enlace único.",
             },
             recurring: {
               label: "Recurrencia",
@@ -735,7 +737,7 @@ const es: Dict = {
           items: {
             authorized: {
               label: "Uso autorizado",
-              body: "TerminalSync otorga una licencia limitada para usar nuestros logotipos, capturas de pantalla y material de marketing disponibles en el Dashboard de Afiliados exclusivamente para la promoción del software.",
+              body: "TS otorga una licencia limitada para usar nuestros logotipos, capturas de pantalla y material de marketing disponibles en el Dashboard de Afiliados exclusivamente para la promoción del software.",
             },
             restriction: {
               label: "Restricción de marca",
@@ -748,7 +750,7 @@ const es: Dict = {
           items: {
             ethics: {
               label: "Ética",
-              body: "Queda estrictamente prohibido el uso de spam, publicidad engañosa o cualquier práctica que pueda dañar la reputación de TerminalSync.",
+              body: "Queda estrictamente prohibido el uso de spam, publicidad engañosa o cualquier práctica que pueda dañar la reputación de TS.",
             },
             transparency: {
               label: "Transparencia",
@@ -765,7 +767,7 @@ const es: Dict = {
           items: {
             modifications: {
               label: "Cambios",
-              body: "TerminalSync se reserva el derecho de ajustar los porcentajes de comisión o los términos del servicio notificando a los partners con 30 días de antelación.",
+              body: "TS se reserva el derecho de ajustar los porcentajes de comisión o los términos del servicio notificando a los partners con 30 días de antelación.",
             },
             termination: {
               label: "Terminación",
@@ -781,7 +783,7 @@ const es: Dict = {
     errorTitle: "No pudimos abrir el pago",
     success: {
       eyebrow: "¡Listo!",
-      title: "Bienvenido a TerminalSync Pro",
+      title: "Bienvenido a TS Pro",
       body: "Ya tienes acceso completo. Te enviamos un correo con el recibo y los pasos para instalar la app.",
       ctaDownload: "Descargar la app",
       ctaHome: "Volver al inicio",
@@ -804,6 +806,80 @@ const es: Dict = {
       body: "Cancelaste el pago — no se cobró nada. Puedes intentar de nuevo cuando quieras, o escribirnos si necesitas ayuda.",
       ctaRetry: "Probar de nuevo",
       ctaContact: "Hablar con el equipo",
+    },
+  },
+  landingB: {
+    announceBar: {
+      badge: "NUEVO",
+      text: "Ya puedes conectar Facebook, Instagram y Meta Ads.",
+      cta: "Ver cómo funciona →",
+      ctaHref: "#meta",
+    },
+    header: {
+      talk: "Hablar con nosotros",
+      download: "Descargar",
+    },
+    hero: {
+      eyebrow: "IA para tu negocio",
+      title: "Tu oficina digital, con la IA ya incluida.",
+      titlePre: "Tu oficina digital, con",
+      titleHighlight: "la IA ya incluida",
+      titlePost: ".",
+      subtitle:
+        "TS reúne tus archivos, conversaciones y herramientas en un solo lugar para que la IA pueda ayudarte a trabajar sin empezar de cero.",
+      ctaPrimary: "↓ Descargar para Mac",
+      ctaSecondary: "Miralo funcionando",
+      ctaSecondaryHref: "#demos",
+      trustLine: "macOS · Gratis para empezar",
+    },
+    subNav: {
+      demos: "Cómo funciona",
+      integrations: "Integraciones",
+      meta: "Meta",
+      files: "Tus archivos",
+      pricing: "Precios",
+    },
+    demos: {
+      eyebrow: "Una IA diseñada para tu forma de trabajar",
+      title: "Mira cómo TS\ncambia tu día a día",
+      subtitle:
+        "Elige el escenario más parecido a lo que hacés y ve cómo funciona en la práctica.",
+      items: [
+        { title: "Tu espacio de trabajo en un vistazo", src: "/demos/demo-home.html" },
+        { title: "Cambia de IA sin perder el hilo", src: "/demos/demo-cambio-ia.html" },
+        { title: "Conecta tus herramientas", src: "/demos/demo-conectores.html" },
+        { title: "Mensajería en tu espacio", src: "/demos/demo-mensajeria.html" },
+        { title: "Sincroniza entre dispositivos", src: "/demos/demo-sync-dispositivos.html" },
+        { title: "Resultados en segundos", src: "/demos/demo-resultados.html" },
+        { title: "Asistente con tus prompts", src: "/demos/demo-asistente-prompts.html" },
+        { title: "IA como director de equipo", src: "/demos/demo-ai-director.html" },
+      ],
+    },
+    integrations: {
+      eyebrow: "Integraciones",
+      title: "Conecta los servicios\nque ya usas",
+      subtitle:
+        "TS se conecta con las herramientas de tu negocio para que la IA tenga el contexto que necesita, sin que tengas que copiarlo a mano.",
+    },
+    meta: {
+      eyebrow: "Meta para negocios",
+      title: "Facebook, Instagram y WhatsApp\ndentro de tu espacio de trabajo",
+      subtitle:
+        "Atiende mensajes, revisa campañas y crea contenido sin salir de donde trabajas.",
+    },
+    files: {
+      eyebrow: "Tus archivos",
+      title: "Tu información siempre\nen el lugar correcto",
+      subtitle:
+        "Sube documentos, conecta carpetas y deja que la IA los use cuando los necesites, sin volver a buscarlos.",
+    },
+    finalCta: {
+      eyebrow: "Empieza hoy",
+      title: "Tu trabajo con IA,\norganizado de una vez",
+      subtitle:
+        "Descarga TS y crea tu primer espacio de trabajo en menos de dos minutos.",
+      ctaTalk: "Hablar con nosotros",
+      ctaDownload: "Descargar para Mac",
     },
   },
 };

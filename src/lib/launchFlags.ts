@@ -36,3 +36,21 @@
  * exige el día que se publique la ficha.
  */
 export const CHROME_EXTENSION_PUBLIC = false;
+
+/**
+ * ¿La portada usa el Landing B (IA única)?
+ *
+ * **Apagado mientras se construye.** Mismo criterio que CHROME_EXTENSION_PUBLIC:
+ * apagar es cambiar a `false`, la portada vieja sigue entera y vuelve sola.
+ *
+ * Para prenderlo hacen falta tres cosas juntas:
+ * 1. La imagen del hero en `public/landing-b/app-home-cover-v3.png`.
+ * 2. Los 8 demos HTML en `public/demos/`.
+ * 3. Un smoke que recorra `/es`, `/en`, `/es/login`, `/es/admin`,
+ *    `/es/connectors` y `/es/checkout` con el interruptor en `true`,
+ *    confirmando que el Nav sigue apareciendo en todas las páginas internas.
+ *
+ * Qué corta: la portada `/es` y `/en`. Todo lo demás — login, admin,
+ * checkout, conectores, legales — queda intacto con su Nav.
+ */
+export const LANDING_B = true;

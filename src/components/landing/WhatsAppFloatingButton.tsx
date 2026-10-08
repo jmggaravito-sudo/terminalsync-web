@@ -21,8 +21,8 @@ import { usePathname } from "next/navigation";
 const RAW_NUMBER = process.env.NEXT_PUBLIC_CONTACT_WHATSAPP_NUMBER ?? "";
 
 const GREETING: Record<string, string> = {
-  es: "Hola, quiero saber más sobre TerminalSync",
-  en: "Hi, I'd like to know more about TerminalSync",
+  es: "Hola, quiero saber más sobre TS",
+  en: "Hi, I'd like to know more about TS",
 };
 
 export function WhatsAppFloatingButton({ lang }: { lang: string }) {

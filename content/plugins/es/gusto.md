@@ -33,11 +33,11 @@ Junta dos piezas que se potencian, en un solo install:
 
 ## Por qué el combo funciona
 
-Gusto solo puede decirte cuánto le pagaste a cada contratista — no le aplica las reglas del IRS a la lista, y su propio server es solo lectura por diseño. 1099/W-9 Organizer solo necesita que le retipees tus pagados en un chat, un contratista a la vez. Juntos, el conector aporta los nombres y los totales que ya están en tu cuenta de nómina, y la skill les aplica las reglas que declara el IRS. Es el mismo combo que ofrece el Plugin de Google Sheets para una planilla — pero apuntando a la cuenta de la que salieron los pagos.
+Gusto solo puede decirte cuánto le pagaste a cada contratista — no le aplica las reglas del IRS a la lista, y su propio server es solo lectura por diseño. 1099/W-9 Organizer solo necesita que le vuelvas a escribir tus pagos en un chat, un contratista a la vez. Juntos, el conector aporta los nombres y los totales que ya están en tu cuenta de nómina, y la skill les aplica las reglas que declara el IRS. Es el mismo combo que ofrece el Plugin de Google Sheets para una planilla — pero apuntando a la cuenta de la que salieron los pagos.
 
 ## Límites
 
 - Solo lectura de punta a punta: nunca presenta un 1099, nunca junta un W-9, nunca corre una nómina y nunca edita el registro de un contratista. Presentar sigue pasando en Gusto, en tu software de impuestos o con tu contador.
 - Es tan bueno como lo que Gusto expone: donde el tipo de entidad, el estado del W-9 o el total pagado no están disponibles, el pagado queda en "sin resolver" — nunca en una adivinanza.
-- Nunca inventa un SSN/EIN y nunca decide si alguien debería ser empleado W-2 en vez de contratista — la clasificación dudosa se marca para un CPA/EA, no se resuelve acá.
+- Nunca inventa un SSN/EIN y nunca decide si alguien debería ser empleado W-2 en vez de contratista — la clasificación dudosa se marca para un CPA/EA, no se resuelve aquí.
 - La fecha límite del 31 de enero que menciona es la regla general del 1099-NEC para verificar en el año fiscal vigente, no una fecha personalizada.

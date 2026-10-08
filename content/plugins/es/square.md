@@ -14,7 +14,7 @@ skillSlugs: ["pedir-resenas"]
 
 - Cobras con Square, y las reseñas públicas — Google, un marketplace, tu propio sitio — son la forma en que te encuentran los clientes nuevos.
 - Sabes que a quien hay que pedirle es al que acaba de tener una buena experiencia; solo que nunca llegas a hacerlo.
-- Quieres el mensaje escrito y el follow-up planeado, y quieres elegir a quién se le manda en vez de blastear a todos.
+- Quieres el mensaje escrito y el follow-up planeado, y quieres elegir a quién se le manda en vez de enviárselo a todos.
 
 ## Qué hace
 
@@ -39,6 +39,7 @@ Square sabe quién compró y quién volvió — no escribe el pedido, y no tiene
 ## Límites
 
 - El pedido lo mandas tú, desde tu propio email/WhatsApp/SMS — el conector no le escribe a tus clientes, y la skill nunca publica una reseña en nombre de nadie.
+- Este plugin solo necesita leer, pero el servidor oficial de Square también puede escribir (expone toda la API de Square, reembolsos incluidos). Antes de pasar a producción, considera activar su opción de solo lectura (`DISALLOW_WRITES`) para que solo se pueda leer.
 - Nada de incentivos atados a una calificación: no va a redactar "déjanos 5 estrellas y te damos 10% de descuento", porque la mayoría de las plataformas lo prohíbe y esto no te ayuda a romper sus reglas.
 - El conector viene sandboxeado por defecto; en producción tu token actúa sobre tu cuenta real, así que trátalo como una contraseña.
 - No promete cuántas reseñas van a caer. Apunta bien el pedido; el cliente igual decide.

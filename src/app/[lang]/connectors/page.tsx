@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params;
   const title =
     lang === "es"
-      ? "Connectors · Terminal Sync"
-      : "Connectors · Terminal Sync";
+      ? "Connectors · TS"
+      : "Connectors · TS";
   const description =
     lang === "es"
       ? "Dale superpoderes a tu Claude Code: conectalo a Notion, Supabase, Make, Gmail y más. Un solo setup, sincronizado en todas tus máquinas."

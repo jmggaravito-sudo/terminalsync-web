@@ -5,7 +5,7 @@ import { verifyToken } from "@/lib/signedTokens";
 import { UnsubscribeForm } from "./UnsubscribeForm";
 
 export const metadata: Metadata = {
-  title: "Cancelar suscripción de emails · Terminal Sync",
+  title: "Cancelar suscripción de emails · TS",
   robots: { index: false, follow: false },
 };
 

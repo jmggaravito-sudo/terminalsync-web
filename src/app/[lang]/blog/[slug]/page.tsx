@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getPost(lang, slug);
   if (!post) return { title: "Post not found" };
   return {
-    title: `${post.title} — TerminalSync Blog`,
+    title: `${post.title} — TS Blog`,
     description: post.description,
     keywords: post.keywords,
     alternates: {
@@ -59,8 +59,8 @@ export default async function BlogPostPage({ params }: Props) {
     headline: post.title,
     description: post.description,
     datePublished: post.date,
-    author: { "@type": "Organization", name: "TerminalSync" },
-    publisher: { "@type": "Organization", name: "TerminalSync" },
+    author: { "@type": "Organization", name: "TS" },
+    publisher: { "@type": "Organization", name: "TS" },
     mainEntityOfPage: `https://terminalsync.ai/${lang}/blog/${slug}`,
     keywords: post.keywords.join(", "),
   };
@@ -117,8 +117,8 @@ export default async function BlogPostPage({ params }: Props) {
           </p>
           <p className="mt-1 text-[13px] text-[var(--color-fg-muted)]">
             {isEs
-              ? "TerminalSync conecta tu IA con el trabajo real de tu empresa."
-              : "TerminalSync connects your AI to your company's real work."}
+              ? "TS conecta tu IA con el trabajo real de tu empresa."
+              : "TS connects your AI to your company's real work."}
           </p>
           <a
             href="/api/download"

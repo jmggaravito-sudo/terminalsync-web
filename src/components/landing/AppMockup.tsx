@@ -72,7 +72,7 @@ const THEMES: Record<"dark" | "light" | "rose" | "amber" | "violet" | "emerald",
   },
 };
 
-// Inline mockup of the TerminalSync desktop app. Mirrors the actual app's
+// Inline mockup of the TS desktop app. Mirrors the actual app's
 // home grid: 6 session cards in a 2×3 (sm+) or 3×2 (mobile) layout. Each
 // card is a miniature terminal window themed by session category, with
 // AI-tool chip + portable badge + storage chip mimicking the real cards.

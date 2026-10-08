@@ -4,9 +4,9 @@ logo: /connectors/airtable.svg
 category: database
 status: available
 simpleTitle: "Your no-code database, in the agent"
-simpleSubtitle: "Airtable holds your CRMs, inventory, and trackers — now Claude reads them too."
+simpleSubtitle: "Airtable holds your CRMs, inventory, and trackers — now your AI reads them too."
 devTitle: "Airtable MCP Connector"
-devSubtitle: "Base + table introspection with read/write to Claude Code."
+devSubtitle: "Base + table introspection with read/write from your AI."
 ctaUrl: "https://www.airtable.com"
 tokenHelpUrl: "https://airtable.com/create/tokens/new"
 manifest:
@@ -44,7 +44,7 @@ With this connector, your AI can read and write any Airtable base you grant acce
 You need an Airtable **Personal Access Token (PAT)**, format `pat123.abc123`. Replaces the old API keys.
 
 1. Go to [airtable.com/create/tokens/new](https://airtable.com/create/tokens/new).
-2. Name it something like "Terminal Sync — Claude".
+2. Name it something like "Terminal Sync".
 3. **Required scopes** (per the official README): `schema.bases:read` and `data.records:read`.
 4. **Optional scopes**: `schema.bases:write`, `data.records:write`, `data.recordComments:read`, `data.recordComments:write`. Add these only if you want the agent to edit or work with comments.
 5. **Access**: pick which bases it can see — you can be surgical and give it only "Clients CRM" without touching the rest.

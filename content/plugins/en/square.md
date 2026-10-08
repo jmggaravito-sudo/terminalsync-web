@@ -39,6 +39,7 @@ Square knows who bought and who came back — it doesn't write the ask, and it h
 ## Limits
 
 - You send the ask, from your own email/WhatsApp/SMS — the connector doesn't message your customers, and the skill never posts a review on anyone's behalf.
+- This plugin only needs to read, but Square's official server can also write (it exposes Square's full API, refunds included). Before switching to production, consider turning on its read-only option (`DISALLOW_WRITES`) so nothing but reading can happen.
 - No incentives tied to a rating: it won't draft "leave us five stars and get 10% off," because most platforms forbid it and this won't help you break their rules.
 - The connector ships sandboxed by default; in production your token acts on your real account, so treat it like a password.
 - It doesn't promise how many reviews land. It targets the ask well; the customer still decides.

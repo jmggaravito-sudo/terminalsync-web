@@ -49,8 +49,8 @@ export function DragStrip({ lang }: { lang: string }) {
         <ArrowDown size={18} strokeWidth={2.2} />
         <span className="text-[14px] font-semibold">
           {lang === "es"
-            ? "Arrástralo a tu sesión en TerminalSync para instalarlo. Cero código."
-            : "Drag it into your TerminalSync session to install it. Zero code."}
+            ? "Arrástralo a tu sesión en TS para instalarlo. Cero código."
+            : "Drag it into your TS session to install it. Zero code."}
         </span>
       </div>
     </div>

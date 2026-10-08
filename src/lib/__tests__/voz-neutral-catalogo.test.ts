@@ -41,7 +41,10 @@ const VOSEO =
 
 /** Archivos que ya estaban en voseo cuando se puso el trinquete (9 ago 2026).
  *  No se agrega nada acá: si un archivo nuevo aparece en esta lista, el
- *  trinquete no sirvió para nada. */
+ *  trinquete no sirvió para nada.
+ *
+ *  Salidos de la lista (reescritos a neutral, la lista solo se achica):
+ *  - `skills/es/xlsx.md` — 6 oct 2026. */
 const DEUDA = new Set([
   "content/blog/es/2026-07-06-que-es-espacio-trabajo-ia.md",
   "content/blog/es/2026-07-07-deja-de-subir-archivos.md",
@@ -84,7 +87,6 @@ const DEUDA = new Set([
   "content/skills/es/slack-summarizer.md",
   "content/skills/es/tax-prep-checklist.md",
   "content/skills/es/winback-dormidos.md",
-  "content/skills/es/xlsx.md",
   "content/skills/es/zapier-automation-blueprint.md",
 ]);
 

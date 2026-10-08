@@ -6,13 +6,13 @@ const COPY = {
     eyebrow: "Facebook, Instagram, Meta Ads y WhatsApp",
     title: "Tu negocio en redes, con aprobación antes de cada acción.",
     subtitle:
-      "Terminal Sync te ayuda a revisar, preparar y responder en tus canales de Meta. Tú apruebas, Terminal Sync ejecuta: nada se publica, se envía o gasta sin tu confirmación explícita.",
+      "TS te ayuda a revisar, preparar y responder en tus canales de Meta. Tú apruebas, TS ejecuta: nada se publica, se envía o gasta sin tu confirmación explícita.",
     availableTitle: "Ya disponible en la app",
     permissionsTitle: "Requiere conexión o permisos",
     safetyTitle: "Seguro por diseño",
     safetyBody:
       "No prometemos publicaciones, envíos, activaciones ni gasto automático. Primero ves el borrador, la cuenta, el público, el presupuesto o la respuesta sugerida; después decides si aprobar.",
-    approval: "Tú apruebas, Terminal Sync ejecuta.",
+    approval: "Tú apruebas, TS ejecuta.",
     available: [
       "Conectar Facebook e Instagram desde el flujo guiado de Meta.",
       "Preparar publicaciones para Facebook e Instagram con copy, idea visual y checklist de aprobación.",
@@ -39,7 +39,7 @@ const COPY = {
     preview: {
       title: "Ejemplo de trabajo seguro",
       steps: [
-        "Terminal Sync revisa lo permitido o te dice qué conexión falta.",
+        "TS revisa lo permitido o te dice qué conexión falta.",
         "Te muestra resumen, borrador, copy, audiencia o respuesta sugerida.",
         "Tú apruebas explícitamente antes de publicar, enviar o gastar.",
       ],
@@ -49,13 +49,13 @@ const COPY = {
     eyebrow: "Facebook, Instagram, Meta Ads & WhatsApp",
     title: "Your social channels, with approval before every action.",
     subtitle:
-      "Terminal Sync helps you review, prepare, and respond across Meta channels. You approve, Terminal Sync executes: nothing is posted, sent, activated, or spent without your explicit confirmation.",
+      "TS helps you review, prepare, and respond across Meta channels. You approve, TS executes: nothing is posted, sent, activated, or spent without your explicit confirmation.",
     availableTitle: "Available in the app",
     permissionsTitle: "Requires connection or permissions",
     safetyTitle: "Safe by design",
     safetyBody:
       "We do not promise automatic posting, sending, activation, or spend. First you see the draft, account, audience, budget, or suggested reply; then you decide whether to approve.",
-    approval: "You approve, Terminal Sync executes.",
+    approval: "You approve, TS executes.",
     available: [
       "Connect Facebook and Instagram through the guided Meta flow.",
       "Prepare Facebook and Instagram posts with copy, visual ideas, and an approval checklist.",
@@ -82,7 +82,7 @@ const COPY = {
     preview: {
       title: "Example safe workflow",
       steps: [
-        "Terminal Sync reads what is allowed or tells you what connection is missing.",
+        "TS reads what is allowed or tells you what connection is missing.",
         "It shows a summary, draft, copy, audience, or suggested reply.",
         "You explicitly approve before anything is posted, sent, or spent.",
       ],

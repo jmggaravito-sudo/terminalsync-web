@@ -118,7 +118,7 @@ export function Footer({ dict }: { dict: Dict }) {
           <div className="flex items-center gap-2">
             <Logo size={28} />
             <span className="text-[15px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-              TerminalSync
+              TS
             </span>
           </div>
           <p className="mt-3 text-[12.5px] text-[var(--color-fg-muted)] max-w-[14rem] leading-relaxed">

@@ -12,11 +12,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!isLocale(lang)) return {};
   const isEs = lang === "es";
   const title = isEs
-    ? "Casos de uso — TerminalSync"
-    : "Use cases — TerminalSync";
+    ? "Casos de uso — TS"
+    : "Use cases — TS";
   const description = isEs
-    ? "28 formas concretas de usar TerminalSync para tu negocio. Filtrá por área, IA y nivel."
-    : "28 concrete ways to use TerminalSync for your business. Filter by area, AI, and level.";
+    ? "28 formas concretas de usar TS para tu negocio. Filtrá por área, IA y nivel."
+    : "28 concrete ways to use TS for your business. Filter by area, AI, and level.";
   return {
     title,
     description,

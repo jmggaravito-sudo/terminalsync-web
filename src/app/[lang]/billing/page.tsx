@@ -4,7 +4,7 @@ import { isLocale } from "@/content";
 import { BillingPortalLauncher } from "./BillingPortalLauncher";
 
 export const metadata: Metadata = {
-  title: "Administrar suscripción · Terminal Sync",
+  title: "Administrar suscripción · TS",
   robots: { index: false, follow: false },
 };
 

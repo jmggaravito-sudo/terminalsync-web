@@ -8,6 +8,10 @@ type FaqCopy = {
   eyebrow: string;
   title: string;
   subtitle: string;
+  /** "Ver más preguntas" / "See more questions" — required when `initial` is set. */
+  more?: string;
+  /** "Ver menos" / "See less" — required when `initial` is set. */
+  less?: string;
 };
 
 // Accordion-style FAQ. The page passes only the public FAQ projection so
@@ -16,11 +20,18 @@ type FaqCopy = {
 export function FAQ({
   copy,
   items,
+  initial,
 }: {
   copy: FaqCopy;
   items: readonly PublicFaqItem[];
+  /** Show only this many items before a "Ver más" toggle. Without it, all items show. */
+  initial?: number;
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [showAll, setShowAll] = useState(false);
+
+  const visible =
+    initial && !showAll ? items.slice(0, initial) : items;
 
   return (
     <section
@@ -43,7 +54,7 @@ export function FAQ({
       </div>
 
       <div className="mt-10 space-y-3">
-        {items.map((item, idx) => {
+        {visible.map((item, idx) => {
           const open = openIndex === idx;
           return (
             <div
@@ -80,6 +91,19 @@ export function FAQ({
           );
         })}
       </div>
+
+      {initial && initial < items.length ? (
+        <div className="mt-6 text-center">
+          <button
+            type="button"
+            onClick={() => setShowAll((v) => !v)}
+            aria-expanded={showAll}
+            className="text-[13.5px] text-[var(--color-accent)] hover:underline font-medium"
+          >
+            {showAll ? (copy.less ?? "Ver menos") : (copy.more ?? "Ver más preguntas")}
+          </button>
+        </div>
+      ) : null}
     </section>
   );
 }

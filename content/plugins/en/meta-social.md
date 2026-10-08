@@ -29,7 +29,7 @@ Bundles two pieces that reinforce each other, in one install:
 
 1. Connect Meta Social in the app: you sign in with Facebook and grant posting permission — no API keys to paste. Your Instagram has to be a Business or Creator account linked to your Facebook Page, and you need to be an admin of that Page.
 2. Ask: *"give me a week of organic posts for Instagram and Facebook for [what you sell], with captions, format notes, hashtags, and a calendar."*
-3. Swap in your own photos, then ask it to publish the day's post — and approve the preview.
+3. Give it the link to each of your own photos (the connector publishes from an image URL), then ask it to publish the day's post — and approve the preview.
 
 ## Why the bundle works
 
