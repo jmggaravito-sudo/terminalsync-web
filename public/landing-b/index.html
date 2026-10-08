@@ -292,7 +292,10 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .uc-category{height:40px;padding:0 16px;border:1px solid var(--line-2);border-radius:999px;background:var(--surface);color:var(--fg-2);font-size:14px;font-weight:550;white-space:nowrap;transition:background .16s,border-color .16s,color .16s}
 .uc-category:hover{border-color:var(--violet);color:var(--fg)}
 .uc-category[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.uc-meta{max-width:940px;margin:16px auto 0;font-size:13px;color:var(--fg-3)}
+.uc-category-static{cursor:default;background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.uc-category-static:hover{border-color:var(--accent);color:var(--accent-ink)}
+.uc-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;max-width:940px;margin:16px auto 0;font-size:13px;color:var(--fg-3)}
+.uc-availability{font-size:12px;line-height:1.5;max-width:72ch}
 .uc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:18px;max-width:940px;margin:18px auto 0}
 .uc-card{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);padding:22px;box-shadow:0 14px 30px -28px rgba(16,24,40,.45);transition:border-color .18s,transform .18s}
 .uc-card:hover{border-color:var(--line-2);transform:translateY(-1px)}
@@ -306,7 +309,10 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .uc-copy{margin-top:12px;padding:9px 14px;border:1px solid var(--line-2);border-radius:999px;background:var(--surface);font-size:13px;font-weight:600;color:var(--fg);transition:background .16s,border-color .16s,color .16s}
 .uc-copy:hover{border-color:var(--violet);color:var(--violet-ink)}
 .uc-copy.is-copied{border-color:var(--violet);background:var(--violet-soft);color:var(--violet-ink)}
-@media (prefers-reduced-motion:reduce){.uc-category,.uc-card,.uc-copy{transition:none}.uc-card:hover{transform:none}}
+.uc-use{margin-top:14px}
+.uc-use:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
+.uc-use.is-copied{filter:saturate(.8)}
+@media (prefers-reduced-motion:reduce){.uc-category,.uc-card,.uc-copy,.uc-use{transition:none}.uc-card:hover{transform:none}}
 @media (max-width:1040px){
   [id]{scroll-margin-top:124px}
   .nav-links{display:none}
@@ -435,11 +441,11 @@ html.var-dark .theme-toggle .ic-moon{display:block}
   <div class="wrap">
     <div class="head center">
       <span class="eyebrow eyebrow--v">Casos de uso</span>
-      <h2 id="use-cases-title">Ideas prácticas para el trabajo de todos los días</h2>
-      <p class="sub">Elige un área y explora ejemplos concretos que puedes adaptar a tu negocio.</p>
+      <h2 id="use-cases-title">Mercado y competencia, con Búsqueda en vivo</h2>
+      <p class="sub">Explora siete casos prácticos para entender tu negocio, tus competidores y lo que ocurre en tu mercado.</p>
     </div>
     <div class="uc-categories" id="useCasesCategories" role="group" aria-label="Categorías de negocio"></div>
-    <div class="uc-meta"><span id="useCasesCount" aria-live="polite">2 ejemplos prácticos</span></div>
+    <div class="uc-meta"><span id="useCasesCount" aria-live="polite">7 casos de uso</span><span id="useCasesAvailability" class="uc-availability"></span></div>
     <div class="uc-grid" id="useCasesGrid" aria-live="polite"></div>
   </div>
 </section>
@@ -737,6 +743,7 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 </div>
 
 <script src="/landing-b/i18n.js"></script>
+<script src="/landing-b/use-cases-data.js"></script>
 <script src="/landing-b/use-cases.js"></script>
 <script>
 (function(){

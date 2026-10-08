@@ -871,8 +871,9 @@
     "Primero revisa el aviso de la aplicación y vuelve a intentar solo si la acción lo indica. Si hay riesgo de perder datos, un cobro, un problema de seguridad o un fallo repetido de sincronización, pide ayuda humana y conserva el mensaje de error sin compartir secretos.": "First read the app's notice and retry only if the action tells you to. If there is a risk of data loss, a charge, a security problem, or repeated sync failure, ask for human help and keep the error message without sharing secrets.",
     "Ver más preguntas": "See more questions",
     "Ver menos": "See less",
-    "Ideas prácticas para el trabajo de todos los días": "Practical ideas for everyday work",
-    "Elige un área y explora ejemplos concretos que puedes adaptar a tu negocio.": "Choose an area and explore concrete examples you can adapt to your business.",
+    "Mercado y competencia, con Búsqueda en vivo": "Market & competitors, with Live Search",
+    "Explora siete casos prácticos para entender tu negocio, tus competidores y lo que ocurre en tu mercado.": "Explore seven practical use cases to understand your business, competitors, and what is happening in your market.",
+    "En TerminalSync, cada caso aparece cuando las herramientas necesarias están disponibles.": "In TerminalSync, each case appears when the required tools are available.",
     "Claro": "Light",
     "Oscuro": "Dark"
   };
