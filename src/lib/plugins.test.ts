@@ -124,6 +124,7 @@ describe("plugins — catalog (Fase 1: first pilot)", () => {
       { slug: "notion", connector: "notion", skill: "doc-coauthoring" },
       { slug: "github", connector: "github", skill: "code-reviewer" },
       { slug: "stripe", connector: "stripe", skill: "internal-comms" },
+      { slug: "airtable", connector: "airtable", skill: "rfm-segmentacion" },
     ] as const;
 
     for (const lang of ["en", "es"] as const) {
