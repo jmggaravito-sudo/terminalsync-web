@@ -116,7 +116,15 @@ describe("syncSubscriptionToSupabase — account linking", () => {
     });
     expect(await syncSubscriptionToSupabase(sub)).toBe(true);
     expect(upsertCalls.find((call) => call.table === "subscriptions")?.row.plan).toBe("pro");
+    expect(upsertCalls.find((call) => call.table === "subscriptions")?.row.ai_included).toBe(true);
     expect(upsertCalls.find((call) => call.table === "courtesy_entitlement")?.row.tier).toBe("included_ai");
+  });
+
+  it("keeps historical base-only subscriptions without included AI", async () => {
+    const sub = fakeSub({ metadata: { supabase_user_id: "user-legacy" } });
+    expect(await syncSubscriptionToSupabase(sub)).toBe(true);
+    expect(upsertCalls.find((call) => call.table === "subscriptions")?.row.ai_included).toBe(false);
+    expect(upsertCalls.find((call) => call.table === "courtesy_entitlement")).toBeUndefined();
   });
 
   it("persists the paid AI entitlement independently of the plan", async () => {
