@@ -366,6 +366,32 @@ Until these are present, keep the kit out of the published marketplace catalog.
 
 **Also noted:** the "Card-only today" list is stale on `gmail` (now has a manifest and OAuth setup instructions). This run did not edit that list — flagging instead, since first-party/no-manifest entries around it (`gdrive`, `kit`, `sqlite`, `vercel`, `whatsapp`) were not re-verified.
 
+### 2026-10-05 — Field Service Routes Kit; re-check of the deferred queue
+
+**Shipped (1 kit, EN/ES parity):**
+
+- `field-service-routes` (category: operations) — `google-sheets` + `google-maps` + `internal-comms`. Scoped to the daily route-planning loop of a local service business that runs on visits (cleaning, repairs, deliveries, showings): read the job list from the spreadsheet where it already lives (Sheets), measure the route instead of guessing it (geocode + distance matrix + directions via Maps), write the stop order and ETAs back next to the jobs, and hand the crew an executable brief (Internal Comms). `google-maps` was used by zero prior kits; `google-sheets` only by `bookkeeping-tax-handoff` (finance packet — different job, same generic artifact); this is the only kit grounded in physical stops and travel time. Distinct from `team-operations` (task-board status), `client-meetings` (in-flight PR #363 — the call loop), and `bookkeeping-tax-handoff` (accountant packet).
+
+**Overlap check against parallel, not-yet-merged Loop PRs:** #363 (`loop/kits-2026-09-28`, client-meetings kit — takes google-calendar/zoom/todoist, leaves google-maps untouched), #362 (`loop/plugins-2026-09-28`, gusto/square/meta-social packs), #373 (`loop/plugins-2026-10-05`, airtable + rfm-segmentacion pack), #352 (`loop/connectors-2026-09-22`, ramp — unmerged, so ramp stays unpublished). No conflict with any of them.
+
+**New evaluations this run (4 SKIP, all coherence/scope — no rule change needed):**
+
+- **Canva brand-collateral kit** — `canva` is installable (OAuth, manifest) and unused, but no whitelisted skill serves short-form collateral copy: `doc-coauthoring` is a long-document co-authoring process (the same stretch the 2026-08-03 run rejected for support replies), and the natural fits (`contenido-social`, `ideogram-creative-director`) are outside the 7-skill whitelist. Also adjacent to `social-ad-creative-studio`'s creative space. Deferred until the whitelist question is resolved or a collateral-copy skill passes the mold.
+- **Asana client-delivery kit** — a third task-manager kit (after clickup in `team-operations` and todoist in client-meetings #363). "Client project delivery + status report" is a real job, but the workflow shape (read task board → write update) is `team-operations`' purpose with a different vendor; reads as a relabel under the duplicate-purpose prohibition. Reconsider only with a genuinely different anchor.
+- **Webflow marketing-site kit** — `webflow` + `seo-auditor` + `doc-coauthoring` reproduces `seo-content`'s draft→audit→publish loop with a different CMS; same purpose, different vendor = relabel, not a new kit.
+- **Twitter/X social-presence kit** — `twitter` alone can't anchor it: `meta-social` is first-party without manifest, `contenido-social` is outside the whitelist, and `doc-coauthoring` is the wrong shape for posts. Too thin to be coherent.
+
+**Carry-over re-checks (6, all still blocked — facts re-verified this run):**
+
+- **Klaviyo retention/email kit** — every skill that makes it coherent (`lifecycle-email` [staged], `carrito-abandonado`, `winback-dormidos`, `promos-cupones`, `ltv-cohortes`, `rfm-segmentacion`) is outside the 7-skill whitelist. Unchanged since the 2026-09-28 run flagged the whitelist drift for JM; no rule change merged.
+- **Support / Customer Service kit** — `gmail` is installable (manifest re-verified) but the blocker is the skill side and is unchanged: no whitelisted skill fits customer-facing reply drafting; `intercom` remains first-party without manifest.
+- **Gusto payroll/1099 kit** — plugin PR #362 still open (bundles gusto + `1099-w9-organizer`); a kit with the same combo would duplicate the pack's purpose one layer up. Also `1099-w9-organizer` is outside the whitelist.
+- **Ramp spend-management kit** — connector PR #352 still unmerged → ramp is not a published catalog item → fails the "only published, installable pieces" gate.
+- **Local Marketing kit** — `google-business` still has no `manifest:` block (re-verified this run).
+- **Calendly scheduling kit** — `calendly` is installable but coherence-dropped (per 2026-09-28: its server already reads the calendar and makes booking links, so partners duplicate it or reduce to filler); additionally it would overlap client-meetings (#363) on google-calendar and the meeting domain.
+
+**App mirror:** not opened — per `docs/integration-loop-two-pr-policy.md` this kit needs no desktop code (standard connector/skill items the app already renders from `/api/marketplace/catalog`); opening a record-only mirror PR is exactly what the policy forbids. Landing body states `App mirror PR: no aplica — la app consume el catálogo`. App-side guard run as verification: `node scripts/verify-integration-loop.mjs --snapshot` in `terminal-sync` passes ("✓ el contrato se cumple").
+
 ### 2026-08-03 — SEO Content Kit; overlap check against in-flight kit PRs
 
 **Shipped (1 kit, EN/ES parity):**
