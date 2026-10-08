@@ -88,7 +88,12 @@ switch (cmd) {
   case "report": {
     const [dir, merged, mergeNote, checks] = args;
     const research = readJson(path.join(dir, "research.json"));
-    const build = readJson(path.join(dir, "build.json"));
+    const rawBuild = readJson(path.join(dir, "build.json"));
+    // The agent wrote this file; it once misspelled the owner in its own PR URL. Rebuild the link.
+    const repo = process.env.GITHUB_REPOSITORY;
+    const build = rawBuild
+      ? { ...rawBuild, url: repo && Number.isInteger(Number(rawBuild.pr)) ? `https://github.com/${repo}/pull/${Number(rawBuild.pr)}` : undefined }
+      : rawBuild;
     const decision = readJson(path.join(dir, "decision.json"));
     console.log(
       buildReport({

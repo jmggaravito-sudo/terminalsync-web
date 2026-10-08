@@ -26,6 +26,13 @@ inputs:
   github-token:
     description: GITHUB_TOKEN, exposed to the agent as GH_TOKEN for gh
     required: true
+  tolerate-failure:
+    description: >
+      "true" keeps the job going when the agent step fails. Use it only for stages whose
+      deliverable file is validated afterwards (a missing review file becomes a hold).
+      GLM sometimes ends "successfully" after more turns than --max-turns and the action
+      then reports a failure even though the file was written.
+    default: "false"
 
 runs:
   using: composite
@@ -47,6 +54,7 @@ runs:
 
     - name: Run agent (${{ inputs.label }})
       uses: anthropics/claude-code-action@v1
+      continue-on-error: ${{ inputs.tolerate-failure == 'true' }}
       env:
         GH_TOKEN: ${{ inputs.github-token }}
         GITHUB_TOKEN: ${{ inputs.github-token }}
