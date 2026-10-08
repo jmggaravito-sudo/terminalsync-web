@@ -16,7 +16,7 @@ const ROTATE_DATA: Record<Locale, Array<{ h: string; s: string }>> = {
   es: [
     {
       h: 'Tu trabajo continúa, <span class="grad">aunque cierres el computador.</span>',
-      s: "TerminalSync sigue trabajando mientras tú haces otras cosas.",
+      s: "TS sigue trabajando mientras tú haces otras cosas.",
     },
     {
       h: 'No es otro chat. <span class="grad">Es tu oficina digital con IA.</span>',
@@ -38,7 +38,7 @@ const ROTATE_DATA: Record<Locale, Array<{ h: string; s: string }>> = {
   en: [
     {
       h: 'Your work keeps going, <span class="grad">even after you close your laptop.</span>',
-      s: "TerminalSync keeps working while you do other things.",
+      s: "TS keeps working while you do other things.",
     },
     {
       h: "It's not another chat. <span class=\"grad\">It's your digital office with AI.</span>",
@@ -153,6 +153,12 @@ export function Hero({ dict }: { dict: Dict }) {
         {/* Titular + subtítulo rotativos sincronizados */}
         <RotatingPair lang={dict.locale} />
 
+        <p className="mt-4 text-[14px] text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed">
+          {dict.locale === "es"
+            ? "Terminal Sync (TerminalSync o TS) es una aplicación de escritorio con IA para organizar documentos y correos en espacios de trabajo. Puedes conectar Gmail en modo solo lectura, elegir qué correos añadir al contexto y hacer preguntas sobre ellos."
+            : "Terminal Sync (TerminalSync or TS) is a desktop AI application for organizing documents and emails in workspaces. You can connect Gmail in read-only mode, choose which messages to add as context, and ask questions about them."}
+        </p>
+
         {/* Línea de resultados */}
         <p className="mt-4 text-[14px] text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed">
           <strong className="font-bold text-[var(--color-fg-strong)]">
@@ -197,7 +203,7 @@ export function Hero({ dict }: { dict: Dict }) {
           <div style={{ aspectRatio: "2400/1860" }}>
             <img
               src={dict.locale === "en" ? "/redesign/dashboard-hero-en.png" : "/redesign/dashboard-hero.png"}
-              alt="TerminalSync dashboard"
+              alt="TS dashboard"
               className="w-full h-full object-cover object-top"
             />
           </div>

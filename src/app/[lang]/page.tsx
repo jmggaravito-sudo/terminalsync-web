@@ -1,13 +1,14 @@
 import { notFound } from "next/navigation";
 import dynamic from "next/dynamic";
 import { getDict, isLocale } from "@/content";
-import { getHomeFaq } from "@/content/faq";
+import { getHomeFaq, getLandingBFaq } from "@/content/faq";
 import { Hero } from "@/components/landing/Hero";
 import { MemoryPersistent } from "@/components/landing/MemoryPersistent";
 import { MultiAI } from "@/components/landing/MultiAI";
 import { ChromeExtensionTeaser } from "@/components/landing/ChromeExtensionTeaser";
 import { WindowsEarlyAccess } from "@/components/landing/WindowsEarlyAccess";
-import { CHROME_EXTENSION_PUBLIC } from "@/lib/launchFlags";
+import { CHROME_EXTENSION_PUBLIC, LANDING_B } from "@/lib/launchFlags";
+import { LandingB } from "@/components/landing-b/LandingB";
 import { DemosGrid } from "@/components/landing/DemosGrid";
 import { IntegrationsDiscovery } from "@/components/landing/IntegrationsDiscovery";
 import { MetaBusiness } from "@/components/landing/MetaBusiness";
@@ -57,6 +58,12 @@ export default async function Landing({ params }: Props) {
   // (≈ $X COP) se removieron 2026-05-29 — las tasas hardcoded se
   // desfasaban y daban falsa sensación de precisión. Stripe igual cobra
   // en USD y el banco del cliente hace la conversión real.
+
+  if (LANDING_B) {
+    return (
+      <LandingB dict={d} lang={lang} faq={getLandingBFaq(lang)} />
+    );
+  }
 
   return (
     <>

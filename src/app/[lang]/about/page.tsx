@@ -12,12 +12,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!isLocale(lang)) return {};
   const title =
     lang === "es"
-      ? "Sobre nosotros — TerminalSync"
-      : "About — TerminalSync";
+      ? "Sobre nosotros — TS"
+      : "About — TS";
   const description =
     lang === "es"
-      ? "Por qué construimos TerminalSync, en qué creemos sobre privacidad y autonomía digital, y cómo trabajamos."
-      : "Why we built TerminalSync, what we believe about privacy and digital autonomy, and how we work.";
+      ? "Por qué construimos TS, en qué creemos sobre privacidad y autonomía digital, y cómo trabajamos."
+      : "Why we built TS, what we believe about privacy and digital autonomy, and how we work.";
   return {
     title,
     description,
@@ -43,7 +43,7 @@ export default async function AboutPage({ params }: Props) {
     return (
       <LegalShell
         lang="es"
-        title="Sobre TerminalSync"
+        title="Sobre TS"
         subtitle="Construimos la capa de memoria, privacidad y movilidad para los agentes IA modernos."
       >
         <h2>Por qué existimos</h2>
@@ -59,7 +59,7 @@ export default async function AboutPage({ params }: Props) {
           dependencia que para muchos profesionales no es aceptable.
         </p>
         <p>
-          <strong>TerminalSync es la tercera opción</strong>: una capa local
+          <strong>TS es la tercera opción</strong>: una capa local
           que le da memoria, privacidad y movilidad a tus agentes — corriendo
           en tu propia Mac, guardando en tu propia nube — tus archivos nunca
           pasan por nuestros servidores, y tus secretos y conversaciones
@@ -111,7 +111,7 @@ export default async function AboutPage({ params }: Props) {
   return (
     <LegalShell
       lang="en"
-      title="About TerminalSync"
+      title="About TS"
       subtitle="We build the memory, privacy, and mobility layer for modern AI agents."
     >
       <h2>Why we exist</h2>
@@ -127,7 +127,7 @@ export default async function AboutPage({ params }: Props) {
         dependency that for many professionals isn't acceptable.
       </p>
       <p>
-        <strong>TerminalSync is the third option</strong>: a local layer
+        <strong>TS is the third option</strong>: a local layer
         that gives memory, privacy, and mobility to your agents — running on
         your own Mac, storing on your own cloud — your files never pass
         through our servers, and your secrets and conversations travel with

@@ -9,7 +9,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params;
   return {
-    title: lang === "es" ? "Iniciar sesión · TerminalSync" : "Sign in · TerminalSync",
+    title: lang === "es" ? "Iniciar sesión · TS" : "Sign in · TS",
     robots: { index: false },
   };
 }

@@ -6,7 +6,7 @@ vendors: ["claude"]
 author: "Anthropic"
 status: available
 tagline: "PowerPoint at the speed of prompt"
-description: "Builds and edits PowerPoint decks (.pptx/.potx) with real slide layouts, native charts, speaker notes, and template reuse — instead of a bullet-point outline pretending to be a deck. Ships natively with Claude; nothing to install."
+description: "Builds and edits PowerPoint decks (.pptx/.potx) with real slide layouts, native charts, speaker notes, and template reuse — instead of a bullet-point outline pretending to be a deck. Included by default; nothing to install."
 license: "proprietary"
 licenseUrl: "https://github.com/anthropics/skills/blob/main/skills/pptx/LICENSE.txt"
 marketplaceSource: "anthropic"
@@ -33,9 +33,9 @@ Do not use it for Word documents, PDFs, or spreadsheets — that's the DOCX, PDF
 ## How to use
 
 1. Describe the deck: audience, occasion, slide count, and the real numbers or story it needs to carry — e.g. *"a 10-slide client review deck, last month's KPIs, ending with a renewal ask."*
-2. If you have a brand template or an existing deck, share it — Claude works from your layouts and colors instead of inventing new ones.
+2. If you have a brand template or an existing deck, share it — the AI works from your layouts and colors instead of inventing new ones.
 3. Give the actual data for any chart; the skill will not invent figures to fill a slide that looks empty.
-4. Open the exported file in PowerPoint or Keynote for a final pass — Claude checks its own render for broken slides, but the pitch and the ask are still your call.
+4. Open the exported file in PowerPoint or Keynote for a final pass — The AI checks its own render for broken slides, but the pitch and the ask are still your call.
 
 ## Best for
 

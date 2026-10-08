@@ -45,8 +45,21 @@ export default async function PrivacyPage({ params }: Props) {
         lang="es"
         title="Política de Privacidad"
         subtitle="Esta política describe qué datos recolectamos, por qué, cómo los protegemos y cómo podés ejercer tus derechos sobre ellos."
-        lastUpdated="Última actualización: 23 de septiembre de 2026"
+        lastUpdated="Última actualización: 7 de octubre de 2026"
       >
+        <h2>Gmail: acceso opcional de solo lectura</h2>
+        <p>Terminal Sync (TerminalSync o TS) solicita <code>gmail.readonly</code>
+          solo si conectás Gmail. Lee remitentes, destinatarios, asuntos, fechas,
+          cuerpos y adjuntos para buscar, mostrar e importar los mensajes que
+          elegís. No envía, borra, mueve, marca ni modifica correo. Ver Inbox no
+          incorpora el correo a la IA: vos elegís enviarlo a un espacio.</p>
+        <p>Los correos y adjuntos importados se guardan en tu computadora.
+          Al pedir una respuesta, el contexto habilitado puede enviarse a los
+          proveedores de IA descritos abajo. Podés pausar, excluir o quitar la
+          copia del contexto. Desconectar Gmail no borra copias ya importadas ni
+          recupera datos ya enviados al proveedor. Los originales quedan en Gmail.</p>
+        <p>La información completa sobre los permisos de Google está en nuestra
+          <a href="/privacy"> política de datos de Google</a>.</p>
         <h2>1. Quiénes somos</h2>
         <p>
           TerminalSync es una aplicación de escritorio que sincroniza el estado
@@ -140,24 +153,33 @@ export default async function PrivacyPage({ params }: Props) {
             contactemos, y el contenido de las notificaciones que elegís recibir.</li>
         </ul>
         <p>
-          Y, si usás la <strong>IA incluida</strong> en tu plan, lo que le
-          escribís pasa además por estos dos:
+          Y, si usás la <strong>IA de TerminalSync</strong>, lo que le
+          escribís pasa además por estos proveedores:
         </p>
         <ul>
           <li><strong>Z.ai (Zhipu AI)</strong>, empresa china: recibe tu mensaje,
             el material activo de tu panel de Contexto y la conversación previa
-            de ese espacio, y genera la respuesta. Sus términos{" "}
-            <strong>no prometen</strong> que no vayan a usar lo que enviás para
-            mejorar sus propios modelos. Si un documento no puede salir de tu
-            empresa, no lo pongas en Contexto:{" "}
-            <a href="https://z.ai/terms/privacy-policy">su política</a>.</li>
+            de ese espacio, y genera la respuesta. Nuestra política prohíbe que Terminal Sync
+            o sus proveedores usen los datos de Google para desarrollar, mejorar
+            o entrenar modelos de IA generales o no personalizados. Para recibir
+            esos datos, el proveedor debe respaldar esa restricción con términos
+            contractuales y controles de procesamiento aplicables.
+            <a href="https://z.ai/terms/privacy-policy"> Política del proveedor</a>.</li>
           <li><strong>Cloudflare</strong>: el servidor intermedio por el que ese
-            pedido viaja hacia Z.ai. Verifica que tu plan esté al día y cuenta
+            pedido viaja hacia Z.ai (y, si la IA busca negocios o reseñas, hacia
+            SearchApi). Verifica que tu plan esté al día y cuenta
             cuánto usaste. <strong>No guarda el contenido</strong> de lo que
             pasa por ahí: del uso registramos un identificador de tu cuenta, qué
             modelo se usó, cuánto texto entró y salió, y cuánto costó — nunca el
             texto de tu mensaje, la respuesta, el contenido de tus documentos,
             las rutas de tus archivos ni tu correo.</li>
+          <li><strong>SearchApi</strong> (EE. UU.): solo cuando le pedís a la IA
+            que busque negocios o reseñas en Google Maps, o cuando un video de
+            YouTube que agregaste al Contexto no se puede leer de otra forma.
+            Recibe el texto de esa búsqueda (o el enlace del video), el país y el
+            idioma, y devuelve resultados públicos. No recibe tu nombre, tu correo
+            ni tus documentos. Contamos cuántas búsquedas hiciste en el mes, pero{" "}
+            <strong>no guardamos qué buscaste</strong>.</li>
         </ul>
         <p>
           No vendemos tus datos a terceros. Nunca hemos. Nunca vamos a hacerlo.
@@ -222,8 +244,20 @@ export default async function PrivacyPage({ params }: Props) {
       lang="en"
       title="Privacy Policy"
       subtitle="This policy describes what data we collect, why, how we protect it, and how you can exercise your rights over it."
-      lastUpdated="Last updated: September 23, 2026"
+      lastUpdated="Last updated: October 7, 2026"
     >
+      <h2>Gmail: optional read-only access</h2>
+      <p>Terminal Sync (TerminalSync or TS) requests <code>gmail.readonly</code>
+        only when you connect Gmail. It reads senders, recipients, subjects, dates,
+        bodies and attachments to search, display and import messages you select.
+        It cannot send, delete, move, mark or modify mail. Viewing Inbox does not
+        add messages to AI: you choose to send them to a workspace.</p>
+      <p>Imported emails and attachments are saved on your computer. When you
+        request an answer, enabled context may be sent to the AI providers
+        disclosed below. You can pause, exclude or remove imported context.
+        Disconnecting Gmail does not erase imported copies or recall data already
+        sent to a provider. Original messages remain in Gmail.</p>
+      <p>See our <a href="/privacy">complete Google data policy</a> for details.</p>
       <h2>1. Who we are</h2>
       <p>
         TerminalSync is a desktop application that syncs the state of your
@@ -317,24 +351,33 @@ export default async function PrivacyPage({ params }: Props) {
           contacted, and the content of notifications you opt into.</li>
       </ul>
       <p>
-        And, if you use the <strong>AI included</strong> in your plan, what you
-        write also passes through these two:
+        And, if you use <strong>TerminalSync's AI</strong>, what you
+        write also passes through these providers:
       </p>
       <ul>
         <li><strong>Z.ai (Zhipu AI)</strong>, a Chinese company: receives your
           message, the active material in your Context panel and the earlier
-          conversation in that workspace, and generates the answer. Their terms{" "}
-          <strong>do not promise</strong> that they won't use what you send to
-          improve their own models. If a document can't leave your company,
-          don't put it in Context:{" "}
-          <a href="https://z.ai/terms/privacy-policy">their policy</a>.</li>
+          conversation in that workspace, and generates the answer. Our policy prohibits Terminal Sync and
+          its providers from using Google user data to develop, improve or train
+          generalized or non-personalized AI models. Before receiving that data,
+          a provider must support this restriction through applicable contractual
+          terms and processing controls.
+          <a href="https://z.ai/terms/privacy-policy"> Provider policy</a>.</li>
         <li><strong>Cloudflare</strong>: the middle server that request travels
-          through on its way to Z.ai. It checks that your plan is current and
+          through on its way to Z.ai (and, when the AI looks up businesses or
+          reviews, to SearchApi). It checks that your plan is current and
           counts how much you used. <strong>It does not store the content</strong>{" "}
           that passes through it: of your usage we record an identifier for your
           account, which model was used, how much text went in and out, and what
           it cost — never the text of your message, the answer, the contents of
           your documents, your file paths or your email address.</li>
+        <li><strong>SearchApi</strong> (US): only when you ask the AI to look up
+          businesses or reviews on Google Maps, or when a YouTube video you added
+          to Context can't be read any other way. It receives the text of that
+          search (or the video link), the country and the language, and returns
+          public results. It does not receive your name, your email or your
+          documents. We count how many searches you made this month, but{" "}
+          <strong>we don't store what you searched for</strong>.</li>
       </ul>
       <p>We don't sell your data. We never have. We never will.</p>
 

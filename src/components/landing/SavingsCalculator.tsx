@@ -6,7 +6,7 @@ import type { Dict } from "@/content";
 
 /**
  * Sliders + live numbers showing how much a dev saves per year by mixing
- * Claude/Codex/Gemini through TerminalSync vs. paying for a single AI's
+ * Claude/Codex/Gemini through TS vs. paying for a single AI's
  * heavy plan and burning extra hours.
  *
  * Numbers come from list prices Anthropic/OpenAI/Google + tool-mixing
@@ -198,8 +198,8 @@ export function SavingsCalculator({ dict }: { dict: Dict }) {
             }
             help={
               dict.locale === "es"
-                ? "Con TerminalSync no repites quién eres ni dónde quedaste."
-                : "With TerminalSync you don't repeat who you are or where you left off."
+                ? "Con TS no repites quién eres ni dónde quedaste."
+                : "With TS you don't repeat who you are or where you left off."
             }
             value={memHrs}
             onChange={setMemHrs}

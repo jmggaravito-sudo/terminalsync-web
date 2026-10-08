@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, slug } = await params;
   const plugin = await getPlugin(lang, slug);
   if (!plugin) return { title: "Plugin not found" };
-  const title = `${plugin.name} · TerminalSync Plugin`;
+  const title = `${plugin.name} · TS Plugin`;
   return {
     title,
     description: plugin.description,
@@ -76,7 +76,7 @@ export default async function PluginDetail({ params }: Props) {
             className="inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-[13px] font-semibold text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] glow-accent transition-all hover:-translate-y-px"
           >
             <Download size={14} strokeWidth={2.4} />
-            {isEs ? "Instalar en TerminalSync" : "Install in TerminalSync"}
+            {isEs ? "Instalar en TS" : "Install in TS"}
           </a>
         </div>
 

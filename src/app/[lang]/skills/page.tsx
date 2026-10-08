@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params;
   const isEs = lang === "es";
   const title = isEs
-    ? "Skills · Terminal Sync"
-    : "Skills · Terminal Sync";
+    ? "Skills · TS"
+    : "Skills · TS";
   const description = isEs
     ? "Skills listas para Claude Code y Codex. Instalalas una vez y se sincronizan en todas tus máquinas."
     : "Ready-to-install skills for Claude Code and Codex. Install once, sync across every machine.";

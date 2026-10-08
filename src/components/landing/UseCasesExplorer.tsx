@@ -113,11 +113,11 @@ function Modal({
         <p className="text-[13px] text-[var(--color-fg-muted)] mb-6 leading-relaxed">
           {tab === "prompts"
             ? (isEs
-                ? `Descarga TerminalSync y abre "${title}" con tu IA preferida. El prompt ya está listo.`
-                : `Download TerminalSync and open "${title}" with your preferred AI. The prompt is already ready.`)
+                ? `Descarga TS y abre "${title}" con tu IA preferida. El prompt ya está listo.`
+                : `Download TS and open "${title}" with your preferred AI. The prompt is already ready.`)
             : (isEs
-                ? `Descarga TerminalSync y activa "${title}" en minutos. Tu empleado digital trabaja solo desde el primer día.`
-                : `Download TerminalSync and activate "${title}" in minutes. Your digital worker runs on its own from day one.`)}
+                ? `Descarga TS y activa "${title}" en minutos. Tu empleado digital trabaja solo desde el primer día.`
+                : `Download TS and activate "${title}" in minutes. Your digital worker runs on its own from day one.`)}
         </p>
         <div className="flex flex-col gap-2">
           <a
@@ -125,7 +125,7 @@ function Modal({
             className="flex items-center justify-center gap-2 rounded-xl bg-[var(--color-accent)] text-white text-[14px] font-semibold py-3 hover:bg-[var(--color-accent-soft)] transition-colors"
           >
             <Download size={14} strokeWidth={2.3} />
-            {isEs ? "Descargar TerminalSync" : "Download TerminalSync"}
+            {isEs ? "Descargar TS" : "Download TS"}
           </a>
           <button
             type="button"
@@ -1000,7 +1000,7 @@ export function UseCasesExplorer({ lang }: { lang: Locale }) {
             className="inline-flex items-center gap-2 rounded-2xl bg-[var(--color-accent)] px-7 py-3.5 text-[15px] font-semibold text-white transition-all glow-accent hover:-translate-y-px hover:bg-[var(--color-accent-soft)]"
           >
             <Download size={15} strokeWidth={2.2} />
-            {isEs ? "Descargar TerminalSync" : "Download TerminalSync"}
+            {isEs ? "Descargar TS" : "Download TS"}
           </a>
         </div>
       </div>

@@ -20,8 +20,8 @@ export function MarketplaceAppBanner({ lang }: { lang: string }) {
             </h2>
             <p className="mt-2 text-[13.5px] text-[var(--color-fg-muted)] leading-relaxed">
               {isEs
-                ? "TerminalSync mantiene tu Claude, Codex y Gemini sincronizados, encriptados y listos en cualquier Mac."
-                : "TerminalSync keeps your Claude, Codex and Gemini synced, encrypted, and ready on any Mac."}
+                ? "TS mantiene tu Claude, Codex y Gemini sincronizados, encriptados y listos en cualquier Mac."
+                : "TS keeps your Claude, Codex and Gemini synced, encrypted, and ready on any Mac."}
             </p>
             <div className="mt-5 flex items-center gap-2.5 flex-wrap">
               <a
@@ -45,7 +45,7 @@ export function MarketplaceAppBanner({ lang }: { lang: string }) {
             <div className="relative h-full rounded-xl border border-[var(--color-border)] bg-[var(--color-panel-2)]/50 overflow-hidden shadow-lg">
               <Image
                 src="/marketplace/app-dashboard.png"
-                alt={isEs ? "TerminalSync · panel principal" : "TerminalSync dashboard"}
+                alt={isEs ? "TS · panel principal" : "TS dashboard"}
                 fill
                 className="object-cover object-left-top"
                 sizes="(min-width: 768px) 50vw, 100vw"

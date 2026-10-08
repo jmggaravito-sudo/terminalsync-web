@@ -8,10 +8,10 @@ const T = {
     eyebrow: "Continuidad",
     title: "Cuando una IA se detiene, tu trabajo no.",
     subtitle:
-      "Las IAs tienen límites. Tus proyectos no deberían tenerlos. Cuando una deja de responder, TerminalSync continúa el proyecto sin perder contexto, sin copiar nada, sin empezar desde cero.",
+      "Las IAs tienen límites. Tus proyectos no deberían tenerlos. Cuando una deja de responder, TS continúa el proyecto sin perder contexto, sin copiar nada, sin empezar desde cero.",
     relayFrom: "IA #1 llega a su límite",
     relayTo: "IA #2 continúa sola",
-    moat: "Una herramienta de una sola IA no puede hacer esto. TerminalSync no depende de ninguna — por eso tu trabajo nunca choca contra una pared.",
+    moat: "Una herramienta de una sola IA no puede hacer esto. TS no depende de ninguna — por eso tu trabajo nunca choca contra una pared.",
     behaviors: [
       { title: "Se da cuenta cuando una IA se traba", body: "Detecta cuando una IA llega a su límite, se cae o deja de responder — sin que tengas que estar mirando." },
       { title: "Cambia de IA por ti", body: "Pasa el proyecto a otra IA disponible. Tú no haces nada." },
@@ -24,7 +24,7 @@ const T = {
       "Nunca vuelves a empezar desde cero.",
       "Nunca pierdes el trabajo realizado.",
     ],
-    quote: "Mientras otras plataformas terminan conversaciones, TerminalSync termina proyectos.",
+    quote: "Mientras otras plataformas terminan conversaciones, TS termina proyectos.",
     whatsapp: {
       eyebrow: "Tu trabajo te sigue hasta el chat",
       title: "Escríbele a tu empresa desde donde estés.",
@@ -42,10 +42,10 @@ const T = {
     eyebrow: "Continuity",
     title: "When one AI stops, your work doesn't.",
     subtitle:
-      "AIs have limits. Your projects shouldn't. When one stops responding, TerminalSync continues the project — no lost context, no copying, no starting over.",
+      "AIs have limits. Your projects shouldn't. When one stops responding, TS continues the project — no lost context, no copying, no starting over.",
     relayFrom: "AI #1 hits its limit",
     relayTo: "AI #2 continues on its own",
-    moat: "A single-AI tool can't do this. TerminalSync doesn't depend on any one of them — that's why your work never hits a wall.",
+    moat: "A single-AI tool can't do this. TS doesn't depend on any one of them — that's why your work never hits a wall.",
     behaviors: [
       { title: "It notices when an AI gets stuck", body: "Detects when an AI hits its limit, goes down or stops responding — without you watching." },
       { title: "Switches to another AI for you", body: "Passes the project to another available AI. You don't do a thing." },
@@ -58,7 +58,7 @@ const T = {
       "Never start from scratch.",
       "Never lose completed work.",
     ],
-    quote: "While other platforms end conversations, TerminalSync finishes projects.",
+    quote: "While other platforms end conversations, TS finishes projects.",
     whatsapp: {
       eyebrow: "Your work follows you to the chat",
       title: "Message your business from anywhere.",
@@ -133,9 +133,9 @@ export function Continuity({ lang }: { lang: Locale }) {
           style={{ fontSize: "clamp(1.125rem, 2.5vw, 1.5rem)" }}
         >
           {lang === "es" ? (
-            <>Mientras otras plataformas terminan conversaciones, <strong className="text-[var(--color-fg-strong)]">TerminalSync termina proyectos.</strong></>
+            <>Mientras otras plataformas terminan conversaciones, <strong className="text-[var(--color-fg-strong)]">TS termina proyectos.</strong></>
           ) : (
-            <>While other platforms end conversations, <strong className="text-[var(--color-fg-strong)]">TerminalSync finishes projects.</strong></>
+            <>While other platforms end conversations, <strong className="text-[var(--color-fg-strong)]">TS finishes projects.</strong></>
           )}
         </p>
       </blockquote>

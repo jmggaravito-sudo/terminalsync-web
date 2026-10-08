@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="es" class="var-light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TS — un espacio para cada proyecto, con IA incluida</title>
+<meta name="description" content="Separa cada cliente, proyecto o área en su propio espacio, con sus archivos y contexto. TS incluye IA, sin pagar otra suscripción de IA. Para Mac." />
+<template id="__bundler_thumbnail"><svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#6a48e8"/><rect x="26" y="34" width="68" height="52" rx="8" fill="#fff"/><rect x="34" y="44" width="38" height="5" rx="2.5" fill="#6a48e8"/><rect x="34" y="55" width="52" height="4" rx="2" fill="#c8e6da"/><rect x="34" y="64" width="44" height="4" rx="2" fill="#c8e6da"/></svg></template>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.js"></script>
+<style>
+:root{--bg:#f5f6f8;--bg-2:#fff;--surface:#fff;--surface-2:#f5f6f8;--line:rgba(24,26,31,.10);--line-2:rgba(24,26,31,.16);--fg:#16181d;--fg-2:#565b64;--fg-3:#8b909a;--accent:#6a48e8;--accent-2:#5a37d6;--accent-ink:#fff;--accent-soft:#efeafd;--violet:#6D3BF5;--violet-2:#5a2ee0;--violet-soft:#f2ecff;--violet-ink:#3d17b8;--amber:#b45309;--amber-soft:#fdf1e0;--block:#16181d;--pane:rgb(255 255 255/.88);--pane-2:rgb(255 255 255/.94);--r-sm:8px;--r:14px;--r-lg:22px;--sans:'Geist',Arial,'Liberation Sans',Helvetica,sans-serif;--mono:'Geist Mono','Courier New','Liberation Mono',monospace}
+html.var-dark .subnav a.on{background:var(--surface-2);color:var(--fg)}
+html.var-dark .ann{background:var(--surface-2);border-bottom:1px solid var(--line-2)}
+html.var-dark{--bg:#08090b;--bg-2:#0c0e12;--surface:#111419;--surface-2:#161a20;--line:rgb(255 255 255/.09);--line-2:rgb(255 255 255/.17);--fg:#f3f5f7;--fg-2:#aab2bd;--fg-3:#7d848f;--accent:#a894f7;--accent-2:#b9a8fa;--accent-ink:#17093d;--accent-soft:rgb(168 148 247/.16);--violet:#8b6cf0;--violet-2:#7c4df8;--violet-soft:rgb(139 108 240/.17);--violet-ink:#c9b6ff;--amber:#f0a339;--amber-soft:rgb(240 163 57/.16);--block:#111419;--pane:rgb(12 14 18/.9);--pane-2:rgb(12 14 18/.95)}
+*{box-sizing:border-box}
+html,body{margin:0}
+html{scrollbar-gutter:stable;scroll-behavior:auto}
+html.lb-open{overflow:hidden}
+body.lb-lock{position:fixed;width:100%;left:0;right:0;overflow:hidden}
+[id]{scroll-margin-top:132px}
+
+/* el hueco del icono se reserva ANTES de que lucide lo reemplace:
+   un <i> vacío mide 0 y al inyectarse el SVG todo el texto se corría */
+i[data-lucide]{display:inline-block;flex:none;vertical-align:-.125em}
+i[data-lucide][width="13"]{width:13px;height:13px}
+i[data-lucide][width="14"]{width:14px;height:14px}
+i[data-lucide][width="16"]{width:16px;height:16px}
+i[data-lucide][width="17"]{width:17px;height:17px}
+i[data-lucide][width="22"]{width:22px;height:22px}
+i[data-lucide][width="26"]{width:26px;height:26px}
+body{background:var(--bg-2);font-family:var(--sans);color:var(--fg);-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.55}
+svg{display:block}
+img{max-width:100%;display:block}
+a{color:var(--accent);text-decoration:none}
+a:hover{color:var(--accent-2)}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+h1,h2,h3{letter-spacing:-.022em;text-wrap:pretty;margin:0}
+p{margin:0;text-wrap:pretty}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+.eyebrow{display:inline-block;font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-2)}
+.eyebrow--v{color:var(--violet-ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 22px;border-radius:999px;font-size:15px;font-weight:600;white-space:nowrap;transition:background .16s,border-color .16s,color .16s}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-primary:hover{background:var(--accent-2);color:#fff}
+.btn-ghost{border:1px solid var(--line-2);color:var(--fg)}
+.btn-ghost:hover{border-color:var(--fg-3);color:var(--fg)}
+.btn-sm{height:38px;padding:0 17px;font-size:14px}
+
+/* ── barra de anuncio ── */
+.ann{display:flex;align-items:center;justify-content:center;gap:12px;padding:11px 20px;background:var(--block);color:#fff;font-size:14px;flex-wrap:wrap}
+.ann .tag{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:3px 9px;border-radius:var(--r-sm);flex:none}
+.ann a{color:#fff;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.ann a:hover{color:#cfc2fb}
+
+/* ── nav ── */
+.nav{position:sticky;top:0;z-index:40;background:var(--pane);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;gap:10px;height:66px}
+.logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16.5px;color:var(--fg);letter-spacing:-.02em;flex:none}
+.logo img{width:27px;height:27px;border-radius:7px}
+.nav-links{display:flex;align-items:center;gap:2px;margin-left:18px}
+.nav-links a{height:38px;padding:0 13px;display:inline-flex;align-items:center;white-space:nowrap;border-radius:var(--r-sm);font-size:14.5px;font-weight:500;color:var(--fg-2)}
+.nav-links a:hover{background:var(--surface-2);color:var(--fg)}
+.nav-sp{flex:1}
+.nav-right{display:flex;align-items:center;gap:9px;flex:none}
+.theme-toggle{width:34px;height:34px;border-radius:var(--r-sm);display:grid;place-items:center;color:var(--fg-2);flex:none}
+.theme-toggle:hover{background:var(--surface-2);color:var(--fg)}
+.theme-toggle .ic-moon{display:none}
+html.var-dark .theme-toggle .ic-sun{display:none}
+html.var-dark .theme-toggle .ic-moon{display:block}
+.lang{display:flex;gap:2px;font-family:var(--mono);font-size:12.5px;flex:none}
+.lang a{color:var(--fg-3);padding:4px 7px;border-radius:6px;text-decoration:none}
+.lang a.on{color:var(--accent-2);background:var(--accent-soft)}
+
+/* ── hero ── */
+.hero{padding:clamp(48px,6vw,84px) 0 clamp(36px,4vw,56px)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:clamp(32px,4vw,60px);align-items:center}
+.hero-copy{min-width:0}
+.hero h1{font-size:clamp(34px,4vw,55px);line-height:1.08;font-weight:600;letter-spacing:-.03em}
+.hero h1 em{font-style:normal;color:var(--violet)}
+.hero .lede{margin-top:19px;font-size:clamp(16px,1.35vw,17.5px);line-height:1.58;color:var(--fg-2);max-width:40ch}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.hero-cta{display:flex;gap:11px;margin-top:24px;flex-wrap:wrap}
+.hero-plat{margin-top:16px;font-size:13.5px;color:var(--fg-2)}
+.hero-plat a{color:var(--fg-2);text-decoration:underline;text-underline-offset:3px}
+
+/* ── la ventana: el patrón que se repite ── */
+.win{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);overflow:hidden;box-shadow:0 30px 64px -40px rgba(16,24,40,.42)}
+.win-bar{display:flex;align-items:center;gap:7px;height:38px;padding:0 15px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.win-bar .d{width:9px;height:9px;border-radius:50%;background:var(--line-2);flex:none}
+.win-bar .t{margin-left:8px;font-family:var(--mono);font-size:11px;color:var(--fg-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.win-bar .ctx-pill{margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--violet-ink);background:var(--violet-soft);padding:3px 10px;border-radius:999px;flex:none}
+.win-bar .ctx-pill::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--violet)}
+.win-shot{aspect-ratio:1525/909;background:#fff}
+.win-shot img{width:100%;height:100%;object-fit:cover;object-position:top center}
+.hero-preview{background:#d4d5d8}
+.hero-shot{aspect-ratio:1600/1273;background:#d4d5d8}
+.hero-shot img{object-fit:contain}
+
+/* ── barra de secciones pegajosa ── */
+.subnav{position:sticky;top:66px;z-index:30;background:var(--pane-2);backdrop-filter:blur(12px);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.subnav-in{display:flex;align-items:center;gap:4px;height:54px;position:relative}
+.subnav-scroll{display:flex;align-items:center;gap:4px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none;mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
+.subnav-scroll::-webkit-scrollbar{display:none}
+.subnav-in::-webkit-scrollbar{display:none}
+.subnav a{height:34px;padding:0 14px;display:inline-flex;align-items:center;border-radius:999px;font-size:14px;font-weight:550;color:var(--fg-2);white-space:nowrap}
+.subnav a:not(.btn):hover{background:var(--surface-2);color:var(--fg)}
+.subnav a.on{background:var(--block);color:#fff}
+.subnav a.btn-primary{color:var(--accent-ink)}
+.subnav a.btn-primary:hover{background:var(--accent-2);color:#fff}
+.subnav .rt{flex:none;margin-left:12px}
+
+/* ── secciones ── */
+.sec{padding:clamp(56px,6.5vw,96px) 0;border-top:1px solid var(--line)}
+.sec.alt{background:var(--bg)}
+.sec.first{border-top:none}
+.head{max-width:62ch}
+.head.center{margin-inline:auto;text-align:center}
+.head h2{margin-top:14px;font-size:clamp(27px,3.1vw,40px);line-height:1.14;font-weight:600}
+.head .sub{margin-top:15px;font-size:clamp(15.5px,1.35vw,17.5px);line-height:1.62;color:var(--fg-2)}
+
+/* ── tarjetas-ventana: la ventana manda, el texto es una línea ── */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,314px),1fr));gap:22px;margin-top:44px}
+.card{display:flex;flex-direction:column;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--line);background:var(--surface);transition:box-shadow .18s,transform .18s}
+.card:hover{box-shadow:0 22px 48px -34px rgba(16,24,40,.4);transform:translateY(-2px)}
+.card .media{aspect-ratio:16/10;background:var(--surface-2);border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.card .foot{padding:18px 20px 22px;display:flex;gap:13px;align-items:flex-start}
+.card .ic{width:34px;height:34px;border-radius:var(--r-sm);display:grid;place-items:center;flex:none}
+.card .tx b{display:block;font-size:16px;font-weight:600;line-height:1.35}
+.card .tx span{display:block;font-size:14px;line-height:1.55;color:var(--fg-2);margin-top:4px}
+
+/* mini-mocks dentro de las tarjetas */
+.mock{position:absolute;inset:14px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);padding:13px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.mock .ln{height:7px;border-radius:4px;background:var(--line)}
+.mock .ln.a{background:var(--accent-soft)}
+.mock .ln.v{background:var(--violet-soft)}
+.mock .chip.v{background:var(--violet-soft);color:var(--violet-ink)}
+.mock .row{display:flex;align-items:center;gap:8px}
+.mock .chip{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:5px;background:var(--accent-soft);color:var(--accent-2);flex:none}
+.mock .chip.w{background:var(--amber-soft);color:var(--amber)}
+.mock .file{display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid var(--line);border-radius:var(--r-sm);font-size:11.5px;color:var(--fg-2)}
+.mock .file .ext{font-family:var(--mono);font-size:8.5px;font-weight:600;padding:2px 5px;border-radius:4px;background:var(--surface-2);color:var(--fg-3);flex:none}
+.mock .bub{align-self:flex-end;max-width:76%;padding:8px 11px;border-radius:12px 12px 3px 12px;background:var(--accent);color:#fff;font-size:11.5px;line-height:1.45}
+.mock .bub.them{align-self:flex-start;border-radius:12px 12px 12px 3px;background:var(--surface-2);color:var(--fg-2)}
+
+/* ── tarjetas de demo: el patrón de tarjeta con ventana adentro ── */
+.head-mark{display:flex;align-items:center;gap:14px;font-size:clamp(22px,2.55vw,38px);line-height:1.14;font-weight:600;margin-top:0;text-wrap:nowrap}
+@media (max-width:560px){.head-mark{text-wrap:pretty}}
+.head-mark .mk{width:44px;height:44px;border-radius:13px;background:var(--violet-soft);color:var(--violet);display:grid;place-items:center;flex:none}
+.head-mark .mk--meta{background:var(--surface-2);border:1px solid var(--line)}
+.head-mark .mk--meta img{width:24px;height:24px}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:22px;margin-top:40px}
+.dcard{display:flex;flex-direction:column;padding:16px;border-radius:26px;background:linear-gradient(158deg,#7b4dff 0%,#5a2ee0 52%,#3d17b8 100%);color:#fff;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 20px 44px -30px rgba(61,23,184,.7)}
+.dcard:hover{transform:translateY(-3px);box-shadow:0 30px 60px -32px rgba(61,23,184,.8);color:#fff}
+.dcard-win{position:relative;display:block;aspect-ratio:16/10;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 10px 26px -14px rgba(11,12,20,.45)}
+.dcard-win iframe{position:absolute;top:0;left:0;width:250%;height:250%;border:0;transform:scale(.4);transform-origin:top left;pointer-events:none;background:#fff}
+.dcard-win--phone{background:linear-gradient(170deg,#f6f4ff,#ece6ff)}
+.dcard-win--tall{aspect-ratio:16/13}
+.dcard-win--tall iframe{width:340%;height:340%;transform:scale(.294)}
+.dcard-win--phone iframe{width:106.5%;height:213%;transform:scale(.47);left:50%;margin-left:-25.03%}
+.dcard-try{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;background:rgb(255 255 255/.86);backdrop-filter:blur(3px);display:grid;place-items:center;box-shadow:0 12px 30px -10px rgba(11,12,20,.45);transition:background .18s,transform .18s}
+.dcard-try svg{width:22px;height:22px;margin-left:3px;fill:#3d17b8;stroke:none}
+.dcard:hover .dcard-try,.dcard:focus-visible .dcard-try{background:#fff;transform:translate(-50%,-50%) scale(1.08)}
+@media (prefers-reduced-motion:reduce){.dcard-try{transition:none}.dcard:hover .dcard-try{transform:translate(-50%,-50%)}}
+.dcard h3{margin:20px 4px 0;font-size:21px;line-height:1.28;font-weight:600;color:#fff;flex:1}
+.dcard-pill{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;margin:18px 0 4px 4px;padding:6px 13px;border-radius:999px;background:rgb(255 255 255/.16);font-size:13px;font-weight:550;color:#fff}
+@media (prefers-reduced-motion:reduce){.dcard{transition:none}.dcard:hover{transform:none}}
+
+/* ── tres columnas centradas: icono, título, texto ── */
+.tri{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,236px),1fr));gap:clamp(24px,3vw,54px);margin-top:46px}
+.tri-col{text-align:center;display:flex;flex-direction:column;align-items:center}
+.tri-ic{color:var(--violet);margin-bottom:18px}
+.tri-col h3{font-size:19px;line-height:1.32;font-weight:600}
+.tri-col p{margin-top:13px;font-size:15px;line-height:1.62;color:var(--fg-2);max-width:34ch}
+.tri-col a{text-decoration:underline;text-underline-offset:3px}
+
+/* ── sección alterna: texto + ventana ── */
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:clamp(30px,4.5vw,64px);align-items:center;margin-top:8px}
+.split.rev>.split-tx{order:2}
+.split-tx h2{font-size:clamp(25px,2.7vw,36px);line-height:1.16;font-weight:600}
+.split-tx .lead-claim{font-size:20.5px;line-height:1.38;font-weight:600;letter-spacing:-.015em;color:var(--fg);margin-top:0;text-wrap:pretty}
+.split-tx .lead-claim+p{margin-top:13px}
+.split-tx p{margin-top:16px;font-size:16.5px;line-height:1.62;color:var(--fg-2)}
+.split-list{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:13px}
+.split-list li{position:relative;padding-left:26px;font-size:15.5px;line-height:1.55;color:var(--fg-2)}
+.split-list li::before{content:'';position:absolute;left:0;top:7px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent)}
+.split-list b{color:var(--fg);font-weight:600}
+
+/* ── tarjeta de aprobación ── */
+.appr{padding:20px}
+.appr-top{display:flex;gap:13px;align-items:flex-start}
+.appr-top .ic{width:36px;height:36px;border-radius:var(--r-sm);background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
+.appr-top b{display:block;font-size:15.5px;font-weight:600}
+.appr-top span{display:block;font-size:13.5px;color:var(--fg-2);margin-top:3px}
+.appr dl{margin:18px 0 0;padding:16px 0 0;border-top:1px solid var(--line);display:grid;gap:10px}
+.appr dl>div{display:flex;gap:16px;align-items:baseline}
+.appr dt{flex:none;width:104px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-2)}
+.appr dd{margin:0;font-size:14.5px;color:var(--fg)}
+.appr .risk{display:inline-block;font-size:12.5px;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--amber-soft);color:var(--amber)}
+.appr-acts{display:flex;gap:10px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.appr-acts .ok{flex:1;text-align:center;padding:11px;border-radius:var(--r-sm);background:var(--accent);color:var(--accent-ink);font-size:14.5px;font-weight:600}
+.appr-acts .no{padding:11px 20px;border-radius:var(--r-sm);border:1px solid var(--line-2);color:var(--fg-2);font-size:14.5px;font-weight:550}
+
+/* ── capacidades por grupo: Ads · Social · Aprobación ── */
+.caps{margin-top:clamp(38px,4.5vw,58px);padding-top:clamp(30px,3.5vw,44px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:clamp(24px,3vw,40px)}
+.cap-g{min-width:0}
+.cap-h{display:flex;gap:12px;align-items:flex-start;margin-bottom:15px}
+.cap-lg{display:flex;gap:4px;align-items:center;flex:none;height:34px;padding:0 10px;border-radius:var(--r-sm);background:var(--surface-2);border:1px solid var(--line)}
+.cap-lg img{width:19px;height:19px}
+.cap-lg--sh{color:var(--accent-2);padding:0 8px}
+.cap-h>span:last-child{min-width:0}
+.cap-h b{display:block;font-size:15.5px;font-weight:600;line-height:1.35}
+.cap-h b+span{display:block;font-size:13px;line-height:1.5;color:var(--fg-2);margin-top:2px}
+.cap-chips{display:flex;flex-wrap:wrap;gap:6px}
+.cc{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:12.5px;color:var(--fg-2);white-space:nowrap}
+.cc.act{border-color:color-mix(in srgb,var(--violet) 38%,transparent);background:var(--violet-soft);color:var(--violet-ink);font-weight:550}
+.cc.act::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--violet);flex:none}
+.cap-foot{grid-column:1/-1;display:flex;align-items:center;gap:9px;margin-top:4px;font-size:13px;line-height:1.55;color:var(--fg-2)}
+.cap-foot .cc.act{padding:5px;flex:none}
+.cap-foot b{color:var(--fg);font-weight:600}
+
+/* ── integraciones: las dos filas de la otra versión ── */
+.tiles-rows{display:flex;flex-direction:column;gap:14px;align-items:center;margin-top:44px}
+.tiles-row{display:flex;gap:14px;justify-content:center;flex-wrap:nowrap}
+.tile{width:62px;height:62px;flex:none;border-radius:15px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;transition:transform .18s ease,border-color .18s ease}
+.tile img{width:28px;height:28px}
+.tile:hover{transform:translateY(-3px);border-color:var(--fg-3)}
+.tile.edge{opacity:.38}
+@media (max-width:720px){.tile.edge{display:none}.tile{width:52px;height:52px;border-radius:13px}.tile img{width:23px;height:23px}.tiles-row{flex-wrap:wrap}}
+
+/* ── precios ── */
+.prices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:22px;max-width:800px;margin:44px auto 0}
+.price{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);padding:30px 28px;display:flex;flex-direction:column;position:relative}
+.price.hl{border-color:var(--accent);box-shadow:0 26px 54px -38px rgba(106,72,232,.55)}
+.ribbon{position:absolute;top:-11px;left:28px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;background:var(--accent);color:#fff;padding:4px 11px;border-radius:999px}
+.price .tier{font-size:15px;font-weight:600;color:var(--fg-2)}
+.price .amt{margin-top:8px;font-size:44px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.price .amt i{font-style:normal;font-size:16px;font-weight:500;color:var(--fg-2)}
+.price .for{margin-top:12px;font-size:14.5px;line-height:1.55;color:var(--fg-2)}
+.price ul{list-style:none;margin:22px 0 26px;padding:0;display:grid;gap:11px;flex:1}
+.price li{position:relative;padding-left:25px;font-size:14.5px;line-height:1.5;color:var(--fg-2)}
+.price li::before{content:'';position:absolute;left:1px;top:6px;width:13px;height:7px;border-left:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:rotate(-45deg)}
+.price li.more{padding-left:0;font-weight:600;color:var(--fg)}
+.price li.more::before{display:none}
+.price .btn{width:100%}
+.price-note{margin:22px auto 0;max-width:60ch;text-align:center;font-size:14px;line-height:1.6;color:var(--fg-2)}
+
+/* ── faq ── */
+.faq{max-width:780px;margin:40px auto 0;border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;padding:20px 40px 20px 0;font-size:16.5px;font-weight:550;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'';position:absolute;right:6px;top:27px;width:9px;height:9px;border-right:2px solid var(--fg-3);border-bottom:2px solid var(--fg-3);transform:rotate(45deg);transition:transform .18s}
+.faq details[open] summary::after{transform:rotate(-135deg)}
+.faq .a{padding:0 40px 22px 0;font-size:15.5px;line-height:1.65;color:var(--fg-2)}
+.faq-more{max-width:780px;margin:22px auto 0;text-align:center}
+.faq-more button{font:inherit;font-size:15px;font-weight:600;color:var(--accent);background:none;border:none;cursor:pointer;padding:8px 4px}
+.faq-more button:hover{text-decoration:underline}
+
+/* ── cierre ── */
+.final{padding:clamp(60px,7vw,104px) 0;text-align:center;background:var(--block);color:#fff;border-top:1px solid var(--line)}
+.final h2{font-size:clamp(28px,3.4vw,44px);line-height:1.12;font-weight:600;max-width:20ch;margin-inline:auto}
+.final p{margin:18px auto 0;max-width:52ch;font-size:16.5px;line-height:1.6;color:#b3bac4}
+.final .btn-ghost{border-color:rgb(255 255 255/.3);color:#fff}
+.final .btn-ghost:hover{border-color:#fff;color:#fff}
+.final .cta{display:flex;gap:12px;justify-content:center;margin-top:30px;flex-wrap:wrap}
+.final .plat{margin-top:18px;font-size:13.5px;color:#8b929c}
+
+.foot{padding-block:34px;font-size:13.5px;color:var(--fg-3);display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.foot .sp{flex:1}
+.foot a{color:var(--fg-2)}
+
+.winw{align-items:center}
+.winw-form{display:flex;gap:10px;flex-wrap:wrap}
+.winw-form input{flex:1;min-width:190px;padding:13px 15px;border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface);color:var(--fg);font-family:inherit;font-size:15px}
+.winw-form input::placeholder{color:var(--fg-3)}
+.winw-form input:focus{outline:none;border-color:var(--accent)}
+/* ── lightbox de demos ── */
+.lb{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:clamp(12px,3vw,40px);background:rgb(11 12 20/.72);backdrop-filter:blur(6px);animation:lbin .18s ease}
+.lb[hidden]{display:none}
+@keyframes lbin{from{opacity:0}to{opacity:1}}
+.lb-box{position:relative;width:100%;max-width:1200px;height:min(84vh,820px);border-radius:var(--r-lg);overflow:hidden;background:#fff;box-shadow:0 40px 90px -30px rgba(11,12,20,.7)}
+.lb-box iframe{width:100%;height:100%;border:0;display:block}
+.lb-close{position:absolute;top:12px;right:12px;z-index:2;width:38px;height:38px;border-radius:50%;background:rgb(255 255 255/.94);color:#16181d;display:grid;place-items:center;box-shadow:0 8px 22px -8px rgba(11,12,20,.5)}
+.lb-close:hover{background:#fff}
+.lb-cap{position:absolute;left:0;right:0;bottom:0;padding:11px 18px;background:linear-gradient(0deg,rgb(11 12 20/.82),transparent);color:#fff;font-size:13.5px;font-weight:550;pointer-events:none}
+@media (max-width:1040px){
+  [id]{scroll-margin-top:124px}
+  .nav-links{display:none}
+  .nav-in{height:58px}
+  .subnav{top:58px}
+}
+@media (max-width:920px){
+  .hero-grid,.split{grid-template-columns:1fr}
+  .split.rev>.split-tx{order:0}
+}
+@media (max-width:600px){
+  .nav-right>a.btn{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="ann"><span class="tag">Nuevo</span><span>Ya puedes conectar Facebook, Instagram y Meta Ads.</span><a href="#meta">Ver cómo funciona →</a></div>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a href="#" class="logo"><img src="/landing-b/assets/logo.png" alt="" />TS</a>
+    <nav class="nav-links">
+      <a href="#capacidades">Explora los demos</a>
+      <a href="#meta">Meta Ads</a>
+      <a href="/es/casos-de-uso" data-lhref="/casos-de-uso">Casos de uso</a>
+      <a href="#precios">Precios</a>
+    </nav>
+    <span class="nav-sp"></span>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema" title="Claro / Oscuro">
+        <svg class="ic-sun" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg class="ic-moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <div class="lang"><a href="#" data-lang="es" class="on">ES</a><a href="#" data-lang="en">EN</a></div>
+      <a class="btn btn-ghost btn-sm" href="mailto:hola@terminalsync.ai?subject=Quiero%20hablar%20con%20alguien">Hablar con nosotros</a>
+      <a class="btn btn-primary btn-sm" href="/api/download" data-cta="header-b-download">Descargar</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy" id="heroCopy">
+      <h1 id="heroHeadline"><span id="heroHeadlineLead">Cada cliente, proyecto o área</span> <em id="heroHeadlineAccent">conserva su propio contexto.</em></h1>
+      <p class="lede" id="heroSubtitle">La IA nunca pierde el contexto de ese trabajo.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="/api/download" data-cta="hero-b-primary">⤓ Descargar para Mac</a>
+        <a class="btn btn-ghost" href="#capacidades">Explora los demos</a>
+      </div>
+      <p class="hero-plat">Apple Silicon e Intel · macOS 13+ · <a href="#windows">Windows en lista de espera</a></p>
+    </div>
+    <div class="win hero-preview">
+      <div class="win-shot hero-shot"><img src="/landing-b/assets/dashboard-workspaces-video-poster-es.png" alt="Dashboard de TS con espacios separados para clientes, proyectos y departamentos." fetchpriority="high" /></div>
+    </div>
+  </div>
+</section>
+
+<div class="subnav">
+  <div class="wrap subnav-in">
+    <div class="subnav-scroll">
+    <a href="#capacidades" class="on">Explora los demos</a>
+    <a href="#integraciones">Integraciones</a>
+    <a href="#meta">Meta Ads</a>
+    <a href="#archivos">Tus archivos</a>
+    <a href="#memoria">Memoria</a>
+    <a href="#precios">Precios</a>
+    <a href="/es/casos-de-uso" data-lhref="/casos-de-uso">Casos de uso</a>
+    </div>
+    <a href="/api/download" class="btn btn-primary btn-sm rt" data-cta="subnav-b-start">Empieza gratis</a>
+  </div>
+</div>
+
+<section class="sec first" id="capacidades">
+  <div class="wrap">
+    <div class="head">
+      <h2 class="head-mark"><span class="mk"><i data-lucide="sparkles" width="22" height="22"></i></span>Espacios separados, cada uno con su contexto</h2>
+      <p class="sub">Explora estos recorridos interactivos de ejemplo para ver cómo se organiza el trabajo.</p>
+    </div>
+    <div class="dgrid">
+      <a class="dcard" href="/landing-b/demos/demo-contexto.html">
+        <span class="dcard-win dcard-win--tall"><iframe src="/landing-b/demos/demo-contexto.html" title="Cada espacio de trabajo tiene su propio contexto." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+        <h3>Cada espacio sabe de lo suyo.</h3>
+        <span class="dcard-pill"><i data-lucide="globe" width="13" height="13"></i>Contexto</span>
+      </a>
+      <a class="dcard" href="/landing-b/demos/demo-resultados.html">
+        <span class="dcard-win"><iframe src="/landing-b/demos/demo-resultados.html" title="No es un chat. Es trabajo terminado." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+        <h3>No es un chat. Es trabajo terminado.</h3>
+        <span class="dcard-pill"><i data-lucide="file-check-2" width="13" height="13"></i>Trabajo terminado</span>
+      </a>
+      <a class="dcard" href="/landing-b/demos/demo-varios-agentes.html">
+        <span class="dcard-win"><iframe src="/landing-b/demos/demo-varios-agentes.html" title="La IA trabaja en varias tareas a la vez." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+        <h3>La IA trabaja en varias tareas a la vez.</h3>
+        <span class="dcard-pill"><i data-lucide="users" width="13" height="13"></i>La IA</span>
+      </a>
+      <a class="dcard" href="/landing-b/demos/demo-sync-dispositivos.html">
+        <span class="dcard-win"><iframe src="/landing-b/demos/demo-sync-dispositivos.html" title="Empieza en el portátil. Sigue en la oficina." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+        <h3>Empieza en el portátil. Sigue en la oficina.</h3>
+        <span class="dcard-pill"><i data-lucide="laptop" width="13" height="13"></i>Continuidad</span>
+      </a>
+      <a class="dcard" href="/landing-b/demos/demo-conectores.html">
+        <span class="dcard-win"><iframe src="/landing-b/demos/demo-conectores.html" title="Dale nuevas habilidades a TS." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+        <h3>Dale nuevas habilidades a TS.</h3>
+        <span class="dcard-pill"><i data-lucide="plug" width="13" height="13"></i>Integraciones</span>
+      </a>
+      <a class="dcard" href="/landing-b/demos/demo-mensajeria.html">
+        <span class="dcard-win"><iframe src="/landing-b/demos/demo-mensajeria.html" title="Empieza en tu computador. Sigue en WhatsApp y Telegram." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+        <h3>Empieza en tu computador. Sigue en WhatsApp y Telegram.</h3>
+        <span class="dcard-pill"><i data-lucide="message-circle" width="13" height="13"></i>Mensajería</span>
+      </a>
+      <a class="dcard" href="/landing-b/demos/demo-asistente-prompts.html">
+        <span class="dcard-win"><iframe src="/landing-b/demos/demo-asistente-prompts.html" title="Un asistente que te ayuda a pedir mejor." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+        <h3>Un asistente que te ayuda a pedir mejor.</h3>
+        <span class="dcard-pill"><i data-lucide="sparkles" width="13" height="13"></i>Asistente de ideas</span>
+      </a>
+      <a class="dcard" href="/landing-b/demos/demo-pregunta-otro-espacio.html">
+        <span class="dcard-win"><iframe src="/landing-b/demos/demo-pregunta-otro-espacio.html" title="Tus espacios se preguntan entre ellos." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+        <h3>Tus espacios se preguntan entre ellos.</h3>
+        <span class="dcard-pill"><i data-lucide="messages-square" width="13" height="13"></i>Pregunta a otro espacio</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="sec alt" id="integraciones">
+  <div class="wrap">
+    <div class="head center">
+      <h2>Las herramientas que ya usas,<br />ahora con la IA adentro</h2>
+      <p>Terminal Sync organiza documentos y correos en espacios de trabajo con IA. Conecta Gmail en modo solo lectura y elige qué mensajes usar como contexto.</p>
+    </div>
+    <div class="tri">
+      <div class="tri-col">
+        <span class="tri-ic"><i data-lucide="plug" width="26" height="26"></i></span>
+        <h3>Conecta lo que tu empresa ya tiene abierto</h3>
+        <p>Meta, Facebook, Instagram y WhatsApp. Gmail, Drive, Sheets, Notion, Stripe y decenas más en el <a href="/es/connectors" data-lhref="/connectors">catálogo</a>.</p>
+      </div>
+      <div class="tri-col">
+        <span class="tri-ic"><i data-lucide="wand-2" width="26" height="26"></i></span>
+        <h3>Sin claves y sin configurar nada</h3>
+        <p>Arrastras la integración a tu espacio de trabajo y queda lista. No hay tokens que pegar ni documentación que leer.</p>
+      </div>
+      <div class="tri-col">
+        <span class="tri-ic"><i data-lucide="shield-check" width="26" height="26"></i></span>
+        <h3>Tú decides qué puede tocar</h3>
+        <p>Cada integración pide permiso por separado, y toda acción que publique, envíe o gaste <a href="#meta">espera tu aprobación</a>.</p>
+      </div>
+    </div>
+    <div class="tiles-rows">
+      <div class="tiles-row">
+        <span class="tile"><img src="https://cdn.simpleicons.org/meta" alt="Meta" /></span>
+        <span class="tile"><img src="https://cdn.simpleicons.org/facebook" alt="Facebook" /></span>
+        <span class="tile"><img src="https://cdn.simpleicons.org/instagram" alt="Instagram" /></span>
+        <span class="tile"><img src="https://cdn.simpleicons.org/whatsapp" alt="WhatsApp" /></span>
+        <span class="tile"><img src="https://cdn.simpleicons.org/gmail" alt="Gmail" /></span>
+        <span class="tile"><img src="https://cdn.simpleicons.org/googledrive" alt="Google Drive" /></span>
+        <span class="tile"><img src="https://cdn.simpleicons.org/googlesheets" alt="Google Sheets" /></span>
+        <span class="tile"><img src="https://cdn.simpleicons.org/notion/565b64" alt="Notion" /></span>
+        <span class="tile edge"><img src="https://cdn.simpleicons.org/stripe" alt="Stripe" /></span>
+      </div>
+      <div class="tiles-row">
+        <span class="tile edge"><img src="https://cdn.simpleicons.org/telegram" alt="Telegram" /></span>
+        <span class="tile"><img src="https://cdn.simpleicons.org/googlecalendar" alt="Google Calendar" /></span>
+        <span class="tile"><img src="https://cdn.simpleicons.org/airtable" alt="Airtable" /></span>
+        <span class="tile"><img src="https://cdn.simpleicons.org/github/565b64" alt="GitHub" /></span>
+        <span class="tile"><img src="https://cdn.simpleicons.org/supabase" alt="Supabase" /></span>
+        <span class="tile"><img src="https://cdn.simpleicons.org/postgresql" alt="PostgreSQL" /></span>
+        <span class="tile"><img src="https://cdn.simpleicons.org/webflow" alt="Webflow" /></span>
+        <span class="tile"><img src="https://cdn.simpleicons.org/googlemaps" alt="Google Maps" /></span>
+        <span class="tile edge"><img src="https://cdn.simpleicons.org/brave" alt="Brave Search" /></span>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:30px"><a class="btn btn-ghost btn-sm" href="/es/connectors" data-lhref="/connectors">Ver todas las integraciones</a></p>
+  </div>
+</section>
+
+<section class="sec" id="meta">
+  <div class="wrap">
+    <div class="head">
+      <h2 class="head-mark"><span class="mk mk--meta"><img src="https://cdn.simpleicons.org/meta" alt="Meta" /></span>Una IA que maneja tus ads conversando</h2>
+      <p class="sub">Le pides en palabras y ella consulta, compara y deja la campaña armada.</p>
+    </div>
+    <div class="split" style="margin-top:46px">
+      <div class="split-tx">
+        <p class="lead-claim">Nada se publica, se envía, se borra ni se gasta sin tu OK.</p>
+        <p>La IA deja el trabajo terminado y se detiene. Ves exactamente qué va a pasar en una sola pantalla — antes de que pase.</p>
+        <ul class="split-list">
+          <li><b>Antes de gastar.</b> Presupuestos, promociones y recargas se detienen acá, con la cifra exacta a la vista.</li>
+          <li><b>Antes de publicar.</b> Lo que sale a Facebook, Instagram o WhatsApp lo lees completo primero.</li>
+          <li><b>Antes de borrar.</b> Ningún archivo ni registro se elimina sin que lo confirmes.</li>
+          <li><b>Antes de enviar.</b> Correos y mensajes a clientes esperan tu OK, uno por uno.</li>
+        </ul>
+      </div>
+      <div class="win">
+        <div class="win-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">Esperando tu aprobación</span></div>
+        <div class="appr">
+          <div class="appr-top">
+            <span class="ic"><i data-lucide="megaphone" width="18" height="18"></i></span>
+            <span><b>Publicar campaña · Meta Ads</b><span>Preparada y en pausa. No se ha gastado nada.</span></span>
+          </div>
+          <dl>
+            <div><dt>Objetivo</dt><dd>Mensajes a WhatsApp</dd></div>
+            <div><dt>Audiencia</dt><dd>Bogotá · 25-45 · interés en vivienda</dd></div>
+            <div><dt>Presupuesto</dt><dd>$40.000 COP / día</dd></div>
+            <div><dt>Duración</dt><dd>14 días · termina el 29 de sep</dd></div>
+            <div><dt>Riesgo</dt><dd><span class="risk">Medio · gasta dinero real</span></dd></div>
+          </dl>
+          <div class="appr-acts"><span class="ok">Aprobar y publicar</span><span class="no">Rechazar</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="caps">
+      <div class="cap-g">
+        <div class="cap-h">
+          <span class="cap-lg"><img src="https://cdn.simpleicons.org/meta" alt="Meta" /></span>
+          <span><b>Meta Ads</b><span>Lee, analiza y prepara tus campañas</span></span>
+        </div>
+        <div class="cap-chips">
+          <span class="cc">Cuentas</span><span class="cc">Páginas</span><span class="cc">Campañas</span><span class="cc">Insights</span><span class="cc">Métricas</span><span class="cc">ROAS</span><span class="cc">Comparar</span><span class="cc">Pacing</span><span class="cc">Anomalías</span><span class="cc">Previsualizar</span><span class="cc">Borradores</span>
+          <span class="cc act">Estructurar</span><span class="cc act">Presupuestos</span><span class="cc act">Pausar</span><span class="cc act">Reanudar</span><span class="cc act">Impulsar</span>
+        </div>
+      </div>
+      <div class="cap-g">
+        <div class="cap-h">
+          <span class="cap-lg"><img src="https://cdn.simpleicons.org/facebook" alt="Facebook" /><img src="https://cdn.simpleicons.org/instagram" alt="Instagram" /></span>
+          <span><b>Facebook e Instagram</b><span>Contenido orgánico en tus Pages</span></span>
+        </div>
+        <div class="cap-chips">
+          <span class="cc">Previsualizar</span>
+          <span class="cc act">Publicar</span><span class="cc act">Cancelar</span>
+        </div>
+      </div>
+      <div class="cap-g">
+        <div class="cap-h">
+          <span class="cap-lg cap-lg--sh"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></span>
+          <span><b>Aprobación</b><span>Lo que separa preparar de ejecutar</span></span>
+        </div>
+        <div class="cap-chips">
+          <span class="cc">Todo nace en pausa</span><span class="cc">Riesgo a la vista</span><span class="cc">Confirmación explícita</span><span class="cc">Cada vez, no una sola</span>
+        </div>
+      </div>
+      <p class="cap-foot"><span class="cc act" aria-hidden="true"></span> Lo marcado <b>pide tu aprobación</b> antes de ejecutarse. El resto solo lee y te informa.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec alt" id="archivos">
+  <div class="wrap">
+    <div class="split rev">
+      <div class="split-tx">
+        <span class="eyebrow">Tus archivos, donde ya viven</span>
+        <h2>No vuelvas a subir un archivo dos veces.</h2>
+        <p>Conecta la carpeta de tu proyecto una sola vez. TS entiende tus documentos, recuerda el contexto y trabaja siempre sobre la versión más reciente. No llevas tus archivos a la IA: la IA llega hasta donde ya trabajas.</p>
+        <ul class="split-list">
+          <li><b>Conecta una sola vez.</b> Carpetas del equipo, Google Drive, iCloud o un repositorio.</li>
+          <li><b>Siempre la última versión.</b> Si cambias el archivo, la IA ya lo sabe.</li>
+          <li><b>Lo que se guarda va cifrado</b> a tu propia nube, no a la nuestra.</li>
+        </ul>
+      </div>
+      <div class="win">
+        <div class="win-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">/proyectos/Martínez</span></div>
+        <div style="padding:22px;display:grid;gap:10px">
+          <div class="mock" style="position:static;inset:auto;border:none;padding:0;gap:10px">
+            <div class="file"><span class="ext">DOC</span>Propuesta.docx<span style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--violet-ink)">v. actual</span></div>
+            <div class="file"><span class="ext">XLS</span>Presupuesto.xlsx<span style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--violet-ink)">v. actual</span></div>
+            <div class="file"><span class="ext">PDF</span>Contrato.pdf<span style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--violet-ink)">v. actual</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;margin:4px 0"><span style="flex:1;height:1px;background:var(--line)"></span><span style="font-family:var(--mono);font-size:10.5px;color:var(--fg-3)">conectada una vez</span><span style="flex:1;height:1px;background:var(--line)"></span></div>
+          <div style="display:flex;align-items:center;gap:11px;padding:13px 15px;border:1px solid var(--violet);border-radius:var(--r);background:var(--violet-soft)">
+            <span style="width:30px;height:30px;border-radius:var(--r-sm);background:var(--violet);color:#fff;display:grid;place-items:center;flex:none"><i data-lucide="sparkles" width="15" height="15"></i></span>
+            <span><b style="display:block;font-size:14px">TS</b><span style="font-size:12.5px;color:var(--fg-2)">lee la última versión, sin subir nada</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="memoria">
+  <div class="wrap">
+    <div class="head center">
+      <span class="eyebrow eyebrow--v">Memoria de negocio</span>
+      <h2>Tu empresa recuerda. Cada decisión, cada cliente, cada proceso.</h2>
+      <p class="sub">No es memoria de chat: es el conocimiento de tu empresa, y no se pierde al cerrar la ventana.</p>
+    </div>
+    <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))">
+      <div class="card"><div class="foot" style="padding:22px"><span class="ic" style="background:var(--surface-2);color:var(--fg-3);font-family:var(--mono);font-size:11px;font-weight:600">1</span><span class="tx"><b>Día 1</b><span>Le explicas cómo es tu negocio y cómo te gusta trabajar.</span></span></div></div>
+      <div class="card"><div class="foot" style="padding:22px"><span class="ic" style="background:var(--surface-2);color:var(--fg-3);font-family:var(--mono);font-size:11px;font-weight:600">3</span><span class="tx"><b>Día 3</b><span>“Como tu tono es cercano, lo escribo así.”</span></span></div></div>
+      <div class="card"><div class="foot" style="padding:22px"><span class="ic" style="background:var(--surface-2);color:var(--fg-3);font-family:var(--mono);font-size:11px;font-weight:600">14</span><span class="tx"><b>Día 14</b><span>“Siguiendo tus reglas para clientes nuevos…”</span></span></div></div>
+      <div class="card" style="border-color:var(--violet)"><div class="foot" style="padding:22px"><span class="ic" style="background:var(--violet);color:#fff;font-family:var(--mono);font-size:11px;font-weight:600">30</span><span class="tx"><b>Día 30</b><span>Entiende tu negocio mejor que alguien que recién entra a tu equipo.</span></span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec alt" id="precios">
+  <div class="wrap">
+    <div class="head center">
+      <span class="eyebrow">Precios</span>
+      <h2>Simple, como debe ser.</h2>
+      <p class="sub">Prueba 7 días gratis. Pro y Max incluyen la IA: no necesitas pagar otra herramienta de IA. Si cancelas antes del día 7, no se cobra nada.</p>
+    </div>
+    <div class="prices">
+      <div class="price hl">
+        <span class="ribbon">Más popular</span>
+        <div class="tier">Pro</div>
+        <div class="amt">$34<i> / mes</i></div>
+        <p class="for">Para empezar a trabajar con IA en tu empresa.</p>
+        <ul>
+          <li class="more">IA incluida. No necesitas pagar otra IA aparte.</li>
+          <li>10 espacios de trabajo con memoria y continuidad</li>
+          <li>Meta Social + Meta Ads, con tu aprobación</li>
+          <li>Tu empresa recuerda todo — no explicas dos veces</li>
+          <li>Diseño e imágenes desde el chat (con créditos)</li>
+          <li>Continúa desde WhatsApp y Telegram</li>
+        </ul>
+        <a class="btn btn-primary" href="/api/download" data-cta="pricing-b-starter">Probar 7 días gratis</a>
+      </div>
+      <div class="price">
+        <div class="tier">Max</div>
+        <div class="amt">$54<i> / mes</i></div>
+        <p class="for">Para equipos que necesitan más espacio y más trabajo de IA.</p>
+        <ul>
+          <li class="more">IA incluida. No necesitas pagar otra IA aparte.</li>
+          <li>Todo lo de Pro, más:</li>
+          <li>Espacios de trabajo ilimitados</li>
+          <li>Hasta 10 dispositivos</li>
+          <li>Herramientas compartidas por equipo</li>
+          <li>Más trabajo de IA incluido cada mes</li>
+          <li>Soporte prioritario por correo</li>
+        </ul>
+        <a class="btn btn-ghost" href="/api/download" data-cta="pricing-b-pro">Probar 7 días gratis</a>
+      </div>
+    </div>
+    <p class="price-note">Los créditos son solo para imágenes y video, y se recargan cuando tú quieras. Todo lo demás viene incluido en el plan.</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="head center"><span class="eyebrow">Preguntas frecuentes</span><h2>Lo que la gente nos pregunta primero</h2></div>
+    <div class="faq">
+      <details open><summary>¿Qué es TS?</summary><div class="a">TS reúne tu trabajo con IA en espacios de trabajo que puedes retomar, organizar y sincronizar entre tus equipos. Conserva el contexto del proyecto, las conversaciones, la memoria y las herramientas que hayas conectado para que no tengas que empezar de cero.</div></details>
+      <details><summary>¿Cómo empiezo?</summary><div class="a">Descarga TS, inicia sesión y crea tu primer espacio de trabajo. La IA incluida queda lista para conversar; después puedes agregar archivos, enlaces o herramientas desde Contexto cuando quieras trabajar con información de tu negocio.</div></details>
+      <details><summary>¿Tengo que pagar otra IA para usar TS?</summary><div class="a">No. Pro y Max incluyen la IA de TS; no necesitas contratar otra herramienta de IA para usar la app. Las imágenes y los videos usan créditos que puedes recargar si quieres. Algunos servicios externos que conectes pueden tener sus propios costos.</div></details>
+      <details><summary>¿Cómo paso mi trabajo a otro equipo?</summary><div class="a">Deja de escribir en el primer equipo, espera a que se sincronice y después abre, importa o retoma ese espacio en el segundo. Así continúas con el historial y el contexto del proyecto.</div></details>
+      <details><summary>¿Qué es Contexto?</summary><div class="a">Contexto es el lugar donde ves qué información puede usar la IA en ese espacio: conversaciones, documentos, notas, reglas, enlaces, videos, memoria y material producido. También separa las herramientas conectadas para que no confundas una conexión con un documento que la IA ya leyó. Controles como pausar, quitar o preguntar solo sobre una fuente aparecen solo cuando esa fuente los permite.</div></details>
+      <details><summary>¿La IA recuerda mi proyecto?</summary><div class="a">Sí. TS sincroniza la memoria de cada proyecto: conversaciones anteriores y notas sobre tus formas de trabajar. Cuando abres el mismo proyecto en otro equipo, puedes continuar con ese contexto en lugar de explicarlo de nuevo.</div></details>
+      <details><summary>¿Puedo agregar una página web o un video de YouTube?</summary><div class="a">Sí. En Contexto elige “Webs y videos”, pega el enlace y espera a que el texto quede guardado. Un video de YouTube funciona cuando tiene una pista de subtítulos que la aplicación puede leer; si no, el panel debe explicar el problema en vez de fingir que lo leyó.</div></details>
+      <details><summary>¿Puedo enviar contexto a otro espacio?</summary><div class="a">Sí. Selecciona las fuentes que se pueden compartir y envíalas a otro espacio tuyo. En el destino deben aparecer como una copia utilizable; quitar la copia del destino no debe borrar la fuente original.</div></details>
+      <details><summary>¿Qué queda protegido?</summary><div class="a">Tus secretos, credenciales, memoria y conversaciones se cifran en tu equipo antes de sincronizarse. Eso es distinto del procesamiento de una respuesta: si usas la IA incluida, el mensaje y el material de Contexto necesario se envían al proveedor de IA para generar la respuesta. Tus archivos de proyecto siguen la ruta de nube que configuraste; revisa la política de privacidad para ver qué ocurre en cada caso.</div></details>
+      <details><summary>¿Qué es un conector y qué necesito para usarlo?</summary><div class="a">Un conector enlaza la IA con un servicio que ya usas, como correo, calendario, documentos, CRM o pagos. Se agrega desde Integraciones y puede requerir una API key, OAuth, inicio de sesión, una cuenta o permisos según el servicio. La pantalla debe decirte qué falta.</div></details>
+      <details><summary>¿En qué equipos está disponible ahora?</summary><div class="a">El lanzamiento actual está disponible en macOS. Windows está en preparación y avisaremos cuando esté disponible; Linux no está disponible actualmente.</div></details>
+      <div class="faq-extra" id="faqExtra" hidden>
+      <details><summary>¿Cuántas fuentes puedo agregar a Contexto?</summary><div class="a">No tenemos aún un máximo documentado por categoría. Eso no significa que sea ilimitado: el número que puede usarse depende de la fuente, la selección y el espacio disponible para cada respuesta.</div></details>
+      <details><summary>¿Qué tamaño puede tener una fuente?</summary><div class="a">Depende del tipo. PDF, DOCX, EPUB y texto se extraen hasta 60.000 caracteres; en archivos de texto, la lectura del archivo tiene además un tope de 16 MiB. Las páginas web se descargan hasta 5 MiB y su texto se limita a 60.000 caracteres. Los subtítulos de YouTube usan un tope de descarga de 5 MiB y hasta 60.000 caracteres de texto. El texto pegado tiene un máximo de 20.000 caracteres. Estos son topes de lectura o extracción, no el tamaño total admitido del archivo.</div></details>
+      <details><summary>¿Cuánto de Contexto usa la IA en una respuesta?</summary><div class="a">En cada turno, TS arma un paquete con tu mensaje, la conversación y las fuentes que caben. Las fuentes elegibles están incluidas por defecto; puedes quitar algunas desde la biblioteca y aplicar ese cambio. El código usa un presupuesto estimado de 24.000 tokens para ese paquete; un token es una unidad aproximada de texto, no un límite universal de la ventana del modelo ni del plan. Si no alcanza, algunas fuentes o mensajes quedan fuera o entran parcialmente. Una fuente disponible o incluida no prueba por sí sola que se haya usado en una respuesta ni que aparezca citada; las herramientas y el contexto automático se manejan aparte.</div></details>
+      <details><summary>¿Cómo abro la biblioteca de Contexto?</summary><div class="a">Abre Contexto en el espacio y elige “Elegir fuentes”. Algunas versiones pueden mostrar “Ver todas” mientras reciben el cambio. Si tu versión todavía no muestra ninguno de esos botones, no actives interruptores ocultos para forzarla.</div></details>
+      <details><summary>¿Cómo busco una fuente en la biblioteca?</summary><div class="a">Escribe parte del nombre o de la dirección, y usa los filtros de tipo y estado. La biblioteca muestra hasta 50 resultados por página; cambia de página para seguir revisando. Buscar o filtrar no cambia lo que usa la IA.</div></details>
+      <details><summary>¿Cómo marco las fuentes que quiero usar?</summary><div class="a">Marca las fuentes seleccionables con su casilla. La selección queda como borrador dentro de la biblioteca: la IA no cambia hasta que eliges aplicar. Algunas filas solo informan que una fuente fue detectada y no se pueden marcar.</div></details>
+      <details><summary>¿Qué diferencia hay entre disponible, incluida, usada y citada?</summary><div class="a">Disponible significa que la fuente aparece y tiene contenido o un estado que puedes revisar. Incluida significa que la selección aplicada permite que entre al contexto de ese espacio. Usada significa que ese turno realmente incorporó contenido; puede ser solo una parte. Citada significa que la respuesta señaló esa fuente. Ver una fuente disponible o incluida no demuestra que se haya usado ni citada en cada respuesta.</div></details>
+      <details><summary>¿Aplicar una selección es lo mismo que compartirla?</summary><div class="a">No. Aplicar cambia las fuentes incluidas en ese espacio; las nuevas se agregan antes de quitar las que dejaste fuera. Esto no cambia las herramientas ni el contexto automático. Compartir abre una revisión y envía copias de las fuentes compatibles a otro espacio tuyo: no mueve ni borra la original, y las fuentes no compatibles quedan fuera.</div></details>
+      <details><summary>¿Qué pasa si una fuente cambia, se pausa o aparece sin lectura confirmada?</summary><div class="a">La biblioteca conserva el registro de la fuente y muestra su estado. Una fuente “Lectura sin confirmar” fue detectada, pero no demuestra que su contenido ya sea usable; en una imagen no significa OCR. Una fuente pausada no debe presentarse como usada: reactívala o vuelve a leerla solo cuando la acción aparezca. Si Aplicar muestra un problema, conserva el aviso y no des por hecho que la selección quedó aplicada. La selección pertenece a ese espacio y no se hereda a otro.</div></details>
+      <details><summary>¿Cómo compruebo una cita o vuelvo a leer una fuente?</summary><div class="a">Cuando una respuesta incluye una cita, usa “Ver esta fuente” para abrir la biblioteca y ubicar la fila correspondiente. Eso confirma la fuente, pero no garantiza que la pantalla salte al fragmento exacto. Si la fila muestra un problema y ofrece Reintentar, vuelve a leerla desde ahí; si no ofrece esa acción, no prometemos que se pueda forzar una nueva lectura.</div></details>
+      <details><summary>¿Cómo sé si mi versión tiene la biblioteca nueva?</summary><div class="a">La biblioteca nueva está disponible solo en las versiones que ya incluyen ese cambio. Busca el botón “Ver todas” dentro de Contexto y registra el título y el build si necesitas pedir ayuda. La instalación y la comprobación de una versión concreta deben confirmarse por separado; esta FAQ no las da por hechas.</div></details>
+      <details><summary>¿Qué pasa si pierdo internet?</summary><div class="a">El trabajo local puede continuar sin conexión y la sincronización con la nube se reanuda cuando vuelves a tener internet. Las funciones que necesitan leer un servicio externo o responder con la IA pueden esperar a que vuelva la conexión.</div></details>
+      <details><summary>¿Qué puedo encontrar en Integraciones?</summary><div class="a">El explorador organiza el catálogo en cinco grupos visibles: Kits, Plugins, Conectores, Skills y Herramientas CLI. Los Kits y Plugins juntan piezas para un trabajo; los Conectores enlazan servicios; los Skills aportan una forma de trabajar; y las Herramientas CLI cubren tareas técnicas que necesitan instalación e inicio de sesión.</div></details>
+      <details><summary>¿Los Kits tienen un costo aparte?</summary><div class="a">Los Kits disponibles aparecen marcados como gratuitos e incluidos en el plan; algunos están marcados Próximamente y no deben contarse como listos. El costo o la cuenta que necesites para una integración externa dentro del Kit sigue dependiendo de ese servicio.</div></details>
+      <details><summary>¿Cuánto cuesta?</summary><div class="a">Los planes y la disponibilidad de cualquier prueba aparecen en la pantalla de precios y en el checkout. Revisa el plan actual, la moneda y las condiciones antes de pagar; las cuentas existentes no deben asumir que una prueba se reinicia al cambiar de plan.</div></details>
+      <details><summary>¿Qué hago si algo falla?</summary><div class="a">Primero revisa el aviso de la aplicación y vuelve a intentar solo si la acción lo indica. Si hay riesgo de perder datos, un cobro, un problema de seguridad o un fallo repetido de sincronización, pide ayuda humana y conserva el mensaje de error sin compartir secretos.</div></details>
+      </div>
+    </div>
+    <p class="faq-more"><button type="button" id="faqMore" aria-expanded="false" aria-controls="faqExtra"><span data-more>Ver más preguntas</span><span data-less hidden>Ver menos</span></button></p>
+  </div>
+</section>
+
+<section class="sec alt" id="windows">
+  <div class="wrap">
+    <div class="split winw">
+      <div class="split-tx">
+        <span class="eyebrow">Windows</span>
+        <h2>Todavía no, pero va en camino.</h2>
+        <p>Hoy TS es una app para Mac — Apple Silicon e Intel, desde macOS 13. Déjanos tu correo y te escribimos el día que salga la de Windows. Nada más: no mandamos boletines.</p>
+      </div>
+      <form class="winw-form" id="winForm" data-cta="windows-early-access">
+        <input type="email" placeholder="tu@correo.com" aria-label="Tu correo" required />
+        <button class="btn btn-primary" type="submit">Avísenme</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="sec final">
+  <div class="wrap">
+    <h2>Empieza hoy. La IA ya viene adentro.</h2>
+    <p>Descárgalo, abre tu primer espacio de trabajo y pídele algo. No hay nada que configurar.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="/api/download" data-cta="final-cta-download">⤓ Descargar para Mac</a>
+      <a class="btn btn-ghost" href="mailto:hola@terminalsync.ai?subject=Quiero%20hablar%20con%20alguien">Hablar con nosotros</a>
+    </div>
+    <p class="plat">Apple Silicon e Intel · macOS 13+ · Windows en lista de espera</p>
+  </div>
+</section>
+
+<div class="wrap foot">
+  <span>© 2026 TS</span><span class="sp"></span>
+  <a href="/es/legal/privacy" data-lhref="/legal/privacy">Privacidad</a><a href="/es/legal/terms" data-lhref="/legal/terms">Términos</a><a href="/es/casos-de-uso" data-lhref="/casos-de-uso">Casos de uso</a><a href="/es/connectors" data-lhref="/connectors">Integraciones</a><a href="mailto:hola@terminalsync.ai">Contacto</a>
+</div>
+
+<div class="lb" id="lb" hidden>
+  <div class="lb-box">
+    <button class="lb-close" id="lbClose" aria-label="Cerrar"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <iframe id="lbFrame" title="Demo de TS" allow="clipboard-write"></iframe>
+    <span class="lb-cap" id="lbCap"></span>
+  </div>
+</div>
+
+<script src="/landing-b/i18n.js"></script>
+<script>
+(function(){
+  const root=document.documentElement, sysDark=matchMedia('(prefers-color-scheme: dark)');
+  let saved=null; try{saved=localStorage.getItem('ts-theme')}catch(e){}
+  set(saved||(sysDark.matches?'dark':'light'), !saved);
+  function set(name,auto){
+    root.classList.remove('var-light','var-dark');
+    root.classList.add('var-'+name);
+    if(!auto){try{localStorage.setItem('ts-theme',name)}catch(e){}}
+  }
+  document.getElementById('themeToggle').addEventListener('click',()=>{
+    set(root.classList.contains('var-dark')?'light':'dark');
+  });
+})();
+if('scrollRestoration' in history)history.scrollRestoration='manual';
+/* Rotate the actual H1 and its companion sentence, not a separate card. */
+(function(){
+  const messages={
+    es:[
+      ['Cada cliente, proyecto o área','conserva su propio contexto.','La IA nunca pierde el contexto de ese trabajo.'],
+      ['Tu trabajo continúa,','aunque cierres el computador.','TS sigue trabajando mientras tú haces otras cosas.'],
+      ['No es otro chat.','Es tu oficina digital con IA.','Porque trabajar es mucho más que conversar.'],
+      ['La IA trabaja','donde ya están tus archivos.','No lleves tus archivos a la IA. Lleva la IA hasta ellos.'],
+      ['La IA cambia cada pocos meses.','El trabajo de tu empresa permanece.','Diseñado para que tu empresa evolucione con cualquier IA.']
+    ],
+    en:[
+      ['Every client, project, or team','keeps its own context.','AI never loses the context of that work.'],
+      ['Your work keeps going,','even after you close your laptop.','TS keeps working while you do other things.'],
+      ["It's not another chat.","It's your digital office with AI.",'Because work is much more than a conversation.'],
+      ['AI works','where your files already live.',"Don't bring your files to the AI. Bring the AI to them."],
+      ['AI changes every few months.',"Your company's work stays.",'Built so your business evolves with any AI.']
+    ]
+  };
+  const box=document.getElementById('heroCopy');
+  const title=document.getElementById('heroHeadline'),lead=document.getElementById('heroHeadlineLead');
+  const accent=document.getElementById('heroHeadlineAccent'),text=document.getElementById('heroSubtitle');
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let index=0,timer=null;
+  const language=()=>window.TS_getLang?window.TS_getLang():'es';
+  function reserveHeight(){
+    const slides=messages[language()],headlineProbe=document.createElement('h1'),textProbe=document.createElement('p');
+    headlineProbe.innerHTML='<span></span> <em></em>';
+    textProbe.className='lede';
+    box.append(headlineProbe,textProbe);
+    for(const [probe,original] of [[headlineProbe,title],[textProbe,text]]){
+      probe.style.cssText='position:absolute;visibility:hidden;pointer-events:none;min-height:0;height:auto;width:'+original.getBoundingClientRect().width+'px';
+    }
+    let maxHeadline=0,maxText=0;
+    for(const [first,highlight,subtitle] of slides){
+      headlineProbe.firstElementChild.textContent=first;
+      headlineProbe.lastElementChild.textContent=highlight;
+      textProbe.textContent=subtitle;
+      maxHeadline=Math.max(maxHeadline,headlineProbe.getBoundingClientRect().height);
+      maxText=Math.max(maxText,textProbe.getBoundingClientRect().height);
+    }
+    headlineProbe.remove();textProbe.remove();
+    title.style.minHeight=Math.ceil(maxHeadline)+'px';
+    text.style.minHeight=Math.ceil(maxText)+'px';
+  }
+  function render(){
+    const en=language()==='en',[first,highlight,subtitle]=messages[en?'en':'es'][index];
+    lead.textContent=first;accent.textContent=highlight;text.textContent=subtitle;
+  }
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  function start(){
+    if(timer||reduced||document.hidden||box.matches(':hover')||box.contains(document.activeElement))return;
+    timer=setInterval(()=>{index=(index+1)%messages.es.length;render()},8000);
+  }
+  box.addEventListener('mouseenter',stop);box.addEventListener('mouseleave',start);
+  box.addEventListener('focusin',stop);box.addEventListener('focusout',()=>setTimeout(start,0));
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();else start()});
+  addEventListener('ts-lang',()=>{render();reserveHeight()});
+  addEventListener('resize',()=>requestAnimationFrame(reserveHeight),{passive:true});
+  if(document.fonts)document.fonts.ready.then(reserveHeight);
+  render();reserveHeight();start();
+})();
+const stickyNav=document.querySelector('.nav'),stickySubnav=document.querySelector('.subnav');
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{
+  const id=a.getAttribute('href').slice(1);
+  if(!id)return;
+  const t=document.getElementById(id);
+  if(!t)return;
+  e.preventDefault();
+  /* Measure the two sticky bars instead of using a fixed offset.  A fixed
+     offset was a few pixels off at each breakpoint, which looked like a
+     small second jump after the smooth scroll settled. */
+  const bars=(stickyNav?.getBoundingClientRect().height||0)+(stickySubnav?.getBoundingClientRect().height||0);
+  const top=Math.max(0,t.getBoundingClientRect().top+scrollY-bars-1);
+  history.replaceState(null,'','#'+id);
+  /* Keep section changes stable: the animated scroll was the remaining
+     visible “saltico” on slower pages and when the sticky bar settled. */
+  scrollTo({top,behavior:'auto'});
+}));
+const lb=document.getElementById('lb'),lbFrame=document.getElementById('lbFrame'),lbCap=document.getElementById('lbCap');
+let lbPrev=null,lbScrollY=0;
+function openDemo(src,cap){lbScrollY=window.scrollY;document.body.style.top=(-lbScrollY)+'px';document.body.classList.add('lb-lock');lbFrame.src=src;lbCap.textContent=cap||'';lb.hidden=false;document.documentElement.classList.add('lb-open');document.getElementById('lbClose').focus()}
+function closeDemo(){lb.hidden=true;lbFrame.src='about:blank';document.documentElement.classList.remove('lb-open');document.body.classList.remove('lb-lock');document.body.style.top='';window.scrollTo(0,lbScrollY);if(lbPrev)lbPrev.focus()}
+document.querySelectorAll('.dcard').forEach(c=>c.addEventListener('click',e=>{
+  e.preventDefault();lbPrev=c;
+  openDemo(c.getAttribute('href'),c.querySelector('h3').textContent);
+}));
+document.getElementById('lbClose').addEventListener('click',closeDemo);
+lb.addEventListener('click',e=>{if(e.target===lb)closeDemo()});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!lb.hidden)closeDemo()});
+
+const links=[...document.querySelectorAll('.subnav a[href^="#"]')].filter(a=>!a.classList.contains('rt'));
+const secs=links.map(a=>document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(!e.isIntersecting)return;
+    links.forEach(l=>l.classList.toggle('on',l.getAttribute('href').slice(1)===e.target.id));
+  });
+},{rootMargin:'-45% 0px -50% 0px'});
+secs.forEach(s=>io.observe(s));
+(function(){const b=document.getElementById('faqMore'),x=document.getElementById('faqExtra');if(!b||!x)return;b.addEventListener('click',()=>{const open=x.hidden;x.hidden=!open;b.setAttribute('aria-expanded',open);b.querySelector('[data-more]').hidden=open;b.querySelector('[data-less]').hidden=!open;if(!open){const r=b.getBoundingClientRect();if(r.top<0||r.bottom>innerHeight)scrollTo({top:r.top+scrollY-innerHeight/2});}});})();
+/* ── producción ── */
+const LANG=location.pathname.startsWith('/en')?'en':'es';
+document.querySelectorAll('[data-lhref]').forEach(a=>a.href='/'+LANG+a.dataset.lhref);
+document.querySelectorAll('.lang a[data-lang]').forEach(a=>{a.href='/'+a.dataset.lang+location.hash;a.addEventListener('click',e=>{e.stopImmediatePropagation();},true);});
+addEventListener('click',e=>{const c=e.target.closest&&e.target.closest('[data-cta]');if(!c||c.tagName==='FORM')return;window.va&&window.va('event',{name:'cta_click',data:{cta:c.dataset.cta,landing:'consumer',path:location.pathname}});},true);
+(function(){let f=false;addEventListener('scroll',()=>{if(f)return;const d=document.documentElement;if((scrollY+innerHeight)/d.scrollHeight>=.75){f=true;window.va&&window.va('event',{name:'scroll_75',data:{landing:'consumer',path:location.pathname}});}},{passive:true});})();
+(function(){const f=document.getElementById('winForm');if(!f)return;const i=f.querySelector('input'),b=f.querySelector('button');
+f.addEventListener('submit',async e=>{e.preventDefault();if(!i.value.includes('@'))return;b.disabled=true;
+try{const r=await fetch('/api/early-access',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:i.value,feature:'windows-app',lang:LANG})});
+if(!r.ok)throw 0;window.va&&window.va('event',{name:'cta_click',data:{cta:'windows-early-access',landing:'consumer',path:location.pathname}});
+f.innerHTML='<p style="margin:0;font-weight:600">'+(LANG==='en'?'Done. We will email you when it ships.':'Listo. Te escribimos el día que salga.')+'</p>';}
+catch(_){b.disabled=false;b.textContent=LANG==='en'?'Try again':'Intenta de nuevo';}});})();
+lucide.createIcons();
+</script>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

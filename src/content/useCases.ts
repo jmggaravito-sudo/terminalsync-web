@@ -1,4 +1,4 @@
-// TerminalSync — Use Cases data module
+// TS — Use Cases data module
 // Tab 1: 29 prompt cases (CASES). Tab 2: 12 automated jobs (JOBS).
 
 export type AI = "Claude" | "Codex" | "Gemini";
