@@ -37,7 +37,7 @@ Workflow: `.github/workflows/integration-pipeline.yml`. Prompts: `.github/pipeli
 ## Qué queda en cada superficie
 
 - **Landing y Explorador de la app:** salen del mismo catálogo (`/api/marketplace/catalog`). Al mergear, Vercel despliega y el explorador lo toma sin release de la app (caché de unos 10 minutos).
-- **Conversación (GLM):** los conectores **npm** se instalan conversando. Los conectores **remotos con login** (`mcp-remote`) **no**: el catálogo los marca `installableForAi: false` y se instalan desde Explorar. El reporte lo dice por cada integración.
+- **Conversación (GLM):** los conectores **npm** se instalan conversando. Los conectores **remotos con login** (`mcp-remote`) también: la app pide un login único en el navegador al instalar y, si el token vence, ofrece «Reconectar» en el chat. El catálogo los marca `installableForAi: true` con razón `remote-needs-login`. El reporte lo dice por cada integración.
 
 ## Interruptores
 

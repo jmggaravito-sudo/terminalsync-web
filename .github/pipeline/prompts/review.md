@@ -27,7 +27,7 @@ Verifica con WebFetch los hechos clave de las dos fichas y de la fila de `SOURCE
 - Frontmatter válido para `src/lib/connectors.ts`: categoría permitida (`productivity|database|automation|storage|messaging|support|dev|research`), `manifest` bien formado, `logo` existente en el PR, sin secretos en claro.
 - Remoto con login → `mcp-remote` sin `env` (molde B); npm con token → `${SECRET:NOMBRE}` (molde A). Confirma que el comando es ejecutable y el paquete/endpoint existe.
 - Si es npm: corre `node scripts/verify-connector.mjs --file <ficha en> --file <ficha es>` y reporta `installableForAi`, `aiToolsCount` y `aiReadOnlyTools`. Las herramientas que no declaran `readOnlyHint` piden confirmación a la IA antes de ejecutarse: dilo.
-- Confirma que `research.conversational_install` coincide con la realidad (npm → sí; remoto → no, solo desde Explorar) y que la ficha no promete lo contrario.
+- Confirma que `research.conversational_install` coincide con la realidad (npm → `yes`; remoto con login → `remote_login`, instalable con un login único) y que la ficha no promete lo contrario.
 - El cuerpo del PR contiene `App PR: no aplica — la app consume el catálogo`.
 
 ## ROLE: honesty — Honestidad

@@ -6,7 +6,7 @@ export const SLUG_RE = /^[a-z0-9-]{1,40}$/;
 export const VERDICTS = ["ship_official", "needs_own_build", "exists", "skip"];
 export const REVIEW_ROLES = ["sources", "voice", "install", "honesty"];
 export const REVIEW_VERDICTS = ["pass", "fix", "hold"];
-export const CONVERSATIONAL = ["yes", "no_remote", "unknown"];
+export const CONVERSATIONAL = ["yes", "remote_login", "unknown"];
 
 const isObj = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
 const isStr = (v) => typeof v === "string" && v.trim().length > 0;
@@ -134,8 +134,8 @@ export function surfaces({ research, merged }) {
   const conv =
     research?.conversational_install === "yes"
       ? `sí (${when})`
-      : research?.conversational_install === "no_remote"
-        ? "no: es un conector remoto con login; se instala desde Explorar, no por chat"
+      : research?.conversational_install === "remote_login"
+        ? `sí (${when}): conector remoto, pide un login único en el navegador al instalar`
         : "sin confirmar";
   return {
     landing: merged ? "publicado" : "pendiente de merge",

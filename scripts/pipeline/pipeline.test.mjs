@@ -20,7 +20,7 @@ const officialRemote = {
   reason: "Ramp publica un MCP remoto oficial",
   already_in_catalog: false,
   persona_fit: true,
-  conversational_install: "no_remote",
+  conversational_install: "remote_login",
   official: {
     exists: true,
     kind: "remote",
@@ -169,11 +169,11 @@ describe("decide", () => {
 });
 
 describe("surfaces / report", () => {
-  it("is honest that remote OAuth connectors are not installable by chat", () => {
+  it("says remote OAuth connectors install by chat with a one-time login", () => {
     const s = surfaces({ research: officialRemote, merged: true });
     expect(s.landing).toBe("publicado");
-    expect(s.conversation).toContain("no:");
-    expect(s.conversation).toContain("Explorar");
+    expect(s.conversation).toContain("sí (listo)");
+    expect(s.conversation).toContain("login único");
   });
 
   it("says chat install works for npm connectors", () => {
