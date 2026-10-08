@@ -44,7 +44,7 @@ This connector **doesn't ask you to paste an API key**. It uses the official Sii
 2. Enable the connector in TerminalSync.
 3. The `mcp-remote` bridge opens the official Siigo login in your browser; sign in and authorize access. The AI never sees your password and operates with your own user's identity and permissions.
 
-**Honest note:** this is a server **hosted by Siigo** (`https://mcp.siigo.com`), not something that runs on your computer. What the agent can see and do is bounded by your Siigo user's permissions. It can create and update invoices and customers with your explicit approval, and consult your catalog — but it never deletes information: the official docs put it in two words, *"Borrar, nunca."* ("Delete: never.") Data comes straight from your account, and verifying it is your responsibility.
+**Honest note:** this is a server **hosted by Siigo** (`https://mcp.siigo.com`), not something that runs on your computer. What the agent can see and do is bounded by your Siigo user's permissions. It can create invoices, and create or update customers, with your explicit approval, and consult your catalog — but it never deletes information: the official docs put it in two words, *"Borrar, nunca."* ("Delete: never.") Data comes straight from your account, and verifying it is your responsibility.
 
 --- dev ---
 
@@ -54,7 +54,7 @@ Siigo publishes its **official MCP** as a remote/hosted server at `https://mcp.s
 npx -y mcp-remote@latest https://mcp.siigo.com
 ```
 
-Authentication is **OAuth/B2C through Siigo's official login**, with no client secret to store: "Inicias sesión mediante el login oficial de Siigo (OAuth/B2C)", and "La IA nunca ve tu contraseña y opera utilizando la identidad y los permisos asociados a tu usuario" (the AI never sees your password and operates with your user's identity and permissions). Siigo's launch was done on Claude and ChatGPT.
+Authentication is **OAuth/B2C through Siigo's official login**, with no client secret to store: "Inicias sesión mediante el login oficial de Siigo (OAuth/B2C)", and "La IA nunca ve tu contraseña y opera utilizando la identidad y los permisos asociados a tu usuario" (the AI never sees your password and operates with your user's identity and permissions). Siigo's launch was done on Claude and ChatGPT. **Logging in to Siigo through the `mcp-remote` bridge has not been tested yet with a real account**: the documentation describes the OAuth/B2C flow but does not mention this bridge.
 
 **Documented prerequisite:** "Tu empresa debe tener habilitadas las credenciales de integración de Siigo API" — your company must have Siigo API integration credentials enabled, under **Configuración → Credenciales de integración a plataformas digitales** in Siigo; if missing, the assistant walks you through activation.
 

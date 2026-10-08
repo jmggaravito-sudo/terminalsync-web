@@ -25,7 +25,7 @@ marketplaceCategory: "web"
 ---
 **Siigo** es el software contable y administrativo con el que muchas micro, pequeñas y medianas empresas de Colombia llevan su contabilidad, su facturación y su operación diaria. El conector oficial de Siigo es un **server MCP hospedado** (`https://mcp.siigo.com`), publicado por Siigo, que le da a tu agente acceso a tus facturas, tus clientes y tu catálogo de productos con el login oficial de tu cuenta de Siigo — sin pegar ninguna API key y, como dice la propia documentación, "sin necesidad de un desarrollador, tener conocimientos de código".
 
-Pregúntale *"¿Cuánto facturé este mes y a qué clientes?"* y el agente lee tus facturas directo de tu cuenta. *"Muéstrame el stock disponible de mis productos."* *"¿Cuál fue mi producto más vendido esta semana?"* — respuestas que hoy te tocan buscar entre pantallas de Siigo. También puede crear por ti: *"Crea la factura para Carlos Pérez: 2 sillas ejecutivas, pago de contado"* — el asistente te pide confirmación antes de registrar cualquier cosa. Y si manejas varias empresas, puedes cambiar de una a otra desde el propio chat.
+Pregúntale *"¿Cuánto facturé este mes y a qué clientes?"* y el agente lee tus facturas directo de tu cuenta. *"Muéstrame el stock disponible de mis productos."* *"¿Cuál fue mi producto más vendido esta semana?"* — respuestas que hoy te tocan buscar entre pantallas de Siigo. También puede crear por ti: *"Crea la factura para Carlos Pérez: 2 sillas ejecutivas, pago al contado"* — el asistente te pide confirmación antes de registrar cualquier cosa. Y si manejas varias empresas, puedes cambiar de una a otra desde el propio chat.
 
 ### Qué le puedes pedir
 
@@ -34,7 +34,7 @@ Pregúntale *"¿Cuánto facturé este mes y a qué clientes?"* y el agente lee t
 - *"Lista mis clientes y dime cuáles son empresas."*
 - *"¿Qué impuestos y formas de pago tengo configurados?"*
 - *"¿Cuál fue mi producto más vendido esta semana?"*
-- *"Crea la factura para Carlos Pérez: 2 sillas ejecutivas, pago de contado."* — se registra solo después de tu confirmación.
+- *"Crea la factura para Carlos Pérez: 2 sillas ejecutivas, pago al contado."* — se registra solo después de tu confirmación.
 
 ### Cómo te conectas
 
@@ -44,7 +44,7 @@ Este conector **no te pide pegar ninguna API key**. Usa el login oficial de tu c
 2. Activa el conector en TerminalSync.
 3. El puente `mcp-remote` abre el login oficial de Siigo en tu navegador; inicia sesión y autoriza el acceso. La IA nunca ve tu contraseña y opera con los permisos de tu propio usuario.
 
-**Aviso honesto:** es un **server hospedado por Siigo** (`https://mcp.siigo.com`), no algo que corre en tu computadora. Lo que el agente puede ver y hacer queda acotado por los permisos de tu usuario de Siigo. Puede crear y actualizar facturas y clientes con tu aprobación explícita, y consultar tu catálogo — pero no borrar información: la documentación oficial lo dice en dos palabras, *"Borrar, nunca."* Los datos salen directo de tu cuenta, y verificarlos es tu responsabilidad.
+**Aviso honesto:** es un **server hospedado por Siigo** (`https://mcp.siigo.com`), no algo que corre en tu computadora. Lo que el agente puede ver y hacer queda acotado por los permisos de tu usuario de Siigo. Puede crear facturas, y crear o actualizar clientes, con tu aprobación explícita, y consultar tu catálogo — pero no borrar información: la documentación oficial lo dice en dos palabras, *"Borrar, nunca."* Los datos salen directo de tu cuenta, y verificarlos es tu responsabilidad.
 
 --- dev ---
 
@@ -54,7 +54,7 @@ Siigo publica su **MCP oficial** como server remoto/hospedado en `https://mcp.si
 npx -y mcp-remote@latest https://mcp.siigo.com
 ```
 
-La autenticación es **OAuth/B2C con el login oficial de Siigo**, sin client secret que guardar: "Inicias sesión mediante el login oficial de Siigo (OAuth/B2C)" y "La IA nunca ve tu contraseña y opera utilizando la identidad y los permisos asociados a tu usuario". Siigo realizó el lanzamiento sobre Claude y ChatGPT.
+La autenticación es **OAuth/B2C con el login oficial de Siigo**, sin client secret que guardar: "Inicias sesión mediante el login oficial de Siigo (OAuth/B2C)" y "La IA nunca ve tu contraseña y opera utilizando la identidad y los permisos asociados a tu usuario". Siigo realizó el lanzamiento sobre Claude y ChatGPT. **No se probó todavía el login de Siigo a través del puente `mcp-remote` con una cuenta real**: la documentación describe el flujo OAuth/B2C pero no menciona este puente.
 
 **Prerrequisito documentado:** "Tu empresa debe tener habilitadas las credenciales de integración de Siigo API" — se habilitan en Siigo en **Configuración → Credenciales de integración a plataformas digitales**; si faltan, el propio asistente guía la activación.
 
