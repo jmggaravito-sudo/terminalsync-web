@@ -253,3 +253,41 @@ describe("cli", () => {
     expect(out).toContain("action=hold");
   });
 });
+
+describe("cli report", () => {
+  const cliPath = path.join(path.dirname(new URL(import.meta.url).pathname), "cli.mjs");
+
+  it("rebuilds the PR link from the repository instead of trusting the agent's url", () => {
+    // The first real run produced build.json with the owner misspelled in its own PR url.
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "pipeline-"));
+    fs.writeFileSync(path.join(dir, "research.json"), JSON.stringify(officialRemote));
+    fs.writeFileSync(path.join(dir, "build.json"), JSON.stringify({ pr: 388, branch: "loop/connectors/x", url: "https://github.com/jmggaravato-sudo/terminalsync-web/pull/388" }));
+    const out = execFileSync("node", [cliPath, "report", dir], { encoding: "utf8", env: { ...process.env, GITHUB_REPOSITORY: "jmggaravito-sudo/terminalsync-web" } });
+    expect(out).toContain("https://github.com/jmggaravito-sudo/terminalsync-web/pull/388");
+    expect(out).not.toContain("jmggaravato");
+  });
+});
+
+describe("workflow wiring", () => {
+  const wf = fs.readFileSync(path.join(path.dirname(new URL(import.meta.url).pathname), "../../.github/workflows/integration-pipeline.yml"), "utf8");
+  const job = (name) => {
+    const start = wf.indexOf(`\n  ${name}:\n`);
+    const next = wf.slice(start + 1).search(/\n  [a-z]+:\n/);
+    return wf.slice(start, next === -1 ? undefined : start + 1 + next);
+  };
+
+  it("the fixer still runs when a reviewer job ended red (implicit success() looks at the whole chain)", () => {
+    expect(job("fix")).toMatch(/if: always\(\) && needs\.decide\.result == 'success' && needs\.decide\.outputs\.needs_fix == 'true'/);
+  });
+
+  it("reviewers get enough turns and tolerate the action's turn-count exit; a missing verdict becomes a hold", () => {
+    const review = job("review");
+    expect(review).toMatch(/max-turns: "50"/);
+    expect(review).toMatch(/tolerate-failure: "true"/);
+    expect(decide({ research: officialRemote, scope: cleanScope, reviewsByRole: { ...allPass, honesty: undefined }, automerge: true }).action).toBe("hold");
+  });
+
+  it("only reviewers tolerate failures: research, build and fix must fail loudly", () => {
+    for (const name of ["research", "build", "fix"]) expect(job(name), name).not.toMatch(/tolerate-failure/);
+  });
+});

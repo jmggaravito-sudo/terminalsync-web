@@ -67,5 +67,5 @@ gh workflow run integration-pipeline.yml -R jmggaravito-sudo/terminalsync-web -f
 - **Solo conectores.** Plugins, kits y skills siguen en sus loops semanales.
 - **GLM como revisor no está medido** contra una revisión humana. Por eso el merge automático parte apagado.
 - La supervisión de un PR descarga el catálogo **de producción**, no el del PR: si producción está en rojo, el check falla en todos los PRs hasta que se corrija.
-- Costo estimado por integración: unos USD 8–12 de GLM (investigador, constructor de hasta 80 turnos, cuatro revisores de hasta 30). Es una estimación a partir de las trazas de los loops, no una medición.
+- Costo estimado por integración: unos USD 8–12 de GLM (investigador, constructor de hasta 80 turnos, cuatro revisores de hasta 50). Es una estimación a partir de las trazas de los loops, no una medición.
 - Siempre habrá casos (sin MCP oficial, decisiones de producto, publicar un paquete propio en npm) que requieren a una persona. El pipeline se detiene ahí y lo dice.

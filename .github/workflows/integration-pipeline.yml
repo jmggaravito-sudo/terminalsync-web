@@ -188,7 +188,8 @@ jobs:
         uses: ./.github/actions/run-agent
         with:
           label: review-${{ matrix.role }}
-          max-turns: "30"
+          max-turns: "50"
+          tolerate-failure: "true"
           allowed-tools: "Read,Grep,Glob,WebFetch,Write,Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git diff:*),Bash(git log:*),Bash(node scripts/verify-connector.mjs:*),Bash(npx vitest run:*)"
           zai-api-key: ${{ secrets.Z_AI_API_KEY }}
           zai-model: ${{ vars.ZAI_MODEL }}
@@ -252,7 +253,9 @@ jobs:
   fix:
     name: "5 · Corrector"
     needs: [build, decide]
-    if: needs.decide.outputs.needs_fix == 'true'
+    # always(): the implicit success() also looks at the reviewers, and a reviewer job can end red
+    # while its verdict file is fine. The decision already treats a missing file as a hold.
+    if: always() && needs.decide.result == 'success' && needs.decide.outputs.needs_fix == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
