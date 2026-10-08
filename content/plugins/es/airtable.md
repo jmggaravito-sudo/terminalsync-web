@@ -4,7 +4,7 @@ logo: /plugins/airtable.svg
 category: marketing
 status: available
 tagline: "Tu lista de clientes, segmentada por quién merece tu esfuerzo — sin exportar CSV."
-description: "Junta el conector de Airtable (lee la base de clientes que ya llevas — clientes, pedidos, historial de compras) con Segmentación RFM (puntúa a cada cliente por recencia, frecuencia y gasto, los agrupa en Campeones / Leales / En riesgo, y nombra una acción por grupo), para que 'quiénes son mis mejores clientes' se responda desde tu base viva y no desde una planilla exportada."
+description: "Junta el conector de Airtable, que lee la base de clientes que ya llevas (clientes, pedidos, historial de compras), con Segmentación RFM (puntúa a cada cliente por recencia, frecuencia y gasto, los agrupa en Campeones / Leales / En riesgo, y nombra una acción por grupo), para que 'quiénes son mis mejores clientes' se responda desde tu base viva y no desde una planilla exportada."
 author: "TerminalSync"
 marketplaceSource: "terminalsync"
 connectorSlug: airtable
