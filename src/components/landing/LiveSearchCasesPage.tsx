@@ -2,28 +2,11 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Check, ChevronDown, Copy, Download, Search } from "lucide-react";
+import { ChevronDown, Download, Search } from "lucide-react";
 import type { Locale } from "@/content";
 import { LANDING_USE_CASES } from "@/content/landingUseCases.generated";
 
-type CopyStatus = { id: string; state: "copied" | "error" } | null;
 type Tab = "cases" | "workflows";
-
-async function copyText(text: string) {
-  if (navigator.clipboard?.writeText) {
-    try { await navigator.clipboard.writeText(text); return true; } catch { /* fallback below */ }
-  }
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.setAttribute("readonly", "");
-  textarea.style.position = "fixed";
-  textarea.style.opacity = "0";
-  document.body.appendChild(textarea);
-  textarea.select();
-  const copied = document.execCommand("copy");
-  textarea.remove();
-  return copied;
-}
 
 export function LiveSearchCasesPage({ lang }: { lang: Locale }) {
   const isEs = lang === "es";
@@ -31,7 +14,6 @@ export function LiveSearchCasesPage({ lang }: { lang: Locale }) {
   const [category, setCategory] = useState("all");
   const [query, setQuery] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
-  const [copyStatus, setCopyStatus] = useState<CopyStatus>(null);
   const search = query.trim().toLocaleLowerCase(lang);
 
   const cases = useMemo(() => LANDING_USE_CASES.cases.filter((item) => {
@@ -51,12 +33,6 @@ export function LiveSearchCasesPage({ lang }: { lang: Locale }) {
     setTab(next);
     setCategory("all");
     setOpenId(null);
-    setCopyStatus(null);
-  }
-
-  async function handleCopy(id: string, prompt: string) {
-    const copied = await copyText(prompt);
-    setCopyStatus({ id, state: copied ? "copied" : "error" });
   }
 
   return (
@@ -99,11 +75,7 @@ export function LiveSearchCasesPage({ lang }: { lang: Locale }) {
               className="min-h-11 w-full rounded-xl border border-[#e2e4e9] bg-white pl-10 pr-4 text-sm outline-none placeholder:text-[#8b909a] focus:border-[#8e76ec] focus:ring-2 focus:ring-[#6a48e8]/15" />
           </label>
           <div className="mt-4 flex flex-wrap gap-2" aria-label={isEs ? "Categorías de negocio" : "Business categories"}>
-            <button type="button" aria-pressed={category === "all"} onClick={() => setCategory("all")}
-              className={`rounded-full px-3.5 py-2 text-sm font-semibold ${category === "all" ? "bg-[#efeafd] text-[#4c31b6]" : "border border-[#e2e4e9] text-[#565b64] hover:border-[#c9bdf8]"}`}>
-              {isEs ? "Todas las categorías" : "All categories"}
-            </button>
-            {filters.map((item) => <button key={item.id} type="button" aria-pressed={category === item.id} onClick={() => setCategory(item.id)}
+            {filters.map((item) => <button key={item.id} type="button" aria-pressed={category === item.id} onClick={() => setCategory((current) => current === item.id ? "all" : item.id)}
               className={`rounded-full px-3.5 py-2 text-sm font-semibold ${category === item.id ? "bg-[#efeafd] text-[#4c31b6]" : "border border-[#e2e4e9] text-[#565b64] hover:border-[#c9bdf8]"}`}>
               {item[lang]}
             </button>)}
@@ -121,7 +93,6 @@ export function LiveSearchCasesPage({ lang }: { lang: Locale }) {
               const copy = item[lang];
               const group = LANDING_USE_CASES.categories.find((entry) => entry.id === item.area);
               const open = openId === item.id;
-              const status = copyStatus?.id === item.id ? copyStatus.state : null;
               const panelId = `case-${item.id}`;
               return <article key={item.id} className="rounded-2xl border border-[#e2e4e9] bg-white p-5 shadow-[0_10px_28px_-24px_rgba(22,24,29,.42)] transition hover:border-[#c9bdf8] md:p-6">
                 <div className="flex items-start gap-4">
@@ -132,19 +103,16 @@ export function LiveSearchCasesPage({ lang }: { lang: Locale }) {
                     <p className="mt-2 text-sm leading-6 text-[#565b64]">{copy.d}</p>
                   </div>
                 </div>
-                <button type="button" aria-expanded={open} aria-controls={panelId} onClick={() => { setOpenId(open ? null : item.id); setCopyStatus(null); }}
+                <button type="button" aria-expanded={open} aria-controls={panelId} onClick={() => setOpenId(open ? null : item.id)}
                   className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-full border border-[#ded7fb] px-4 text-sm font-semibold text-[#4c31b6] hover:bg-[#f6f3ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6a48e8]">
                   {open ? (isEs ? "Ocultar ejemplo" : "Hide example") : (isEs ? "Ver ejemplo" : "See example")}<ChevronDown size={15} className={`transition-transform ${open ? "rotate-180" : ""}`} />
                 </button>
                 {open && <div id={panelId} className="mt-4 border-t border-[#ececf1] pt-4">
                   <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6b7280]">{isEs ? "Texto listo para usar" : "Ready-to-use text"}</p>
                   <pre className="max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-xl border border-[#e7e7ee] bg-[#f8f7fc] p-4 text-[13px] leading-6 text-[#292a31]">{copy.p}</pre>
-                  <div className="mt-4 flex flex-wrap items-center gap-3">
-                    <button type="button" onClick={() => void handleCopy(item.id, copy.p)} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#6a48e8] px-5 text-sm font-semibold text-white hover:bg-[#5a37d6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6a48e8]">
-                      {status === "copied" ? <Check size={16} /> : <Copy size={15} />}{status === "copied" ? (isEs ? "Copiado" : "Copied") : (isEs ? "Usar este caso" : "Use this case")}
-                    </button>
-                    <p aria-live="polite" className="text-sm text-[#565b64]">{status === "error" ? (isEs ? "No se pudo copiar; selecciona el texto." : "Could not copy; select the text instead.") : status === "copied" ? (isEs ? "Texto copiado al portapapeles." : "Text copied to clipboard.") : ""}</p>
-                  </div>
+                  <Link href="/api/download" className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#6a48e8] px-5 text-sm font-semibold text-white hover:bg-[#5a37d6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6a48e8]">
+                    <Download size={16} />{isEs ? "Usar este caso · Descargar TS" : "Use this case · Download TS"}
+                  </Link>
                 </div>}
               </article>;
             })}
