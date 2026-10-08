@@ -5,7 +5,7 @@ import path from "node:path";
 import ts from "typescript";
 
 const APP_REPO = "jmggaravito-sudo/terminal-sync";
-const DEFAULT_REF = "3c7d784fdb2432dc14cdcd475da41680ff02035d";
+const DEFAULT_REF = "5c421dd2eeea34cc4c3663fabe4dff4ad8668094";
 const APP_DATA_PATH = "src/data/useCases.ts";
 const LOCALE_PATH = (locale) => `public/locales/${locale}/translation.json`;
 const LOCAL_DATA_PATH = path.resolve("src/content/useCases.ts");
