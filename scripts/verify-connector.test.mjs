@@ -28,3 +28,18 @@ describe("connector installability contract", () => {
     expect(responseMatchesId({ id: 1, result: {} }, 1)).toBe(true);
   });
 });
+
+import { isMcpRemote } from "./verify-connector.mjs";
+import { REASONS } from "./verify-connector.mjs";
+
+describe("remote connectors (mcp-remote)", () => {
+  it("detects an mcp-remote recipe, pinned or not", () => {
+    expect(isMcpRemote({ command: "npx", args: ["-y", "mcp-remote", "https://mcp.siigo.com"] })).toBe(true);
+    expect(isMcpRemote({ command: "npx", args: ["-y", "mcp-remote@latest", "https://x.test/mcp"] })).toBe(true);
+    expect(isMcpRemote({ command: "npx", args: ["-y", "@scope/other-server"] })).toBe(false);
+    expect(isMcpRemote(null)).toBe(false);
+  });
+  it("knows the remote-needs-login reason", () => {
+    expect(REASONS.has("remote-needs-login")).toBe(true);
+  });
+});
