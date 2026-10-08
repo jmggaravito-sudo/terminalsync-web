@@ -40,12 +40,12 @@ const env = fs.existsSync(envFile)
 
 const SUPABASE_URL = process.env.SUPABASE_URL || env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_SERVICE_ROLE_KEY;
-const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || env.ANTHROPIC_API_KEY;
+const ZAI_KEY = process.env.ZAI_API_KEY || env.ZAI_API_KEY;
 const INGEST_URL = "https://terminalsync.ai/api/marketplace/admin/proposals/ingest";
 const INGEST_KEY = process.env.DISCOVERY_INGEST_KEY || env.DISCOVERY_INGEST_KEY;
 
-console.error("DEBUG keys present:", { SUPABASE_URL: !!SUPABASE_URL, SUPABASE_KEY: !!SUPABASE_KEY, ANTHROPIC_KEY: !!ANTHROPIC_KEY, INGEST_KEY: !!INGEST_KEY });
-for (const [k, v] of Object.entries({ SUPABASE_URL, SUPABASE_KEY, ANTHROPIC_KEY, INGEST_KEY })) {
+console.error("DEBUG keys present:", { SUPABASE_URL: !!SUPABASE_URL, SUPABASE_KEY: !!SUPABASE_KEY, ZAI_KEY: !!ZAI_KEY, INGEST_KEY: !!INGEST_KEY });
+for (const [k, v] of Object.entries({ SUPABASE_URL, SUPABASE_KEY, ZAI_KEY, INGEST_KEY })) {
   if (!v) { console.error(`missing env: ${k}`); process.exit(1); }
 }
 
@@ -140,26 +140,26 @@ Si el catálogo no tiene items razonables para esta persona, devolvé proposals:
 }
 
 async function callClaude(p) {
-  const r = await fetch("https://api.anthropic.com/v1/messages", {
+  const r = await fetch(`${(process.env.ANTHROPIC_BASE_URL || "https://open.bigmodel.cn/api/anthropic").replace(/\/+$/, "")}/v1/messages`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": ANTHROPIC_KEY,
+      "x-api-key": ZAI_KEY,
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
+      model: process.env.ZAI_MODEL || "glm-5.3-flash",
       max_tokens: 2500,
       messages: [{ role: "user", content: buildPrompt(p) }],
     }),
   });
   if (!r.ok) {
     const errBody = await r.text();
-    console.warn(`  ${p.id}: claude HTTP ${r.status} — ${errBody.slice(0, 200)}`);
+    console.warn(`  ${p.id}: glm HTTP ${r.status} — ${errBody.slice(0, 200)}`);
     return [];
   }
   const j = await r.json();
-  const text = j.content?.[0]?.text || "{}";
+  const text = j.content?.find((b) => b.type === "text")?.text || "{}";
   const match = text.match(/\{[\s\S]*\}/);
   if (!match) return [];
   try {

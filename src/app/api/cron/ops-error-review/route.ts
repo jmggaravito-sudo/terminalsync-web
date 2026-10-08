@@ -17,7 +17,7 @@
  * Auth: Vercel-injected `Authorization: Bearer ${CRON_SECRET}`.
  *
  * Env knobs:
- *   - ANTHROPIC_API_KEY  required for classification + proposals
+ *   - ZAI_API_KEY  required for classification + proposals
  *   - GEMINI_API_KEY     fallback for classification (no proposals)
  *   - RESEND_API_KEY     for the digest email
  *   - SUPABASE_URL/KEY   for ops_auto_actions persistence
@@ -39,7 +39,7 @@ export const maxDuration = 300;
 
 const N8N_URL = process.env.N8N_URL ?? "https://n8n.nexflowai.net";
 const N8N_API_KEY = process.env.N8N_API_KEY ?? "";
-const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY ?? "";
+const ZAI_KEY = process.env.ZAI_API_KEY ?? "";
 const GEMINI_KEY = process.env.GEMINI_API_KEY ?? "";
 const RESEND_KEY = process.env.RESEND_API_KEY ?? "";
 const DIGEST_TO = process.env.OPS_DIGEST_EMAIL ?? "jmggaravito@gmail.com";
@@ -134,23 +134,23 @@ async function callClaude(
   prompt: string,
   maxTokens = 400,
 ): Promise<string | null> {
-  if (!ANTHROPIC_KEY) return null;
-  const r = await fetch("https://api.anthropic.com/v1/messages", {
+  if (!ZAI_KEY) return null;
+  const r = await fetch(`${(process.env.ANTHROPIC_BASE_URL || "https://open.bigmodel.cn/api/anthropic").replace(/\/+$/, "")}/v1/messages`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": ANTHROPIC_KEY,
+      "x-api-key": ZAI_KEY,
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
+      model: process.env.ZAI_MODEL || "glm-5.3-flash",
       max_tokens: maxTokens,
       messages: [{ role: "user", content: prompt }],
     }),
   });
   if (!r.ok) return null;
-  const j = (await r.json()) as { content?: Array<{ text?: string }> };
-  return j.content?.[0]?.text ?? null;
+  const j = (await r.json()) as { content?: Array<{ type?: string; text?: string }> };
+  return j.content?.find((b) => b.type === "text")?.text ?? null;
 }
 
 async function callGemini(prompt: string): Promise<string | null> {
@@ -168,7 +168,7 @@ async function callGemini(prompt: string): Promise<string | null> {
   );
   if (!r.ok) return null;
   const j = (await r.json()) as {
-    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+    candidates?: Array<{ content?: { parts?: Array<{ type?: string; text?: string }> } }>;
   };
   return j.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
 }
@@ -545,7 +545,7 @@ export async function GET(req: Request) {
     errorsFound: reviews.length,
     retries,
     proposals,
-    aiUsed: ANTHROPIC_KEY ? "claude" : GEMINI_KEY ? "gemini" : "none",
+    aiUsed: ZAI_KEY ? "glm" : GEMINI_KEY ? "gemini" : "none",
     emailSent,
   });
 }
