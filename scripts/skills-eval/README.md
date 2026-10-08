@@ -11,7 +11,7 @@ against a generic baseline prompt, plus a human-review note that the evals are
 
 For each fixture (`fixtures/<skill>.json`), per case:
 
-1. Asks Claude twice over the same input — once with the **generic baseline**
+1. Asks GLM twice over the same input — once with the **generic baseline**
    prompt, once with the **skill-enabled** prompt.
 2. An **LLM judge** compares the two answers against the case's expected
    behavior and returns a structured verdict (scores 0-10, meets-expected,
@@ -28,16 +28,20 @@ a pass/fail verdict.
 
 ```bash
 # One skill (writes docs/skills-evals/code-reviewer.md)
-ANTHROPIC_API_KEY=... node scripts/skills-eval/run-evals.mjs code-reviewer
+ZAI_API_KEY=... node scripts/skills-eval/run-evals.mjs code-reviewer
 
 # All fixtures
-ANTHROPIC_API_KEY=... node scripts/skills-eval/run-evals.mjs
+ZAI_API_KEY=... node scripts/skills-eval/run-evals.mjs
 
 # Custom output path (single fixture only)
-ANTHROPIC_API_KEY=... node scripts/skills-eval/run-evals.mjs code-reviewer --out docs/skills-evals/code-reviewer.md
+ZAI_API_KEY=... node scripts/skills-eval/run-evals.mjs code-reviewer --out docs/skills-evals/code-reviewer.md
 ```
 
-Model defaults to `claude-opus-4-8`; override with `SKILLS_EVAL_MODEL`.
+Runs on GLM through Z.ai's Anthropic-compatible endpoint. Variables:
+
+- `ZAI_API_KEY` (or `SKILLS_EVAL_API_KEY`): the key. `ANTHROPIC_API_KEY` is only a last-resort fallback.
+- `ANTHROPIC_BASE_URL` / `SKILLS_EVAL_BASE_URL`: endpoint, e.g. `https://open.bigmodel.cn/api/anthropic`.
+- `ZAI_MODEL` / `SKILLS_EVAL_MODEL`: judge model (e.g. `glm-5.3`). `SKILLS_EVAL_SUBJECT_MODEL`: subject model, default `glm-5.3-flash`, so the model that answers is not the one that judges.
 
 ## DRY_RUN (offline)
 
