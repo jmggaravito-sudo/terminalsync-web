@@ -1,0 +1,444 @@
+name: Integration Pipeline
+
+# Name in, integration out. One agent per stage, every agent on GLM (Z.ai):
+#
+#   1 Investigador  -> is there an official MCP? (read-only; writes research.json)
+#   2 Constructor   -> fichas en/es + logo + SOURCES, draft PR      (only if ship_official)
+#   3 Revisores x4  -> sources / voice / install / honesty, in parallel, independent of the builder
+#   4 Decisión      -> deterministic: scope allowlist + reviewers -> merge | ready | fix | hold
+#   5 Corrector     -> one fix round, only when reviewers asked for fixes
+#   6 CI y merge    -> waits for the PR checks; merges only with INTEGRATION_AUTOMERGE=true
+#   7 Reporte       -> PR comment + job summary + loop_runs row
+#
+# The builder never grades its own work: stage 3 runs in separate jobs with
+# read-only tools. Logic that does not need a model (scope, decision, report)
+# lives in scripts/pipeline/*.mjs and is unit-tested.
+#
+# Required (same as the curation loops):
+#   secret   Z_AI_API_KEY          Z.ai key (GLM)
+#   variable ZAI_MODEL             exact GLM model id that key serves
+#   secret   LOOP_RUNS_WRITE_TOKEN bearer for /api/internal/loop-runs
+# Optional:
+#   variable INTEGRATION_AUTOMERGE "true" lets stage 6 merge a PR that passed every gate.
+#            Unset = the PR is left ready for a person (default).
+#   secret   RESEND_API_KEY + variables REPORT_EMAIL_TO / REPORT_EMAIL_FROM  email the report.
+#
+# See docs/integration-pipeline.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      focus:
+        description: "Nombre de la integración (ej. Ramp, Calendly)"
+        required: true
+        type: string
+      dry_run:
+        description: "Solo investiga y reporta: no construye, no crea PR, no mergea"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: integration-pipeline-${{ inputs.focus }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+env:
+  PIPELINE_DIR: .pipeline
+  AGENT_TOOLS_WRITE: "Read,Write,Edit,MultiEdit,Bash,WebFetch,Grep,Glob"
+
+jobs:
+  research:
+    name: "1 · Investigador"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      verdict: ${{ steps.validate.outputs.verdict }}
+      slug: ${{ steps.validate.outputs.slug }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate the integration name
+        env:
+          FOCUS: ${{ inputs.focus }}
+        run: |
+          # The name goes into an agent prompt: keep it to a plain product name.
+          if ! printf '%s' "$FOCUS" | grep -Eq '^[A-Za-z0-9][A-Za-z0-9 ._&+-]{0,59}$'; then
+            echo "::error::El nombre debe ser un nombre de producto simple (letras, números, espacios, . _ & + -; máx. 60)."
+            exit 1
+          fi
+          mkdir -p "$PIPELINE_DIR"
+
+      - name: Research agent
+        uses: ./.github/actions/run-agent
+        with:
+          label: research
+          max-turns: "40"
+          allowed-tools: "Read,Grep,Glob,WebFetch,Write,Bash(curl:*),Bash(gh api:*),Bash(npm view:*),Bash(npm search:*)"
+          zai-api-key: ${{ secrets.Z_AI_API_KEY }}
+          zai-model: ${{ vars.ZAI_MODEL }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: |
+            Eres el agente INVESTIGADOR del pipeline de integraciones. Lee y sigue .github/pipeline/prompts/research.md.
+            INTEGRATION_NAME: "${{ inputs.focus }}"
+            Escribe el resultado en .pipeline/research.json y termina.
+
+      - name: Validate research.json
+        id: validate
+        run: node scripts/pipeline/cli.mjs research-validate "$PIPELINE_DIR/research.json" | tee -a "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pipeline-research
+          path: .pipeline/research.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+  build:
+    name: "2 · Constructor"
+    needs: research
+    if: needs.research.outputs.verdict == 'ship_official' && inputs.dry_run != true
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    outputs:
+      pr: ${{ steps.validate.outputs.pr }}
+      branch: ${{ steps.validate.outputs.branch }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: pipeline-research
+          path: .pipeline
+
+      - name: Build agent
+        uses: ./.github/actions/run-agent
+        with:
+          label: build
+          max-turns: "80"
+          allowed-tools: ${{ env.AGENT_TOOLS_WRITE }}
+          zai-api-key: ${{ secrets.Z_AI_API_KEY }}
+          zai-model: ${{ vars.ZAI_MODEL }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: |
+            Eres el agente CONSTRUCTOR del pipeline de integraciones. Lee y sigue .github/pipeline/prompts/build.md.
+            INTEGRATION_NAME: "${{ inputs.focus }}"
+            SLUG: "${{ needs.research.outputs.slug }}"
+            Los hechos verificados están en .pipeline/research.json. Abre el PR en borrador y escribe .pipeline/build.json.
+
+      - name: Validate build.json
+        id: validate
+        run: node scripts/pipeline/cli.mjs build-validate "$PIPELINE_DIR/build.json" | tee -a "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pipeline-build
+          path: .pipeline/build.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+  review:
+    name: "3 · Revisor ${{ matrix.role }}"
+    needs: [research, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [sources, voice, install, honesty]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.build.outputs.branch }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: pipeline-*
+          merge-multiple: true
+          path: .pipeline
+
+      - name: Review agent (${{ matrix.role }})
+        uses: ./.github/actions/run-agent
+        with:
+          label: review-${{ matrix.role }}
+          max-turns: "30"
+          allowed-tools: "Read,Grep,Glob,WebFetch,Write,Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git diff:*),Bash(git log:*),Bash(node scripts/verify-connector.mjs:*),Bash(npx vitest run:*)"
+          zai-api-key: ${{ secrets.Z_AI_API_KEY }}
+          zai-model: ${{ vars.ZAI_MODEL }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: |
+            Eres un REVISOR independiente del pipeline de integraciones. Lee y sigue .github/pipeline/prompts/review.md.
+            ROLE: ${{ matrix.role }}
+            PR: ${{ needs.build.outputs.pr }}
+            Escribe .pipeline/review-${{ matrix.role }}.json y termina. Eres de solo lectura.
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pipeline-review-${{ matrix.role }}
+          path: .pipeline/review-${{ matrix.role }}.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+  decide:
+    name: "4 · Decisión"
+    needs: [research, build, review]
+    if: always() && needs.build.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      action: ${{ steps.decide.outputs.action }}
+      needs_fix: ${{ steps.decide.outputs.needs_fix }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: pipeline-*
+          merge-multiple: true
+          path: .pipeline
+
+      - name: Files changed by the PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ needs.build.outputs.pr }}
+        run: gh pr diff "$PR" --name-only > "$PIPELINE_DIR/files.txt"
+
+      - name: Decide
+        id: decide
+        run: |
+          node scripts/pipeline/cli.mjs decide "$PIPELINE_DIR" "$PIPELINE_DIR/files.txt" \
+            "${{ vars.INTEGRATION_AUTOMERGE == 'true' }}" "${{ inputs.dry_run }}" | tee -a "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pipeline-decision
+          path: .pipeline/decision.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+  fix:
+    name: "5 · Corrector"
+    needs: [build, decide]
+    if: needs.decide.outputs.needs_fix == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.build.outputs.branch }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: pipeline-*
+          merge-multiple: true
+          path: .pipeline
+
+      - name: Fix agent
+        uses: ./.github/actions/run-agent
+        with:
+          label: fix
+          max-turns: "40"
+          allowed-tools: ${{ env.AGENT_TOOLS_WRITE }}
+          zai-api-key: ${{ secrets.Z_AI_API_KEY }}
+          zai-model: ${{ vars.ZAI_MODEL }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: |
+            Eres el agente CORRECTOR del pipeline de integraciones. Lee y sigue .github/pipeline/prompts/fix.md.
+            Los hallazgos están en .pipeline/decision.json y la rama en .pipeline/build.json.
+            Aplica solo esos cambios, haz push a la rama del PR y escribe .pipeline/fix.json.
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pipeline-fix
+          path: .pipeline/fix.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+  finalize:
+    name: "6 · CI y merge"
+    needs: [research, build, decide, fix]
+    if: always() && needs.decide.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      merged: ${{ steps.merge.outputs.merged }}
+      note: ${{ steps.merge.outputs.note }}
+      checks: ${{ steps.ci.outputs.checks }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for the PR checks
+        id: ci
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ needs.build.outputs.pr }}
+          ACTION: ${{ needs.decide.outputs.action }}
+        run: |
+          if [ "$ACTION" != "merge" ]; then
+            echo "checks=no se esperó (acción: $ACTION)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Up to 45 minutes. gh reports pending/queued/in_progress until a check settles.
+          for _ in $(seq 1 90); do
+            pending=$(gh pr checks "$PR" 2>&1 | grep -c -E 'pending|queued|in_progress' || true)
+            [ "$pending" = "0" ] && break
+            sleep 30
+          done
+          failing=$(gh pr view "$PR" --json statusCheckRollup \
+            --jq '[.statusCheckRollup[] | select((.conclusion // .state) != "SUCCESS" and (.conclusion // .state) != "NEUTRAL" and (.conclusion // .state) != "SKIPPED") | (.name // .context)] | join(", ")')
+          if [ -z "$failing" ]; then
+            echo "checks=todos en verde" >> "$GITHUB_OUTPUT"
+          else
+            echo "checks=con fallos: $failing" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Merge or leave for a person
+        id: merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ needs.build.outputs.pr }}
+          ACTION: ${{ needs.decide.outputs.action }}
+          CHECKS: ${{ steps.ci.outputs.checks }}
+        run: |
+          case "$ACTION" in
+            merge)
+              if [ "$CHECKS" = "todos en verde" ]; then
+                gh pr ready "$PR" || true
+                gh pr merge "$PR" --squash --delete-branch
+                echo "merged=true" >> "$GITHUB_OUTPUT"
+                echo "note=mergeado automáticamente (todos los revisores y checks en verde)" >> "$GITHUB_OUTPUT"
+              else
+                echo "merged=false" >> "$GITHUB_OUTPUT"
+                echo "note=no se mergeó: $CHECKS. Queda en borrador para revisión" >> "$GITHUB_OUTPUT"
+              fi
+              ;;
+            ready)
+              gh pr ready "$PR" || true
+              echo "merged=false" >> "$GITHUB_OUTPUT"
+              echo "note=todo pasó; el merge automático está apagado. PR listo para que lo mergees" >> "$GITHUB_OUTPUT"
+              ;;
+            fix)
+              echo "merged=false" >> "$GITHUB_OUTPUT"
+              echo "note=el corrector aplicó una ronda de arreglos; sin segunda revisión no se mergea solo. Queda en borrador" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "merged=false" >> "$GITHUB_OUTPUT"
+              echo "note=un revisor frenó el PR o salió del alcance del conector; queda en borrador para una persona" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+
+  report:
+    name: "7 · Reporte"
+    needs: [research, build, decide, fix, finalize]
+    if: always() && needs.research.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: pipeline-*
+          merge-multiple: true
+          path: .pipeline
+
+      - name: Build the report
+        env:
+          MERGED: ${{ needs.finalize.outputs.merged }}
+          NOTE: ${{ needs.finalize.outputs.note }}
+          CHECKS: ${{ needs.finalize.outputs.checks }}
+        run: |
+          mkdir -p "$PIPELINE_DIR"
+          node scripts/pipeline/cli.mjs report "$PIPELINE_DIR" "$MERGED" "$NOTE" "$CHECKS" > report.md
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment the report on the PR
+        if: needs.build.outputs.pr != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ needs.build.outputs.pr }}
+        run: gh pr comment "$PR" --body-file report.md
+
+      - name: Register the run in the admin panel
+        if: needs.build.outputs.pr != ''
+        env:
+          LOOP_RUNS_ENDPOINT: https://terminalsync.ai/api/internal/loop-runs
+          LOOP_RUNS_WRITE_TOKEN: ${{ secrets.LOOP_RUNS_WRITE_TOKEN }}
+          SLUG: ${{ needs.research.outputs.slug }}
+          PR_URL: https://github.com/${{ github.repository }}/pull/${{ needs.build.outputs.pr }}
+          MERGED: ${{ needs.finalize.outputs.merged }}
+        run: |
+          found=0; skipped=1
+          if [ "$MERGED" = "true" ]; then found=1; skipped=0; fi
+          node scripts/record_loop_run.mjs --kind connectors --found "$found" --skipped "$skipped" --items "$SLUG" --pr "$PR_URL"
+
+      - name: Email the report (optional)
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_TO: ${{ vars.REPORT_EMAIL_TO }}
+          EMAIL_FROM: ${{ vars.REPORT_EMAIL_FROM }}
+          FOCUS: ${{ inputs.focus }}
+        run: |
+          if [ -z "${RESEND_API_KEY:-}" ] || [ -z "${EMAIL_TO:-}" ] || [ -z "${EMAIL_FROM:-}" ]; then
+            echo "Email not configured (RESEND_API_KEY, REPORT_EMAIL_TO, REPORT_EMAIL_FROM); skipping."
+            exit 0
+          fi
+          node -e '
+            const fs = require("fs");
+            const body = {
+              from: process.env.EMAIL_FROM,
+              to: [process.env.EMAIL_TO],
+              subject: "Integración " + process.env.FOCUS + ": reporte del pipeline",
+              text: fs.readFileSync("report.md", "utf8"),
+            };
+            fs.writeFileSync("email.json", JSON.stringify(body));
+          '
+          curl -sS -o /dev/null -w 'Resend: HTTP %{http_code}\n' https://api.resend.com/emails \
+            -H "Authorization: Bearer $RESEND_API_KEY" -H "Content-Type: application/json" --data @email.json
