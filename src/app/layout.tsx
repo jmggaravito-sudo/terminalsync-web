@@ -9,29 +9,29 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://terminalsync.ai"),
   title: {
-    default: "TerminalSync — Memoria, privacidad y movilidad para tu IA",
-    // Plain "%s" without "· TerminalSync" — the per-page title already
+    default: "TS — espacios de trabajo con IA para tu empresa",
+    // Plain "%s" without "· TS" — the per-page title already
     // includes the brand. The previous template doubled it (e.g.
-    // "TerminalSync — Lleva ... · TerminalSync"), pushing past Google's
+    // "TS — Lleva ... · TS"), pushing past Google's
     // 60-char SERP truncation.
     template: "%s",
   },
   description:
-    "Tu agente IA (Claude/Codex) sigue corriendo aunque se caiga internet o cambies de Mac. AES-256 · ni nosotros podemos leer tu contenido. Acceso desde cualquier dispositivo.",
-  authors: [{ name: "TerminalSync" }],
+    "Organiza cada cliente, proyecto o departamento en su propio espacio. TS recuerda el contexto y trae IA incluida, sin pagar otra suscripción de IA.",
+  authors: [{ name: "TS" }],
   // Explicit image + social tags — Next auto-detects opengraph-image.tsx but
   // spelling them out avoids any ambiguity for scrapers that don't follow the
   // convention. The referenced /opengraph-image route is the edge-generated PNG.
   openGraph: {
     type: "website",
-    siteName: "TerminalSync",
+    siteName: "TS",
     url: "https://terminalsync.ai",
     images: [
       {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "TerminalSync — Lleva tu Claude Code a cualquier parte",
+        alt: "TS — espacios de trabajo con IA incluida para tu empresa",
       },
     ],
   },

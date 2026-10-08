@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? "Cómo usar IA para trabajar mejor. Guías, casos de uso y novedades del producto."
     : "How to use AI to work better. Guides, use cases, and product updates.";
   return {
-    title: "Blog — TerminalSync",
+    title: "Blog — TS",
     description,
     alternates: {
       canonical: `https://terminalsync.ai/${lang}/blog`,

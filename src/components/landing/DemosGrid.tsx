@@ -40,7 +40,7 @@ const DEMOS: Record<Locale, Demo[]> = {
       src: "/demos/demo-ai-director.html",
       eyebrow: "AI Director",
       title: "Un director que elige por ti.",
-      body: "TerminalSync recomienda el modo correcto para cada tarea — y te dice cuánto ahorras antes de cambiar.",
+      body: "TS recomienda el modo correcto para cada tarea — y te dice cuánto ahorras antes de cambiar.",
     },
     {
       id: "continuidad",
@@ -98,7 +98,7 @@ const DEMOS: Record<Locale, Demo[]> = {
       src: "/demos/demo-ai-director.html",
       eyebrow: "AI Director",
       title: "A director that chooses for you.",
-      body: "TerminalSync recommends the right mode for each task — and tells you how much you save before switching.",
+      body: "TS recommends the right mode for each task — and tells you how much you save before switching.",
     },
     {
       id: "continuidad",
@@ -170,13 +170,13 @@ export function DemosGrid({ lang }: { lang: Locale }) {
             style={{ fontSize: "clamp(1.75rem, 4.4vw, 2.75rem)" }}
           >
             {lang === "es"
-              ? "Así trabajan las empresas con TerminalSync."
-              : "This is how businesses work with TerminalSync."}
+              ? "Así trabajan las empresas con TS."
+              : "This is how businesses work with TS."}
           </h2>
           <p className="mt-3 text-[15px] text-[var(--color-fg-muted)]">
             {lang === "es"
-              ? "No es un video: es TerminalSync funcionando. Míralo en vivo y pruébalo tú mismo."
-              : "It's not a video: it's TerminalSync running. Watch it live and try it yourself."}
+              ? "No es un video: es TS funcionando. Míralo en vivo y pruébalo tú mismo."
+              : "It's not a video: it's TS running. Watch it live and try it yourself."}
           </p>
         </div>
 

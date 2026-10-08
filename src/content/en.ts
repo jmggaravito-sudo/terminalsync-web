@@ -1,11 +1,12 @@
 import type { Dict } from "./types";
+import { getHomeFaq } from "./faq";
 
 const en: Dict = {
   locale: "en",
   meta: {
-    title: "TerminalSync — Memory, privacy and mobility for your AI",
+    title: "TS — AI workspaces for your business",
     description:
-      "Your AIs keep working even if the internet drops or you switch computers. Your secrets and conversations travel encrypted; your files live in YOUR cloud, not ours. Access from any device.",
+      "Give each client, project, or department its own workspace. TS keeps the context and includes AI, with no extra AI subscription needed.",
   },
   nav: {
     features: "Features",
@@ -37,7 +38,7 @@ const en: Dict = {
       body: "Anywhere Access via Cloudflare Tunnel — open your session from your phone with zero install. Unified multi-AI workflow: Claude and Codex sharing the same context. Per-workspace secrets vault.",
     },
     mockup: {
-      appName: "Terminal Sync",
+      appName: "TS",
       statusOk: "Everything safe and synced",
       bannerTitle: "Your AI ready in seconds",
       bannerBody: "We set everything up for you — just open and start asking.",
@@ -51,7 +52,7 @@ const en: Dict = {
   demos: {
     title: "Three ‘wow’ moments",
     subtitle:
-      "Why people who try TerminalSync drop their old tools within 30 seconds.",
+      "Why people who try TS drop their old tools within 30 seconds.",
     items: {
       context: {
         kicker: "Demo · Persistence",
@@ -103,8 +104,8 @@ const en: Dict = {
     ],
     timeline: {
       heading: "Without persistent memory vs. with persistent memory",
-      withoutLabel: "Without TerminalSync Memory",
-      withLabel: "With TerminalSync Memory",
+      withoutLabel: "Without TS Memory",
+      withLabel: "With TS Memory",
       withoutItems: [
         { when: "Day 1", line: "You explain how your business works and how you like to work." },
         { when: "Day 3", line: "“What do you do again?” — you explain it all over." },
@@ -130,7 +131,7 @@ const en: Dict = {
     subtitle:
       "For the first time you can grow your company's capacity without hiring more people. You decide and approve; your digital team executes in parallel. And if one specialist stops, another continues.",
     problem: {
-      title: "Without TerminalSync",
+      title: "Without TS",
       items: [
         "One AI in one window",
         "Another in another",
@@ -141,7 +142,7 @@ const en: Dict = {
       ],
     },
     solution: {
-      title: "With TerminalSync",
+      title: "With TS",
       items: [
         "One place to work",
         "Shared context",
@@ -245,7 +246,7 @@ const en: Dict = {
     subtitle:
       "Before: lost mornings and conversations that start from scratch. After: your company's work picks up right where you left it, no matter what you're doing.",
     before: {
-      heading: "Without Terminal Sync",
+      heading: "Without TS",
       items: [
         "Close the app and your work is gone",
         "Every conversation starts by explaining your business from scratch",
@@ -255,7 +256,7 @@ const en: Dict = {
       ],
     },
     after: {
-      heading: "With Terminal Sync",
+      heading: "With TS",
       items: [
         "Close everything, reopen, and the work continues where it was",
         "Every area keeps its own context: you never explain from scratch",
@@ -276,40 +277,9 @@ const en: Dict = {
     eyebrow: "Frequently asked",
     title: "What people ask first",
     subtitle: "Still got questions? Email support@terminalsync.ai",
-    items: [
-      {
-        q: "How is this different from keeping my folder in Drive or iCloud?",
-        a: "Putting a folder in Drive doesn't save your WORK: you lose the AI sessions, the memory, the secrets and the configuration. TerminalSync makes all of that portable between your computers, and the sensitive parts — secrets, credentials, memory and AI conversations — travel encrypted (AES-256): neither Google nor we can read them. Your project files stay in your own cloud, under your account and your control.",
-      },
-      {
-        q: "Do my files end up on your servers?",
-        a: "No. Your files go straight from your computer to YOUR cloud (your Drive) — they never pass through our servers and we can't see them. And the sensitive parts (secrets, credentials, AI conversations) upload encrypted, with a key only you hold.",
-      },
-      {
-        q: "Does it work with just one computer?",
-        a: "Yes, but it shines with two. With one it's a secure backup and gets you set up for when you add another. The real magic kicks in from the second.",
-      },
-      {
-        q: "What happens if I cancel my subscription?",
-        a: "The app keeps running on the free plan. Your files stay in your cloud — you remain the owner. You can export everything anytime.",
-      },
-      {
-        q: "Can I trust its security?",
-        a: "Yes. We use AES-256, the industry standard, to encrypt your secrets, credentials and AI conversations before they leave your computer — only you hold the key. Your project files never pass through our servers: they go straight to your own cloud, under your account.",
-      },
-      {
-        q: "Does it work with any AI or just Claude and Codex?",
-        a: "Today it works great with Claude and Codex, plus Gemini for long documents. We add others based on what people ask for most. Want a specific one? Write us.",
-      },
-      {
-        q: "How is this different from using Claude or Codex on their own?",
-        a: "On their own they don't talk to each other: each has its own context and memory. TerminalSync connects them in a single flow. You ask one to analyze and another to do it, without re-explaining anything — they share the same project and the same memory.",
-      },
-      {
-        q: "Do I need to configure anything?",
-        a: "No. You open the app and your workspaces, tools and memory are ready from the first session. Nothing to configure.",
-      },
-    ],
+    items: getHomeFaq("en").map(({ question, answer }) => ({ q: question, a: answer })),
+    more: "See more questions",
+    less: "See less",
   },
   comparison: {
     eyebrow: "The honest comparison",
@@ -317,10 +287,10 @@ const en: Dict = {
     subtitle:
       "Stacked against the tools you're already using every day. If something is partial or still in progress, the table says so.",
     pitch:
-      "AIs on their own (Claude, Codex, Gemini) are powerful but forgetful: every time you close them they lose context, they don't follow you between computers, they don't keep your keys safe, and they don't tell you when they get stuck. TerminalSync adds memory, privacy and mobility — without paying for the cloud and without handing your work to anyone.",
+      "AIs on their own (Claude, Codex, Gemini) are powerful but forgetful: every time you close them they lose context, they don't follow you between computers, they don't keep your keys safe, and they don't tell you when they get stuck. TS adds memory, privacy and mobility — without paying for the cloud and without handing your work to anyone.",
     columns: {
       feature: "Feature",
-      terminalSync: "Terminal Sync",
+      terminalSync: "TS",
       vercel: "ChatGPT (web)",
       claudeCode: "Claude Code",
       codex: "Codex CLI",
@@ -370,7 +340,7 @@ const en: Dict = {
       results: {
         soloLabel: "Single AI only",
         soloHint: "You pay for long context and tools you don't always need.",
-        withTsLabel: "With TerminalSync",
+        withTsLabel: "With TS",
         withTsHint: "Each task goes to the cheapest model that handles it well.",
         savingsLabel: "You save",
         perYear: "/yr",
@@ -384,7 +354,7 @@ const en: Dict = {
         apiCostMix: "API cost mixed (≈ $1.50/h)",
         devTimeSolo: "Your time at full rate",
         devTimeWithTs: "Your time, 25% fewer hours",
-        subscription: "TerminalSync Pro (12 × $19 = $228)",
+        subscription: "TS Pro (12 × $19 = $228)",
         timeSaving:
           "The 25% time savings come from skipping rate limits, not swapping context between tools, and routing each task to the cheapest, fastest model.",
       },
@@ -416,9 +386,9 @@ const en: Dict = {
       replyInjection:
         "From your phone, inject replies into an agent that's waiting for input on your computer. Perfect for unblocking a command while you're out.",
       whatsAppContinue:
-        "The same conversation you started in TerminalSync continues in WhatsApp or Telegram. You reply from the chat and your AIs keep working, without opening the app or browser.",
+        "The same conversation you started in TS continues in WhatsApp or Telegram. You reply from the chat and your AIs keep working, without opening the app or browser.",
       noVendorLockIn:
-        "Your files live in your own Google Drive (iCloud, S3, Dropbox coming soon). If you leave Terminal Sync, you take everything with you. No export fee.",
+        "Your files live in your own Google Drive (iCloud, S3, Dropbox coming soon). If you leave TS, you take everything with you. No export fee.",
       zeroRuntime:
         "We don't run your agents on our servers. Everything runs on your computer, so runtime cost is zero — you only pay the AI provider you choose.",
       zeroStorage:
@@ -432,11 +402,11 @@ const en: Dict = {
   personas: {
     title: "Is this for you?",
     subtitle:
-      "Three profiles who don't get how they worked without Terminal Sync.",
+      "Three profiles who don't get how they worked without TS.",
     items: {
       nomad: {
         title: "Lives in their AI agent",
-        body: "You spend hours with Claude or Codex shipping projects. When the app freezes, internet drops, or you accidentally close it, you lose all the context. With TerminalSync your agent keeps running and you come back exactly where you left off.",
+        body: "You spend hours with Claude or Codex shipping projects. When the app freezes, internet drops, or you accidentally close it, you lose all the context. With TS your agent keeps running and you come back exactly where you left off.",
         tag: "AI Power User",
       },
       beginner: {
@@ -454,7 +424,7 @@ const en: Dict = {
   pricing: {
     title: "Simple, as it should be",
     subtitle:
-      "Start free. 7 days with every Max feature — cancel before day 7 and you're not charged. AIs run on your own subscription (or their free plans): TerminalSync doesn't resell you tokens.",
+      "Start free. 7 days with every Max feature — cancel before day 7 and you're not charged. AIs run on your own subscription (or their free plans): TS doesn't resell you tokens.",
     perMonth: "/mo",
     free: "Free",
     trial: {
@@ -549,10 +519,10 @@ const en: Dict = {
         priceNote: "/mo",
         priceCop: "$139,000",
         priceNoteCop: "COP/mo",
-        tagline: "Pro with TerminalSync's AI included — no account needed.",
+        tagline: "Pro with TS's AI included — no account needed.",
         features: [
           "Everything in Pro — spaces, memory, and mobile",
-          "TerminalSync AI included — no account needed",
+          "TS AI included — no account needed",
           "After the trial, keep using our AI",
           "Great for getting started fast — less setup",
         ],
@@ -583,10 +553,10 @@ const en: Dict = {
         priceNote: "/mo",
         priceCop: "$219,000",
         priceNoteCop: "COP/mo",
-        tagline: "Max with TerminalSync's AI included — no account needed.",
+        tagline: "Max with TS's AI included — no account needed.",
         features: [
           "Everything in Max — unlimited, team, and support",
-          "TerminalSync AI included — no account needed",
+          "TS AI included — no account needed",
           "Zero friction for teams — less setup",
           "Simple cost — platform + AI",
         ],
@@ -657,10 +627,10 @@ const en: Dict = {
       dataDeletion: "Delete my data",
     },
     tagline: "Separate your work from your machine.",
-    copyright: "© {{year}} TerminalSync. All rights reserved.",
+    copyright: "© {{year}} TS. All rights reserved.",
   },
   windowsEarlyAccess: {
-    title: "TerminalSync for Windows — coming soon",
+    title: "TS for Windows — coming soon",
     body: "We detected you're on Windows. The Mac app ships now; the Windows version is in development. Drop your email and we'll let you know the day it's ready.",
     cta: "Notify me",
     ctaSubmitting: "Saving…",
@@ -677,11 +647,11 @@ const en: Dict = {
   },
   agent: {
     open: "Open assistant",
-    name: "TerminalSync Assistant",
+    name: "TS Assistant",
     tagline: "Sales & support · Online",
     close: "Close",
     greeting:
-      "Hi! I'm your TerminalSync assistant. I can help with Claude Code, Codex, Gemini, memory, connectors, plans or technical issues. What are you trying to do?",
+      "Hi! I'm your TS assistant. I can help with Claude Code, Codex, Gemini, memory, connectors, plans or technical issues. What are you trying to do?",
     placeholder: "Type your message…",
     send: "Send",
     you: "You",
@@ -693,7 +663,7 @@ const en: Dict = {
     ],
     replies: {
       install:
-        "Download TerminalSync, create a workspace and choose the AI you want to use: Claude Code, Codex, Gemini CLI or No AI. In Integrations you can configure connectors, skills and workspace tools. Tell me your use case and I can recommend the best starting point.",
+        "Download TS, create a workspace and choose the AI you want to use: Claude Code, Codex, Gemini CLI or No AI. In Integrations you can configure connectors, skills and workspace tools. Tell me your use case and I can recommend the best starting point.",
       pricing:
         "There are plans for trying the product, power users and technical users/teams. Starter is for getting started; Pro adds advanced capabilities like memory/integrations; Max is for Git-native sync, secrets vault and our most complete workflows. Check Pricing for the current details. Want me to recommend a plan for your use case?",
       security:
@@ -715,10 +685,10 @@ const en: Dict = {
       pageTitle: "Partner Agreement",
       title: "Partner Agreement",
       subtitle:
-        "Terms and conditions for joining the TerminalSync Affiliate Program.",
+        "Terms and conditions for joining the TS Affiliate Program.",
       updated: "Last updated: April 22, 2026",
       intro:
-        "This agreement describes the terms and conditions for joining the TerminalSync Affiliate Program. By signing up, you agree to the following:",
+        "This agreement describes the terms and conditions for joining the TS Affiliate Program. By signing up, you agree to the following:",
       readFullTerms: "Read full terms",
       back: "Back to Affiliates",
       acceptance:
@@ -729,7 +699,7 @@ const en: Dict = {
           items: {
             percent: {
               label: "Percentage",
-              body: "You'll earn a recurring 30% commission on the net value of every TerminalSync Pro subscription referred through your unique link.",
+              body: "You'll earn a recurring 30% commission on the net value of every TS Pro subscription referred through your unique link.",
             },
             recurring: {
               label: "Recurrence",
@@ -767,7 +737,7 @@ const en: Dict = {
           items: {
             authorized: {
               label: "Authorized use",
-              body: "TerminalSync grants a limited license to use our logos, screenshots and marketing material available in the Affiliate Dashboard exclusively to promote the software.",
+              body: "TS grants a limited license to use our logos, screenshots and marketing material available in the Affiliate Dashboard exclusively to promote the software.",
             },
             restriction: {
               label: "Brand restriction",
@@ -780,7 +750,7 @@ const en: Dict = {
           items: {
             ethics: {
               label: "Ethics",
-              body: "Spam, misleading advertising or any practice that could damage TerminalSync's reputation is strictly prohibited.",
+              body: "Spam, misleading advertising or any practice that could damage TS's reputation is strictly prohibited.",
             },
             transparency: {
               label: "Transparency",
@@ -797,7 +767,7 @@ const en: Dict = {
           items: {
             modifications: {
               label: "Changes",
-              body: "TerminalSync reserves the right to adjust commission rates or the terms of service by notifying partners 30 days in advance.",
+              body: "TS reserves the right to adjust commission rates or the terms of service by notifying partners 30 days in advance.",
             },
             termination: {
               label: "Termination",
@@ -813,7 +783,7 @@ const en: Dict = {
     errorTitle: "We couldn't open checkout",
     success: {
       eyebrow: "You're in!",
-      title: "Welcome to TerminalSync Pro",
+      title: "Welcome to TS Pro",
       body: "You've got full access now. We sent you an email with the receipt and instructions to install the app.",
       ctaDownload: "Download the app",
       ctaHome: "Back to home",
@@ -836,6 +806,80 @@ const en: Dict = {
       body: "You canceled the payment — nothing was charged. Try again whenever, or reach out if you need a hand.",
       ctaRetry: "Try again",
       ctaContact: "Talk to the team",
+    },
+  },
+  landingB: {
+    announceBar: {
+      badge: "NEW",
+      text: "You can now connect Facebook, Instagram, and Meta Ads.",
+      cta: "See how it works →",
+      ctaHref: "#meta",
+    },
+    header: {
+      talk: "Talk to us",
+      download: "Download",
+    },
+    hero: {
+      eyebrow: "AI for your business",
+      title: "Your digital office, with AI already included.",
+      titlePre: "Your digital office, with",
+      titleHighlight: "AI already included",
+      titlePost: ".",
+      subtitle:
+        "TS brings your files, conversations, and tools together so the AI can help you work without starting from scratch.",
+      ctaPrimary: "↓ Download for Mac",
+      ctaSecondary: "See it in action",
+      ctaSecondaryHref: "#demos",
+      trustLine: "macOS · Free to start",
+    },
+    subNav: {
+      demos: "How it works",
+      integrations: "Integrations",
+      meta: "Meta",
+      files: "Your files",
+      pricing: "Pricing",
+    },
+    demos: {
+      eyebrow: "An AI designed for how you work",
+      title: "See how TS\nchanges your day",
+      subtitle:
+        "Pick the scenario closest to what you do and see how it works in practice.",
+      items: [
+        { title: "Your workspace at a glance", src: "/demos/demo-home.html" },
+        { title: "Switch AI without losing context", src: "/demos/demo-cambio-ia.html" },
+        { title: "Connect your tools", src: "/demos/demo-conectores.html" },
+        { title: "Messaging in your workspace", src: "/demos/demo-mensajeria.html" },
+        { title: "Sync across devices", src: "/demos/demo-sync-dispositivos.html" },
+        { title: "Results in seconds", src: "/demos/demo-resultados.html" },
+        { title: "Assistant with your prompts", src: "/demos/demo-asistente-prompts.html" },
+        { title: "AI as your team director", src: "/demos/demo-ai-director.html" },
+      ],
+    },
+    integrations: {
+      eyebrow: "Integrations",
+      title: "Connect the services\nyou already use",
+      subtitle:
+        "TS connects with your business tools so the AI has the context it needs, without you having to copy anything manually.",
+    },
+    meta: {
+      eyebrow: "Meta for business",
+      title: "Facebook, Instagram, and WhatsApp\ninside your workspace",
+      subtitle:
+        "Handle messages, review campaigns, and create content without leaving where you work.",
+    },
+    files: {
+      eyebrow: "Your files",
+      title: "Your information always\nin the right place",
+      subtitle:
+        "Upload documents, connect folders, and let the AI use them when you need them — no more searching.",
+    },
+    finalCta: {
+      eyebrow: "Start today",
+      title: "Your AI work,\norganized at last",
+      subtitle:
+        "Download TS and create your first workspace in under two minutes.",
+      ctaTalk: "Talk to us",
+      ctaDownload: "Download for Mac",
     },
   },
 };

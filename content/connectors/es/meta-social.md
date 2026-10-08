@@ -4,7 +4,7 @@ logo: /connectors/meta-social.svg
 category: messaging
 status: available
 simpleTitle: "Postea en Instagram y Facebook sin abrir ninguna de las dos apps"
-simpleSubtitle: "Escribe el texto, elige la foto — Claude lo publica en tus redes. Tú apruebas, él publica."
+simpleSubtitle: "Escribe el texto, elige la foto — tu IA lo publica en tus redes. Tú apruebas, él publica."
 devTitle: "Publicación en Instagram + Facebook (via Meta Graph API)"
 devSubtitle: "OAuth de página + tokens de IG, publicación IG en dos pasos, posteo directo al feed de la Página — detrás de un gate de aprobación obligatorio."
 ctaUrl: "https://developers.facebook.com/docs/instagram-platform/content-publishing"
@@ -17,7 +17,7 @@ firstParty: true
 ---
 Construido sobre la Graph API oficial de Meta — la misma familia que usa nuestro conector de WhatsApp. Te deja publicar un posteo (imagen + texto) en tu **Instagram** y en tu **Página de Facebook** sin abrir ninguna de las dos apps.
 
-Claude redacta el texto con tu tono, adjunta la imagen y te muestra exactamente qué va a salir — y en qué cuenta. Nada se publica hasta que tú digas que sí. Postear es público y no se puede deshacer, así que el paso de aprobación no es opcional: **tú apruebas, él postea.**
+La IA redacta el texto con tu tono, adjunta la imagen y te muestra exactamente qué va a salir — y en qué cuenta. Nada se publica hasta que tú digas que sí. Postear es público y no se puede deshacer, así que el paso de aprobación no es opcional: **tú apruebas, él postea.**
 
 ### Qué le puedes pedir
 

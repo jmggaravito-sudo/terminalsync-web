@@ -104,7 +104,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, slug } = await params;
   const bundle = await fetchBundle(slug, lang);
   if (!bundle) return {};
-  const title = `${bundle.name} · TerminalSync Stack Pack`;
+  const title = `${bundle.name} · TS Stack Pack`;
   const description = bundle.hero_subtitle ?? bundle.tagline;
   return {
     title,
@@ -238,7 +238,7 @@ export default async function BundleDetailPage({ params }: Props) {
                 style={{ boxShadow: "0 8px 30px -10px var(--color-accent)" }}
               >
                 <Download size={16} strokeWidth={2.4} />
-                {isEs ? "Descargar TerminalSync" : "Download TerminalSync"}
+                {isEs ? "Descargar TS" : "Download TS"}
               </a>
             </div>
             <ul className="mt-5 space-y-2 text-[12.5px] text-[var(--color-fg-muted)]">
@@ -250,8 +250,8 @@ export default async function BundleDetailPage({ params }: Props) {
                 />
                 <span>
                   {isEs
-                    ? "Instalación automática en TerminalSync"
-                    : "Automatic install in TerminalSync"}
+                    ? "Instalación automática en TS"
+                    : "Automatic install in TS"}
                 </span>
               </li>
               <li className="flex gap-2 items-start">
@@ -328,13 +328,13 @@ export default async function BundleDetailPage({ params }: Props) {
             <div>
               <h3 className="text-[15px] font-semibold tracking-tight">
                 {isEs
-                  ? "Necesitás TerminalSync para usarlo"
-                  : "You need TerminalSync to use it"}
+                  ? "Necesitás TS para usarlo"
+                  : "You need TS to use it"}
               </h3>
               <p className="mt-2 text-[13px] text-[var(--color-fg-muted)] leading-relaxed">
                 {isEs
-                  ? "Todo se instala automáticamente en la app de TerminalSync (gratis para descargar). Las recetas se cargan en tu IA con un clic. Si todavía no tenés la app, te llevamos a la descarga después de la compra."
-                  : "Everything installs automatically in the TerminalSync app (free download). Recipes load into your AI with one click. If you don't have the app yet, we'll point you to the download after purchase."}
+                  ? "Todo se instala automáticamente en la app de TS (gratis para descargar). Las recetas se cargan en tu IA con un clic. Si todavía no tenés la app, te llevamos a la descarga después de la compra."
+                  : "Everything installs automatically in the TS app (free download). Recipes load into your AI with one click. If you don't have the app yet, we'll point you to the download after purchase."}
               </p>
             </div>
           </div>

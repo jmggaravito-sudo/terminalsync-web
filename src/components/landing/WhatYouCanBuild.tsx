@@ -11,7 +11,7 @@ const T = {
     eyebrow: "Qué puedes construir",
     title: "Construye lo que tu negocio necesita",
     subtitle: "Lo describes con tus palabras. La IA lo construye. Y lo ves al instante.",
-    closing: "Y lo ves apareciendo dentro de TerminalSync — no solo lo que la IA dijo.",
+    closing: "Y lo ves apareciendo dentro de TS — no solo lo que la IA dijo.",
     ctaPrimary: "Empieza gratis",
     ctaSecondary: "Míralo hecho",
     outcomes: [
@@ -29,7 +29,7 @@ const T = {
     eyebrow: "What you can build",
     title: "Build what your business actually needs",
     subtitle: "You describe it in your words. The AI builds it. And you see it instantly.",
-    closing: "And you watch it appear inside TerminalSync — not just what the AI said.",
+    closing: "And you watch it appear inside TS — not just what the AI said.",
     ctaPrimary: "Start free",
     ctaSecondary: "See it done",
     outcomes: [

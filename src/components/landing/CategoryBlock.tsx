@@ -5,32 +5,32 @@ const T = {
     eyebrow: "Del chat al sistema",
     title: "Un chat responde preguntas. Un sistema termina trabajo.",
     subtitle:
-      "Cada una de estas herramientas es buena en lo suyo. TerminalSync juega otro partido: el trabajo de tu empresa fluye, se recuerda y se termina.",
+      "Cada una de estas herramientas es buena en lo suyo. TS juega otro partido: el trabajo de tu empresa fluye, se recuerda y se termina.",
     cards: [
       {
         name: "ChatGPT",
         strength: "Chat general potente",
-        diff: "TerminalSync organiza trabajo persistente por espacios — no conversaciones sueltas.",
+        diff: "TS organiza trabajo persistente por espacios — no conversaciones sueltas.",
       },
       {
         name: "Claude",
         strength: "Razonamiento y escritura",
-        diff: "TerminalSync evita que tu trabajo dependa de un solo límite o proveedor.",
+        diff: "TS evita que tu trabajo dependa de un solo límite o proveedor.",
       },
       {
         name: "Cursor",
         strength: "Programación",
-        diff: "TerminalSync vive en toda la empresa, no solo en el código.",
+        diff: "TS vive en toda la empresa, no solo en el código.",
       },
       {
         name: "Notion",
         strength: "Organización y documentos",
-        diff: "TerminalSync agrega trabajadores digitales y continuidad operativa.",
+        diff: "TS agrega trabajadores digitales y continuidad operativa.",
       },
       {
         name: "Zapier",
         strength: "Conectar aplicaciones",
-        diff: "Zapier conecta aplicaciones. TerminalSync conecta trabajo, contexto y decisiones.",
+        diff: "Zapier conecta aplicaciones. TS conecta trabajo, contexto y decisiones.",
       },
     ],
   },
@@ -38,32 +38,32 @@ const T = {
     eyebrow: "From chat to system",
     title: "A chat answers questions. A system gets work done.",
     subtitle:
-      "Each of these tools is great at its own thing. TerminalSync plays a different game: your company's work flows, is remembered, and gets finished.",
+      "Each of these tools is great at its own thing. TS plays a different game: your company's work flows, is remembered, and gets finished.",
     cards: [
       {
         name: "ChatGPT",
         strength: "Powerful general chat",
-        diff: "TerminalSync organizes persistent work in spaces — not loose conversations.",
+        diff: "TS organizes persistent work in spaces — not loose conversations.",
       },
       {
         name: "Claude",
         strength: "Reasoning and writing",
-        diff: "TerminalSync keeps your work from depending on a single limit or provider.",
+        diff: "TS keeps your work from depending on a single limit or provider.",
       },
       {
         name: "Cursor",
         strength: "Coding",
-        diff: "TerminalSync lives across the whole business, not just the code.",
+        diff: "TS lives across the whole business, not just the code.",
       },
       {
         name: "Notion",
         strength: "Organization and docs",
-        diff: "TerminalSync adds digital workers and operational continuity.",
+        diff: "TS adds digital workers and operational continuity.",
       },
       {
         name: "Zapier",
         strength: "Connecting apps",
-        diff: "Zapier connects apps. TerminalSync connects work, context and decisions.",
+        diff: "Zapier connects apps. TS connects work, context and decisions.",
       },
     ],
   },

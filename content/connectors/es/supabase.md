@@ -50,7 +50,7 @@ Para activarlo, pásale el flag `--read-only` al server o usá un Postgres role 
 Necesitas un **Personal Access Token (PAT)** de Supabase — el server opera *"under the context of your developer permissions"* via este PAT. Distinto al `service_role` o `anon` key de tu proyecto.
 
 1. Anda a [supabase.com/dashboard/account/tokens](https://supabase.com/dashboard/account/tokens).
-2. Click "Generate new token". Ponele un nombre tipo "Terminal Sync — Claude".
+2. Click "Generate new token". Ponele un nombre tipo "Terminal Sync".
 3. Cópialo (solo lo ves una vez) y pégalo cuando el Lab te pida `SUPABASE_ACCESS_TOKEN`. Cifrado en tu Keychain.
 
 El alcance del PAT es a nivel de **tu cuenta de Supabase**: el agente puede ver todos los proyectos donde eres owner/member. Para producción crítica, recomendamos crear un proyecto Supabase aparte como "sandbox del agente" o usar una cuenta dedicada.

@@ -50,6 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "legal/terms",
     "legal/security",
     "about",
+    "faq",
     "blog",
   ];
   for (const lang of LANGS) {

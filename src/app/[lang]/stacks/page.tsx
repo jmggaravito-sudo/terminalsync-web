@@ -23,8 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params;
   const isEs = lang === "es";
   const title = isEs
-    ? "Stack Packs · TerminalSync"
-    : "Stack Packs · TerminalSync";
+    ? "Stack Packs · TS"
+    : "Stack Packs · TS";
   const description = isEs
     ? "Paquetes curados de conectores, skills y CLIs listos para tu negocio. Un click, una compra, todo configurado."
     : "Curated bundles of connectors, skills, and terminal tools ready for your business. One click, one purchase, all configured.";
@@ -144,8 +144,8 @@ export default async function StacksIndex({ params }: Props) {
         </h1>
         <p className="mt-5 text-[15.5px] text-[var(--color-fg-muted)] max-w-2xl mx-auto leading-relaxed">
           {isEs
-            ? "Conectores, skills y CLIs curados para casos de uso reales. Un solo pago, instalación automática en TerminalSync, garantía de 14 días."
-            : "Connectors, skills, and terminal tools curated for real use cases. One-time payment, automatic install in TerminalSync, 14-day guarantee."}
+            ? "Conectores, skills y CLIs curados para casos de uso reales. Un solo pago, instalación automática en TS, garantía de 14 días."
+            : "Connectors, skills, and terminal tools curated for real use cases. One-time payment, automatic install in TS, 14-day guarantee."}
         </p>
       </section>
 
@@ -199,8 +199,8 @@ export default async function StacksIndex({ params }: Props) {
               </span>
               <span>
                 {isEs
-                  ? "Abrís TerminalSync y todo aparece instalado."
-                  : "Open TerminalSync and everything is already installed."}
+                  ? "Abrís TS y todo aparece instalado."
+                  : "Open TS and everything is already installed."}
               </span>
             </li>
             <li className="flex gap-3">

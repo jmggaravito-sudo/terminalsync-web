@@ -13,8 +13,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params;
   if (!isLocale(lang)) return {};
   const copy = lang === "es"
-    ? { title: "Gracias por descargar TerminalSync", description: "Tu descarga arrancó. Acá tenés los próximos pasos." }
-    : { title: "Thanks for downloading TerminalSync", description: "Your download started. Here's what to do next." };
+    ? { title: "Gracias por descargar TS", description: "Tu descarga arrancó. Acá tenés los próximos pasos." }
+    : { title: "Thanks for downloading TS", description: "Your download started. Here's what to do next." };
   return { title: copy.title, description: copy.description, robots: { index: false, follow: false } };
 }
 
@@ -175,14 +175,14 @@ const COPY = {
     },
     consumer: {
       eyebrow: "Descarga iniciada",
-      title: "Tu computadora está descargando TerminalSync.",
+      title: "Tu computadora está descargando TS.",
       subtitle:
         "En unos segundos vas a ver el .dmg en Finder. Mientras tanto, mirá el video y los próximos pasos.",
-      videoTitle: "Próximos pasos en TerminalSync",
+      videoTitle: "Próximos pasos en TS",
       videoPlaceholder: "Video de 60s — próximos pasos",
       steps: [
         {
-          title: "Abrí el .dmg y arrastrá Terminal Sync a Aplicaciones",
+          title: "Abrí el .dmg y arrastrá TS a Aplicaciones",
           body: "macOS Sonoma o más nuevo. La primera vez te pide permiso para abrir una app de internet — es normal.",
         },
         {
@@ -201,11 +201,11 @@ const COPY = {
       title: "Memoria compartida entre tus 3 agentes — descargando.",
       subtitle:
         "El .dmg está bajando. Mientras se instala, dejá lista tu primera sesión Claude Code / Codex / Gemini.",
-      videoTitle: "TerminalSync para devs — quickstart",
+      videoTitle: "TS para devs — quickstart",
       videoPlaceholder: "Quickstart 60s — Claude Code + Codex + Gemini",
       steps: [
         {
-          title: "Instalá Terminal Sync (drag & drop al folder de Aplicaciones)",
+          title: "Instalá TS (drag & drop al folder de Aplicaciones)",
           body: "Apple Silicon. La primera vez Gatekeeper pide aprobar — Settings → Privacy → Open Anyway.",
         },
         {
@@ -232,14 +232,14 @@ const COPY = {
     },
     consumer: {
       eyebrow: "Download started",
-      title: "Your computer is grabbing TerminalSync.",
+      title: "Your computer is grabbing TS.",
       subtitle:
         "The .dmg should land in your Downloads folder in a few seconds. Meanwhile, here's what comes next.",
-      videoTitle: "TerminalSync — next steps",
+      videoTitle: "TS — next steps",
       videoPlaceholder: "60-sec next steps video",
       steps: [
         {
-          title: "Open the .dmg and drag Terminal Sync to Applications",
+          title: "Open the .dmg and drag TS to Applications",
           body: "macOS Sonoma or newer. First launch asks permission for an internet-downloaded app — that's expected.",
         },
         {
@@ -258,11 +258,11 @@ const COPY = {
       title: "Shared memory across all 3 agents — downloading.",
       subtitle:
         "The .dmg is on its way. While it installs, get your first Claude Code / Codex / Gemini session ready to wire up.",
-      videoTitle: "TerminalSync for devs — quickstart",
+      videoTitle: "TS for devs — quickstart",
       videoPlaceholder: "60-sec quickstart — Claude Code + Codex + Gemini",
       steps: [
         {
-          title: "Install Terminal Sync (drag & drop to Applications)",
+          title: "Install TS (drag & drop to Applications)",
           body: "Apple Silicon. Gatekeeper will ask once — Settings → Privacy → Open Anyway.",
         },
         {

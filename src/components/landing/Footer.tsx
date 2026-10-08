@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Github, Instagram, Facebook } from "lucide-react";
 import type { Dict } from "@/content";
 import { Logo } from "@/components/Logo";
+import { CHROME_EXTENSION_PUBLIC } from "@/lib/launchFlags";
 
 // Social handles confirmed live by JM. Add new ones here as accounts
 // come online — same handles also live in StructuredData.tsx's
@@ -46,12 +47,24 @@ export function Footer({ dict }: { dict: Dict }) {
         { key: "features", label: dict.footer.links.features, href: `/${lang}#how-it-works` },
         { key: "demos", label: dict.footer.links.demos, href: `/${lang}#demos` },
         { key: "pricing", label: dict.footer.links.pricing, href: `/${lang}#pricing` },
-        { key: "download", label: dict.footer.links.download, href: "/api/download" },
         {
-          key: "chrome-extension",
-          label: lang === "es" ? "Extensión Chrome" : "Chrome extension",
-          href: `/${lang}#chrome-extension`,
+          key: "faq",
+          label: lang === "es" ? "FAQ completa" : "Full FAQ",
+          href: `/${lang}/faq`,
         },
+        { key: "download", label: dict.footer.links.download, href: "/api/download" },
+        // La extensión de Chrome está apagada en el sitio
+        // (`CHROME_EXTENSION_PUBLIC`): el enlace llevaba a una sección de la
+        // portada que ya no se pinta, o sea a ningún lado.
+        ...(CHROME_EXTENSION_PUBLIC
+          ? [
+              {
+                key: "chrome-extension",
+                label: lang === "es" ? "Extensión Chrome" : "Chrome extension",
+                href: `/${lang}#chrome-extension`,
+              },
+            ]
+          : []),
         {
           key: "ai-terminal",
           label: lang === "es" ? "Terminal IA" : "AI terminal",
@@ -105,7 +118,7 @@ export function Footer({ dict }: { dict: Dict }) {
           <div className="flex items-center gap-2">
             <Logo size={28} />
             <span className="text-[15px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-              TerminalSync
+              TS
             </span>
           </div>
           <p className="mt-3 text-[12.5px] text-[var(--color-fg-muted)] max-w-[14rem] leading-relaxed">

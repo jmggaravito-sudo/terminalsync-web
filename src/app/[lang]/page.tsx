@@ -1,10 +1,14 @@
 import { notFound } from "next/navigation";
 import dynamic from "next/dynamic";
 import { getDict, isLocale } from "@/content";
+import { getHomeFaq, getLandingBFaq } from "@/content/faq";
 import { Hero } from "@/components/landing/Hero";
 import { MemoryPersistent } from "@/components/landing/MemoryPersistent";
 import { MultiAI } from "@/components/landing/MultiAI";
 import { ChromeExtensionTeaser } from "@/components/landing/ChromeExtensionTeaser";
+import { WindowsEarlyAccess } from "@/components/landing/WindowsEarlyAccess";
+import { CHROME_EXTENSION_PUBLIC, LANDING_B } from "@/lib/launchFlags";
+import { LandingB } from "@/components/landing-b/LandingB";
 import { DemosGrid } from "@/components/landing/DemosGrid";
 import { IntegrationsDiscovery } from "@/components/landing/IntegrationsDiscovery";
 import { MetaBusiness } from "@/components/landing/MetaBusiness";
@@ -55,6 +59,12 @@ export default async function Landing({ params }: Props) {
   // desfasaban y daban falsa sensación de precisión. Stripe igual cobra
   // en USD y el banco del cliente hace la conversión real.
 
+  if (LANDING_B) {
+    return (
+      <LandingB dict={d} lang={lang} faq={getLandingBFaq(lang)} />
+    );
+  }
+
   return (
     <>
       <StructuredData dict={d} lang={lang} />
@@ -65,6 +75,15 @@ export default async function Landing({ params }: Props) {
           Categoría + tabla (colapsada) → Reseñas → Extensión Chrome →
           Precios → Seguridad → FAQ → Afiliados → Footer. */}
       <Hero dict={d} />
+      {/* Solo se pinta para visitantes de Windows: el componente detecta el
+          sistema y devuelve null para todos los demás, así que el CTA de Mac
+          sigue siendo el principal. Va acá, pegado al héroe, porque es
+          justamente el lugar donde el visitante de Windows iba a apretar
+          "Empieza gratis" y bajarse un archivo de Mac. El ancla la usa
+          `/api/download` para mandarlo acá en vez de servirle el DMG. */}
+      <div id="windows">
+        <WindowsEarlyAccess dict={d} />
+      </div>
       <WhatYouCanBuild lang={lang} />
       <DemosGrid lang={lang} />
       <IntegrationsDiscovery lang={lang} />
@@ -80,10 +99,13 @@ export default async function Landing({ params }: Props) {
       <CategoryBlock lang={lang} />
       <Comparison dict={d} />
       <Testimonials lang={lang} />
-      <ChromeExtensionTeaser dict={d} />
+      {CHROME_EXTENSION_PUBLIC && <ChromeExtensionTeaser dict={d} />}
       <Pricing dict={d} />
       <Trust dict={d} />
-      <FAQ dict={d} />
+      <FAQ
+        copy={{ eyebrow: d.faq.eyebrow, title: d.faq.title, subtitle: d.faq.subtitle }}
+        items={getHomeFaq(lang)}
+      />
       <Affiliates dict={d} />
       <MidCta dict={d} />
       <Footer dict={d} />

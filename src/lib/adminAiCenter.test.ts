@@ -22,6 +22,17 @@ describe("Admin AI Center payload", () => {
     expect(glm?.visibleLabel).toBe("TerminalSync / Z.ai");
     expect(glm?.defaultModelId).toBe("glm-5.3");
     expect(glm?.modelIds).toContain("glm-5.3");
+    expect(glm?.modelIds).toContain("glm-4.6");
+    expect(glm?.modelIds).toContain("glm-5.3-flash");
+    expect(glm?.models.find((model) => model.modelId === "glm-4.6")).toMatchObject({
+      visibleLabel: "GLM-4.6",
+      modalities: ["text"],
+      pricing: { prompt: "0.6", cachedPrompt: "0.11", completion: "2.2" },
+    });
+    expect(glm?.models.find((model) => model.modelId === "glm-5.3-flash")).toMatchObject({
+      capabilities: expect.arrayContaining(["image_input", "video_input", "file_input"]),
+      pricing: { prompt: "0.15", cachedPrompt: "0.03", completion: "0.50" },
+    });
 
     const gpt54 = codex?.models.find((model) => model.modelId === "gpt-5.4");
     expect(gpt54).toMatchObject({
@@ -72,7 +83,7 @@ describe("Admin AI Center payload", () => {
     expect(payload.stats).toMatchObject({
       providers: 4,
       managedEngines: 2,
-      models: 22,
+      models: 41,
       published: 6,
     });
     // Real snapshot alerts (3 gpt-5.4 findings) take priority over the local
