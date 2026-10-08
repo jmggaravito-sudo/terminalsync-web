@@ -36,7 +36,7 @@ export function LiveSearchCasesPage({ lang }: { lang: Locale }) {
   }
 
   return (
-    <div className="min-h-[calc(100vh-56px)] bg-[#f5f6f8] text-[#16181d]">
+    <div className="min-h-[calc(100vh-56px)] bg-white text-[#16181d]">
       <div className="mx-auto max-w-6xl px-5 pb-20 pt-10 md:px-8 md:pt-14">
         <Link href={`/${lang}`} className="inline-flex items-center gap-2 text-sm font-semibold text-[#5a37d6] hover:text-[#3d17b8]">
           <span aria-hidden="true">←</span>{isEs ? "Volver al inicio" : "Back to home"}
@@ -51,8 +51,8 @@ export function LiveSearchCasesPage({ lang }: { lang: Locale }) {
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-pretty text-base leading-7 text-[#565b64] md:text-lg">
             {isEs
-              ? "Explora las categorías de casos de uso, abre un ejemplo y copia el texto para empezar. Mercado y competencia suma siete ejemplos de Búsqueda en vivo al catálogo existente."
-              : "Explore use-case categories, open an example, and copy its prompt to get started. Market & competitors adds seven Live Search examples to the existing catalog."}
+              ? `Explora los ${LANDING_USE_CASES.cases.length} casos del catálogo de TerminalSync en ${LANDING_USE_CASES.categories.length} categorías de negocio. Abre un ejemplo y descarga TS para ponerlo en práctica.`
+              : `Explore ${LANDING_USE_CASES.cases.length} TerminalSync use cases across ${LANDING_USE_CASES.categories.length} business categories. Open an example and download TS to put it to work.`}
           </p>
         </header>
 
@@ -84,7 +84,7 @@ export function LiveSearchCasesPage({ lang }: { lang: Locale }) {
 
         <div className="mb-4 flex items-center justify-between gap-3 px-1">
           <p aria-live="polite" className="text-sm text-[#565b64]">{count} {tab === "cases" ? (isEs ? "casos" : "cases") : (isEs ? "flujos" : "workflows")}</p>
-          {tab === "cases" && <p className="text-right text-xs text-[#6b7280]">{isEs ? "Mercado y competencia: nueva categoría · 7 casos" : "Market & competitors: new category · 7 cases"}</p>}
+          {tab === "cases" && <p className="text-right text-xs text-[#6b7280]">{isEs ? "Los casos de Búsqueda en vivo dependen de las herramientas activas en tu espacio de TS." : "Live Search cases depend on the tools enabled in your TS workspace."}</p>}
         </div>
 
         {tab === "cases" ? (

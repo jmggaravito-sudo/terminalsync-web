@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/content";
+import { LANDING_USE_CASES } from "@/content/landingUseCases.generated";
 import { LiveSearchCasesPage } from "@/components/landing/LiveSearchCasesPage";
 
 interface Props {
@@ -15,8 +16,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? "Casos de uso para tu negocio — TerminalSync"
     : "Business use cases — TerminalSync";
   const description = isEs
-    ? "Explora 36 casos prácticos en 12 categorías de negocio, incluida la nueva categoría de Mercado y competencia."
-    : "Explore 36 practical use cases across 12 business categories, including the new Market & competitors category.";
+    ? `Explora ${LANDING_USE_CASES.cases.length} casos prácticos en ${LANDING_USE_CASES.categories.length} categorías de negocio de TerminalSync.`
+    : `Explore ${LANDING_USE_CASES.cases.length} practical TerminalSync use cases across ${LANDING_USE_CASES.categories.length} business categories.`;
   return {
     title,
     description,
