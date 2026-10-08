@@ -4,7 +4,7 @@ name: Connector Curation Loop
 #
 # This is intentionally NOT a plain script: the loop requires reading official
 # vendor sources, applying the persona/publisher/license gates, writing catalog
-# content, opening a draft PR, and registering the run in /admin/ops/loop-runs.
+# content, opening a draft PR, and registering the run in /admin/integraciones/loop-runs.
 # Claude Code GitHub Action supports scheduled custom automation with a prompt.
 # See: https://code.claude.com/docs/en/github-actions
 #
@@ -15,7 +15,7 @@ name: Connector Curation Loop
 #                      comentario anterior decía "Direct Claude API key" y
 #                      mandó a más de uno a buscarla en console.anthropic.com.
 #   LOOP_RUNS_WRITE_TOKEN    Shared bearer token accepted by /api/internal/loop-runs.
-#   TS_CROSS_REPO_TOKEN      Optional PAT/app token that can create the required app mirror PR in jmggaravito-sudo/terminal-sync.
+#   TS_CROSS_REPO_TOKEN      Optional PAT/app token, only needed for the rare app PR (see docs/integration-loop-two-pr-policy.md) in jmggaravito-sudo/terminal-sync.
 #
 # Required repo variables (Settings -> Secrets and variables -> Actions -> Variables):
 #   ZAI_MODEL          Id exacto del modelo GLM que sirve esa key (el mismo
@@ -146,28 +146,34 @@ jobs:
             Current focus from workflow input: "${{ inputs.focus }}".
             Dry run: ${{ inputs.dry_run || 'false' }}.
 
+            Work budget — read this before starting. The run is hard-capped at 80 turns and anything not pushed when the cap hits is lost: recent runs used all 80 turns and shipped nothing.
+            - Read each listed doc once. Do not re-read files, browse git history or list the repo tree.
+            - Ship at most 2 items. Choose them within your first 10 turns.
+            - Logos: at most 2 attempts per item to get the official logo. If you cannot, use the TS fallback and record it in the "Logos pendientes" backlog of content/connectors/SOURCES.md. Never keep hunting.
+            - As soon as the first item is complete and validated: commit, push the branch and open the draft PR (`gh pr create --draft`), then register the run right away (last operating rule). Only add a second item if you are clearly under 50 turns, and then update the PR body instead of registering again.
+            - NEVER poll or wait for CI, workflow runs, evals or background processes (`gh run list`, `gh run watch`, `ps`, `sleep`, Monitor). Checks run on their own once the PR exists. Finish by printing the PR URL.
+
             Operating rules:
             1. Start from current main and create exactly one branch for this run.
             2. Use only official vendor sources for factual content. GitHub/npm/official docs are acceptable; aggregators are discovery hints only.
             3. Apply the persona filter in content/connectors/SOURCES.md. Every completed run must include at least one business-first item unless the run is a documented no-ship run.
-            4. Prioritize the queued remote candidates in SOURCES.md: Asana, Klaviyo, Canva; also check whether any of them now publish official GitHub/registry material like Zoom did.
-            5. Do not ship PayPal unless the 8h-token + license/repo blockers are resolved. Do not ship Wix unless the toolset is no longer dev-docs-only.
-            6. If you ship a connector, create strict EN/ES parity content, official logo or documented fallback, and update SOURCES.md. The app-visible fields/body must be localized in both languages; do not copy Spanish descriptions into `content/connectors/en` or rely on fallback copy.
-            7. If nothing is shippable, still update SOURCES.md with a dated run note explaining what official sources were checked and why candidates were skipped/deferred. That gives the run a reviewable PR and makes the result visible.
-            8. Run the relevant validation before opening PRs: npm test at minimum; if only markdown/content changed and the full suite is unexpectedly blocked by unrelated environment issues, run the marketplace/content tests you can and document the blocker in the PR bodies.
-            9. Open exactly one landing/web draft PR in this repo. Never merge it.
-            10. Open exactly one app mirror draft PR in $TERMINALSYNC_APP_REPO against $TERMINALSYNC_APP_BASE_BRANCH, following docs/integration-loop-two-pr-policy.md. Use TS_CROSS_REPO_TOKEN for the app repo if present; if it is missing or unauthorized, mark the web PR body as `App mirror PR: blocked — missing cross-repo token` and do not report the integration as fully ready.
-            11. Link both PRs in their bodies when both exist. The app PR body must include `## Lo que el bot de soporte debe saber`.
-            12. After the landing/web draft PR exists and this is not a dry run, register the run history using scripts/record_loop_run.mjs with the actual counts and include the app PR URL or blocker in the log:
+            4. Asana, Klaviyo, Canva and Zoom are already SHIPPED (see SOURCES.md) — do not re-investigate them. Find new candidates through the discovery sources listed in SOURCES.md (Anthropic Connectors Directory, MCP Registry). Do not ship PayPal unless the 8h-token + license/repo blockers are resolved. Do not ship Wix unless the toolset is no longer dev-docs-only.
+            5. If you ship a connector, create strict EN/ES parity content, official logo or documented fallback, and update SOURCES.md. The app-visible fields/body must be localized in both languages; do not copy Spanish descriptions into `content/connectors/en` or rely on fallback copy.
+            6. If nothing is shippable, still update SOURCES.md with a dated run note explaining what official sources were checked and why candidates were skipped/deferred. That gives the run a reviewable PR and makes the result visible.
+            7. Run the relevant validation before opening PRs: npm test at minimum; if only markdown/content changed and the full suite is unexpectedly blocked by unrelated environment issues, run the marketplace/content tests you can and document the blocker in the PR bodies.
+            8. Open exactly one landing/web draft PR in this repo. Never merge it.
+            9. App PR: do NOT open one by default. Per docs/integration-loop-two-pr-policy.md the app consumes the catalog served by the landing PR. Open an app PR in $TERMINALSYNC_APP_REPO against $TERMINALSYNC_APP_BASE_BRANCH only if the item needs desktop code the app does not have (a special install flow, or an item that would render as a broken generic card); use TS_CROSS_REPO_TOKEN for it. Otherwise the landing PR body must say `App PR: no aplica — la app consume el catálogo`.
+            10. If you did open an app PR, link both PRs in their bodies and include `## Lo que el bot de soporte debe saber` in the app PR body.
+            11. After the landing/web draft PR exists and this is not a dry run, register the run history using scripts/record_loop_run.mjs with the actual counts and include the app PR URL or blocker in the log:
                 LOOP_RUNS_ENDPOINT="$LOOP_RUNS_ENDPOINT" LOOP_RUNS_WRITE_TOKEN="$LOOP_RUNS_WRITE_TOKEN" node scripts/record_loop_run.mjs --kind connectors --found <connectors_added> --skipped <candidates_skipped_or_deferred> --items <connector_slugs_csv> --pr <landing_web_draft_pr_url>
 
             Expected final answer in the workflow log:
             - Landing/web PR URL
-            - App mirror PR URL or blocker
+            - App PR URL, or `no aplica — la app consume el catálogo`
             - connectors added count
             - skipped/deferred count
-            - landing connector links visible in /admin/ops/loop-runs
-            - where results are visible: /admin/ops/loop-runs
+            - landing connector links visible in /admin/integraciones/loop-runs
+            - where results are visible: /admin/integraciones/loop-runs
           claude_args: |
             --model ${{ vars.ZAI_MODEL }}
             --max-turns ${{ inputs.max_turns || '80' }}

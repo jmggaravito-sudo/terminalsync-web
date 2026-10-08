@@ -24,7 +24,7 @@ Its gate is `content/plugins/RULES.md`.
 7. Keep ES/EN strict parity. Status `soon` if any referenced piece is `soon`.
 8. Validate: `vitest run src/lib/plugins.test.ts` (composition resolves the real pieces) + `tsc`. Add a loader/catalog test for the new Plugin when it exercises a new shape.
 9. Open the **landing/web draft PR**.
-10. Open the **app mirror draft PR** in `jmggaravito-sudo/terminal-sync` following `docs/integration-loop-two-pr-policy.md` so the desktop Integraciones surface mirrors the Plugin correctly.
+10. Open an app PR **only if** the item needs desktop code the app does not have (a special install flow, or an item that would render as a broken generic card), following `docs/integration-loop-two-pr-policy.md`. Otherwise state `App PR: no aplica — la app consume el catálogo` in the landing PR body; the desktop reads the catalog on its own and the supervision loop verifies it.
 11. Stop. Do not merge and do not push to `main` (this repo merges web via the owner/coordinator).
 
 ## What makes a good Plugin (vs a Kit)
@@ -119,4 +119,4 @@ Focus input: "TaxBandits, QuickBooks, Odoo, Xero, 1099, W-9, W-2, payroll tax fi
   - `zapier` — the connector exists and is `available`, but it is a many-to-many automation hub (9,000+ apps), not a single product with one usage pattern. No skill in `content/skills/{en,es}` teaches a specific Zapier workflow, and forcing a generic skill (e.g. Internal Comms) onto it would misrepresent a broad automation hub as a one-product Plugin. Deferred: a future Skill Loop candidate could target one concrete Zapier workflow (e.g. "capture a lead into a sheet + task"); until then this is not a Plugin.
   - `notebooklm` — no connector for NotebookLM exists in `content/connectors/{en,es}` or `content/connectors/SOURCES.md`. This is a Connector Loop task first (source the official NotebookLM MCP/API surface, if one exists) — the Plugin Loop does not source new connectors.
 - Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` + `tsc --noEmit`.
-- Landing/web PR and app mirror PR opened per `docs/integration-loop-two-pr-policy.md`; see `/admin/integraciones/loop-runs` for the recorded run.
+- Landing/web PR opened (and an app PR only if needed) per `docs/integration-loop-two-pr-policy.md`; see `/admin/integraciones/loop-runs` for the recorded run.
