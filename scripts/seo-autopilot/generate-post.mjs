@@ -7,7 +7,7 @@
  *   TOPIC_SLUG=rag-vs-project-memory node scripts/seo-autopilot/generate-post.mjs
  *
  * Env vars:
- *   ANTHROPIC_API_KEY  — required (unless DRY_RUN=1)
+ *   ZAI_API_KEY  — required (unless DRY_RUN=1)
  *   DRY_RUN            — skip API call, write fixture content
  *   TOPIC_SLUG         — force a specific topic (else picks next unwritten)
  *
@@ -92,10 +92,10 @@ FORMAT: Return valid Markdown with YAML frontmatter.
 Frontmatter fields: title, description (max 160 chars), date, keywords (array), category, author.`;
 
 async function callClaude(prompt) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set");
+  const apiKey = process.env.ZAI_API_KEY;
+  if (!apiKey) throw new Error("ZAI_API_KEY not set");
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch(`${(process.env.ANTHROPIC_BASE_URL || "https://open.bigmodel.cn/api/anthropic").replace(/\/+$/, "")}/v1/messages`, {
     method: "POST",
     headers: {
       "x-api-key": apiKey,
@@ -103,7 +103,7 @@ async function callClaude(prompt) {
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
+      model: process.env.ZAI_MODEL || "glm-5.3-flash",
       max_tokens: 2000,
       messages: [{ role: "user", content: prompt }],
       system: SYSTEM_PROMPT,
@@ -115,7 +115,7 @@ async function callClaude(prompt) {
     throw new Error(`Claude API error ${res.status}: ${err}`);
   }
   const data = await res.json();
-  return data.content[0].text;
+  return data.content.find((b) => b.type === "text").text;
 }
 
 function buildPrompt(topic, lang) {
