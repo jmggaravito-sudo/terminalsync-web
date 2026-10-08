@@ -23,7 +23,7 @@ Máximo 40 turnos. No releas archivos, no explores el repositorio entero, no bus
    - `ship_official` — hay un MCP oficial del proveedor (remoto o npm) y su documentación oficial deja leer endpoint/paquete, autenticación y herramientas.
    - `needs_own_build` — el proveedor tiene API pública pero **no** un MCP oficial. No se construye nada: documenta los hechos verificados de la API (URL base, autenticación, endpoints clave, límites, cómo obtener credenciales de prueba) para que una persona decida.
    - `skip` — sin MCP ni API usable, o no pasa el filtro de público o de licencia. Explica por qué.
-7. **Instalación por chat:** los conectores npm (stdio) se instalan conversando con la IA. Los remotos (`mcp-remote`, con login) **no**: el catálogo los marca `installableForAi: false` y se instalan desde Explorar. Pon `conversational_install`: `"yes"` (npm), `"no_remote"` (remoto) o `"unknown"`.
+7. **Instalación por chat:** los conectores npm (stdio) se instalan conversando con la IA. Los remotos (`mcp-remote`, con login) **también**: se instalan por chat y desde Explorar, y la app pide un login único en el navegador (OAuth). No los marques `installableForAi: false`. Pon `conversational_install`: `"yes"` (npm), `"remote_login"` (remoto con login) o `"unknown"`.
 
 ## Entregable: `.pipeline/research.json` (JSON válido, sin comentarios)
 ```json
@@ -34,7 +34,7 @@ Máximo 40 turnos. No releas archivos, no explores el repositorio entero, no bus
   "reason": "una o dos frases con el porqué",
   "already_in_catalog": false,
   "persona_fit": true,
-  "conversational_install": "yes | no_remote | unknown",
+  "conversational_install": "yes | remote_login | unknown",
   "official": {
     "exists": true,
     "kind": "remote | npm",
