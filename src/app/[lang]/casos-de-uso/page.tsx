@@ -12,11 +12,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!isLocale(lang)) return {};
   const isEs = lang === "es";
   const title = isEs
-    ? "Casos de uso: mercado y competencia — TerminalSync"
-    : "Use cases: market and competitors — TerminalSync";
+    ? "Casos de uso para tu negocio — TerminalSync"
+    : "Business use cases — TerminalSync";
   const description = isEs
-    ? "Siete casos prácticos de búsqueda en vivo para entender tu negocio, tus competidores y tu mercado."
-    : "Seven practical live-search use cases to understand your business, competitors, and market.";
+    ? "Explora 36 casos prácticos en 12 categorías de negocio, incluida la nueva categoría de Mercado y competencia."
+    : "Explore 36 practical use cases across 12 business categories, including the new Market & competitors category.";
   return {
     title,
     description,

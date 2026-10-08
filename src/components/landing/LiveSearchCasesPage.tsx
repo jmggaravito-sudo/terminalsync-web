@@ -1,23 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Check, ChevronDown, Copy, Download } from "lucide-react";
+import { Check, ChevronDown, Copy, Download, Search } from "lucide-react";
 import type { Locale } from "@/content";
-import { LIVE_SEARCH_CASES } from "@/content/liveSearchCases.generated";
+import { LANDING_USE_CASES } from "@/content/landingUseCases.generated";
 
 type CopyStatus = { id: string; state: "copied" | "error" } | null;
+type Tab = "cases" | "workflows";
 
 async function copyText(text: string) {
   if (navigator.clipboard?.writeText) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return true;
-    } catch {
-      // Try the legacy clipboard path below for browsers that block the API.
-    }
+    try { await navigator.clipboard.writeText(text); return true; } catch { /* fallback below */ }
   }
-
   const textarea = document.createElement("textarea");
   textarea.value = text;
   textarea.setAttribute("readonly", "");
@@ -32,9 +27,32 @@ async function copyText(text: string) {
 
 export function LiveSearchCasesPage({ lang }: { lang: Locale }) {
   const isEs = lang === "es";
-  const category = LIVE_SEARCH_CASES.categories[0];
-  const [openCaseId, setOpenCaseId] = useState<string | null>(null);
+  const [tab, setTab] = useState<Tab>("cases");
+  const [category, setCategory] = useState("all");
+  const [query, setQuery] = useState("");
+  const [openId, setOpenId] = useState<string | null>(null);
   const [copyStatus, setCopyStatus] = useState<CopyStatus>(null);
+  const search = query.trim().toLocaleLowerCase(lang);
+
+  const cases = useMemo(() => LANDING_USE_CASES.cases.filter((item) => {
+    const copy = item[lang];
+    return (category === "all" || item.area === category) &&
+      (!search || `${copy.t} ${copy.d} ${copy.p}`.toLocaleLowerCase(lang).includes(search));
+  }), [category, lang, search]);
+  const jobs = useMemo(() => LANDING_USE_CASES.jobs.filter((item) => {
+    const copy = item[lang];
+    return (category === "all" || item.cat === category) &&
+      (!search || `${copy.t} ${copy.d} ${copy.steps.join(" ")} ${copy.rep}`.toLocaleLowerCase(lang).includes(search));
+  }), [category, lang, search]);
+  const filters = tab === "cases" ? LANDING_USE_CASES.categories : LANDING_USE_CASES.jobCategories;
+  const count = tab === "cases" ? cases.length : jobs.length;
+
+  function setTabAndClear(next: Tab) {
+    setTab(next);
+    setCategory("all");
+    setOpenId(null);
+    setCopyStatus(null);
+  }
 
   async function handleCopy(id: string, prompt: string) {
     const copied = await copyText(prompt);
@@ -42,143 +60,120 @@ export function LiveSearchCasesPage({ lang }: { lang: Locale }) {
   }
 
   return (
-    <div className="min-h-[calc(100vh-72px)] bg-[#f5f6f8] text-[#16181d]">
+    <div className="min-h-[calc(100vh-56px)] bg-[#f5f6f8] text-[#16181d]">
       <div className="mx-auto max-w-6xl px-5 pb-20 pt-10 md:px-8 md:pt-14">
-        <Link
-          href={`/${lang}`}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-[#5a37d6] transition hover:text-[#3d17b8]"
-        >
-          <span aria-hidden="true">←</span>
-          {isEs ? "Volver al inicio" : "Back to home"}
+        <Link href={`/${lang}`} className="inline-flex items-center gap-2 text-sm font-semibold text-[#5a37d6] hover:text-[#3d17b8]">
+          <span aria-hidden="true">←</span>{isEs ? "Volver al inicio" : "Back to home"}
         </Link>
 
-        <header className="mx-auto mb-9 mt-8 max-w-3xl text-center md:mb-12 md:mt-10">
+        <header className="mx-auto mb-8 mt-8 max-w-3xl text-center md:mb-10 md:mt-10">
           <span className="inline-flex rounded-full border border-[#ded7fb] bg-[#efeafd] px-3 py-1 text-xs font-semibold text-[#4c31b6]">
-            {isEs ? "7 casos prácticos" : "7 practical use cases"}
+            {LANDING_USE_CASES.cases.length} {isEs ? "casos" : "use cases"} · {LANDING_USE_CASES.categories.length} {isEs ? "categorías" : "categories"}
           </span>
-          <h1 className="mt-5 text-balance text-3xl font-semibold leading-tight tracking-[-0.035em] text-[#16181d] md:text-5xl">
-            {isEs
-              ? "Mercado y competencia, con Búsqueda en vivo"
-              : "Market & competitors, with Live Search"}
+          <h1 className="mt-5 text-balance text-3xl font-semibold leading-tight tracking-[-0.035em] md:text-5xl">
+            {isEs ? "Ideas prácticas para hacer crecer tu negocio" : "Practical ideas to move your business forward"}
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-pretty text-base leading-7 text-[#565b64] md:text-lg">
             {isEs
-              ? "Explora siete casos prácticos para entender tu negocio, tus competidores y lo que ocurre en tu mercado."
-              : "Explore seven practical use cases to understand your business, competitors, and what is happening in your market."}
+              ? "Explora las categorías de casos de uso, abre un ejemplo y copia el texto para empezar. Mercado y competencia suma siete ejemplos de Búsqueda en vivo al catálogo existente."
+              : "Explore use-case categories, open an example, and copy its prompt to get started. Market & competitors adds seven Live Search examples to the existing catalog."}
           </p>
         </header>
 
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e2e4e9] bg-white px-5 py-4 shadow-[0_8px_24px_-20px_rgba(22,24,29,.35)]">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-full bg-[#efeafd] px-3 py-1.5 text-sm font-semibold text-[#4c31b6]">
-              {category[lang]}
-            </span>
-            <span className="text-sm text-[#565b64]">
-              {LIVE_SEARCH_CASES.cases.length} {isEs ? "casos" : "use cases"}
-            </span>
-          </div>
-          <p className="max-w-xl text-sm leading-6 text-[#6b7280]">
-            {isEs
-              ? "Algunos ejemplos requieren que las herramientas de búsqueda estén disponibles en el espacio."
-              : "Some examples require search tools to be available in the workspace."}
-          </p>
+        <div className="mb-6 flex justify-center" role="tablist" aria-label={isEs ? "Tipo de contenido" : "Content type"}>
+          <button type="button" role="tab" aria-selected={tab === "cases"} onClick={() => setTabAndClear("cases")}
+            className={`min-h-11 rounded-l-full border px-5 text-sm font-semibold ${tab === "cases" ? "border-[#6a48e8] bg-[#6a48e8] text-white" : "border-[#ded7fb] bg-white text-[#4c31b6] hover:bg-[#f6f3ff]"}`}>
+            {isEs ? "Casos de uso" : "Use cases"} ({LANDING_USE_CASES.cases.length})
+          </button>
+          <button type="button" role="tab" aria-selected={tab === "workflows"} onClick={() => setTabAndClear("workflows")}
+            className={`min-h-11 rounded-r-full border border-l-0 px-5 text-sm font-semibold ${tab === "workflows" ? "border-[#6a48e8] bg-[#6a48e8] text-white" : "border-[#ded7fb] bg-white text-[#4c31b6] hover:bg-[#f6f3ff]"}`}>
+            {isEs ? "Flujos de trabajo" : "Workflows"} ({LANDING_USE_CASES.jobs.length})
+          </button>
         </div>
 
-        <section
-          aria-label={isEs ? "Casos de mercado y competencia" : "Market and competitor use cases"}
-          className="grid gap-4 md:grid-cols-2"
-        >
-          {LIVE_SEARCH_CASES.cases.map((useCase, index) => {
-            const copy = useCase[lang];
-            const isOpen = openCaseId === useCase.id;
-            const status = copyStatus?.id === useCase.id ? copyStatus.state : null;
-            const panelId = `live-search-case-${useCase.id}`;
+        <section className="mb-6 rounded-2xl border border-[#e2e4e9] bg-white p-5 shadow-[0_8px_24px_-20px_rgba(22,24,29,.35)]" aria-label={isEs ? "Filtros" : "Filters"}>
+          <label className="relative block">
+            <span className="sr-only">{isEs ? "Buscar por palabra" : "Search by keyword"}</span>
+            <Search size={17} aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#777d87]" />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={isEs ? "Busca un caso o resultado…" : "Search use cases or outcomes…"}
+              className="min-h-11 w-full rounded-xl border border-[#e2e4e9] bg-white pl-10 pr-4 text-sm outline-none placeholder:text-[#8b909a] focus:border-[#8e76ec] focus:ring-2 focus:ring-[#6a48e8]/15" />
+          </label>
+          <div className="mt-4 flex flex-wrap gap-2" aria-label={isEs ? "Categorías de negocio" : "Business categories"}>
+            <button type="button" aria-pressed={category === "all"} onClick={() => setCategory("all")}
+              className={`rounded-full px-3.5 py-2 text-sm font-semibold ${category === "all" ? "bg-[#efeafd] text-[#4c31b6]" : "border border-[#e2e4e9] text-[#565b64] hover:border-[#c9bdf8]"}`}>
+              {isEs ? "Todas las categorías" : "All categories"}
+            </button>
+            {filters.map((item) => <button key={item.id} type="button" aria-pressed={category === item.id} onClick={() => setCategory(item.id)}
+              className={`rounded-full px-3.5 py-2 text-sm font-semibold ${category === item.id ? "bg-[#efeafd] text-[#4c31b6]" : "border border-[#e2e4e9] text-[#565b64] hover:border-[#c9bdf8]"}`}>
+              {item[lang]}
+            </button>)}
+          </div>
+        </section>
 
-            return (
-              <article
-                key={useCase.id}
-                className="rounded-2xl border border-[#e2e4e9] bg-white p-5 shadow-[0_10px_28px_-24px_rgba(22,24,29,.42)] transition hover:border-[#c9bdf8] hover:shadow-[0_16px_36px_-26px_rgba(61,23,184,.32)] md:p-6"
-              >
+        <div className="mb-4 flex items-center justify-between gap-3 px-1">
+          <p aria-live="polite" className="text-sm text-[#565b64]">{count} {tab === "cases" ? (isEs ? "casos" : "cases") : (isEs ? "flujos" : "workflows")}</p>
+          {tab === "cases" && <p className="text-right text-xs text-[#6b7280]">{isEs ? "Mercado y competencia: nueva categoría · 7 casos" : "Market & competitors: new category · 7 cases"}</p>}
+        </div>
+
+        {tab === "cases" ? (
+          cases.length ? <section className="grid gap-4 md:grid-cols-2" aria-label={isEs ? "Casos de uso para tu negocio" : "Business use cases"}>
+            {cases.map((item, index) => {
+              const copy = item[lang];
+              const group = LANDING_USE_CASES.categories.find((entry) => entry.id === item.area);
+              const open = openId === item.id;
+              const status = copyStatus?.id === item.id ? copyStatus.state : null;
+              const panelId = `case-${item.id}`;
+              return <article key={item.id} className="rounded-2xl border border-[#e2e4e9] bg-white p-5 shadow-[0_10px_28px_-24px_rgba(22,24,29,.42)] transition hover:border-[#c9bdf8] md:p-6">
                 <div className="flex items-start gap-4">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#efeafd] font-mono text-sm font-semibold text-[#5a37d6]">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#efeafd] font-mono text-sm font-semibold text-[#5a37d6]">{String(index + 1).padStart(2, "0")}</span>
                   <div className="min-w-0">
-                    <h2 className="text-lg font-semibold leading-snug tracking-[-0.02em] text-[#16181d]">
-                      {copy.t}
-                    </h2>
+                    <span className="inline-flex rounded-full bg-[#f5f3fc] px-2.5 py-1 text-[11px] font-semibold text-[#5a37d6]">{group?.[lang]}</span>
+                    <h2 className="mt-2 text-lg font-semibold leading-snug tracking-[-0.02em]">{copy.t}</h2>
                     <p className="mt-2 text-sm leading-6 text-[#565b64]">{copy.d}</p>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  aria-expanded={isOpen}
-                  aria-controls={panelId}
-                  onClick={() => {
-                    setOpenCaseId(isOpen ? null : useCase.id);
-                    setCopyStatus(null);
-                  }}
-                  className="mt-5 inline-flex items-center gap-2 rounded-full border border-[#ded7fb] px-4 py-2 text-sm font-semibold text-[#4c31b6] transition hover:bg-[#f6f3ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6a48e8]"
-                >
-                  {isOpen
-                    ? (isEs ? "Ocultar ejemplo" : "Hide example")
-                    : (isEs ? "Ver ejemplo" : "See example")}
-                  <ChevronDown size={15} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                <button type="button" aria-expanded={open} aria-controls={panelId} onClick={() => { setOpenId(open ? null : item.id); setCopyStatus(null); }}
+                  className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-full border border-[#ded7fb] px-4 text-sm font-semibold text-[#4c31b6] hover:bg-[#f6f3ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6a48e8]">
+                  {open ? (isEs ? "Ocultar ejemplo" : "Hide example") : (isEs ? "Ver ejemplo" : "See example")}<ChevronDown size={15} className={`transition-transform ${open ? "rotate-180" : ""}`} />
                 </button>
-
-                {isOpen && (
-                  <div id={panelId} className="mt-4 border-t border-[#ececf1] pt-4">
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6b7280]">
-                      {isEs ? "Texto listo para usar" : "Ready-to-use text"}
-                    </p>
-                    <pre className="max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-xl border border-[#e7e7ee] bg-[#f8f7fc] p-4 text-[13px] leading-6 text-[#292a31]">
-                      {copy.p}
-                    </pre>
-                    <div className="mt-4 flex flex-wrap items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => void handleCopy(useCase.id, copy.p)}
-                        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#6a48e8] px-5 text-sm font-semibold text-white transition hover:bg-[#5a37d6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6a48e8]"
-                      >
-                        {status === "copied" ? <Check size={16} /> : <Copy size={15} />}
-                        {status === "copied"
-                          ? (isEs ? "Copiado" : "Copied")
-                          : (isEs ? "Usar este caso" : "Use this case")}
-                      </button>
-                      <p aria-live="polite" className="text-sm text-[#565b64]">
-                        {status === "error"
-                          ? (isEs ? "No se pudo copiar; selecciona el texto." : "Could not copy; select the text instead.")
-                          : status === "copied"
-                            ? (isEs ? "Texto copiado al portapapeles." : "Text copied to clipboard.")
-                            : ""}
-                      </p>
-                    </div>
+                {open && <div id={panelId} className="mt-4 border-t border-[#ececf1] pt-4">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6b7280]">{isEs ? "Texto listo para usar" : "Ready-to-use text"}</p>
+                  <pre className="max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-xl border border-[#e7e7ee] bg-[#f8f7fc] p-4 text-[13px] leading-6 text-[#292a31]">{copy.p}</pre>
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <button type="button" onClick={() => void handleCopy(item.id, copy.p)} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#6a48e8] px-5 text-sm font-semibold text-white hover:bg-[#5a37d6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6a48e8]">
+                      {status === "copied" ? <Check size={16} /> : <Copy size={15} />}{status === "copied" ? (isEs ? "Copiado" : "Copied") : (isEs ? "Usar este caso" : "Use this case")}
+                    </button>
+                    <p aria-live="polite" className="text-sm text-[#565b64]">{status === "error" ? (isEs ? "No se pudo copiar; selecciona el texto." : "Could not copy; select the text instead.") : status === "copied" ? (isEs ? "Texto copiado al portapapeles." : "Text copied to clipboard.") : ""}</p>
                   </div>
-                )}
-              </article>
-            );
-          })}
-        </section>
+                </div>}
+              </article>;
+            })}
+          </section> : <EmptyState lang={lang} />
+        ) : (
+          jobs.length ? <section className="grid gap-4 md:grid-cols-2" aria-label={isEs ? "Flujos de trabajo" : "Workflows"}>
+            {jobs.map((item) => {
+              const copy = item[lang];
+              const group = LANDING_USE_CASES.jobCategories.find((entry) => entry.id === item.cat);
+              const open = openId === item.id;
+              const panelId = `workflow-${item.id}`;
+              return <article key={item.id} className="rounded-2xl border border-[#e2e4e9] bg-white p-5 shadow-[0_10px_28px_-24px_rgba(22,24,29,.42)] transition hover:border-[#c9bdf8] md:p-6">
+                <div className="flex items-start gap-4"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#efeafd] font-mono text-sm font-semibold text-[#5a37d6]" aria-hidden="true">↻</span><div className="min-w-0"><span className="inline-flex rounded-full bg-[#f5f3fc] px-2.5 py-1 text-[11px] font-semibold text-[#5a37d6]">{group?.[lang]}</span><h2 className="mt-2 text-lg font-semibold leading-snug">{copy.t}</h2><p className="mt-2 text-sm leading-6 text-[#565b64]">{copy.d}</p></div></div>
+                <button type="button" aria-expanded={open} aria-controls={panelId} onClick={() => setOpenId(open ? null : item.id)} className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-full border border-[#ded7fb] px-4 text-sm font-semibold text-[#4c31b6] hover:bg-[#f6f3ff]">{open ? (isEs ? "Ocultar detalles" : "Hide details") : (isEs ? "Ver detalles" : "See details")}<ChevronDown size={15} className={`transition-transform ${open ? "rotate-180" : ""}`} /></button>
+                {open && <div id={panelId} className="mt-4 border-t border-[#ececf1] pt-4"><p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#6b7280]">{isEs ? "Qué hace" : "What it does"}</p><ol className="space-y-2 rounded-xl border border-[#e7e7ee] bg-[#f8f7fc] p-4">{copy.steps.map((step, i) => <li key={i} className="flex gap-3 text-sm leading-6 text-[#424650]"><span className="font-mono text-xs font-semibold text-[#6a48e8]">{i + 1}.</span>{step}</li>)}</ol><div className="mt-3 grid gap-3 sm:grid-cols-2"><div className="rounded-xl border border-[#e7e7ee] p-3"><p className="text-xs font-semibold uppercase tracking-wide text-[#777d87]">{isEs ? "Frecuencia" : "Schedule"}</p><p className="mt-1 text-sm font-medium">{copy.cad}</p></div><div className="rounded-xl border border-[#e7e7ee] p-3"><p className="text-xs font-semibold uppercase tracking-wide text-[#777d87]">{isEs ? "Resultado" : "Outcome"}</p><p className="mt-1 text-sm leading-5 text-[#424650]">{copy.rep}</p></div></div></div>}
+              </article>;
+            })}
+          </section> : <EmptyState lang={lang} />
+        )}
 
         <footer className="mt-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-[#e2e4e9] bg-white p-6 text-center shadow-[0_8px_24px_-20px_rgba(22,24,29,.35)] sm:flex-row sm:text-left">
-          <div>
-            <p className="font-semibold text-[#16181d]">
-              {isEs ? "Llévalo a tu espacio de trabajo" : "Use it in your workspace"}
-            </p>
-            <p className="mt-1 text-sm text-[#565b64]">
-              {isEs ? "Descarga TS para organizar tus proyectos." : "Download TS to organize your projects."}
-            </p>
-          </div>
-          <Link
-            href="/api/download"
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#6a48e8] px-5 text-sm font-semibold text-white transition hover:bg-[#5a37d6]"
-          >
-            <Download size={16} />
-            {isEs ? "Descargar TS" : "Download TS"}
-          </Link>
+          <div><p className="font-semibold">{isEs ? "Llévalo a tu espacio de trabajo" : "Use it in your workspace"}</p><p className="mt-1 text-sm text-[#565b64]">{isEs ? "Descarga TS para organizar tus proyectos." : "Download TS to organize your projects."}</p></div>
+          <Link href="/api/download" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#6a48e8] px-5 text-sm font-semibold text-white hover:bg-[#5a37d6]"><Download size={16} />{isEs ? "Descargar TS" : "Download TS"}</Link>
         </footer>
       </div>
     </div>
   );
+}
+
+function EmptyState({ lang }: { lang: Locale }) {
+  return <p className="rounded-2xl border border-[#e2e4e9] bg-white p-10 text-center text-[#565b64]">{lang === "es" ? "No encontramos resultados con esos filtros." : "No results match those filters."}</p>;
 }
