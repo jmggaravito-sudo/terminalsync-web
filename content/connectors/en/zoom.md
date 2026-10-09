@@ -22,8 +22,8 @@ license: "MIT"
 licenseUrl: "https://github.com/zoom/mcp-registry/blob/main/LICENSE"
 marketplaceSource: "official"
 marketplaceCategory: "productivity"
-installableForAi: true
-installableForAiReason: "remote-needs-login"
+installableForAi: false
+installableForAiReason: "needs-oauth"
 aiToolsCount: 0
 aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"
