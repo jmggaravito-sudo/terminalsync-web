@@ -405,7 +405,7 @@ body {
   justify-content: center;
   gap: 10px;
 }
-/* Cada fuente es su nombre; el logo solo aparece si la marca lo permite. */
+/* Cada fuente: logo + nombre. Si el logo no carga, queda el nombre. */
 .ts-source-chip {
   display: inline-flex;
   align-items: center;

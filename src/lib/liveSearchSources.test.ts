@@ -30,12 +30,12 @@ const LIVE = LIVE_SEARCH_SOURCES.filter((s) => s.batch === "live");
 const LOTE3 = LIVE_SEARCH_SOURCES.filter((s) => s.batch === "lote3");
 
 /**
- * Marcas cuyas pautas permiten mostrar su logo en esta fila (revisado el
- * 2026-10-08, ver docs/live-search-sources.md). Todas las demás van solo con
- * el nombre. Para sumar una, primero revisá sus pautas y anotalo en ese doc;
- * este test frena un logo agregado sin ese paso.
+ * Decisión de JM del 2026-10-09 (ver docs/live-search-sources.md): todas las
+ * fuentes van con logo, asumiendo el riesgo de marca que encontró la revisión
+ * de pautas del 2026-10-08, y Walmart sale de la fila. La nota "no implica
+ * afiliación" va siempre.
  */
-const LOGO_ALLOWED = new Set(["Perplexity"]);
+const EXCLUDED = ["Walmart"];
 
 describe("NEXT_PUBLIC_LIVE_SEARCH_LOTE3", () => {
   it("está apagado por defecto, sin la variable", async () => {
@@ -82,10 +82,17 @@ describe("LIVE_SEARCH_SOURCES", () => {
     expect(liveSearchSourceLabel(yelp, "es")).toBe("Yelp");
   });
 
-  it("solo llevan logo las marcas que lo permiten", () => {
+  it("todas las fuentes llevan logo (decisión de JM, 2026-10-09)", () => {
     for (const s of LIVE_SEARCH_SOURCES) {
-      if (LOGO_ALLOWED.has(s.name)) continue;
-      expect(s.logo, `${s.name} no puede llevar logo`).toBeNull();
+      expect(s.logo, `${s.name} sin logo`).not.toBeNull();
+    }
+  });
+
+  it("Walmart quedó afuera (decisión de JM, 2026-10-09)", () => {
+    const names = LIVE_SEARCH_SOURCES.map((s) => s.name.toLowerCase());
+    for (const name of EXCLUDED) {
+      expect(names).not.toContain(name.toLowerCase());
+      expect(existsSync(path.join(ROOT, "public/sources", `${name.toLowerCase()}.svg`))).toBe(false);
     }
   });
 
@@ -167,6 +174,25 @@ describe("landing-b: la fila estática coincide con la lista", () => {
     expect(html).toContain("fetch('/api/live-search-sources')");
   });
 
+  it("no menciona marcas excluidas", () => {
+    const i18n = readFileSync(path.join(ROOT, "public/landing-b/i18n.js"), "utf8");
+    for (const name of EXCLUDED) {
+      expect(block![1]).not.toContain(name);
+      expect(i18n).not.toContain(name);
+    }
+  });
+
+  it("si un logo no carga se oculta y queda el nombre; el alt sigue al idioma", () => {
+    const imgs = block![1].match(/<img [^>]*>/g) ?? [];
+    expect(imgs.length).toBe(LIVE_SEARCH_SOURCES.length);
+    for (const img of imgs) {
+      expect(img).toContain(
+        `onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()"`,
+      );
+    }
+    expect(html).toContain("window.addEventListener('ts-lang',syncAlt)");
+  });
+
   it("i18n.js traduce al inglés el rótulo, la nota y los nombres que cambian", () => {
     const i18n = readFileSync(
       path.join(ROOT, "public/landing-b/i18n.js"),
@@ -201,9 +227,14 @@ describe("IntegrationsMarquee: tercera fila", () => {
     expect(html).toContain("no implica afiliación");
     for (const s of LIVE) expect(shown(html, liveSearchSourceLabel(s, "es")), s.name).toBe(true);
     for (const s of LOTE3) expect(shown(html, liveSearchSourceLabel(s, "es")), s.name).toBe(false);
-    // Perplexity: logo con alt y nombre visible aria-hidden.
-    expect(html).toContain('src="/sources/perplexity.svg" alt="Perplexity"');
-    expect(html).toContain('<span aria-hidden="true">Perplexity</span>');
+    // Cada logo con alt = nombre en el idioma, y el nombre visible aria-hidden.
+    for (const s of LIVE) {
+      const label = liveSearchSourceLabel(s, "es");
+      expect(html).toContain(`src="/sources/${s.logo}.svg" alt="${label}"`);
+      expect(html).toContain(`<span aria-hidden="true">${label}</span>`);
+    }
+    // Logo oscuro (ChatGPT): clase para el fondo claro en tema oscuro.
+    expect(html).toContain("ts-source-chip ts-source-chip--dark-logo");
   });
 
   it("con el lote 3 prendido suma esas marcas (EN)", async () => {
@@ -211,8 +242,11 @@ describe("IntegrationsMarquee: tercera fila", () => {
     expect(html).toContain("TS AI searches live on…");
     expect(html).toContain("no affiliation implied");
     for (const s of LIVE_SEARCH_SOURCES) {
-      expect(shown(html, liveSearchSourceLabel(s, "en")), s.name).toBe(true);
+      const label = liveSearchSourceLabel(s, "en");
+      expect(shown(html, label), s.name).toBe(true);
+      expect(html).toContain(`src="/sources/${s.logo}.svg" alt="${label}"`);
     }
+    expect(html).not.toContain("Walmart");
   });
 });
 

@@ -18,15 +18,12 @@
  *   desincroniza de esta lista. El HTML estático no puede leer env vars, así
  *   que pregunta el interruptor a `/api/live-search-sources`.
  *
- * **Logos: casi todas van como texto, a propósito.** Cada marca se muestra por
- * su nombre; el logo solo se agrega si las pautas de la marca permiten que un
- * tercero lo use para este tipo de mención sin pedir permiso. Revisadas el
- * 2026-10-08, solo Perplexity lo permite: Google, YouTube, Meta, Yelp, TikTok,
- * Tripadvisor, Amazon, Walmart, eBay y Airbnb piden aprobación o licencia por
- * escrito; OpenAI (ChatGPT) también, y Simple Icons retiró sus íconos (igual
- * que Amazon y Walmart). Nombrarlas en texto para decir que se las consulta
- * sí está permitido. Detalle y links por marca en `docs/live-search-sources.md`.
- * Antes de ponerle `logo` a otra marca, revisá sus pautas y actualizá ese doc.
+ * **Logos: decisión de JM del 2026-10-09.** Todas las fuentes van con su
+ * logo y su nombre. La revisión de pautas del 2026-10-08 encontró que casi
+ * todas estas marcas piden permiso o licencia para usar su logo (solo
+ * Perplexity no); JM decidió usarlos igual, asumiendo ese riesgo de marca, y
+ * sacar a Walmart de la fila. La nota "no implica afiliación" va siempre.
+ * Detalle, links por marca y origen de cada SVG en `docs/live-search-sources.md`.
  */
 
 /**
@@ -51,8 +48,8 @@ export interface LiveSearchSource {
   /** Nombre en español, solo si cambia (ej. "Biblioteca de anuncios de Meta"). */
   es?: string;
   /**
-   * Archivo en `public/sources/<logo>.svg`, solo para marcas cuyas pautas
-   * permiten usar el logo. `null` = solo el nombre.
+   * Archivo en `public/sources/<logo>.svg`. `null` = solo el nombre (hoy
+   * ninguna; queda para una fuente nueva que todavía no tenga logo).
    */
   logo: string | null;
   /** Logo negro/oscuro: en tema oscuro necesita fondo claro para verse. */
@@ -65,31 +62,30 @@ export interface LiveSearchSource {
  * varias fuentes (Google cubre web, Noticias, Shopping, Trends, anuncios de
  * Google, Google AI y, en el lote 3, Google Jobs; Google Maps cubre las
  * reseñas de Google; YouTube cubre subtítulos y, en el lote 3, búsqueda de
- * videos).
+ * videos). Walmart no va: decisión de JM del 2026-10-09.
  */
 export const LIVE_SEARCH_SOURCES: readonly LiveSearchSource[] = [
   // ── En producción (lotes 1 y 2) ──
-  { name: "Google", logo: null, batch: "live" },
-  { name: "Google Maps", logo: null, batch: "live" },
-  { name: "YouTube", logo: null, batch: "live" },
+  { name: "Google", logo: "google", batch: "live" },
+  { name: "Google Maps", logo: "google-maps", batch: "live" },
+  { name: "YouTube", logo: "youtube", batch: "live" },
   {
     name: "Meta Ad Library",
     es: "Biblioteca de anuncios de Meta",
-    logo: null,
+    logo: "meta",
     batch: "live",
   },
-  { name: "ChatGPT", logo: null, batch: "live" },
+  { name: "ChatGPT", logo: "chatgpt", darkLogo: true, batch: "live" },
   { name: "Perplexity", logo: "perplexity", batch: "live" },
-  { name: "Yelp", logo: null, batch: "live" },
+  { name: "Yelp", logo: "yelp", batch: "live" },
   // ── Lote 3: detrás de NEXT_PUBLIC_LIVE_SEARCH_LOTE3 ──
-  { name: "TikTok", logo: null, batch: "lote3" },
-  { name: "Instagram", logo: null, batch: "lote3" },
-  { name: "Facebook", logo: null, batch: "lote3" },
-  { name: "Tripadvisor", logo: null, batch: "lote3" },
-  { name: "Amazon", logo: null, batch: "lote3" },
-  { name: "Walmart", logo: null, batch: "lote3" },
-  { name: "eBay", logo: null, batch: "lote3" },
-  { name: "Airbnb", logo: null, batch: "lote3" },
+  { name: "TikTok", logo: "tiktok", darkLogo: true, batch: "lote3" },
+  { name: "Instagram", logo: "instagram", batch: "lote3" },
+  { name: "Facebook", logo: "facebook", batch: "lote3" },
+  { name: "Tripadvisor", logo: "tripadvisor", batch: "lote3" },
+  { name: "Amazon", logo: "amazon", batch: "lote3" },
+  { name: "eBay", logo: "ebay", batch: "lote3" },
+  { name: "Airbnb", logo: "airbnb", batch: "lote3" },
 ];
 
 /** Texto visible de la fuente en el idioma pedido. */

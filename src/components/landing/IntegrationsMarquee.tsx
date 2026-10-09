@@ -116,7 +116,7 @@ export function IntegrationsMarquee({ lang }: { lang: Locale }) {
  * Tercera fila, separada de las integraciones: fuentes públicas que la IA de
  * TS consulta en vivo (no son cuentas que el cliente conecta). Fila estática
  * y centrada en vez de marquee: son pocas marcas y así no hay huecos en
- * pantallas anchas. Lista, logos permitidos e interruptor del lote 3 en
+ * pantallas anchas. Lista, logos e interruptor del lote 3 en
  * `liveSearchSources.ts`.
  */
 export function LiveSearchSources({
@@ -145,10 +145,9 @@ export function LiveSearchSources({
 }
 
 /**
- * Cada fuente va con su nombre. Si la marca permite usar su logo, el logo va
- * delante y lleva el `alt`; el nombre visible queda `aria-hidden` para que el
- * lector de pantalla no lo lea dos veces. Si el logo falla al cargar, se
- * oculta y queda solo el nombre.
+ * Cada fuente va con su logo y su nombre. El logo lleva el `alt`; el nombre
+ * visible queda `aria-hidden` para que el lector de pantalla no lo lea dos
+ * veces. Si el logo falla al cargar, se oculta y queda solo el nombre.
  */
 function SourceChip({
   source,

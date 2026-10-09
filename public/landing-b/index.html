@@ -233,7 +233,7 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .live-src{max-width:760px;margin:44px auto 0;padding-top:30px;border-top:1px solid var(--line);text-align:center}
 .live-src-h{margin:0;font-size:16px;font-weight:600;letter-spacing:-.01em;color:var(--fg)}
 .live-src-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:18px}
-/* cada fuente es su nombre; el logo solo va si la marca permite usarlo */
+/* cada fuente: logo + nombre; si el logo no carga, queda el nombre */
 .src-chip{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px;border-radius:13px;background:var(--surface);border:1px solid var(--line);font-size:14.5px;font-weight:550;color:var(--fg);white-space:nowrap}
 .src-chip[hidden]{display:none}
 .src-chip img{width:18px;height:18px;display:block}
@@ -470,26 +470,25 @@ html.var-dark .src-chip.dark-logo img{background:#e8eaee;border-radius:4px;paddi
     </div>
     <p style="text-align:center;margin-top:30px"><a class="btn btn-ghost btn-sm" href="/es/connectors" data-lhref="/connectors">Ver todas las integraciones</a></p>
     <!-- Búsqueda en vivo: debe coincidir con LIVE_SEARCH_SOURCES (src/lib/liveSearchSources.ts); lo verifica liveSearchSources.test.ts.
-         Cada fuente va con su nombre; logo solo si la marca permite usarlo (hoy solo Perplexity, ver docs/live-search-sources.md).
+         Cada fuente va con logo + nombre (decisión de JM 2026-10-09; ver docs/live-search-sources.md).
          Las del lote 3 van con hidden y solo aparecen si /api/live-search-sources dice lote3:true (NEXT_PUBLIC_LIVE_SEARCH_LOTE3=1). -->
     <div class="live-src" data-live-search>
       <h3 class="live-src-h">La IA de TS busca en vivo en…</h3>
       <div class="live-src-row" role="list">
-        <span class="src-chip" role="listitem">Google</span>
-        <span class="src-chip" role="listitem">Google Maps</span>
-        <span class="src-chip" role="listitem">YouTube</span>
-        <span class="src-chip" role="listitem">Biblioteca de anuncios de Meta</span>
-        <span class="src-chip" role="listitem">ChatGPT</span>
+        <span class="src-chip" role="listitem"><img src="/sources/google.svg" alt="Google" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">Google</span></span>
+        <span class="src-chip" role="listitem"><img src="/sources/google-maps.svg" alt="Google Maps" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">Google Maps</span></span>
+        <span class="src-chip" role="listitem"><img src="/sources/youtube.svg" alt="YouTube" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">YouTube</span></span>
+        <span class="src-chip" role="listitem"><img src="/sources/meta.svg" alt="Biblioteca de anuncios de Meta" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">Biblioteca de anuncios de Meta</span></span>
+        <span class="src-chip dark-logo" role="listitem"><img src="/sources/chatgpt.svg" alt="ChatGPT" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">ChatGPT</span></span>
         <span class="src-chip" role="listitem"><img src="/sources/perplexity.svg" alt="Perplexity" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">Perplexity</span></span>
-        <span class="src-chip" role="listitem">Yelp</span>
-        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>TikTok</span>
-        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>Instagram</span>
-        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>Facebook</span>
-        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>Tripadvisor</span>
-        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>Amazon</span>
-        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>Walmart</span>
-        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>eBay</span>
-        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden>Airbnb</span>
+        <span class="src-chip" role="listitem"><img src="/sources/yelp.svg" alt="Yelp" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">Yelp</span></span>
+        <span class="src-chip dark-logo" role="listitem" data-live-search-lote="3" hidden><img src="/sources/tiktok.svg" alt="TikTok" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">TikTok</span></span>
+        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden><img src="/sources/instagram.svg" alt="Instagram" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">Instagram</span></span>
+        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden><img src="/sources/facebook.svg" alt="Facebook" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">Facebook</span></span>
+        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden><img src="/sources/tripadvisor.svg" alt="Tripadvisor" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">Tripadvisor</span></span>
+        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden><img src="/sources/amazon.svg" alt="Amazon" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">Amazon</span></span>
+        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden><img src="/sources/ebay.svg" alt="eBay" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">eBay</span></span>
+        <span class="src-chip" role="listitem" data-live-search-lote="3" hidden><img src="/sources/airbnb.svg" alt="Airbnb" loading="lazy" onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()" /><span aria-hidden="true">Airbnb</span></span>
       </div>
       <p class="live-src-note">Las marcas pertenecen a sus respectivos dueños. TS consulta información pública; no implica afiliación.</p>
     </div>
@@ -744,6 +743,14 @@ html.var-dark .src-chip.dark-logo img{background:#e8eaee;border-radius:4px;paddi
    y no lee env vars, así que se lo pregunta a /api/live-search-sources. Si la
    llamada falla, quedan ocultas (la rama segura). */
 (function(){
+  /* i18n.js traduce el texto visible pero no el alt: el alt de cada logo copia
+     el nombre visible (ej. "Biblioteca de anuncios de Meta" → "Meta Ad Library"). */
+  function syncAlt(){
+    document.querySelectorAll('[data-live-search] .src-chip img').forEach(function(img){
+      var label=img.nextElementSibling; if(label)img.alt=label.textContent.trim();
+    });
+  }
+  window.addEventListener('ts-lang',syncAlt);
   var later=document.querySelectorAll('[data-live-search] [data-live-search-lote="3"]');
   if(!later.length||!window.fetch)return;
   fetch('/api/live-search-sources').then(function(r){return r.ok?r.json():null}).then(function(d){
