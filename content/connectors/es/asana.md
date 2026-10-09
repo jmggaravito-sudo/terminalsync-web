@@ -6,14 +6,14 @@ status: available
 simpleTitle: "Pregúntale a tus proyectos de Asana cómo van"
 simpleSubtitle: "MCP oficial de Asana: tareas, proyectos y estados por OAuth, sin pegar ninguna API key."
 devTitle: "Asana MCP Connector"
-devSubtitle: "Official hosted Asana MCP (mcp.asana.com/v2/mcp) — tasks and project data through OAuth."
+devSubtitle: "Official hosted Asana MCP (mcp.asana.com/sse) — tasks and project data through OAuth."
 ctaUrl: "https://asana.com"
 tokenHelpUrl: "https://developers.asana.com/docs/using-asanas-mcp-server"
 manifest:
   mcpServers:
     asana:
       command: npx
-      args: ["-y", "mcp-remote@latest", "https://mcp.asana.com/v2/mcp"]
+      args: ["-y", "mcp-remote@latest", "https://mcp.asana.com/sse"]
 affiliate: false
 tagline: "Tu workspace de Asana, al alcance del agente"
 originalAuthor: "Asana"
@@ -48,16 +48,16 @@ Este conector **no te pide pegar ninguna API key**. Usa el login de tu propia cu
 2. El puente `mcp-remote` abre el login de Asana en tu navegador y te pide autorizar el acceso.
 3. Apruébalo con tu cuenta — el conector solo puede ver y hacer lo que esa cuenta tenga permitido. La guía oficial de Asana está en [developers.asana.com](https://developers.asana.com/docs/using-asanas-mcp-server).
 
-**Aclaración honesta:** es un server **hospedado por Asana** (`https://mcp.asana.com/v2/mcp`), no algo que corre en tu computadora. Lo que el agente puede ver o cambiar queda acotado por los permisos de tu workspace de Asana.
+**Aclaración honesta:** es un server **hospedado por Asana** (`https://mcp.asana.com/sse`), no algo que corre en tu computadora. Lo que el agente puede ver o cambiar queda acotado por los permisos de tu workspace de Asana.
 
 --- dev ---
 
-Asana publica un **server MCP remoto oficial (V2)** en `https://mcp.asana.com/v2/mcp`, documentado en `developers.asana.com/docs/using-asanas-mcp-server`. El beta anterior (`v1`, servido en `/sse`) está programado por Asana para apagarse el 05/11/2026 — este conector apunta a V2. El transporte es Streamable HTTP; la auth es OAuth contra la cuenta de Asana del usuario (la doc dice, verbatim: *"This server requires authentication with your Asana account. When connecting, you'll be prompted to authorize the application to access your Asana data."*).
+Asana publica un **server MCP remoto oficial (endpoint SSE)** en `https://mcp.asana.com/sse`, documentado en `developers.asana.com/docs/using-asanas-mcp-server`. El beta anterior (`v1`, servido en `/sse`) está programado por Asana para apagarse el 05/11/2026 — este conector apunta a V2. El transporte es Streamable HTTP; la auth es OAuth contra la cuenta de Asana del usuario (la doc dice, verbatim: *"This server requires authentication with your Asana account. When connecting, you'll be prompted to authorize the application to access your Asana data."*).
 
 TerminalSync hace de puente con el endpoint hospedado localmente:
 
 ```
-npx -y mcp-remote@latest https://mcp.asana.com/v2/mcp
+npx -y mcp-remote@latest https://mcp.asana.com/sse
 ```
 
 La doc de Asana no publica una lista estática de tools en la página; dirige a los clientes a llamar `tools/list` contra el server en vivo para enumerar las tools disponibles. Las capacidades de ejemplo documentadas cubren buscar/filtrar tareas, crear tareas, listar secciones de proyecto, y chequear el estado de un proyecto.
