@@ -519,6 +519,10 @@
     "Descarga la versión para Mac Intel": "Download the Intel Mac version",
     "Conecta tus herramientas de siempre — arrastrándolas, cero código": "Connect the tools you already use — drag them in, zero code",
     "Ver todas las integraciones": "Browse all integrations",
+    // ── Búsqueda en vivo (fila de fuentes bajo las integraciones) ──
+    "La IA de TS busca en vivo en…": "TS AI searches live on…",
+    "Biblioteca de anuncios de Meta": "Meta Ad Library",
+    "Las marcas pertenecen a sus respectivos dueños. TS consulta información pública; no implica afiliación.": "Brands belong to their respective owners. TS looks up public information; no affiliation implied.",
     "Más de 2,000 empresas ya confían en TS": "Over 2,000 companies already trust TS",
     // Video
     "Mira TS en acción": "See TS in action",

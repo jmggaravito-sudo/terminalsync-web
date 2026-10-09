@@ -3,6 +3,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import type { Locale } from "@/content";
+import {
+  liveSearchSourceLabel,
+  VISIBLE_LIVE_SEARCH_SOURCES,
+  type LiveSearchSource,
+} from "@/lib/liveSearchSources";
 
 // Filas del catálogo real (public/connectors/*.svg). Si algún slug falla al
 // cargar, el tile se oculta (nunca se muestra un tile vacío).
@@ -46,6 +51,9 @@ const COPY = {
     subtitle:
       "Arrastra tus herramientas de siempre a tu sesión. Sin claves, sin configurar.",
     cta: "Ver todas las integraciones →",
+    liveSearchTitle: "La IA de TS busca en vivo en…",
+    liveSearchNote:
+      "Las marcas pertenecen a sus respectivos dueños. TS consulta información pública; no implica afiliación.",
   },
   en: {
     title: "Ready-made automations for your business with ",
@@ -53,6 +61,9 @@ const COPY = {
     subtitle:
       "Drag your everyday tools into your session. No keys, no setup.",
     cta: "See all integrations →",
+    liveSearchTitle: "TS AI searches live on…",
+    liveSearchNote:
+      "Brands belong to their respective owners. TS looks up public information; no affiliation implied.",
   },
 } as const;
 
@@ -91,7 +102,81 @@ export function IntegrationsMarquee({ lang }: { lang: Locale }) {
           {t.cta}
         </Link>
       </div>
+      <LiveSearchSources
+        lang={lang}
+        title={t.liveSearchTitle}
+        note={t.liveSearchNote}
+        sources={VISIBLE_LIVE_SEARCH_SOURCES}
+      />
     </section>
+  );
+}
+
+/**
+ * Tercera fila, separada de las integraciones: fuentes públicas que la IA de
+ * TS consulta en vivo (no son cuentas que el cliente conecta). Fila estática
+ * y centrada en vez de marquee: son pocas marcas y así no hay huecos en
+ * pantallas anchas. Lista, logos e interruptor del lote 3 en
+ * `liveSearchSources.ts`.
+ */
+export function LiveSearchSources({
+  lang,
+  title,
+  note,
+  sources,
+}: {
+  lang: Locale;
+  title: string;
+  note: string;
+  sources: readonly LiveSearchSource[];
+}) {
+  if (sources.length === 0) return null;
+  return (
+    <div className="ts-live-sources">
+      <h3 className="ts-live-sources-title">{title}</h3>
+      <ul className="ts-live-sources-row" aria-label={title}>
+        {sources.map((source) => (
+          <SourceChip key={source.name} source={source} lang={lang} />
+        ))}
+      </ul>
+      <p className="ts-live-sources-note">{note}</p>
+    </div>
+  );
+}
+
+/**
+ * Cada fuente va con su logo y su nombre. El logo lleva el `alt`; el nombre
+ * visible queda `aria-hidden` para que el lector de pantalla no lo lea dos
+ * veces. Si el logo falla al cargar, se oculta y queda solo el nombre.
+ */
+function SourceChip({
+  source,
+  lang,
+}: {
+  source: LiveSearchSource;
+  lang: Locale;
+}) {
+  const [failed, setFailed] = useState(false);
+  const label = liveSearchSourceLabel(source, lang);
+  const showLogo = Boolean(source.logo) && !failed;
+  return (
+    <li
+      className={`ts-source-chip${
+        showLogo && source.darkLogo ? " ts-source-chip--dark-logo" : ""
+      }`}
+    >
+      {showLogo && (
+        <img
+          src={`/sources/${source.logo}.svg`}
+          alt={label}
+          onError={() => setFailed(true)}
+          loading="lazy"
+          width={18}
+          height={18}
+        />
+      )}
+      <span aria-hidden={showLogo ? true : undefined}>{label}</span>
+    </li>
   );
 }
 
