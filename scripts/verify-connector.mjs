@@ -27,6 +27,10 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONNECTOR_DIRS = ["content/connectors/en", "content/connectors/es"];
 const FIRST_PARTY = new Set(["memory", "meta-ads", "meta-social"]);
 const OAUTH_CONNECTORS = new Set(["gmail", "google-calendar", "google-sheets"]);
+// Remote connectors whose OAuth server has no dynamic client registration: mcp-remote
+// cannot log in (smoke 2026-10-08, "does not support dynamic client registration"), so
+// they stay blocked until the app can pre-register a client with the vendor.
+const REMOTE_WITHOUT_DCR = new Set(["zoom"]);
 const KEY_REQUIRED_CONNECTORS = new Set(["postgres", "neon", "mongodb", "stripe", "todoist", "elasticsearch", "pipedream", "monday"]);
 
 function parseArgs(argv) {
@@ -186,6 +190,7 @@ export async function verifyFile(file, { verifiedAt = new Date().toISOString(), 
   if (FIRST_PARTY.has(slug)) return { slug, firstParty: true };
   if (!validateSlug(slug)) return baseResult(slug, "package-invalid", verifiedAt);
   const server = getStdioServer(parsed.data); if (!server) return baseResult(slug, "no-manifest", verifiedAt);
+  if (isMcpRemote(server) && REMOTE_WITHOUT_DCR.has(slug)) return baseResult(slug, "needs-oauth", verifiedAt);
   if (isMcpRemote(server)) return { slug, installableForAi: true, installableForAiReason: "remote-needs-login", aiToolsCount: 0, aiReadOnlyTools: 0, verifiedAt, verifiedPackageVersion: null };
   const recipe = parseRecipe(server); if (recipe.reason) return baseResult(slug, recipe.reason, verifiedAt);
   const envInput = server.env && typeof server.env === "object" ? server.env : {};

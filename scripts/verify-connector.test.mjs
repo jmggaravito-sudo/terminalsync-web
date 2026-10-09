@@ -43,3 +43,11 @@ describe("remote connectors (mcp-remote)", () => {
     expect(REASONS.has("remote-needs-login")).toBe(true);
   });
 });
+
+describe("remote connectors without dynamic client registration", () => {
+  it("keeps zoom blocked: mcp-remote cannot log in there", async () => {
+    const { verifyFile } = await import("./verify-connector.mjs");
+    const r = await verifyFile("content/connectors/en/zoom.md", { verifiedAt: "2026-10-08T00:00:00.000Z" });
+    expect(r).toMatchObject({ slug: "zoom", installableForAi: false, installableForAiReason: "needs-oauth" });
+  });
+});
