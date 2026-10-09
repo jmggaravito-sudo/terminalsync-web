@@ -177,6 +177,14 @@ jobs:
             --max-turns ${{ inputs.max_turns || '80' }}
             --allowedTools Read,Write,Edit,MultiEdit,Bash,WebFetch,Grep,Glob
 
+      - name: Rescatar trabajo si el agente llego al tope de turnos
+        # El agente a veces agota los turnos sin haber subido nada y se pierde todo.
+        # Esto sube lo escrito como PR en draft (WIP), nunca mergeado. Ver scripts/loop-salvage.sh.
+        if: ${{ always() && inputs.dry_run != true }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/loop-salvage.sh plugins
+
       - name: Redactar el detalle de la corrida del agente
         # El JSON trae el transcripto completo del agente, y el prompt lo deja
         # correr comandos: si alguna vez corre `env`, el archivo queda con los
