@@ -13,7 +13,7 @@ manifest:
   mcpServers:
     siigo:
       command: npx
-      args: ["-y", "mcp-remote@latest", "https://mcp.siigo.com"]
+      args: ["-y", "mcp-remote@latest", "https://mcp.siigo.com/mcp-adapter"]
 affiliate: false
 tagline: "Your invoices, your customers and your catalog, within reach of the agent"
 originalAuthor: "Siigo"
@@ -51,7 +51,7 @@ This connector **doesn't ask you to paste an API key**. It uses the official Sii
 Siigo publishes its **official MCP** as a remote/hosted server at `https://mcp.siigo.com` (the "URL MCP Siigo"), documented in its developer portal (`developers.siigo.com/docs/siigoapi/MCP/1-documentation/`). There's no npm package or local stdio server — it's bridged locally with `mcp-remote`:
 
 ```
-npx -y mcp-remote@latest https://mcp.siigo.com
+npx -y mcp-remote@latest https://mcp.siigo.com/mcp-adapter
 ```
 
 Authentication is **OAuth/B2C through Siigo's official login**, with no client secret to store: "Inicias sesión mediante el login oficial de Siigo (OAuth/B2C)", and "La IA nunca ve tu contraseña y opera utilizando la identidad y los permisos asociados a tu usuario" (the AI never sees your password and operates with your user's identity and permissions). Siigo's launch was done on Claude and ChatGPT. **Logging in to Siigo through the `mcp-remote` bridge has not been tested yet with a real account**: the documentation describes the OAuth/B2C flow but does not mention this bridge.
