@@ -69,7 +69,7 @@ npx -y mcp-remote@latest https://mcp.alegra.com/mcp --header "Authorization:${AL
 
 **Token:** app.alegra.com → **Configuración** → **API - Integraciones con otros sistemas** (shows the API email and the token; generates one if none exists).
 
-**Tool groups (`mcp-groups`).** An optional header — "Grupos de herramientas a habilitar separados por comas" (tool groups to enable, comma-separated) — with the documented values: `invoices`, `items`, `contacts`, `banks`, `income-payments`, `resolutions`, `currencies`, `sellers`, `taxes`, `retentions`, `reports`, `ledger`, `accounting`, `support-center` (docs example: `invoices,items,contacts,banks`). The manifest doesn't send it, so the server's default groups are exposed; to narrow the surface, add it as another header to the bridge (`--header "mcp-groups:invoices,items"`).
+**Tool groups (`mcp-groups`).** An optional header — "Grupos de herramientas a habilitar separados por comas" (tool groups to enable, comma-separated) — with the documented values: `invoices`, `items`, `contacts`, `banks`, `income-payments`, `resolutions`, `currencies`, `sellers`, `taxes`, `retentions`, `reports`, `ledger`, `accounting`, `support-center` (docs example: `invoices,items,contacts,banks`). The manifest doesn't send it — the docs don't specify which groups stay active when the header is absent. To narrow the surface, add it as another header to the bridge (`--header "mcp-groups:invoices,items"`).
 
 **Documented catalog by group** (official pages under `developer.alegra.com/reference/`):
 
