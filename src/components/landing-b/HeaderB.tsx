@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import type { Dict, Locale } from "@/content";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -11,11 +12,30 @@ interface Props {
   lang: Locale;
 }
 
-export function HeaderB({ dict, lang }: Props) {
+export function HeaderB({ dict, lang, standalone = false }: Props & { standalone?: boolean }) {
   const c = dict.landingB?.header;
+  const standaloneTheme = standalone
+    ? ({
+        "--color-bg": "#ffffff",
+        "--color-panel": "#ffffff",
+        "--color-panel-2": "#f8f7fc",
+        "--color-border": "#e2e4e9",
+        "--color-fg": "#16181d",
+        "--color-fg-strong": "#16181d",
+        "--color-fg-muted": "#565b64",
+        "--color-accent": "#6a48e8",
+        "--color-accent-soft": "#5a37d6",
+        "--color-accent-glow": "rgba(106,72,232,0.16)",
+      } as CSSProperties)
+    : undefined;
 
   return (
-    <header className="sticky top-0 z-30 backdrop-blur-md bg-[var(--color-bg)]/80 border-b border-[var(--color-border)]">
+    <header
+      className={standalone
+        ? "sticky top-0 z-30 border-b border-[#e2e4e9] bg-white/90 backdrop-blur-md"
+        : "sticky top-0 z-30 backdrop-blur-md bg-[var(--color-bg)]/80 border-b border-[var(--color-border)]"}
+      style={standaloneTheme}
+    >
       <div className="mx-auto max-w-6xl px-5 md:px-6 h-14 flex items-center justify-between gap-4">
         <Link href={`/${lang}`} className="flex items-center gap-2 shrink-0">
           <Logo size={28} />
@@ -25,7 +45,7 @@ export function HeaderB({ dict, lang }: Props) {
         </Link>
 
         <div className="flex items-center gap-3 ml-auto">
-          <ThemeToggle labels={dict.theme} />
+          {!standalone && <ThemeToggle labels={dict.theme} />}
           <LanguageSwitcher current={lang} />
           <a
             href="mailto:hola@terminalsync.ai"
