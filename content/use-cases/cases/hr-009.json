@@ -1,0 +1,35 @@
+{
+  "id": "hr-009",
+  "categoryId": "hr",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 51,
+  "es": {
+    "title": "Encuesta de clima laboral",
+    "outcome": "Encuesta corta que detecta problemas antes que escalen.",
+    "prompt": "Quiero medir cómo se siente mi equipo trabajando en mi empresa.\n\nTamaño del equipo: [#].\nLo que más me importa medir: [satisfacción / liderazgo / carga laboral / clima].\n\nDame: 12 preguntas balanceadas (10 numéricas y 2 abiertas), mensaje de presentación que invite a responder con sinceridad, cómo analizar resultados y plan de acción según señales de alerta.",
+    "recommendedFiles": [
+      "Resultados de encuestas previas"
+    ],
+    "expectedResult": [
+      "12 preguntas",
+      "Mensaje de invitación",
+      "Análisis",
+      "Plan de acción"
+    ]
+  },
+  "en": {
+    "title": "Employee engagement survey",
+    "outcome": "A short survey that detects issues before they escalate.",
+    "prompt": "I want to measure how my team feels working at my company.\n\nTeam size: [#].\nWhat I most want to measure: [satisfaction / leadership / workload / climate].\n\nGive me: 12 balanced questions (10 numeric and 2 open), an introduction message that invites honest responses, how to analyze results and an action plan based on warning signs.",
+    "recommendedFiles": [
+      "Previous survey results"
+    ],
+    "expectedResult": [
+      "12 questions",
+      "Invitation message",
+      "Analysis",
+      "Action plan"
+    ]
+  }
+}

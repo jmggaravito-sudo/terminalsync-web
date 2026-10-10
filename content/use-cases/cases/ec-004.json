@@ -1,0 +1,33 @@
+{
+  "id": "ec-004",
+  "categoryId": "ecommerce",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 76,
+  "es": {
+    "title": "Email de carrito abandonado",
+    "outcome": "Secuencia de 3 emails para recuperar carritos perdidos.",
+    "prompt": "Necesito una secuencia de emails para recuperar carritos abandonados en mi tienda online.\n\nMi tienda: [describir].\nProductos principales: [listar].\nMargen para descuentos: [%].\n\nDame: secuencia de 3 emails (2 horas / 24 horas / 72 horas) con asuntos que abran, copy persuasivo pero no agresivo, oferta progresiva de descuento y CTA claro en cada uno.",
+    "recommendedFiles": [
+      "Ejemplos de productos"
+    ],
+    "expectedResult": [
+      "Email 1: 2 hs",
+      "Email 2: 24 hs",
+      "Email 3: 72 hs"
+    ]
+  },
+  "en": {
+    "title": "Abandoned Cart Email",
+    "outcome": "Sequence of 3 emails to recover lost carts.",
+    "prompt": "I need a sequence of emails to recover abandoned carts in my online store.\n\nMy store: [describe].\nMain products: [list].\nMargin available for discounts: [%].\n\nGive me: a sequence of 3 emails (2 hours / 24 hours / 72 hours) with subject lines that get opens, persuasive but not aggressive copy, a progressive discount offer and a clear CTA in each.",
+    "recommendedFiles": [
+      "Product examples"
+    ],
+    "expectedResult": [
+      "Email 1: 2 hrs",
+      "Email 2: 24 hrs",
+      "Email 3: 72 hrs"
+    ]
+  }
+}

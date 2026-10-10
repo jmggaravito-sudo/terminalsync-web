@@ -1,0 +1,37 @@
+{
+  "id": "ops-004",
+  "categoryId": "operations",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 36,
+  "es": {
+    "title": "Plan de mejora continua",
+    "outcome": "Plan trimestral para mejorar un área específica de la operación.",
+    "prompt": "Quiero implementar un plan de mejora continua en un área de mi empresa.\n\nÁrea a mejorar: [describir].\nProblemas actuales: [listar].\nMeta deseada: [resultado en 3 meses].\n\nDame: diagnóstico inicial, 5 acciones de mejora priorizadas, cronograma de 3 meses, responsables sugeridos y métricas para medir el progreso.",
+    "recommendedFiles": [
+      "Diagnóstico actual",
+      "Datos del área"
+    ],
+    "expectedResult": [
+      "Diagnóstico",
+      "5 acciones",
+      "Cronograma",
+      "Métricas"
+    ]
+  },
+  "en": {
+    "title": "Continuous improvement plan",
+    "outcome": "Quarterly plan to improve a specific operational area.",
+    "prompt": "I want to implement a continuous improvement plan in an area of my company.\n\nArea to improve: [describe].\nCurrent problems: [list].\nDesired goal: [result in 3 months].\n\nGive me: initial diagnosis, 5 prioritized improvement actions, 3-month timeline, suggested responsible persons and metrics to measure progress.",
+    "recommendedFiles": [
+      "Current diagnosis",
+      "Area data"
+    ],
+    "expectedResult": [
+      "Diagnosis",
+      "5 actions",
+      "Timeline",
+      "Metrics"
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "mkt-003",
+  "categoryId": "marketing",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 13,
+  "popular": true,
+  "es": {
+    "title": "Crear contenido para redes sociales",
+    "outcome": "Plan de 10 posts listos para publicar la próxima quincena.",
+    "prompt": "Necesito ideas y textos para publicar en redes sociales.\n\nMi negocio: [describir].\nMis redes: [Instagram, Facebook, LinkedIn, TikTok…].\nTono de marca: [profesional / cercano / divertido].\n\nDame 10 ideas de posts con: título sugerido, texto completo listo para publicar, hashtags relevantes y descripción de la imagen ideal. Mezcla educativos, vendedores e inspiradores.",
+    "recommendedFiles": [
+      "Identidad de marca",
+      "Posts anteriores que funcionaron"
+    ],
+    "expectedResult": [
+      "10 posts completos",
+      "Hashtags por post",
+      "Sugerencias de imagen"
+    ]
+  },
+  "en": {
+    "title": "Create social media content",
+    "outcome": "Plan of 10 posts ready to publish over the next two weeks.",
+    "prompt": "I need ideas and text to post on social media.\n\nMy business: [describe].\nMy networks: [Instagram, Facebook, LinkedIn, TikTok...].\nBrand tone: [professional / approachable / fun].\n\nGive me 10 post ideas with: suggested title, full text ready to publish, relevant hashtags and description of the ideal image. Mix educational, sales and inspirational posts.",
+    "recommendedFiles": [
+      "Brand identity",
+      "Previous posts that performed well"
+    ],
+    "expectedResult": [
+      "10 complete posts",
+      "Hashtags per post",
+      "Image suggestions"
+    ]
+  }
+}

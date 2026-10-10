@@ -1,0 +1,35 @@
+{
+  "id": "ec-002",
+  "categoryId": "ecommerce",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 74,
+  "es": {
+    "title": "Optimizar página de checkout",
+    "outcome": "Recomendaciones concretas para reducir abandono de carrito.",
+    "prompt": "Tengo mucho abandono de carrito en mi tienda online y quiero reducirlo.\n\nMi tienda: [describir producto].\n% actual de abandono: [si lo sabes].\nPasos actuales del checkout: [describir].\nMétodos de pago aceptados: [listar].\n\nDame: 7 mejoras concretas priorizadas por impacto, qué textos y botones cambiar, qué señales de confianza agregar y email de recuperación de carrito.",
+    "recommendedFiles": [
+      "Capturas del checkout actual"
+    ],
+    "expectedResult": [
+      "7 mejoras priorizadas",
+      "Cambios de copy",
+      "Señales de confianza",
+      "Email de recuperación"
+    ]
+  },
+  "en": {
+    "title": "Optimize Checkout Page",
+    "outcome": "Concrete recommendations to reduce cart abandonment.",
+    "prompt": "I have high cart abandonment on my online store and want to reduce it.\n\nMy store: [describe product].\nCurrent abandonment %: [if known].\nCurrent checkout steps: [describe].\nAccepted payment methods: [list].\n\nGive me: 7 concrete improvements prioritized by impact, which texts and buttons to change, what trust signals to add and a cart recovery email.",
+    "recommendedFiles": [
+      "Screenshots of current checkout"
+    ],
+    "expectedResult": [
+      "7 prioritized improvements",
+      "Copy changes",
+      "Trust signals",
+      "Recovery email"
+    ]
+  }
+}

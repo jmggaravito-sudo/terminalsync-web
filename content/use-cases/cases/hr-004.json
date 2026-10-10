@@ -1,0 +1,37 @@
+{
+  "id": "hr-004",
+  "categoryId": "hr",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 46,
+  "es": {
+    "title": "Evaluación de desempeño",
+    "outcome": "Evaluación justa que motiva y orienta al empleado.",
+    "prompt": "Necesito hacer una evaluación de desempeño justa y útil.\n\nEmpleado: [puesto].\nTiempo en la empresa: [meses/años].\nObjetivos del último periodo: [describir].\nResultados: [describir].\n\nDame: criterios de evaluación profesionales, formato de reunión de evaluación, cómo dar feedback positivo y de mejora, plan de desarrollo para próximo periodo y plantilla de acuerdo de objetivos.",
+    "recommendedFiles": [
+      "Evaluaciones previas",
+      "Objetivos pactados"
+    ],
+    "expectedResult": [
+      "Criterios",
+      "Formato de reunión",
+      "Plan de desarrollo",
+      "Plantilla de objetivos"
+    ]
+  },
+  "en": {
+    "title": "Performance Evaluation",
+    "outcome": "Fair evaluation that motivates and guides the employee.",
+    "prompt": "I need to perform a fair and useful performance evaluation.\n\nEmployee: [position].\nTime at the company: [months/years].\nObjectives from the last period: [describe].\nResults: [describe].\n\nGive me: professional evaluation criteria, format for the evaluation meeting, how to give positive and improvement feedback, development plan for the next period and a template for agreed objectives.",
+    "recommendedFiles": [
+      "Previous evaluations",
+      "Agreed objectives"
+    ],
+    "expectedResult": [
+      "Criteria",
+      "Meeting format",
+      "Development plan",
+      "Objectives template"
+    ]
+  }
+}

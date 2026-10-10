@@ -1,0 +1,32 @@
+{
+  "id": "sup-003",
+  "categoryId": "support",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 23,
+  "popular": true,
+  "es": {
+    "title": "Plantillas para WhatsApp Business",
+    "outcome": "10 respuestas tipo listas para responder rápido y consistente.",
+    "prompt": "Necesito plantillas de respuesta rápida para WhatsApp Business.\n\nMi negocio: [describir].\nLas 10 situaciones más comunes son: [listar las que recuerdes, ej: precio, horarios, ubicación, agendar, devoluciones…].\n\nDame 10 plantillas completas con tono cálido pero profesional, cortas, con emojis sutiles y CTA claro al final de cada una.",
+    "recommendedFiles": [
+      "Conversaciones tipo que recibes"
+    ],
+    "expectedResult": [
+      "10 plantillas listas",
+      "Variaciones por situación"
+    ]
+  },
+  "en": {
+    "title": "Templates for WhatsApp Business",
+    "outcome": "10 ready-to-use response templates to reply quickly and consistently.",
+    "prompt": "I need quick response templates for WhatsApp Business.\n\nMy business: [describe].\nThe 10 most common situations are: [list the ones you remember, e.g.: price, hours, location, booking, returns…].\n\nGive me 10 complete templates with a warm but professional tone, short, with subtle emojis and a clear CTA at the end of each one.",
+    "recommendedFiles": [
+      "Typical conversations you receive"
+    ],
+    "expectedResult": [
+      "10 ready templates",
+      "Variations by situation"
+    ]
+  }
+}

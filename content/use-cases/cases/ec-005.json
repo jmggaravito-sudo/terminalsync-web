@@ -1,0 +1,37 @@
+{
+  "id": "ec-005",
+  "categoryId": "ecommerce",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 77,
+  "es": {
+    "title": "Lanzamiento de nuevo producto",
+    "outcome": "Plan completo para lanzar un producto nuevo en tu tienda.",
+    "prompt": "Voy a lanzar un producto nuevo en mi tienda online y quiero un plan completo.\n\nProducto: [describir].\nFecha de lanzamiento: [cuándo].\nAudiencia: [perfil].\nPrecio: [monto].\n\nDame: cuenta regresiva 14 días antes, email pre-lanzamiento, día del lanzamiento, post-lanzamiento, anuncios para Meta Ads y métricas a seguir.",
+    "recommendedFiles": [
+      "Fotos del producto",
+      "Audiencia actual"
+    ],
+    "expectedResult": [
+      "Cronograma",
+      "Emails",
+      "Anuncios",
+      "Métricas"
+    ]
+  },
+  "en": {
+    "title": "New Product Launch",
+    "outcome": "Complete plan to launch a new product in your store.",
+    "prompt": "I'm launching a new product in my online store and want a complete plan.\n\nProduct: [describe].\nLaunch date: [when].\nAudience: [profile].\nPrice: [amount].\n\nGive me: a 14-day countdown, pre-launch email, launch day, post-launch, ads for Meta Ads and metrics to track.",
+    "recommendedFiles": [
+      "Product photos",
+      "Current audience"
+    ],
+    "expectedResult": [
+      "Timeline",
+      "Emails",
+      "Ads",
+      "Metrics"
+    ]
+  }
+}

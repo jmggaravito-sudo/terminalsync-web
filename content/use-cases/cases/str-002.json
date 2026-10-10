@@ -1,0 +1,37 @@
+{
+  "id": "str-002",
+  "categoryId": "strategy",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 95,
+  "es": {
+    "title": "Análisis FODA",
+    "outcome": "Diagnóstico claro de fortalezas, debilidades, oportunidades y amenazas.",
+    "prompt": "Quiero hacer un FODA serio de mi empresa para tomar mejores decisiones.\n\nMi negocio: [describir].\nMercado y competencia: [contexto].\nLo que siento que sé: [intuiciones].\n\nDame: FODA estructurado con 5 puntos en cada cuadrante, las 3 prioridades surgidas del cruce de cuadrantes (FO, FA, DO, DA) y plan de acción para cada prioridad.",
+    "recommendedFiles": [
+      "Datos del negocio",
+      "Análisis de competencia"
+    ],
+    "expectedResult": [
+      "FODA completo",
+      "Cruces estratégicos",
+      "3 prioridades",
+      "Acciones"
+    ]
+  },
+  "en": {
+    "title": "SWOT analysis",
+    "outcome": "Clear diagnosis of strengths, weaknesses, opportunities, and threats.",
+    "prompt": "I want to do a serious SWOT of my company to make better decisions.\n\nMy business: [describe].\nMarket and competition: [context].\nWhat I feel I know: [intuitions].\n\nGive me: a structured SWOT with 5 points in each quadrant, the 3 priorities arising from the crossing of quadrants (SO, ST, WO, WT) and an action plan for each priority.",
+    "recommendedFiles": [
+      "Business data",
+      "Competitive analysis"
+    ],
+    "expectedResult": [
+      "Complete SWOT",
+      "Strategic crosses",
+      "3 priorities",
+      "Actions"
+    ]
+  }
+}

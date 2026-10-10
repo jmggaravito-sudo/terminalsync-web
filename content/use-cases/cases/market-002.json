@@ -1,0 +1,42 @@
+{
+  "id": "market-002",
+  "categoryId": "market",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 106,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__find_places",
+    "business-search__web_search"
+  ],
+  "es": {
+    "title": "Competidores cerca de mi negocio",
+    "outcome": "Encuentra a tus competidores de la zona en Google Maps y te muestra quién aparece primero en Google cuando buscan tu servicio.",
+    "prompt": "Quiero conocer a mis competidores cercanos.\n\nMi negocio: [qué vendes o qué servicio das].\nZona: [barrio o ciudad, y país — por ejemplo: Houston, Texas, EE. UU. / Chapinero, Bogotá, Colombia].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta la zona, el país o el idioma, pregúntamelos antes de buscar. Busca en Google Maps los negocios de mi rubro en esa zona y arma una tabla con: nombre, dirección, teléfono, sitio web, calificación y número de reseñas. Después busca en Google mi servicio en esa zona (por ejemplo, \"dentista en Houston\") y dime quiénes aparecen primero, qué destacan en esos resultados y qué oportunidades tengo para diferenciarme.\n\nNo inventes precios ni datos que no aparezcan en los resultados.",
+    "recommendedFiles": [
+      "Descripción de tu negocio",
+      "Competidores que ya conoces"
+    ],
+    "expectedResult": [
+      "Tabla de competidores cercanos",
+      "Quién aparece primero en Google",
+      "Qué destacan tus competidores",
+      "Oportunidades para diferenciarte"
+    ]
+  },
+  "en": {
+    "title": "Competitors near my business",
+    "outcome": "Finds your local competitors on Google Maps and shows who comes up first on Google when people search for your service.",
+    "prompt": "I want to know my nearby competitors.\n\nMy business: [what you sell or what service you offer].\nArea: [neighborhood or city, and country — for example: Houston, Texas, USA / Chapinero, Bogotá, Colombia].\nLanguage for the answer: [English / Spanish].\n\nIf the area, the country, or the language is missing, ask me before searching. Search Google Maps for businesses like mine in that area and build a table with: name, address, phone, website, rating, and number of reviews. Then search Google for my service in that area (for example, \"dentist in Houston\") and tell me who comes up first, what they highlight in those results, and what opportunities I have to stand out.\n\nDon't make up prices or details that don't appear in the results.",
+    "recommendedFiles": [
+      "Description of your business",
+      "Competitors you already know"
+    ],
+    "expectedResult": [
+      "Table of nearby competitors",
+      "Who comes up first on Google",
+      "What your competitors highlight",
+      "Ways to stand out"
+    ]
+  }
+}

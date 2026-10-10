@@ -1,0 +1,37 @@
+{
+  "id": "fin-004",
+  "categoryId": "finance",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 56,
+  "es": {
+    "title": "Plan para reducir cartera vencida",
+    "outcome": "Estrategia clara para cobrar lo que te deben.",
+    "prompt": "Tengo cartera vencida y necesito un plan para cobrarla sin perder a los clientes.\n\nVolumen actual de cartera vencida: [monto y % del total].\nTipo de clientes deudores: [describir].\nTiempo promedio de mora: [días].\n\nDame: estrategia por tipo de mora (15/30/60/90 días), 4 mensajes escalonados de cobro, cuándo y cómo escalar legalmente y políticas preventivas para evitar futura mora.",
+    "recommendedFiles": [
+      "Lista de clientes con mora",
+      "Histórico de cobranza"
+    ],
+    "expectedResult": [
+      "Estrategia por mora",
+      "4 mensajes de cobro",
+      "Plan legal",
+      "Políticas preventivas"
+    ]
+  },
+  "en": {
+    "title": "Plan to reduce overdue receivables",
+    "outcome": "Clear strategy to collect what is owed to you.",
+    "prompt": "I have overdue receivables and need a plan to collect them without losing customers.\n\nCurrent volume of overdue receivables: [amount and % of total].\nType of debtor clients: [describe].\nAverage days past due: [days].\n\nGive me: strategy by aging (15/30/60/90 days), 4 staged collection messages, when and how to escalate legally and preventive policies to avoid future overdue receivables.",
+    "recommendedFiles": [
+      "List of clients in arrears",
+      "Collections history"
+    ],
+    "expectedResult": [
+      "Strategy by aging",
+      "4 collection messages",
+      "Legal escalation plan",
+      "Preventive policies"
+    ]
+  }
+}

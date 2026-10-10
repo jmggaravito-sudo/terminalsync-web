@@ -1,0 +1,31 @@
+{
+  "id": "leg-003",
+  "categoryId": "legal",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 65,
+  "es": {
+    "title": "Términos y condiciones",
+    "outcome": "T&C profesionales que protegen tu negocio.",
+    "prompt": "Necesito Términos y Condiciones para mi sitio web/servicio.\n\nMi negocio: [describir].\nLo que ofrezco: [producto/servicio].\nPaís principal de mis clientes: [país].\nLo que necesito proteger: [listar].\n\nDame: T&C completos con secciones de aceptación, uso del servicio, pagos y reembolsos, limitación de responsabilidad, propiedad intelectual, ley aplicable y cómo modificarlos en el futuro.",
+    "recommendedFiles": [
+      "Información de tu negocio"
+    ],
+    "expectedResult": [
+      "T&C completos",
+      "Versión resumida"
+    ]
+  },
+  "en": {
+    "title": "Terms and Conditions",
+    "outcome": "Professional T&Cs that protect your business.",
+    "prompt": "I need Terms and Conditions for my website/service.\n\nMy business: [describe].\nWhat I offer: [product/service].\nPrimary country of my customers: [country].\nWhat I need to protect: [list].\n\nGive me: full T&Cs with sections on acceptance, use of the service, payments and refunds, limitation of liability, intellectual property, governing law, and how to modify them in the future.",
+    "recommendedFiles": [
+      "Your business information"
+    ],
+    "expectedResult": [
+      "Full T&Cs",
+      "Summary version"
+    ]
+  }
+}

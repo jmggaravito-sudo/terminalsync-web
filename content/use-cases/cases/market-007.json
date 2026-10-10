@@ -1,0 +1,42 @@
+{
+  "id": "market-007",
+  "categoryId": "market",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 111,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__web_search",
+    "business-search__ai_answer"
+  ],
+  "es": {
+    "title": "Qué dicen Google y la IA de TerminalSync sobre mi negocio",
+    "outcome": "Revisa cómo apareces en Google y qué respuesta con IA obtiene TerminalSync cuando alguien pregunta por tu negocio o tu rubro.",
+    "prompt": "Quiero saber cómo aparece mi negocio cuando alguien lo busca en Google y qué respuesta con IA obtiene TerminalSync.\n\nNegocio: [nombre].\nSitio web: [dirección, si tienes].\nCiudad y país: [por ejemplo: Orlando, Florida, EE. UU. / Guadalajara, México].\nPreguntas que haría un cliente: [de 1 a 3 — por ejemplo: \"mejor dentista en Orlando\", \"dónde comprar café de especialidad en Guadalajara\"].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta la ciudad, el país o el idioma, pregúntamelos antes de buscar. Busca esas preguntas en Google y revisa la respuesta con IA que TerminalSync obtiene para cada una. Dame: en qué posición aparezco en Google (o si no aparezco), qué competidores salen antes, qué respuesta con IA sobre mi negocio aparece y si me menciona, y cinco acciones concretas para mejorar mi visibilidad.\n\nNo supongas posiciones ni respuestas que no hayas visto.",
+    "recommendedFiles": [
+      "Sitio web del negocio",
+      "Lista de servicios"
+    ],
+    "expectedResult": [
+      "Dónde apareces en Google",
+      "Competidores que salen antes",
+      "Qué responde la IA de TerminalSync",
+      "Acciones para mejorar tu visibilidad"
+    ]
+  },
+  "en": {
+    "title": "What Google and TerminalSync’s AI say about my business",
+    "outcome": "See how your business appears on Google and what AI-powered answer TerminalSync retrieves when people ask about your business or industry.",
+    "prompt": "I want to know how my business appears on Google and what AI-powered answer TerminalSync retrieves.\n\nBusiness: [name].\nWebsite: [address, if you have one].\nCity and country: [for example: Orlando, Florida, USA / Guadalajara, Mexico].\nQuestions a customer would ask: [1 to 3 — for example: \"best dentist in Orlando\", \"where to buy specialty coffee in Guadalajara\"].\nLanguage for the answer: [English / Spanish].\n\nIf the city, the country, or the language is missing, ask me before searching. Search those questions on Google and review the AI-powered answer TerminalSync retrieves for each one. Tell me: where I appear on Google (or whether I do not appear), which competitors appear ahead, what the AI-powered answer says about my business and whether it mentions me, plus five concrete actions to improve my visibility.\n\nDo not assume positions or answers you have not seen.",
+    "recommendedFiles": [
+      "Business website",
+      "List of services"
+    ],
+    "expectedResult": [
+      "Where you appear on Google",
+      "Competitors that appear ahead",
+      "What TerminalSync’s AI answer says",
+      "Actions to improve visibility"
+    ]
+  }
+}

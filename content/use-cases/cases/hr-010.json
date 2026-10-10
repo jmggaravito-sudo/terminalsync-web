@@ -1,0 +1,37 @@
+{
+  "id": "hr-010",
+  "categoryId": "hr",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 52,
+  "es": {
+    "title": "Plan de carrera",
+    "outcome": "Camino claro de crecimiento para retener al talento.",
+    "prompt": "Quiero crear un plan de carrera claro para retener a mis empleados clave.\n\nMi empresa: [describir].\nPuestos clave: [listar].\nQué busco evitar: [renuncias por falta de crecimiento].\n\nDame: estructura de niveles por área, criterios para subir de nivel, sueldo orientativo por nivel, plan de capacitación por nivel y cómo comunicarlo al equipo.",
+    "recommendedFiles": [
+      "Organigrama actual",
+      "Salarios"
+    ],
+    "expectedResult": [
+      "Niveles por área",
+      "Criterios de ascenso",
+      "Sueldos orientativos",
+      "Capacitación"
+    ]
+  },
+  "en": {
+    "title": "Career plan",
+    "outcome": "Clear growth path to retain talent.",
+    "prompt": "I want to create a clear career plan to retain my key employees.\n\nMy company: [describe].\nKey positions: [list].\nWhat I'm trying to avoid: [resignations due to lack of growth].\n\nGive me: structure of levels by area, criteria for promotion, indicative salary by level, training plan by level and how to communicate it to the team.",
+    "recommendedFiles": [
+      "Current org chart",
+      "Salaries"
+    ],
+    "expectedResult": [
+      "Levels by area",
+      "Promotion criteria",
+      "Indicative salaries",
+      "Training"
+    ]
+  }
+}

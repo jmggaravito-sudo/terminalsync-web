@@ -1,0 +1,37 @@
+{
+  "id": "fin-010",
+  "categoryId": "finance",
+  "recommendedAI": "gemini",
+  "level": "Avanzado",
+  "order": 62,
+  "es": {
+    "title": "Detectar fugas de dinero",
+    "outcome": "Diagnóstico de dónde se escapa el dinero del negocio.",
+    "prompt": "Siento que el dinero se me escapa y no sé bien dónde. Ayúdame a detectar fugas.\n\nMi negocio: [describir].\nIngresos: [monto].\nGastos conocidos: [listar].\nLo que sospecho: [intuiciones].\n\nDame: las 10 fugas más comunes en negocios como el mío, preguntas para investigar cada una, métricas para detectarlas y plan de acción priorizado por impacto.",
+    "recommendedFiles": [
+      "Estados financieros",
+      "Inventario si aplica"
+    ],
+    "expectedResult": [
+      "10 fugas comunes",
+      "Preguntas de investigación",
+      "Métricas",
+      "Plan de acción"
+    ]
+  },
+  "en": {
+    "title": "Detect money leaks",
+    "outcome": "Diagnosis of where the business is losing money.",
+    "prompt": "I feel money is slipping away and I don't know where. Help me detect leaks.\n\nMy business: [describe].\nRevenue: [amount].\nKnown expenses: [list].\nWhat I suspect: [intuitions].\n\nGive me: the 10 most common leaks in businesses like mine, questions to investigate each one, metrics to detect them, and an action plan prioritized by impact.",
+    "recommendedFiles": [
+      "Financial statements",
+      "Inventory, if applicable"
+    ],
+    "expectedResult": [
+      "10 common leaks",
+      "Investigation questions",
+      "Metrics",
+      "Action plan"
+    ]
+  }
+}

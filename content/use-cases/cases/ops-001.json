@@ -1,0 +1,42 @@
+{
+  "id": "ops-001",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 33,
+  "popular": true,
+  "es": {
+    "title": "Documentar un proceso",
+    "outcome": "Proceso paso a paso documentado para que cualquiera pueda ejecutarlo.",
+    "prompt": "Necesito documentar un proceso de mi empresa para que mi equipo lo siga sin tener que preguntarme cada vez.\n\nProceso a documentar: [describir].\nQuién lo va a ejecutar: [rol].\nResultado esperado: [qué debe quedar al final].\n\nDame el proceso paso a paso, claro y simple: objetivo, materiales/herramientas necesarias, pasos en orden, tiempo estimado de cada paso, controles de calidad y qué hacer si algo sale mal.",
+    "recommendedFiles": [
+      "Manual actual si existe",
+      "Notas del proceso"
+    ],
+    "expectedResult": [
+      "Objetivo",
+      "Materiales",
+      "Pasos",
+      "Tiempos",
+      "Controles de calidad",
+      "Plan B"
+    ]
+  },
+  "en": {
+    "title": "Document a process",
+    "outcome": "Step-by-step process documented so anyone can execute it.",
+    "prompt": "I need to document a process in my company so my team can follow it without having to ask me each time.\n\nProcess to document: [describe].\nWho will execute it: [role].\nExpected outcome: [what should remain at the end].\n\nGive me the step-by-step process, clear and simple: objective, necessary materials/tools, steps in order, estimated time for each step, quality controls and what to do if something goes wrong.",
+    "recommendedFiles": [
+      "Current manual if available",
+      "Process notes"
+    ],
+    "expectedResult": [
+      "Objective",
+      "Materials",
+      "Steps",
+      "Times",
+      "Quality controls",
+      "Plan B"
+    ]
+  }
+}

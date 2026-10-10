@@ -1,0 +1,41 @@
+{
+  "id": "market-004",
+  "categoryId": "market",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 108,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__shopping_search"
+  ],
+  "es": {
+    "title": "Comparar precios online",
+    "outcome": "Busca productos parecidos al tuyo en tiendas online de EE. UU., México, Colombia, Chile, Argentina y Brasil, y te arma una tabla de precios para comparar.",
+    "prompt": "Quiero comparar el precio de mi producto con lo que se vende en internet.\n\nProducto: [tipo, marca, tamaño o modelo].\nMi precio actual: [monto y moneda].\nCiudad y país: [Estados Unidos, México, Colombia, Chile, Argentina o Brasil — por ejemplo: Miami, EE. UU. / Ciudad de México / Bogotá, Colombia].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta el país o el idioma, pregúntamelos antes de buscar; si mi país no es uno de esos, avísame en vez de buscar. Busca productos comparables en Google Shopping y arma una tabla con: producto, tienda, precio tal como aparece, calificación y número de reseñas si los hay, y si mencionan envío. Después dame el rango de precios (bajo, medio y alto), dónde queda mi precio y una recomendación.\n\nUsa solo los precios que encuentres; no los estimes.",
+    "recommendedFiles": [
+      "Ficha del producto",
+      "Tu precio actual"
+    ],
+    "expectedResult": [
+      "Tabla de precios",
+      "Rango bajo, medio y alto",
+      "Dónde queda tu precio",
+      "Recomendación de precio"
+    ]
+  },
+  "en": {
+    "title": "Compare prices online",
+    "outcome": "Finds products like yours in online stores in the US, Mexico, Colombia, Chile, Argentina, and Brazil, and builds a price table to compare.",
+    "prompt": "I want to compare my product's price with what's sold online.\n\nProduct: [type, brand, size, or model].\nMy current price: [amount and currency].\nCity and country: [United States, Mexico, Colombia, Chile, Argentina, or Brazil — for example: Miami, USA / Mexico City / Bogotá, Colombia].\nLanguage for the answer: [English / Spanish].\n\nIf the country or the language is missing, ask me before searching; if my country isn't one of those, tell me instead of searching. Search Google Shopping for comparable products and build a table with: product, store, price as listed, rating and number of reviews if available, and whether they mention shipping. Then give me the price range (low, mid, and high), where my price falls, and a recommendation.\n\nOnly use prices you actually find; don't estimate them.",
+    "recommendedFiles": [
+      "Product sheet",
+      "Your current price"
+    ],
+    "expectedResult": [
+      "Price table",
+      "Low, mid, and high range",
+      "Where your price falls",
+      "Pricing recommendation"
+    ]
+  }
+}

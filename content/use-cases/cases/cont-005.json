@@ -1,0 +1,40 @@
+{
+  "id": "cont-005",
+  "categoryId": "continuity",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 124,
+  "isNew": true,
+  "es": {
+    "title": "Convertir chat en documentación",
+    "outcome": "Una conversación se vuelve un documento que cualquiera entiende sin contexto.",
+    "prompt": "Tengo una conversación importante donde se decidieron cosas pero no queda nada documentado. Quiero convertirla en un documento útil.\n\nTema: [describir].\nParticipantes: [listar].\nConversación: [pegar o resumir].\n\nAyúdame a producir un documento con: contexto y antecedentes, decisiones tomadas con justificación, acuerdos operativos, qué quedó pendiente para futura definición y formato listo para guardar o compartir.",
+    "recommendedFiles": [
+      "Transcripción del chat",
+      "Documentos previos relacionados"
+    ],
+    "expectedResult": [
+      "Documento completo",
+      "Decisiones",
+      "Acuerdos",
+      "Pendientes",
+      "Próxima revisión"
+    ]
+  },
+  "en": {
+    "title": "Turn chat into documentation",
+    "outcome": "A conversation becomes a document that anyone can understand without prior context.",
+    "prompt": "I have an important conversation where decisions were made but nothing is documented. I want to turn it into a useful document.\n\nTopic: [describe].\nParticipants: [list].\nConversation: [paste or summarize].\n\nHelp me produce a document with: context and background, decisions made with justification, operational agreements, what was left pending for future definition, and a format ready to save or share.",
+    "recommendedFiles": [
+      "Chat transcript",
+      "Related prior documents"
+    ],
+    "expectedResult": [
+      "Complete document",
+      "Decisions",
+      "Agreements",
+      "Pending items",
+      "Next review"
+    ]
+  }
+}

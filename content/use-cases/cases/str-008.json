@@ -1,0 +1,37 @@
+{
+  "id": "str-008",
+  "categoryId": "strategy",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 102,
+  "es": {
+    "title": "Plan de salida o sucesión",
+    "outcome": "Plan para que el negocio funcione sin vos o para venderlo bien.",
+    "prompt": "Quiero preparar a mi negocio para que funcione sin mí o para una eventual venta.\n\nMi negocio: [describir].\nObjetivo: [quiero retirarme / vender / delegar más].\nPlazo deseado: [años].\n\nDame: qué hace que mi negocio sea vendible o autónomo, los 5 cambios estructurales más importantes, plan por años, riesgos y cómo aumentar el valor del negocio.",
+    "recommendedFiles": [
+      "Estructura organizacional actual",
+      "Resultados financieros"
+    ],
+    "expectedResult": [
+      "Qué hace vendible al negocio",
+      "5 cambios clave",
+      "Plan por años",
+      "Cómo aumentar valor"
+    ]
+  },
+  "en": {
+    "title": "Exit or succession plan",
+    "outcome": "Plan for the business to run without you or to be sold well.",
+    "prompt": "I want to prepare my business to run without me or for an eventual sale.\n\nMy business: [describe].\nGoal: [I want to retire / sell / delegate more].\nDesired timeline: [years].\n\nGive me: what makes my business sellable or autonomous, the 5 most important structural changes, plan by years, risks and how to increase the business's value.",
+    "recommendedFiles": [
+      "Current organizational structure",
+      "Financial results"
+    ],
+    "expectedResult": [
+      "What makes the business sellable",
+      "5 key changes",
+      "Year-by-year plan",
+      "How to increase value"
+    ]
+  }
+}

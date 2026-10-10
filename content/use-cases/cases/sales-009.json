@@ -1,0 +1,37 @@
+{
+  "id": "sales-009",
+  "categoryId": "sales",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 9,
+  "es": {
+    "title": "Responder objeción de precio",
+    "outcome": "Respuestas listas para cuando un cliente dice 'está caro'.",
+    "prompt": "Mis clientes me dicen seguido que mi precio es alto. Quiero defenderlo sin bajar el valor.\n\nMi producto/servicio: [describir].\nMi precio: [valor].\nLa competencia cobra: [aproximado].\n\nDame 3 respuestas profesionales y empáticas para diferentes momentos del proceso de venta, y argumentos concretos para sostener el precio.",
+    "recommendedFiles": [
+      "Lista de competidores y precios",
+      "Tus diferenciales"
+    ],
+    "expectedResult": [
+      "Respuesta 1: en la propuesta",
+      "Respuesta 2: en la negociación",
+      "Respuesta 3: cierre final",
+      "Argumentos clave"
+    ]
+  },
+  "en": {
+    "title": "Respond to price objection",
+    "outcome": "Ready responses for when a customer says 'it's expensive'.",
+    "prompt": "My customers often tell me my price is high. I want to defend it without lowering value.\n\nMy product/service: [describe].\nMy price: [price].\nThe competition charges: [approximate].\n\nGive me 3 professional and empathetic responses for different moments in the sales process, and concrete arguments to support the price.",
+    "recommendedFiles": [
+      "List of competitors and prices",
+      "Your differentiators"
+    ],
+    "expectedResult": [
+      "Response 1: in the proposal",
+      "Response 2: during negotiation",
+      "Response 3: final close",
+      "Key arguments"
+    ]
+  }
+}

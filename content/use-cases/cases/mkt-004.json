@@ -1,0 +1,37 @@
+{
+  "id": "mkt-004",
+  "categoryId": "marketing",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 14,
+  "es": {
+    "title": "Plan de marketing trimestral",
+    "outcome": "Plan de 90 días con objetivos, canales, acciones y métricas.",
+    "prompt": "Ayúdame a armar un plan de marketing para los próximos 3 meses.\n\nMi negocio: [describir].\nObjetivo principal: [vender más / dar a conocer / lanzar producto].\nPresupuesto mensual de marketing: [monto].\nCanales actuales: [redes, email, ads, web…].\n\nDame: objetivos SMART para 3 meses, acciones por canal por mes, presupuesto sugerido por canal y las 5 métricas clave para medir éxito.",
+    "recommendedFiles": [
+      "Resultados de marketing del último trimestre",
+      "Metas de la empresa"
+    ],
+    "expectedResult": [
+      "Objetivos SMART",
+      "Acciones por canal por mes",
+      "Distribución de presupuesto",
+      "Métricas clave"
+    ]
+  },
+  "en": {
+    "title": "Quarterly marketing plan",
+    "outcome": "90-day plan with objectives, channels, actions and metrics.",
+    "prompt": "Help me build a marketing plan for the next 3 months.\n\nMy business: [describe].\nMain objective: [sell more / raise awareness / launch a product].\nMonthly marketing budget: [amount].\nCurrent channels: [social, email, ads, web...].\n\nGive me: SMART objectives for 3 months, actions by channel by month, suggested budget allocation by channel and the 5 key metrics to measure success.",
+    "recommendedFiles": [
+      "Last quarter marketing results",
+      "Company goals"
+    ],
+    "expectedResult": [
+      "SMART objectives",
+      "Actions by channel by month",
+      "Budget distribution",
+      "Key metrics"
+    ]
+  }
+}

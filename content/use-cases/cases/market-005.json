@@ -1,0 +1,41 @@
+{
+  "id": "market-005",
+  "categoryId": "market",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 109,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__trends"
+  ],
+  "es": {
+    "title": "Detectar tendencias de mercado",
+    "outcome": "Compara qué tan buscados son varios temas o productos en Google y cómo cambia el interés con el tiempo.",
+    "prompt": "Quiero saber qué está creciendo en mi mercado.\n\nTemas o productos a comparar: [hasta 5 — por ejemplo: pilates, yoga, crossfit].\nPaís: [por ejemplo: Estados Unidos / Colombia / Argentina — o todo el mundo].\nPeriodo: [último mes / últimos 3 meses / último año / últimos 5 años].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta el país, el periodo o el idioma, pregúntamelos antes de buscar. Usa Google Trends para comparar el interés de búsqueda en el tiempo y para ver las búsquedas relacionadas que más están subiendo. Dame: qué tema crece y cuál baja, en qué meses sube el interés, las búsquedas relacionadas que más crecen y tres ideas de producto, contenido o campaña para probar en los próximos 30 días.\n\nRecuerda que Google Trends muestra interés relativo (de 0 a 100), no cantidades de búsquedas.",
+    "recommendedFiles": [
+      "Descripción del negocio",
+      "Productos o servicios actuales"
+    ],
+    "expectedResult": [
+      "Qué crece y qué baja",
+      "Meses de más interés",
+      "Búsquedas relacionadas en alza",
+      "Ideas para probar"
+    ]
+  },
+  "en": {
+    "title": "Spot market trends",
+    "outcome": "Compares how much people search for several topics or products on Google and how interest changes over time.",
+    "prompt": "I want to know what's growing in my market.\n\nTopics or products to compare: [up to 5 — for example: pilates, yoga, crossfit].\nCountry: [for example: United States / Colombia / Argentina — or worldwide].\nTime range: [past month / past 3 months / past year / past 5 years].\nLanguage for the answer: [English / Spanish].\n\nIf the country, the time range, or the language is missing, ask me before searching. Use Google Trends to compare search interest over time and to see the related searches that are rising the most. Give me: which topic is growing and which is falling, the months when interest goes up, the fastest-rising related searches, and three product, content, or campaign ideas to test in the next 30 days.\n\nRemember that Google Trends shows relative interest (0 to 100), not the number of searches.",
+    "recommendedFiles": [
+      "Business description",
+      "Current products or services"
+    ],
+    "expectedResult": [
+      "What's growing and what's falling",
+      "Peak months",
+      "Rising related searches",
+      "Ideas to test"
+    ]
+  }
+}

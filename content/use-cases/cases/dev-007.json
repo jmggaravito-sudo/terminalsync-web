@@ -1,0 +1,35 @@
+{
+  "id": "dev-007",
+  "categoryId": "dev",
+  "recommendedAI": "codex",
+  "level": "Avanzado",
+  "order": 89,
+  "es": {
+    "title": "Migrar de Excel a sistema",
+    "outcome": "Plan para pasar de Excel a una herramienta más profesional.",
+    "prompt": "Estoy creciendo y mi Excel ya no me alcanza. Quiero migrar a algo más profesional sin perder datos.\n\nLo que tengo en Excel: [describir].\nProblemas actuales: [duplicados / lentitud / errores].\nQuién más necesita acceso: [equipo].\nPresupuesto: [monto/mes].\n\nDame: 3 herramientas recomendadas según mi caso, comparación de pros y contras, plan de migración por etapas y cómo capacitar al equipo.",
+    "recommendedFiles": [
+      "Capturas del Excel actual"
+    ],
+    "expectedResult": [
+      "3 herramientas",
+      "Pros/contras",
+      "Plan de migración",
+      "Capacitación"
+    ]
+  },
+  "en": {
+    "title": "Migrate from Excel to a system",
+    "outcome": "Plan to move from Excel to a more professional tool.",
+    "prompt": "I'm growing and my Excel no longer meets my needs. I want to migrate to something more professional without losing data.\n\nWhat I have in Excel: [describe].\nCurrent problems: [duplicates / slowness / errors].\nWho else needs access: [team].\nBudget: [amount/month].\n\nGive me: 3 tools recommended for my case, a comparison of pros and cons, a staged migration plan and how to train the team.",
+    "recommendedFiles": [
+      "Screenshots of the current Excel"
+    ],
+    "expectedResult": [
+      "3 tools",
+      "Pros/cons",
+      "Migration plan",
+      "Training"
+    ]
+  }
+}

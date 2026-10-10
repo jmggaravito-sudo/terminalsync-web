@@ -1,0 +1,39 @@
+{
+  "id": "dev-011",
+  "categoryId": "dev",
+  "recommendedAI": "codex",
+  "level": "Avanzado",
+  "order": 93,
+  "es": {
+    "title": "Diseñar operación de WhatsApp Business con IA",
+    "outcome": "Mapa completo de cómo debería funcionar WhatsApp Business en tu negocio con IA y revisión humana.",
+    "prompt": "Quiero diseñar bien la operación de WhatsApp Business con IA para mi negocio.\n\nMi negocio: [describir].\nQué quiero lograr: [ventas / soporte / seguimiento / reservas / postventa].\nQué sistemas ya uso: [CRM / agenda / e-commerce / planilla / email].\nQué riesgos me preocupan: [respuestas incorrectas / demora / mensajes sensibles / quejas].\n\nDame: arquitectura operativa simple, qué debería automatizarse y qué no, cuándo debe intervenir un humano, qué datos mínimos necesita la IA, qué permisos/integraciones hacen falta y cómo hacer una primera prueba sin romper la atención al cliente.",
+    "recommendedFiles": [
+      "Mapa de procesos actual",
+      "Herramientas actuales",
+      "Mensajes reales o FAQs"
+    ],
+    "expectedResult": [
+      "Arquitectura operativa",
+      "Separación IA vs humano",
+      "Datos necesarios",
+      "Plan de prueba"
+    ]
+  },
+  "en": {
+    "title": "Design WhatsApp Business operation with AI",
+    "outcome": "Complete map of how WhatsApp Business should work in your business with AI and human review.",
+    "prompt": "I want to properly design the WhatsApp Business operation with AI for my business.\n\nMy business: [describe].\nWhat I want to achieve: [sales / support / follow-up / bookings / after-sales].\nWhat systems I already use: [CRM / calendar / e-commerce / spreadsheet / email].\nWhat risks worry me: [incorrect answers / delays / sensitive messages / complaints].\n\nGive me: a simple operational architecture, what should be automated and what should not, when a human should intervene, the minimum data the AI needs, what permissions/integrations are required and how to run a first test without breaking customer service.",
+    "recommendedFiles": [
+      "Current process map",
+      "Current tools",
+      "Real messages or FAQs"
+    ],
+    "expectedResult": [
+      "Operational architecture",
+      "AI vs human separation",
+      "Required data",
+      "Test plan"
+    ]
+  }
+}

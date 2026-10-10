@@ -1,0 +1,41 @@
+{
+  "id": "market-006",
+  "categoryId": "market",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 110,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__news_search"
+  ],
+  "es": {
+    "title": "Reputación y noticias de mi negocio",
+    "outcome": "Busca noticias recientes sobre tu negocio o tu marca y te avisa si hay algo que pueda afectar tu reputación.",
+    "prompt": "Quiero revisar qué se publica sobre mi negocio en las noticias.\n\nNegocio o marca: [nombre exacto].\nPaís: [por ejemplo: Estados Unidos / Perú / Chile].\nPeriodo: [última semana / último mes / último año].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta el país, el periodo o el idioma, pregúntamelos antes de buscar. Busca noticias recientes sobre mi negocio y, si no hay, sobre mi rubro en mi ciudad. Si además puedes leer las reseñas de mi negocio, inclúyelas. Dame: las noticias más importantes con fecha, medio y enlace; si el tono es positivo, neutral o negativo; los riesgos que veas y una respuesta sugerida si hay algo delicado.\n\nSi no encuentras menciones, dímelo claramente.",
+    "recommendedFiles": [
+      "Nombre exacto del negocio o la marca",
+      "Comunicados anteriores, si los hay"
+    ],
+    "expectedResult": [
+      "Noticias recientes con su enlace",
+      "Tono de las menciones",
+      "Riesgos para tu reputación",
+      "Respuesta sugerida"
+    ]
+  },
+  "en": {
+    "title": "My business's reputation and news",
+    "outcome": "Finds recent news about your business or brand and flags anything that could affect your reputation.",
+    "prompt": "I want to check what the news is saying about my business.\n\nBusiness or brand: [exact name].\nCountry: [for example: United States / Peru / Chile].\nTime range: [past week / past month / past year].\nLanguage for the answer: [English / Spanish].\n\nIf the country, the time range, or the language is missing, ask me before searching. Search for recent news about my business and, if there isn't any, about my industry in my city. If you can also read my business's reviews, include them. Give me: the most important stories with date, outlet, and link; whether the tone is positive, neutral, or negative; any risks you see; and a suggested response if something is sensitive.\n\nIf you don't find any mentions, tell me clearly.",
+    "recommendedFiles": [
+      "Exact business or brand name",
+      "Previous announcements, if any"
+    ],
+    "expectedResult": [
+      "Recent news with links",
+      "Tone of the mentions",
+      "Reputation risks",
+      "Suggested response"
+    ]
+  }
+}

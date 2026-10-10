@@ -1,0 +1,37 @@
+{
+  "id": "fin-003",
+  "categoryId": "finance",
+  "recommendedAI": "gemini",
+  "level": "Intermedio",
+  "order": 55,
+  "es": {
+    "title": "Análisis de rentabilidad por producto",
+    "outcome": "Descubrir cuáles productos te hacen ganar y cuáles te hacen perder.",
+    "prompt": "Quiero saber cuáles de mis productos/servicios son los más rentables.\n\nMi negocio: [describir].\nMis productos/servicios: [listar con precio].\nCostos por producto: [listar si los conoces].\n\nDame: análisis comparativo en tabla, margen por producto, los 3 que más aportan al negocio, los 3 que debería revisar o discontinuar y recomendaciones de pricing.",
+    "recommendedFiles": [
+      "Costos por producto",
+      "Ventas últimos 3 meses"
+    ],
+    "expectedResult": [
+      "Tabla comparativa",
+      "Top 3 rentables",
+      "Bottom 3",
+      "Recomendaciones"
+    ]
+  },
+  "en": {
+    "title": "Profitability analysis by product",
+    "outcome": "Discover which products make you money and which make you lose it.",
+    "prompt": "I want to know which of my products/services are the most profitable.\n\nMy business: [describe].\nMy products/services: [list with price].\nCosts per product: [list if known].\n\nGive me: comparative analysis in a table, margin per product, the 3 that contribute most to the business, the 3 I should review or discontinue and pricing recommendations.",
+    "recommendedFiles": [
+      "Costs per product",
+      "Sales last 3 months"
+    ],
+    "expectedResult": [
+      "Comparative table",
+      "Top 3 profitable",
+      "Bottom 3",
+      "Recommendations"
+    ]
+  }
+}

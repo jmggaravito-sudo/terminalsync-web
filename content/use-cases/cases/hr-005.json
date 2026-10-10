@@ -1,0 +1,37 @@
+{
+  "id": "hr-005",
+  "categoryId": "hr",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 47,
+  "es": {
+    "title": "Carta de despido respetuosa",
+    "outcome": "Conversación y carta que cierra una etapa con dignidad.",
+    "prompt": "Tengo que desvincular a un empleado y quiero hacerlo de la forma más respetuosa y profesional posible.\n\nMotivo: [reducción / desempeño / cierre área].\nTiempo del empleado: [tiempo].\nLo que voy a ofrecer: [indemnización / referencia / tiempo].\n\nDame: guion para la conversación cara a cara, carta de desvinculación formal, qué decir y qué NO decir, próximos pasos administrativos y cómo comunicarlo al resto del equipo.",
+    "recommendedFiles": [
+      "Antecedentes del empleado",
+      "Política de la empresa"
+    ],
+    "expectedResult": [
+      "Guion conversación",
+      "Carta formal",
+      "Pasos administrativos",
+      "Comunicación al equipo"
+    ]
+  },
+  "en": {
+    "title": "Respectful Termination Letter",
+    "outcome": "Conversation and letter that close a chapter with dignity.",
+    "prompt": "I have to terminate an employee and want to do it as respectfully and professionally as possible.\n\nReason: [reduction / performance / area closure].\nEmployee tenure: [time].\nWhat I will offer: [severance / reference / time].\n\nGive me: script for the face-to-face conversation, formal termination letter, what to say and what NOT to say, next administrative steps and how to communicate it to the rest of the team.",
+    "recommendedFiles": [
+      "Employee background",
+      "Company policy"
+    ],
+    "expectedResult": [
+      "Conversation script",
+      "Formal letter",
+      "Administrative steps",
+      "Team communication"
+    ]
+  }
+}

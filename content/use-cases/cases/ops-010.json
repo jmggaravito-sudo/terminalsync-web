@@ -1,0 +1,33 @@
+{
+  "id": "ops-010",
+  "categoryId": "operations",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 42,
+  "es": {
+    "title": "Auditoría interna simple",
+    "outcome": "Diagnóstico claro de qué funciona, qué no y dónde empezar a mejorar.",
+    "prompt": "Quiero hacer una auditoría interna de mi negocio para ver dónde estoy bien y dónde mejorar.\n\nMi negocio: [describir].\nÁreas a auditar: [ventas / operaciones / atención / finanzas / equipo].\n\nDame: 5 preguntas críticas por área, escala de evaluación (1-5), formato simple de reporte, las 3 áreas a priorizar después de la auditoría y plan de seguimiento.",
+    "recommendedFiles": [
+      "Métricas actuales"
+    ],
+    "expectedResult": [
+      "Preguntas por área",
+      "Formato de reporte",
+      "Plan de priorización"
+    ]
+  },
+  "en": {
+    "title": "Simple Internal Audit",
+    "outcome": "Clear diagnosis of what works, what doesn't, and where to start improving.",
+    "prompt": "I want to do an internal audit of my business to see where I'm doing well and where to improve.\n\nMy business: [describe].\nAreas to audit: [sales / operations / customer service / finance / team].\n\nGive me: 5 critical questions per area, evaluation scale (1-5), simple report format, the 3 areas to prioritize after the audit and a follow-up plan.",
+    "recommendedFiles": [
+      "Current metrics"
+    ],
+    "expectedResult": [
+      "Questions per area",
+      "Report format",
+      "Prioritization plan"
+    ]
+  }
+}

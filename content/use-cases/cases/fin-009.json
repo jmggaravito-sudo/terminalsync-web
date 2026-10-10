@@ -1,0 +1,37 @@
+{
+  "id": "fin-009",
+  "categoryId": "finance",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 61,
+  "es": {
+    "title": "Ajustar precios",
+    "outcome": "Estrategia para subir precios sin perder clientes.",
+    "prompt": "Necesito subir mis precios y tengo miedo de perder clientes.\n\nMi producto/servicio: [describir].\nPrecio actual: [monto].\nAumento que necesito: [%].\nCosto principal que subió: [describir].\n\nDame: cuánto subir y con qué frecuencia, cómo comunicarlo a clientes actuales, justificación clara que entiendan, 3 alternativas para clientes que no acepten el nuevo precio y plan de implementación.",
+    "recommendedFiles": [
+      "Lista de clientes y precios",
+      "Justificación del aumento"
+    ],
+    "expectedResult": [
+      "Plan de aumento",
+      "Comunicación a clientes",
+      "Alternativas",
+      "Cronograma"
+    ]
+  },
+  "en": {
+    "title": "Adjust prices",
+    "outcome": "Strategy to raise prices without losing customers.",
+    "prompt": "I need to raise my prices and I'm afraid of losing customers.\n\nMy product/service: [describe].\nCurrent price: [amount].\nIncrease I need: [%].\nMain cost that increased: [describe].\n\nGive me: how much to increase and how often, how to communicate it to current customers, a clear justification they will understand, 3 alternatives for customers who don't accept the new price, and an implementation plan.",
+    "recommendedFiles": [
+      "Customer and pricing list",
+      "Justification for the increase"
+    ],
+    "expectedResult": [
+      "Increase plan",
+      "Communication to customers",
+      "Alternatives",
+      "Timeline"
+    ]
+  }
+}

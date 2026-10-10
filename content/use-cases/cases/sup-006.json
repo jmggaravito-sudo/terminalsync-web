@@ -1,0 +1,35 @@
+{
+  "id": "sup-006",
+  "categoryId": "support",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 28,
+  "es": {
+    "title": "Manual de atención al cliente",
+    "outcome": "Guía para que tu equipo atienda igual de bien que tú.",
+    "prompt": "Quiero entrenar a mi equipo en atención al cliente.\n\nMi negocio: [describir].\nValores de marca: [listar].\nLo que NO quiero que pase: [errores comunes].\n\nDame un manual con: los 5 principios de atención de mi marca, el tono correcto, frases obligatorias y prohibidas, escenarios típicos con respuesta ideal y proceso de escalación cuando algo se complica.",
+    "recommendedFiles": [
+      "Casos buenos y malos previos"
+    ],
+    "expectedResult": [
+      "Principios",
+      "Tono y frases",
+      "Escenarios típicos",
+      "Proceso de escalación"
+    ]
+  },
+  "en": {
+    "title": "Customer service manual",
+    "outcome": "Guide so your team serves customers as well as you do.",
+    "prompt": "I want to train my team in customer service.\n\nMy business: [describe].\nBrand values: [list].\nWhat I DO NOT want to happen: [common mistakes].\n\nGive me a manual with: the 5 customer-service principles of my brand, the correct tone, required and forbidden phrases, typical scenarios with ideal responses and the escalation process when something gets complicated.",
+    "recommendedFiles": [
+      "Previous good and bad cases"
+    ],
+    "expectedResult": [
+      "Principles",
+      "Tone and phrases",
+      "Typical scenarios",
+      "Escalation process"
+    ]
+  }
+}

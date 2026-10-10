@@ -1,0 +1,35 @@
+{
+  "id": "str-009",
+  "categoryId": "strategy",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 103,
+  "es": {
+    "title": "Comunicar mal año al equipo",
+    "outcome": "Comunicación honesta y motivadora ante un resultado malo.",
+    "prompt": "Tuvimos un año difícil y necesito comunicarlo al equipo sin destruir la moral.\n\nResultados: [describir].\nCausas principales: [describir].\nQué pasa con sueldos/bonos: [describir].\nVisión hacia adelante: [esperanza realista].\n\nDame: guion de reunión con el equipo, principios de comunicación honesta y motivadora, qué decir y qué NO decir y cómo cerrar con compromiso y claridad.",
+    "recommendedFiles": [
+      "Resultados financieros"
+    ],
+    "expectedResult": [
+      "Guion de reunión",
+      "Frases clave",
+      "Qué evitar",
+      "Cierre motivador"
+    ]
+  },
+  "en": {
+    "title": "Communicate a bad year to the team",
+    "outcome": "Honest and motivating communication after a poor result.",
+    "prompt": "We had a difficult year and I need to communicate it to the team without destroying morale.\n\nResults: [describe].\nMain causes: [describe].\nWhat happens with salaries/bonuses: [describe].\nVision going forward: [realistic hope].\n\nGive me: meeting script with the team, principles for honest and motivating communication, what to say and what NOT to say and how to close with commitment and clarity.",
+    "recommendedFiles": [
+      "Financial results"
+    ],
+    "expectedResult": [
+      "Meeting script",
+      "Key phrases",
+      "What to avoid",
+      "Motivating close"
+    ]
+  }
+}

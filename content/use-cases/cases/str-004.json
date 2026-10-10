@@ -1,0 +1,39 @@
+{
+  "id": "str-004",
+  "categoryId": "strategy",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 98,
+  "es": {
+    "title": "Plan de expansión",
+    "outcome": "Plan realista para crecer a nuevo mercado, ciudad o producto.",
+    "prompt": "Quiero expandir mi negocio y necesito un plan realista.\n\nMi negocio actual: [describir].\nA dónde quiero expandirme: [nueva ciudad / nuevo producto / nuevo segmento].\nPor qué creo que es buena idea: [hipótesis].\nRecursos disponibles: [tiempo / dinero / equipo].\n\nDame: validación de la hipótesis con preguntas clave, plan por fases, inversión estimada, riesgos principales y métricas para saber si funciona.",
+    "recommendedFiles": [
+      "Datos del negocio actual",
+      "Investigación de mercado si tienes"
+    ],
+    "expectedResult": [
+      "Validación",
+      "Plan por fases",
+      "Inversión",
+      "Riesgos",
+      "Métricas"
+    ]
+  },
+  "en": {
+    "title": "Expansion plan",
+    "outcome": "Realistic plan to grow into a new market, city or product.",
+    "prompt": "I want to expand my business and I need a realistic plan.\n\nMy current business: [describe].\nWhere I want to expand: [new city / new product / new segment].\nWhy I think it's a good idea: [hypothesis].\nResources available: [time / money / team].\n\nGive me: validation of the hypothesis with key questions, phased plan, estimated investment, main risks and metrics to know if it works.",
+    "recommendedFiles": [
+      "Current business data",
+      "Market research if you have it"
+    ],
+    "expectedResult": [
+      "Validation",
+      "Phased plan",
+      "Investment",
+      "Risks",
+      "Metrics"
+    ]
+  }
+}

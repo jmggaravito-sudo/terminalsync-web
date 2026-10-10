@@ -1,0 +1,37 @@
+{
+  "id": "ops-008",
+  "categoryId": "operations",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 40,
+  "es": {
+    "title": "Evaluar a un proveedor",
+    "outcome": "Marco para elegir o renegociar con proveedores objetivamente.",
+    "prompt": "Necesito evaluar a un proveedor objetivamente, ya sea para elegirlo o renegociar condiciones.\n\nProveedor: [describir qué provee].\nTiempo de relación: [tiempo].\nProblemas o dudas actuales: [describir].\n\nDame: 7 criterios de evaluación con su peso relativo, una matriz de evaluación lista para usar, preguntas para la reunión de renegociación y plan B si no se llega a acuerdo.",
+    "recommendedFiles": [
+      "Contrato actual",
+      "Histórico de problemas"
+    ],
+    "expectedResult": [
+      "Criterios y pesos",
+      "Matriz de evaluación",
+      "Preguntas de negociación",
+      "Plan B"
+    ]
+  },
+  "en": {
+    "title": "Evaluate a supplier",
+    "outcome": "Framework to choose or renegotiate with suppliers objectively.",
+    "prompt": "I need to evaluate a supplier objectively, either to choose them or renegotiate terms.\n\nSupplier: [describe what they supply].\nLength of relationship: [time].\nCurrent problems or doubts: [describe].\n\nGive me: 7 evaluation criteria with their relative weight, an evaluation matrix ready to use, questions for the renegotiation meeting and a Plan B if no agreement is reached.",
+    "recommendedFiles": [
+      "Current contract",
+      "History of problems"
+    ],
+    "expectedResult": [
+      "Criteria and weights",
+      "Evaluation matrix",
+      "Negotiation questions",
+      "Plan B"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "str-005",
+  "categoryId": "strategy",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 99,
+  "es": {
+    "title": "Reunión de directorio",
+    "outcome": "Reunión de equipo directivo efectiva en 60 minutos.",
+    "prompt": "Quiero estructurar mejor mis reuniones de equipo directivo o socios.\n\nFrecuencia: [semanal / mensual].\nTamaño del equipo: [#].\nTipo de temas a tratar: [estratégicos / operativos / financieros].\n\nDame: agenda de 60 minutos, formato para llevarla bien, qué decisiones se toman en estas reuniones vs otras, plantilla de minuta y cómo cerrar con acciones claras y responsables.",
+    "recommendedFiles": [
+      "Minutas anteriores"
+    ],
+    "expectedResult": [
+      "Agenda 60 min",
+      "Formato",
+      "Plantilla de minuta",
+      "Cierre"
+    ]
+  },
+  "en": {
+    "title": "Board/team meeting",
+    "outcome": "Effective leadership/team meeting in 60 minutes.",
+    "prompt": "I want to better structure my leadership or partners' team meetings.\n\nFrequency: [weekly / monthly].\nTeam size: [#].\nType of topics to cover: [strategic / operational / financial].\n\nGive me: 60-minute agenda, format to run it well, what decisions are made in these meetings vs others, meeting minutes template and how to close with clear accountable actions.",
+    "recommendedFiles": [
+      "Previous meeting minutes"
+    ],
+    "expectedResult": [
+      "60-minute agenda",
+      "Format",
+      "Meeting minutes template",
+      "Closure"
+    ]
+  }
+}
