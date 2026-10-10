@@ -1,0 +1,33 @@
+{
+  "id": "ops-005",
+  "categoryId": "operations",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 37,
+  "es": {
+    "title": "Lista de chequeo (checklist)",
+    "outcome": "Checklist clara que asegura que nada se olvide.",
+    "prompt": "Necesito una lista de chequeo para asegurar que una tarea se haga bien siempre.\n\nTarea: [describir].\nQuién la ejecuta: [rol].\nFrecuencia: [diaria / semanal / mensual].\nProblema más común si no se hace bien: [describir].\n\nDame una checklist ordenada lógicamente, con casillas para tildar, en formato listo para imprimir o enviar por WhatsApp.",
+    "recommendedFiles": [
+      "Errores comunes en esta tarea"
+    ],
+    "expectedResult": [
+      "Checklist completa",
+      "Versión imprimible",
+      "Versión WhatsApp"
+    ]
+  },
+  "en": {
+    "title": "Checklist",
+    "outcome": "Clear checklist that ensures nothing is forgotten.",
+    "prompt": "I need a checklist to ensure a task is always done correctly.\n\nTask: [describe].\nWho executes it: [role].\nFrequency: [daily / weekly / monthly].\nMost common problem if not done well: [describe].\n\nGive me a logically ordered checklist, with boxes to tick, in a format ready to print or send via WhatsApp.",
+    "recommendedFiles": [
+      "Common errors in this task"
+    ],
+    "expectedResult": [
+      "Complete checklist",
+      "Printable version",
+      "WhatsApp version"
+    ]
+  }
+}

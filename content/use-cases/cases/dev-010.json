@@ -1,0 +1,35 @@
+{
+  "id": "dev-010",
+  "categoryId": "dev",
+  "recommendedAI": "codex",
+  "level": "Intermedio",
+  "order": 92,
+  "es": {
+    "title": "Chatbot simple para WhatsApp/web",
+    "outcome": "Chatbot que responde preguntas básicas y libera tiempo.",
+    "prompt": "Quiero un chatbot simple para responder preguntas básicas de mis clientes y liberar tiempo.\n\nMi negocio: [describir].\nLas preguntas más frecuentes son: [listar].\nDonde lo necesito: [WhatsApp / web / Instagram].\n\nDame: flujo conversacional con las preguntas frecuentes resueltas, cuándo pasar a humano, herramientas recomendadas y cómo medir su efectividad.",
+    "recommendedFiles": [
+      "Lista de preguntas frecuentes"
+    ],
+    "expectedResult": [
+      "Flujo conversacional",
+      "Reglas de paso a humano",
+      "Herramientas",
+      "Métricas"
+    ]
+  },
+  "en": {
+    "title": "Simple chatbot for WhatsApp/web",
+    "outcome": "Chatbot that answers basic questions and frees up time.",
+    "prompt": "I want a simple chatbot to answer basic customer questions and free up time.\n\nMy business: [describe].\nThe most frequent questions are: [list].\nWhere I need it: [WhatsApp / web / Instagram].\n\nGive me: conversational flow with the frequent questions answered, when to hand off to a human, recommended tools and how to measure its effectiveness.",
+    "recommendedFiles": [
+      "List of frequently asked questions"
+    ],
+    "expectedResult": [
+      "Conversation flow",
+      "Rules for handing to a human",
+      "Tools",
+      "Metrics"
+    ]
+  }
+}

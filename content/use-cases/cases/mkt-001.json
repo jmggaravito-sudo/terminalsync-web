@@ -1,0 +1,42 @@
+{
+  "id": "mkt-001",
+  "categoryId": "marketing",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 11,
+  "popular": true,
+  "es": {
+    "title": "Crear campaña Meta Ads",
+    "outcome": "Campaña completa con copies, segmentación y estructura de anuncios.",
+    "prompt": "Necesito armar una campaña de anuncios en Facebook e Instagram.\n\nMi producto/servicio: [describir].\nMi cliente ideal: [edad, ubicación, intereses].\nMi objetivo: [generar leads / vender / dar a conocer].\nPresupuesto diario: [monto].\n\nDame: 3 ángulos de anuncio diferentes, copy para cada ángulo (headline + cuerpo + CTA), descripción de la imagen ideal, segmentación recomendada y métricas que debo seguir.",
+    "recommendedFiles": [
+      "Logo y fotos del producto",
+      "Casos de éxito",
+      "Audiencia actual de redes"
+    ],
+    "expectedResult": [
+      "3 ángulos creativos",
+      "Copies completos",
+      "Descripción de imágenes",
+      "Segmentación",
+      "Métricas clave"
+    ]
+  },
+  "en": {
+    "title": "Create Meta Ads campaign",
+    "outcome": "Complete campaign with copies, targeting and ad structure.",
+    "prompt": "I need to set up an ad campaign on Facebook and Instagram.\n\nMy product/service: [describe].\nMy ideal customer: [age, location, interests].\nMy objective: [generate leads / sell / raise awareness].\nDaily budget: [amount].\n\nGive me: 3 different ad angles, copy for each angle (headline + body + CTA), description of the ideal image, recommended targeting and metrics I should track.",
+    "recommendedFiles": [
+      "Logo and product photos",
+      "Success stories",
+      "Current social audience"
+    ],
+    "expectedResult": [
+      "3 creative angles",
+      "Complete copies",
+      "Image descriptions",
+      "Targeting",
+      "Key metrics"
+    ]
+  }
+}

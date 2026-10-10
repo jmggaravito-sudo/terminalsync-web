@@ -1,0 +1,35 @@
+{
+  "id": "ec-006",
+  "categoryId": "ecommerce",
+  "recommendedAI": "gemini",
+  "level": "Intermedio",
+  "order": 78,
+  "es": {
+    "title": "Análisis de productos estrella",
+    "outcome": "Identificar qué productos te hacen ganar más.",
+    "prompt": "Quiero saber cuáles son mis productos estrella y cuáles debería discontinuar.\n\nMi tienda: [describir].\nVolumen de productos: [#].\nVentas mensuales aproximadas: [monto].\n\nDame: clasificación tipo ABC (cuáles son los 20% que dan el 80%), criterios para discontinuar productos, recomendaciones de cómo destacar los estrella y reemplazos para los que se van.",
+    "recommendedFiles": [
+      "Reporte de ventas últimos 6 meses"
+    ],
+    "expectedResult": [
+      "Top 20%",
+      "A discontinuar",
+      "Cómo destacar",
+      "Reemplazos"
+    ]
+  },
+  "en": {
+    "title": "Analysis of Top Products",
+    "outcome": "Identify which products make you the most profit.",
+    "prompt": "I want to know which of my products are star performers and which I should discontinue.\n\nMy store: [describe].\nProduct count: [#].\nApproximate monthly sales: [amount].\n\nGive me: an ABC classification (which 20% deliver 80%), criteria to discontinue products, recommendations on how to highlight the stars and replacements for those you discontinue.",
+    "recommendedFiles": [
+      "Sales report for the last 6 months"
+    ],
+    "expectedResult": [
+      "Top 20%",
+      "To discontinue",
+      "How to highlight",
+      "Replacements"
+    ]
+  }
+}

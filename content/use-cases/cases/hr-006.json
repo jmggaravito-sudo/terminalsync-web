@@ -1,0 +1,37 @@
+{
+  "id": "hr-006",
+  "categoryId": "hr",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 48,
+  "es": {
+    "title": "Plan de incentivos para equipo",
+    "outcome": "Sistema de bonos justo y motivador.",
+    "prompt": "Quiero implementar un plan de incentivos para mi equipo que sea justo y motivador.\n\nTamaño del equipo: [#].\nRoles: [listar].\nObjetivos clave del negocio: [vender más / mejorar atención / reducir costos].\nPresupuesto disponible: [monto o porcentaje].\n\nDame: estructura del plan, métricas por rol, frecuencia de pago, ejemplos concretos de cálculo y comunicación clara al equipo.",
+    "recommendedFiles": [
+      "Salarios y roles actuales",
+      "Resultados del negocio"
+    ],
+    "expectedResult": [
+      "Estructura del plan",
+      "Métricas por rol",
+      "Cálculos de ejemplo",
+      "Comunicación al equipo"
+    ]
+  },
+  "en": {
+    "title": "Team Incentive Plan",
+    "outcome": "Fair and motivating bonus system.",
+    "prompt": "I want to implement an incentive plan for my team that is fair and motivating.\n\nTeam size: [#].\nRoles: [list].\nKey business objectives: [sell more / improve service / reduce costs].\nBudget available: [amount or percentage].\n\nGive me: plan structure, metrics per role, payment frequency, concrete calculation examples and clear communication to the team.",
+    "recommendedFiles": [
+      "Current salaries and roles",
+      "Business results"
+    ],
+    "expectedResult": [
+      "Plan structure",
+      "Metrics per role",
+      "Calculation examples",
+      "Team communication"
+    ]
+  }
+}

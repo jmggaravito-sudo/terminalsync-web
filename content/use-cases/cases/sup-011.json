@@ -1,0 +1,40 @@
+{
+  "id": "sup-011",
+  "categoryId": "support",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 24,
+  "popular": true,
+  "es": {
+    "title": "Atender clientes por WhatsApp Business",
+    "outcome": "Flujo claro para responder, priorizar y escalar conversaciones por WhatsApp.",
+    "prompt": "Quiero usar WhatsApp Business como canal principal de atención al cliente.\n\nMi negocio: [describir].\nQué tipo de mensajes recibo: [precios / horarios / soporte / reclamos / reservas / pedidos].\nQué horario atiendo: [horario].\nCuándo debe entrar una persona: [casos sensibles].\n\nDame: flujo de atención completo, tipos de mensajes más comunes, respuestas sugeridas, reglas de prioridad, cuándo escalar a humano y checklist para operar esto con consistencia.",
+    "recommendedFiles": [
+      "Preguntas frecuentes",
+      "Mensajes reales de clientes",
+      "Políticas de atención"
+    ],
+    "expectedResult": [
+      "Flujo de atención",
+      "Respuestas sugeridas",
+      "Reglas de prioridad",
+      "Criterios de escalación"
+    ]
+  },
+  "en": {
+    "title": "Handle customers via WhatsApp Business",
+    "outcome": "Clear flow to respond, prioritize and escalate conversations via WhatsApp.",
+    "prompt": "I want to use WhatsApp Business as the main customer support channel.\n\nMy business: [describe].\nWhat types of messages I receive: [prices / hours / support / complaints / reservations / orders].\nWhat hours I operate: [hours].\nWhen a person should intervene: [sensitive cases].\n\nGive me: complete support flow, most common message types, suggested responses, priority rules, when to escalate to a human and a checklist to operate this consistently.",
+    "recommendedFiles": [
+      "Frequently asked questions",
+      "Real customer messages",
+      "Service policies"
+    ],
+    "expectedResult": [
+      "Support flow",
+      "Suggested responses",
+      "Priority rules",
+      "Escalation criteria"
+    ]
+  }
+}

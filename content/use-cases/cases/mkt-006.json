@@ -1,0 +1,41 @@
+{
+  "id": "mkt-006",
+  "categoryId": "marketing",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 16,
+  "es": {
+    "title": "Crear estrategia de marca",
+    "outcome": "Identidad de marca clara: misión, tono, posicionamiento.",
+    "prompt": "Necesito definir la identidad y estrategia de mi marca.\n\nMi negocio: [describir].\nPor qué empecé: [historia].\nMi cliente ideal: [perfil].\nMis competidores: [3 principales].\n\nDame: misión y visión claras, propuesta de valor única, posicionamiento contra competencia, valores de marca, tono de comunicación y 5 frases clave que pueda usar consistentemente.",
+    "recommendedFiles": [
+      "Historia de la empresa",
+      "Análisis de competidores"
+    ],
+    "expectedResult": [
+      "Misión y visión",
+      "Propuesta de valor",
+      "Posicionamiento",
+      "Valores",
+      "Tono",
+      "Frases clave"
+    ]
+  },
+  "en": {
+    "title": "Create brand strategy",
+    "outcome": "Clear brand identity: mission, tone, positioning.",
+    "prompt": "I need to define my brand identity and strategy.\n\nMy business: [describe].\nWhy I started: [story].\nMy ideal customer: [profile].\nMy competitors: [3 main].\n\nGive me: clear mission and vision, unique value proposition, positioning against competitors, brand values, tone of communication and 5 key phrases I can use consistently.",
+    "recommendedFiles": [
+      "Company story",
+      "Competitor analysis"
+    ],
+    "expectedResult": [
+      "Mission and vision",
+      "Value proposition",
+      "Positioning",
+      "Values",
+      "Tone",
+      "Key phrases"
+    ]
+  }
+}

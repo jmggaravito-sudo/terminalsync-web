@@ -1,0 +1,37 @@
+{
+  "id": "hr-002",
+  "categoryId": "hr",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 44,
+  "es": {
+    "title": "Guion de entrevista",
+    "outcome": "Entrevista estructurada que descubre al candidato real.",
+    "prompt": "Voy a entrevistar candidatos para un puesto y quiero hacer una entrevista profesional.\n\nPuesto: [describir].\nLo que más necesito en la persona: [habilidades clave].\nNivel: [junior / semi senior / senior].\n\nDame: una entrevista estructurada de 45 minutos, 10 preguntas conductuales (situaciones reales), 5 preguntas técnicas, qué buscar en cada respuesta y red flags que debería identificar.",
+    "recommendedFiles": [
+      "CV del candidato",
+      "Descripción del puesto"
+    ],
+    "expectedResult": [
+      "Estructura de 45 min",
+      "10 preguntas conductuales",
+      "5 técnicas",
+      "Red flags"
+    ]
+  },
+  "en": {
+    "title": "Interview Script",
+    "outcome": "Structured interview that uncovers the real candidate.",
+    "prompt": "I'm going to interview candidates for a role and want to run a professional interview.\n\nPosition: [describe].\nWhat I need most in the person: [key skills].\nLevel: [junior / mid-level / senior].\n\nGive me: a structured 45-minute interview, 10 behavioral questions (real situations), 5 technical questions, what to look for in each answer and red flags I should identify.",
+    "recommendedFiles": [
+      "Candidate CV",
+      "Job description"
+    ],
+    "expectedResult": [
+      "45-minute structure",
+      "10 behavioral questions",
+      "5 technical questions",
+      "Red flags"
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "cont-002",
+  "categoryId": "continuity",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 121,
+  "isNew": true,
+  "es": {
+    "title": "Continuar trabajo iniciado en Telegram",
+    "outcome": "Convierte un hilo de Telegram en trabajo accionable.",
+    "prompt": "Vengo de una conversación en Telegram y quiero retomarla aquí con orden.\n\nGrupo o chat: [describir contexto].\nTema central: [describir].\nMensajes clave: [pegar o resumir].\nLo que quedó por hacer: [listar].\n\nAyúdame a: extraer las decisiones del hilo, separar lo importante del ruido, listar pendientes con dueño y plazo, y proponer el siguiente paso concreto.",
+    "recommendedFiles": [
+      "Exportación o capturas del chat",
+      "Archivos compartidos en el chat"
+    ],
+    "expectedResult": [
+      "Decisiones del hilo",
+      "Pendientes con dueño",
+      "Siguiente paso"
+    ]
+  },
+  "en": {
+    "title": "Continue work started on Telegram",
+    "outcome": "Turn a Telegram thread into actionable work.",
+    "prompt": "I'm coming from a conversation on Telegram and want to pick it up here in an organized way.\n\nGroup or chat: [describe context].\nCentral topic: [describe].\nKey messages: [paste or summarize].\nWhat remains to be done: [list].\n\nHelp me to: extract the decisions from the thread, separate what's important from the noise, list pending items with owner and deadline, and propose the concrete next step.",
+    "recommendedFiles": [
+      "Export or screenshots of the chat",
+      "Files shared in the chat"
+    ],
+    "expectedResult": [
+      "Decisions from the thread",
+      "Pending items with owners",
+      "Next step"
+    ]
+  }
+}

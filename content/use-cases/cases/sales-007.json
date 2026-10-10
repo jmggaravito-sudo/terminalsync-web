@@ -1,0 +1,37 @@
+{
+  "id": "sales-007",
+  "categoryId": "sales",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 7,
+  "es": {
+    "title": "Crear pitch deck de ventas",
+    "outcome": "Estructura clara y persuasiva para presentar tu empresa.",
+    "prompt": "Ayúdame a estructurar un pitch deck de ventas para mi empresa.\n\nMi negocio: [describir].\nA quién se lo voy a mostrar: [tipo de cliente].\nLo que quiero lograr: [cerrar venta / agendar demo / etc].\n\nDame la estructura ideal slide por slide (máximo 10 slides), con qué debe ir en cada uno y consejos de cómo presentarlo en vivo.",
+    "recommendedFiles": [
+      "Información de tu empresa",
+      "Casos de éxito",
+      "Datos del cliente"
+    ],
+    "expectedResult": [
+      "Lista de 10 slides",
+      "Contenido de cada slide",
+      "Tips de presentación"
+    ]
+  },
+  "en": {
+    "title": "Create a sales pitch deck",
+    "outcome": "Clear, persuasive structure to present your company.",
+    "prompt": "Help me structure a sales pitch deck for my company.\n\nMy business: [describe].\nWho I'll show it to: [type of client].\nWhat I want to achieve: [close sale / schedule demo / etc].\n\nGive me the ideal slide-by-slide structure (maximum 10 slides), what should be on each one and tips on how to present it live.",
+    "recommendedFiles": [
+      "Your company information",
+      "Success cases",
+      "Client data"
+    ],
+    "expectedResult": [
+      "List of 10 slides",
+      "Content for each slide",
+      "Presentation tips"
+    ]
+  }
+}

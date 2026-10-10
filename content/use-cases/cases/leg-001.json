@@ -1,0 +1,34 @@
+{
+  "id": "leg-001",
+  "categoryId": "legal",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 63,
+  "popular": true,
+  "es": {
+    "title": "Contrato de prestación de servicios",
+    "outcome": "Borrador de contrato profesional listo para revisar con abogado.",
+    "prompt": "Necesito un contrato de prestación de servicios para mis clientes.\n\nTipo de servicio que presto: [describir].\nDuración típica del servicio: [tiempo].\nForma de pago: [describir].\nQué quiero proteger: [listar puntos clave].\n\nDame un borrador con: objeto, plazo, obligaciones de ambas partes, forma de pago, confidencialidad, propiedad intelectual, terminación anticipada y cláusulas de resolución de conflictos. (Después un abogado debe revisarlo).",
+    "recommendedFiles": [
+      "Contratos anteriores",
+      "Política de servicio"
+    ],
+    "expectedResult": [
+      "Borrador completo",
+      "Puntos sensibles a discutir con abogado"
+    ]
+  },
+  "en": {
+    "title": "Service agreement",
+    "outcome": "Draft of a professional contract ready to review with a lawyer.",
+    "prompt": "I need a service agreement for my clients.\n\nType of service I provide: [describe].\nTypical duration of the service: [time].\nPayment terms: [describe].\nWhat I want to protect: [list key points].\n\nGive me a draft with: scope/objective, term, obligations of both parties, payment terms, confidentiality, intellectual property, early termination, and dispute resolution clauses. (A lawyer should review it afterwards).",
+    "recommendedFiles": [
+      "Previous contracts",
+      "Service policy"
+    ],
+    "expectedResult": [
+      "Complete draft",
+      "Sensitive points to discuss with a lawyer"
+    ]
+  }
+}

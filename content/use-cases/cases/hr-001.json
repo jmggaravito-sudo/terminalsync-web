@@ -1,0 +1,34 @@
+{
+  "id": "hr-001",
+  "categoryId": "hr",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 43,
+  "popular": true,
+  "es": {
+    "title": "Escribir oferta de trabajo",
+    "outcome": "Oferta de trabajo que atrae a los candidatos correctos.",
+    "prompt": "Necesito publicar una oferta de trabajo que atraiga buenos candidatos.\n\nPuesto: [describir rol].\nMi empresa: [describir].\nQué busco en la persona: [habilidades duras y blandas].\nLo que ofrezco: [salario, beneficios, cultura].\n\nDame una oferta con: título atractivo del puesto, resumen de la empresa, responsabilidades concretas, requisitos imprescindibles vs deseables, qué ofrecemos y proceso de postulación.",
+    "recommendedFiles": [
+      "Descripción de puestos previos"
+    ],
+    "expectedResult": [
+      "Oferta completa",
+      "Versión LinkedIn",
+      "Versión web"
+    ]
+  },
+  "en": {
+    "title": "Write Job Posting",
+    "outcome": "Job posting that attracts the right candidates.",
+    "prompt": "I need to post a job that attracts good candidates.\n\nPosition: [describe role].\nMy company: [describe].\nWhat I'm looking for in the person: [hard and soft skills].\nWhat I offer: [salary, benefits, culture].\n\nGive me a posting with: attractive job title, company summary, concrete responsibilities, must-have vs desirable requirements, what we offer and application process.",
+    "recommendedFiles": [
+      "Previous job descriptions"
+    ],
+    "expectedResult": [
+      "Complete posting",
+      "LinkedIn version",
+      "Website version"
+    ]
+  }
+}

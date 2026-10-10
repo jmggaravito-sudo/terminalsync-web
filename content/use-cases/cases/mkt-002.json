@@ -1,0 +1,44 @@
+{
+  "id": "mkt-002",
+  "categoryId": "marketing",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 12,
+  "popular": true,
+  "es": {
+    "title": "Escribir una landing page",
+    "outcome": "Estructura y texto completo para una landing que convierte.",
+    "prompt": "Necesito una landing page para [producto/servicio].\n\nObjetivo: [agendar reunión / vender / capturar lead].\nMi cliente ideal: [describir].\nMis 3 diferenciales: [listar].\n\nDame la estructura completa con: hero (titular + subtítulo + CTA), beneficios principales, prueba social, descripción de servicio, FAQ y CTA final. Texto listo para copiar y pegar.",
+    "recommendedFiles": [
+      "Información del producto",
+      "Testimonios",
+      "Logos de clientes"
+    ],
+    "expectedResult": [
+      "Hero completo",
+      "Sección beneficios",
+      "Prueba social",
+      "Descripción",
+      "FAQ",
+      "CTA final"
+    ]
+  },
+  "en": {
+    "title": "Write a landing page",
+    "outcome": "Complete structure and text for a high-converting landing page.",
+    "prompt": "I need a landing page for [product/service].\n\nObjective: [schedule a meeting / sell / capture a lead].\nMy ideal customer: [describe].\nMy 3 differentiators: [list].\n\nGive me the complete structure with: hero (headline + subheadline + CTA), main benefits, social proof, service description, FAQ and final CTA. Text ready to copy and paste.",
+    "recommendedFiles": [
+      "Product information",
+      "Testimonials",
+      "Client logos"
+    ],
+    "expectedResult": [
+      "Complete hero",
+      "Benefits section",
+      "Social proof",
+      "Service description",
+      "FAQ",
+      "Final CTA"
+    ]
+  }
+}

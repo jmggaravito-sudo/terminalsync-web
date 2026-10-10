@@ -1,0 +1,35 @@
+{
+  "id": "cont-007",
+  "categoryId": "continuity",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 126,
+  "es": {
+    "title": "Continuar desde móvil",
+    "outcome": "Lo que empezaste en el celular sigue acá sin perder el hilo.",
+    "prompt": "Empecé algo en el celular (nota, mensaje, idea suelta) y lo quiero terminar aquí con calma y mejor herramienta.\n\nLo que empecé: [pegar texto o describir].\nObjetivo final: [email / documento / propuesta / publicación].\nA quién va dirigido: [destinatario].\n\nAyúdame a: ordenar lo que escribí, completarlo profesionalmente, ajustar el tono al destinatario y dejarlo listo para enviar.",
+    "recommendedFiles": [
+      "Texto del móvil",
+      "Información del destinatario"
+    ],
+    "expectedResult": [
+      "Versión final ordenada",
+      "Tono ajustado",
+      "Listo para enviar"
+    ]
+  },
+  "en": {
+    "title": "Continue from mobile",
+    "outcome": "What you started on your phone carries over here without losing the thread.",
+    "prompt": "I started something on my phone (note, message, loose idea) and want to finish it here with a calmer, better tool.\n\nWhat I started: [paste the text or describe].\nFinal objective: [email / document / proposal / publication].\nWho it's for: [recipient].\n\nHelp me to: organize what I wrote, complete it professionally, adjust the tone for the recipient, and leave it ready to send.",
+    "recommendedFiles": [
+      "Text from the mobile",
+      "Recipient information"
+    ],
+    "expectedResult": [
+      "Final organized version",
+      "Tone adjusted",
+      "Ready to send"
+    ]
+  }
+}

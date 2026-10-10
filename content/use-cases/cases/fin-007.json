@@ -1,0 +1,35 @@
+{
+  "id": "fin-007",
+  "categoryId": "finance",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 59,
+  "es": {
+    "title": "Reporte financiero mensual",
+    "outcome": "Reporte ejecutivo claro para revisar el negocio en 10 minutos.",
+    "prompt": "Quiero un formato de reporte financiero mensual ejecutivo para revisar mi negocio rápido.\n\nMi negocio: [describir].\nQué decisiones necesito tomar basadas en el reporte: [crecer / ajustar costos / invertir].\n\nDame: estructura del reporte (1-2 páginas máximo), KPIs clave a mostrar, gráficos sugeridos, comentarios automáticos según resultados y plantilla lista para llenar mes a mes.",
+    "recommendedFiles": [
+      "Reportes contables actuales"
+    ],
+    "expectedResult": [
+      "Estructura del reporte",
+      "KPIs",
+      "Comentarios sugeridos",
+      "Plantilla"
+    ]
+  },
+  "en": {
+    "title": "Monthly financial report",
+    "outcome": "Clear executive report to review the business in 10 minutes.",
+    "prompt": "I want a format for a monthly executive financial report to review my business quickly.\n\nMy business: [describe].\nDecisions I need to make based on the report: [grow / adjust costs / invest].\n\nGive me: report structure (1-2 pages maximum), key KPIs to display, suggested charts, automated comments based on results, and a template ready to fill in month by month.",
+    "recommendedFiles": [
+      "Current accounting reports"
+    ],
+    "expectedResult": [
+      "Report structure",
+      "KPIs",
+      "Suggested comments",
+      "Template"
+    ]
+  }
+}

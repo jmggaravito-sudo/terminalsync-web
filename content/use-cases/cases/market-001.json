@@ -1,0 +1,42 @@
+{
+  "id": "market-001",
+  "categoryId": "market",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 105,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__find_places",
+    "business-search__place_reviews"
+  ],
+  "es": {
+    "title": "Auditar mi negocio local",
+    "outcome": "Revisa cómo aparece tu negocio en Google Maps, qué dicen tus reseñas y cómo te comparas con los negocios cercanos.",
+    "prompt": "Quiero una auditoría de cómo aparece mi negocio en Google Maps.\n\nNegocio: [nombre exacto, como aparece en Google].\nCiudad y país: [por ejemplo: Doral, Florida, EE. UU. / Medellín, Colombia].\nRubro: [restaurante / clínica dental / salón de belleza / taller / otro].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta la ciudad, el país o el idioma, pregúntamelos antes de buscar. Busca mi negocio en Google Maps y lee sus reseñas más recientes. Dame:\n1. Cómo aparece mi ficha: dirección, teléfono, sitio web, horarios y calificación.\n2. Qué elogian y de qué se quejan mis clientes en las reseñas.\n3. Los negocios cercanos de mi rubro mejor calificados y cómo me comparo en calificación y cantidad de reseñas.\n4. Cinco acciones concretas para mejorar mi presencia y mis reseñas.\n\nSi un dato no aparece en Google Maps, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Nombre y dirección del negocio",
+      "Lista de servicios o productos"
+    ],
+    "expectedResult": [
+      "Cómo aparece tu ficha",
+      "Qué elogian y qué critican tus clientes",
+      "Comparación con negocios cercanos",
+      "Plan de mejora"
+    ]
+  },
+  "en": {
+    "title": "Audit my local business",
+    "outcome": "Reviews how your business shows up on Google Maps, what your reviews say, and how you compare with nearby businesses.",
+    "prompt": "I want an audit of how my business shows up on Google Maps.\n\nBusiness: [exact name, as it appears on Google].\nCity and country: [for example: Doral, Florida, USA / Medellín, Colombia].\nType of business: [restaurant / dental clinic / beauty salon / auto shop / other].\nLanguage for the answer: [English / Spanish].\n\nIf the city, the country, or the language is missing, ask me before searching. Look up my business on Google Maps and read its most recent reviews. Give me:\n1. How my listing appears: address, phone, website, hours, and rating.\n2. What my customers praise and complain about in the reviews.\n3. The best-rated nearby businesses of my type and how I compare on rating and number of reviews.\n4. Five concrete actions to improve my presence and my reviews.\n\nIf something doesn't appear on Google Maps, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Business name and address",
+      "List of services or products"
+    ],
+    "expectedResult": [
+      "How your listing appears",
+      "What customers praise and criticize",
+      "Comparison with nearby businesses",
+      "Improvement plan"
+    ]
+  }
+}

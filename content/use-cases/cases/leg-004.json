@@ -1,0 +1,35 @@
+{
+  "id": "leg-004",
+  "categoryId": "legal",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 66,
+  "es": {
+    "title": "Carta de cobro legal",
+    "outcome": "Carta formal que precede acciones legales.",
+    "prompt": "Un cliente no me paga y necesito enviarle una carta formal antes de tomar acciones legales.\n\nDeuda: [monto y desde cuándo].\nServicio prestado: [describir].\nIntentos previos de cobro: [listar].\n\nDame: carta formal de requerimiento de pago, plazo razonable para pagar, consecuencias claras si no paga, tono firme pero profesional y opciones de pago para facilitar el acuerdo.",
+    "recommendedFiles": [
+      "Facturas pendientes",
+      "Contrato firmado"
+    ],
+    "expectedResult": [
+      "Carta formal",
+      "Opciones de pago",
+      "Pasos siguientes"
+    ]
+  },
+  "en": {
+    "title": "Formal demand letter (pre-litigation)",
+    "outcome": "Formal letter that precedes legal action.",
+    "prompt": "A client hasn't paid me and I need to send a formal letter before taking legal action.\n\nDebt: [amount and since when].\nService provided: [describe].\nPrevious collection attempts: [list].\n\nGive me: a formal demand letter for payment, a reasonable deadline to pay, clear consequences if they do not pay, a firm but professional tone, and payment options to facilitate a settlement.",
+    "recommendedFiles": [
+      "Outstanding invoices",
+      "Signed contract"
+    ],
+    "expectedResult": [
+      "Formal letter",
+      "Payment options",
+      "Next steps"
+    ]
+  }
+}

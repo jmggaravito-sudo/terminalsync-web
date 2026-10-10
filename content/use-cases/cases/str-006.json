@@ -1,0 +1,33 @@
+{
+  "id": "str-006",
+  "categoryId": "strategy",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 100,
+  "es": {
+    "title": "Definir misión, visión y valores",
+    "outcome": "Misión, visión y valores claros que inspiren al equipo.",
+    "prompt": "Quiero definir o redefinir la misión, visión y valores de mi empresa.\n\nMi negocio: [describir].\nPor qué empecé: [historia].\nLo que más me importa: [principios].\nDónde me veo en 5 años: [aspiración].\n\nDame: 3 propuestas de misión, 3 propuestas de visión, 5 valores con descripción y ejemplos reales de cómo se viven en el día a día.",
+    "recommendedFiles": [
+      "Historia de la empresa"
+    ],
+    "expectedResult": [
+      "3 propuestas de misión",
+      "3 propuestas de visión",
+      "5 valores con ejemplos"
+    ]
+  },
+  "en": {
+    "title": "Define mission, vision and values",
+    "outcome": "Clear mission, vision and values that inspire the team.",
+    "prompt": "I want to define or redefine my company's mission, vision and values.\n\nMy business: [describe].\nWhy I started: [story].\nWhat matters most to me: [principles].\nWhere I see myself in 5 years: [aspiration].\n\nGive me: 3 mission proposals, 3 vision proposals, 5 values with descriptions and real examples of how they are lived day-to-day.",
+    "recommendedFiles": [
+      "Company history"
+    ],
+    "expectedResult": [
+      "3 mission proposals",
+      "3 vision proposals",
+      "5 values with examples"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "id": "leg-009",
+  "categoryId": "legal",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 71,
+  "es": {
+    "title": "Acuerdo entre socios",
+    "outcome": "Borrador de acuerdo entre socios que previene conflictos futuros.",
+    "prompt": "Voy a formalizar un acuerdo entre socios y quiero un borrador profesional para revisar con abogado.\n\nNúmero de socios: [#].\nAportes de cada uno: [dinero / trabajo / contactos].\n% de participación: [describir].\nRoles: [describir].\n\nDame: borrador con aportes, distribución de utilidades, toma de decisiones, qué pasa si alguien se va, qué pasa si entra un inversor y resolución de conflictos. (Pasar a abogado para revisión final).",
+    "recommendedFiles": [
+      "Información de los socios",
+      "Plan de negocio"
+    ],
+    "expectedResult": [
+      "Borrador completo",
+      "Puntos críticos para abogado"
+    ]
+  },
+  "en": {
+    "title": "Partnership agreement",
+    "outcome": "Draft partnership agreement that prevents future conflicts.",
+    "prompt": "I am going to formalize a partnership agreement and I want a professional draft to review with a lawyer.\n\nNumber of partners: [#].\nContributions from each: [money / work / contacts].\n% ownership: [describe].\nRoles: [describe].\n\nGive me: a draft covering contributions, profit distribution, decision-making, what happens if someone leaves, what happens if an investor joins, and conflict resolution. (Provide to a lawyer for final review.)",
+    "recommendedFiles": [
+      "Information about the partners",
+      "Business plan"
+    ],
+    "expectedResult": [
+      "Complete draft",
+      "Key points for lawyer"
+    ]
+  }
+}

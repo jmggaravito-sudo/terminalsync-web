@@ -1,0 +1,348 @@
+{
+  "categories": [
+    {
+      "id": "ventas",
+      "es": "Ventas",
+      "en": "Sales"
+    },
+    {
+      "id": "marketing",
+      "es": "Marketing",
+      "en": "Marketing"
+    },
+    {
+      "id": "operaciones",
+      "es": "Operaciones",
+      "en": "Operations"
+    },
+    {
+      "id": "legal",
+      "es": "Legal",
+      "en": "Legal"
+    },
+    {
+      "id": "alojamientos",
+      "es": "Alojamientos",
+      "en": "Rentals"
+    },
+    {
+      "id": "software",
+      "es": "Software",
+      "en": "Software"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "buscar-clientes",
+      "cat": "ventas",
+      "es": {
+        "t": "Buscador de clientes potenciales",
+        "d": "Investiga tu mercado y te entrega una lista de prospectos calificados.",
+        "cad": "Cada lunes",
+        "rep": "Lista con contactos y por qué encajan, en tu carpeta de Ventas",
+        "steps": [
+          "Investiga empresas que encajan con tu cliente ideal",
+          "Filtra y califica según tus criterios",
+          "Prepara el primer mensaje sugerido para cada uno"
+        ]
+      },
+      "en": {
+        "t": "Prospect finder",
+        "d": "Researches your market and delivers a list of qualified prospects.",
+        "cad": "Every Monday",
+        "rep": "A list with contacts and why they fit, in your Sales folder",
+        "steps": [
+          "Researches companies matching your ideal client",
+          "Filters and qualifies by your criteria",
+          "Drafts a suggested first message for each"
+        ]
+      }
+    },
+    {
+      "id": "propuestas-auto",
+      "cat": "ventas",
+      "es": {
+        "t": "Preparador de propuestas",
+        "d": "Convierte los datos de un cliente en una propuesta lista para revisar.",
+        "cad": "Cuando se lo pidas",
+        "rep": "Propuesta en tu formato, avisa por WhatsApp al terminar",
+        "steps": [
+          "Lee la carpeta del cliente y el histórico",
+          "Arma la propuesta con tu plantilla y precios",
+          "Te la deja lista para revisar y enviar"
+        ]
+      },
+      "en": {
+        "t": "Proposal builder",
+        "d": "Turns a client’s details into a proposal ready to review.",
+        "cad": "On demand",
+        "rep": "Proposal in your format, pings you on WhatsApp when done",
+        "steps": [
+          "Reads the client folder and history",
+          "Builds the proposal with your template and pricing",
+          "Leaves it ready to review and send"
+        ]
+      }
+    },
+    {
+      "id": "crm-aldia",
+      "cat": "ventas",
+      "es": {
+        "t": "CRM siempre al día",
+        "d": "Registra cada interacción y te avisa qué seguimiento toca hoy.",
+        "cad": "Todos los días, 7:00 am",
+        "rep": "Resumen diario: qué se movió y a quién contactar",
+        "steps": [
+          "Revisa correos y conversaciones nuevas",
+          "Actualiza el estado de cada negocio",
+          "Prepara la lista de seguimientos del día"
+        ]
+      },
+      "en": {
+        "t": "CRM always up to date",
+        "d": "Logs every interaction and tells you which follow-up is due today.",
+        "cad": "Daily, 7:00 am",
+        "rep": "Daily digest: what moved and who to contact",
+        "steps": [
+          "Reviews new emails and conversations",
+          "Updates each deal’s status",
+          "Prepares today’s follow-up list"
+        ]
+      }
+    },
+    {
+      "id": "seo-mensual",
+      "cat": "marketing",
+      "es": {
+        "t": "Analista SEO mensual",
+        "d": "Revisa tu sitio y el de tus competidores y te dice dónde ganar.",
+        "cad": "El 1° de cada mes",
+        "rep": "Informe con hallazgos y 5 acciones priorizadas",
+        "steps": [
+          "Analiza posiciones, contenido y competidores",
+          "Detecta oportunidades y caídas",
+          "Prioriza qué publicar o corregir este mes"
+        ]
+      },
+      "en": {
+        "t": "Monthly SEO analyst",
+        "d": "Reviews your site and competitors and tells you where to win.",
+        "cad": "1st of every month",
+        "rep": "Report with findings and 5 prioritized actions",
+        "steps": [
+          "Analyzes rankings, content and competitors",
+          "Spots opportunities and drops",
+          "Prioritizes what to publish or fix this month"
+        ]
+      }
+    },
+    {
+      "id": "contenido-semanal",
+      "cat": "marketing",
+      "es": {
+        "t": "Productor de contenido",
+        "d": "Produce los borradores de la semana en tu voz, listos para aprobar.",
+        "cad": "Cada viernes",
+        "rep": "Piezas en tu carpeta de Marketing + aviso por Telegram",
+        "steps": [
+          "Lee tu calendario y temas del mes",
+          "Escribe posts, correos y guiones en tu tono",
+          "Deja todo en borradores para tu revisión"
+        ]
+      },
+      "en": {
+        "t": "Content producer",
+        "d": "Produces the week’s drafts in your voice, ready to approve.",
+        "cad": "Every Friday",
+        "rep": "Pieces in your Marketing folder + Telegram ping",
+        "steps": [
+          "Reads your calendar and monthly topics",
+          "Writes posts, emails and scripts in your tone",
+          "Leaves everything as drafts for review"
+        ]
+      }
+    },
+    {
+      "id": "vigia-campanas",
+      "cat": "marketing",
+      "es": {
+        "t": "Vigía de campañas",
+        "d": "Monitorea tus anuncios y te alerta antes de quemar presupuesto.",
+        "cad": "Todos los días",
+        "rep": "Alerta solo si algo se sale de rango; resumen semanal",
+        "steps": [
+          "Revisa métricas de cada campaña activa",
+          "Compara contra tus metas y costos máximos",
+          "Sugiere pausar, escalar o ajustar"
+        ]
+      },
+      "en": {
+        "t": "Campaign watchdog",
+        "d": "Monitors your ads and alerts you before budget burns.",
+        "cad": "Daily",
+        "rep": "Alerts only if something drifts; weekly summary",
+        "steps": [
+          "Checks metrics on every active campaign",
+          "Compares against your targets and max costs",
+          "Suggests pausing, scaling or adjusting"
+        ]
+      }
+    },
+    {
+      "id": "reporte-lunes",
+      "cat": "operaciones",
+      "es": {
+        "t": "Reportero de los lunes",
+        "d": "Arma el informe semanal del negocio sin que nadie lo persiga.",
+        "cad": "Cada lunes, 6:00 am",
+        "rep": "Informe en PDF + correo al equipo",
+        "steps": [
+          "Junta los datos de tus fuentes",
+          "Arma el informe con tu formato",
+          "Lo envía al equipo y te avisa"
+        ]
+      },
+      "en": {
+        "t": "Monday reporter",
+        "d": "Builds the weekly business report without anyone chasing it.",
+        "cad": "Every Monday, 6:00 am",
+        "rep": "PDF report + email to the team",
+        "steps": [
+          "Gathers data from your sources",
+          "Builds the report in your format",
+          "Sends it to the team and pings you"
+        ]
+      }
+    },
+    {
+      "id": "clasificador",
+      "cat": "operaciones",
+      "es": {
+        "t": "Clasificador de correos y documentos",
+        "d": "Ordena lo que llega: facturas, contratos, soporte, spam.",
+        "cad": "Cada hora",
+        "rep": "Todo archivado en su carpeta; urgentes a tu WhatsApp",
+        "steps": [
+          "Lee lo nuevo en el correo y las carpetas",
+          "Clasifica y archiva según tus reglas",
+          "Escala solo lo que necesita tu decisión"
+        ]
+      },
+      "en": {
+        "t": "Email & document sorter",
+        "d": "Sorts what comes in: invoices, contracts, support, spam.",
+        "cad": "Hourly",
+        "rep": "Everything filed in its folder; urgent items to your WhatsApp",
+        "steps": [
+          "Reads new mail and folder drops",
+          "Classifies and files by your rules",
+          "Escalates only what needs your decision"
+        ]
+      }
+    },
+    {
+      "id": "pendientes",
+      "cat": "operaciones",
+      "es": {
+        "t": "Monitor de pendientes",
+        "d": "Persigue las tareas vencidas para que nada se enfríe.",
+        "cad": "Todos los días, 5:00 pm",
+        "rep": "Lista de vencidos y quién los tiene, cada tarde",
+        "steps": [
+          "Revisa tareas y compromisos de cada espacio",
+          "Detecta lo vencido o a punto de vencer",
+          "Redacta los recordatorios para enviar"
+        ]
+      },
+      "en": {
+        "t": "Overdue tracker",
+        "d": "Chases overdue tasks so nothing goes cold.",
+        "cad": "Daily, 5:00 pm",
+        "rep": "List of overdue items and owners, every afternoon",
+        "steps": [
+          "Reviews tasks and commitments in each space",
+          "Flags overdue and at-risk items",
+          "Drafts the reminders to send"
+        ]
+      }
+    },
+    {
+      "id": "revisor-contratos",
+      "cat": "legal",
+      "es": {
+        "t": "Revisor de contratos",
+        "d": "Cada contrato nuevo llega revisado, con riesgos señalados en simple.",
+        "cad": "Cuando llega un contrato",
+        "rep": "Resumen de riesgos y qué negociar, antes de tu firma",
+        "steps": [
+          "Lee el contrato que llega a la carpeta",
+          "Señala cláusulas riesgosas y las explica",
+          "Prepara la lista de puntos a negociar"
+        ]
+      },
+      "en": {
+        "t": "Contract reviewer",
+        "d": "Every new contract arrives reviewed, risks flagged in plain language.",
+        "cad": "When a contract arrives",
+        "rep": "Risk summary and negotiation points, before you sign",
+        "steps": [
+          "Reads contracts dropped in the folder",
+          "Flags risky clauses and explains them",
+          "Prepares the negotiation checklist"
+        ]
+      }
+    },
+    {
+      "id": "huespedes",
+      "cat": "alojamientos",
+      "es": {
+        "t": "Anfitrión digital",
+        "d": "Procesa cada reserva: bienvenida, portería e ingreso registrado.",
+        "cad": "Con cada reserva",
+        "rep": "Todo registrado; te avisa solo si algo requiere tu decisión",
+        "steps": [
+          "Envía la bienvenida e instrucciones al huésped",
+          "Notifica a portería con los datos del ingreso",
+          "Registra la reserva y el pago en tu control"
+        ]
+      },
+      "en": {
+        "t": "Digital host",
+        "d": "Handles each booking: welcome, front desk and logged check-in.",
+        "cad": "With every booking",
+        "rep": "Everything logged; pings you only if something needs your call",
+        "steps": [
+          "Sends the guest welcome and instructions",
+          "Notifies the front desk with check-in details",
+          "Logs the booking and payment in your tracker"
+        ]
+      }
+    },
+    {
+      "id": "guardian-bugs",
+      "cat": "software",
+      "es": {
+        "t": "Guardián del código",
+        "d": "Revisa bugs reportados, corre pruebas y propone correcciones.",
+        "cad": "Cada noche",
+        "rep": "Resumen matutino: qué se arregló y qué espera tu OK",
+        "steps": [
+          "Revisa los bugs e issues nuevos",
+          "Corre las pruebas y reproduce errores",
+          "Propone la corrección y la deja lista para revisar"
+        ]
+      },
+      "en": {
+        "t": "Code guardian",
+        "d": "Reviews reported bugs, runs tests and proposes fixes.",
+        "cad": "Every night",
+        "rep": "Morning digest: what was fixed and what awaits your OK",
+        "steps": [
+          "Reviews new bugs and issues",
+          "Runs tests and reproduces errors",
+          "Proposes the fix, ready for your review"
+        ]
+      }
+    }
+  ]
+}

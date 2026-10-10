@@ -1,0 +1,37 @@
+{
+  "id": "str-003",
+  "categoryId": "strategy",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 96,
+  "es": {
+    "title": "Tomar decisión difícil",
+    "outcome": "Marco claro para decidir cuando hay dudas serias.",
+    "prompt": "Tengo que tomar una decisión importante en mi negocio y necesito un marco objetivo.\n\nLa decisión: [describir opciones].\nQué está en juego: [impacto].\nPlazo para decidir: [tiempo].\nLo que más me preocupa: [riesgos].\n\nDame: criterios objetivos para evaluar, tabla comparativa de las opciones, escenarios optimista/realista/pesimista de cada opción, preguntas que debo responder antes y recomendación con justificación.",
+    "recommendedFiles": [
+      "Información de las opciones"
+    ],
+    "expectedResult": [
+      "Criterios",
+      "Tabla comparativa",
+      "Escenarios",
+      "Preguntas",
+      "Recomendación"
+    ]
+  },
+  "en": {
+    "title": "Make a difficult decision",
+    "outcome": "Clear framework to decide when there are serious doubts.",
+    "prompt": "I have to make an important decision in my business and I need an objective framework.\n\nThe decision: [describe options].\nWhat's at stake: [impact].\nDeadline to decide: [time].\nWhat worries me most: [risks].\n\nGive me: objective criteria to evaluate, a comparative table of the options, optimistic/realistic/pessimistic scenarios for each option, questions I must answer beforehand and a recommendation with justification.",
+    "recommendedFiles": [
+      "Information about the options"
+    ],
+    "expectedResult": [
+      "Criteria",
+      "Comparative table",
+      "Scenarios",
+      "Questions",
+      "Recommendation"
+    ]
+  }
+}

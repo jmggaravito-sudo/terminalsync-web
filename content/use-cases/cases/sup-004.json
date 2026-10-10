@@ -1,0 +1,33 @@
+{
+  "id": "sup-004",
+  "categoryId": "support",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 26,
+  "es": {
+    "title": "Política de devoluciones",
+    "outcome": "Política clara que protege al negocio y al cliente.",
+    "prompt": "Necesito redactar mi política de devoluciones y cambios.\n\nMi negocio: [describir].\nMi producto: [describir].\nLo que estoy dispuesto a aceptar: [condiciones].\nLo que NO acepto: [listar].\n\nDame una política clara y profesional, fácil de entender por el cliente, que cubra: plazos, condiciones, qué cubre y qué no, proceso paso a paso y cómo iniciar el reclamo.",
+    "recommendedFiles": [
+      "Política actual si la tienes"
+    ],
+    "expectedResult": [
+      "Política completa",
+      "Versión corta para web",
+      "Versión corta para WhatsApp"
+    ]
+  },
+  "en": {
+    "title": "Return policy",
+    "outcome": "Clear policy that protects the business and the customer.",
+    "prompt": "I need to write my returns and exchanges policy.\n\nMy business: [describe].\nMy product: [describe].\nWhat I'm willing to accept: [conditions].\nWhat I DO NOT accept: [list].\n\nGive me a clear and professional policy, easy for the customer to understand, that covers: deadlines, conditions, what is covered and what is not, step-by-step process and how to start a claim.",
+    "recommendedFiles": [
+      "Current policy if you have one"
+    ],
+    "expectedResult": [
+      "Complete policy",
+      "Short version for web",
+      "Short version for WhatsApp"
+    ]
+  }
+}

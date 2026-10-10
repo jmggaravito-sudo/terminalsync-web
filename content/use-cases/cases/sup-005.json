@@ -1,0 +1,33 @@
+{
+  "id": "sup-005",
+  "categoryId": "support",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 27,
+  "es": {
+    "title": "Encuesta de satisfacción",
+    "outcome": "Encuesta corta y bien diseñada para medir y mejorar.",
+    "prompt": "Quiero medir la satisfacción de mis clientes.\n\nMi negocio: [describir].\nQué quiero entender: [calidad del servicio / atención / producto / precio].\nCuándo se la voy a enviar: [post-compra / mensual / trimestral].\n\nDame: 7 preguntas balanceadas (5 numéricas y 2 abiertas), un email de presentación de la encuesta y qué hacer con cada tipo de respuesta.",
+    "recommendedFiles": [
+      "Comentarios anteriores de clientes"
+    ],
+    "expectedResult": [
+      "7 preguntas",
+      "Email de presentación",
+      "Plan de acción según respuestas"
+    ]
+  },
+  "en": {
+    "title": "Customer satisfaction survey",
+    "outcome": "Short, well-designed survey to measure and improve.",
+    "prompt": "I want to measure my customers' satisfaction.\n\nMy business: [describe].\nWhat I want to understand: [service quality / support / product / price].\nWhen I will send it: [post-purchase / monthly / quarterly].\n\nGive me: 7 balanced questions (5 numeric and 2 open), a survey introduction email and what to do with each type of response.",
+    "recommendedFiles": [
+      "Previous customer feedback"
+    ],
+    "expectedResult": [
+      "7 questions",
+      "Survey introduction email",
+      "Action plan based on responses"
+    ]
+  }
+}

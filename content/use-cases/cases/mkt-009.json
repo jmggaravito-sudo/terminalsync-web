@@ -1,0 +1,37 @@
+{
+  "id": "mkt-009",
+  "categoryId": "marketing",
+  "recommendedAI": "gemini",
+  "level": "Avanzado",
+  "order": 19,
+  "es": {
+    "title": "Crear estrategia SEO",
+    "outcome": "Plan claro para aparecer en Google cuando tus clientes buscan.",
+    "prompt": "Quiero que mi web aparezca en Google cuando mis clientes buscan.\n\nMi negocio: [describir].\nMi ubicación geográfica: [ciudad/país].\nQué venden mis clientes que buscan: [productos/servicios].\n\nDame: 20 palabras clave estratégicas (mezcla locales y generales), estructura de páginas que debe tener mi web, ideas de 10 artículos de blog y acciones técnicas básicas que debo aplicar.",
+    "recommendedFiles": [
+      "URL de tu web actual",
+      "Web de competidores que aparecen primero"
+    ],
+    "expectedResult": [
+      "20 palabras clave",
+      "Estructura web",
+      "10 ideas de artículos",
+      "Acciones técnicas"
+    ]
+  },
+  "en": {
+    "title": "Create SEO strategy",
+    "outcome": "Clear plan to appear on Google when your customers search.",
+    "prompt": "I want my website to appear on Google when my customers search.\n\nMy business: [describe].\nMy geographic location: [city/country].\nWhat my customers search for: [products/services].\n\nGive me: 20 strategic keywords (mix of local and general), website page structure that my site should have, ideas for 10 blog posts and basic technical actions I should apply.",
+    "recommendedFiles": [
+      "URL of your current website",
+      "Competitor websites that rank first"
+    ],
+    "expectedResult": [
+      "20 keywords",
+      "Website structure",
+      "10 article ideas",
+      "Technical actions"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "dev-003",
+  "categoryId": "dev",
+  "recommendedAI": "codex",
+  "level": "Intermedio",
+  "order": 85,
+  "es": {
+    "title": "Conectar dos herramientas (integración)",
+    "outcome": "Integración entre apps para que la información fluya sola.",
+    "prompt": "Quiero conectar dos herramientas que uso para que la información fluya sin pasarla a mano.\n\nHerramienta A: [origen, ej: WhatsApp Business].\nHerramienta B: [destino, ej: Google Sheets].\nQué quiero que pase: [describir flujo].\nFrecuencia: [tiempo real / diaria].\n\nDame: opciones de integración (Zapier, Make, n8n, etc), cuál recomiendas y por qué, paso a paso para configurarla y cómo probar que funciona.",
+    "recommendedFiles": [
+      "Credenciales de las herramientas (¡no las pegues acá!)"
+    ],
+    "expectedResult": [
+      "Opciones",
+      "Recomendación",
+      "Pasos",
+      "Cómo probar"
+    ]
+  },
+  "en": {
+    "title": "Connect two tools (integration)",
+    "outcome": "Integration between apps so information flows automatically.",
+    "prompt": "I want to connect two tools I use so information flows without manual transfer.\n\nTool A: [source, e.g., WhatsApp Business].\nTool B: [destination, e.g., Google Sheets].\nWhat I want to happen: [describe the flow].\nFrequency: [real time / daily].\n\nGive me: integration options (Zapier, Make, n8n, etc.), which you recommend and why, step-by-step setup and how to test that it works.",
+    "recommendedFiles": [
+      "Tool credentials (do NOT paste them here!)"
+    ],
+    "expectedResult": [
+      "Options",
+      "Recommendation",
+      "Steps",
+      "How to test"
+    ]
+  }
+}

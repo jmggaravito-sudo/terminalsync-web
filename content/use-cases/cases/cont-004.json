@@ -1,0 +1,40 @@
+{
+  "id": "cont-004",
+  "categoryId": "continuity",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 123,
+  "popular": true,
+  "es": {
+    "title": "Convertir conversación en tareas",
+    "outcome": "Tu conversación se transforma en una lista de tareas con responsables y fechas.",
+    "prompt": "Tuve una conversación que terminó con varias cosas por hacer pero todo quedó suelto. Quiero convertirla en tareas claras.\n\nContexto de la conversación: [reunión / chat / llamada].\nParticipantes: [listar].\nResumen o transcripción: [pegar].\n\nDame: lista de tareas accionables, responsable sugerido de cada una, fecha límite tentativa, prioridad (alta/media/baja) y el mensaje para confirmarlas con el equipo.",
+    "recommendedFiles": [
+      "Minuta o transcripción",
+      "Mensajes del equipo"
+    ],
+    "expectedResult": [
+      "Lista de tareas",
+      "Responsables",
+      "Fechas",
+      "Prioridades",
+      "Mensaje de confirmación"
+    ]
+  },
+  "en": {
+    "title": "Turn conversation into tasks",
+    "outcome": "Your conversation is transformed into a list of tasks with owners and dates.",
+    "prompt": "I had a conversation that ended with several things to do but everything is loose. I want to convert it into clear tasks.\n\nConversation context: [meeting / chat / call].\nParticipants: [list].\nSummary or transcript: [paste].\n\nGive me: a list of actionable tasks, a suggested owner for each, a tentative due date, priority (high/medium/low), and the message to confirm them with the team.",
+    "recommendedFiles": [
+      "Minutes or transcript",
+      "Team messages"
+    ],
+    "expectedResult": [
+      "List of tasks",
+      "Owners",
+      "Dates",
+      "Priorities",
+      "Confirmation message"
+    ]
+  }
+}

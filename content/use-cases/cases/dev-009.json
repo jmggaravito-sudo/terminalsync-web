@@ -1,0 +1,35 @@
+{
+  "id": "dev-009",
+  "categoryId": "dev",
+  "recommendedAI": "codex",
+  "level": "Intermedio",
+  "order": 91,
+  "es": {
+    "title": "Backup y seguridad de datos",
+    "outcome": "Plan claro para no perder información crítica del negocio.",
+    "prompt": "Quiero proteger los datos de mi negocio para no perderlos nunca.\n\nDónde están mis datos hoy: [computadora / nube / sistema].\nQué pasaría si los perdiera: [impacto].\nPresupuesto disponible para backup: [monto/mes].\n\nDame: estrategia 3-2-1 adaptada a mi caso, herramientas recomendadas (gratuitas y pagas), proceso paso a paso para implementarlo y cómo probar la recuperación.",
+    "recommendedFiles": [
+      "Lista de datos críticos"
+    ],
+    "expectedResult": [
+      "Estrategia 3-2-1",
+      "Herramientas",
+      "Pasos",
+      "Plan de prueba"
+    ]
+  },
+  "en": {
+    "title": "Data backup and security",
+    "outcome": "Clear plan to avoid losing critical business information.",
+    "prompt": "I want to protect my business data so I never lose it.\n\nWhere my data is today: [computer / cloud / system].\nWhat would happen if I lost it: [impact].\nBudget available for backup: [amount/month].\n\nGive me: 3-2-1 strategy adapted to my case, recommended tools (free and paid), step-by-step process to implement it and how to test recovery.",
+    "recommendedFiles": [
+      "List of critical data"
+    ],
+    "expectedResult": [
+      "3-2-1 strategy",
+      "Tools",
+      "Steps",
+      "Test plan"
+    ]
+  }
+}

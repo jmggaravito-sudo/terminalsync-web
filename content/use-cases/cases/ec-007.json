@@ -1,0 +1,35 @@
+{
+  "id": "ec-007",
+  "categoryId": "ecommerce",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 79,
+  "es": {
+    "title": "Programa de fidelización",
+    "outcome": "Sistema de recompensas que hace que los clientes vuelvan.",
+    "prompt": "Quiero crear un programa de fidelización para mi tienda online.\n\nMi tienda: [describir].\nTicket promedio: [monto].\nFrecuencia de compra de clientes recurrentes: [veces/mes].\nMargen de maniobra para premios: [% del ticket].\n\nDame: estructura del programa (niveles, puntos), recompensas que motiven sin afectar margen, cómo comunicarlo, cómo medir su efectividad y errores a evitar.",
+    "recommendedFiles": [
+      "Datos de clientes recurrentes"
+    ],
+    "expectedResult": [
+      "Estructura del programa",
+      "Recompensas",
+      "Comunicación",
+      "Métricas"
+    ]
+  },
+  "en": {
+    "title": "Loyalty Program",
+    "outcome": "Rewards system that brings customers back.",
+    "prompt": "I want to create a loyalty program for my online store.\n\nMy store: [describe].\nAverage order value: [amount].\nPurchase frequency of repeat customers: [times/month].\nBudget margin for rewards: [% of the ticket].\n\nGive me: program structure (tiers, points), rewards that motivate without hurting margin, how to communicate it, how to measure its effectiveness and mistakes to avoid.",
+    "recommendedFiles": [
+      "Data on repeat customers"
+    ],
+    "expectedResult": [
+      "Program structure",
+      "Rewards",
+      "Communication",
+      "Metrics"
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "market-003",
+  "categoryId": "market",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 107,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__ads_library"
+  ],
+  "es": {
+    "title": "Ver los anuncios de la competencia",
+    "outcome": "Revisa los anuncios públicos de tus competidores y te resume qué mensajes y ofertas están usando.",
+    "prompt": "Quiero ver qué anuncios están publicando mis competidores.\n\nCompetidores: [nombre de la marca o su sitio web, de 1 a 3].\nPaís donde anuncian: [por ejemplo: Estados Unidos / México / Colombia].\nMi producto o servicio: [describir].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta el país o el idioma, pregúntamelos antes de buscar. Busca en las bibliotecas públicas de anuncios que tengas disponibles los anuncios activos de cada competidor. De los anuncios de Facebook e Instagram, resume: mensajes principales, ofertas y precios que mencionan, llamados a la acción, desde cuándo están activos y qué formato usan (imagen, video o texto). De los anuncios de Google solo se sabe que se mostraron y cuándo: dime cuántos encontraste y desde cuándo se muestran, sin inventar su texto. Termina con ideas para mi próxima campaña.\n\nNo copies los anuncios tal cual. Si no encuentras anuncios de una marca, dímelo.",
+    "recommendedFiles": [
+      "Lista de competidores",
+      "Tu producto o servicio a promocionar"
+    ],
+    "expectedResult": [
+      "Anuncios encontrados",
+      "Mensajes y ofertas que repiten",
+      "Ideas para tu campaña"
+    ]
+  },
+  "en": {
+    "title": "See competitors' ads",
+    "outcome": "Reviews your competitors' public ads and sums up the messages and offers they're using.",
+    "prompt": "I want to see what ads my competitors are running.\n\nCompetitors: [brand name or website, 1 to 3].\nCountry where they advertise: [for example: United States / Mexico / Colombia].\nMy product or service: [describe].\nLanguage for the answer: [English / Spanish].\n\nIf the country or the language is missing, ask me before searching. Search the public ad libraries you have available for each competitor's active ads. For Facebook and Instagram ads, sum up: main messages, offers and prices they mention, calls to action, how long they've been running, and the format they use (image, video, or text). For Google ads, all that's known is that they were shown and when: tell me how many you found and since when they've been running, without making up their text. Finish with ideas for my next campaign.\n\nDon't copy the ads word for word. If you can't find ads for a brand, tell me.",
+    "recommendedFiles": [
+      "Competitor list",
+      "Your product or service to promote"
+    ],
+    "expectedResult": [
+      "Ads found",
+      "Repeated messages and offers",
+      "Ideas for your campaign"
+    ]
+  }
+}

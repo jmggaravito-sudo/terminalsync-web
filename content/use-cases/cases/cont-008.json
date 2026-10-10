@@ -1,0 +1,37 @@
+{
+  "id": "cont-008",
+  "categoryId": "continuity",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 127,
+  "es": {
+    "title": "Continuar desde escritorio",
+    "outcome": "Algo que dejaste a medias en otra máquina sigue acá sin reempezar.",
+    "prompt": "Estuve trabajando en otra computadora y dejé algo a medias. Quiero continuar acá sin perder lo avanzado.\n\nQué estaba haciendo: [describir].\nDónde quedé: [punto exacto].\nMaterial que ya tengo: [archivos / notas].\nObjetivo final: [resultado].\n\nAyúdame a: revisar lo hecho, identificar lo que falta, sugerir el siguiente paso concreto y terminarlo con orden.",
+    "recommendedFiles": [
+      "Archivos en progreso",
+      "Notas y borradores"
+    ],
+    "expectedResult": [
+      "Revisión de lo hecho",
+      "Lo que falta",
+      "Siguiente paso",
+      "Versión final"
+    ]
+  },
+  "en": {
+    "title": "Continue from desktop",
+    "outcome": "Something you left halfway on another machine continues here without restarting.",
+    "prompt": "I was working on another computer and left something half done. I want to continue here without losing what I've already done.\n\nWhat I was doing: [describe].\nWhere I left off: [exact point].\nMaterial I already have: [files / notes].\nFinal objective: [result].\n\nHelp me to: review what's been done, identify what's missing, suggest the concrete next step, and finish it in an organized way.",
+    "recommendedFiles": [
+      "Work-in-progress files",
+      "Notes and drafts"
+    ],
+    "expectedResult": [
+      "Review of what's done",
+      "What's missing",
+      "Next step",
+      "Final version"
+    ]
+  }
+}

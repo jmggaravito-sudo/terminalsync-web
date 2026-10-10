@@ -1,0 +1,39 @@
+{
+  "id": "mkt-008",
+  "categoryId": "marketing",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 18,
+  "es": {
+    "title": "Crear guion para video corto",
+    "outcome": "Guion para Reels, TikTok o YouTube Shorts que enganchan en 3 segundos.",
+    "prompt": "Necesito un guion para un video corto vertical (Reel/TikTok/Short).\n\nMi negocio: [describir].\nTema del video: [describir].\nDuración: [15-60 seg].\nObjetivo: [educar / vender / entretener].\n\nDame: gancho de los primeros 3 segundos, desarrollo del mensaje, CTA al final, descripción visual de cada escena y sugerencias de audio o música.",
+    "recommendedFiles": [
+      "Información del producto",
+      "Videos anteriores que funcionaron"
+    ],
+    "expectedResult": [
+      "Gancho",
+      "Desarrollo",
+      "CTA",
+      "Plan visual",
+      "Sugerencias de audio"
+    ]
+  },
+  "en": {
+    "title": "Create script for short video",
+    "outcome": "Script for Reels, TikTok or YouTube Shorts that hook in 3 seconds.",
+    "prompt": "I need a script for a vertical short video (Reel/TikTok/Short).\n\nMy business: [describe].\nVideo topic: [describe].\nDuration: [15-60 sec].\nObjective: [educate / sell / entertain].\n\nGive me: hook for the first 3 seconds, development of the message, CTA at the end, visual description of each scene and audio or music suggestions.",
+    "recommendedFiles": [
+      "Product information",
+      "Previous videos that worked"
+    ],
+    "expectedResult": [
+      "Hook",
+      "Development",
+      "CTA",
+      "Visual plan",
+      "Audio suggestions"
+    ]
+  }
+}

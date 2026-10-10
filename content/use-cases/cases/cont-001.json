@@ -1,0 +1,38 @@
+{
+  "id": "cont-001",
+  "categoryId": "continuity",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 120,
+  "isNew": true,
+  "es": {
+    "title": "Continuar trabajo iniciado en WhatsApp",
+    "outcome": "Retoma sin perder hilo lo que empezaste a discutir por WhatsApp.",
+    "prompt": "Estuve hablando con alguien por WhatsApp sobre un tema y necesito retomarlo aquí con contexto completo.\n\nCon quién hablé: [persona/cliente/proveedor].\nTema de la conversación: [describir].\nResumen de lo que se dijo: [pegar mensajes clave o resumir].\nLo que quedó pendiente: [próximo paso].\n\nAyúdame a: ordenar lo conversado, identificar decisiones tomadas, listar pendientes con responsable y armar el siguiente mensaje o documento que tengo que producir.",
+    "recommendedFiles": [
+      "Capturas o exportación del chat de WhatsApp",
+      "Documentos relacionados"
+    ],
+    "expectedResult": [
+      "Resumen ordenado",
+      "Decisiones tomadas",
+      "Pendientes",
+      "Siguiente paso listo"
+    ]
+  },
+  "en": {
+    "title": "Continue work started on WhatsApp",
+    "outcome": "Pick up what you started discussing on WhatsApp without losing the thread.",
+    "prompt": "I was talking with someone on WhatsApp about a topic and need to resume it here with full context.\n\nWho I spoke with: [person/client/supplier].\nTopic of the conversation: [describe].\nSummary of what was said: [paste key messages or summarize].\nWhat was left pending: [next step].\n\nHelp me to: organize what was discussed, identify decisions made, list pending items with owners, and draft the next message or document I need to produce.",
+    "recommendedFiles": [
+      "Screenshots or export of the WhatsApp chat",
+      "Related documents"
+    ],
+    "expectedResult": [
+      "Organized summary",
+      "Decisions made",
+      "Pending items",
+      "Next step ready"
+    ]
+  }
+}

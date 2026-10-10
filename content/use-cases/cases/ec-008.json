@@ -1,0 +1,35 @@
+{
+  "id": "ec-008",
+  "categoryId": "ecommerce",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 80,
+  "es": {
+    "title": "Reseñas y testimonios para producto",
+    "outcome": "Estrategia para conseguir reseñas reales que impulsen ventas.",
+    "prompt": "Quiero conseguir más reseñas de mis clientes para mi tienda.\n\nMi tienda: [describir].\nVolumen de pedidos mensuales: [#].\n% actual que deja reseña: [si lo sabes].\n\nDame: email post-compra para pedir reseña, incentivo razonable que no compre la opinión, plantilla simple para responder reseñas (buenas y malas) y cómo mostrar las reseñas en la web para que vendan.",
+    "recommendedFiles": [
+      "Lista de clientes recientes"
+    ],
+    "expectedResult": [
+      "Email para pedir reseña",
+      "Incentivos",
+      "Plantillas de respuesta",
+      "Cómo mostrarlas"
+    ]
+  },
+  "en": {
+    "title": "Reviews and Testimonials for Product",
+    "outcome": "Strategy to get real reviews that boost sales.",
+    "prompt": "I want to get more customer reviews for my store.\n\nMy store: [describe].\nMonthly order volume: [#].\nCurrent % that leave a review: [if known].\n\nGive me: post-purchase email to ask for a review, a reasonable incentive that doesn't buy the opinion, a simple template to respond to reviews (positive and negative) and how to display reviews on the website so they sell.",
+    "recommendedFiles": [
+      "List of recent customers"
+    ],
+    "expectedResult": [
+      "Email to request review",
+      "Incentives",
+      "Response templates",
+      "How to display them"
+    ]
+  }
+}

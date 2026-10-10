@@ -1,0 +1,41 @@
+{
+  "id": "social-002",
+  "categoryId": "social",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 115,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__video_search"
+  ],
+  "es": {
+    "title": "Qué videos funcionan en mi nicho",
+    "outcome": "Busca en YouTube o TikTok los videos de tu tema y te muestra cuáles tienen más vistas y qué formatos, títulos y temas se repiten.",
+    "prompt": "Quiero saber qué videos funcionan en mi nicho para inspirar mi contenido.\n\nTema o nicho: [por ejemplo: recetas saludables, rutinas de pilates, remodelación de cocinas].\nPlataforma: [YouTube / TikTok / las dos].\nPaís: [por ejemplo: Estados Unidos / México / Colombia].\nIdioma de los videos: [español / inglés].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta el país o el idioma, pregúntamelos antes de buscar. Busca videos de mi tema en la plataforma que elegí (si elijo las dos, busca en cada una; si una no está disponible, dímelo) y arma una tabla con: título, canal o cuenta, vistas, likes, fecha de publicación, duración y enlace. Después dime: qué formatos se repiten entre los más vistos (tutorial, antes y después, lista, reacción…), qué prometen los títulos, cuánto duran y qué temas tienen más vistas. Termina con cinco ideas de videos para mi negocio.\n\nUsa solo los números que aparezcan en los resultados; si un video no muestra vistas o fecha, déjalo en blanco en vez de estimarlo.",
+    "recommendedFiles": [
+      "Descripción de tu negocio",
+      "Tus videos o publicaciones recientes"
+    ],
+    "expectedResult": [
+      "Tabla de videos con sus números",
+      "Formatos que se repiten",
+      "Qué prometen los títulos",
+      "Ideas de videos"
+    ]
+  },
+  "en": {
+    "title": "Which videos work in my niche",
+    "outcome": "Searches YouTube or TikTok for videos on your topic and shows you which ones get the most views and which formats, titles, and topics repeat.",
+    "prompt": "I want to know which videos work in my niche to inspire my content.\n\nTopic or niche: [for example: healthy recipes, pilates routines, kitchen remodeling].\nPlatform: [YouTube / TikTok / both].\nCountry: [for example: United States / Mexico / Colombia].\nLanguage of the videos: [English / Spanish].\nLanguage for the answer: [English / Spanish].\n\nIf the country or the language is missing, ask me before searching. Search for videos on my topic on the platform I chose (if I choose both, search each one; if one isn't available, tell me) and build a table with: title, channel or account, views, likes, publish date, length, and link. Then tell me: which formats repeat among the most-watched (tutorial, before and after, list, reaction…), what the titles promise, how long they run, and which topics get the most views. Finish with five video ideas for my business.\n\nUse only the numbers that appear in the results; if a video doesn't show views or a date, leave it blank instead of estimating it.",
+    "recommendedFiles": [
+      "Description of your business",
+      "Your recent videos or posts"
+    ],
+    "expectedResult": [
+      "Table of videos with their numbers",
+      "Formats that repeat",
+      "What the titles promise",
+      "Video ideas"
+    ]
+  }
+}

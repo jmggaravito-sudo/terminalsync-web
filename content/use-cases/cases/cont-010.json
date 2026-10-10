@@ -1,0 +1,37 @@
+{
+  "id": "cont-010",
+  "categoryId": "continuity",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 129,
+  "es": {
+    "title": "Compartir contexto con equipo",
+    "outcome": "Un resumen que pone a tu equipo al día sin tener que reexplicar todo.",
+    "prompt": "Necesito poner al día a mi equipo sobre algo en lo que vengo trabajando solo. Quiero un mensaje claro.\n\nTema: [describir].\nLo que ya hice: [listar].\nLo que sigue: [próximos pasos].\nA quién se lo voy a mandar: [equipo / socio / responsable].\n\nDame: mensaje principal (corto), bullets con lo más importante, qué necesito de cada persona y cómo van a quedar las próximas decisiones. Formato listo para Slack, email o WhatsApp grupal.",
+    "recommendedFiles": [
+      "Documentos relacionados",
+      "Lista del equipo"
+    ],
+    "expectedResult": [
+      "Mensaje principal",
+      "Puntos clave",
+      "Pedidos específicos",
+      "Próximos pasos"
+    ]
+  },
+  "en": {
+    "title": "Share context with team",
+    "outcome": "A summary that brings your team up to date without having to re-explain everything.",
+    "prompt": "I need to bring my team up to speed on something I've been working on alone. I want a clear message.\n\nTopic: [describe].\nWhat I've already done: [list].\nWhat comes next: [next steps].\nWho I'm sending this to: [team / partner / lead].\n\nGive me: main message (short), bullets with the most important points, what I need from each person and how the next decisions will be handled. Format ready for Slack, email or group WhatsApp.",
+    "recommendedFiles": [
+      "Related documents",
+      "Team list"
+    ],
+    "expectedResult": [
+      "Main message",
+      "Key points",
+      "Specific requests",
+      "Next steps"
+    ]
+  }
+}
