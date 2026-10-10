@@ -73,17 +73,17 @@ npx -y mcp-remote@latest https://mcp.alegra.com/mcp --header "Authorization:${AL
 
 **Catálogo documentado por grupo** (páginas oficiales bajo `developer.alegra.com/reference/`):
 
-- **Facturas de venta** (`invoices`): `invoices__getInvoices`, `getInvoiceById`, `getInvoiceByNumber`, `createInvoice`, `updateInvoice`, `deleteInvoice`, `getPaymentTypes`.
-- **Productos e inventario** (`items` y grupos asociados): `items__getItems`, `getItem`, `createItem`, `updateItem`, `deleteItem`; stock (`get_item_stock`, `get_item_stock_summary`), categorías, listas de precios, bodegas y traslados, ajustes de inventario, campos personalizados y variantes.
-- **Contactos** (`contacts`): `contacts__getContacts`, `getContactByName`, `createContact`, `updateContact`, `deleteContact`.
+- **Facturas de venta** (`invoices`): `invoices__getInvoices`, `invoices__getInvoiceById`, `invoices__getInvoiceByNumber`, `invoices__createInvoice`, `invoices__updateInvoice`, `invoices__deleteInvoice`, `invoices__getPaymentTypes` (solo República Dominicana).
+- **Productos e inventario** (`items` y grupos asociados): `items__getItems`, `items__getItem`, `items__createItem`, `items__updateItem`, `items__deleteItem`; stock (`itemStock__get_item_stock`, `itemStock__get_item_stock_summary`), categorías, listas de precios, bodegas y traslados, ajustes de inventario, campos personalizados y variantes.
+- **Contactos** (`contacts`): `contacts__getContacts`, `contacts__getContactByName`, `contacts__createContact`, `contacts__updateContact`, `contacts__deleteContact`.
 - **Bancos** (`banks`): bancos y cuentas bancarias (consultar, crear, actualizar, eliminar), conciliaciones y transferencias entre cuentas.
 - **Pagos** (`income-payments`, pagos salientes): pagos recibidos (consultar, crear, actualizar, eliminar) y pagos salientes, incluida su anulación.
 - **Gastos — paquete "MCP Expenses"** (`@alegradev/mcp-expenses`): según la doc, cubre "facturas de compra (bills), notas de débito de gastos, órdenes de compra y pagos salientes", con herramientas públicas documentadas que se invocan igual vía JSON-RPC sobre `POST /mcp`. Ojo: ese paquete no está publicado en el registro público de npm al día de esta ficha (verificado 2026-10-10) — los grupos de gastos se documentan sobre el server hospedado.
 - **Reportes** (`reports`): 30 herramientas — ventas por cliente, vendedor, producto y bodega (con totales), rentabilidad por producto, estado de resultados, balance general, balance de comprobación, flujo de caja, cuentas por pagar y por cobrar (con resúmenes), detalle de retenciones y exportables.
-- **Contabilidad** (`ledger`, `accounting`): categorías del libro, comprobantes contables (journals) y centros de costo (consultar, crear, actualizar, eliminar).
+- **Contabilidad** (`ledger`, `accounting`): categorías del libro (consultar, crear, actualizar), comprobantes contables (journals) y centros de costo (consultar, crear, actualizar, eliminar).
 - **Centro de soporte** (`support-center`): crear tickets, consultar el historial y buscar ayuda.
 - **Maestros**: numeraciones y resoluciones, monedas y tasas de cambio, vendedores, impuestos y retenciones fiscales.
 
-**Divulgación:** server hospedado (no local) que lee, escribe y borra — el catálogo incluye tools de borrado (`deleteInvoice`, `deleteItem`, `deleteContact`, `deleteBankAccount`, …). La doc del MCP no documenta un gate de confirmación del lado del servidor: el control queda en el cliente que orquesta las tools y en los permisos del token. Límite del API: "150 request por minuto por usuario"; al superarlo devuelve un código 429, y cada respuesta incluye los headers `X-Rate-Limit-Limit`, `X-Rate-Limit-Remaining` y `X-Rate-Limit-Reset`.
+**Divulgación:** server hospedado (no local) que lee, escribe y borra — el catálogo incluye tools de borrado (`invoices__deleteInvoice`, `items__deleteItem`, `contacts__deleteContact`, `banks__deleteBankAccount`, …). La doc del MCP no documenta un gate de confirmación del lado del servidor: el control queda en el cliente que orquesta las tools y en los permisos del token. Límite del API: "150 request por minuto por usuario"; al superarlo devuelve un código 429, y cada respuesta incluye los headers `X-Rate-Limit-Limit`, `X-Rate-Limit-Remaining` y `X-Rate-Limit-Reset`.
 
-Licencia: MIT (declarada en la definición OpenAPI del MCP Alegra). Fuente: developer.alegra.com — documentación MCP de Alegra (`mcpexecute`, `mcpsse`, autenticación, límite de requests). Soporte: alegra.com/community/c/alegra-api/40.
+Licencia: MIT (declarada en la definición OpenAPI del MCP Alegra). Fuente: developer.alegra.com — documentación MCP de Alegra (`mcpexecute`, `mcpsse`, autenticación, límite de requests). Soporte: developer.alegra.com.

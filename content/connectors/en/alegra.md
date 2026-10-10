@@ -57,15 +57,15 @@ You need your **Alegra API user token**, converted to Base64 — the same token 
 
 --- dev ---
 
-Alegra publishes its **official MCP** as a remote/hosted server at `https://mcp.alegra.com` (the "Servidor de Producción" of its OpenAPI definition, v1.0.0), documented on its developer portal (`developer.alegra.com`). There's no npm package or local stdio server — it's bridged with `mcp-remote`:
+Alegra publishes its **official MCP** as a remote/hosted server at `https://mcp.alegra.com` (the "Servidor de Producción" [Production Server] of its OpenAPI definition, v1.0.0), documented on its developer portal (`developer.alegra.com`). There's no npm package or local stdio server — it's bridged with `mcp-remote`:
 
 ```
 npx -y mcp-remote@latest https://mcp.alegra.com/mcp --header "Authorization:${ALEGRA_AUTH_HEADER}"
 ```
 
-**Protocol.** JSON-RPC 2.0 over `POST /mcp`, with the `tools/list` and `tools/call` methods; SSE connection over `GET /mcp` ("Establece conexión SSE (Server-Sent Events) para streaming de eventos MCP"), plus session-close and health-check endpoints of its own. The docs' example invocation is a `tools/call` with `name: "items__getItems"` and `arguments: {"limit": 10, "offset": 0}`.
+**Protocol.** JSON-RPC 2.0 over `POST /mcp`, with the `tools/list` and `tools/call` methods; SSE connection over `GET /mcp` ("Establece conexión SSE (Server-Sent Events) para streaming de eventos MCP" — establishes the SSE connection for streaming MCP events), plus session-close and health-check endpoints of its own. The docs' example invocation is a `tools/call` with `name: "items__getItems"` and `arguments: {"limit": 10, "offset": 0}`.
 
-**Authentication: Basic Access.** The `Authorization` header carries the email and token of the registered Alegra user, separated by a colon and all in Base64 — the same credential as the Alegra API (the MCP definition describes it as "Token de Alegra codificado en Base64 (usuario:token)"; a 401 means invalid credentials). Verbatim example from the docs: `Authorization: Basic ZWplbXBsb2FwaUBhbGVncmEuY29tOnRva2VuZWplbXBsb2FwaTEyMzQ1`. This ficha's manifest injects the credential from the app's Secrets as `${SECRET:ALEGRA_API_TOKEN_BASE64}` inside that header — the `--header` argument carries no spaces around the colon, as the `mcp-remote` README recommends to dodge the escaping bug in some clients.
+**Authentication: Basic Access.** The `Authorization` header carries the email and token of the registered Alegra user, separated by a colon and all in Base64 — the same credential as the Alegra API (the MCP definition describes it as "Token de Alegra codificado en Base64 (usuario:token)"; a 401 means invalid credentials). Verbatim example from the docs: `Authorization: Basic ZWplbXBsb2FwaUBhbGVncmEuY29tOnRva2VuZWplbXBsb2FwaTEyMzQ1`. This card's manifest injects the credential from the app's Secrets as `${SECRET:ALEGRA_API_TOKEN_BASE64}` inside that header — the `--header` argument carries no spaces around the colon, as the `mcp-remote` README recommends to dodge the escaping bug in some clients.
 
 **Token:** app.alegra.com → **Configuración** → **API - Integraciones con otros sistemas** (shows the API email and the token; generates one if none exists).
 
@@ -73,17 +73,17 @@ npx -y mcp-remote@latest https://mcp.alegra.com/mcp --header "Authorization:${AL
 
 **Documented catalog by group** (official pages under `developer.alegra.com/reference/`):
 
-- **Sales invoices** (`invoices`): `invoices__getInvoices`, `getInvoiceById`, `getInvoiceByNumber`, `createInvoice`, `updateInvoice`, `deleteInvoice`, `getPaymentTypes`.
-- **Products and inventory** (`items` and adjacent groups): `items__getItems`, `getItem`, `createItem`, `updateItem`, `deleteItem`; stock (`get_item_stock`, `get_item_stock_summary`), categories, price lists, warehouses and transfers, inventory adjustments, custom fields and variants.
-- **Contacts** (`contacts`): `contacts__getContacts`, `getContactByName`, `createContact`, `updateContact`, `deleteContact`.
+- **Sales invoices** (`invoices`): `invoices__getInvoices`, `invoices__getInvoiceById`, `invoices__getInvoiceByNumber`, `invoices__createInvoice`, `invoices__updateInvoice`, `invoices__deleteInvoice`, `invoices__getPaymentTypes` (Dominican Republic only).
+- **Products and inventory** (`items` and adjacent groups): `items__getItems`, `items__getItem`, `items__createItem`, `items__updateItem`, `items__deleteItem`; stock (`itemStock__get_item_stock`, `itemStock__get_item_stock_summary`), categories, price lists, warehouses and transfers, inventory adjustments, custom fields and variants.
+- **Contacts** (`contacts`): `contacts__getContacts`, `contacts__getContactByName`, `contacts__createContact`, `contacts__updateContact`, `contacts__deleteContact`.
 - **Banks** (`banks`): banks and bank accounts (list, create, update, delete), reconciliations and transfers between accounts.
 - **Payments** (`income-payments`, outgoing payments): received payments (list, create, update, delete) and outgoing payments, including voiding them.
-- **Expenses — the "MCP Expenses" package** (`@alegradev/mcp-expenses`): per the docs, it covers "facturas de compra (bills), notas de débito de gastos, órdenes de compra y pagos salientes" (purchase bills, expense debit notes, purchase orders and outgoing payments), with public documented tools invoked the same way via JSON-RPC over `POST /mcp`. Note: that package is not published in the public npm registry as of this ficha (verified 2026-10-10) — the expense groups are documented against the hosted server.
+- **Expenses — the "MCP Expenses" package** (`@alegradev/mcp-expenses`): per the docs, it covers "facturas de compra (bills), notas de débito de gastos, órdenes de compra y pagos salientes" (purchase bills, expense debit notes, purchase orders and outgoing payments), with public documented tools invoked the same way via JSON-RPC over `POST /mcp`. Note: that package is not published in the public npm registry as of this card's writing (verified 2026-10-10) — the expense groups are documented against the hosted server.
 - **Reports** (`reports`): 30 tools — sales by client, seller, product and warehouse (with totals), profitability by product, income statement, general balance, trial balance, cash flow, payables and receivables (with summaries), retentions detail and exportables.
-- **Accounting** (`ledger`, `accounting`): ledger categories, accounting journals and cost centers (list, create, update, delete).
+- **Accounting** (`ledger`, `accounting`): ledger categories (list, create, update), accounting journals and cost centers (list, create, update, delete).
 - **Support center** (`support-center`): create tickets, retrieve ticket history and search help.
 - **Master data**: numbering sequences and resolutions, currencies and exchange rates, sellers, taxes and fiscal retentions.
 
-**Disclosure:** a hosted server (not local) that reads, writes and deletes — the catalog includes delete tools (`deleteInvoice`, `deleteItem`, `deleteContact`, `deleteBankAccount`, …). The MCP docs document no server-side confirmation gate: control stays with the client orchestrating the tools and with the token's permissions. API limit: "150 request por minuto por usuario" (150 requests per minute per user); exceeding it returns a 429, and every response carries the `X-Rate-Limit-Limit`, `X-Rate-Limit-Remaining` and `X-Rate-Limit-Reset` headers.
+**Disclosure:** a hosted server (not local) that reads, writes and deletes — the catalog includes delete tools (`invoices__deleteInvoice`, `items__deleteItem`, `contacts__deleteContact`, `banks__deleteBankAccount`, …). The MCP docs document no server-side confirmation gate: control stays with the client orchestrating the tools and with the token's permissions. API limit: "150 request por minuto por usuario" (150 requests per minute per user); exceeding it returns a 429, and every response carries the `X-Rate-Limit-Limit`, `X-Rate-Limit-Remaining` and `X-Rate-Limit-Reset` headers.
 
-License: MIT (declared in the MCP Alegra OpenAPI definition). Source: developer.alegra.com — Alegra MCP documentation (`mcpexecute`, `mcpsse`, authentication, request limits). Support: alegra.com/community/c/alegra-api/40.
+License: MIT (declared in the MCP Alegra OpenAPI definition). Source: developer.alegra.com — Alegra MCP documentation (`mcpexecute`, `mcpsse`, authentication, request limits). Support: developer.alegra.com.
