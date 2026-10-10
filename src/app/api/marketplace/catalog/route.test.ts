@@ -114,6 +114,28 @@ describe("GET /api/marketplace/catalog", () => {
     expect(Array.isArray(body.bundles)).toBe(true);
   });
 
+  it("serves the single-source use cases in one language per request", async () => {
+    const es = await callCatalog("es");
+    const en = await callCatalog("en");
+    for (const { body } of [es, en]) {
+      expect(body.useCases.cases).toHaveLength(129);
+      expect(body.useCases.categories).toHaveLength(14);
+      const categoryIds = new Set(body.useCases.categories.map((c) => c.id));
+      for (const c of body.useCases.cases) {
+        expect(categoryIds.has(c.categoryId)).toBe(true);
+        expect(c).not.toHaveProperty("es");
+        expect(c).not.toHaveProperty("en");
+        expect(c.title.length).toBeGreaterThan(0);
+        expect(c.prompt.length).toBeGreaterThan(0);
+        expect(c.expectedResult.length).toBeGreaterThan(0);
+      }
+    }
+    const esFirst = es.body.useCases.cases[0];
+    const enFirst = en.body.useCases.cases.find((c) => c.id === esFirst.id);
+    expect(enFirst?.title).not.toBe(esFirst.title);
+    expect(esFirst.level).toBe(enFirst?.level);
+  });
+
   it("returns non-empty connectors/skills/cliTools (first-party content shipped)", async () => {
     // These three pillars read from `content/<pillar>/<lang>/*.md`,
     // which is committed in the repo. An empty array would mean the

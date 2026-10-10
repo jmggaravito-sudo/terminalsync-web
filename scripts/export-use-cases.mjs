@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * One-off exporter: app repo (src/data/useCases.ts + es/en translation.json)
- * -> content/use-cases/{categories.json,jobs.json,cases/<id>.json}.
+ * -> content/use-cases/{categories.json,cases/<id>.json} (jobs.json is edited by hand).
  *
  * From the migration on, content/use-cases/ is the single source of truth
  * (landing + desktop app via /api/marketplace/catalog). Keep this script only
@@ -10,7 +10,7 @@
  * Usage: node scripts/export-use-cases.mjs [--app-repo <dir>] [--ref <git-ref>]
  */
 import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import ts from "typescript";
 
@@ -22,7 +22,6 @@ function opt(name, fallback) {
 const APP_DIR = opt("--app-repo", "/Users/jm/projects/terminal-sync-onboarding-back-buttons");
 const REF = opt("--ref", "origin/release/v0.2.18-lab");
 const OUT = path.resolve("content/use-cases");
-const JOBS_SOURCE = path.resolve("src/content/useCases.ts");
 
 function show(file) {
   return execFileSync("git", ["-C", APP_DIR, "show", `${REF}:${file}`], {
@@ -165,16 +164,8 @@ for (const [index, c] of raw.entries()) {
   writeJson(path.join(OUT, "cases", `${c.id}.json`), out);
 }
 
-// Workflows (jobs) - hand-written web content, kept as is.
-const jobsFile = parse("useCases.ts", readFileSync(JOBS_SOURCE, "utf8"));
-const jobs = findVariable(jobsFile, "JOBS").elements
-  .map((n) => literal(n, new Map()))
-  .map(({ id, cat, es, en }) => ({ id, cat, es, en }));
-const jobCategories = findVariable(jobsFile, "JOB_CATS").elements
-  .map((n) => literal(n, new Map()))
-  .filter((c) => c.id !== "todos")
-  .map(({ id, es, en }) => ({ id, es, en }));
+// Workflows (jobs) were hand-written in src/content/useCases.ts and now live
+// only in content/use-cases/jobs.json (edit that file directly).
 
 writeJson(path.join(OUT, "categories.json"), categories);
-writeJson(path.join(OUT, "jobs.json"), { categories: jobCategories, jobs });
-console.log(`Exported ${raw.length} cases, ${categories.length} categories, ${jobs.length} jobs from ${REF}.`);
+console.log(`Exported ${raw.length} cases and ${categories.length} categories from ${REF}.`);
