@@ -78,6 +78,22 @@ jobs:
           node scripts/verify-connector.mjs --all --json --concurrency 1 > connector-installability-ci.json
           node -e 'const r=require("./connector-installability-ci.json"); console.log(`Connector installability: ${r.installable} verified, ${r.unverifiedNeedsKey} installable pending key, ${r.false.length} false (${r.total} supervised; ${r.firstParty.length} first-party excluded).`); for (const x of r.false) console.log(`  ${x.slug}: ${x.reason}`)'
 
+      - name: Smoke the login step of remote connectors
+        # Un conector remoto puede pasar todas las pruebas de catalogo y aun asi no dejar
+        # entrar a nadie: Siigo tenia la URL mala (404) y Asana /v2/mcp y Zoom no admiten
+        # registro dinamico de clientes. Esto corre mcp-remote real hasta la pantalla de
+        # autorizacion, sin cuenta. En un PR solo revisa los conectores que el PR toca; en
+        # el cron semanal y a mano, todos. No completa ningun login. Ver
+        # scripts/smoke-remote-login.mjs.
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch --no-tags --depth=1 origin "${{ github.base_ref }}"
+            files=$(git diff --name-only FETCH_HEAD HEAD -- content/connectors | tr '\n' ' ')
+            node scripts/smoke-remote-login.mjs --files $files
+          else
+            node scripts/smoke-remote-login.mjs --all
+          fi
+
       - name: Upload connector installability evidence
         if: always()
         uses: actions/upload-artifact@v4
