@@ -260,6 +260,13 @@ export default async function ConnectorDetail({ params }: Props) {
                   <p className="mt-0.5 text-[12.5px] text-[var(--color-fg-muted)] leading-relaxed">
                     {useCase.outcome}
                   </p>
+                  {useCase.requiredSearchTools?.includes("business-search__web_search") && (
+                    <p className="mt-1 text-[12px] text-[var(--color-fg-muted)]">
+                      {lang === "es"
+                        ? "También requiere búsqueda web para consultar los resultados de Google."
+                        : "Also requires web search to check Google search results."}
+                    </p>
+                  )}
                 </li>
               ))}
             </ul>
