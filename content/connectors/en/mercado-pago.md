@@ -74,4 +74,4 @@ Documented MCP tools, verbatim from the README's "When MCP connection is require
 
 **Disclosure:** the repo is marked **Beta** (*"This project is under active development. APIs, skill structures, and plugin interfaces may change between versions. Use in production integrations at your own discretion."*). The integration wizard and skills (Checkout Pro, Bricks, QR, Point, Subscriptions…) belong to Mercado Pago's Claude Code plugin, not to this MCP server — the server surface is the tool list above. Product availability *"still depends on country, account eligibility, commercial enablement, and the selected API."*
 
-License: Apache-2.0 (repo LICENSE — "Copyright (c) 2026 Mercado Pago (MercadoLibre S.R.L.)"). Source: github.com/mercadopago/mercadopago-claude-marketplace.
+License: Apache-2.0 (repo NOTICE — "Copyright (c) 2026 Mercado Pago (MercadoLibre S.R.L.)"). Source: github.com/mercadopago/mercadopago-claude-marketplace.

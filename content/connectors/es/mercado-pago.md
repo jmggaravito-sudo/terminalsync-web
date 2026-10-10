@@ -54,7 +54,7 @@ Este conector **no te pide pegar ninguna API key**. Usa el login de tu propia cu
 
 Mercado Pago (MercadoLibre S.R.L.) publica un **server MCP remoto oficial** en `https://mcp.mercadopago.com/mcp`, documentado en su org oficial de GitHub a través del repo del plugin oficial de Claude Code (`github.com/mercadopago/mercadopago-claude-marketplace` — README más `plugins/mercadopago/.mcp.json`, que declara el server como `"type": "http"` en esa URL). La auth es OAuth: *"No Access Token or keychain setup is required — the MCP server handles authentication via OAuth."* El README agrega que el server *"is remote and does not require a local Node.js server"* y lista 7 países soportados: Argentina, Brasil, México, Chile, Colombia, Perú y Uruguay.
 
-TerminalSync hace de puente con el endpoint hospedado localmente:
+TerminalSync hace de puente localmente con el endpoint hospedado:
 
 ```
 npx -y mcp-remote@latest https://mcp.mercadopago.com/mcp
@@ -74,4 +74,4 @@ Tools MCP documentadas, verbatim de la tabla "When MCP connection is required" d
 
 **Divulgación:** el repo está marcado **Beta** (*"This project is under active development. APIs, skill structures, and plugin interfaces may change between versions. Use in production integrations at your own discretion."*). El asistente de integración y las skills (Checkout Pro, Bricks, QR, Point, Suscripciones…) pertenecen al plugin de Claude Code de Mercado Pago, no a este server MCP — la superficie del server es la lista de tools de arriba. La disponibilidad de productos *"still depends on country, account eligibility, commercial enablement, and the selected API."*
 
-Licencia: Apache-2.0 (LICENSE del repo — "Copyright (c) 2026 Mercado Pago (MercadoLibre S.R.L.)"). Fuente: github.com/mercadopago/mercadopago-claude-marketplace.
+Licencia: Apache-2.0 (NOTICE del repo — "Copyright (c) 2026 Mercado Pago (MercadoLibre S.R.L.)"). Fuente: github.com/mercadopago/mercadopago-claude-marketplace.
