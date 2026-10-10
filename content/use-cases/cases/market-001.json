@@ -9,6 +9,9 @@
     "business-search__find_places",
     "business-search__place_reviews"
   ],
+  "connectors": [
+    "google-maps"
+  ],
   "es": {
     "title": "Auditar mi negocio local",
     "outcome": "Revisa cómo aparece tu negocio en Google Maps, qué dicen tus reseñas y cómo te comparas con los negocios cercanos.",

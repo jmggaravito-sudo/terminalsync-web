@@ -9,6 +9,9 @@
     "business-search__find_places",
     "business-search__web_search"
   ],
+  "connectors": [
+    "google-maps"
+  ],
   "es": {
     "title": "Competidores cerca de mi negocio",
     "outcome": "Encuentra a tus competidores de la zona en Google Maps y te muestra quién aparece primero en Google cuando buscan tu servicio.",

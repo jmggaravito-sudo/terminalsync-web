@@ -76,6 +76,26 @@ describe("content/use-cases", () => {
     }
   });
 
+  it("tags at most 3 connectors per case, without duplicates", () => {
+    for (const c of raw.cases) {
+      const tags = c.connectors ?? [];
+      expect(tags.length, `${c.id}: more than 3 connectors`).toBeLessThanOrEqual(3);
+      expect(new Set(tags).size, `${c.id}: duplicate connector tags`).toBe(tags.length);
+    }
+  });
+
+  it("keeps the connector-tag snapshot (minimum tagged cases per connector)", () => {
+    // Floor, not exact: adding tags is fine; losing one must be deliberate.
+    const MIN_TAGGED: Record<string, number> = { "google-maps": 2 };
+    const counts: Record<string, number> = {};
+    for (const c of raw.cases) {
+      for (const slug of c.connectors ?? []) counts[slug] = (counts[slug] ?? 0) + 1;
+    }
+    for (const [slug, min] of Object.entries(MIN_TAGGED)) {
+      expect(counts[slug] ?? 0, `connector ${slug}`).toBeGreaterThanOrEqual(min);
+    }
+  });
+
   it("returns a single language per call", () => {
     const es = getUseCases("es");
     const en = getUseCases("en");
