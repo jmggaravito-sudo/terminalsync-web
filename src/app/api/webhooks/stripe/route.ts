@@ -100,6 +100,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
+  // This ledger backs real provider spending. A valid test signature is not
+  // evidence of money received. Keep legacy subscription test handling intact,
+  // but never convert test credit receipts into a spendable balance.
+  if (isCreditPaymentEvent(event)) {
+    const session = event.data.object as Stripe.Checkout.Session;
+    if (typeof event.livemode !== "boolean" || session.livemode !== event.livemode) {
+      return NextResponse.json({ error: "Credit payment mode mismatch" }, { status: 400 });
+    }
+    if (!event.livemode) {
+      return NextResponse.json({ received: true, ignored: "test_credit_event" });
+    }
+  }
+
   try {
     await handle(event);
   } catch (err) {

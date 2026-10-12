@@ -40,10 +40,12 @@ import { POST } from "./route";
 function creditEvent() {
   return {
     id: "evt_credit_123",
+    livemode: true,
     type: "checkout.session.completed",
     data: {
       object: {
         id: "cs_credit_123",
+        livemode: true,
         amount_total: 1000,
         currency: "usd",
         payment_status: "paid",
@@ -110,6 +112,30 @@ describe("Stripe credit payment webhook", () => {
     const res = await POST(signedRequest());
 
     expect(res.status).toBe(500);
+    expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+  });
+});
+
+// Test-mode provider receipts must never become spendable production funds.
+describe("credit funding environment boundary", () => {
+  it.each(["checkout.session.completed", "checkout.session.async_payment_succeeded"])(
+    "does not fund a signed test event: %s", async (type) => {
+      const event = creditEvent();
+      event.type = type;
+      event.livemode = false;
+      event.data.object.livemode = false;
+      mocks.constructEvent.mockReturnValue(event);
+      const res = await POST(signedRequest());
+      expect(res.status).toBe(200);
+      expect(await res.json()).toMatchObject({ received: true, ignored: "test_credit_event" });
+      expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+    },
+  );
+  it("rejects inconsistent live event and test session", async () => {
+    const event = creditEvent();
+    event.data.object.livemode = false;
+    mocks.constructEvent.mockReturnValue(event);
+    expect((await POST(signedRequest())).status).toBe(400);
     expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
   });
 });
