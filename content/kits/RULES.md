@@ -342,6 +342,27 @@ Until these are present, keep the kit out of the published marketplace catalog.
 
 ## Loop run log
 
+### 2026-10-12 — Spend Review Kit; ramp unblocked after its connector landed; deferred queue re-checked
+
+**Shipped (1 kit, EN/ES parity):**
+
+- `spend-review` (category: finance) — `ramp` + `doc-coauthoring` + `internal-comms`. Scoped to the spend-review loop of an owner, finance lead, or office manager who runs company spend on Ramp corporate cards: pull the real ledger (top vendors, transactions missing receipts, pending reimbursements and requests, card balances), decide the queue (approve/reject with a confirmation gate, lock a card), record the month in a structured memo (Doc Co-authoring), and deliver the policy changes to the team (Internal Comms). `ramp` is used by zero prior kits — this closes the candidate the 2026-09-28 and 2026-10-05 runs deferred with "revisit after #352 lands": the connector is now on `main` (`content/connectors/{en,es}/ramp.md`, `status: available`, `manifest:` block, OAuth molde B). Distinct from the other finance kits: `small-business-finance` reads the books (Xero + Stripe) and writes the owner's monthly financial summary; `bookkeeping-tax-handoff` assembles the accountant packet; this kit runs one layer below the books — the corporate-card/reimbursement layer — and ends in actions (approvals, locks) plus a team policy brief. Both skills are used inside their declared scope (doc-coauthoring: reports/strategy memos; internal-comms: policy updates), the same pattern the prior finance kits already use.
+
+**Deferred queue re-check (facts verified this run, all still blocked):**
+
+- **Klaviyo retention/email kit** — every skill that makes it coherent (`lifecycle-email`, `carrito-abandonado`, `winback-dormidos`, `promos-cupones`, `ltv-cohortes`, `rfm-segmentacion`) is outside the 7-skill whitelist; the whitelist-drift flag for JM from 2026-09-28 is still open.
+- **Support / Customer Service kit** — blocker unchanged on the skill side: no whitelisted skill fits customer-facing reply drafting; `intercom` remains first-party without a manifest.
+- **Gusto payroll/1099 kit** — the gusto plugin pack (gusto + `1099-w9-organizer`) is published, so a kit with the same combo would duplicate the pack's purpose one layer up; `1099-w9-organizer` is outside the whitelist anyway.
+- **Local Marketing kit** — `google-business` still first-party without a `manifest:` block.
+- **Calendly scheduling kit** — still coherence-dropped (its server already reads the calendar and makes booking links, so partners duplicate it or reduce to filler).
+
+**New evaluations this run (2 SKIP, coherence/scope):**
+
+- **Siigo invoicing kit** — `siigo` is newly published (2026-10-08, manifest, OAuth) and unused by any kit, but no whitelisted skill serves daily invoicing operations (creating invoices, chasing receivables). The only fit, `doc-coauthoring` for a sales report, reduces the kit to "connector + report drafting" and overlaps `small-business-finance`'s artifact shape — same purpose with a different vendor is the relabel the 2026-10-05 run already rejected for Webflow. Revisit when a whitelisted skill serves invoicing/collections comms, or when JM resolves the whitelist question.
+- **Airtable ops kit** — `airtable` is installable and unused by kits, but with only the 7 whitelisted skills it reduces to a generic "data + docs + comms" bundle, exactly the generic filler the coherence rule bans; the product-level combo is already served by the airtable plugin pack (airtable + `rfm-segmentacion`). SKIP.
+
+**App mirror:** not opened — per `docs/integration-loop-two-pr-policy.md` this kit needs no desktop code (standard connector + skill items the app already renders from `/api/marketplace/catalog`); opening a record-only mirror PR is exactly what the policy forbids. Landing body states `App mirror PR: no aplica — la app consume el catálogo`.
+
 ### 2026-09-28 — Client Meetings Kit; overlap check against in-flight loop PRs; skills-whitelist staleness flagged
 
 **Shipped (1 kit, EN/ES parity):**
