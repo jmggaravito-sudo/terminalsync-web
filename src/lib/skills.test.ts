@@ -137,6 +137,9 @@ describe("skills content mold", () => {
       "tax-prep-checklist",
       "1099-w9-organizer",
       "quarterly-tax-estimate-prep",
+      // Skills Loop 2026-10-12 — cash-flow skill for entrepreneurs, finance
+      // category, GLM eval evidence in docs/skills-evals/cobros-vencidos.md.
+      "cobros-vencidos",
     ] as const;
     const sorted = [...publicSlugs].sort();
 

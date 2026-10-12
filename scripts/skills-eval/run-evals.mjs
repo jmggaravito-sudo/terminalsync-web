@@ -605,6 +605,13 @@ async function callSubject(provider, prompt, opts) {
       apiKey: opts.apiKey,
       model: opts.subjectModel || opts.model,
       maxTokens: opts.maxTokens,
+      // GLM SIEMPRE razona (el endpoint rechaza desactivarlo). Con el esfuerzo
+      // default una llamada de sujeto tarda 55–105s (medido 2026-10-12: 6.029
+      // tokens de los cuales ~4.500 eran thinking) y la mediana de 3 corridas
+      // no entra en la ventana del loop. Con `low` la misma llamada baja a
+      // ~43s sin perder estructura en la respuesta — y la comparación sigue
+      // siendo justa porque baseline y skill corren con el mismo esfuerzo.
+      reasoningEffort: "low",
     });
   }
   if (provider === "gemini") {
@@ -619,7 +626,13 @@ async function callSubject(provider, prompt, opts) {
   return callClaude(prompt, { apiKey: opts.apiKey, model: opts.model, maxTokens: opts.maxTokens });
 }
 
-async function callClaude(prompt, { apiKey, model, maxTokens = SUBJECT_MAX_TOKENS }) {
+async function callClaude(prompt, { apiKey, model, maxTokens = SUBJECT_MAX_TOKENS, reasoningEffort }) {
+  // GLM (Z.ai) expone `reasoning_effort`; los modelos Claude lo rechazarían
+  // con 400, así que solo viaja cuando el modelo es GLM.
+  const extra =
+    reasoningEffort && String(model).startsWith("glm")
+      ? { reasoning_effort: reasoningEffort }
+      : {};
   const r = await withRetry(() => fetch(ANTHROPIC_URL, {
     method: "POST",
     headers: {
@@ -631,7 +644,14 @@ async function callClaude(prompt, { apiKey, model, maxTokens = SUBJECT_MAX_TOKEN
       model,
       max_tokens: maxTokens,
       messages: [{ role: "user", content: prompt }],
+      ...extra,
     }),
+    // Techo por petición: el fetch sin señal no tiene timeout, y una conexión
+    // estancada del endpoint cuelga la corrida entera (medido 2026-10-12: una
+    // corrida murió por el timeout del loop sin escribir el reporte). Con
+    // AbortSignal el estancamiento se vuelve un error de red, y withRetry ya
+    // sabe reintentar esos.
+    signal: AbortSignal.timeout(180_000),
   }));
   if (!r.ok) {
     const body = await r.text();
@@ -660,49 +680,65 @@ export async function runFixture(fixture, opts) {
   const { dryRun, answers, judged, apiKey, model } = opts;
   // Qué modelo RESPONDE. El que JUZGA es siempre Claude — ver callSubject.
   const subjectProvider = opts.subjectProvider || DEFAULT_SUBJECT_PROVIDER;
-  const results = [];
-  for (const c of fixture.cases) {
-    try {
-      let baselineAnswer;
-      let skillAnswer;
-      if (dryRun) {
-        const a = answers?.[c.id];
-        if (!a || typeof a.baseline !== "string" || typeof a.skill !== "string") {
-          throw new Error("DRY_RUN answers missing baseline/skill for case");
+  // Los casos corren EN PARALELO, no en serie. Medido 2026-10-12 con el
+  // sujeto GLM: cada llamada de sujeto tarda 43–106s, y 15 llamadas
+  // secuenciales por corrida (5 casos × 2 variantes + juez) dejaban la
+  // mediana de 3 corridas en ~50 minutos — imposible dentro de la ventana
+  // del loop. Los casos son independientes entre sí (cada uno trae su
+  // input y su expected), así que el paralelismo no cambia la semántica;
+  // Promise.all preserva el orden de fixture.cases en `results`.
+  const results = await Promise.all(
+    fixture.cases.map(async (c) => {
+      try {
+        let baselineAnswer;
+        let skillAnswer;
+        if (dryRun) {
+          const a = answers?.[c.id];
+          if (!a || typeof a.baseline !== "string" || typeof a.skill !== "string") {
+            throw new Error("DRY_RUN answers missing baseline/skill for case");
+          }
+          baselineAnswer = a.baseline;
+          skillAnswer = a.skill;
+        } else {
+          baselineAnswer = await callSubject(
+            subjectProvider,
+            buildSubjectPrompt(fixture.baselinePrompt, c.input),
+            opts,
+          );
+          skillAnswer = await callSubject(
+            subjectProvider,
+            buildSubjectPrompt(opts.skillPrompt ?? fixture.skillPrompt, c.input),
+            opts,
+          );
         }
-        baselineAnswer = a.baseline;
-        skillAnswer = a.skill;
-      } else {
-        baselineAnswer = await callSubject(
-          subjectProvider,
-          buildSubjectPrompt(fixture.baselinePrompt, c.input),
-          opts,
-        );
-        skillAnswer = await callSubject(
-          subjectProvider,
-          buildSubjectPrompt(opts.skillPrompt ?? fixture.skillPrompt, c.input),
-          opts,
-        );
-      }
 
-      let verdict;
-      if (dryRun) {
-        const raw = judged?.[c.id];
-        if (!raw) throw new Error("DRY_RUN judge verdict missing for case");
-        verdict = parseJudge(typeof raw === "string" ? raw : JSON.stringify(raw));
-      } else {
-        const judgeText = await callClaude(buildJudgePrompt(c, baselineAnswer, skillAnswer), {
-          apiKey,
-          model,
-          maxTokens: 600,
-        });
-        verdict = parseJudge(judgeText);
+        let verdict;
+        if (dryRun) {
+          const raw = judged?.[c.id];
+          if (!raw) throw new Error("DRY_RUN judge verdict missing for case");
+          verdict = parseJudge(typeof raw === "string" ? raw : JSON.stringify(raw));
+        } else {
+          const judgeText = await callClaude(buildJudgePrompt(c, baselineAnswer, skillAnswer), {
+            apiKey,
+            model,
+            // Antes 600: alcanzaba cuando el juez no razonaba. glm-5.3 piensa
+            // ANTES de emitir el JSON (medido 2026-10-12: el thinking solo ya
+            // comía el techo) y el texto salía truncado a mitad de objeto —
+            // parseJudge fallaba y TODOS los casos daban error. El thinking
+            // razonable + el JSON caben holgado en 6000.
+            maxTokens: 6000,
+            // Mismo recorte que el sujeto: el juez califica, no redacta; con
+            // `low` piensa lo justo y no trunca.
+            reasoningEffort: "low",
+          });
+          verdict = parseJudge(judgeText);
+        }
+        return { id: c.id, type: c.type, verdict };
+      } catch (err) {
+        return { id: c.id, type: c.type, error: err.message };
       }
-      results.push({ id: c.id, type: c.type, verdict });
-    } catch (err) {
-      results.push({ id: c.id, type: c.type, error: err.message });
-    }
-  }
+    }),
+  );
   return results;
 }
 
@@ -805,29 +841,36 @@ async function main() {
     // Varias corridas y decisión por mediana: una sola es un sorteo en el
     // margen (ver DEFAULT_RUNS). En DRY_RUN una alcanza — no hay varianza.
     const runs = dryRun ? 1 : Number(process.argv[process.argv.indexOf("--runs") + 1]) || DEFAULT_RUNS;
-    const perRun = [];
-    let results = [];
-    for (let i = 0; i < runs; i++) {
-      results = await runFixture(fixture, {
-        dryRun,
-        answers,
-        judged,
-        apiKey,
-        model,
-        subjectProvider,
-        geminiApiKey,
-        geminiModel,
-        subjectModel: subjectProvider === "glm" ? DEFAULT_SUBJECT_MODEL : undefined,
-        skillPrompt,
-      });
-      perRun.push(aggregate(results));
+    // Las CORRIDAS también van en paralelo, no solo los casos. Cada corrida es
+    // independiente (la mediana es ENTRE corridas), y con el sujeto GLM tres
+    // corridas secuenciales de ~2 min no entraban en la ventana del loop.
+    // El reporte per-case muestra la última corrida; el veredicto lo decide la
+    // mediana, como siempre.
+    const runResults = await Promise.all(
+      Array.from({ length: runs }, () =>
+        runFixture(fixture, {
+          dryRun,
+          answers,
+          judged,
+          apiKey,
+          model,
+          subjectProvider,
+          geminiApiKey,
+          geminiModel,
+          subjectModel: subjectProvider === "glm" ? DEFAULT_SUBJECT_MODEL : undefined,
+          skillPrompt,
+        }),
+      ),
+    );
+    const perRun = runResults.map(aggregate);
+    perRun.forEach((r, i) => {
       if (runs > 1) {
-        const r = perRun[i];
         process.stderr.write(
           `[skills-eval] ${fixture.skill}: corrida ${i + 1}/${runs} — meets ${r.meetsExpected}/${r.scored} · skill ${fmt(r.avgSkill)}\n`,
         );
       }
-    }
+    });
+    const results = runResults[runResults.length - 1];
     const summary = runs > 1 ? medianSummary(perRun) : perRun[0];
     const verdict = decideVerdict(summary);
     const md = renderMarkdown(fixture, results, summary, {
