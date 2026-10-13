@@ -58,8 +58,11 @@ p{margin:0;text-wrap:pretty}
 /* ── nav ── */
 .nav{position:sticky;top:0;z-index:40;background:var(--pane);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line)}
 .nav-in{display:flex;align-items:center;gap:10px;height:66px}
-.logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16.5px;color:var(--fg);letter-spacing:-.02em;flex:none}
-.logo img{width:27px;height:27px;border-radius:7px}
+.logo{display:flex;align-items:center;gap:5px;font-weight:800;font-size:22px;color:var(--fg);letter-spacing:-.02em;flex:none}
+.logo img{width:22px;height:22px;border-radius:0;flex:none}
+.logo-wordmark{display:inline-flex;align-items:center;line-height:1;font-weight:800;letter-spacing:-.055em}
+.logo-t{color:var(--accent)}
+.logo-s{color:var(--fg)}
 .nav-links{display:flex;align-items:center;gap:2px;margin-left:18px}
 .nav-links a{height:38px;padding:0 13px;display:inline-flex;align-items:center;white-space:nowrap;border-radius:var(--r-sm);font-size:14.5px;font-weight:500;color:var(--fg-2)}
 .nav-links a:hover{background:var(--surface-2);color:var(--fg)}
@@ -316,7 +319,7 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 
 <header class="nav">
   <div class="wrap nav-in">
-    <a href="#" class="logo"><img src="/landing-b/assets/logo.png" alt="" />TS</a>
+    <a href="#" class="logo" aria-label="Terminal Sync"><img src="/landing-b/assets/logo.png" alt="" aria-hidden="true" /><span class="logo-wordmark" aria-hidden="true"><span class="logo-t">T</span><span class="logo-s">S</span></span></a>
     <nav class="nav-links">
       <a href="#capacidades">Explora los demos</a>
       <a href="#meta">Meta Ads</a>
