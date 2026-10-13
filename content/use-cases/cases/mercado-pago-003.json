@@ -1,0 +1,41 @@
+{
+  "id": "mercado-pago-003",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 138,
+  "isNew": true,
+  "connectors": [
+    "mercado-pago"
+  ],
+  "es": {
+    "title": "Conciliar mis pedidos con los pagos de Mercado Pago",
+    "outcome": "Cruza una lista de pedidos con los pagos que aparecen en Mercado Pago y te marca cuáles no coinciden.",
+    "prompt": "Quiero conciliar mis ventas con Mercado Pago.\n\nLista de pedidos: [pegar número, cliente y monto de cada pedido de la semana, o adjuntar el archivo].\nPeriodo: [fechas].\nMoneda: [MXN / COP / ARS / otra].\n\nSi la lista o el periodo están incompletos, pregúntame antes de buscar. Busca los pagos de ese periodo en Mercado Pago y cruza cada pedido con su pago. Dame:\n1. Una tabla con pedido, pago encontrado, estado y si el monto coincide.\n2. Pedidos sin pago o con pago pendiente.\n3. Pagos que no corresponden a ningún pedido de mi lista.\n4. Diferencias de monto.\n\nSolo consulta: no reembolses ni muevas dinero. Si no puedes emparejar un pedido con seguridad, dilo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Lista de pedidos de la semana",
+      "Reporte de ventas de tu tienda"
+    ],
+    "expectedResult": [
+      "Tabla de pedidos contra pagos",
+      "Pedidos sin pago",
+      "Pagos sin pedido",
+      "Diferencias de monto"
+    ]
+  },
+  "en": {
+    "title": "Reconcile my orders with Mercado Pago payments",
+    "outcome": "Matches a list of orders with the payments that appear in Mercado Pago and flags the ones that don't match.",
+    "prompt": "I want to reconcile my sales with Mercado Pago.\n\nList of orders: [paste order number, customer, and amount for each order this week, or attach the file].\nPeriod: [dates].\nCurrency: [MXN / COP / ARS / other].\n\nIf the list or the period is incomplete, ask me before searching. Search the payments for that period in Mercado Pago and match each order to its payment. Give me:\n1. A table with order, payment found, status, and whether the amount matches.\n2. Orders with no payment or a pending payment.\n3. Payments that don't belong to any order on my list.\n4. Amount differences.\n\nRead only: don't refund or move money. If you can't match an order with confidence, say so instead of guessing.",
+    "recommendedFiles": [
+      "This week's order list",
+      "Your store's sales report"
+    ],
+    "expectedResult": [
+      "Table of orders vs. payments",
+      "Orders without payment",
+      "Payments without an order",
+      "Amount differences"
+    ]
+  }
+}

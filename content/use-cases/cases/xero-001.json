@@ -1,0 +1,41 @@
+{
+  "id": "xero-001",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 142,
+  "isNew": true,
+  "connectors": [
+    "xero"
+  ],
+  "es": {
+    "title": "Facturas vencidas y quién me debe en Xero",
+    "outcome": "Lee tus facturas en Xero y te dice quién te debe dinero, cuánto y desde hace cuántos días.",
+    "prompt": "Muéstrame quién me debe dinero en Xero.\n\nFecha de corte: [hoy / fin de mes].\nMoneda: [USD / otra].\nCuántos días de retraso quiero ver primero: [más de 30 / más de 60].\n\nSi te falta algún dato, pregúntamelo antes de consultar. Lee mis facturas por cobrar y dame:\n1. El total que me deben y cuánto de eso está vencido.\n2. Una tabla por cliente: cliente, facturas vencidas, monto y días de retraso, de mayor a menor.\n3. Los tres clientes a los que conviene escribir primero y un mensaje de cobro cordial para cada uno.\n\nSolo consulta, no crees ni modifiques facturas. Si un dato no aparece en Xero, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Fecha de corte",
+      "Política de cobro de tu negocio"
+    ],
+    "expectedResult": [
+      "Total por cobrar y total vencido",
+      "Tabla de clientes con días de retraso",
+      "Clientes a contactar primero",
+      "Mensajes de cobro"
+    ]
+  },
+  "en": {
+    "title": "Overdue invoices and who owes me in Xero",
+    "outcome": "Reads your invoices in Xero and tells you who owes you money, how much, and for how many days.",
+    "prompt": "Show me who owes me money in Xero.\n\nCut-off date: [today / end of month].\nCurrency: [USD / other].\nHow many days late I want to see first: [over 30 / over 60].\n\nIf anything is missing, ask me before looking. Read my receivable invoices and give me:\n1. The total I'm owed and how much of it is overdue.\n2. A table by customer: customer, overdue invoices, amount, and days late, from most to least late.\n3. The three customers I should write to first, and a courteous collection message for each.\n\nRead only: don't create or change invoices. If something doesn't appear in Xero, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Cut-off date",
+      "Your business's collection policy"
+    ],
+    "expectedResult": [
+      "Total receivable and total overdue",
+      "Customer table with days late",
+      "Customers to contact first",
+      "Collection messages"
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "stripe-003",
+  "categoryId": "sales",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 141,
+  "isNew": true,
+  "connectors": [
+    "stripe"
+  ],
+  "es": {
+    "title": "Crear un producto y un link de pago en Stripe",
+    "outcome": "Prepara un producto con su precio y un link de pago en Stripe, y lo crea solo cuando tú lo confirmas.",
+    "prompt": "Quiero crear un producto y un link de pago en Stripe.\n\nNombre del producto o servicio: [nombre].\nPrecio: [monto y moneda].\nTipo de cobro: [pago único / mensual / anual].\nDescripción corta: [una frase].\n\nAntes de crear nada, muéstrame cómo quedarían el producto, el precio y el link de pago, e indícame si estás conectado a una cuenta de prueba o a la real, si lo puedes ver. Pídeme confirmación y no crees nada hasta que yo escriba \"confirmo\". Después de crearlo, dame el link para compartirlo. No cobres a nadie ni modifiques productos que ya existen.",
+    "recommendedFiles": [
+      "Descripción del servicio",
+      "Lista de precios"
+    ],
+    "expectedResult": [
+      "Resumen del producto y precio",
+      "Confirmación antes de crear",
+      "Link de pago listo para compartir"
+    ]
+  },
+  "en": {
+    "title": "Create a product and a payment link in Stripe",
+    "outcome": "Prepares a product with its price and a payment link in Stripe, and creates it only when you confirm.",
+    "prompt": "I want to create a product and a payment link in Stripe.\n\nProduct or service name: [name].\nPrice: [amount and currency].\nBilling type: [one-time / monthly / yearly].\nShort description: [one sentence].\n\nBefore creating anything, show me how the product, the price, and the payment link would look, and tell me whether you're connected to a test account or the live one, if you can see it. Ask me to confirm and don't create anything until I write \"confirm\". After creating it, give me the link to share. Don't charge anyone or change products that already exist.",
+    "recommendedFiles": [
+      "Service description",
+      "Price list"
+    ],
+    "expectedResult": [
+      "Product and price summary",
+      "Confirmation before creating",
+      "Payment link ready to share"
+    ]
+  }
+}

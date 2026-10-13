@@ -1,0 +1,41 @@
+{
+  "id": "meta-social-001",
+  "categoryId": "social",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 175,
+  "isNew": true,
+  "connectors": [
+    "meta-social"
+  ],
+  "es": {
+    "title": "¿En qué cuentas puedo publicar? Revisar mi Facebook e Instagram",
+    "outcome": "Lista tus páginas de Facebook y cuentas de Instagram conectadas, y te dice si están listas para publicar.",
+    "prompt": "Quiero saber dónde puedo publicar desde aquí.\n\nQué necesito: [ver mis páginas de Facebook y cuentas de Instagram / saber si mi Instagram está listo para publicar].\nNegocio: [nombre del negocio].\n\nSi te falta algún dato, pregúntamelo antes de consultar. Muéstrame qué páginas de Facebook y qué cuentas de Instagram vinculadas puedo usar para publicar. Para cada cuenta dime si está lista o qué le falta (por ejemplo, que el Instagram sea de empresa o creador, o que esté vinculado a una página). Después sugiere tres ideas de publicación para esta semana, adaptadas a mi tipo de negocio.\n\nSolo consulta: no publiques nada en este paso. Si una cuenta no aparece, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Descripción de tu negocio",
+      "Ideas de contenido que ya tienes"
+    ],
+    "expectedResult": [
+      "Páginas y cuentas disponibles",
+      "Estado de cada cuenta",
+      "Qué falta para publicar",
+      "Tres ideas de publicación"
+    ]
+  },
+  "en": {
+    "title": "Where can I post? Check my Facebook and Instagram",
+    "outcome": "Lists your connected Facebook pages and Instagram accounts and tells you whether they are ready to post.",
+    "prompt": "I want to know where I can post from here.\n\nWhat I need: [see my Facebook pages and Instagram accounts / find out whether my Instagram is ready to post].\nBusiness: [business name].\n\nIf anything is missing, ask me before looking. Show me which Facebook pages and which linked Instagram accounts I can use to post. For each account, tell me whether it's ready or what it's missing (for example, that the Instagram must be a business or creator account, or be linked to a page). Then suggest three post ideas for this week, tailored to my type of business.\n\nRead only: don't publish anything in this step. If an account doesn't appear, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Description of your business",
+      "Content ideas you already have"
+    ],
+    "expectedResult": [
+      "Available pages and accounts",
+      "Status of each account",
+      "What's missing to post",
+      "Three post ideas"
+    ]
+  }
+}

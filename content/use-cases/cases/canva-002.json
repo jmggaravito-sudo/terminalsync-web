@@ -1,0 +1,41 @@
+{
+  "id": "canva-002",
+  "categoryId": "marketing",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 170,
+  "isNew": true,
+  "connectors": [
+    "canva"
+  ],
+  "es": {
+    "title": "Crear una publicación para redes en Canva",
+    "outcome": "Propone el texto y el diseño de una publicación de tu promoción y la genera en Canva solo cuando tú lo confirmas.",
+    "prompt": "Quiero crear una publicación para redes sociales en Canva.\n\nPromoción o mensaje: [qué quiero anunciar].\nFormato: [publicación cuadrada / historia vertical].\nEstilo: [limpio y profesional / colorido / elegante].\nTexto que debe aparecer: [título, precio, fecha, contacto].\nIdioma: [español / inglés].\n\nPrimero propón el texto exacto y describe cómo se vería el diseño (colores, imagen, jerarquía). Pídeme confirmación y no generes nada hasta que yo escriba \"confirmo\". Después genera el diseño en mi Canva y dime dónde quedó. Exporta una versión PNG solo si te lo pido. Si mi plan de Canva no permite alguna función, dímelo en vez de prometerla.",
+    "recommendedFiles": [
+      "Logo y colores de tu marca",
+      "Foto del producto o servicio"
+    ],
+    "expectedResult": [
+      "Texto y descripción del diseño",
+      "Confirmación antes de generar",
+      "Diseño creado en Canva",
+      "Exportación opcional"
+    ]
+  },
+  "en": {
+    "title": "Create a social media post in Canva",
+    "outcome": "Proposes the text and design for a post about your promotion and generates it in Canva only when you confirm.",
+    "prompt": "I want to create a social media post in Canva.\n\nPromotion or message: [what I want to announce].\nFormat: [square post / vertical story].\nStyle: [clean and professional / colorful / elegant].\nText that must appear: [title, price, date, contact].\nLanguage: [English / Spanish].\n\nFirst propose the exact text and describe how the design would look (colors, image, hierarchy). Ask me to confirm and don't generate anything until I write \"confirm\". Then generate the design in my Canva and tell me where it landed. Export a PNG version only if I ask. If my Canva plan doesn't allow a feature, tell me instead of promising it.",
+    "recommendedFiles": [
+      "Your brand logo and colors",
+      "Photo of the product or service"
+    ],
+    "expectedResult": [
+      "Text and design description",
+      "Confirmation before generating",
+      "Design created in Canva",
+      "Optional export"
+    ]
+  }
+}

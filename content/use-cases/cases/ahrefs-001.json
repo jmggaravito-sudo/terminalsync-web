@@ -1,0 +1,39 @@
+{
+  "id": "ahrefs-001",
+  "categoryId": "marketing",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 177,
+  "isNew": true,
+  "connectors": [
+    "ahrefs"
+  ],
+  "es": {
+    "title": "Palabras clave en la segunda página de Google (Ahrefs)",
+    "outcome": "Encuentra con Ahrefs las búsquedas en las que tu sitio aparece en la segunda página, las victorias rápidas de SEO.",
+    "prompt": "Quiero encontrar victorias rápidas de SEO con Ahrefs.\n\nMi sitio: [dominio, por ejemplo minegocio.com].\nPaís de búsqueda: [EE. UU. / México / Colombia / otro].\nIdioma: [español / inglés].\n\nSi te falta el dominio o el país, pregúntamelos antes de consultar. Busca las palabras clave por las que mi sitio posiciona entre los puestos 11 y 20 y dame:\n1. Una tabla con palabra clave, posición, volumen de búsqueda y página que posiciona.\n2. Las cinco con mejor relación entre volumen y cercanía a la primera página.\n3. Qué mejorar en cada una de esas páginas (título, contenido, enlaces internos), basándote en lo que ves.\n\nSolo consulta datos. No prometas que subirás de posición; si un dato no está disponible en mi plan de Ahrefs, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Dominio de tu sitio",
+      "Páginas más importantes del negocio"
+    ],
+    "expectedResult": [
+      "Tabla de palabras clave en página 2",
+      "Cinco prioridades",
+      "Mejoras sugeridas por página"
+    ]
+  },
+  "en": {
+    "title": "Page-two keywords on Google (Ahrefs)",
+    "outcome": "Finds with Ahrefs the searches where your site ranks on page two, the quick SEO wins.",
+    "prompt": "I want to find quick SEO wins with Ahrefs.\n\nMy site: [domain, for example mybusiness.com].\nSearch country: [USA / Mexico / Colombia / other].\nLanguage: [English / Spanish].\n\nIf the domain or the country is missing, ask me before looking. Find the keywords my site ranks for in positions 11 to 20 and give me:\n1. A table with keyword, position, search volume, and the ranking page.\n2. The five with the best balance between volume and closeness to page one.\n3. What to improve on each of those pages (title, content, internal links), based on what you see.\n\nData lookup only. Don't promise that you'll move up in rankings; if a figure isn't available on my Ahrefs plan, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Your site's domain",
+      "The business's most important pages"
+    ],
+    "expectedResult": [
+      "Table of page-two keywords",
+      "Five priorities",
+      "Suggested improvements per page"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "exa-001",
+  "categoryId": "market",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 185,
+  "isNew": true,
+  "connectors": [
+    "exa"
+  ],
+  "es": {
+    "title": "Investigar a una empresa antes de una reunión (Exa)",
+    "outcome": "Busca en la web información actual sobre una empresa —qué hace, quién la dirige y noticias recientes— para llegar preparado.",
+    "prompt": "Necesito prepararme para una reunión con una empresa.\n\nEmpresa: [nombre y sitio web].\nMotivo de la reunión: [venderle / comprarle / alianza / entrevista].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta el nombre o el sitio web, pregúntamelos antes de buscar. Investiga en la web y dame:\n1. Qué hace la empresa, a quién le vende y su tamaño aproximado, si es público.\n2. Quién la dirige y personas clave, si aparecen.\n3. Noticias o anuncios recientes, con la fecha y la fuente de cada uno.\n4. Cinco preguntas inteligentes para la reunión según mi motivo.\n\nCita la fuente de cada dato y separa lo confirmado de lo que es una suposición. Si no encuentras algo, dímelo en vez de inventarlo.",
+    "recommendedFiles": [
+      "Sitio web de la empresa",
+      "Perfil de la persona con la que te reúnes"
+    ],
+    "expectedResult": [
+      "Perfil de la empresa",
+      "Personas clave",
+      "Noticias recientes con fuente",
+      "Preguntas para la reunión"
+    ]
+  },
+  "en": {
+    "title": "Research a company before a meeting (Exa)",
+    "outcome": "Searches the web for current information about a company — what it does, who runs it, and recent news — so you arrive prepared.",
+    "prompt": "I need to prepare for a meeting with a company.\n\nCompany: [name and website].\nReason for the meeting: [selling to them / buying from them / partnership / interview].\nLanguage for the answer: [English / Spanish].\n\nIf the name or the website is missing, ask me before searching. Research the web and give me:\n1. What the company does, who it sells to, and its approximate size, if public.\n2. Who runs it and key people, if they appear.\n3. Recent news or announcements, with the date and source of each.\n4. Five smart questions for the meeting based on my reason.\n\nCite the source for each fact and separate what is confirmed from what is an assumption. If you can't find something, tell me instead of making it up.",
+    "recommendedFiles": [
+      "The company's website",
+      "Profile of the person you're meeting"
+    ],
+    "expectedResult": [
+      "Company profile",
+      "Key people",
+      "Recent news with sources",
+      "Questions for the meeting"
+    ]
+  }
+}

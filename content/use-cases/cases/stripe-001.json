@@ -1,0 +1,41 @@
+{
+  "id": "stripe-001",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 139,
+  "isNew": true,
+  "connectors": [
+    "stripe"
+  ],
+  "es": {
+    "title": "Suscripciones activas e ingreso mensual en Stripe",
+    "outcome": "Cuenta tus suscripciones activas en Stripe y calcula cuánto ingreso recurrente mensual representan.",
+    "prompt": "Quiero saber cómo van mis suscripciones en Stripe.\n\nMoneda principal: [USD / otra].\nProductos o planes que me interesan: [todos / nombres].\n\nSi te falta algún dato, pregúntamelo antes de consultar. Lee mi cuenta de Stripe y dame:\n1. Cuántas suscripciones activas tengo, por plan.\n2. Cuánto ingreso recurrente mensual representan (si hay planes anuales, conviértelos a mensual y dime cómo lo hiciste).\n3. Cuántas están en periodo de prueba, pendientes de pago o programadas para cancelarse.\n4. Qué plan aporta más.\n\nSolo consulta: no cambies suscripciones ni hagas reembolsos. Si un dato no está disponible, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Lista de tus planes y precios",
+      "Objetivo mensual de ingresos"
+    ],
+    "expectedResult": [
+      "Suscripciones activas por plan",
+      "Ingreso recurrente mensual",
+      "Pruebas, pagos pendientes y cancelaciones programadas",
+      "Plan que más aporta"
+    ]
+  },
+  "en": {
+    "title": "Active subscriptions and monthly revenue in Stripe",
+    "outcome": "Counts your active subscriptions in Stripe and calculates how much monthly recurring revenue they represent.",
+    "prompt": "I want to know how my subscriptions are doing in Stripe.\n\nMain currency: [USD / other].\nProducts or plans I care about: [all / names].\n\nIf anything is missing, ask me before looking. Read my Stripe account and give me:\n1. How many active subscriptions I have, by plan.\n2. How much monthly recurring revenue they represent (if there are annual plans, convert them to monthly and tell me how you did it).\n3. How many are in a trial, awaiting payment, or scheduled to cancel.\n4. Which plan contributes the most.\n\nRead only: don't change subscriptions or issue refunds. If something isn't available, tell me instead of guessing.",
+    "recommendedFiles": [
+      "List of your plans and prices",
+      "Monthly revenue goal"
+    ],
+    "expectedResult": [
+      "Active subscriptions by plan",
+      "Monthly recurring revenue",
+      "Trials, pending payments, and scheduled cancellations",
+      "Top-contributing plan"
+    ]
+  }
+}
