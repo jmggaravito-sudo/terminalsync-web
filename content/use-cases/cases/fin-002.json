@@ -1,0 +1,37 @@
+{
+  "id": "fin-002",
+  "categoryId": "finance",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 54,
+  "es": {
+    "title": "Presupuesto anual",
+    "outcome": "Presupuesto realista que se puede cumplir y medir.",
+    "prompt": "Necesito armar el presupuesto anual de mi empresa.\n\nMi negocio: [describir].\nIngresos del año anterior: [monto].\nMetas para este año: [crecimiento esperado].\nInversiones planeadas: [listar].\n\nDame: presupuesto mes a mes con ingresos y egresos por categoría, supuestos clave, escenario conservador y agresivo, indicadores de seguimiento mensual y revisiones trimestrales sugeridas.",
+    "recommendedFiles": [
+      "Estado de resultados año anterior",
+      "Plan estratégico"
+    ],
+    "expectedResult": [
+      "Presupuesto mensual",
+      "Escenarios",
+      "Indicadores",
+      "Calendario de revisión"
+    ]
+  },
+  "en": {
+    "title": "Annual budget",
+    "outcome": "A realistic budget that can be met and measured.",
+    "prompt": "I need to build my company's annual budget.\n\nMy business: [describe].\nLast year's revenue: [amount].\nGoals for this year: [expected growth].\nPlanned investments: [list].\n\nGive me: month-by-month budget with revenues and expenses by category, key assumptions, conservative and aggressive scenarios, monthly tracking indicators and suggested quarterly reviews.",
+    "recommendedFiles": [
+      "Previous year's income statement",
+      "Strategic plan"
+    ],
+    "expectedResult": [
+      "Monthly budget",
+      "Scenarios",
+      "Indicators",
+      "Review calendar"
+    ]
+  }
+}

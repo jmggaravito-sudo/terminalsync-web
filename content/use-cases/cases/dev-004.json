@@ -1,0 +1,35 @@
+{
+  "id": "dev-004",
+  "categoryId": "dev",
+  "recommendedAI": "codex",
+  "level": "Intermedio",
+  "order": 86,
+  "es": {
+    "title": "Debug — qué hago si algo no funciona",
+    "outcome": "Diagnóstico claro de por qué falla un sistema o proceso.",
+    "prompt": "Algo no está funcionando en mi sistema/proceso y necesito ayuda para diagnosticar.\n\nQué debería pasar: [describir].\nQué está pasando: [describir el síntoma].\nQué cambió recientemente: [describir si recuerdas].\nMensaje de error si lo hay: [pegar].\n\nDame: las 5 causas más probables ordenadas por probabilidad, cómo verificar cada una y solución paso a paso para cada caso.",
+    "recommendedFiles": [
+      "Captura del error",
+      "Logs si los tienes"
+    ],
+    "expectedResult": [
+      "5 causas probables",
+      "Cómo verificar",
+      "Soluciones"
+    ]
+  },
+  "en": {
+    "title": "Debug — what to do if something doesn't work",
+    "outcome": "Clear diagnosis of why a system or process is failing.",
+    "prompt": "Something isn't working in my system/process and I need help diagnosing it.\n\nWhat should happen: [describe].\nWhat is happening: [describe the symptom].\nWhat changed recently: [describe if you remember].\nError message, if any: [paste].\n\nGive me: the 5 most likely causes ordered by probability, how to check each one and step-by-step fixes for each case.",
+    "recommendedFiles": [
+      "Error screenshot",
+      "Logs if you have them"
+    ],
+    "expectedResult": [
+      "5 most likely causes",
+      "How to verify",
+      "Solutions"
+    ]
+  }
+}

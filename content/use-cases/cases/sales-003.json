@@ -1,0 +1,36 @@
+{
+  "id": "sales-003",
+  "categoryId": "sales",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 3,
+  "popular": true,
+  "es": {
+    "title": "Hacer seguimiento a prospectos",
+    "outcome": "Mensajes de seguimiento que reactivan conversaciones sin sonar insistente.",
+    "prompt": "Tengo prospectos que dejaron de responder. Ayúdame a escribir 3 mensajes de seguimiento profesionales y cálidos.\n\nContexto del prospecto: [qué hablamos antes y cuánto tiempo pasó].\nProducto/servicio: [describir].\nCanal: [email / WhatsApp / LinkedIn].\n\nUn mensaje corto que reactive la conversación sin sonar insistente, uno que aporte valor (recurso, artículo, dato) y uno final de cierre amable.",
+    "recommendedFiles": [
+      "Historial de la conversación",
+      "Notas de la última llamada"
+    ],
+    "expectedResult": [
+      "Mensaje 1: reactivar",
+      "Mensaje 2: aportar valor",
+      "Mensaje 3: cierre amable"
+    ]
+  },
+  "en": {
+    "title": "Follow up with prospects",
+    "outcome": "Follow-up messages that reactivate conversations without sounding pushy.",
+    "prompt": "I have prospects who stopped responding. Help me write 3 professional, warm follow-up messages.\n\nProspect context: [what we talked about before and how much time passed].\nProduct/service: [describe].\nChannel: [email / WhatsApp / LinkedIn].\n\nOne short message to reactivate the conversation without sounding pushy, one that adds value (resource, article, statistic) and one final polite closing message.",
+    "recommendedFiles": [
+      "Conversation history",
+      "Notes from the last call"
+    ],
+    "expectedResult": [
+      "Message 1: reactivate",
+      "Message 2: add value",
+      "Message 3: polite close"
+    ]
+  }
+}

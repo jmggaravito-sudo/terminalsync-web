@@ -8,7 +8,6 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "sync:live-search-cases": "node scripts/sync-live-search-cases.mjs",
     "test": "vitest run",
     "verify:connectors": "node scripts/verify-connector.mjs --all --write --json --concurrency 1",
     "test:watch": "vitest"

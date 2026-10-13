@@ -1,0 +1,37 @@
+{
+  "id": "mkt-007",
+  "categoryId": "marketing",
+  "recommendedAI": "gemini",
+  "level": "Intermedio",
+  "order": 17,
+  "es": {
+    "title": "Analizar competencia",
+    "outcome": "Diagnóstico claro de competidores y oportunidades para diferenciarte.",
+    "prompt": "Quiero analizar a mi competencia y encontrar oportunidades.\n\nMi negocio: [describir].\nMis principales competidores: [listar nombres y webs].\nLo que quiero entender: [precios / posicionamiento / contenido / debilidades].\n\nDame: análisis comparativo en tabla, 3 oportunidades claras donde puedo diferenciarme y 3 amenazas que debo cuidar.",
+    "recommendedFiles": [
+      "Webs de competidores",
+      "Posts de redes de competidores"
+    ],
+    "expectedResult": [
+      "Tabla comparativa",
+      "Oportunidades",
+      "Amenazas",
+      "Recomendaciones"
+    ]
+  },
+  "en": {
+    "title": "Analyze competitors",
+    "outcome": "Clear diagnosis of competitors and opportunities to differentiate yourself.",
+    "prompt": "I want to analyze my competitors and find opportunities.\n\nMy business: [describe].\nMy main competitors: [list names and websites].\nWhat I want to understand: [prices / positioning / content / weaknesses].\n\nGive me: comparative analysis in a table, 3 clear opportunities where I can differentiate, and 3 threats I should watch out for.",
+    "recommendedFiles": [
+      "Competitors' websites",
+      "Competitors' social media posts"
+    ],
+    "expectedResult": [
+      "Comparative table",
+      "Opportunities",
+      "Threats",
+      "Recommendations"
+    ]
+  }
+}

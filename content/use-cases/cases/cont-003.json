@@ -1,0 +1,38 @@
+{
+  "id": "cont-003",
+  "categoryId": "continuity",
+  "recommendedAI": "gemini",
+  "level": "Intermedio",
+  "order": 122,
+  "isNew": true,
+  "es": {
+    "title": "Continuar investigación desde Chrome",
+    "outcome": "Consolida lo que investigaste en el navegador en un solo documento útil.",
+    "prompt": "Estuve investigando un tema en Chrome y tengo varias pestañas, links y notas sueltas. Quiero consolidarlo.\n\nTema de la investigación: [describir].\nLinks/fuentes principales: [pegar URLs o títulos].\nLo que ya saqué en limpio: [resumir si tienes].\nObjetivo final: [decisión / informe / propuesta].\n\nAyúdame a: organizar la información por subtemas, identificar lo más importante, completar lo que falta y armar un documento final claro listo para compartir.",
+    "recommendedFiles": [
+      "Lista de URLs investigadas",
+      "Notas previas en cualquier formato"
+    ],
+    "expectedResult": [
+      "Información organizada",
+      "Puntos clave",
+      "Lo que falta investigar",
+      "Documento final"
+    ]
+  },
+  "en": {
+    "title": "Continue research from Chrome",
+    "outcome": "Consolidate what you researched in the browser into a single useful document.",
+    "prompt": "I was researching a topic in Chrome and have several tabs, links and loose notes. I want to consolidate it.\n\nResearch topic: [describe].\nMain links/sources: [paste URLs or titles].\nWhat I've already distilled: [summarize if you have].\nFinal objective: [decision / report / proposal].\n\nHelp me to: organize the information by subtopics, identify the most important points, fill in what's missing, and prepare a clear final document ready to share.",
+    "recommendedFiles": [
+      "List of researched URLs",
+      "Previous notes in any format"
+    ],
+    "expectedResult": [
+      "Organized information",
+      "Key points",
+      "What else needs research",
+      "Final document"
+    ]
+  }
+}

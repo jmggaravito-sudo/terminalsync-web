@@ -1,0 +1,37 @@
+{
+  "id": "ops-003",
+  "categoryId": "operations",
+  "recommendedAI": "gemini",
+  "level": "Avanzado",
+  "order": 35,
+  "es": {
+    "title": "Optimizar costos operativos",
+    "outcome": "Diagnóstico de gastos con recomendaciones para reducir sin afectar calidad.",
+    "prompt": "Quiero reducir costos operativos sin afectar la calidad del servicio.\n\nMi negocio: [describir].\nGastos mensuales principales: [listar con monto aproximado].\nIngresos mensuales aproximados: [monto].\n\nDame: análisis de qué gastos son críticos vs opcionales, 5 oportunidades concretas de ahorro priorizadas por impacto, riesgos de cada recorte y plan de implementación.",
+    "recommendedFiles": [
+      "Estado de resultados último trimestre",
+      "Lista de proveedores"
+    ],
+    "expectedResult": [
+      "Análisis crítico/opcional",
+      "5 oportunidades de ahorro",
+      "Riesgos",
+      "Plan de implementación"
+    ]
+  },
+  "en": {
+    "title": "Optimize operating costs",
+    "outcome": "Expense diagnosis with recommendations to reduce costs without affecting quality.",
+    "prompt": "I want to reduce operating costs without affecting service quality.\n\nMy business: [describe].\nMain monthly expenses: [list with approximate amount].\nApproximate monthly revenue: [amount].\n\nGive me: analysis of which expenses are critical vs optional, 5 concrete cost-saving opportunities prioritized by impact, risks of each cut and an implementation plan.",
+    "recommendedFiles": [
+      "Last quarter income statement",
+      "List of suppliers"
+    ],
+    "expectedResult": [
+      "Critical/optional analysis",
+      "5 cost-saving opportunities",
+      "Risks",
+      "Implementation plan"
+    ]
+  }
+}

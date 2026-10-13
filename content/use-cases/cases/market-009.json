@@ -1,0 +1,41 @@
+{
+  "id": "market-009",
+  "categoryId": "market",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 113,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__jobs_search"
+  ],
+  "es": {
+    "title": "Qué está contratando mi competencia",
+    "outcome": "Busca las ofertas de empleo publicadas por tus competidores o por tu rubro y te dice qué puestos buscan, qué salarios ofrecen cuando los publican y qué puede indicar eso de sus planes.",
+    "prompt": "Quiero saber qué puestos está contratando mi competencia.\n\nEmpresas o rubro: [de 1 a 3 competidores por su nombre, o el rubro — por ejemplo: clínicas dentales, restaurantes, agencias de marketing].\nCiudad y país: [por ejemplo: Houston, Texas, EE. UU. / Ciudad de México, México].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta la ciudad, el país o el idioma, pregúntamelos antes de buscar. Busca las ofertas de empleo publicadas y arma una tabla con: puesto, empresa, ciudad, tipo de contrato, salario si lo publican, fecha de publicación, dónde se publicó y enlace. Después dime: qué puestos se repiten, qué rangos de salario aparecen, qué habilidades piden y qué podrían indicar esas contrataciones sobre los planes de mis competidores (abrir una sede, vender más, lanzar un servicio). Termina con ideas para mi propio equipo.\n\nSi una oferta no dice el salario, no lo estimes. Presenta lo de los planes como posibilidades, no como hechos.",
+    "recommendedFiles": [
+      "Lista de competidores",
+      "Puestos de tu equipo"
+    ],
+    "expectedResult": [
+      "Ofertas de empleo encontradas",
+      "Puestos y salarios que se repiten",
+      "Qué podrían indicar sobre sus planes",
+      "Ideas para tu equipo"
+    ]
+  },
+  "en": {
+    "title": "What my competitors are hiring for",
+    "outcome": "Searches the job postings from your competitors or your industry and tells you which roles they're hiring for, what salaries they offer when they post them, and what that could say about their plans.",
+    "prompt": "I want to know which roles my competitors are hiring for.\n\nCompanies or industry: [1 to 3 competitors by name, or the industry — for example: dental clinics, restaurants, marketing agencies].\nCity and country: [for example: Houston, Texas, USA / Mexico City, Mexico].\nLanguage for the answer: [English / Spanish].\n\nIf the city, the country, or the language is missing, ask me before searching. Search the published job postings and build a table with: role, company, city, type of contract, salary if posted, posting date, where it was posted, and link. Then tell me: which roles repeat, which salary ranges show up, which skills they ask for, and what those hires could suggest about my competitors' plans (opening a new location, selling more, launching a service). Finish with ideas for my own team.\n\nIf a posting doesn't show the salary, don't estimate it. Present the part about their plans as possibilities, not facts.",
+    "recommendedFiles": [
+      "List of competitors",
+      "Roles on your team"
+    ],
+    "expectedResult": [
+      "Job postings found",
+      "Roles and salaries that repeat",
+      "What they could suggest about their plans",
+      "Ideas for your team"
+    ]
+  }
+}

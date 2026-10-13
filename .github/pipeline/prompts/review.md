@@ -34,4 +34,5 @@ Verifica con WebFetch los hechos clave de las dos fichas y de la fila de `SOURCE
 - La divulgación dice lo que es: servidor hospedado o local, qué puede leer y escribir, roles/planes exigidos, qué no cubre. Sin marketing.
 - El logo está declarado con honestidad (oficial vs. de reserva) y, si es de reserva, está en "Logos pendientes".
 - `SOURCES.md`: la fila nueva es exacta; no se borró ni reescribió nada ajeno al conector.
+- **Casos de uso:** `en` tiene `### What you can ask` y `es` tiene `### Qué le puedes pedir`, con 4 a 6 casos cada una y el mismo contenido localizado. Cada caso se puede hacer con una herramienta que la fuente oficial documenta (un caso sin herramienta que lo respalde es un hallazgo `fix`). Si el conector es de solo lectura, ningún caso pide escribir.
 - Compara lo que promete la ficha con lo que de verdad hace el conector: sin capacidades inventadas ni exageradas.

@@ -1,0 +1,38 @@
+{
+  "id": "fin-001",
+  "categoryId": "finance",
+  "recommendedAI": "gemini",
+  "level": "Intermedio",
+  "order": 53,
+  "popular": true,
+  "es": {
+    "title": "Análisis de flujo de caja",
+    "outcome": "Diagnóstico claro de tu flujo de dinero con alertas tempranas.",
+    "prompt": "Quiero analizar mi flujo de caja para tomar mejores decisiones.\n\nMi negocio: [describir].\nIngresos mensuales aproximados: [monto].\nGastos fijos: [listar].\nGastos variables principales: [listar].\n\nDame: análisis de salud financiera actual, las 3 alertas tempranas que debo monitorear, recomendaciones para mejorar el flujo y proyección realista a 3 meses.",
+    "recommendedFiles": [
+      "Estado de cuenta últimos 3 meses",
+      "Lista de gastos fijos"
+    ],
+    "expectedResult": [
+      "Diagnóstico",
+      "Alertas tempranas",
+      "Recomendaciones",
+      "Proyección 3 meses"
+    ]
+  },
+  "en": {
+    "title": "Cash flow analysis",
+    "outcome": "Clear diagnosis of your cash flow with early warnings.",
+    "prompt": "I want to analyze my cash flow to make better decisions.\n\nMy business: [describe].\nApproximate monthly revenue: [amount].\nFixed expenses: [list].\nMain variable expenses: [list].\n\nGive me: analysis of current financial health, the 3 early warnings I should monitor, recommendations to improve cash flow and a realistic 3-month projection.",
+    "recommendedFiles": [
+      "Bank statements last 3 months",
+      "List of fixed expenses"
+    ],
+    "expectedResult": [
+      "Diagnosis",
+      "Early warnings",
+      "Recommendations",
+      "3-month projection"
+    ]
+  }
+}

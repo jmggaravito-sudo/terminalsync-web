@@ -1,0 +1,41 @@
+{
+  "id": "market-008",
+  "categoryId": "market",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 112,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__marketplace_search"
+  ],
+  "es": {
+    "title": "Precios en Amazon, Walmart y eBay",
+    "outcome": "Busca productos como el tuyo en Amazon, Walmart o eBay y te arma una tabla con precios, calificaciones y vendedores para comparar.",
+    "prompt": "Quiero comparar el precio de mi producto con lo que se vende en Amazon, Walmart o eBay.\n\nProducto: [tipo, marca, tamaño o modelo].\nMi precio actual: [monto y moneda].\nTiendas: [Amazon / Walmart / eBay / las tres].\nPaís: [por ejemplo: Estados Unidos / México].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta el país, la tienda o el idioma, pregúntamelos antes de buscar. Cada tienda vende solo en algunos países: si una no está disponible en mi país, dímelo en vez de buscar ahí. Busca productos comparables en cada tienda y arma una tabla con: producto, tienda, precio tal como aparece, calificación, número de reseñas, vendedor y si es nuevo o usado cuando se indique. Después dame el rango de precios de cada tienda, dónde queda mi precio y una recomendación.\n\nAclara siempre de qué tienda y de qué país es cada precio. Usa solo los precios que encuentres; no los estimes.",
+    "recommendedFiles": [
+      "Ficha del producto",
+      "Tu precio actual"
+    ],
+    "expectedResult": [
+      "Tabla de precios por tienda",
+      "Rango de precios de cada tienda",
+      "Dónde queda tu precio",
+      "Recomendación de precio"
+    ]
+  },
+  "en": {
+    "title": "Prices on Amazon, Walmart, and eBay",
+    "outcome": "Searches Amazon, Walmart, or eBay for products like yours and builds a table with prices, ratings, and sellers to compare.",
+    "prompt": "I want to compare my product's price with what's sold on Amazon, Walmart, or eBay.\n\nProduct: [type, brand, size, or model].\nMy current price: [amount and currency].\nStores: [Amazon / Walmart / eBay / all three].\nCountry: [for example: United States / Mexico].\nLanguage for the answer: [English / Spanish].\n\nIf the country, the store, or the language is missing, ask me before searching. Each store only sells in some countries: if one isn't available in my country, tell me instead of searching there. Look for comparable products in each store and build a table with: product, store, price as shown, rating, number of reviews, seller, and whether it's new or used when stated. Then give me each store's price range, where my price falls, and a recommendation.\n\nAlways say which store and which country each price comes from. Use only the prices you find; don't estimate them.",
+    "recommendedFiles": [
+      "Product sheet",
+      "Your current price"
+    ],
+    "expectedResult": [
+      "Price table by store",
+      "Each store's price range",
+      "Where your price falls",
+      "Price recommendation"
+    ]
+  }
+}

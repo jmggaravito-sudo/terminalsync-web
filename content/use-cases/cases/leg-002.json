@@ -1,0 +1,31 @@
+{
+  "id": "leg-002",
+  "categoryId": "legal",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 64,
+  "es": {
+    "title": "Política de privacidad",
+    "outcome": "Política de privacidad clara y profesional para tu web.",
+    "prompt": "Necesito una política de privacidad para mi sitio web/app.\n\nMi negocio: [describir].\nDatos que recolecto: [listar].\nPara qué uso esos datos: [describir].\nPaís principal de mis usuarios: [país].\n\nDame: política de privacidad clara y profesional, en lenguaje entendible, con secciones de datos recolectados, uso, compartición, derechos del usuario, cookies y cómo contactarnos.",
+    "recommendedFiles": [
+      "Información de tu negocio"
+    ],
+    "expectedResult": [
+      "Política completa",
+      "Versión resumida para mostrar"
+    ]
+  },
+  "en": {
+    "title": "Privacy policy",
+    "outcome": "Clear and professional privacy policy for your website.",
+    "prompt": "I need a privacy policy for my website/app.\n\nMy business: [describe].\nData I collect: [list].\nWhat I use that data for: [describe].\nMain country of my users: [country].\n\nGive me: a clear and professional privacy policy, in understandable language, with sections on collected data, usage, sharing, user rights, cookies, and how to contact us.",
+    "recommendedFiles": [
+      "Your business information"
+    ],
+    "expectedResult": [
+      "Complete policy",
+      "Short version to display"
+    ]
+  }
+}

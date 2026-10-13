@@ -1,6 +1,6 @@
 /**
  * Single-shot catalog endpoint for the desktop app's "Explorar" mode in
- * the Power-Ups drawer. Returns all four pillars in one round-trip:
+ * the Power-Ups drawer. Returns all pillars in one round-trip:
  *
  *   GET /api/marketplace/catalog?lang=es
  *   →
@@ -9,6 +9,8 @@
  *     skills:     SkillMeta[],           // first-party (markdown)
  *     cliTools:   CliToolMeta[],         // first-party + DB-tracked
  *     bundles:    BundleSummary[],       // active Stack Packs with items resolved
+ *     plugins:    PluginSummary[],
+ *     useCases:   { categories, cases }, // content/use-cases, one language
  *   }
  *
  * Rationale: the panel renders the four categories in the same view at
@@ -50,6 +52,7 @@ import { listAllConnectors, type ConnectorMeta } from "@/lib/connectors";
 import { listSkills, type SkillMeta } from "@/lib/skills";
 import { listCliTools, type CliToolMeta } from "@/lib/cliTools";
 import { listPlugins, type PluginMeta } from "@/lib/plugins";
+import { getUseCases, type UseCasesCatalog } from "@/lib/useCases";
 import { loadFileKits } from "@/lib/marketplace/fileKits";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import {
@@ -126,6 +129,7 @@ function localizeCatalogAssets(body: CatalogResponse): CatalogResponse {
       ...item,
       logo: localizePublicAssetUrl(item.logo) ?? item.logo,
     })),
+    useCases: body.useCases,
   };
 }
 
@@ -201,6 +205,8 @@ export interface CatalogResponse {
   cliTools: CliToolMeta[];
   bundles: BundleSummary[];
   plugins: PluginSummary[];
+  /** Single-source use cases (content/use-cases), one language per request. */
+  useCases: UseCasesCatalog;
 }
 
 export async function GET(req: Request) {
@@ -254,6 +260,7 @@ export async function GET(req: Request) {
       deriveBundleInstallability(bundle, connectorBySlug),
     ),
     plugins,
+    useCases: getUseCases(lang),
   });
 
   // Cache-Control intentionally NOT set here. The `export const

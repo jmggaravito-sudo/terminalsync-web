@@ -1,0 +1,31 @@
+{
+  "id": "leg-010",
+  "categoryId": "legal",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 72,
+  "es": {
+    "title": "Reglamento interno de la empresa",
+    "outcome": "Reglamento que establece reglas claras de convivencia laboral.",
+    "prompt": "Necesito un reglamento interno de trabajo para mi empresa.\n\nTamaño del equipo: [#].\nRubro: [describir].\nQué quiero regular: [horarios / vacaciones / uso de redes / vestimenta / disciplina].\n\nDame: reglamento profesional con secciones claras, redacción simple, derechos y deberes balanceados, proceso disciplinario justo y proceso de comunicación al equipo.",
+    "recommendedFiles": [
+      "Reglamento actual si existe"
+    ],
+    "expectedResult": [
+      "Reglamento completo",
+      "Comunicación al equipo"
+    ]
+  },
+  "en": {
+    "title": "Company internal regulations",
+    "outcome": "Regulations that establish clear workplace rules.",
+    "prompt": "I need an internal work regulation for my company.\n\nTeam size: [#].\nIndustry: [describe].\nWhat I want to regulate: [schedules / vacations / social media use / dress code / discipline].\n\nGive me: a professional regulation with clear sections, plain language, balanced rights and duties, a fair disciplinary process, and a process for communicating it to the team.",
+    "recommendedFiles": [
+      "Current regulations if any"
+    ],
+    "expectedResult": [
+      "Complete regulations",
+      "Communication to the team"
+    ]
+  }
+}
