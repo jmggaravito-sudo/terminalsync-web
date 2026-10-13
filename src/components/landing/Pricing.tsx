@@ -94,7 +94,7 @@ export function Pricing({ dict }: { dict: Dict }) {
         </div>
       </button>
 
-      <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-stretch">
+      <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
         <PlanCard
           id="plan-starter"
           name={dict.pricing.plans.starter.name}
@@ -117,15 +117,6 @@ export function Pricing({ dict }: { dict: Dict }) {
           copy={dict.pricing.plans.pro}
           dict={dict}
           currency={currency}
-          highlighted={highlighted === "pro"}
-        />
-
-        <PaidCard
-          id="plan-proAi"
-          plan="pro"
-          copy={dict.pricing.plans.proAi}
-          dict={dict}
-          currency={currency}
           featured
           highlighted={highlighted === "pro"}
         />
@@ -134,15 +125,6 @@ export function Pricing({ dict }: { dict: Dict }) {
           id="plan-max"
           plan="max"
           copy={dict.pricing.plans.max}
-          dict={dict}
-          currency={currency}
-          highlighted={highlighted === "max"}
-        />
-
-        <PaidCard
-          id="plan-maxAi"
-          plan="max"
-          copy={dict.pricing.plans.maxAi}
           dict={dict}
           currency={currency}
           highlighted={highlighted === "max"}
