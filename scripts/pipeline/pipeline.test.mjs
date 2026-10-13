@@ -287,7 +287,14 @@ describe("workflow wiring", () => {
     expect(decide({ research: officialRemote, scope: cleanScope, reviewsByRole: { ...allPass, honesty: undefined }, automerge: true }).action).toBe("hold");
   });
 
-  it("only reviewers tolerate failures: research, build and fix must fail loudly", () => {
-    for (const name of ["research", "build", "fix"]) expect(job(name), name).not.toMatch(/tolerate-failure/);
+  it("only stages whose deliverable is validated afterwards tolerate failures: build and fix must fail loudly", () => {
+    for (const name of ["build", "fix"]) expect(job(name), name).not.toMatch(/tolerate-failure/);
+  });
+
+  it("research tolerates the turn-count exit but research.json is still validated (a missing file fails loudly)", () => {
+    const research = job("research");
+    expect(research).toMatch(/max-turns: "60"/);
+    expect(research).toMatch(/tolerate-failure: "true"/);
+    expect(research).toMatch(/research-validate/);
   });
 });

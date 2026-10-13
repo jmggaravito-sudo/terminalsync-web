@@ -82,7 +82,11 @@ jobs:
         uses: ./.github/actions/run-agent
         with:
           label: research
-          max-turns: "40"
+          max-turns: "60"
+          # GLM a veces cierra "con exito" tras mas turnos que --max-turns y la accion lo reporta
+          # como fallo aunque research.json ya este escrito (QuickBooks, 2026-10-10: 50 turnos
+          # vs 40). El paso siguiente valida research.json y falla fuerte si falta.
+          tolerate-failure: "true"
           allowed-tools: "Read,Grep,Glob,WebFetch,Write,Bash(curl:*),Bash(gh api:*),Bash(npm view:*),Bash(npm search:*)"
           zai-api-key: ${{ secrets.Z_AI_API_KEY }}
           zai-model: ${{ vars.ZAI_MODEL }}
