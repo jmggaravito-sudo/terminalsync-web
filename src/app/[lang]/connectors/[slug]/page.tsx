@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Check, Boxes } from "lucide-react";
 import { getConnector, listSlugs } from "@/lib/connectors";
 import { pluginsUsingConnector } from "@/lib/plugins";
+import { getUseCasesForConnector } from "@/lib/useCases";
 import { ConnectorDualView } from "./DualView";
 import { ConnectorLogo } from "../Logo";
 
@@ -47,6 +48,8 @@ export default async function ConnectorDetail({ params }: Props) {
 
   // Plugins that bundle this connector — surface the product it's part of.
   const inPlugins = await pluginsUsingConnector(lang, slug);
+  // Use cases that declare this connector; the block is omitted when none do.
+  const useCases = getUseCasesForConnector(slug, lang).slice(0, 6);
 
   const t = {
     back: lang === "es" ? "Conectores" : "Connectors",
@@ -244,6 +247,37 @@ export default async function ConnectorDetail({ params }: Props) {
             </>
           )}
         </div>
+
+        {useCases.length > 0 && (
+          <div className="mt-6 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5">
+            <h2 className="text-[13px] font-semibold tracking-tight">
+              {lang === "es" ? "Qué le puedes pedir" : "What you can ask"}
+            </h2>
+            <ul className="mt-3 space-y-2.5">
+              {useCases.map((useCase) => (
+                <li key={useCase.id}>
+                  <p className="text-[13px] font-medium">{useCase.title}</p>
+                  <p className="mt-0.5 text-[12.5px] text-[var(--color-fg-muted)] leading-relaxed">
+                    {useCase.outcome}
+                  </p>
+                  {useCase.requiredSearchTools?.includes("business-search__web_search") && (
+                    <p className="mt-1 text-[12px] text-[var(--color-fg-muted)]">
+                      {lang === "es"
+                        ? "También requiere búsqueda web para consultar los resultados de Google."
+                        : "Also requires web search to check Google search results."}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+            <Link
+              href={`/${lang}/casos-de-uso`}
+              className="mt-4 inline-block text-[12.5px] text-[var(--color-accent)] hover:underline"
+            >
+              {lang === "es" ? "Ver todos los casos de uso" : "See all use cases"} →
+            </Link>
+          </div>
+        )}
 
         {/* How it works footer — explain the moat */}
         <div className="mt-6 rounded-2xl border border-[var(--color-border)]/50 bg-[var(--color-panel)]/50 p-5">

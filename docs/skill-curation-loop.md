@@ -16,7 +16,7 @@ Its gate is `content/skills/RULES.md`.
 7. Publish only if the skill clearly beats the baseline for every claimed provider.
 8. Validate with skills tests, logo tests, and typecheck when feasible.
 9. Open the landing/web draft PR.
-10. Open the app mirror draft PR following `docs/integration-loop-two-pr-policy.md`.
+10. Open an app PR **only if** the item needs desktop code the app does not have (a special install flow, or an item that would render as a broken generic card), following `docs/integration-loop-two-pr-policy.md`. Otherwise state `App PR: no aplica — la app consume el catálogo` in the landing PR body; the desktop reads the catalog on its own and the supervision loop verifies it.
 11. Stop. Do not merge and do not push to `main`.
 
 ## Run-history registration

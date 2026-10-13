@@ -1,0 +1,42 @@
+{
+  "id": "travel-003",
+  "categoryId": "travel",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 118,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__airbnb_search",
+    "business-search__airbnb_availability"
+  ],
+  "es": {
+    "title": "Qué tan llena está mi zona en Airbnb",
+    "outcome": "Revisa el calendario de alojamientos de Airbnb de tu zona y te dice qué parte de los días aparece no disponible, aclarando que eso incluye reservas y bloqueos del anfitrión.",
+    "prompt": "Quiero tener una idea de qué tan llena está mi zona en Airbnb.\n\nZona: [barrio o ciudad, y país — por ejemplo: Kissimmee, Florida, EE. UU. / Tulum, México].\nTipo de alojamiento: [entero o habitación, y número de habitaciones].\nDesde qué fecha mirar: [por ejemplo: 1 de noviembre].\nCuántos meses: [1, 2 o 3].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta la zona, la fecha o el idioma, pregúntamelos antes de buscar. Busca en Airbnb alojamientos parecidos en esa zona y revisa el calendario de hasta 4 de ellos para el periodo que elegí. Dame una tabla con: alojamiento, precio por noche, días revisados, días no disponibles, porcentaje no disponible y enlace. Después dame el promedio de esos alojamientos, qué semanas aparecen más llenas y qué significa para mi precio.\n\nImportante: en Airbnb un día \"no disponible\" puede estar reservado o bloqueado por el anfitrión, y no se puede saber cuál de los dos. No lo llames ocupación sin aclararlo, y dime con cuántos alojamientos calculaste el promedio.",
+    "recommendedFiles": [
+      "Descripción de tu alojamiento",
+      "Tus fechas o temporadas clave"
+    ],
+    "expectedResult": [
+      "Días no disponibles por alojamiento",
+      "Promedio de la muestra",
+      "Semanas más llenas",
+      "Qué significa para tu precio"
+    ]
+  },
+  "en": {
+    "title": "How booked up my area is on Airbnb",
+    "outcome": "Checks the calendar of Airbnb stays in your area and tells you what share of the days shows as unavailable, making clear that this includes bookings and dates blocked by the host.",
+    "prompt": "I want to get an idea of how booked up my area is on Airbnb.\n\nArea: [neighborhood or city, and country — for example: Kissimmee, Florida, USA / Tulum, Mexico].\nType of place: [entire place or room, and number of bedrooms].\nStart date to check: [for example: November 1].\nHow many months: [1, 2, or 3].\nLanguage for the answer: [English / Spanish].\n\nIf the area, the date, or the language is missing, ask me before searching. Search Airbnb for similar places in that area and check the calendar of up to 4 of them for the period I chose. Give me a table with: place, nightly price, days checked, unavailable days, percentage unavailable, and link. Then give me the average across those places, which weeks look the most booked, and what it means for my price.\n\nImportant: on Airbnb an \"unavailable\" day can be booked or blocked by the host, and there's no way to tell which. Don't call it occupancy without saying so, and tell me how many places you used for the average.",
+    "recommendedFiles": [
+      "Description of your place",
+      "Your key dates or seasons"
+    ],
+    "expectedResult": [
+      "Unavailable days per place",
+      "Average for the sample",
+      "Most booked weeks",
+      "What it means for your price"
+    ]
+  }
+}

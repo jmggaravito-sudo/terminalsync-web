@@ -1,0 +1,33 @@
+{
+  "id": "leg-008",
+  "categoryId": "legal",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 70,
+  "es": {
+    "title": "Carta de no objeción",
+    "outcome": "Carta formal de no objeción para uso de imagen, contenido o referencias.",
+    "prompt": "Necesito una carta de no objeción/autorización formal.\n\nQué se autoriza: [uso de imagen / testimonio / referencia profesional / contenido].\nQuién autoriza: [persona/empresa].\nDuración: [tiempo].\n\nDame: carta formal lista para firmar, con alcance claro de la autorización, duración, condiciones de revocación y firma.",
+    "recommendedFiles": [
+      "Información de las partes"
+    ],
+    "expectedResult": [
+      "Carta formal",
+      "Alcance",
+      "Condiciones"
+    ]
+  },
+  "en": {
+    "title": "No-objection/authorization letter",
+    "outcome": "Formal no-objection letter for use of image, content, or references.",
+    "prompt": "I need a no-objection/authorization letter.\n\nWhat is authorized: [use of image / testimonial / professional reference / content].\nWho authorizes: [person/company].\nDuration: [time].\n\nGive me: a formal letter ready to sign, with a clear scope of the authorization, duration, conditions for revocation, and signature block.",
+    "recommendedFiles": [
+      "Information about the parties"
+    ],
+    "expectedResult": [
+      "Formal letter",
+      "Scope",
+      "Conditions"
+    ]
+  }
+}

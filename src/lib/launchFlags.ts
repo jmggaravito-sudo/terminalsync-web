@@ -70,9 +70,16 @@ export const LANDING_B = true;
  * no está construida. Quien llegue por "las 3 IAs" se instala otra cosa.
  *
  * Qué corta: las páginas cuyo TEMA es trabajar con varias IAs —
- * `/[lang]/ai-terminal`, `/[lang]/casos-de-uso` y las tres guías
+ * `/[lang]/ai-terminal`, `/[lang]/for-developers` y las tres guías
  * `sync-claude-code-between-macs`, `sync-codex-between-macs` y
  * `sync-gemini-cli-between-macs` — y sus entradas en el sitemap.
+ *
+ * `/[lang]/casos-de-uso` SALIÓ de esta lista el 2026-10-13: se iba a
+ * esconder porque etiquetaba cada caso con "IA recomendada — Claude / Codex /
+ * Gemini" y dejaba filtrar por IA. Mientras tanto se reconstruyó entera
+ * (`LiveSearchCasesPage`) y esa dimensión desapareció: la página ya no manda
+ * al cliente ningún nombre de IA. El candado sobraba, así que se retira en
+ * vez de esconder una página que hoy está bien.
  *
  * Qué NO corta, a propósito:
  *

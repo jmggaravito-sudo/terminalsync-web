@@ -1,0 +1,39 @@
+{
+  "id": "sales-002",
+  "categoryId": "sales",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 2,
+  "es": {
+    "title": "Preparar una reunión de ventas",
+    "outcome": "Te llega un guion con preguntas clave y objeciones esperadas.",
+    "prompt": "Voy a tener una reunión de ventas con un cliente potencial. Ayúdame a prepararla.\n\nEl cliente: [nombre de la empresa y a qué se dedica].\nLo que les voy a ofrecer: [producto/servicio].\nMi objetivo en la reunión: [cerrar / avanzar al siguiente paso / entender necesidad].\n\nDame: un guion para abrir la reunión, las 5 preguntas más importantes que debo hacer, las 3 objeciones más probables y cómo responderlas, y un cierre claro.",
+    "recommendedFiles": [
+      "Información del cliente (web, redes)",
+      "Tu propuesta de valor",
+      "Casos de éxito previos"
+    ],
+    "expectedResult": [
+      "Apertura",
+      "Preguntas clave",
+      "Objeciones y respuestas",
+      "Cierre sugerido"
+    ]
+  },
+  "en": {
+    "title": "Prepare for a sales meeting",
+    "outcome": "You receive a script with key questions and expected objections.",
+    "prompt": "I'm going to have a sales meeting with a potential client. Help me prepare it.\n\nThe client: [company name and what it does].\nWhat I'll offer them: [product/service].\nMy objective in the meeting: [close / move to the next step / understand needs].\n\nGive me: a script to open the meeting, the 5 most important questions I should ask, the 3 most likely objections and how to respond to them, and a clear close.",
+    "recommendedFiles": [
+      "Client information (website, social media)",
+      "Your value proposition",
+      "Previous success cases"
+    ],
+    "expectedResult": [
+      "Opening",
+      "Key questions",
+      "Objections and responses",
+      "Suggested close"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "sup-002",
+  "categoryId": "support",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 22,
+  "es": {
+    "title": "Crear FAQ para tu negocio",
+    "outcome": "Lista de preguntas frecuentes con respuestas claras.",
+    "prompt": "Necesito crear una sección de Preguntas Frecuentes para mi negocio.\n\nMi negocio: [describir].\nMi producto/servicio: [describir].\nDudas que escucho seguido: [listar las que recuerdes].\n\nDame: 15 preguntas frecuentes ordenadas por categoría (compra, entrega, devolución, garantía, etc) con respuestas claras y cortas, listas para publicar en web o WhatsApp.",
+    "recommendedFiles": [
+      "Quejas y dudas frecuentes que recibes"
+    ],
+    "expectedResult": [
+      "15 preguntas con respuestas",
+      "Categorías sugeridas"
+    ]
+  },
+  "en": {
+    "title": "Create FAQ for your business",
+    "outcome": "List of frequently asked questions with clear answers.",
+    "prompt": "I need to create a Frequently Asked Questions section for my business.\n\nMy business: [describe].\nMy product/service: [describe].\nQuestions I often hear: [list the ones you remember].\n\nGive me: 15 frequently asked questions organized by category (purchase, delivery, returns, warranty, etc.) with clear and short answers, ready to publish on the web or WhatsApp.",
+    "recommendedFiles": [
+      "Complaints and common questions you receive"
+    ],
+    "expectedResult": [
+      "15 questions with answers",
+      "Suggested categories"
+    ]
+  }
+}

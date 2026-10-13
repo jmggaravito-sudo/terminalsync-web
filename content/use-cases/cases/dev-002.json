@@ -1,0 +1,35 @@
+{
+  "id": "dev-002",
+  "categoryId": "dev",
+  "recommendedAI": "codex",
+  "level": "Intermedio",
+  "order": 84,
+  "es": {
+    "title": "Crear base de datos para tu negocio",
+    "outcome": "Base de datos simple para organizar clientes, ventas o inventario.",
+    "prompt": "Necesito una base de datos para organizar información de mi negocio.\n\nQué quiero organizar: [clientes / ventas / inventario / proyectos].\nQué información necesito guardar: [listar campos].\nQuién la va a usar: [yo solo / equipo].\nHerramienta preferida: [Excel / Google Sheets / Airtable / Notion].\n\nDame: estructura de tablas y campos, fórmulas o automatizaciones útiles, vistas/reportes recomendados y cómo importar datos que ya tienes.",
+    "recommendedFiles": [
+      "Datos actuales en cualquier formato"
+    ],
+    "expectedResult": [
+      "Estructura de tablas",
+      "Fórmulas",
+      "Vistas",
+      "Plan de migración"
+    ]
+  },
+  "en": {
+    "title": "Create a database for your business",
+    "outcome": "Simple database to organize customers, sales or inventory.",
+    "prompt": "I need a database to organize information for my business.\n\nWhat I want to organize: [customers / sales / inventory / projects].\nWhich information I need to store: [list fields].\nWho will use it: [just me / team].\nPreferred tool: [Excel / Google Sheets / Airtable / Notion].\n\nGive me: table and field structure, useful formulas or automations, recommended views/reports and how to import the data you already have.",
+    "recommendedFiles": [
+      "Current data in any format"
+    ],
+    "expectedResult": [
+      "Table structure",
+      "Formulas",
+      "Views",
+      "Migration plan"
+    ]
+  }
+}

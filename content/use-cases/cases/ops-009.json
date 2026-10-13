@@ -1,0 +1,33 @@
+{
+  "id": "ops-009",
+  "categoryId": "operations",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 41,
+  "es": {
+    "title": "Plan de contingencia",
+    "outcome": "Qué hacer cuando algo crítico falla en la operación.",
+    "prompt": "Quiero un plan de contingencia para los problemas que más temo en mi operación.\n\nMi negocio: [describir].\nLos 3 problemas que más me preocupan: [listar, ej: se enferma el equipo clave, falla el sistema, falta de stock].\n\nDame para cada problema: nivel de impacto, primeras 24 horas de respuesta, plan de comunicación interno y externo, recuperación y prevención futura.",
+    "recommendedFiles": [
+      "Histórico de crisis pasadas"
+    ],
+    "expectedResult": [
+      "3 planes detallados",
+      "Plantillas de comunicación",
+      "Lista de contactos clave"
+    ]
+  },
+  "en": {
+    "title": "Contingency Plan",
+    "outcome": "What to do when something critical fails in operations.",
+    "prompt": "I want a contingency plan for the problems I fear most in my operation.\n\nMy business: [describe].\nThe 3 problems I worry about most: [list, e.g.: key team gets sick, system failure, stockout].\n\nGive me for each problem: level of impact, first 24 hours of response, internal and external communication plan, recovery and future prevention.",
+    "recommendedFiles": [
+      "History of past crises"
+    ],
+    "expectedResult": [
+      "3 detailed plans",
+      "Communication templates",
+      "List of key contacts"
+    ]
+  }
+}

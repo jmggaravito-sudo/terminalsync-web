@@ -1,0 +1,40 @@
+{
+  "id": "str-001",
+  "categoryId": "strategy",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 94,
+  "popular": true,
+  "es": {
+    "title": "Plan estratégico anual",
+    "outcome": "Plan a 12 meses con objetivos, prioridades y revisión.",
+    "prompt": "Quiero armar el plan estratégico de mi empresa para los próximos 12 meses.\n\nMi negocio: [describir].\nLogros del año anterior: [destacar].\nLo que me preocupa: [riesgos / desafíos].\nDónde quiero estar en 12 meses: [meta].\n\nDame: análisis FODA, 5 objetivos estratégicos SMART, iniciativas clave por trimestre, KPIs principales y calendario de revisiones.",
+    "recommendedFiles": [
+      "Resultados del año anterior",
+      "Misión y visión"
+    ],
+    "expectedResult": [
+      "FODA",
+      "5 objetivos",
+      "Iniciativas por trimestre",
+      "KPIs",
+      "Calendario de revisión"
+    ]
+  },
+  "en": {
+    "title": "Annual strategic plan",
+    "outcome": "12-month plan with objectives, priorities, and review.",
+    "prompt": "I want to build my company's strategic plan for the next 12 months.\n\nMy business: [describe].\nAchievements of the past year: [highlight].\nWhat worries me: [risks / challenges].\nWhere I want to be in 12 months: [goal].\n\nGive me: SWOT analysis, 5 SMART strategic objectives, key initiatives by quarter, main KPIs and a review calendar.",
+    "recommendedFiles": [
+      "Last year's results",
+      "Mission and vision"
+    ],
+    "expectedResult": [
+      "SWOT",
+      "5 objectives",
+      "Initiatives by quarter",
+      "KPIs",
+      "Review calendar"
+    ]
+  }
+}

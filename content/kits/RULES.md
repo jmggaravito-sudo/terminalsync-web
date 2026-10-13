@@ -342,6 +342,56 @@ Until these are present, keep the kit out of the published marketplace catalog.
 
 ## Loop run log
 
+### 2026-09-28 — Client Meetings Kit; overlap check against in-flight loop PRs; skills-whitelist staleness flagged
+
+**Shipped (1 kit, EN/ES parity):**
+
+- `client-meetings` (category: operations) — `google-calendar` + `zoom` + `todoist` + `internal-comms`. Scoped to the loop around a client meeting for a service-business owner (consultant, agency, coach, freelancer): see the week's calls before they happen (Calendar), pull what was actually said — AI summaries, transcripts, recordings, follow-up Zoom Docs — (Zoom), turn the agreements into dated, prioritized work (Todoist), and brief the team on what was decided (Internal Comms). None of the three connectors was used by any prior kit, and no existing kit covers the client-meeting loop — `team-operations` runs on ClickUp's task board for internal work status, not on the client call itself.
+
+**Overlap check against parallel, not-yet-merged Loop runs:** no open PR ships kits (checked before starting). Two open PRs do constrain this run's candidates:
+
+- PR `loop/plugins-2026-09-28` (#362) ships a **gusto plugin pack** (gusto connector + `1099-w9-organizer` skill) as a product-level bundle. A gusto-anchored payroll/1099 **kit** would duplicate that pack's exact combo at the layer above it — deferred, see below.
+- PR `loop/connectors-2026-09-22` (#352) ships the `ramp` connector, but it is **not merged**, so `ramp` is not a published catalog item — see below.
+
+**Deferred / SKIP (6 candidates, documented for the proper Loop):**
+
+1. **Ecommerce retention & email marketing kit (`klaviyo`)** — `klaviyo` is installable (`status: available`, manifest, official remote server) and unused by any kit, but every skill that would make the kit coherent is outside this file's 7-skill whitelist: `lifecycle-email` (also staged, `catalogReady: false`), `carrito-abandonado`, `winback-dormidos`, `promos-cupones`, `ltv-cohortes`, `rfm-segmentacion`. A klaviyo kit restricted to the 7 allowed skills would lean on `doc-coauthoring` for short email copy — the same coherence stretch the 2026-08-03 entry already rejected for support replies. Rule change for JM, not a call for this run.
+2. **Support / Customer Service kit** — still deferred, with one new fact: `gmail` **now has a `manifest:` block** (it was moved out of card-only status upstream), so this file's "Card-only today" list is stale on `gmail`. The blocker is unchanged and sits on the skill side: none of the 7 allowed skills fits customer-facing reply drafting (`internal-comms` scopes itself to internal/team audience; `doc-coauthoring` is long-document co-authoring; `meeting-notes` is staged, `catalogReady: false`). `intercom` remains first-party without a manifest.
+3. **Gusto payroll / 1099 kit** — the in-flight plugin PR #362 already bundles gusto + `1099-w9-organizer`; a kit with the same combo would trip this file's "Duplicates another kit's purpose" prohibition across layers. Also `1099-w9-organizer` is outside the 7-skill whitelist.
+4. **Ramp spend-management kit** — `ramp` exists only in open PR #352; not merged means not published, which fails "only published, installable pieces". Revisit after #352 lands.
+5. **Local Marketing kit** — unchanged from prior runs: `google-business` is first-party with no `manifest:` block. Not re-researched.
+6. **Calendly-anchored scheduling kit** — `calendly` is newly installable (official hosted server with manifest; resolves the 2026-07-23 SKIP upstream), but dropped on coherence: Calendly's own server already reads the calendar and generates booking links, so the natural partners either duplicate what Calendly does (google-calendar) or reduce to connector + filler — no whitelisted skill serves scheduling comms. Not shipped.
+
+**Flag for JM — the 7-skill whitelist has drifted from the catalog.** The skills catalog now has ~20 public, mold-passing, catalog-ready skills beyond the 7 whitelisted here (`cotizaciones`, `contenido-social`, `pedir-resenas`, `tax-prep-checklist`, `quarterly-tax-estimate-prep`, `1099-w9-organizer`, `carrito-abandonado`, `winback-dormidos`, `promos-cupones`, `ltv-cohortes`, `rfm-segmentacion`, the `docx`/`pdf`/`pptx`/`xlsx` document skills…). This file's allowed-connectors section was made principle-based precisely so it wouldn't go stale; the allowed-skills section was not, and it now blocks several high-value business-role kits (the klaviyo retention kit above, a quotes/proposals kit on `cotizaciones`, a reviews kit on `pedir-resenas`). This run treated the literal list as authoritative, same as the 2026-08-02 run did for first-party connectors. Extending the whitelist is a rule change for JM, not for an automated run.
+
+**Also noted:** the "Card-only today" list is stale on `gmail` (now has a manifest and OAuth setup instructions). This run did not edit that list — flagging instead, since first-party/no-manifest entries around it (`gdrive`, `kit`, `sqlite`, `vercel`, `whatsapp`) were not re-verified.
+
+### 2026-10-05 — Field Service Routes Kit; re-check of the deferred queue
+
+**Shipped (1 kit, EN/ES parity):**
+
+- `field-service-routes` (category: operations) — `google-sheets` + `google-maps` + `internal-comms`. Scoped to the daily route-planning loop of a local service business that runs on visits (cleaning, repairs, deliveries, showings): read the job list from the spreadsheet where it already lives (Sheets), measure the route instead of guessing it (geocode + distance matrix + directions via Maps), write the stop order and ETAs back next to the jobs, and hand the crew an executable brief (Internal Comms). `google-maps` was used by zero prior kits; `google-sheets` only by `bookkeeping-tax-handoff` (finance packet — different job, same generic artifact); this is the only kit grounded in physical stops and travel time. Distinct from `team-operations` (task-board status), `client-meetings` (in-flight PR #363 — the call loop), and `bookkeeping-tax-handoff` (accountant packet).
+
+**Overlap check against parallel, not-yet-merged Loop PRs:** #363 (`loop/kits-2026-09-28`, client-meetings kit — takes google-calendar/zoom/todoist, leaves google-maps untouched), #362 (`loop/plugins-2026-09-28`, gusto/square/meta-social packs), #373 (`loop/plugins-2026-10-05`, airtable + rfm-segmentacion pack), #352 (`loop/connectors-2026-09-22`, ramp — unmerged, so ramp stays unpublished). No conflict with any of them.
+
+**New evaluations this run (4 SKIP, all coherence/scope — no rule change needed):**
+
+- **Canva brand-collateral kit** — `canva` is installable (OAuth, manifest) and unused, but no whitelisted skill serves short-form collateral copy: `doc-coauthoring` is a long-document co-authoring process (the same stretch the 2026-08-03 run rejected for support replies), and the natural fits (`contenido-social`, `ideogram-creative-director`) are outside the 7-skill whitelist. Also adjacent to `social-ad-creative-studio`'s creative space. Deferred until the whitelist question is resolved or a collateral-copy skill passes the mold.
+- **Asana client-delivery kit** — a third task-manager kit (after clickup in `team-operations` and todoist in client-meetings #363). "Client project delivery + status report" is a real job, but the workflow shape (read task board → write update) is `team-operations`' purpose with a different vendor; reads as a relabel under the duplicate-purpose prohibition. Reconsider only with a genuinely different anchor.
+- **Webflow marketing-site kit** — `webflow` + `seo-auditor` + `doc-coauthoring` reproduces `seo-content`'s draft→audit→publish loop with a different CMS; same purpose, different vendor = relabel, not a new kit.
+- **Twitter/X social-presence kit** — `twitter` alone can't anchor it: `meta-social` is first-party without manifest, `contenido-social` is outside the whitelist, and `doc-coauthoring` is the wrong shape for posts. Too thin to be coherent.
+
+**Carry-over re-checks (6, all still blocked — facts re-verified this run):**
+
+- **Klaviyo retention/email kit** — every skill that makes it coherent (`lifecycle-email` [staged], `carrito-abandonado`, `winback-dormidos`, `promos-cupones`, `ltv-cohortes`, `rfm-segmentacion`) is outside the 7-skill whitelist. Unchanged since the 2026-09-28 run flagged the whitelist drift for JM; no rule change merged.
+- **Support / Customer Service kit** — `gmail` is installable (manifest re-verified) but the blocker is the skill side and is unchanged: no whitelisted skill fits customer-facing reply drafting; `intercom` remains first-party without manifest.
+- **Gusto payroll/1099 kit** — plugin PR #362 still open (bundles gusto + `1099-w9-organizer`); a kit with the same combo would duplicate the pack's purpose one layer up. Also `1099-w9-organizer` is outside the whitelist.
+- **Ramp spend-management kit** — connector PR #352 still unmerged → ramp is not a published catalog item → fails the "only published, installable pieces" gate.
+- **Local Marketing kit** — `google-business` still has no `manifest:` block (re-verified this run).
+- **Calendly scheduling kit** — `calendly` is installable but coherence-dropped (per 2026-09-28: its server already reads the calendar and makes booking links, so partners duplicate it or reduce to filler); additionally it would overlap client-meetings (#363) on google-calendar and the meeting domain.
+
+**App mirror:** not opened — per `docs/integration-loop-two-pr-policy.md` this kit needs no desktop code (standard connector/skill items the app already renders from `/api/marketplace/catalog`); opening a record-only mirror PR is exactly what the policy forbids. Landing body states `App mirror PR: no aplica — la app consume el catálogo`. App-side guard run as verification: `node scripts/verify-integration-loop.mjs --snapshot` in `terminal-sync` passes ("✓ el contrato se cumple").
+
 ### 2026-08-03 — SEO Content Kit; overlap check against in-flight kit PRs
 
 **Shipped (1 kit, EN/ES parity):**

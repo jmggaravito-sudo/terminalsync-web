@@ -1,0 +1,37 @@
+{
+  "id": "fin-008",
+  "categoryId": "finance",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 60,
+  "es": {
+    "title": "Plan para conseguir financiamiento",
+    "outcome": "Estrategia para acceder a crédito o inversión.",
+    "prompt": "Necesito financiamiento para mi negocio y quiero prepararme bien.\n\nMonto que necesito: [monto].\nPara qué lo necesito: [capital de trabajo / inversión / expansión].\nMi negocio: [tamaño y antigüedad].\n\nDame: opciones de financiamiento más adecuadas, documentos que voy a necesitar, cómo presentar mi negocio ante el banco/inversor, errores comunes a evitar y plan B si me dicen que no.",
+    "recommendedFiles": [
+      "Estados financieros",
+      "Plan de negocio"
+    ],
+    "expectedResult": [
+      "Opciones de financiamiento",
+      "Documentos requeridos",
+      "Pitch",
+      "Plan B"
+    ]
+  },
+  "en": {
+    "title": "Plan to obtain financing",
+    "outcome": "Strategy to access credit or investment.",
+    "prompt": "I need financing for my business and want to prepare well.\n\nAmount I need: [amount].\nWhat I need it for: [working capital / investment / expansion].\nMy business: [size and age].\n\nGive me: the most suitable financing options, documents I will need, how to present my business to the bank/investor, common mistakes to avoid, and a plan B if they say no.",
+    "recommendedFiles": [
+      "Financial statements",
+      "Business plan"
+    ],
+    "expectedResult": [
+      "Financing options",
+      "Required documents",
+      "Pitch",
+      "Plan B"
+    ]
+  }
+}

@@ -8,6 +8,7 @@ import {
   stripe,
   type PlanId,
 } from "@/lib/stripe";
+import { shouldApplyCheckoutTrial } from "@/lib/checkoutTrial";
 import {
   ExistingSubscriptionOnOtherRailError,
   assertSameRailForChange,
@@ -54,13 +55,6 @@ function wantsIncludedAi(body: Body): boolean {
   return (
     body.includedAi === true || body.addOns?.includes("included_ai") === true
   );
-}
-
-export function shouldApplyCheckoutTrial(
-  plan: PlanId,
-  supabaseUserId?: string | null,
-): boolean {
-  return !supabaseUserId && (plan === "pro" || plan === "max");
 }
 
 function corsHeaders(origin: string | null): Record<string, string> {

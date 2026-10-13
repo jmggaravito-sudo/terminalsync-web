@@ -237,6 +237,12 @@ describe("Admin AI Center payload", () => {
       for (const provider of normalized.connectedProviders) {
         for (const model of provider.models) {
           expect(model.upstreamProviderSlug).toBeNull();
+          if (provider.providerId === "glm") {
+            // GLM models are hydrated from the local seed on purpose (#375), so
+            // the admin table shows modalities even for a pre-field payload.
+            expect(model.modalities.length).toBeGreaterThan(0);
+            continue;
+          }
           expect(model.modalities).toEqual([]);
           expect(model.pricing).toBeNull();
         }

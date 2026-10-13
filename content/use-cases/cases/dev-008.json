@@ -1,0 +1,37 @@
+{
+  "id": "dev-008",
+  "categoryId": "dev",
+  "recommendedAI": "codex",
+  "level": "Básico",
+  "order": 90,
+  "es": {
+    "title": "Plantilla de planilla profesional",
+    "outcome": "Hoja de cálculo lista para usar con fórmulas y diseño limpio.",
+    "prompt": "Necesito una plantilla de planilla de cálculo profesional para una tarea específica.\n\nTarea: [presupuesto / control de stock / seguimiento de ventas / etc].\nDatos a registrar: [listar columnas].\nQuién la va a usar: [yo / equipo].\nHerramienta: [Excel / Google Sheets].\n\nDame: estructura de columnas, fórmulas útiles, validaciones para evitar errores, gráficos recomendados y formato visual claro.",
+    "recommendedFiles": [
+      "Datos de ejemplo"
+    ],
+    "expectedResult": [
+      "Columnas",
+      "Fórmulas",
+      "Validaciones",
+      "Gráficos",
+      "Formato"
+    ]
+  },
+  "en": {
+    "title": "Professional spreadsheet template",
+    "outcome": "Ready-to-use spreadsheet with formulas and clean design.",
+    "prompt": "I need a professional spreadsheet template for a specific task.\n\nTask: [budget / inventory control / sales tracking / etc].\nData to record: [list columns].\nWho will use it: [me / team].\nTool: [Excel / Google Sheets].\n\nGive me: column structure, useful formulas, validations to avoid errors, recommended charts and a clear visual format.",
+    "recommendedFiles": [
+      "Example data"
+    ],
+    "expectedResult": [
+      "Columns",
+      "Formulas",
+      "Validations",
+      "Charts",
+      "Formatting"
+    ]
+  }
+}

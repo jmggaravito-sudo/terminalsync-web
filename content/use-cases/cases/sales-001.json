@@ -1,0 +1,44 @@
+{
+  "id": "sales-001",
+  "categoryId": "sales",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 1,
+  "popular": true,
+  "es": {
+    "title": "Crear propuesta comercial",
+    "outcome": "Genera una propuesta profesional lista para enviar a un cliente.",
+    "prompt": "Ayúdame a crear una propuesta comercial para mi empresa.\n\nMi empresa vende: [describir tu producto o servicio].\nMi cliente ideal es: [tipo de cliente].\nEl objetivo de la propuesta es: [cerrar venta / agendar reunión / firmar contrato].\n\nIncluye: resumen ejecutivo, propuesta de valor, alcance del servicio, beneficios, precio sugerido, condiciones y próximos pasos.",
+    "recommendedFiles": [
+      "Brochure del servicio",
+      "Cotización anterior similar",
+      "Información del cliente (web, LinkedIn)"
+    ],
+    "expectedResult": [
+      "Resumen ejecutivo",
+      "Propuesta de valor",
+      "Alcance",
+      "Beneficios",
+      "Precio y condiciones",
+      "Próximos pasos"
+    ]
+  },
+  "en": {
+    "title": "Create a sales proposal",
+    "outcome": "Generates a professional proposal ready to send to a client.",
+    "prompt": "Help me create a sales proposal for my company.\n\nMy company sells: [describe your product or service].\nMy ideal client is: [type of client].\nThe goal of the proposal is: [close sale / schedule meeting / sign contract].\n\nInclude: executive summary, value proposition, scope of service, benefits, suggested price, terms and next steps.",
+    "recommendedFiles": [
+      "Service brochure",
+      "Previous similar quotation",
+      "Client information (website, LinkedIn)"
+    ],
+    "expectedResult": [
+      "Executive summary",
+      "Value proposition",
+      "Scope",
+      "Benefits",
+      "Price and terms",
+      "Next steps"
+    ]
+  }
+}

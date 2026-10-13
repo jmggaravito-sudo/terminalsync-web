@@ -1,0 +1,184 @@
+[
+  {
+    "id": "sales",
+    "icon": "🎯",
+    "accent": "#f97316",
+    "es": {
+      "title": "Conseguir más clientes",
+      "description": "Propuestas, seguimientos y mensajes de venta listos para enviar."
+    },
+    "en": {
+      "title": "Get more customers",
+      "description": "Proposals, follow-ups, and sales messages ready to send."
+    }
+  },
+  {
+    "id": "marketing",
+    "icon": "📣",
+    "accent": "#ec4899",
+    "es": {
+      "title": "Marketing",
+      "description": "Campañas, landings y contenido para redes sociales."
+    },
+    "en": {
+      "title": "Marketing",
+      "description": "Campaigns, landing pages, and social media content."
+    }
+  },
+  {
+    "id": "support",
+    "icon": "💬",
+    "accent": "#06b6d4",
+    "es": {
+      "title": "Atención al cliente",
+      "description": "Respuestas, plantillas y políticas de servicio."
+    },
+    "en": {
+      "title": "Customer support",
+      "description": "Replies, templates, and service policies."
+    }
+  },
+  {
+    "id": "operations",
+    "icon": "⚙️",
+    "accent": "#10b981",
+    "es": {
+      "title": "Operaciones",
+      "description": "Procesos documentados, SOPs y eficiencia operativa."
+    },
+    "en": {
+      "title": "Operations",
+      "description": "Documented processes, SOPs, and operational efficiency."
+    }
+  },
+  {
+    "id": "hr",
+    "icon": "👥",
+    "accent": "#8b5cf6",
+    "es": {
+      "title": "Recursos Humanos",
+      "description": "Contrataciones, evaluaciones y cultura de equipo."
+    },
+    "en": {
+      "title": "Human Resources",
+      "description": "Hiring, evaluations, and team culture."
+    }
+  },
+  {
+    "id": "finance",
+    "icon": "💰",
+    "accent": "#eab308",
+    "es": {
+      "title": "Finanzas",
+      "description": "Presupuestos, flujo de caja y análisis financiero."
+    },
+    "en": {
+      "title": "Finance",
+      "description": "Budgets, cash flow, and financial analysis."
+    }
+  },
+  {
+    "id": "legal",
+    "icon": "⚖️",
+    "accent": "#64748b",
+    "es": {
+      "title": "Legal",
+      "description": "Contratos, políticas y respuestas iniciales."
+    },
+    "en": {
+      "title": "Legal",
+      "description": "Contracts, policies, and first-draft responses."
+    }
+  },
+  {
+    "id": "ecommerce",
+    "icon": "✉️",
+    "accent": "#3b82f6",
+    "es": {
+      "title": "Correo electrónico",
+      "description": "Emails, campañas, newsletters y mensajes listos para enviar."
+    },
+    "en": {
+      "title": "Email",
+      "description": "Emails, campaigns, newsletters, and messages ready to send."
+    }
+  },
+  {
+    "id": "dev",
+    "icon": "💻",
+    "accent": "#22c55e",
+    "es": {
+      "title": "Programas",
+      "description": "Herramientas internas, planillas, software y bases de datos."
+    },
+    "en": {
+      "title": "Programs",
+      "description": "Internal tools, spreadsheets, software, and databases."
+    }
+  },
+  {
+    "id": "strategy",
+    "icon": "🧭",
+    "accent": "#a855f7",
+    "es": {
+      "title": "Dirección y estrategia",
+      "description": "Planes, análisis competitivo y decisiones de negocio."
+    },
+    "en": {
+      "title": "Leadership and strategy",
+      "description": "Plans, competitive analysis, and business decisions."
+    }
+  },
+  {
+    "id": "market",
+    "icon": "🔎",
+    "accent": "#6366f1",
+    "es": {
+      "title": "Mercado y competencia",
+      "description": "Investiga tu mercado con datos actuales de internet."
+    },
+    "en": {
+      "title": "Market & competitors",
+      "description": "Research your market with up-to-date data from the web."
+    }
+  },
+  {
+    "id": "social",
+    "icon": "📱",
+    "accent": "#f43f5e",
+    "es": {
+      "title": "Redes y contenido",
+      "description": "Qué publican los negocios de tu rubro y qué videos funcionan en tu tema."
+    },
+    "en": {
+      "title": "Social media & content",
+      "description": "What businesses in your field post and which videos work on your topic."
+    }
+  },
+  {
+    "id": "travel",
+    "icon": "🧳",
+    "accent": "#14b8a6",
+    "es": {
+      "title": "Turismo y alojamiento",
+      "description": "Tripadvisor y Airbnb: reputación, precios y demanda en tu zona."
+    },
+    "en": {
+      "title": "Travel & lodging",
+      "description": "Tripadvisor and Airbnb: reputation, prices, and demand in your area."
+    }
+  },
+  {
+    "id": "continuity",
+    "icon": "🔗",
+    "accent": "#0ea5e9",
+    "es": {
+      "title": "Continuidad",
+      "description": "Retomar trabajo entre dispositivos, canales y conversaciones."
+    },
+    "en": {
+      "title": "Continuity",
+      "description": "Resume work across devices, channels, and conversations."
+    }
+  }
+]

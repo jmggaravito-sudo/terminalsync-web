@@ -1,0 +1,40 @@
+{
+  "id": "ec-001",
+  "categoryId": "ecommerce",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 73,
+  "popular": true,
+  "es": {
+    "title": "Descripción de producto que vende",
+    "outcome": "Texto que convierte visitantes en compradores.",
+    "prompt": "Necesito una descripción que venda para un producto en mi tienda online.\n\nProducto: [nombre y características].\nA quién va dirigido: [perfil].\nLo que lo hace especial: [diferenciales].\nPrecio: [monto].\n\nDame: título llamativo, descripción corta (2 líneas), descripción larga con beneficios, especificaciones técnicas en lista, palabras clave para SEO y CTA fuerte al final.",
+    "recommendedFiles": [
+      "Fotos del producto",
+      "Ficha técnica"
+    ],
+    "expectedResult": [
+      "Título",
+      "Descripción corta",
+      "Descripción larga",
+      "Especificaciones",
+      "Keywords"
+    ]
+  },
+  "en": {
+    "title": "Product Description That Sells",
+    "outcome": "Copy that turns visitors into buyers.",
+    "prompt": "I need a sales-focused description for a product in my online store.\n\nProduct: [name and features].\nTarget audience: [profile].\nWhat makes it special: [differentiators].\nPrice: [amount].\n\nGive me: attention-grabbing title, short description (2 lines), long description with benefits, technical specifications as a list, SEO keywords and a strong CTA at the end.",
+    "recommendedFiles": [
+      "Product photos",
+      "Technical sheet"
+    ],
+    "expectedResult": [
+      "Title",
+      "Short description",
+      "Long description",
+      "Specifications",
+      "Keywords"
+    ]
+  }
+}

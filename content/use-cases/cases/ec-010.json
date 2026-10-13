@@ -1,0 +1,39 @@
+{
+  "id": "ec-010",
+  "categoryId": "ecommerce",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 82,
+  "es": {
+    "title": "Promoción de fin de mes",
+    "outcome": "Promo que mueve ventas sin destruir el margen.",
+    "prompt": "Quiero lanzar una promoción de fin de mes para mover stock y ventas.\n\nMi tienda: [describir].\nProductos a promover: [listar].\nMargen disponible para descuento: [%].\nDuración deseada: [días].\n\nDame: tipo de promoción ideal (descuento / 2x1 / envío gratis), copy para anunciarla, email a base de clientes, posts para redes y cómo medir su éxito.",
+    "recommendedFiles": [
+      "Stock disponible",
+      "Lista de clientes"
+    ],
+    "expectedResult": [
+      "Tipo de promo",
+      "Copy de anuncio",
+      "Email",
+      "Posts",
+      "Métricas"
+    ]
+  },
+  "en": {
+    "title": "End-of-month promotion",
+    "outcome": "Promotion that moves sales without eroding margin.",
+    "prompt": "I want to launch an end-of-month promotion to move stock and sales.\n\nMy store: [describe].\nProducts to promote: [list].\nMargin available for discount: [%].\nDesired duration: [days].\n\nGive me: ideal type of promotion (discount / buy-one-get-one / free shipping), ad copy to announce it, email to the customer base, social posts and how to measure its success.",
+    "recommendedFiles": [
+      "Available stock",
+      "Customer list"
+    ],
+    "expectedResult": [
+      "Type of promotion",
+      "Ad copy",
+      "Email",
+      "Posts",
+      "Metrics"
+    ]
+  }
+}

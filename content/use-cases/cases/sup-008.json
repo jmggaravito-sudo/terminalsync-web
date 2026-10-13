@@ -1,0 +1,35 @@
+{
+  "id": "sup-008",
+  "categoryId": "support",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 30,
+  "es": {
+    "title": "Pedir testimonio a cliente feliz",
+    "outcome": "Mensaje que consigue testimonios reales sin sentirse forzado.",
+    "prompt": "Tengo clientes felices y quiero pedirles testimonio para mi web y redes.\n\nMi negocio: [describir].\nQué me gustaría que destaquen: [resultados / experiencia / atención].\n\nDame: un mensaje cálido para pedir el testimonio, 3 preguntas guía para facilitarles la respuesta, una versión para WhatsApp y otra para email, y una nota de agradecimiento.",
+    "recommendedFiles": [
+      "Lista de clientes a contactar"
+    ],
+    "expectedResult": [
+      "Mensaje WhatsApp",
+      "Mensaje email",
+      "Preguntas guía",
+      "Agradecimiento"
+    ]
+  },
+  "en": {
+    "title": "Ask for a testimonial from a happy customer",
+    "outcome": "Message that gets real testimonials without sounding forced.",
+    "prompt": "I have happy customers and I want to ask them for a testimonial for my website and social media.\n\nMy business: [describe].\nWhat I'd like them to highlight: [results / experience / service].\n\nGive me: a warm message to request the testimonial, 3 guiding questions to make it easy for them to respond, a WhatsApp version and an email version, and a thank-you note.",
+    "recommendedFiles": [
+      "List of clients to contact"
+    ],
+    "expectedResult": [
+      "WhatsApp message",
+      "Email message",
+      "Guiding questions",
+      "Thank-you note"
+    ]
+  }
+}

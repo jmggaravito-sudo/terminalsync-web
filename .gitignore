@@ -48,3 +48,6 @@ outreach-links.csv
 # First-cut frame extractions (scripts/armar-corte.sh + ffmpeg -ss)
 /capturas/
 .design/
+
+# integration pipeline: handoff files between agent stages, never committed
+.pipeline/

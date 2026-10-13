@@ -1,0 +1,35 @@
+{
+  "id": "sup-009",
+  "categoryId": "support",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 31,
+  "es": {
+    "title": "Recuperar cliente perdido",
+    "outcome": "Mensaje para clientes que dejaron de comprar e invitarlos de regreso.",
+    "prompt": "Tengo clientes que antes compraban seguido y dejaron de hacerlo. Quiero recuperarlos.\n\nMi negocio: [describir].\nTiempo aproximado sin comprar: [meses].\nQué hay de nuevo en mi negocio: [novedades, mejoras, productos].\n\nDame: un mensaje cálido que reabra la conversación sin sonar a venta agresiva, una oferta clara pero respetuosa y una pregunta que invite a responder.",
+    "recommendedFiles": [
+      "Lista de clientes inactivos",
+      "Historial de compras"
+    ],
+    "expectedResult": [
+      "Mensaje principal",
+      "Oferta sugerida",
+      "Plan B si no responde"
+    ]
+  },
+  "en": {
+    "title": "Win back a lost customer",
+    "outcome": "Message for customers who stopped buying to invite them back.",
+    "prompt": "I have customers who used to buy regularly and stopped. I want to win them back.\n\nMy business: [describe].\nApproximate time since last purchase: [months].\nWhat's new in my business: [news, improvements, products].\n\nGive me: a warm message that reopens the conversation without sounding like aggressive selling, a clear but respectful offer and a question that invites a reply.",
+    "recommendedFiles": [
+      "Inactive customers list",
+      "Purchase history"
+    ],
+    "expectedResult": [
+      "Main message",
+      "Suggested offer",
+      "Plan B if no response"
+    ]
+  }
+}

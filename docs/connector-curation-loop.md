@@ -21,7 +21,7 @@ auto-promotion pipeline and must not be used as the Loop entrypoint.
 8. Before finishing, clear any items in the "Logos pendientes" backlog whose official logo is now obtainable — replacing a fallback counts toward the run.
 9. Validate the change.
 10. Open the **landing/web draft PR** in `terminalsync-web`.
-11. Open the **app mirror draft PR** in `terminal-sync` following `docs/integration-loop-two-pr-policy.md`. This is required even when the app consumes the remote catalog automatically; prove or adjust the Integraciones behavior.
+11. Open an app PR **only if** the item needs desktop code the app does not have (a special install flow, or an item that would render as a broken generic card), following `docs/integration-loop-two-pr-policy.md`. Otherwise state `App PR: no aplica — la app consume el catálogo` in the landing PR body; the desktop reads the catalog on its own and the supervision loop verifies it.
 12. Stop. Do not merge and do not push to `main`.
 
 ## Landing-first sync gate

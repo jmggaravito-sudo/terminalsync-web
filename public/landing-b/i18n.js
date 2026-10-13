@@ -64,6 +64,7 @@
     "Control por Telegram": "Telegram control",
     "Las herramientas que ya usas,": "The tools you already use,",
     "ahora con la IA adentro": "now with the AI inside",
+    "Terminal Sync organiza documentos y correos en espacios de trabajo con IA. Conecta Gmail en modo solo lectura y elige qué mensajes usar como contexto.": "Terminal Sync organizes documents and emails in AI workspaces. Connect Gmail in read-only mode and choose which messages to use as context.",
     "Conecta lo que tu empresa ya tiene abierto": "Connect what your company already has open",
     "Meta, Facebook, Instagram y WhatsApp. Gmail, Drive, Sheets, Notion, Stripe y decenas más en el": "Meta, Facebook, Instagram and WhatsApp. Gmail, Drive, Sheets, Notion, Stripe and dozens more in the",
     "catálogo": "catalog",
@@ -518,6 +519,9 @@
     "Descarga la versión para Mac Intel": "Download the Intel Mac version",
     "Conecta tus herramientas de siempre — arrastrándolas, cero código": "Connect the tools you already use — drag them in, zero code",
     "Ver todas las integraciones": "Browse all integrations",
+    // ── Búsqueda en vivo (fila de fuentes bajo las integraciones) ──
+    "La IA de TS busca en vivo en…": "TS AI searches live on…",
+    "Las marcas pertenecen a sus respectivos dueños. TS consulta información pública; no implica afiliación.": "Brands belong to their respective owners. TS looks up public information; no affiliation implied.",
     "Más de 2,000 empresas ya confían en TS": "Over 2,000 companies already trust TS",
     // Video
     "Mira TS en acción": "See TS in action",

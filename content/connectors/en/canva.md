@@ -22,8 +22,8 @@ license: "proprietary"
 licenseUrl: "https://www.canva.com/policies/canva-developer-terms/"
 marketplaceSource: "official"
 marketplaceCategory: "web"
-installableForAi: false
-installableForAiReason: "recipe-not-npx"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
 aiToolsCount: 0
 aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"

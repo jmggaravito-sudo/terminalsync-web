@@ -1,0 +1,33 @@
+{
+  "id": "ops-006",
+  "categoryId": "operations",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 38,
+  "es": {
+    "title": "Manual de operaciones",
+    "outcome": "Manual maestro de cómo opera tu empresa.",
+    "prompt": "Quiero un manual de operaciones que documente cómo funciona mi empresa, para que pueda delegar y escalar.\n\nMi empresa: [describir].\nÁreas principales: [listar].\nProcesos críticos: [listar].\n\nDame: tabla de contenidos completa, estructura por área, lo que debe ir en cada sección y orden recomendado de creación (qué empezar primero).",
+    "recommendedFiles": [
+      "Procesos actuales documentados"
+    ],
+    "expectedResult": [
+      "Tabla de contenidos",
+      "Estructura por área",
+      "Plan de creación"
+    ]
+  },
+  "en": {
+    "title": "Operations manual",
+    "outcome": "Master manual of how your company operates.",
+    "prompt": "I want an operations manual that documents how my company works, so I can delegate and scale.\n\nMy company: [describe].\nMain areas: [list].\nCritical processes: [list].\n\nGive me: complete table of contents, structure by area, what should go in each section and recommended order of creation (what to start first).",
+    "recommendedFiles": [
+      "Currently documented processes"
+    ],
+    "expectedResult": [
+      "Table of contents",
+      "Structure by area",
+      "Creation plan"
+    ]
+  }
+}

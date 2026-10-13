@@ -1,0 +1,40 @@
+{
+  "id": "cont-006",
+  "categoryId": "continuity",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 125,
+  "popular": true,
+  "es": {
+    "title": "Recuperar contexto de un proyecto",
+    "outcome": "Te pones al día rápido en un proyecto que dejaste pausado o que retomas con poca info.",
+    "prompt": "Voy a retomar un proyecto en el que no estuve hace un tiempo (o que recién recibo) y necesito ponerme al día rápido.\n\nProyecto: [describir].\nMi rol: [describir].\nLo que sé hasta ahora: [resumir].\nQué necesito decidir o hacer en los próximos días: [listar].\n\nAyúdame a: identificar la información clave que me falta, qué preguntas hacer a quién, riesgos visibles del proyecto y un plan de acción para mis primeros 7 días.",
+    "recommendedFiles": [
+      "Documentos del proyecto",
+      "Conversaciones anteriores",
+      "Cronograma si existe"
+    ],
+    "expectedResult": [
+      "Información clave faltante",
+      "Preguntas a hacer",
+      "Riesgos",
+      "Plan 7 días"
+    ]
+  },
+  "en": {
+    "title": "Recover project context",
+    "outcome": "Get up to speed quickly on a project you paused or are taking over with little information.",
+    "prompt": "I'm going to resume a project I haven't been involved with for a while (or that I just received) and need to get up to speed quickly.\n\nProject: [describe].\nMy role: [describe].\nWhat I know so far: [summarize].\nWhat I need to decide or do in the next few days: [list].\n\nHelp me: identify the key missing information, what questions to ask whom, visible project risks, and an action plan for my first 7 days.",
+    "recommendedFiles": [
+      "Project documents",
+      "Previous conversations",
+      "Schedule if it exists"
+    ],
+    "expectedResult": [
+      "Key missing information",
+      "Questions to ask",
+      "Risks",
+      "7-day action plan"
+    ]
+  }
+}

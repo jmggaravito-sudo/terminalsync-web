@@ -9,7 +9,7 @@ import { GET, OPTIONS } from "./route";
 
 describe("GET /api/credits/pricing", () => {
   it("serves the peso price from the same place that charges it", async () => {
-    const res = await GET();
+    const res = await GET(new Request("https://terminalsync.ai/api/credits/pricing"));
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -21,7 +21,7 @@ describe("GET /api/credits/pricing", () => {
   });
 
   it("returns a rate the app can apply to an arbitrary balance", async () => {
-    const body = await (await GET()).json();
+    const body = await (await GET(new Request("https://terminalsync.ai/api/credits/pricing"))).json();
     // Balance is any amount, not one of the packages, so the app needs the rate.
     expect(body.rate).toBeCloseTo(3_204.51 * 1.08, 2);
     // The bare legal rate travels too, so the number can be explained.
@@ -30,7 +30,7 @@ describe("GET /api/credits/pricing", () => {
   });
 
   it("prices every package on round pesos", async () => {
-    const body = await (await GET()).json();
+    const body = await (await GET(new Request("https://terminalsync.ai/api/credits/pricing"))).json();
     for (const amount of Object.values(body.packages) as number[]) {
       expect(amount % 100).toBe(0);
     }
