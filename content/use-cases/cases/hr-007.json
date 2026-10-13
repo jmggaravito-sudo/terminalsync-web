@@ -1,0 +1,39 @@
+{
+  "id": "hr-007",
+  "categoryId": "hr",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 49,
+  "es": {
+    "title": "Manual de bienvenida",
+    "outcome": "Manual de cultura, valores y reglas que cualquier nuevo empleado entiende.",
+    "prompt": "Quiero crear un manual de bienvenida para que cada nuevo empleado entienda la cultura y reglas de mi empresa.\n\nMi empresa: [describir].\nValores: [listar].\nHistoria breve: [describir].\nLas reglas más importantes: [listar].\n\nDame un manual con: bienvenida personal, historia y propósito, valores con ejemplos reales, reglas claras de convivencia, beneficios y políticas operativas.",
+    "recommendedFiles": [
+      "Reglamento actual",
+      "Cultura de la empresa"
+    ],
+    "expectedResult": [
+      "Bienvenida",
+      "Historia y propósito",
+      "Valores con ejemplos",
+      "Reglas",
+      "Beneficios"
+    ]
+  },
+  "en": {
+    "title": "Welcome handbook",
+    "outcome": "Culture, values and rules handbook that any new employee understands.",
+    "prompt": "I want to create a welcome handbook so every new employee understands my company's culture and rules.\n\nMy company: [describe].\nValues: [list].\nBrief history: [describe].\nMost important rules: [list].\n\nGive me a handbook with: personal welcome, history and purpose, values with real examples, clear conduct rules, benefits and operational policies.",
+    "recommendedFiles": [
+      "Current regulations",
+      "Company culture"
+    ],
+    "expectedResult": [
+      "Welcome",
+      "History and purpose",
+      "Values with examples",
+      "Rules",
+      "Benefits"
+    ]
+  }
+}

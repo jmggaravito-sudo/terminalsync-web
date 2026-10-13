@@ -1,0 +1,39 @@
+{
+  "id": "sup-012",
+  "categoryId": "support",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 25,
+  "es": {
+    "title": "Soporte postventa por WhatsApp",
+    "outcome": "Recorrido postventa que reduce fricción y mejora la experiencia del cliente.",
+    "prompt": "Quiero usar WhatsApp Business para soporte postventa.\n\nQué vendo: [producto/servicio].\nQué problemas aparecen después de vender: [listar].\nQué sí puedo resolver por chat: [describir].\nQué tiene que pasar a otra área: [describir].\n\nDame: flujo postventa, respuestas base, alertas para escalar a humano, mensajes de seguimiento y cómo medir si el soporte está funcionando bien.",
+    "recommendedFiles": [
+      "Preguntas de postventa",
+      "Políticas de garantía/devolución",
+      "Casos anteriores"
+    ],
+    "expectedResult": [
+      "Flujo postventa",
+      "Mensajes base",
+      "Criterios de escalación",
+      "Métricas sugeridas"
+    ]
+  },
+  "en": {
+    "title": "Post-sale support via WhatsApp",
+    "outcome": "Post-sale journey that reduces friction and improves the customer experience.",
+    "prompt": "I want to use WhatsApp Business for post-sale support.\n\nWhat I sell: [product/service].\nProblems that appear after selling: [list].\nWhat I CAN resolve via chat: [describe].\nWhat needs to go to another department: [describe].\n\nGive me: post-sale flow, base replies, alerts to escalate to a human, follow-up messages, and how to measure if support is working well.",
+    "recommendedFiles": [
+      "Post-sale questions",
+      "Warranty/return policies",
+      "Past cases"
+    ],
+    "expectedResult": [
+      "Post-sale flow",
+      "Base messages",
+      "Escalation criteria",
+      "Suggested metrics"
+    ]
+  }
+}

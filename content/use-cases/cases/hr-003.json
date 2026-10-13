@@ -1,0 +1,35 @@
+{
+  "id": "hr-003",
+  "categoryId": "hr",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 45,
+  "es": {
+    "title": "Plan de inducción para nuevo empleado",
+    "outcome": "Primer mes planificado para que el nuevo empleado se integre rápido.",
+    "prompt": "Voy a recibir un empleado nuevo y quiero que tenga una buena inducción.\n\nPuesto: [describir].\nDuración de la inducción: [días/semanas].\nQuién lo va a acompañar: [mentor/jefe].\n\nDame: cronograma día a día de la primera semana, objetivos por semana del primer mes, personas que debe conocer, documentos a entregar y reuniones de seguimiento sugeridas.",
+    "recommendedFiles": [
+      "Documentos clave de la empresa",
+      "Manual del puesto"
+    ],
+    "expectedResult": [
+      "Cronograma semana 1",
+      "Objetivos mes 1",
+      "Reuniones de seguimiento"
+    ]
+  },
+  "en": {
+    "title": "New Employee Onboarding Plan",
+    "outcome": "First month planned so the new employee integrates quickly.",
+    "prompt": "I'm about to receive a new employee and want them to have a good onboarding.\n\nPosition: [describe].\nOnboarding duration: [days/weeks].\nWho will accompany them: [mentor/manager].\n\nGive me: day-by-day schedule for the first week, weekly objectives for the first month, people they should meet, documents to hand over and suggested follow-up meetings.",
+    "recommendedFiles": [
+      "Key company documents",
+      "Job manual"
+    ],
+    "expectedResult": [
+      "Week 1 schedule",
+      "Month 1 objectives",
+      "Follow-up meetings"
+    ]
+  }
+}

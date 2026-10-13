@@ -1,0 +1,35 @@
+{
+  "id": "sales-006",
+  "categoryId": "sales",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 6,
+  "es": {
+    "title": "Analizar por qué perdí una venta",
+    "outcome": "Diagnóstico claro y acciones concretas para no perder ventas similares.",
+    "prompt": "Acabo de perder una venta importante y quiero entender por qué.\n\nContexto: [describir el cliente, el producto y por qué crees que se cayó].\nLo que dijo el cliente: [palabras exactas si las recuerdas].\n\nAyúdame a identificar las 3 causas más probables, las preguntas que debí hacer antes y un plan concreto para no repetir el error con clientes similares.",
+    "recommendedFiles": [
+      "Notas de la conversación",
+      "Propuesta enviada"
+    ],
+    "expectedResult": [
+      "Causas probables",
+      "Preguntas faltantes",
+      "Plan de acción"
+    ]
+  },
+  "en": {
+    "title": "Analyze why I lost a sale",
+    "outcome": "Clear diagnosis and concrete actions to avoid losing similar sales.",
+    "prompt": "I just lost an important sale and I want to understand why.\n\nContext: [describe the client, the product, and why you think it fell through].\nWhat the client said: [exact words if you remember them].\n\nHelp me identify the 3 most likely causes, the questions I should have asked earlier, and a concrete plan to avoid repeating the mistake with similar clients.",
+    "recommendedFiles": [
+      "Conversation notes",
+      "Proposal sent"
+    ],
+    "expectedResult": [
+      "Most likely causes",
+      "Questions that were missing",
+      "Action plan"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "ops-002",
+  "categoryId": "operations",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 34,
+  "es": {
+    "title": "Crear SOP (procedimiento estándar)",
+    "outcome": "SOP profesional que cualquier nuevo empleado puede seguir.",
+    "prompt": "Necesito un SOP (Standard Operating Procedure) profesional para una tarea recurrente.\n\nTarea: [describir].\nÁrea responsable: [departamento].\nFrecuencia: [diaria / semanal / mensual].\n\nDame un SOP en formato profesional: propósito, alcance, responsables, materiales, pasos detallados con responsable de cada uno, indicadores de éxito y registro/evidencia que debe quedar archivada.",
+    "recommendedFiles": [
+      "Proceso actual",
+      "Roles del equipo"
+    ],
+    "expectedResult": [
+      "Documento SOP completo",
+      "Lista de indicadores",
+      "Plantilla de registro"
+    ]
+  },
+  "en": {
+    "title": "Create SOP (Standard Operating Procedure)",
+    "outcome": "Professional SOP that any new employee can follow.",
+    "prompt": "I need a professional SOP (Standard Operating Procedure) for a recurring task.\n\nTask: [describe].\nResponsible area: [department].\nFrequency: [daily / weekly / monthly].\n\nGive me an SOP in professional format: purpose, scope, responsible parties, materials, detailed steps with the person responsible for each, success indicators and records/evidence that must be archived.",
+    "recommendedFiles": [
+      "Current process",
+      "Team roles"
+    ],
+    "expectedResult": [
+      "Complete SOP document",
+      "List of indicators",
+      "Record template"
+    ]
+  }
+}

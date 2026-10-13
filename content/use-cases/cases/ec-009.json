@@ -1,0 +1,35 @@
+{
+  "id": "ec-009",
+  "categoryId": "ecommerce",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 81,
+  "es": {
+    "title": "Estrategia de envíos",
+    "outcome": "Política de envío que protege margen y satisface al cliente.",
+    "prompt": "Necesito definir mi política de envíos para mi tienda online.\n\nMi tienda: [describir].\nUbicación: [país/ciudad].\nProducto típico: [peso/volumen].\nMárgenes: [% promedio].\n\nDame: opciones de envío recomendadas, umbral de envío gratis, cómo comunicarlo claramente, política de demoras y cómo manejar zonas remotas.",
+    "recommendedFiles": [
+      "Tarifas de courier"
+    ],
+    "expectedResult": [
+      "Opciones de envío",
+      "Umbral gratis",
+      "Comunicación",
+      "Política de demoras"
+    ]
+  },
+  "en": {
+    "title": "Shipping strategy",
+    "outcome": "Shipping policy that protects margins and satisfies customers.",
+    "prompt": "I need to define my shipping policy for my online store.\n\nMy store: [describe].\nLocation: [country/city].\nTypical product: [weight/volume].\nMargins: [% average].\n\nGive me: recommended shipping options, free-shipping threshold, how to communicate it clearly, delay policy and how to handle remote zones.",
+    "recommendedFiles": [
+      "Courier rates"
+    ],
+    "expectedResult": [
+      "Shipping options",
+      "Free-shipping threshold",
+      "Communication",
+      "Delay policy"
+    ]
+  }
+}

@@ -229,6 +229,15 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .tile:hover{transform:translateY(-3px);border-color:var(--fg-3)}
 .tile.edge{opacity:.38}
 @media (max-width:720px){.tile.edge{display:none}.tile{width:52px;height:52px;border-radius:13px}.tile img{width:23px;height:23px}.tiles-row{flex-wrap:wrap}}
+/* búsqueda en vivo: fila propia, no son integraciones (lista en src/lib/liveSearchSources.ts).
+   Reusa los cuadros de integraciones (.tiles-rows/.tiles-row/.tile); acá solo el título, el
+   espacio, el gate del lote 3 (hidden) y el fondo claro de logos oscuros en tema oscuro. */
+.live-src{max-width:760px;margin:44px auto 0;padding-top:30px;border-top:1px solid var(--line);text-align:center}
+.live-src-h{margin:0;font-size:16px;font-weight:600;letter-spacing:-.01em;color:var(--fg)}
+.live-src .tiles-rows{margin-top:22px}
+.live-src [hidden]{display:none}
+html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transparent}
+.live-src-note{margin:18px auto 0;max-width:62ch;font-size:12px;line-height:1.55;color:var(--fg-3)}
 
 /* ── precios ── */
 .prices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:22px;max-width:800px;margin:44px auto 0}
@@ -458,6 +467,33 @@ html.var-dark .theme-toggle .ic-moon{display:block}
       </div>
     </div>
     <p style="text-align:center;margin-top:30px"><a class="btn btn-ghost btn-sm" href="/es/connectors" data-lhref="/connectors">Ver todas las integraciones</a></p>
+    <!-- Búsqueda en vivo: debe coincidir con LIVE_SEARCH_SOURCES (src/lib/liveSearchSources.ts); lo verifica liveSearchSources.test.ts.
+         Mismos cuadros que las integraciones de arriba: solo el logo, nombre en alt y title (JM 2026-10-13; ver docs/live-search-sources.md).
+         Las del lote 3 van con hidden y solo aparecen si /api/live-search-sources dice lote3:true (NEXT_PUBLIC_LIVE_SEARCH_LOTE3=1). -->
+    <div class="live-src" data-live-search>
+      <h3 class="live-src-h" id="live-src-title">La IA de TS busca en vivo en…</h3>
+      <div class="tiles-rows" role="list" aria-labelledby="live-src-title">
+        <div class="tiles-row" role="none">
+          <span class="tile" role="listitem" title="Google"><img src="/sources/google.svg" alt="Google" loading="lazy" onerror="this.parentNode.remove()" /></span>
+          <span class="tile" role="listitem" title="Google Maps"><img src="/sources/google-maps.svg" alt="Google Maps" loading="lazy" onerror="this.parentNode.remove()" /></span>
+          <span class="tile" role="listitem" title="YouTube"><img src="/sources/youtube.svg" alt="YouTube" loading="lazy" onerror="this.parentNode.remove()" /></span>
+          <span class="tile" role="listitem" title="Biblioteca de anuncios de Meta"><img src="/sources/meta.svg" alt="Biblioteca de anuncios de Meta" data-alt-en="Meta Ad Library" loading="lazy" onerror="this.parentNode.remove()" /></span>
+          <span class="tile dark-logo" role="listitem" title="ChatGPT"><img src="/sources/chatgpt.svg" alt="ChatGPT" loading="lazy" onerror="this.parentNode.remove()" /></span>
+          <span class="tile" role="listitem" title="Perplexity"><img src="/sources/perplexity.svg" alt="Perplexity" loading="lazy" onerror="this.parentNode.remove()" /></span>
+          <span class="tile" role="listitem" title="Yelp"><img src="/sources/yelp.svg" alt="Yelp" loading="lazy" onerror="this.parentNode.remove()" /></span>
+        </div>
+        <div class="tiles-row" role="none" data-live-search-lote="3" hidden>
+          <span class="tile dark-logo" role="listitem" title="TikTok" data-live-search-lote="3" hidden><img src="/sources/tiktok.svg" alt="TikTok" loading="lazy" onerror="this.parentNode.remove()" /></span>
+          <span class="tile" role="listitem" title="Instagram" data-live-search-lote="3" hidden><img src="/sources/instagram.svg" alt="Instagram" loading="lazy" onerror="this.parentNode.remove()" /></span>
+          <span class="tile" role="listitem" title="Facebook" data-live-search-lote="3" hidden><img src="/sources/facebook.svg" alt="Facebook" loading="lazy" onerror="this.parentNode.remove()" /></span>
+          <span class="tile" role="listitem" title="Tripadvisor" data-live-search-lote="3" hidden><img src="/sources/tripadvisor.svg" alt="Tripadvisor" loading="lazy" onerror="this.parentNode.remove()" /></span>
+          <span class="tile" role="listitem" title="Amazon" data-live-search-lote="3" hidden><img src="/sources/amazon.svg" alt="Amazon" loading="lazy" onerror="this.parentNode.remove()" /></span>
+          <span class="tile" role="listitem" title="eBay" data-live-search-lote="3" hidden><img src="/sources/ebay.svg" alt="eBay" loading="lazy" onerror="this.parentNode.remove()" /></span>
+          <span class="tile" role="listitem" title="Airbnb" data-live-search-lote="3" hidden><img src="/sources/airbnb.svg" alt="Airbnb" loading="lazy" onerror="this.parentNode.remove()" /></span>
+        </div>
+      </div>
+      <p class="live-src-note">Las marcas pertenecen a sus respectivos dueños. TS consulta información pública; no implica afiliación.</p>
+    </div>
   </div>
 </section>
 
@@ -703,6 +739,30 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 </div>
 
 <script src="/landing-b/i18n.js"></script>
+<script>
+/* Búsqueda en vivo: las fuentes del lote 3 vienen ocultas. Solo se muestran si
+   el build se hizo con NEXT_PUBLIC_LIVE_SEARCH_LOTE3=1; esta página es estática
+   y no lee env vars, así que se lo pregunta a /api/live-search-sources. Si la
+   llamada falla, quedan ocultas (la rama segura). */
+(function(){
+  /* i18n.js traduce texto visible, no atributos: el alt y el title de cada logo
+     cambian con el idioma acá (data-alt-en solo donde el nombre cambia). */
+  function syncAlt(e){
+    var en=e&&e.detail&&e.detail.lang==='en';
+    document.querySelectorAll('[data-live-search] .tile img').forEach(function(img){
+      if(!img.dataset.altEs)img.dataset.altEs=img.alt;
+      var name=en?(img.dataset.altEn||img.dataset.altEs):img.dataset.altEs;
+      img.alt=name;img.parentNode.title=name;
+    });
+  }
+  window.addEventListener('ts-lang',syncAlt);
+  var later=document.querySelectorAll('[data-live-search] [data-live-search-lote="3"]');
+  if(!later.length||!window.fetch)return;
+  fetch('/api/live-search-sources').then(function(r){return r.ok?r.json():null}).then(function(d){
+    if(d&&d.lote3===true)later.forEach(function(el){el.hidden=false});
+  }).catch(function(){});
+})();
+</script>
 <script>
 (function(){
   const root=document.documentElement, sysDark=matchMedia('(prefers-color-scheme: dark)');

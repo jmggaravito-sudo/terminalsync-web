@@ -1,0 +1,33 @@
+{
+  "id": "mkt-005",
+  "categoryId": "marketing",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 15,
+  "es": {
+    "title": "Escribir email para newsletter",
+    "outcome": "Newsletter atractivo con asunto que invite a abrir.",
+    "prompt": "Necesito un email para mi base de clientes.\n\nMi negocio: [describir].\nQué quiero comunicar: [novedad / promo / consejo / caso].\nAcción deseada: [comprar / agendar / leer artículo].\n\nDame: 3 opciones de asunto que inviten a abrir, un email completo (saludo, cuerpo, CTA), y un PD opcional para reforzar la acción.",
+    "recommendedFiles": [
+      "Información de la novedad/promoción"
+    ],
+    "expectedResult": [
+      "3 asuntos",
+      "Email completo",
+      "PD opcional"
+    ]
+  },
+  "en": {
+    "title": "Write newsletter email",
+    "outcome": "Engaging newsletter with a subject line that invites opens.",
+    "prompt": "I need an email for my customer list.\n\nMy business: [describe].\nWhat I want to communicate: [news / promo / tip / case].\nDesired action: [buy / schedule / read article].\n\nGive me: 3 subject line options that invite opens, a full email (greeting, body, CTA), and an optional P.S. to reinforce the action.",
+    "recommendedFiles": [
+      "Information about the news/promotion"
+    ],
+    "expectedResult": [
+      "3 subject lines",
+      "Complete email",
+      "Optional P.S."
+    ]
+  }
+}

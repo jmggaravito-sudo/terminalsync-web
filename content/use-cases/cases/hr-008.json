@@ -1,0 +1,37 @@
+{
+  "id": "hr-008",
+  "categoryId": "hr",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 50,
+  "es": {
+    "title": "Reunión de feedback difícil",
+    "outcome": "Conversación constructiva que mejora sin lastimar.",
+    "prompt": "Necesito tener una conversación difícil con un empleado sobre su desempeño.\n\nEmpleado: [rol].\nProblema concreto: [describir].\nTiempo del problema: [cuánto hace].\nLo que ya intenté: [describir].\n\nDame: guion para la reunión paso a paso, frases concretas para abrir y cerrar, cómo escuchar antes de hablar, plan de mejora con plazos y consecuencias si no mejora.",
+    "recommendedFiles": [
+      "Historial del empleado",
+      "Ejemplos concretos del problema"
+    ],
+    "expectedResult": [
+      "Guion paso a paso",
+      "Frases clave",
+      "Plan de mejora",
+      "Consecuencias"
+    ]
+  },
+  "en": {
+    "title": "Difficult feedback meeting",
+    "outcome": "A constructive conversation that improves performance without causing harm.",
+    "prompt": "I need to have a difficult conversation with an employee about their performance.\n\nEmployee: [role].\nSpecific problem: [describe].\nDuration of the problem: [how long].\nWhat I've already tried: [describe].\n\nGive me: step-by-step meeting script, concrete phrases to open and close, how to listen before speaking, improvement plan with deadlines and consequences if there is no improvement.",
+    "recommendedFiles": [
+      "Employee history",
+      "Concrete examples of the problem"
+    ],
+    "expectedResult": [
+      "Step-by-step script",
+      "Key phrases",
+      "Improvement plan",
+      "Consequences"
+    ]
+  }
+}

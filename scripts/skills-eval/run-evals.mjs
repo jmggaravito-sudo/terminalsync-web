@@ -22,9 +22,13 @@
  * generating AI is judge and party; the decision that a skill beats the
  * baseline belongs to human review (RULES.md → "Evidence is not the verdict").
  *
- * Usage:
- *   ANTHROPIC_API_KEY=... node scripts/skills-eval/run-evals.mjs code-reviewer
- *   ANTHROPIC_API_KEY=... node scripts/skills-eval/run-evals.mjs            # all fixtures
+ * Usage (GLM — the product lives on GLM only for now; Z.ai exposes an Anthropic-compatible API):
+ *   ZAI_API_KEY=... ANTHROPIC_BASE_URL=https://open.bigmodel.cn/api/anthropic \
+ *     SKILLS_EVAL_MODEL=glm-5.3 node scripts/skills-eval/run-evals.mjs code-reviewer
+ *   (… node scripts/skills-eval/run-evals.mjs            # all fixtures)
+ *   Subject = SKILLS_EVAL_SUBJECT_MODEL (default glm-5.3-flash), judge = SKILLS_EVAL_MODEL.
+ *   Both are GLM models, so the "subject and judge are different models" separation is weaker than
+ *   it was with Gemini vs Claude; the report says which models were used.
  *   node scripts/skills-eval/run-evals.mjs code-reviewer --out docs/skills-evals/code-reviewer.md
  *
  * DRY_RUN (offline, no LLM, no network — used by the vitest suite):
@@ -46,13 +50,25 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = path.join(__dirname, "fixtures");
 
-const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
-const DEFAULT_MODEL = process.env.SKILLS_EVAL_MODEL || "claude-opus-4-8";
+/** Anthropic-format endpoint. Z.ai serves GLM through the same wire format, so a base URL is all it takes. */
+export function anthropicUrl(env = process.env) {
+  const base = (env.SKILLS_EVAL_BASE_URL || env.ANTHROPIC_BASE_URL || "https://api.anthropic.com").replace(/\/+$/, "");
+  return `${base}/v1/messages`;
+}
+/** Key for the judge and (with --provider glm) the subject. Z.ai's key first: it is the one the loops have. */
+export function resolveApiKey(env = process.env) {
+  return env.SKILLS_EVAL_API_KEY || env.ZAI_API_KEY || env.ANTHROPIC_API_KEY || null;
+}
+const ANTHROPIC_URL = anthropicUrl();
+const DEFAULT_MODEL = process.env.SKILLS_EVAL_MODEL || process.env.ZAI_MODEL || "claude-opus-4-8";
+const DEFAULT_SUBJECT_MODEL = process.env.SKILLS_EVAL_SUBJECT_MODEL || "glm-5.3-flash";
 const GEMINI_URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const DEFAULT_GEMINI_MODEL = process.env.SKILLS_EVAL_GEMINI_MODEL || "gemini-2.5-flash";
 
 /** Proveedores que este harness sabe evaluar como sujeto. */
-export const SUBJECT_PROVIDERS = ["claude", "codex", "gemini"];
+export const SUBJECT_PROVIDERS = ["glm", "claude", "codex", "gemini"];
+/** The product runs on GLM only for now (JM, 2026-10-08): that is the default subject. */
+export const DEFAULT_SUBJECT_PROVIDER = "glm";
 
 /**
  * Techo de tokens del SUJETO.
@@ -476,6 +492,7 @@ export function renderMarkdown(fixture, results, summary, meta = {}) {
   lines.push("");
   lines.push(`- Skill: \`${fixture.skill}\``);
   if (meta.subjectProvider) lines.push(`- Proveedor evaluado (sujeto): \`${meta.subjectProvider}\``);
+  if (meta.subjectModel) lines.push(`- Modelo sujeto: \`${meta.subjectModel}\``);
   if (meta.promptSource) lines.push(`- Prompt de la skill: ${meta.promptSource}`);
   if (meta.model) lines.push(`- Judge model: \`${meta.model}\``);
   if (meta.mode) lines.push(`- Run mode: ${meta.mode}`);
@@ -582,6 +599,14 @@ async function callGemini(prompt, { apiKey, model, maxTokens = SUBJECT_MAX_TOKEN
 
 /** Despacha al proveedor que se está evaluando. */
 async function callSubject(provider, prompt, opts) {
+  if (provider === "glm") {
+    // GLM through its Anthropic-compatible endpoint, with its own (lighter) model so the subject is not the judge.
+    return callClaude(prompt, {
+      apiKey: opts.apiKey,
+      model: opts.subjectModel || opts.model,
+      maxTokens: opts.maxTokens,
+    });
+  }
   if (provider === "gemini") {
     return callGemini(prompt, {
       apiKey: opts.geminiApiKey,
@@ -634,7 +659,7 @@ function readJsonFile(p) {
 export async function runFixture(fixture, opts) {
   const { dryRun, answers, judged, apiKey, model } = opts;
   // Qué modelo RESPONDE. El que JUZGA es siempre Claude — ver callSubject.
-  const subjectProvider = opts.subjectProvider || "claude";
+  const subjectProvider = opts.subjectProvider || DEFAULT_SUBJECT_PROVIDER;
   const results = [];
   for (const c of fixture.cases) {
     try {
@@ -697,7 +722,7 @@ async function main() {
   // Qué modelo RESPONDE. El juez es siempre Claude, incluso acá.
   const provIdx = argv.indexOf("--provider");
   const subjectProvider =
-    (provIdx !== -1 ? argv[provIdx + 1] : process.env.SKILLS_EVAL_PROVIDER) || "claude";
+    (provIdx !== -1 ? argv[provIdx + 1] : process.env.SKILLS_EVAL_PROVIDER) || DEFAULT_SUBJECT_PROVIDER;
   if (!SUBJECT_PROVIDERS.includes(subjectProvider)) {
     process.stderr.write(
       `--provider inválido: "${subjectProvider}". Opciones: ${SUBJECT_PROVIDERS.join(", ")}\n`,
@@ -716,11 +741,17 @@ async function main() {
     if (process.env.DRY_RUN_ANSWERS_FILE) answers = readJsonFile(process.env.DRY_RUN_ANSWERS_FILE);
     if (process.env.DRY_RUN_JUDGE_FILE) judged = readJsonFile(process.env.DRY_RUN_JUDGE_FILE);
   } else {
-    // Siempre hace falta: el juez es Claude para cualquier sujeto.
-    apiKey = process.env.ANTHROPIC_API_KEY;
+    // Siempre hace falta: el juez usa esta llave para cualquier sujeto (Z.ai/GLM por defecto).
+    apiKey = resolveApiKey();
     if (!apiKey) {
-      process.stderr.write("ANTHROPIC_API_KEY is required (or set DRY_RUN=1 with fixture files)\n");
+      process.stderr.write("ZAI_API_KEY (or SKILLS_EVAL_API_KEY / ANTHROPIC_API_KEY) is required (or set DRY_RUN=1 with fixture files)\n");
       process.exit(1);
+    }
+    if (subjectProvider === "glm" && DEFAULT_SUBJECT_MODEL === model) {
+      process.stderr.write(
+        `[skills-eval] AVISO: sujeto y juez son el mismo modelo (${model}); el veredicto pierde independencia. ` +
+          "Define SKILLS_EVAL_SUBJECT_MODEL con otro modelo GLM.\n",
+      );
     }
     if (subjectProvider === "gemini") {
       geminiApiKey = process.env.GEMINI_API_KEY;
@@ -786,6 +817,7 @@ async function main() {
         subjectProvider,
         geminiApiKey,
         geminiModel,
+        subjectModel: subjectProvider === "glm" ? DEFAULT_SUBJECT_MODEL : undefined,
         skillPrompt,
       });
       perRun.push(aggregate(results));
@@ -802,6 +834,7 @@ async function main() {
       model: dryRun ? null : model,
       mode: dryRun ? "DRY_RUN (offline fixtures)" : "live",
       subjectProvider,
+      subjectModel: subjectProvider === "glm" && !dryRun ? DEFAULT_SUBJECT_MODEL : null,
       promptSource,
       verdict,
     });

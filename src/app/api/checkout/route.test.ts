@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { shouldApplyCheckoutTrial } from "./route";
+import { shouldApplyCheckoutTrial } from "@/lib/checkoutTrial";
 
 describe("checkout trial eligibility", () => {
   it("keeps the 7-day trial for public Pro and Max signups", () => {

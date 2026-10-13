@@ -1,0 +1,35 @@
+{
+  "id": "ops-007",
+  "categoryId": "operations",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 39,
+  "es": {
+    "title": "Mejorar tiempos de entrega",
+    "outcome": "Plan claro para entregar más rápido sin perder calidad.",
+    "prompt": "Mis tiempos de entrega son más lentos que la competencia y quiero mejorarlos.\n\nMi negocio: [describir].\nTiempo actual de entrega: [días/horas].\nTiempo objetivo: [días/horas].\nProceso actual: [describir paso a paso].\n\nDame: diagnóstico de cuellos de botella, 3 mejoras concretas priorizadas por impacto, riesgos a considerar y métricas para monitorear el progreso.",
+    "recommendedFiles": [
+      "Datos de entregas últimas semanas"
+    ],
+    "expectedResult": [
+      "Cuellos de botella",
+      "3 mejoras priorizadas",
+      "Riesgos",
+      "Métricas"
+    ]
+  },
+  "en": {
+    "title": "Improve delivery times",
+    "outcome": "Clear plan to deliver faster without losing quality.",
+    "prompt": "My delivery times are slower than the competition and I want to improve them.\n\nMy business: [describe].\nCurrent delivery time: [days/hours].\nTarget time: [days/hours].\nCurrent process: [describe step by step].\n\nGive me: diagnosis of bottlenecks, 3 concrete improvements prioritized by impact, risks to consider and metrics to monitor progress.",
+    "recommendedFiles": [
+      "Delivery data from recent weeks"
+    ],
+    "expectedResult": [
+      "Bottlenecks",
+      "3 prioritized improvements",
+      "Risks",
+      "Metrics"
+    ]
+  }
+}

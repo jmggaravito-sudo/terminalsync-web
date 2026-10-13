@@ -1,0 +1,37 @@
+{
+  "id": "mkt-010",
+  "categoryId": "marketing",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 20,
+  "es": {
+    "title": "Lanzar producto nuevo",
+    "outcome": "Plan de lanzamiento de 30 días con todo lo que necesitas.",
+    "prompt": "Voy a lanzar un producto nuevo y quiero un plan de lanzamiento sólido.\n\nProducto: [describir].\nFecha objetivo: [cuándo].\nCanales disponibles: [redes / email / web / ads].\nPresupuesto: [monto].\n\nDame: cuenta regresiva semana a semana, contenido para cada semana, email de pre-lanzamiento, lanzamiento y post-lanzamiento, métricas a seguir y plan de contingencia si las ventas no llegan.",
+    "recommendedFiles": [
+      "Información del producto",
+      "Audiencia actual"
+    ],
+    "expectedResult": [
+      "Plan semana a semana",
+      "Emails clave",
+      "Métricas",
+      "Plan B"
+    ]
+  },
+  "en": {
+    "title": "Launch a new product",
+    "outcome": "30-day launch plan with everything you need.",
+    "prompt": "I'm launching a new product and want a solid launch plan.\n\nProduct: [describe].\nTarget date: [when].\nAvailable channels: [social / email / website / ads].\nBudget: [amount].\n\nGive me: week-by-week countdown, content for each week, pre-launch, launch and post-launch emails, metrics to track and a contingency plan if sales don't arrive.",
+    "recommendedFiles": [
+      "Product information",
+      "Current audience"
+    ],
+    "expectedResult": [
+      "Week-by-week plan",
+      "Key emails",
+      "Metrics",
+      "Plan B"
+    ]
+  }
+}

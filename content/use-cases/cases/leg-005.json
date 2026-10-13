@@ -1,0 +1,31 @@
+{
+  "id": "leg-005",
+  "categoryId": "legal",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 67,
+  "es": {
+    "title": "Acuerdo de confidencialidad (NDA)",
+    "outcome": "NDA listo para firmar con socios, proveedores o empleados.",
+    "prompt": "Necesito un acuerdo de confidencialidad (NDA) para una situación específica.\n\nSituación: [proveedor / empleado / socio / inversor].\nQué información quiero proteger: [describir].\nDuración deseada: [tiempo].\n\nDame: NDA completo en lenguaje claro, con secciones de definición de información confidencial, obligaciones, excepciones, duración, sanciones y ley aplicable.",
+    "recommendedFiles": [
+      "NDAs anteriores"
+    ],
+    "expectedResult": [
+      "NDA completo",
+      "Notas sobre puntos críticos"
+    ]
+  },
+  "en": {
+    "title": "Non-disclosure Agreement (NDA)",
+    "outcome": "NDA ready to sign with partners, suppliers, or employees.",
+    "prompt": "I need a non-disclosure agreement (NDA) for a specific situation.\n\nSituation: [supplier / employee / partner / investor].\nWhat information I want to protect: [describe].\nDesired duration: [time].\n\nGive me: a complete NDA in clear language, with sections defining confidential information, obligations, exceptions, duration, remedies, and governing law.",
+    "recommendedFiles": [
+      "Previous NDAs"
+    ],
+    "expectedResult": [
+      "Complete NDA",
+      "Notes on key points"
+    ]
+  }
+}

@@ -3,6 +3,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import type { Locale } from "@/content";
+import {
+  liveSearchRows,
+  liveSearchSourceLabel,
+  VISIBLE_LIVE_SEARCH_SOURCES,
+  type LiveSearchSource,
+} from "@/lib/liveSearchSources";
 
 // Filas del catálogo real (public/connectors/*.svg). Si algún slug falla al
 // cargar, el tile se oculta (nunca se muestra un tile vacío).
@@ -46,6 +52,9 @@ const COPY = {
     subtitle:
       "Arrastra tus herramientas de siempre a tu sesión. Sin claves, sin configurar.",
     cta: "Ver todas las integraciones →",
+    liveSearchTitle: "La IA de TS busca en vivo en…",
+    liveSearchNote:
+      "Las marcas pertenecen a sus respectivos dueños. TS consulta información pública; no implica afiliación.",
   },
   en: {
     title: "Ready-made automations for your business with ",
@@ -53,6 +62,9 @@ const COPY = {
     subtitle:
       "Drag your everyday tools into your session. No keys, no setup.",
     cta: "See all integrations →",
+    liveSearchTitle: "TS AI searches live on…",
+    liveSearchNote:
+      "Brands belong to their respective owners. TS looks up public information; no affiliation implied.",
   },
 } as const;
 
@@ -91,7 +103,61 @@ export function IntegrationsMarquee({ lang }: { lang: Locale }) {
           {t.cta}
         </Link>
       </div>
+      <LiveSearchSources
+        lang={lang}
+        title={t.liveSearchTitle}
+        note={t.liveSearchNote}
+        sources={VISIBLE_LIVE_SEARCH_SOURCES}
+      />
     </section>
+  );
+}
+
+/**
+ * Tercera fila, separada de las integraciones: fuentes públicas que la IA de
+ * TS consulta en vivo (no son cuentas que el cliente conecta). Usa el mismo
+ * cuadro que las integraciones (`ts-integration-tile`, vía `LogoTile`): solo el
+ * logo, con el nombre en `alt` y en `title`. Filas estáticas y centradas de
+ * `LIVE_SEARCH_ROW_SIZE` (hoy 7 + 7) en vez de marquee, para que coincida con
+ * la portada estática. Lista, logos e interruptor del lote 3 en
+ * `liveSearchSources.ts`.
+ */
+export function LiveSearchSources({
+  lang,
+  title,
+  note,
+  sources,
+}: {
+  lang: Locale;
+  title: string;
+  note: string;
+  sources: readonly LiveSearchSource[];
+}) {
+  if (sources.length === 0) return null;
+  return (
+    <div className="ts-live-sources">
+      <h3 className="ts-live-sources-title">{title}</h3>
+      <div className="ts-live-sources-rows" role="list" aria-label={title}>
+        {liveSearchRows(sources).map((row, i) => (
+          <div key={i} className="ts-live-sources-row" role="none">
+            {row.map((source) => {
+              const label = liveSearchSourceLabel(source, lang);
+              return (
+                <LogoTile
+                  key={source.name}
+                  src={`/sources/${source.logo}.svg`}
+                  alt={label}
+                  title={label}
+                  darkLogo={Boolean(source.darkLogo)}
+                  role="listitem"
+                />
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      <p className="ts-live-sources-note">{note}</p>
+    </div>
   );
 }
 
@@ -123,14 +189,44 @@ function MarqueeRow({
 }
 
 function IntegrationTile({ slug }: { slug: string }) {
+  return (
+    <LogoTile
+      src={`/connectors/${slug}.svg`}
+      alt={slug}
+      darkLogo={DARK_LOGOS.has(slug)}
+    />
+  );
+}
+
+/**
+ * El cuadro de logo de la portada: lo usan las integraciones y la fila de
+ * Búsqueda en vivo. Si el logo falla al cargar, el cuadro se oculta (nunca se
+ * muestra un cuadro vacío). Logo oscuro → fondo claro en tema oscuro.
+ */
+function LogoTile({
+  src,
+  alt,
+  title,
+  darkLogo,
+  role,
+}: {
+  src: string;
+  alt: string;
+  title?: string;
+  darkLogo: boolean;
+  role?: "listitem";
+}) {
   const [failed, setFailed] = useState(false);
   if (failed) return null;
-  const isDark = DARK_LOGOS.has(slug);
   return (
-    <div className={`ts-integration-tile${isDark ? " ts-integration-tile--dark-logo" : ""}`}>
+    <div
+      className={`ts-integration-tile${darkLogo ? " ts-integration-tile--dark-logo" : ""}`}
+      title={title}
+      role={role}
+    >
       <img
-        src={`/connectors/${slug}.svg`}
-        alt={slug}
+        src={src}
+        alt={alt}
         onError={() => setFailed(true)}
         loading="lazy"
         width={24}

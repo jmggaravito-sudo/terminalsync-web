@@ -1,0 +1,41 @@
+{
+  "id": "travel-002",
+  "categoryId": "travel",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 117,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__airbnb_search"
+  ],
+  "es": {
+    "title": "Precio de mi Airbnb contra la zona",
+    "outcome": "Busca en Airbnb alojamientos parecidos al tuyo en tu zona y para tus fechas, y te dice si tu precio por noche está alto, bajo o en el promedio.",
+    "prompt": "Quiero saber si el precio de mi alojamiento en Airbnb está bien comparado con la zona.\n\nZona: [barrio o ciudad, y país — por ejemplo: Brickell, Miami, EE. UU. / El Poblado, Medellín, Colombia].\nFechas: [llegada y salida, por ejemplo: del 12 al 15 de diciembre; o, si no tienes fechas: un fin de semana, una semana o un mes].\nMi alojamiento: [entero o habitación, número de habitaciones y para cuántos huéspedes].\nMi precio por noche: [monto y moneda].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta la zona, las fechas o el idioma, pregúntamelos antes de buscar. Busca en Airbnb alojamientos parecidos al mío en esa zona y para esas fechas, y arma una tabla con: título, tipo de lugar, habitaciones, precio por noche, precio total, calificación, número de reseñas, si el anfitrión es Superanfitrión y enlace. Después dame el rango de precios (bajo, medio y alto), dónde queda mi precio y una recomendación.\n\nAclara siempre para qué fechas son los precios: en Airbnb cambian según las fechas y la cantidad de noches. Usa solo los precios que encuentres; no los estimes.",
+    "recommendedFiles": [
+      "Enlace o descripción de tu alojamiento",
+      "Tu precio por noche"
+    ],
+    "expectedResult": [
+      "Tabla de alojamientos parecidos",
+      "Rango bajo, medio y alto",
+      "Dónde queda tu precio",
+      "Recomendación de precio"
+    ]
+  },
+  "en": {
+    "title": "My Airbnb price vs. the area",
+    "outcome": "Searches Airbnb for stays like yours in your area and for your dates, and tells you whether your nightly price is high, low, or about average.",
+    "prompt": "I want to know whether my Airbnb's price is right compared with the area.\n\nArea: [neighborhood or city, and country — for example: Brickell, Miami, USA / El Poblado, Medellín, Colombia].\nDates: [check-in and check-out, for example: December 12 to 15; or, if you don't have dates: a weekend, a week, or a month].\nMy place: [entire place or room, number of bedrooms, and how many guests].\nMy nightly price: [amount and currency].\nLanguage for the answer: [English / Spanish].\n\nIf the area, the dates, or the language is missing, ask me before searching. Search Airbnb for places like mine in that area and for those dates, and build a table with: title, type of place, bedrooms, nightly price, total price, rating, number of reviews, whether the host is a Superhost, and link. Then give me the price range (low, mid, and high), where my price falls, and a recommendation.\n\nAlways say which dates the prices are for: on Airbnb they change with the dates and the number of nights. Use only the prices you find; don't estimate them.",
+    "recommendedFiles": [
+      "Link to or description of your place",
+      "Your nightly price"
+    ],
+    "expectedResult": [
+      "Table of similar places",
+      "Low, mid, and high range",
+      "Where your price falls",
+      "Price recommendation"
+    ]
+  }
+}

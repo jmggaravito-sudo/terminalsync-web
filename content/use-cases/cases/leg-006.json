@@ -1,0 +1,37 @@
+{
+  "id": "leg-006",
+  "categoryId": "legal",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 68,
+  "es": {
+    "title": "Respuesta a queja legal",
+    "outcome": "Respuesta formal y profesional ante un reclamo legal.",
+    "prompt": "Recibí una queja con tono legal y necesito responder de forma profesional sin admitir responsabilidad de más.\n\nLo que dice el reclamante: [pegar].\nMi versión de los hechos: [describir].\nLo que estoy dispuesto a ofrecer: [opciones].\n\nDame: respuesta formal, qué admitir y qué NO, ofrecimiento concreto si corresponde, próximos pasos sugeridos y recomendación de consultar abogado si es serio.",
+    "recommendedFiles": [
+      "Comunicación del reclamante",
+      "Documentos del caso"
+    ],
+    "expectedResult": [
+      "Respuesta formal",
+      "Qué admitir/no",
+      "Ofrecimiento",
+      "Recomendación"
+    ]
+  },
+  "en": {
+    "title": "Response to legal complaint",
+    "outcome": "Formal, professional response to a legal claim.",
+    "prompt": "I received a complaint with legal tone and I need to respond professionally without admitting more liability than necessary.\n\nWhat the claimant says: [paste].\nMy version of the facts: [describe].\nWhat I am willing to offer: [options].\n\nGive me: a formal response, what to admit and what NOT to admit, a concrete offer if applicable, suggested next steps, and a recommendation to consult a lawyer if it is serious.",
+    "recommendedFiles": [
+      "Claimant's communication",
+      "Case documents"
+    ],
+    "expectedResult": [
+      "Formal response",
+      "What to admit/not",
+      "Offer",
+      "Recommendation"
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "id": "travel-004",
+  "categoryId": "travel",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 119,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__airbnb_search",
+    "business-search__airbnb_reviews"
+  ],
+  "es": {
+    "title": "Qué dicen los huéspedes de mi competencia",
+    "outcome": "Encuentra los alojamientos de Airbnb mejor calificados de tu zona, lee sus reseñas y te dice qué valoran los huéspedes y de qué se quejan.",
+    "prompt": "Quiero saber qué valoran y qué critican los huéspedes de los alojamientos de Airbnb que compiten con el mío.\n\nZona: [barrio o ciudad, y país — por ejemplo: Miami Beach, Florida, EE. UU. / Getsemaní, Cartagena, Colombia].\nTipo de alojamiento: [entero o habitación, y número de habitaciones].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta la zona o el idioma, pregúntamelos antes de buscar. Busca en Airbnb los alojamientos parecidos al mío mejor calificados en esa zona (si buscas sin fechas, dime qué fechas usó la búsqueda) y lee las reseñas más recientes de hasta 3 de ellos. Dame: una tabla con alojamiento, calificación, número de reseñas y enlace; lo que más elogian los huéspedes (limpieza, ubicación, comunicación, camas, vista…); de qué se quejan; cómo responden los anfitriones; y cinco mejoras concretas para mi alojamiento y mi anuncio.\n\nCita frases cortas de las reseñas sin los nombres de los huéspedes. Si un alojamiento no tiene reseñas, dímelo.",
+    "recommendedFiles": [
+      "Descripción de tu alojamiento",
+      "Tus reseñas actuales"
+    ],
+    "expectedResult": [
+      "Alojamientos mejor calificados de tu zona",
+      "Qué elogian los huéspedes",
+      "De qué se quejan",
+      "Mejoras para tu alojamiento"
+    ]
+  },
+  "en": {
+    "title": "What my competitors' guests say",
+    "outcome": "Finds the best-rated Airbnb stays in your area, reads their reviews, and tells you what guests value and what they complain about.",
+    "prompt": "I want to know what guests value and criticize about the Airbnb places that compete with mine.\n\nArea: [neighborhood or city, and country — for example: Miami Beach, Florida, USA / Getsemaní, Cartagena, Colombia].\nType of place: [entire place or room, and number of bedrooms].\nLanguage for the answer: [English / Spanish].\n\nIf the area or the language is missing, ask me before searching. Search Airbnb for the best-rated places like mine in that area (if you search without dates, tell me which dates the search used) and read the most recent reviews of up to 3 of them. Give me: a table with place, rating, number of reviews, and link; what guests praise most (cleanliness, location, communication, beds, view…); what they complain about; how hosts reply; and five concrete improvements for my place and my listing.\n\nQuote short phrases from the reviews without the guests' names. If a place has no reviews, tell me.",
+    "recommendedFiles": [
+      "Description of your place",
+      "Your current reviews"
+    ],
+    "expectedResult": [
+      "Best-rated places in your area",
+      "What guests praise",
+      "What they complain about",
+      "Improvements for your place"
+    ]
+  }
+}

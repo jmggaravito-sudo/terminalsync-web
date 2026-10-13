@@ -17,7 +17,7 @@ import matter from "gray-matter";
 export const REASONS = new Set([
   "ok", "no-manifest", "recipe-not-npx", "package-invalid", "install-failed",
   "no-entrypoint", "handshake-timeout", "no-jsonrpc-id", "no-usable-tools",
-  "needs-postinstall", "env-denied", "unverified-needs-key", "needs-oauth",
+  "needs-postinstall", "env-denied", "unverified-needs-key", "needs-oauth", "remote-needs-login",
 ]);
 const SLUG_RE = /^[a-z0-9-]{1,40}$/;
 const TOOL_RE = /^[A-Za-z0-9_-]{1,64}$/;
@@ -27,6 +27,10 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONNECTOR_DIRS = ["content/connectors/en", "content/connectors/es"];
 const FIRST_PARTY = new Set(["memory", "meta-ads", "meta-social"]);
 const OAUTH_CONNECTORS = new Set(["gmail", "google-calendar", "google-sheets"]);
+// Remote connectors whose OAuth server has no dynamic client registration: mcp-remote
+// cannot log in (smoke 2026-10-08, "does not support dynamic client registration"), so
+// they stay blocked until the app can pre-register a client with the vendor.
+const REMOTE_WITHOUT_DCR = new Set(["zoom"]);
 const KEY_REQUIRED_CONNECTORS = new Set(["postgres", "neon", "mongodb", "stripe", "todoist", "elasticsearch", "pipedream", "monday"]);
 
 function parseArgs(argv) {
@@ -66,6 +70,14 @@ function replaceSecrets(value) {
   return typeof value === "string" ? value.replace(/\$\{SECRET:[A-Z0-9_]+\}/g, "smoke") : value;
 }
 
+// A remote connector is `npx mcp-remote <url>`: the vendor hosts the server and the
+// person logs in once through the browser (OAuth). There is nothing to install and
+// handshake here, and the desktop app runs that login on install, so it is installable.
+export function isMcpRemote(server) {
+  if (!server || server.command !== "npx" || !Array.isArray(server.args)) return false;
+  return server.args.some((a) => typeof a === "string" && (a === "mcp-remote" || a.startsWith("mcp-remote@")));
+}
+
 export function parseRecipe(server) {
   if (!server || server.command !== "npx" || !Array.isArray(server.args)) return { reason: "recipe-not-npx" };
   const args = server.args;
@@ -99,7 +111,7 @@ export function parseRecipe(server) {
   return { packageName, packageSpec, version, runtimeArgs };
 }
 
-function getStdioServer(data) {
+export function getStdioServer(data) {
   const servers = data?.manifest?.mcpServers;
   if (!servers || typeof servers !== "object" || Array.isArray(servers)) return null;
   const entries = Object.values(servers);
@@ -178,6 +190,8 @@ export async function verifyFile(file, { verifiedAt = new Date().toISOString(), 
   if (FIRST_PARTY.has(slug)) return { slug, firstParty: true };
   if (!validateSlug(slug)) return baseResult(slug, "package-invalid", verifiedAt);
   const server = getStdioServer(parsed.data); if (!server) return baseResult(slug, "no-manifest", verifiedAt);
+  if (isMcpRemote(server) && REMOTE_WITHOUT_DCR.has(slug)) return baseResult(slug, "needs-oauth", verifiedAt);
+  if (isMcpRemote(server)) return { slug, installableForAi: true, installableForAiReason: "remote-needs-login", aiToolsCount: 0, aiReadOnlyTools: 0, verifiedAt, verifiedPackageVersion: null };
   const recipe = parseRecipe(server); if (recipe.reason) return baseResult(slug, recipe.reason, verifiedAt);
   const envInput = server.env && typeof server.env === "object" ? server.env : {};
   for (const key of Object.keys(envInput)) if (DENIED_ENV_RE.test(key)) return baseResult(slug, "env-denied", verifiedAt);

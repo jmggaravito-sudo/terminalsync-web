@@ -1,0 +1,33 @@
+{
+  "id": "sales-008",
+  "categoryId": "sales",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 8,
+  "es": {
+    "title": "Calificar leads entrantes",
+    "outcome": "Sistema simple para identificar los prospectos con más probabilidad de comprar.",
+    "prompt": "Quiero un sistema simple para calificar leads que me llegan.\n\nMi negocio: [describir].\nClientes ideales: [perfil].\nVolumen de leads: [aproximado por mes].\n\nDame: 5 preguntas que deben responder al contactarme, criterios para clasificar como Frío/Tibio/Caliente y qué hacer con cada tipo de lead.",
+    "recommendedFiles": [
+      "Histórico de clientes anteriores"
+    ],
+    "expectedResult": [
+      "Preguntas de calificación",
+      "Criterios Frío/Tibio/Caliente",
+      "Acciones por tipo"
+    ]
+  },
+  "en": {
+    "title": "Qualify incoming leads",
+    "outcome": "Simple system to identify prospects with the highest likelihood to buy.",
+    "prompt": "I want a simple system to qualify leads that come to me.\n\nMy business: [describe].\nIdeal customers: [profile].\nLead volume: [approximate per month].\n\nGive me: 5 questions they should answer when contacting me, criteria to classify as Cold/Warm/Hot and what to do with each type of lead.",
+    "recommendedFiles": [
+      "Historical record of previous customers"
+    ],
+    "expectedResult": [
+      "Qualification questions",
+      "Cold/Warm/Hot criteria",
+      "Actions by lead type"
+    ]
+  }
+}

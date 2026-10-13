@@ -268,13 +268,13 @@ Se tratan como deuda, no como diseño. Se declaran solo donde tienen evidencia
 
 #### Cómo se corre
 
-    GEMINI_API_KEY=... ANTHROPIC_API_KEY=... \
-      node scripts/skills-eval/run-evals.mjs <slug> --provider gemini
+    ZAI_API_KEY=... ZAI_MODEL=glm-5.3 \
+      node scripts/skills-eval/run-evals.mjs <slug>   # proveedor GLM por defecto
 
 - **Mediana de 3 corridas**, no una. Medido el 2026-08-07: la misma skill con
   el mismo prompt dio 5/5, 4/5 y 5/5 en tres corridas seguidas — una sola es un
   sorteo en el margen.
-- El **sujeto** es el proveedor evaluado y el **juez** es Claude: modelos
+- El **sujeto** es GLM (modelo `glm-5.3-flash`) y el **juez** es GLM con otro modelo (`glm-5.3`): modelos
   distintos, así el que produce no es el que aprueba.
 - `--local` evalúa el `SKILL.md` del repo antes de publicarlo, que es el orden
   correcto: medir el arreglo sin tener que shipearlo primero.

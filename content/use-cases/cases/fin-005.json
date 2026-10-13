@@ -1,0 +1,35 @@
+{
+  "id": "fin-005",
+  "categoryId": "finance",
+  "recommendedAI": "gemini",
+  "level": "Intermedio",
+  "order": 57,
+  "es": {
+    "title": "Calcular punto de equilibrio",
+    "outcome": "Cuántas unidades o pesos necesitas para no perder dinero.",
+    "prompt": "Quiero saber cuál es mi punto de equilibrio para tomar mejores decisiones.\n\nMi negocio: [describir].\nGastos fijos mensuales: [monto].\nPrecio promedio de venta: [monto].\nCosto variable por unidad: [monto].\n\nDame: cálculo del punto de equilibrio en unidades y pesos, análisis de qué pasaría si subo o bajo el precio, escenarios con diferentes volúmenes de venta y recomendaciones para mejorar la posición.",
+    "recommendedFiles": [
+      "Estructura de costos"
+    ],
+    "expectedResult": [
+      "Punto de equilibrio",
+      "Sensibilidad de precio",
+      "Escenarios",
+      "Recomendaciones"
+    ]
+  },
+  "en": {
+    "title": "Calculate break-even point",
+    "outcome": "How many units or how much money you need to avoid losing money.",
+    "prompt": "I want to know my break-even point to make better decisions.\n\nMy business: [describe].\nMonthly fixed costs: [amount].\nAverage selling price: [amount].\nVariable cost per unit: [amount].\n\nGive me: calculation of the break-even point in units and money, analysis of what would happen if I raise or lower the price, scenarios with different sales volumes and recommendations to improve the position.",
+    "recommendedFiles": [
+      "Cost structure"
+    ],
+    "expectedResult": [
+      "Break-even point",
+      "Price sensitivity",
+      "Scenarios",
+      "Recommendations"
+    ]
+  }
+}

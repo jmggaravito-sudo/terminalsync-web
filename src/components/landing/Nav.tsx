@@ -8,6 +8,7 @@ import type { Dict, Locale } from "@/content";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Logo } from "@/components/Logo";
+import { HeaderB } from "@/components/landing-b/HeaderB";
 import { LANDING_B } from "@/lib/launchFlags";
 
 interface Props {
@@ -35,6 +36,9 @@ export function Nav({ dict, lang }: Props) {
   const isHome =
     pathname === `/${lang}` || pathname === `/${lang}/`;
   if (LANDING_B && isHome) return null;
+  if (LANDING_B && pathname === `/${lang}/casos-de-uso`) {
+    return <HeaderB dict={dict} lang={lang} standalone />;
+  }
 
   // Una sola fuente de items para desktop y móvil.
   const items: NavItem[] = marketplace

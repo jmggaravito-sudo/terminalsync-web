@@ -8,6 +8,7 @@ import {
   stripe,
   type PlanId,
 } from "@/lib/stripe";
+import { shouldApplyCheckoutTrial } from "@/lib/checkoutTrial";
 import {
   ExistingSubscriptionOnOtherRailError,
   assertSameRailForChange,
@@ -50,13 +51,6 @@ interface Body {
 // `tauri://` scheme origin on macOS/Linux; browsers use the literal origin.
 // We allow-list both terminalsync.ai and all tauri origins since the anon
 // endpoint below doesn't expose any secrets beyond publishable info.
-export function shouldApplyCheckoutTrial(
-  plan: PlanId,
-  supabaseUserId?: string | null,
-): boolean {
-  return !supabaseUserId && (plan === "pro" || plan === "max");
-}
-
 function corsHeaders(origin: string | null): Record<string, string> {
   const allowed =
     origin &&

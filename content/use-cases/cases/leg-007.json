@@ -1,0 +1,35 @@
+{
+  "id": "leg-007",
+  "categoryId": "legal",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 69,
+  "es": {
+    "title": "Política de uso de datos",
+    "outcome": "Política interna que protege la información de clientes.",
+    "prompt": "Quiero una política interna de manejo de datos para mi equipo.\n\nMi negocio: [describir].\nDatos sensibles que manejamos: [describir].\nQuién tiene acceso: [roles].\n\nDame: política interna de manejo de datos, reglas claras para el equipo, qué hacer en caso de fuga, capacitación obligatoria sugerida y sanciones por incumplimiento.",
+    "recommendedFiles": [
+      "Sistemas que usan los empleados"
+    ],
+    "expectedResult": [
+      "Política interna",
+      "Reglas claras",
+      "Plan de capacitación",
+      "Sanciones"
+    ]
+  },
+  "en": {
+    "title": "Data usage policy",
+    "outcome": "Internal policy that protects customer information.",
+    "prompt": "I want an internal data handling policy for my team.\n\nMy business: [describe].\nSensitive data we handle: [describe].\nWho has access: [roles].\n\nGive me: an internal data handling policy, clear rules for the team, steps to take in case of a breach, suggested mandatory training, and sanctions for non-compliance.",
+    "recommendedFiles": [
+      "Systems used by employees"
+    ],
+    "expectedResult": [
+      "Internal policy",
+      "Clear rules",
+      "Training plan",
+      "Sanctions"
+    ]
+  }
+}

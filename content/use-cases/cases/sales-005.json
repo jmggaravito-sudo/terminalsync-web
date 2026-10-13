@@ -1,0 +1,35 @@
+{
+  "id": "sales-005",
+  "categoryId": "sales",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 5,
+  "es": {
+    "title": "Escribir email de venta en frío",
+    "outcome": "Email corto que abre conversaciones sin parecer spam.",
+    "prompt": "Ayúdame a escribir un email de venta en frío que el destinatario realmente lea.\n\nMi empresa: [describir].\nA quién le escribo: [perfil].\nQué problema resuelve mi producto: [describir].\n\nQuiero: un asunto que invite a abrir, un saludo personalizado, una frase que conecte con su realidad, una oferta concreta y una pregunta simple para que respondan. Máximo 100 palabras.",
+    "recommendedFiles": [
+      "Información de la empresa destino",
+      "Tu propuesta de valor"
+    ],
+    "expectedResult": [
+      "Asunto",
+      "Email completo",
+      "PD opcional"
+    ]
+  },
+  "en": {
+    "title": "Write a cold sales email",
+    "outcome": "Short email that opens conversations without sounding like spam.",
+    "prompt": "Help me write a cold sales email that the recipient will actually read.\n\nMy company: [describe].\nWho I'm writing to: [profile].\nWhat problem my product solves: [describe].\n\nI want: a subject that invites opening, a personalized greeting, a sentence that connects with their reality, a concrete offer and a simple question for them to answer. Maximum 100 words.",
+    "recommendedFiles": [
+      "Destination company information",
+      "Your value proposition"
+    ],
+    "expectedResult": [
+      "Subject",
+      "Full email",
+      "Optional PS"
+    ]
+  }
+}
