@@ -64,7 +64,7 @@ The credentials are stored encrypted in your Keychain and synced across your mac
 - Create, update, and delete calendar events; fetch a specific event's detail.
 - Check availability for a time window before booking.
 
-Auth is OAuth 2.0 (`AUTH_METHOD=google_cloud`). Config env: `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` from a Google Cloud OAuth client, plus `GOOGLE_REDIRECT_URI=http://localhost:3000/auth/callback` (a fixed literal, not a secret). First run opens the browser consent; tokens persist after.
+Auth is OAuth 2.0 (`AUTH_METHOD=google_cloud`). Config env: `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` from a Google Cloud OAuth client, plus `GOOGLE_REDIRECT_URI=http://localhost:3000/auth/callback` (a fixed literal, not a secret). Verified 2026-10-14: this package is not a stdio MCP server — it starts an HTTP server on port 3000 and login happens by visiting `/mcp/auth/url`; it never answers the MCP handshake over stdio. That is why this connector is not yet installable for the AI.
 
 Terminal Sync keeps the client id/secret + refresh token in your Keychain, synced encrypted across machines with AES-256-GCM. Because create/update/delete mutate a real calendar, the desktop gates those behind a confirmation step.
 

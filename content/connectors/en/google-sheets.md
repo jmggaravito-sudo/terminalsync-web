@@ -63,7 +63,7 @@ Both values are stored encrypted in your Keychain and synced across your machine
 - **Values**: `sheets_values_get` (one range), `sheets_values_batch_get` (multiple ranges), `sheets_values_update` (write a range, overwrites), `sheets_values_batch_update` (write multiple ranges).
 - **Sheets**: `sheets_sheets_list` (list tabs in a spreadsheet).
 
-Auth is OAuth 2.0 with the `spreadsheets` scope (full read/write). Config env: `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` from a Google Cloud OAuth client, redirect `http://localhost:3000/callback`. The server exposes an `/authorize` flow that redirects to Google and encodes the client's callback URL in state — first run opens the browser consent, tokens persist after.
+Auth is OAuth 2.0 with the `spreadsheets` scope (full read/write). Config env: `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` from a Google Cloud OAuth client, redirect `http://localhost:3000/callback`. The server exposes an `/authorize` flow that redirects to Google and encodes the client's callback URL in state — Verified 2026-10-14: over stdio this package does NOT use the client id/secret or open a browser — it exits with "GOOGLE_ACCESS_TOKEN required for stdio transport" (OAuth only exists in its HTTP transport). That is why this connector is not yet installable for the AI: the app would need to supply a Google access token.
 
 Terminal Sync keeps the client id/secret + refresh token in your Keychain, synced encrypted across machines with AES-256-GCM. Pairs well with the Google Drive connector (same author) for finding, sharing and deleting files.
 
