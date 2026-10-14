@@ -3,17 +3,17 @@ name: Shopify
 logo: /connectors/shopify.svg
 category: automation
 markets: ["GLOBAL"]
-status: available
-simpleTitle: "Pregúntale a tu IA por tu tienda de Shopify"
-simpleSubtitle: "Conector propio de Terminal Sync sobre la Admin API oficial de Shopify: ventas, pedidos, productos y clientes."
-devTitle: "Shopify Admin GraphQL Connector"
-devSubtitle: "Servidor MCP first-party sobre la Admin GraphQL API oficial de Shopify."
+status: soon
+simpleTitle: "Tu tienda de Shopify, con tu IA — todavía no disponible"
+simpleSubtitle: "Todavía no disponible en TerminalSync: Shopify no publica una dirección pública que podamos conectar."
+devTitle: "Shopify (todavía no disponible)"
+devSubtitle: "Sin dirección MCP oficial pública para conectar; el conector integrado se retiró."
 ctaUrl: "https://www.shopify.com"
-tokenHelpUrl: "https://help.shopify.com/en/manual/apps/app-types/custom-apps"
+tokenHelpUrl: "https://help.shopify.com/en/manual/ai-powered-tools/connecting-ai-tools/shopify-connector-for-claude"
 affiliate: false
-tagline: "Tu tienda de Shopify, al alcance del agente"
-originalAuthor: "Terminal Sync"
-originalAuthorUrl: "https://terminalsync.ai"
+tagline: "Shopify: todavía no disponible en TerminalSync"
+originalAuthor: "Shopify"
+originalAuthorUrl: "https://help.shopify.com/en/manual/apps/connecting-ai-tools"
 license: "proprietary"
 licenseUrl: "https://terminalsync.ai"
 installableForAi: false
@@ -23,34 +23,30 @@ aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
-**Shopify** es la plataforma detrás de millones de tiendas online. Este conector es **propio de Terminal Sync**: hablamos con la **Admin GraphQL API oficial** de Shopify para que tu asistente lea tu negocio y te responda en lenguaje natural — sin que tengas que entrar al panel.
+**Shopify** todavía no está disponible en TerminalSync, y preferimos decirlo antes que prometer algo que no podemos cumplir.
 
-A diferencia de otras integraciones, **no se instala pegando un paquete**: se conecta **desde adentro de la app**, en **Ajustes → Integraciones → Shopify**. Pegas la dirección de tu tienda y una clave de acceso que generas en Shopify, le das "Probar conexión", y listo. La clave se guarda **cifrada en tu computadora** (nunca en un archivo a la vista).
-
-Le preguntas *"¿cuánto vendí esta semana?"* y lee tus datos de Shopify y te contesta. Le pedís *"muéstrame los pedidos sin enviar"* y te arma la lista. También puede **hacer cambios seguros** — como crear un producto (queda en borrador) o publicar/despublicar uno — pero **siempre te muestra primero qué va a hacer y espera tu OK** antes de tocar nada. Nunca cambia tu tienda sin que confirmes.
+Antes teníamos un conector integrado en la app. Ese conector integrado se **retiró el 2026-09-10**, así que **ya no existe el paso "Ajustes → Integraciones"** y esta página no lo ofrece. Hoy TerminalSync **no puede leer ni cambiar tu tienda de Shopify**.
 
 ### Qué le puedes pedir
 
-- *"¿Cuántas ventas y cuánta plata hicimos esta semana?"*
-- *"Muéstrame los últimos 10 pedidos y cuáles faltan enviar."*
-- *"¿Qué productos tengo activos y con cuánto stock?"*
-- *"Busca al cliente con el email ana@empresa.com y cuántas compras hizo."*
+- *Hoy, nada sobre tu tienda:* TerminalSync todavía no puede leer ni cambiar tus datos de Shopify.
+- *"¿Cómo configuro las tarifas de envío en Shopify?"* — las preguntas generales funcionan, y la respuesta viene de conocimiento general, no de tu tienda.
+- *"Aquí está la exportación de pedidos que bajé de Shopify — ¿qué productos se venden más?"* — tú exportas el archivo desde tu admin de Shopify y lo compartes en el chat.
 
-### Qué necesitas
+### Por qué no está disponible
 
-Necesitas dos cosas de tu cuenta de Shopify:
+Los conectores de TerminalSync que funcionan con un simple login usan una **dirección oficial que publica el proveedor**. Para Shopify no encontramos una que podamos usar:
 
-1. **La dirección de tu tienda** — algo como `mi-tienda.myshopify.com`.
-2. **Una clave de acceso (Admin API access token)** — se genera creando una *"custom app"* en tu Shopify, con permisos de lectura de pedidos, productos y clientes. La guía oficial está en [help.shopify.com](https://help.shopify.com/en/manual/apps/app-types/custom-apps).
+- Shopify sí ofrece conectores oficiales para dueños de negocio, pero se instalan **desde el directorio de conectores de ciertas herramientas de IA** (el centro de ayuda de Shopify describe el de Claude), y las páginas de Shopify no publican una dirección de servidor a la que TerminalSync pueda conectarse. Mira [la página de Shopify sobre conectar herramientas de IA](https://help.shopify.com/en/manual/apps/connecting-ai-tools).
+- El MCP para desarrolladores de Shopify (`@shopify/dev-mcp`) es para quien **construye apps y temas**: trabaja con la documentación de Shopify y no usa el login de tu tienda. No sirve para preguntar por tus ventas o pedidos.
+- Los servidores de storefront de Shopify son para **asistentes de compradores** que hablan con una tienda pública, no para que el dueño la administre.
 
-Después vas a **Ajustes → Integraciones → Shopify** en Terminal Sync, pegas las dos cosas y conectas. La clave viaja cifrada entre tus computadoras junto con el resto de tu perfil.
+Agregaremos Shopify apenas tenga una dirección oficial que podamos conectar con tu propio login, y actualizaremos esta página entonces.
 
 --- dev ---
 
-Conector **first-party**: Terminal Sync bundlea su propio servidor MCP (`terminalsync-shopify-mcp`, sidecar vía Tauri `externalBin`) que habla la **Admin GraphQL API** de Shopify. No es un paquete npm de terceros ni un servidor remoto — es código nuestro sobre la API oficial, elegido porque Shopify no publica un servidor MCP operador para el dueño de la tienda (`@shopify/dev-mcp` es solo para documentación/schema).
+Estado: **bloqueado, no disponible**. El sidecar propio (`terminalsync-shopify-mcp`) y su flujo Ajustes → Integraciones se retiraron de la app el 2026-09-10; no hay manifest y ninguna de sus tools existe ya.
 
-**Config (inyectada por la app desde el almacén cifrado):** `SHOPIFY_STORE_DOMAIN` (ej. `mi-tienda.myshopify.com`), `SHOPIFY_ADMIN_ACCESS_TOKEN` (`shpat_…`, guardado en el llavero del sistema, nunca en un archivo de config), y `SHOPIFY_API_VERSION` opcional.
+Investigado el 2026-10-14 contra fuentes oficiales: (1) Shopify Dev MCP / AI Toolkit (`shopify.dev/docs/apps/build/devmcp`, `shopify.dev/docs/apps/build/ai-toolkit`): corre local con `@shopify/dev-mcp`, no requiere autenticación, es documentación/schema/validación para desarrolladores; la gestión de la tienda pasa por el contexto autenticado de Shopify CLI, no por una URL MCP. (2) Storefront MCP (`shopify.dev/docs/apps/build/storefront-mcp`): `https://{shop}/api/mcp` y los endpoints UCP son por tienda y para compradores. (3) Conectores para comerciantes (`help.shopify.com/en/manual/ai-powered-tools/connecting-ai-tools/shopify-connector-for-claude`): se instalan desde el directorio de Claude y se aprueban en el admin de Shopify; la página no publica URL MCP, así que no se puede puentear con `mcp-remote` desde una dirección documentada.
 
-**Tools de lectura:** `shopify_shop_info`, `shopify_list_orders`, `shopify_sales_summary`, `shopify_list_products`, `shopify_search_customers`. **Tools de escritura (con confirm gate de dos pasos):** `shopify_create_product` (crea en BORRADOR), `shopify_set_product_status` (publica/despublica). Sin `confirm` devuelven un PREVIEW y no mutan nada; el agente muestra el preview y recién con `confirm: true` (tras aprobación del usuario) aplican. Más writes (precio, inventario, fulfillment) pueden agregarse con el mismo patrón.
-
-La conexión se hace desde **Ajustes → Integraciones → Shopify** (verifica la tienda antes de guardar y cablea el servidor en Claude/Codex/Gemini). Fuente: Admin GraphQL API oficial de Shopify (`help.shopify.com`, `shopify.dev`).
+Condición de desbloqueo: que Shopify documente una URL MCP remota pública para comerciantes en la que `node scripts/smoke-remote-login.mjs --slugs shopify` llegue al paso de autorización.

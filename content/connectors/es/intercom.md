@@ -4,51 +4,63 @@ logo: /connectors/intercom.svg
 category: support
 markets: ["GLOBAL"]
 status: available
-simpleTitle: "Tu bandeja de soporte, atendida contigo"
-simpleSubtitle: "\"Muéstrame las conversaciones sin leer\" \"Busca al cliente juan@empresa.com\" — la IA revisa tu Intercom y prepara la respuesta."
-devTitle: "Conector de Intercom (propio)"
-devSubtitle: "Servidor MCP propio de TerminalSync sobre la Intercom API oficial — listar conversaciones, leerlas, buscar contactos y responder con confirmación."
+simpleTitle: "Pregúntale a tu IA por tu bandeja de Intercom"
+simpleSubtitle: "MCP oficial de Intercom: busca conversaciones, contactos, empresas y artículos de ayuda con OAuth, sin pegar ningún token."
+devTitle: "Conector MCP de Intercom"
+devSubtitle: "MCP oficial hospedado de Intercom (mcp.intercom.com) — conversaciones, contactos, empresas y artículos por OAuth."
 ctaUrl: "https://www.intercom.com"
-tokenHelpUrl: "https://developers.intercom.com/building-apps/docs/authentication-types"
+tokenHelpUrl: "https://developers.intercom.com/docs/guides/mcp"
+manifest:
+  mcpServers:
+    intercom:
+      command: npx
+      args: ["-y", "mcp-remote@latest", "https://mcp.intercom.com/mcp"]
 affiliate: false
-tagline: "Leer, entender y responder tu soporte"
-originalAuthor: "Intercom (REST API) · conector de Terminal Sync"
-originalAuthorUrl: "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/"
+tagline: "Tu bandeja de Intercom, al alcance del agente"
+originalAuthor: "Intercom"
+originalAuthorUrl: "https://developers.intercom.com/docs/guides/mcp"
 license: "proprietary"
-installableForAi: false
-installableForAiReason: "no-manifest"
+licenseUrl: "https://www.intercom.com/legal/terms-and-policies"
+marketplaceSource: "official"
+marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
 aiToolsCount: 0
 aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
-Cuando tus clientes te escriben por **Intercom** — dudas, reclamos, pedidos — mantenerte al día es un trabajo aparte. Este conector pone a tu IA a ayudarte: pídele que revise tu bandeja en palabras simples y te dice qué conversaciones necesitan atención, encuentra al cliente que buscas y prepara la respuesta por ti.
+**Intercom** es la bandeja de mensajería y soporte que muchos negocios usan para hablar con sus clientes. El servidor MCP oficial de Intercom deja que tu agente revise ese espacio de trabajo — conversaciones, contactos, empresas y artículos del centro de ayuda — sin pegar ningún token en TerminalSync, solo con el login de tu propia cuenta de Intercom.
 
-Pregúntale *"¿qué conversaciones tengo sin leer?"* y te lista lo que quedó pendiente. Dile *"busca al cliente ana@empresa.com"* y te trae su ficha. Pídele *"respóndele que ya lo solucionamos"* y redacta la respuesta — pero recién la manda después de mostrártela y que confirmes, porque una respuesta la ve el cliente.
+Le preguntas *"Busca las conversaciones de este cliente y resúmeme el problema"* y el agente busca en tu bandeja y las lee. Le preguntas *"¿Qué artículos de ayuda tenemos sobre reembolsos?"* y busca en tu centro de ayuda. Es sobre todo un conector de **lectura**: también puede dejar **notas internas** (solo las ve tu equipo) y crear o editar **artículos del centro de ayuda**, pero **no puede responderle a un cliente** — eso lo sigues haciendo tú en Intercom.
 
 ### Qué le puedes pedir
 
-- *"Muéstrame las conversaciones de soporte sin leer."*
-- *"Lee la conversación de este cliente y resúmeme el problema."*
-- *"Respóndele a esta conversación que le mandamos el reemplazo hoy."*
+- *"Busca las conversaciones de ana@empresa.com y resúmeme qué necesita."*
+- *"Lee esta conversación y dime qué está pidiendo el cliente."*
+- *"Encuentra el contacto de este email y muéstrame a qué empresa pertenece."*
+- *"Lista mis artículos del centro de ayuda y encuentra los de envíos."*
+- *"Agrega una nota interna a esta conversación diciendo que lo llamamos mañana."*
+- *"Redacta un artículo de ayuda sobre nuestra política de devoluciones."*
 
-### Cómo se conecta
+### Cómo conectas
 
-Intercom es un **conector propio**: corre el servidor chico de Terminal Sync sobre la API oficial de Intercom — no hay paquete npm para instalar. Lo conectas desde la app (Ajustes → Integraciones → Intercom), y tu token de acceso queda guardado cifrado en tu Keychain y sincronizado entre tus máquinas.
+Este conector **no te pide pegar ningún token**. Usa el login de tu propia cuenta de Intercom:
 
-Leer y buscar corren libremente; **responderle a un cliente sale hacia afuera**, así que la IA te muestra qué va a mandar y solo envía la respuesta cuando confirmas.
+1. Activa el conector en TerminalSync.
+2. El puente `mcp-remote` abre el login de Intercom en tu navegador y te pide autorizar el acceso.
+3. Apruébalo con tu cuenta. La guía oficial de Intercom está en [developers.intercom.com](https://developers.intercom.com/docs/guides/mcp).
 
-> Aviso: para conectar, genera un token de acceso desde el Developer Hub de Intercom — el chat de soporte dentro de la app te guía. (Un flujo de "Conéctate con Intercom" por OAuth está en camino.)
+**Aclaración honesta:** es un servidor **hospedado por Intercom** (`https://mcp.intercom.com/mcp`), no algo que corre en tu computadora. Intercom lo documenta **solo para espacios alojados en EE. UU. o en la UE** (la UE usa otra dirección, `mcp.eu.intercom.com`, que este conector no usa) y **los espacios alojados en Australia no están soportados**. Las tres acciones de escritura son notas internas y crear o actualizar artículos; los artículos pueden verlos tus clientes, así que revisa antes de publicar. La página de Intercom no indica requisitos de plan ni de rol, así que si el login falla, consulta con el administrador de tu Intercom.
 
 --- dev ---
 
-Sidecar MCP propio (`terminalsync-intercom-mcp`, en el repo `terminal-sync`) sobre la Intercom REST API oficial (base `api.intercom.io`, header `Intercom-Version: 2.11`). Endpoints sacados del SDK oficial `intercom-client` de npm (v7.x).
+Intercom publica un **servidor MCP remoto oficial** en `https://mcp.intercom.com/mcp` (espacios de EE. UU.; la UE en `https://mcp.eu.intercom.com/mcp`; AU no soportado), documentado en `developers.intercom.com/docs/guides/mcp`. El transporte es Streamable HTTP (los endpoints `/sse` están deprecados). La auth es **OAuth** (el servidor de autorización anuncia registro dinámico de cliente en `/register` con PKCE S256); también se documenta auth por bearer token, pero este conector usa OAuth. TerminalSync hace de puente con el endpoint hospedado localmente:
 
-Tools:
+```
+npx -y mcp-remote@latest https://mcp.intercom.com/mcp
+```
 
-- **Lectura**: `intercom_me` (GET /me — quién está conectado), `intercom_list_conversations` (GET /conversations — id, estado open/closed, leído/sin leer), `intercom_get_conversation` (GET /conversations/{id} — todos los mensajes), `intercom_find_contact` (POST /contacts/search por email).
-- **Escritura (con confirmación)**: `intercom_reply` (POST /conversations/{id}/reply, `message_type: comment`, `type: admin`) — SAFE TWO-STEP WRITE. Sin `confirm=true` previsualiza y no manda nada; con `confirm=true` primero resuelve el `admin_id` con GET /me y después envía la respuesta.
+Tools (14, según la página oficial): **solo lectura** `search`, `fetch`, `search_conversations`, `get_conversation`, `search_contacts`, `get_contact`, `list_companies`, `get_company`, `list_articles`, `search_articles`, `get_article`; **escritura** `create_article`, `update_article`, `add_internal_note` (atribuida al admin que autorizó la conexión). Un 401 en `add_internal_note` suele indicar que la conexión es anterior al permiso de escritura y hay que reconectar.
 
-Los bodies de Intercom vienen en HTML, así que el sidecar los limpia a texto plano antes de mostrarlos. La auth es un token de acceso de Intercom (Access Token de una app, o Personal Access Token), leído del keychain del OS (env `INTERCOM_ACCESS_TOKEN` para overrides). Terminal Sync guarda el token en tu Keychain, sincronizado cifrado entre máquinas con AES-256-GCM. Un flujo OAuth completo es el follow-up planeado para no re-pegar el token.
-
-Licencia: el código del conector es de Terminal Sync; la API y los datos son de Intercom (propietario).
+Licencia: términos SaaS propietarios (`intercom.com/legal/terms-and-policies`). Fuente: developers.intercom.com/docs/guides/mcp.
