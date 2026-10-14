@@ -2,6 +2,7 @@
 name: Linear
 logo: /connectors/linear.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your issues and projects, handled in plain language"
 simpleSubtitle: "Official Linear MCP server: find, create and update issues, projects and comments over OAuth."

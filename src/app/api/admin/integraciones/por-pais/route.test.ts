@@ -32,8 +32,10 @@ describe("GET /api/admin/integraciones/por-pais", () => {
     const res = await GET(req());
     expect(res.status).toBe(200);
     const body = (await res.json()) as { rows: { slug: string; markets: string[]; status: string }[] };
-    const alegra = body.rows.find((r) => r.slug === "alegra");
-    expect(alegra?.markets).toContain("CO");
+    const siigo = body.rows.find((r) => r.slug === "siigo");
+    expect(siigo?.markets).toContain("CO");
+    // Alegra was pulled back (status soon): hidden until re-verified.
+    expect(body.rows.find((r) => r.slug === "alegra")).toBeUndefined();
     expect(alegra?.status).toBe("login-pending");
     expect(body.rows.find((r) => r.slug === "pipedream")).toBeUndefined(); // hidden
   });

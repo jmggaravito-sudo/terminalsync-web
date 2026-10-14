@@ -2,6 +2,7 @@
 name: Pipedrive
 logo: /connectors/pipedrive.png
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tu pipeline de ventas, resuelto en lenguaje natural"
 simpleSubtitle: "Server MCP oficial de Pipedrive: busca, crea y actualiza tratos, contactos y seguimientos por OAuth."
