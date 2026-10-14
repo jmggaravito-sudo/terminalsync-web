@@ -1,0 +1,41 @@
+{
+  "id": "xero-002",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 143,
+  "isNew": true,
+  "connectors": [
+    "xero"
+  ],
+  "es": {
+    "title": "Preparar un borrador de factura en Xero",
+    "outcome": "Arma una factura en borrador en Xero para que la revises, sin enviarla ni cobrarla.",
+    "prompt": "Quiero preparar una factura en Xero.\n\nCliente: [nombre].\nConcepto: [descripción del servicio o producto].\nMonto: [monto y moneda].\nVence en: [por ejemplo, 15 días].\n\nPrimero busca al cliente en Xero y dime si lo encuentras; si no existe, pregúntame antes de crearlo. Luego muéstrame la factura como quedaría (cliente, concepto, monto, impuestos, fecha de vencimiento y total) y pídeme confirmación. No crees nada hasta que yo escriba \"confirmo\". Créala solo como borrador: no la envíes ni registres pagos. Si algo no cuadra, avísame antes.",
+    "recommendedFiles": [
+      "Cotización aprobada por el cliente",
+      "Datos fiscales del cliente"
+    ],
+    "expectedResult": [
+      "Cliente encontrado en Xero",
+      "Vista previa de la factura",
+      "Confirmación antes de crear",
+      "Borrador listo para revisar"
+    ]
+  },
+  "en": {
+    "title": "Prepare a draft invoice in Xero",
+    "outcome": "Puts together a draft invoice in Xero for you to review, without sending it or collecting payment.",
+    "prompt": "I want to prepare an invoice in Xero.\n\nCustomer: [name].\nDescription: [service or product].\nAmount: [amount and currency].\nDue in: [for example, 15 days].\n\nFirst look up the customer in Xero and tell me whether you find them; if they don't exist, ask me before creating them. Then show me the invoice as it would be created (customer, description, amount, taxes, due date, and total) and ask me to confirm. Don't create anything until I write \"confirm\". Create it as a draft only: don't send it or record payments. If something doesn't add up, tell me first.",
+    "recommendedFiles": [
+      "Quote approved by the customer",
+      "Customer's billing details"
+    ],
+    "expectedResult": [
+      "Customer found in Xero",
+      "Invoice preview",
+      "Confirmation before creating",
+      "Draft ready to review"
+    ]
+  }
+}

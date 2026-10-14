@@ -1,0 +1,39 @@
+{
+  "id": "canva-001",
+  "categoryId": "marketing",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 169,
+  "isNew": true,
+  "connectors": [
+    "canva"
+  ],
+  "es": {
+    "title": "Encontrar mis diseños y materiales de marca en Canva",
+    "outcome": "Busca en tu Canva el diseño que editaste hace poco o los materiales de una campaña, para que no pierdas tiempo.",
+    "prompt": "Ayúdame a ubicar cosas en mi Canva.\n\nQué busco: [mi diseño editado más recientemente / los diseños de una campaña / los materiales de marca].\nNombre o tema: [por ejemplo, promo de verano / menú / logo].\n\nSi te falta lo que busco, pregúntamelo antes de consultar. Busca en mis diseños y carpetas y dame:\n1. Una lista de lo que encuentres, con nombre, tipo (publicación, historia, folleto, presentación) y fecha de última edición.\n2. Cuál te parece el más reciente o el más adecuado, y por qué.\n3. Qué materiales de marca (logos, imágenes, colores) aparecen en esas carpetas.\n\nSolo consulta: no edites, no borres ni exportes nada. Si no encuentras algo, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Nombre de la campaña",
+      "Tipo de diseño que buscas"
+    ],
+    "expectedResult": [
+      "Diseños encontrados",
+      "El más reciente o adecuado",
+      "Materiales de marca disponibles"
+    ]
+  },
+  "en": {
+    "title": "Find my designs and brand assets in Canva",
+    "outcome": "Searches your Canva for the design you edited recently or a campaign's materials, so you don't lose time.",
+    "prompt": "Help me locate things in my Canva.\n\nWhat I'm looking for: [my most recently edited design / the designs for a campaign / brand assets].\nName or topic: [for example, summer promo / menu / logo].\n\nIf what I'm looking for is missing, ask me before looking. Search my designs and folders and give me:\n1. A list of what you find, with name, type (post, story, flyer, presentation), and last edit date.\n2. Which one looks most recent or most suitable, and why.\n3. Which brand assets (logos, images, colors) appear in those folders.\n\nRead only: don't edit, delete, or export anything. If you can't find something, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Campaign name",
+      "Type of design you're looking for"
+    ],
+    "expectedResult": [
+      "Designs found",
+      "Most recent or suitable one",
+      "Available brand assets"
+    ]
+  }
+}

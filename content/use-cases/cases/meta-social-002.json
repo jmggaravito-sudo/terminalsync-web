@@ -1,0 +1,41 @@
+{
+  "id": "meta-social-002",
+  "categoryId": "social",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 176,
+  "isNew": true,
+  "connectors": [
+    "meta-social"
+  ],
+  "es": {
+    "title": "Publicar una foto con texto en Instagram y Facebook",
+    "outcome": "Redacta el texto de tu publicación, te muestra cómo saldrá y publica solo cuando tú lo apruebas.",
+    "prompt": "Quiero publicar una foto en mis redes.\n\nFoto: [la imagen que quiero publicar].\nDónde publicar: [Instagram / Facebook / ambos].\nMensaje: [de qué trata: promoción, novedad, horario].\nTono: [cercano / profesional / divertido].\nIdioma: [español / inglés].\n\nRedacta el texto de la publicación con un llamado a la acción y, para Instagram, algunos hashtags relevantes. Muéstrame exactamente qué se va a publicar y en qué cuenta o página saldrá, y pídeme aprobación. No publiques nada hasta que yo escriba \"confirmo\", porque publicar es público y no se puede deshacer. Si una cuenta no está lista para publicar, dímelo y no lo intentes.",
+    "recommendedFiles": [
+      "Foto o imagen del producto",
+      "Datos de la promoción o novedad"
+    ],
+    "expectedResult": [
+      "Texto de la publicación",
+      "Cuenta y vista previa",
+      "Aprobación antes de publicar",
+      "Publicación en línea"
+    ]
+  },
+  "en": {
+    "title": "Post a photo with a caption on Instagram and Facebook",
+    "outcome": "Writes the text for your post, shows you how it will look, and posts only when you approve.",
+    "prompt": "I want to post a photo on my social accounts.\n\nPhoto: [the image I want to post].\nWhere to post: [Instagram / Facebook / both].\nMessage: [what it's about: promotion, news, hours].\nTone: [friendly / professional / playful].\nLanguage: [English / Spanish].\n\nWrite the post text with a call to action and, for Instagram, a few relevant hashtags. Show me exactly what will be posted and on which account or page it will go, and ask for my approval. Don't post anything until I write \"confirm\", because posting is public and can't be undone. If an account isn't ready to post, tell me and don't try.",
+    "recommendedFiles": [
+      "Photo or product image",
+      "Details of the promotion or news"
+    ],
+    "expectedResult": [
+      "Post text",
+      "Account and preview",
+      "Approval before posting",
+      "Post live"
+    ]
+  }
+}

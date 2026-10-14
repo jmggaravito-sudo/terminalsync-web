@@ -1,0 +1,41 @@
+{
+  "id": "clickup-001",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 159,
+  "isNew": true,
+  "connectors": [
+    "clickup"
+  ],
+  "es": {
+    "title": "Tareas de esta semana y quién las tiene en ClickUp",
+    "outcome": "Lista las tareas con vencimiento esta semana en tu espacio de ClickUp y quién es responsable de cada una.",
+    "prompt": "Muéstrame qué vence esta semana en ClickUp.\n\nEspacio o lista: [todos / nombre].\nPersona: [todo el equipo / nombre].\nPeriodo: [esta semana / próximos 7 días].\n\nSi te falta algún dato, pregúntamelo antes de buscar. Primero lista mis espacios y listas para ubicar dónde buscar. Luego busca las tareas con vencimiento en ese periodo y dame:\n1. Una tabla con tarea, lista, responsable, fecha y estado.\n2. Las tareas atrasadas.\n3. Quiénes tienen más carga esta semana.\n4. Tareas sin responsable.\n\nSolo consulta: no crees ni cambies tareas. Si un dato no aparece en ClickUp, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Lista de personas del equipo",
+      "Prioridades de la semana"
+    ],
+    "expectedResult": [
+      "Tabla de tareas por vencer",
+      "Tareas atrasadas",
+      "Carga por persona",
+      "Tareas sin responsable"
+    ]
+  },
+  "en": {
+    "title": "This week's tasks and who owns them in ClickUp",
+    "outcome": "Lists the tasks due this week in your ClickUp workspace and who is responsible for each.",
+    "prompt": "Show me what's due this week in ClickUp.\n\nSpace or list: [all / name].\nPerson: [whole team / name].\nPeriod: [this week / next 7 days].\n\nIf anything is missing, ask me before searching. First list my spaces and lists to find where to look. Then search for tasks due in that period and give me:\n1. A table with task, list, owner, date, and status.\n2. The overdue tasks.\n3. Who has the heaviest load this week.\n4. Tasks with no owner.\n\nRead only: don't create or change tasks. If something doesn't appear in ClickUp, tell me instead of guessing.",
+    "recommendedFiles": [
+      "List of team members",
+      "This week's priorities"
+    ],
+    "expectedResult": [
+      "Table of tasks coming due",
+      "Overdue tasks",
+      "Workload per person",
+      "Unassigned tasks"
+    ]
+  }
+}

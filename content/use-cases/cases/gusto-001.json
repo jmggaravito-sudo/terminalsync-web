@@ -1,0 +1,41 @@
+{
+  "id": "gusto-001",
+  "categoryId": "hr",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 153,
+  "isNew": true,
+  "connectors": [
+    "gusto"
+  ],
+  "es": {
+    "title": "Próxima nómina y fechas de pago en Gusto",
+    "outcome": "Consulta en Gusto cuándo es tu próxima nómina, el periodo que cubre y el historial reciente.",
+    "prompt": "Muéstrame cómo viene la nómina en Gusto.\n\nEmpresa: [nombre, si manejo más de una].\nQué quiero saber: [próxima fecha de pago / periodos de pago / últimas nóminas].\n\nSi te falta algún dato, pregúntamelo antes de consultar. Lee mis calendarios de pago y nóminas y dame:\n1. La próxima fecha de pago y el periodo que cubre.\n2. Las últimas tres nóminas con su fecha y estado, y su total si aparece.\n3. Cuántos empleados están en nómina y en qué oficinas.\n4. Una lista de fechas clave del próximo mes para ponerlas en mi calendario.\n\nEsta consulta es solo de lectura: no puedes correr nóminas ni cambiar datos de empleados. Si un total no aparece en los datos, dímelo en vez de calcularlo por tu cuenta.",
+    "recommendedFiles": [
+      "Calendario de pagos de tu empresa",
+      "Lista de oficinas"
+    ],
+    "expectedResult": [
+      "Próxima fecha de pago y periodo",
+      "Últimas tres nóminas",
+      "Empleados por oficina",
+      "Fechas clave del mes"
+    ]
+  },
+  "en": {
+    "title": "Next payroll and pay dates in Gusto",
+    "outcome": "Checks in Gusto when your next payroll is, the period it covers, and recent history.",
+    "prompt": "Show me how payroll looks in Gusto.\n\nCompany: [name, if I manage more than one].\nWhat I want to know: [next pay date / pay periods / latest payrolls].\n\nIf anything is missing, ask me before looking. Read my pay schedules and payrolls and give me:\n1. The next pay date and the period it covers.\n2. The last three payrolls with their date and status, and their total if it appears.\n3. How many employees are on payroll and in which offices.\n4. A list of key dates for next month to put on my calendar.\n\nThis is read only: you can't run payroll or change employee data. If a total doesn't appear in the data, tell me instead of calculating it on your own.",
+    "recommendedFiles": [
+      "Your company's pay calendar",
+      "List of offices"
+    ],
+    "expectedResult": [
+      "Next pay date and period",
+      "Last three payrolls",
+      "Employees by office",
+      "Key dates for the month"
+    ]
+  }
+}

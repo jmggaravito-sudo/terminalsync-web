@@ -1,0 +1,41 @@
+{
+  "id": "klaviyo-001",
+  "categoryId": "marketing",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 149,
+  "isNew": true,
+  "connectors": [
+    "klaviyo"
+  ],
+  "es": {
+    "title": "Resultados de mis campañas de correo en Klaviyo",
+    "outcome": "Revisa cómo rindieron tus campañas y flujos en Klaviyo y te dice cuáles repetir y cuáles mejorar.",
+    "prompt": "Quiero ver cómo me fue con el correo en Klaviyo.\n\nPeriodo: [últimos 30 días / este trimestre].\nQué me importa más: [aperturas / clics / ventas generadas].\n\nSi te falta el periodo, pregúntamelo antes de consultar. Lee mis campañas y flujos de ese periodo y dame:\n1. Una tabla de campañas con envíos, aperturas, clics y, si está disponible, ingresos atribuidos.\n2. Las tres campañas que mejor funcionaron y qué tienen en común.\n3. Los flujos con mejor y peor desempeño.\n4. Tres ideas concretas para la próxima campaña.\n\nSolo consulta: no envíes ni cambies campañas. Si un dato no aparece, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Calendario de promociones",
+      "Metas de ventas por correo"
+    ],
+    "expectedResult": [
+      "Tabla de campañas con métricas",
+      "Campañas ganadoras",
+      "Flujos mejor y peor",
+      "Tres ideas para la próxima"
+    ]
+  },
+  "en": {
+    "title": "Results of my email campaigns in Klaviyo",
+    "outcome": "Reviews how your campaigns and flows performed in Klaviyo and tells you which to repeat and which to improve.",
+    "prompt": "I want to see how email went in Klaviyo.\n\nPeriod: [last 30 days / this quarter].\nWhat matters most: [opens / clicks / sales generated].\n\nIf the period is missing, ask me before looking. Read my campaigns and flows for that period and give me:\n1. A table of campaigns with sends, opens, clicks, and, if available, attributed revenue.\n2. The three best-performing campaigns and what they have in common.\n3. The best and worst performing flows.\n4. Three concrete ideas for the next campaign.\n\nRead only: don't send or change campaigns. If something doesn't appear, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Promotions calendar",
+      "Email sales goals"
+    ],
+    "expectedResult": [
+      "Campaign table with metrics",
+      "Winning campaigns",
+      "Best and worst flows",
+      "Three ideas for the next one"
+    ]
+  }
+}

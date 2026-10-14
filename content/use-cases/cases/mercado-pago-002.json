@@ -1,0 +1,39 @@
+{
+  "id": "mercado-pago-002",
+  "categoryId": "support",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 137,
+  "isNew": true,
+  "connectors": [
+    "mercado-pago"
+  ],
+  "es": {
+    "title": "¿Ya entró el pago de este pedido? (Mercado Pago)",
+    "outcome": "Verifica un pago o un pedido puntual en Mercado Pago y redacta la respuesta para tu cliente.",
+    "prompt": "Un cliente dice que ya pagó y quiero verificarlo en Mercado Pago.\n\nNúmero de pedido o de pago: [número].\nNombre del cliente: [nombre].\nQué dice el cliente: [pegar el mensaje].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta el número de pedido o de pago, pregúntamelo antes de buscar. Consulta el pago o el pedido y dime su estado, monto, fecha y medio de pago. Luego redacta un mensaje corto y amable para el cliente según lo que encuentres: pago confirmado, pendiente (explica qué significa) o no encontrado (pide el comprobante).\n\nSolo consulta, no reembolses ni muevas dinero. No inventes datos que no aparezcan en Mercado Pago.",
+    "recommendedFiles": [
+      "Número de pedido o pago",
+      "Mensaje del cliente"
+    ],
+    "expectedResult": [
+      "Estado del pago o pedido",
+      "Monto, fecha y medio de pago",
+      "Mensaje listo para el cliente"
+    ]
+  },
+  "en": {
+    "title": "Did this order's payment come through? (Mercado Pago)",
+    "outcome": "Checks a specific payment or order in Mercado Pago and drafts the reply for your customer.",
+    "prompt": "A customer says they already paid and I want to verify it in Mercado Pago.\n\nOrder or payment number: [number].\nCustomer name: [name].\nWhat the customer says: [paste the message].\nLanguage for the reply: [English / Spanish].\n\nIf the order or payment number is missing, ask me before searching. Look up the payment or order and tell me its status, amount, date, and payment method. Then write a short, friendly message for the customer based on what you find: payment confirmed, pending (explain what that means), or not found (ask for the receipt).\n\nRead only: don't refund or move money. Don't make up details that don't appear in Mercado Pago.",
+    "recommendedFiles": [
+      "Order or payment number",
+      "Customer's message"
+    ],
+    "expectedResult": [
+      "Payment or order status",
+      "Amount, date, and payment method",
+      "Message ready for the customer"
+    ]
+  }
+}

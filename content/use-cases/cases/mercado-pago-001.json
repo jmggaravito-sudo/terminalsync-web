@@ -1,0 +1,41 @@
+{
+  "id": "mercado-pago-001",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 136,
+  "isNew": true,
+  "connectors": [
+    "mercado-pago"
+  ],
+  "es": {
+    "title": "Pagos pendientes de esta semana en Mercado Pago",
+    "outcome": "Busca tus pagos recientes en Mercado Pago y te dice cuáles siguen pendientes o fueron rechazados.",
+    "prompt": "Muéstrame mis pagos de esta semana en Mercado Pago.\n\nPeriodo: [esta semana / ayer / del [fecha] al [fecha]].\nPaís de mi cuenta: [México / Colombia / Argentina / otro].\nMoneda: [MXN / COP / ARS / otra].\n\nSi te falta el periodo o el país, pregúntamelos antes de buscar. Busca mis pagos y dame:\n1. Cuántos pagos hay por estado (aprobados, pendientes, rechazados) y el monto de cada grupo.\n2. Una tabla con los pagos pendientes: identificador, fecha, monto y medio de pago.\n3. Los rechazados y el motivo, si aparece.\n4. Qué conviene revisar primero.\n\nSolo consulta: no cobres, no reembolses ni muevas dinero. Si un dato no aparece, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Periodo a revisar",
+      "Lista de pedidos esperados"
+    ],
+    "expectedResult": [
+      "Pagos por estado y monto",
+      "Tabla de pagos pendientes",
+      "Rechazados y su motivo",
+      "Qué revisar primero"
+    ]
+  },
+  "en": {
+    "title": "Pending payments this week in Mercado Pago",
+    "outcome": "Searches your recent payments in Mercado Pago and tells you which ones are still pending or were rejected.",
+    "prompt": "Show me my payments this week in Mercado Pago.\n\nPeriod: [this week / yesterday / from [date] to [date]].\nCountry of my account: [Mexico / Colombia / Argentina / other].\nCurrency: [MXN / COP / ARS / other].\n\nIf the period or the country is missing, ask me before searching. Search my payments and give me:\n1. How many payments there are by status (approved, pending, rejected) and the amount of each group.\n2. A table of the pending payments: ID, date, amount, and payment method.\n3. The rejected ones and the reason, if it appears.\n4. What I should look at first.\n\nRead only: don't charge, refund, or move money. If something doesn't appear, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Period to review",
+      "List of expected orders"
+    ],
+    "expectedResult": [
+      "Payments by status and amount",
+      "Table of pending payments",
+      "Rejected payments and why",
+      "What to look at first"
+    ]
+  }
+}

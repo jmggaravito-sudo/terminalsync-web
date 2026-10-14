@@ -1,0 +1,41 @@
+{
+  "id": "calendly-002",
+  "categoryId": "sales",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 168,
+  "isNew": true,
+  "connectors": [
+    "calendly"
+  ],
+  "es": {
+    "title": "Generar un enlace de agenda de un solo uso en Calendly",
+    "outcome": "Crea un enlace de Calendly de un solo uso para un prospecto y redacta el mensaje para enviarlo, con tu confirmación.",
+    "prompt": "Quiero mandarle a un prospecto un enlace para agendar una llamada.\n\nNombre del prospecto: [nombre].\nTipo de cita: [por ejemplo, llamada de introducción de 15 minutos].\nCómo lo conocí: [Instagram / referido / sitio web / otro].\nIdioma del mensaje: [español / inglés].\n\nPrimero revisa mis tipos de cita y dime cuál vas a usar. Pídeme confirmación y no generes el enlace hasta que yo escriba \"confirmo\". Después de generarlo, redacta un mensaje corto y cordial para enviarlo con el enlace, en el tono de mi negocio. No canceles ni cambies citas existentes.",
+    "recommendedFiles": [
+      "Descripción de tu servicio",
+      "Tono con el que escribes a clientes"
+    ],
+    "expectedResult": [
+      "Tipo de cita elegido",
+      "Confirmación antes de generar",
+      "Enlace de un solo uso",
+      "Mensaje listo para enviar"
+    ]
+  },
+  "en": {
+    "title": "Generate a one-time scheduling link in Calendly",
+    "outcome": "Creates a one-time Calendly link for a prospect and drafts the message to send it, with your confirmation.",
+    "prompt": "I want to send a prospect a link to book a call.\n\nProspect's name: [name].\nEvent type: [for example, 15-minute intro call].\nHow I met them: [Instagram / referral / website / other].\nLanguage for the message: [English / Spanish].\n\nFirst review my event types and tell me which one you'll use. Ask me to confirm and don't generate the link until I write \"confirm\". After generating it, write a short, courteous message to send with the link, in the tone of my business. Don't cancel or change existing appointments.",
+    "recommendedFiles": [
+      "Description of your service",
+      "Tone you use with customers"
+    ],
+    "expectedResult": [
+      "Event type chosen",
+      "Confirmation before generating",
+      "One-time link",
+      "Message ready to send"
+    ]
+  }
+}
