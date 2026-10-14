@@ -2,6 +2,7 @@
 name: Pinecone
 logo: /connectors/pinecone.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Ask — and act on — your Pinecone vector database in plain language"
 simpleSubtitle: "Official Pinecone server: search the docs, configure indexes, upsert and query data."

@@ -17,6 +17,7 @@ import matter from "gray-matter";
 import { remark } from "remark";
 import html from "remark-html";
 import { getSupabaseAdmin } from "./supabaseAdmin";
+import { parseMarkets, type MarketCode } from "./markets";
 import { manifestRequiresEnvSecrets } from "./marketplace/secrets";
 import {
   deriveInstallFromManifest,
@@ -158,6 +159,13 @@ export interface ConnectorMeta {
   aiToolsCount?: number;
   aiReadOnlyTools?: number;
   verifiedAt?: string;
+  /** Versión del paquete con la que pasó la supervisión (null/ausente en
+   *  conectores remotos, que no tienen paquete local). */
+  verifiedPackageVersion?: string;
+  /** Países (ISO 3166 alfa-2) donde la integración es útil/está disponible,
+   *  o ["GLOBAL"]. Lo declara cada ficha; ver `markets.ts`. Opcional en el
+   *  payload: los listados de marketplace (Supabase) no lo traen. */
+  markets?: MarketCode[];
   /** Sidecars propios (memory, meta-ads, meta-social) se identifican así y
    *  no entran en el conteo de supervisión de conectores externos. */
   firstParty?: boolean;
@@ -426,6 +434,14 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMe
   const installOverride = readInstallOverrideFromFrontmatter(data);
   const installFields = mergeInstallFields(installDerived, installOverride);
   const installability = readInstallabilityFields(data);
+  let markets: MarketCode[] | undefined;
+  try {
+    // Lenient en runtime (una ficha mala no tumba el catálogo); la validación
+    // estricta vive en connectors.test.ts / markets.test.ts.
+    markets = parseMarkets(data.markets, `${slug}.markets`);
+  } catch {
+    markets = undefined;
+  }
   return {
     slug,
     name: get("name", slug),
@@ -443,6 +459,7 @@ function normalizeMeta(slug: string, data: Record<string, unknown>): ConnectorMe
     deliveredTo: CONNECTOR_DELIVERY_TARGETS,
     requiresEnvSecrets,
     ...installability,
+    ...(markets ? { markets } : {}),
     originalAuthor: get("originalAuthor") || undefined,
     originalAuthorUrl: get("originalAuthorUrl") || undefined,
     license: get("license") || undefined,
@@ -475,6 +492,7 @@ function readInstallabilityFields(
   | "aiToolsCount"
   | "aiReadOnlyTools"
   | "verifiedAt"
+  | "verifiedPackageVersion"
   | "firstParty"
 > {
   const out: Pick<
@@ -485,6 +503,7 @@ function readInstallabilityFields(
     | "aiToolsCount"
     | "aiReadOnlyTools"
     | "verifiedAt"
+    | "verifiedPackageVersion"
     | "firstParty"
   > = {};
   if (typeof data.installableForAi === "boolean") {
@@ -513,6 +532,12 @@ function readInstallabilityFields(
   }
   if (typeof data.verifiedAt === "string" && data.verifiedAt.trim().length > 0) {
     out.verifiedAt = data.verifiedAt.trim();
+  }
+  if (
+    typeof data.verifiedPackageVersion === "string" &&
+    data.verifiedPackageVersion.trim().length > 0
+  ) {
+    out.verifiedPackageVersion = data.verifiedPackageVersion.trim();
   }
   if (typeof data.firstParty === "boolean") {
     out.firstParty = data.firstParty;

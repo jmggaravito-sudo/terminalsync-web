@@ -2,6 +2,7 @@
 name: Slack
 logo: /connectors/slack.svg
 category: messaging
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Que tu IA lea y escriba en Slack"
 simpleSubtitle: "Resúmenes de canales, respuestas en threads, mensajes nuevos — con permisos explícitos que tú eliges."

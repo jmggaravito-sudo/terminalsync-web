@@ -2,6 +2,7 @@
 name: Shopify
 logo: /connectors/shopify.svg
 category: automation
+markets: ["GLOBAL"]
 status: soon
 simpleTitle: "Your Shopify store, with your AI — not available yet"
 simpleSubtitle: "Not available yet in TerminalSync: Shopify doesn't publish a public address we can plug in."

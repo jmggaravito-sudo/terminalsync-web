@@ -2,6 +2,7 @@
 name: Elasticsearch
 logo: /connectors/elasticsearch.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Pregúntale a tu Elasticsearch en lenguaje común"
 simpleSubtitle: "Server oficial de Elastic: busca en tus índices en lenguaje natural."

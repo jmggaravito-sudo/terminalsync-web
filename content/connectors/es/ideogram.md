@@ -2,6 +2,7 @@
 name: Ideogram
 logo: /connectors/ideogram.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Crea imágenes de marca desde tu agente"
 simpleSubtitle: "MCP oficial de Ideogram: generación, edición e iteración visual con OAuth."

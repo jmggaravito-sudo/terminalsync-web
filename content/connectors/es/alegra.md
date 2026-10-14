@@ -2,6 +2,7 @@
 name: Alegra
 logo: /connectors/alegra.svg
 category: automation
+markets: ["CO", "MX", "AR", "PE", "CR", "PA", "DO", "VE", "ES"]
 status: soon
 simpleTitle: "Tu facturación y tu contabilidad, respondidas en lenguaje natural"
 simpleSubtitle: "MCP oficial de Alegra: facturas, contactos, inventario, bancos, pagos y reportes, directo desde tu cuenta."

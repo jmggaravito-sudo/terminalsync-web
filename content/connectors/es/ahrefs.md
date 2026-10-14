@@ -2,6 +2,7 @@
 name: Ahrefs
 logo: /connectors/ahrefs.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tu SEO, explicado en palabras simples"
 simpleSubtitle: "\"¿Dónde aparecemos?\" \"¿Quién nos linkea?\" \"¿Sobre qué conviene escribir?\" — tu IA lee tus datos de SEO."

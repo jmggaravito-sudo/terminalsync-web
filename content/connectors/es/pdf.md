@@ -2,6 +2,7 @@
 name: PDF
 logo: /connectors/pdf.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Deja que tu IA lea y marque PDFs"
 simpleSubtitle: "Abre papers locales o URLs académicas permitidas, busca páginas, extrae texto y anota documentos."

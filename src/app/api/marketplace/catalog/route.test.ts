@@ -843,3 +843,13 @@ function makeSupabaseStubForDuplicateBundleSlug(): SupabaseClient {
     },
   } as unknown as SupabaseClient;
 }
+
+describe("catalog connectors expose markets", () => {
+  it("every first-party connector carries a non-empty markets array (en and es)", async () => {
+    for (const lang of ["en", "es"]) {
+      const { body } = await callCatalog(lang);
+      const missing = body.connectors.filter((c) => !c.markets?.length).map((c) => c.slug);
+      expect(missing, `connectors without markets (${lang})`).toEqual([]);
+    }
+  });
+});

@@ -2,6 +2,7 @@
 name: Notion
 logo: /connectors/notion.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Dale superpoderes a tu asistente con Notion"
 simpleSubtitle: "Para que tu IA lea tus recetas, notas y proyectos sin que copies y pegues."

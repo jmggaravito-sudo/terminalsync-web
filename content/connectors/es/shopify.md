@@ -2,6 +2,7 @@
 name: Shopify
 logo: /connectors/shopify.svg
 category: automation
+markets: ["GLOBAL"]
 status: soon
 simpleTitle: "Tu tienda de Shopify, con tu IA — todavía no disponible"
 simpleSubtitle: "Todavía no disponible en TerminalSync: Shopify no publica una dirección pública que podamos conectar."

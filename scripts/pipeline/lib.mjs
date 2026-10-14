@@ -6,6 +6,9 @@ export const SLUG_RE = /^[a-z0-9-]{1,40}$/;
 export const VERDICTS = ["ship_official", "needs_own_build", "exists", "skip"];
 export const REVIEW_ROLES = ["sources", "voice", "install", "honesty"];
 export const REVIEW_VERDICTS = ["pass", "fix", "hold"];
+// Allowed `markets` codes. MUST mirror MARKETS in src/lib/markets.ts (a test in
+// pipeline.test.mjs fails if they drift). "GLOBAL" cannot be combined with countries.
+export const MARKET_CODES = ["GLOBAL", "US", "MX", "CO", "AR", "CL", "PE", "EC", "DO", "GT", "CR", "PA", "UY", "PY", "BO", "VE", "SV", "HN", "NI", "BR", "PR", "CA", "GB", "ES", "FR", "IE", "JP", "AU", "NZ"];
 export const CONVERSATIONAL = ["yes", "remote_login", "unknown"];
 
 const isObj = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
@@ -31,6 +34,20 @@ export function validateResearch(r) {
   if (!isStr(r.reason)) errors.push("reason is required");
   if (!CONVERSATIONAL.includes(r.conversational_install)) {
     errors.push(`conversational_install must be one of ${CONVERSATIONAL.join(", ")}`);
+  }
+  if (r.verdict === "ship_official" || r.markets !== undefined) {
+    const m = r.markets;
+    if (!isObj(m)) errors.push("markets is required: { codes: [...], evidence: [...] }");
+    else {
+      if (!Array.isArray(m.codes) || m.codes.length === 0 || !m.codes.every((c) => MARKET_CODES.includes(c))) {
+        errors.push(`markets.codes must be a non-empty list of ${MARKET_CODES.join("|")}`);
+      } else if (m.codes.includes("GLOBAL") && m.codes.length > 1) {
+        errors.push("markets.codes: GLOBAL cannot be combined with countries");
+      }
+      if (!Array.isArray(m.evidence) || m.evidence.length === 0 || !m.evidence.every(isStr)) {
+        errors.push("markets.evidence must cite the page(s) that justify the countries (GLOBAL included)");
+      }
+    }
   }
   if (r.verdict === "ship_official") {
     const o = r.official;

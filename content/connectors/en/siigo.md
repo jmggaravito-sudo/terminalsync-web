@@ -2,6 +2,7 @@
 name: Siigo
 logo: /connectors/siigo.svg
 category: automation
+markets: ["CO"]
 status: available
 simpleTitle: "Your invoicing, answered in plain language"
 simpleSubtitle: "Official Siigo MCP: sales invoices, customers and products over OAuth, no API key to paste."
@@ -22,6 +23,12 @@ license: "proprietary"
 licenseUrl: "https://seguridad.siigo.com/paises/colombia/legal/condiciones-de-uso-software-nube"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-10-14T16:56:24.622Z"
+verifiedPackageVersion: null
 ---
 **Siigo** is the accounting and administrative software many micro, small and mid-size businesses in Colombia run their books, their invoicing and their daily operation on. The official Siigo connector is a **hosted MCP server** (`https://mcp.siigo.com`), published by Siigo, that gives your agent access to your invoices, your customers and your product catalog using your own Siigo account login — no API key to paste and, as the official docs put it, "sin necesidad de un desarrollador, tener conocimientos de código" (no developer or coding knowledge needed).
 

@@ -2,6 +2,7 @@
 name: Intercom
 logo: /connectors/intercom.svg
 category: support
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Ask your AI about your Intercom inbox"
 simpleSubtitle: "Official Intercom MCP: search conversations, contacts, companies and help articles over OAuth, no token to paste."

@@ -2,6 +2,7 @@
 name: Google Business · Reviews
 logo: /connectors/google-business.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your reviews, watched and answered"
 simpleSubtitle: "\"Any new reviews?\" \"Did my rating drop?\" — the AI reads your Google reviews and drafts replies for you to approve."

@@ -2,6 +2,7 @@
 name: PostgreSQL
 logo: /connectors/postgres.svg
 category: database
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Let your AI query Postgres safely"
 simpleSubtitle: "Schema introspection and read-only queries for analysis without hand-writing SQL."

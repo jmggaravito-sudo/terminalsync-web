@@ -2,6 +2,7 @@
 name: Zoom
 logo: /connectors/zoom.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Find what was said in your Zoom meetings"
 simpleSubtitle: "Official Zoom server: summaries, transcripts, recordings, chat and docs, in plain language."

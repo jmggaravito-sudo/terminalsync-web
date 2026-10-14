@@ -2,6 +2,7 @@
 name: ClickUp
 logo: /connectors/clickup.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your projects, run by conversation"
 simpleSubtitle: "\"What's due this week?\" \"Create a task for the new client\" — your AI reads and updates ClickUp."

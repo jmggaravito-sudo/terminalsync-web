@@ -2,6 +2,7 @@
 name: Intercom
 logo: /connectors/intercom.svg
 category: support
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Pregúntale a tu IA por tu bandeja de Intercom"
 simpleSubtitle: "MCP oficial de Intercom: busca conversaciones, contactos, empresas y artículos de ayuda con OAuth, sin pegar ningún token."

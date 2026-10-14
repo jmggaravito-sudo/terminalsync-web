@@ -2,6 +2,7 @@
 name: Sentry
 logo: /connectors/sentry.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Investiga errores de producción desde tu IA"
 simpleSubtitle: "Pídele contexto de issues, eventos y stacktraces sin cambiar de herramienta."

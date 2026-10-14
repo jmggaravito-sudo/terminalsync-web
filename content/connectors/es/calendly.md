@@ -2,6 +2,7 @@
 name: Calendly
 logo: /connectors/calendly.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tus agendamientos, resueltos en lenguaje natural"
 simpleSubtitle: "Server oficial de Calendly: consulta disponibilidad, agenda y gestiona reuniones por OAuth."

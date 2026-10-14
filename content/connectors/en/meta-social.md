@@ -2,6 +2,7 @@
 name: Meta Social
 logo: /connectors/meta-social.svg
 category: messaging
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Post to Instagram and Facebook without opening either app"
 simpleSubtitle: "Write the caption, pick the picture — your AI posts it to your feeds. You approve, it posts."

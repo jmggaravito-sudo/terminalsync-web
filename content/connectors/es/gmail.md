@@ -2,6 +2,7 @@
 name: Gmail
 logo: /connectors/gmail.svg
 category: messaging
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tu inbox, hablando con tu IA"
 simpleSubtitle: "\"¿Algo urgente hoy?\" \"Resumime los correos de mi cliente X\" — sin pegar nada."

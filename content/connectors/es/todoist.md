@@ -2,6 +2,7 @@
 name: Todoist
 logo: /connectors/todoist.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tu lista de tareas, manejada por la IA"
 simpleSubtitle: "\"¿Qué vence hoy?\" \"Agrega: llamar al contador el viernes\" — tu IA lee y actualiza tu Todoist."

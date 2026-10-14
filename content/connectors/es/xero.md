@@ -2,6 +2,7 @@
 name: Xero
 logo: /connectors/xero.svg
 category: automation
+markets: ["US", "CA", "GB", "AU", "NZ"]
 status: available
 simpleTitle: "Tu contabilidad, respondiendo en voz alta"
 simpleSubtitle: "\"¿Quién me debe?\" \"¿Qué está vencido?\" \"¿Cómo nos fue el mes pasado?\" — tu IA lee tus libros por ti."

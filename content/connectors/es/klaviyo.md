@@ -2,6 +2,7 @@
 name: Klaviyo
 logo: /connectors/klaviyo.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Maneja tu marketing por email y SMS preguntando"
 simpleSubtitle: "MCP oficial de Klaviyo: campañas, flows, perfiles y reportes por OAuth."

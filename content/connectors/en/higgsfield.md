@@ -2,6 +2,7 @@
 name: Higgsfield
 logo: /connectors/higgsfield.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Generate images and videos from your agent"
 simpleSubtitle: "Official Higgsfield MCP: 30+ creative models for images, video, characters and history."

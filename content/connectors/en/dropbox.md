@@ -2,6 +2,7 @@
 name: Dropbox
 logo: /connectors/dropbox.svg
 category: storage
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your Dropbox, findable by voice"
 simpleSubtitle: "\"Find the contract for client X\" \"Send me March's invoice\" — the AI searches your Dropbox for you."
