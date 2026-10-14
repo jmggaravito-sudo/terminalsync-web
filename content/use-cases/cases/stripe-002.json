@@ -1,0 +1,41 @@
+{
+  "id": "stripe-002",
+  "categoryId": "support",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 140,
+  "isNew": true,
+  "connectors": [
+    "stripe"
+  ],
+  "es": {
+    "title": "Buscar un cliente y sus últimas facturas en Stripe",
+    "outcome": "Encuentra a un cliente por su correo y te resume sus últimas facturas y pagos para atenderlo rápido.",
+    "prompt": "Un cliente me escribió y necesito ver su historial en Stripe.\n\nCorreo del cliente: [correo].\nMotivo del contacto: [no entiende un cobro / quiere factura / pregunta por su plan / otro].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta el correo, pregúntamelo antes de buscar. Busca al cliente y muéstrame sus últimas tres facturas con fecha, monto y estado, además de su plan o suscripción actual. Si hay un pago fallido o reembolsado, señálalo. Después redacta una respuesta breve y cordial para el cliente según el motivo.\n\nSolo consulta: no emitas reembolsos ni cambies nada en la cuenta. Si hay más de un cliente con ese correo, dímelo y no adivines.",
+    "recommendedFiles": [
+      "Correo del cliente",
+      "Mensaje original del cliente"
+    ],
+    "expectedResult": [
+      "Datos del cliente encontrado",
+      "Últimas tres facturas",
+      "Plan o suscripción actual",
+      "Borrador de respuesta"
+    ]
+  },
+  "en": {
+    "title": "Look up a customer and their latest invoices in Stripe",
+    "outcome": "Finds a customer by email and summarizes their latest invoices and payments so you can help them quickly.",
+    "prompt": "A customer wrote to me and I need to see their history in Stripe.\n\nCustomer email: [email].\nReason for contact: [doesn't understand a charge / wants an invoice / asking about their plan / other].\nLanguage for the reply: [English / Spanish].\n\nIf the email is missing, ask me before searching. Find the customer and show me their last three invoices with date, amount, and status, plus their current plan or subscription. If there is a failed or refunded payment, point it out. Then write a short, friendly reply for the customer based on the reason.\n\nRead only: don't issue refunds or change anything on the account. If more than one customer has that email, tell me and don't guess.",
+    "recommendedFiles": [
+      "Customer email",
+      "Customer's original message"
+    ],
+    "expectedResult": [
+      "Customer found",
+      "Last three invoices",
+      "Current plan or subscription",
+      "Draft reply"
+    ]
+  }
+}

@@ -61,6 +61,29 @@ Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first,
 
 ## Run log
 
+### 2026-10-12 — automated run, no focus input given
+
+**Shipped 2 Plugins**, each pairing an already-published, `available` connector with an already-evaluated, `available` skill (all-3-vendor `compatibleWith`), picked so the connector's real tools feed the skill's actual input (no invented capability):
+
+- **siigo** (`sales`) — Siigo connector (official hosted MCP, OAuth login, Colombia-dominant invoicing) + Quotes & Estimates (`cotizaciones`). The pairing maps 1:1 onto the documented surface: the skill *never invents a price you didn't give it*, and the connector supplies exactly that price — the catalog query returns "código, saldos, descripción, precio" — so the quote's line items carry real catalog prices instead of memory/spreadsheet drift. When the quote is accepted, the connector registers the factura de venta (its own doc's example: *"Create the invoice for Carlos Pérez: 2 executive chairs, cash payment"*, confirmation-gated). The body discloses the honest gap: the MCP does **not** register cotizaciones — the quote is a document the owner sends; what lands in Siigo is the invoice they confirm.
+- **ramp** (`operations`) — Ramp connector (official hosted MCP, OAuth) + Quarterly Tax Estimate Prep. Same shape as the shipped `gusto`/`google-sheets` tax packs (real data feeds a finance skill's inputs): Ramp's read surface (transactions, bills, reimbursements, vendors) supplies the **expense half** of the quarterly estimate; income and last-year liability stay with the owner — disclosed in the body, matching the skill's own refusal to invent inputs. Also disclosed: Ramp's documented 100-row query limit (spend may need to be pulled by month/vendor), and that this Plugin only reads — Ramp's write tools (approvals, card locks) are not part of the job.
+
+**Deferred / SKIP, re-verified this run (all with fresh evidence on disk):**
+
+- **calendly** — connector `available`, but its natural pairing `meeting-notes` is still `catalogReady: false` + `compatibleWith: ["claude"]` only. Skill Loop task first (unchanged since 2026-10-05).
+- **zoom** — same blocker: `meeting-notes` still staged and claude-only. Skill Loop task.
+- **klaviyo** — `lifecycle-email` still `catalogReady: false`. Skill Loop task.
+- **canva** — `brand-guidelines` and `brand-voice` both still `catalogReady: false` (+ 2 vendors). Skill Loop task.
+- **intercom** — `email-drafter` still `status: soon` + `hidden: true`. Skill Loop task.
+- **whatsapp** — connector itself is `status: soon` (private beta, no manifest) → no Plugin until the Connector Loop/product flips it to `available`. New finding this run.
+- **higgsfield (augmentation)** — the purpose-built `higgsfield-video-director` skill now exists and is `available` (all 3 vendors), but the live `higgsfield` Plugin already pairs `meta-ads-creator`. Editing a production plugin's pairing is an owner decision (same precedent as `xero` on 2026-08-02, which was left as published). Deferred to the coordinator: either add the skill to the live plugin deliberately or route it through the Kit Loop.
+
+Standing rejections from prior runs (not re-verified, unchanged): asana/todoist/clickup/monday (no publishable workflow skill), twitter/wordpress (`contenido-social` doesn't claim those surfaces), dropbox (read-only surface; `doc-coauthoring` already bundled with gdrive/notion), ahrefs (would duplicate `seo-audit`), kit (skills staged), posthog (RFM would overclaim — product analytics ≠ purchase records), google-calendar (no scheduling skill), second analytics skills on airtable/shopify/square (product→role blur = Kit material).
+
+Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` + `tsc --noEmit`. Both new plugins reuse their connector's committed official logo, vendored at `public/plugins/<slug>.svg` (copy of `public/connectors/<slug>.svg`, same as `airtable`/`higgsfield`/`ideogram`).
+
+App PR: no aplica — la app consume el catálogo. Both reuse shapes the desktop already renders: `siigo` and `ramp` are remote/OAuth connectors bridged with `mcp-remote` (like `ideogram`/`higgsfield`/`gusto`), with plain `connectorSlug` + `skillSlugs` composition the generic plugin renderer handles.
+
 ### 2026-09-28 — automated run, no focus input given
 
 **Shipped 3 Plugins**, each an already-published, `available` connector paired with an already-evaluated, `available` skill, picked so the connector's real tools feed the skill's actual input (no invented capability):

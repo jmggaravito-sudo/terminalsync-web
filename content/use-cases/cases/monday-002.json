@@ -1,0 +1,41 @@
+{
+  "id": "monday-002",
+  "categoryId": "sales",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 158,
+  "isNew": true,
+  "connectors": [
+    "monday"
+  ],
+  "es": {
+    "title": "Agregar un lead a mi tablero de monday.com",
+    "outcome": "Prepara un nuevo lead con sus datos y lo agrega a tu tablero de monday.com solo cuando tú lo confirmas.",
+    "prompt": "Quiero agregar un lead a mi tablero de monday.com.\n\nTablero: [nombre del tablero].\nNombre del lead: [nombre].\nFuente: [Instagram / referido / sitio web / otra].\nEstado: [Nuevo / otro].\nNotas: [opcional].\n\nPrimero revisa las columnas del tablero y dime cómo vas a llenar cada una; si una columna no coincide con mis datos, pregúntame. Luego muéstrame el elemento tal como lo vas a crear y pídeme confirmación. No lo crees hasta que yo escriba \"confirmo\". No modifiques ni borres otros elementos.",
+    "recommendedFiles": [
+      "Datos de contacto del lead",
+      "Estructura de tu tablero"
+    ],
+    "expectedResult": [
+      "Columnas del tablero revisadas",
+      "Elemento listo para revisar",
+      "Confirmación antes de crear",
+      "Lead agregado"
+    ]
+  },
+  "en": {
+    "title": "Add a lead to my monday.com board",
+    "outcome": "Prepares a new lead with its details and adds it to your monday.com board only when you confirm.",
+    "prompt": "I want to add a lead to my monday.com board.\n\nBoard: [board name].\nLead name: [name].\nSource: [Instagram / referral / website / other].\nStatus: [New / other].\nNotes: [optional].\n\nFirst check the board's columns and tell me how you'll fill each one; if a column doesn't match my data, ask me. Then show me the item as you would create it and ask me to confirm. Don't create it until I write \"confirm\". Don't change or delete other items.",
+    "recommendedFiles": [
+      "Lead's contact details",
+      "Structure of your board"
+    ],
+    "expectedResult": [
+      "Board columns checked",
+      "Item ready to review",
+      "Confirmation before creating",
+      "Lead added"
+    ]
+  }
+}

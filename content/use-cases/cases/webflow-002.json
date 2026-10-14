@@ -1,0 +1,41 @@
+{
+  "id": "webflow-002",
+  "categoryId": "marketing",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 182,
+  "isNew": true,
+  "connectors": [
+    "webflow"
+  ],
+  "es": {
+    "title": "Actualizar un elemento de mi colección en Webflow",
+    "outcome": "Prepara el cambio en un artículo o producto de tu CMS de Webflow y lo aplica solo después de tu confirmación.",
+    "prompt": "Quiero actualizar un elemento de mi CMS en Webflow.\n\nSitio: [nombre del sitio].\nColección: [por ejemplo, blog / productos].\nElemento: [nombre o título].\nQué cambiar: [título / descripción / precio / otro campo] por: [nuevo valor].\n\nPrimero busca el elemento y muéstrame el valor actual y el nuevo, campo por campo. Si hay más de uno parecido, pregúntame cuál. Pídeme confirmación y no cambies nada hasta que yo escriba \"confirmo\". Aplica solo ese cambio: no publiques el sitio, no borres elementos ni toques otros campos. Si el cambio queda como borrador, dímelo para que yo decida cuándo publicarlo.",
+    "recommendedFiles": [
+      "Texto nuevo aprobado",
+      "Nombre exacto de la colección"
+    ],
+    "expectedResult": [
+      "Elemento encontrado",
+      "Valor actual contra valor nuevo",
+      "Confirmación antes de cambiar",
+      "Elemento actualizado"
+    ]
+  },
+  "en": {
+    "title": "Update an item in my Webflow collection",
+    "outcome": "Prepares the change to an article or product in your Webflow CMS and applies it only after your confirmation.",
+    "prompt": "I want to update an item in my Webflow CMS.\n\nSite: [site name].\nCollection: [for example, blog / products].\nItem: [name or title].\nWhat to change: [title / description / price / other field] to: [new value].\n\nFirst find the item and show me the current and new value, field by field. If more than one is similar, ask me which. Ask me to confirm and don't change anything until I write \"confirm\". Apply only that change: don't publish the site, delete items, or touch other fields. If the change stays as a draft, tell me so I decide when to publish it.",
+    "recommendedFiles": [
+      "Approved new text",
+      "Exact name of the collection"
+    ],
+    "expectedResult": [
+      "Item found",
+      "Current vs. new value",
+      "Confirmation before changing",
+      "Item updated"
+    ]
+  }
+}

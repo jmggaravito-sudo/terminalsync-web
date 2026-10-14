@@ -18,6 +18,8 @@ async function pedirSalud() {
 beforeEach(() => {
   process.env.STRIPE_PRICE_PRO_MONTHLY = "price_pro";
   process.env.STRIPE_PRICE_MAX_MONTHLY = "price_max";
+  process.env.STRIPE_PRICE_PRO_WITH_AI_MONTHLY = "price_pro_ai";
+  process.env.STRIPE_PRICE_MAX_WITH_AI_MONTHLY = "price_max_ai";
   process.env.STRIPE_INCLUDED_AI_PRICE_ID = "price_ai";
   process.env.STRIPE_SECRET_KEY = "sk_live_nunca_se_publica";
   process.env.STRIPE_WEBHOOK_SECRET = "whsec_nunca_se_publica";
@@ -30,7 +32,7 @@ afterEach(() => {
 });
 
 describe("/api/checkout/health", () => {
-  it("dice que sí cuando los tres precios que la app puede pedir están cargados", async () => {
+  it("dice que sí cuando Pro y Max con IA tienen un precio cada uno", async () => {
     const { res, body } = await pedirSalud();
     expect(res.status).toBe(200);
     expect(body.ok).toBe(true);
@@ -41,7 +43,7 @@ describe("/api/checkout/health", () => {
   // nombre viejo de respaldo, Pro no tiene ninguno, así que en producción el
   // plan de entrada devolvía 503 y nadie podía comprarlo.
   it("nombra a Pro cuando su precio no está en este ambiente", async () => {
-    delete process.env.STRIPE_PRICE_PRO_MONTHLY;
+    delete process.env.STRIPE_PRICE_PRO_WITH_AI_MONTHLY;
     const { res, body } = await pedirSalud();
     expect(res.status).toBe(503);
     expect(body.ok).toBe(false);
@@ -49,10 +51,10 @@ describe("/api/checkout/health", () => {
     expect(body.precios.max).toBe(true);
   });
 
-  it("también avisa si falta el precio de la IA incluida, que es el del lanzamiento", async () => {
-    delete process.env.STRIPE_INCLUDED_AI_PRICE_ID;
+  it("avisa si falta el precio único de Max aunque exista el antiguo add-on", async () => {
+    delete process.env.STRIPE_PRICE_MAX_WITH_AI_MONTHLY;
     const { body } = await pedirSalud();
-    expect(body.faltan).toContain("includedAi");
+    expect(body.faltan).toContain("max");
   });
 
   // Agency se vende por correo, no por este camino: que falte no rompe a
@@ -67,6 +69,7 @@ describe("/api/checkout/health", () => {
     const { body } = await pedirSalud();
     const crudo = JSON.stringify(body);
     expect(crudo).not.toContain("price_pro");
+    expect(crudo).not.toContain("price_pro_ai");
     expect(crudo).not.toContain("price_ai");
     expect(crudo).not.toContain("nunca_se_publica");
   });

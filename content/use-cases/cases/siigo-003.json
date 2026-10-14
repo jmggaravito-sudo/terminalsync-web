@@ -1,0 +1,41 @@
+{
+  "id": "siigo-003",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 132,
+  "isNew": true,
+  "connectors": [
+    "siigo"
+  ],
+  "es": {
+    "title": "Crear una factura de venta en Siigo",
+    "outcome": "Prepara una factura en Siigo con los datos que le das y la registra solo después de que tú la confirmes.",
+    "prompt": "Quiero crear una factura de venta en Siigo.\n\nCliente: [nombre y número de identificación].\nProductos o servicios: [cantidad y descripción de cada uno].\nForma de pago: [contado / crédito a [días] días].\nObservaciones: [opcional].\n\nPrimero busca al cliente y los productos en Siigo. Si falta alguno, dímelo y no lo inventes. Luego muéstrame la factura completa tal como quedaría (cliente, productos, cantidades, valores, impuestos y total) y pídeme confirmación. No registres nada hasta que yo escriba \"confirmo\". Si algo no cuadra, avísame antes de continuar. No borres ni modifiques facturas existentes.",
+    "recommendedFiles": [
+      "Datos del cliente",
+      "Productos y precios acordados"
+    ],
+    "expectedResult": [
+      "Cliente y productos encontrados en Siigo",
+      "Vista previa de la factura con impuestos y total",
+      "Confirmación antes de registrar",
+      "Factura registrada con su número"
+    ]
+  },
+  "en": {
+    "title": "Create a sales invoice in Siigo",
+    "outcome": "Prepares an invoice in Siigo with the details you give and registers it only after you confirm.",
+    "prompt": "I want to create a sales invoice in Siigo.\n\nCustomer: [name and ID number].\nProducts or services: [quantity and description of each].\nPayment method: [cash / credit for [days] days].\nNotes: [optional].\n\nFirst look up the customer and the products in Siigo. If any is missing, tell me and don't make it up. Then show me the full invoice as it would be created (customer, products, quantities, amounts, taxes, and total) and ask me to confirm. Don't register anything until I write \"confirm\". If something doesn't add up, tell me before continuing. Don't delete or change existing invoices.",
+    "recommendedFiles": [
+      "Customer details",
+      "Agreed products and prices"
+    ],
+    "expectedResult": [
+      "Customer and products found in Siigo",
+      "Invoice preview with taxes and total",
+      "Confirmation before registering",
+      "Invoice registered with its number"
+    ]
+  }
+}

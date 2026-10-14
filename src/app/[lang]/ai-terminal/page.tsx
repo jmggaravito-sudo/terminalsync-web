@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight, Brain, KeyRound, Laptop, Link2, Route, ShieldCheck, Sparkles, Terminal } from "lucide-react";
 import { getDict, isLocale, type Locale } from "@/content";
 import { Footer } from "@/components/landing/Footer";
+import { MULTI_AI_PUBLIC } from "@/lib/launchFlags";
 
 interface Props {
   params: Promise<{ lang: string }>;
@@ -167,6 +168,10 @@ const copy = {
 export default async function AiTerminalPage({ params }: Props) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
+  // JM 2026-10-07: la página entera es "TS para IAs en terminal — Claude
+  // Code, Codex y Gemini sincronizados". La primera etapa no menciona eso.
+  // Queda entera; vuelve con MULTI_AI_PUBLIC en `true`.
+  if (!MULTI_AI_PUBLIC) notFound();
   const d = getDict(lang);
   const c = copy[lang];
   const faqJson = {

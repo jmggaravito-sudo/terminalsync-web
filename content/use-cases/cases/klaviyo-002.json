@@ -1,0 +1,41 @@
+{
+  "id": "klaviyo-002",
+  "categoryId": "marketing",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 150,
+  "isNew": true,
+  "connectors": [
+    "klaviyo"
+  ],
+  "es": {
+    "title": "Crear un borrador de campaña de promoción en Klaviyo",
+    "outcome": "Redacta el correo de tu promoción y arma la campaña en Klaviyo como borrador, sin enviarla, con tu confirmación.",
+    "prompt": "Quiero preparar una campaña de correo en Klaviyo.\n\nPromoción: [qué ofreces y por cuánto tiempo].\nA quién va dirigida: [lista o segmento].\nTono: [cercano / profesional / divertido].\nIdioma: [español / inglés].\n\nPrimero revisa mis listas y segmentos para ver cuál encaja y dime cuántos perfiles tiene. Redacta el asunto, el texto de vista previa y el cuerpo del correo con un botón de llamada a la acción. Muéstramelo todo y pídeme confirmación. No crees nada hasta que yo escriba \"confirmo\". Créala solo como borrador: no la programes ni la envíes. Si no encuentras la lista o el segmento, pregúntame.",
+    "recommendedFiles": [
+      "Fotos o logo de tu marca",
+      "Detalles de la promoción"
+    ],
+    "expectedResult": [
+      "Lista o segmento sugerido",
+      "Asunto, vista previa y cuerpo del correo",
+      "Confirmación antes de crear",
+      "Campaña en borrador"
+    ]
+  },
+  "en": {
+    "title": "Create a draft promotional campaign in Klaviyo",
+    "outcome": "Writes the email for your promotion and sets up the campaign in Klaviyo as a draft, without sending it, with your confirmation.",
+    "prompt": "I want to prepare an email campaign in Klaviyo.\n\nPromotion: [what you offer and for how long].\nWho it's for: [list or segment].\nTone: [friendly / professional / playful].\nLanguage: [English / Spanish].\n\nFirst review my lists and segments to see which fits and tell me how many profiles it has. Write the subject line, preview text, and email body with a call-to-action button. Show me everything and ask me to confirm. Don't create anything until I write \"confirm\". Create it as a draft only: don't schedule or send it. If you can't find the list or segment, ask me.",
+    "recommendedFiles": [
+      "Brand photos or logo",
+      "Promotion details"
+    ],
+    "expectedResult": [
+      "Suggested list or segment",
+      "Subject line, preview text, and email body",
+      "Confirmation before creating",
+      "Draft campaign"
+    ]
+  }
+}

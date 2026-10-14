@@ -62,7 +62,7 @@ Los dos valores quedan guardados cifrados en tu Keychain y sincronizados entre t
 - **Values**: `sheets_values_get` (un rango), `sheets_values_batch_get` (varios rangos), `sheets_values_update` (escribe un rango, sobrescribe), `sheets_values_batch_update` (escribe varios rangos).
 - **Sheets**: `sheets_sheets_list` (lista las pestañas de una planilla).
 
-La auth es OAuth 2.0 con el scope `spreadsheets` (lectura/escritura completa). Env de configuración: `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` de un OAuth client de Google Cloud, redirect `http://localhost:3000/callback`. El server expone un flujo `/authorize` que redirige a Google y codifica la callback URL del cliente en el state — la primera corrida abre el consent del navegador, los tokens persisten después.
+La auth es OAuth 2.0 con el scope `spreadsheets` (lectura/escritura completa). Env de configuración: `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` de un OAuth client de Google Cloud, redirect `http://localhost:3000/callback`. El server expone un flujo `/authorize` que redirige a Google y codifica la callback URL del cliente en el state — Verificado el 2026-10-14: por stdio este paquete NO usa el client id/secret ni abre el navegador — termina con "GOOGLE_ACCESS_TOKEN required for stdio transport" (el OAuth solo existe en su transporte HTTP). Por eso este conector todavía no es instalable para la IA: la app tendría que aportar un access token de Google.
 
 Terminal Sync guarda el client id/secret + refresh token en tu Keychain, sincronizados cifrados entre máquinas con AES-256-GCM. Combina bien con el conector de Google Drive (mismo autor) para buscar, compartir y borrar archivos.
 

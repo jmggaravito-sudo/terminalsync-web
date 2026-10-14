@@ -1,0 +1,41 @@
+{
+  "id": "notion-001",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 163,
+  "isNew": true,
+  "connectors": [
+    "notion"
+  ],
+  "es": {
+    "title": "Buscar en mi Notion lo que decidimos sobre un tema",
+    "outcome": "Busca en tu espacio de Notion todo lo escrito sobre un tema y te resume lo que se decidió.",
+    "prompt": "Busca en mi Notion lo que tenemos sobre un tema.\n\nTema: [por ejemplo, precios / un cliente / un proveedor / una política].\nPeriodo: [cualquiera / últimos 3 meses].\nQué necesito: [las decisiones tomadas / el estado actual / las tareas abiertas].\n\nSi te falta el tema, pregúntamelo antes de buscar. Busca en las páginas y bases de datos que tengo compartidas y dame:\n1. Las páginas relevantes, con título y una frase de qué contienen.\n2. Un resumen de lo que se decidió y cuándo.\n3. Datos que se contradicen entre páginas.\n4. Lo que no encontraste, para completarlo después.\n\nSolo consulta: no edites ni crees páginas. Si algo no aparece en mi Notion, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Nombre de la página o base donde suele estar",
+      "Palabras clave del tema"
+    ],
+    "expectedResult": [
+      "Páginas relevantes",
+      "Resumen de las decisiones",
+      "Contradicciones entre páginas",
+      "Información que falta"
+    ]
+  },
+  "en": {
+    "title": "Search my Notion for what we decided on a topic",
+    "outcome": "Searches your Notion workspace for everything written about a topic and summarizes what was decided.",
+    "prompt": "Search my Notion for what we have on a topic.\n\nTopic: [for example, pricing / a client / a supplier / a policy].\nPeriod: [any / last 3 months].\nWhat I need: [the decisions made / the current status / the open tasks].\n\nIf the topic is missing, ask me before searching. Search the pages and databases I've shared and give me:\n1. The relevant pages, with title and one sentence on what they contain.\n2. A summary of what was decided and when.\n3. Details that contradict each other across pages.\n4. What you didn't find, so I can fill it in later.\n\nRead only: don't edit or create pages. If something doesn't appear in my Notion, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Name of the page or database where it usually lives",
+      "Keywords for the topic"
+    ],
+    "expectedResult": [
+      "Relevant pages",
+      "Summary of the decisions",
+      "Contradictions between pages",
+      "Missing information"
+    ]
+  }
+}
