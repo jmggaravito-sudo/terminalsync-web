@@ -58,7 +58,7 @@ Both values are stored encrypted in your Keychain and synced across your machine
 
 `gmail-mcp` (Adam Jones / @domdomegg — same author as our Google Sheets and Airtable connectors) speaks the Gmail API over OAuth. Tools verified against the README: read/search — `gmail_get_profile`, `gmail_messages_list` (search operators), `gmail_message_get`, `gmail_threads_list`; write/manage — `gmail_message_send`, `gmail_message_forward`, `gmail_message_modify` (labels), `gmail_message_archive`, `gmail_message_trash`/`_untrash`, `gmail_message_delete`.
 
-Auth is OAuth 2.0 with `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` (the server acts as an OAuth proxy to Google — same pattern as `google-sheets-mcp`, so one Google project can back Sheets, Calendar and Gmail). First run opens the browser consent; tokens persist after.
+Auth is OAuth 2.0 with `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` (the server acts as an OAuth proxy to Google — same pattern as `google-sheets-mcp`, so one Google project can back Sheets, Calendar and Gmail). Verified 2026-10-14: over stdio this package does NOT use the client id/secret or open a browser — it exits with "GOOGLE_ACCESS_TOKEN required for stdio transport" (OAuth only exists in its HTTP transport). That is why this connector is not yet installable for the AI: the app would need to supply a Google access token.
 
 Terminal Sync keeps the client id/secret + refresh token in your Keychain, synced encrypted across machines with AES-256-GCM. Sends are public/irreversible, so the desktop gates `gmail_message_send`/`_forward`/`_delete` behind a confirmation step; read and search run freely.
 
