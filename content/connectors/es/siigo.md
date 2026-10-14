@@ -23,6 +23,12 @@ license: "proprietary"
 licenseUrl: "https://seguridad.siigo.com/paises/colombia/legal/condiciones-de-uso-software-nube"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-10-14T16:56:24.622Z"
+verifiedPackageVersion: null
 ---
 **Siigo** es el software contable y administrativo con el que muchas micro, pequeñas y medianas empresas de Colombia llevan su contabilidad, su facturación y su operación diaria. El conector oficial de Siigo es un **server MCP hospedado** (`https://mcp.siigo.com`), publicado por Siigo, que le da a tu agente acceso a tus facturas, tus clientes y tu catálogo de productos con el login oficial de tu cuenta de Siigo — sin pegar ninguna API key y, como dice la propia documentación, "sin necesidad de un desarrollador, tener conocimientos de código".
 
