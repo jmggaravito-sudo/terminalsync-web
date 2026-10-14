@@ -12,7 +12,7 @@ skillSlugs: ["cotizaciones"]
 ---
 ## Cuándo usarlo
 
-- Tu negocio funciona sobre Siigo (facturación, clientes, catálogo) y armás las cotizaciones tipeando precios de memoria — o desde una planilla que ya no coincide con tu catálogo real.
+- Tu negocio funciona sobre Siigo (facturación, clientes, catálogo) y armas las cotizaciones tipeando precios de memoria — o desde una planilla que ya no coincide con tu catálogo real.
 - Mandas cotizaciones o presupuestos a prospectos y clientes, y quieres las protecciones puestas por defecto: vencimiento, qué queda explícitamente excluido, condiciones de pago.
 - Cuando un cliente acepta, quieres la factura registrada en Siigo sin retipear cada ítem a mano.
 
