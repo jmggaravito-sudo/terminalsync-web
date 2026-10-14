@@ -529,6 +529,20 @@ const es: Dict = {
         ],
         cta: "Probar 7 días gratis",
       },
+      team: {
+        name: "Team · próximamente",
+        badge: "Próximamente",
+        price: "$59",
+        priceNote: "/empleado/mes",
+        tagline: "Max para equipos con espacios de usuarios distintos.",
+        features: [
+          "Todo lo de Max, más colaboración entre espacios de usuarios distintos",
+          "Cada persona conserva su propio espacio de trabajo",
+          "Compartir respuestas o documentos requiere aprobación antes de enviarlos",
+          "Plan anunciado; colaboración entre cuentas aún no disponible",
+        ],
+        cta: "Próximamente",
+      },
     },
   },
   chromeExtension: {

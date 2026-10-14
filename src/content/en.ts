@@ -529,6 +529,20 @@ const en: Dict = {
         ],
         cta: "Start 7-day free trial",
       },
+      team: {
+        name: "Team · coming soon",
+        badge: "Coming soon",
+        price: "$59",
+        priceNote: "/employee/mo",
+        tagline: "Max for teams with separate user workspaces.",
+        features: [
+          "Everything in Max, plus collaboration across different users' workspaces",
+          "Each person keeps their own workspace",
+          "Sharing answers or documents requires approval before sending",
+          "Announced plan; cross-account collaboration is not available yet",
+        ],
+        cta: "Coming soon",
+      },
     },
   },
   chromeExtension: {
