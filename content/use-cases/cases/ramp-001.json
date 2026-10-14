@@ -1,0 +1,41 @@
+{
+  "id": "ramp-001",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 151,
+  "isNew": true,
+  "connectors": [
+    "ramp"
+  ],
+  "es": {
+    "title": "¿En qué gasta mi empresa? Proveedores principales en Ramp",
+    "outcome": "Analiza los gastos del trimestre en Ramp y te muestra los proveedores y categorías donde más se va el dinero.",
+    "prompt": "Quiero entender en qué estamos gastando con Ramp.\n\nPeriodo: [este trimestre / últimos 30 días].\nEnfoque: [todos los gastos / software / viajes / publicidad].\nMoneda: [USD / otra].\n\nSi te falta el periodo, pregúntamelo antes de consultar. Si hay demasiados movimientos, acota por fechas en vez de traer todo. Lee las transacciones de ese periodo y dame:\n1. Los diez proveedores con más gasto, con monto y número de transacciones.\n2. El gasto por categoría y por departamento, si el dato existe.\n3. Proveedores nuevos o gastos que subieron mucho frente al periodo anterior.\n4. Tres recortes o revisiones que valdría la pena evaluar.\n\nSolo consulta: no apruebes, rechaces ni cambies nada. Si un dato no aparece en Ramp, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Presupuesto por área",
+      "Lista de suscripciones conocidas"
+    ],
+    "expectedResult": [
+      "Top diez proveedores",
+      "Gasto por categoría y departamento",
+      "Aumentos y proveedores nuevos",
+      "Tres revisiones sugeridas"
+    ]
+  },
+  "en": {
+    "title": "Where is my company spending? Top vendors in Ramp",
+    "outcome": "Analyzes the quarter's spend in Ramp and shows you the vendors and categories where the money goes.",
+    "prompt": "I want to understand what we're spending on with Ramp.\n\nPeriod: [this quarter / last 30 days].\nFocus: [all spend / software / travel / advertising].\nCurrency: [USD / other].\n\nIf the period is missing, ask me before looking. If there are too many transactions, narrow by dates instead of pulling everything. Read the transactions for that period and give me:\n1. The ten vendors with the most spend, with amount and number of transactions.\n2. Spend by category and by department, if the data exists.\n3. New vendors or expenses that grew a lot compared with the previous period.\n4. Three cuts or reviews worth evaluating.\n\nRead only: don't approve, reject, or change anything. If something doesn't appear in Ramp, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Budget by area",
+      "List of known subscriptions"
+    ],
+    "expectedResult": [
+      "Top ten vendors",
+      "Spend by category and department",
+      "Increases and new vendors",
+      "Three suggested reviews"
+    ]
+  }
+}

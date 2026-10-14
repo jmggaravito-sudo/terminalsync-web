@@ -147,20 +147,25 @@ export function MultiAI({ dict }: { dict: Dict }) {
           </div>
         )}
 
-        {/* Chips "propia suscripción" — dejan claro que TS no
-            reempaca las IAs: el usuario paga (o usa el free plan) directo
-            con cada provider y las conecta acá. Sin lock-in de facturación. */}
+        {/* Chips de la IA incluida.
+            Hasta el 2026-10-07 decían "usas tu propia suscripción de cada
+            IA" y "empieza con la que ya tienes". Las tres eran falsas: la
+            app NO deja conectar una cuenta propia — el interruptor de
+            opciones avanzadas no se puede prender desde ninguna pantalla —
+            y JM retiró esa oferta ese día ("yo por ahora no quiero ofrecer
+            eso"). Prometerlo acá, que es lo primero que lee el visitante,
+            era vender algo que el producto no entrega. */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12.5px] text-[var(--color-fg-muted)]">
           {(dict.locale === "es"
             ? [
-                "Funciona igual con 1, 2 o las 3 IAs",
-                "Usas tu propia suscripción de cada IA",
-                "Empieza con la que ya tienes — agrega otras cuando quieras",
+                "La IA viene incluida — no conectas ninguna cuenta",
+                "Nada que instalar ni configurar",
+                "Empiezas a trabajar apenas creas el espacio",
               ]
             : [
-                "Works the same with 1, 2 or all 3 AIs",
-                "You use your own subscription for each AI",
-                "Start with the one you already have — add others anytime",
+                "The AI is included — no account to connect",
+                "Nothing to install, nothing to set up",
+                "Start working as soon as you create a workspace",
               ]
           ).map((chip) => (
             <span key={chip} className="inline-flex items-center gap-1.5">

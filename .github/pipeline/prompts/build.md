@@ -24,6 +24,14 @@ Entrada: `.pipeline/research.json` (hechos verificados: úsalos, no los reinvent
 7. PR en borrador a `main`. El cuerpo debe incluir exactamente esta línea: `App PR: no aplica — la app consume el catálogo`. Describe fuentes, qué instala, límites y si el logo es oficial o de reserva.
 8. `.pipeline/build.json`: `{ "pr": <número>, "branch": "loop/connectors/...", "slug": "<slug>", "url": "<url del PR>" }`.
 
+## Casos de uso (obligatorio, en las dos fichas)
+Cada ficha lleva la sección de casos de uso: `### What you can ask` en `en` y `### Qué le puedes pedir` en `es` (los mismos casos, localizados de verdad, no traducidos palabra por palabra). Esa sección es lo que el landing y la app muestran como casos de uso del conector.
+- **4 a 6 casos**, cada uno una petición concreta que un dueño de negocio le haría a la IA, entre comillas y en cursiva, como en el molde de oro.
+- Cada caso debe poder hacerse **con las herramientas que el conector de verdad expone** (las de la fuente oficial). Sin herramienta que lo respalde, no entra. Si el conector es de solo lectura, ningún caso pide escribir.
+- Mezcla lectura ("muéstrame…") y, si el conector permite escribir, al menos una acción ("crea…", "actualiza…"), aclarando que la IA pide confirmación antes de escribir.
+- Pensados para negocios de EE. UU. y Latinoamérica, no para desarrolladores. Usa cifras, monedas y ejemplos que tengan sentido en ambos mercados.
+- No prometas resultados ni integraciones con otros conectores que no existan en el catálogo.
+
 ## Reglas que ya costaron errores reales (no las repitas)
 - **Solo archivos de este conector:** sus dos fichas, su logo y `SOURCES.md`. Un PR anterior cambió además siete logos de otros conectores con imágenes sin verificar y fue rechazado. No toques nada más.
 - **Español neutro, tú:** sin voseo (vos, tenés, pedí, mirá, conectá…), sin regionalismos del Cono Sur (planilla → hoja de cálculo, despachante → despachador, acá → aquí, blastear, retipear). El público es EE. UU. y LatAm, en español e inglés.

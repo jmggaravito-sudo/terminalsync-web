@@ -1,0 +1,41 @@
+{
+  "id": "square-001",
+  "categoryId": "ecommerce",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 144,
+  "isNew": true,
+  "connectors": [
+    "square"
+  ],
+  "es": {
+    "title": "Ventas del día en Square",
+    "outcome": "Revisa los pagos que entraron hoy en Square y te da el total y los productos que más se movieron.",
+    "prompt": "Muéstrame cómo van las ventas en Square.\n\nPeriodo: [hoy / ayer / esta semana].\nLocal o sucursal: [todos / nombre].\nMoneda: [USD / otra].\n\nSi te falta el periodo o el local, pregúntamelos antes de consultar. Lee mis pagos y pedidos de ese periodo y dame:\n1. Cuántos pagos hubo y el total cobrado.\n2. El ticket promedio.\n3. Los productos o servicios que más se vendieron.\n4. Los reembolsos del periodo, si los hay.\n\nSolo consulta: no cobres ni reembolses nada. Si un dato no aparece en Square, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Metas de venta del día",
+      "Lista de productos principales"
+    ],
+    "expectedResult": [
+      "Número de pagos y total cobrado",
+      "Ticket promedio",
+      "Productos más vendidos",
+      "Reembolsos del periodo"
+    ]
+  },
+  "en": {
+    "title": "Today's sales in Square",
+    "outcome": "Reviews the payments that came in today in Square and gives you the total and the items that moved the most.",
+    "prompt": "Show me how sales are going in Square.\n\nPeriod: [today / yesterday / this week].\nLocation or store: [all / name].\nCurrency: [USD / other].\n\nIf the period or location is missing, ask me before looking. Read my payments and orders for that period and give me:\n1. How many payments there were and the total collected.\n2. The average ticket.\n3. The products or services that sold the most.\n4. Refunds in the period, if any.\n\nRead only: don't charge or refund anything. If something doesn't appear in Square, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Daily sales goals",
+      "List of main products"
+    ],
+    "expectedResult": [
+      "Number of payments and total collected",
+      "Average ticket",
+      "Best-selling items",
+      "Refunds in the period"
+    ]
+  }
+}

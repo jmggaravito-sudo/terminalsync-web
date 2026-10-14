@@ -52,7 +52,7 @@ Este conector **no te pide pegar ninguna API key**. Usa el login de tu propia cu
 
 --- dev ---
 
-Pipedrive publica su server MCP como **server remoto/hospedado** en `https://mcp.pipedrive.ai/mcp`, documentado en `pipedrive.com/en/features/mcp-server` y `support.pipedrive.com/en/article/mcp` (guías de setup para Claude y ChatGPT, más una referencia publicada de tools). No hay paquete stdio local: te conectas a la URL hospedada y localmente haces de puente con `mcp-remote`:
+Pipedrive publica su server MCP como **server remoto/hospedado** en `https://mcp.pipedrive.ai/mcp`, documentado en `pipedrive.com/en/features/mcp-server` y `support.pipedrive.com/en/article/mcp` (con una referencia publicada de tools). No hay paquete stdio local: te conectas a la URL hospedada y localmente haces de puente con `mcp-remote`:
 
 ```
 npx -y mcp-remote@latest https://mcp.pipedrive.ai/mcp

@@ -1,0 +1,41 @@
+{
+  "id": "calendly-001",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 167,
+  "isNew": true,
+  "connectors": [
+    "calendly"
+  ],
+  "es": {
+    "title": "Mis próximos espacios libres y citas en Calendly",
+    "outcome": "Revisa tu Calendly y te dice cuáles son tus primeros espacios libres y qué citas tienes agendadas.",
+    "prompt": "Revisa mi Calendly.\n\nQué necesito: [mis primeros espacios libres esta semana / mis citas de mañana / ambos].\nDuración del tipo de cita: [por ejemplo, 30 minutos].\nZona horaria: [por ejemplo, Miami / Ciudad de México / Bogotá].\n\nSi te falta algún dato, pregúntamelo antes de consultar. Dime mis tipos de cita disponibles, mis primeros tres espacios libres de esa duración y mis citas ya agendadas del periodo, con hora y nombre de la persona. Señala si dos citas quedan muy pegadas y propón dónde dejar un descanso.\n\nSolo consulta: no canceles ni cambies ninguna cita. Si algún dato no aparece en Calendly, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Horarios en los que sí atiendes",
+      "Tipos de cita que ofreces"
+    ],
+    "expectedResult": [
+      "Tipos de cita disponibles",
+      "Primeros espacios libres",
+      "Citas ya agendadas",
+      "Sugerencia de descansos"
+    ]
+  },
+  "en": {
+    "title": "My next openings and appointments in Calendly",
+    "outcome": "Checks your Calendly and tells you your first open slots and what appointments you have booked.",
+    "prompt": "Check my Calendly.\n\nWhat I need: [my first open slots this week / tomorrow's appointments / both].\nLength of the event type: [for example, 30 minutes].\nTime zone: [for example, Miami / Mexico City / Bogotá].\n\nIf anything is missing, ask me before looking. Tell me my available event types, my first three open slots of that length, and my already booked appointments for the period, with time and the person's name. Flag if two appointments are back to back and suggest where to leave a break.\n\nRead only: don't cancel or change any appointment. If something doesn't appear in Calendly, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Hours you take appointments",
+      "Event types you offer"
+    ],
+    "expectedResult": [
+      "Available event types",
+      "First open slots",
+      "Already booked appointments",
+      "Break suggestions"
+    ]
+  }
+}

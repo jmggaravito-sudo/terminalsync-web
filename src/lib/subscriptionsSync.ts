@@ -112,10 +112,14 @@ export function planFromPriceId(priceId: string): "pro" | "max" | null {
   const pmYt = envId("STRIPE_PRICE_PRO_YEARLY_TEST");
   const mxMt = envId("STRIPE_PRICE_MAX_MONTHLY_TEST", "STRIPE_PRICE_DEV_MONTHLY_TEST");
   const mxYt = envId("STRIPE_PRICE_MAX_YEARLY_TEST", "STRIPE_PRICE_DEV_YEARLY_TEST");
-  if (priceId === pmM || priceId === pmY || priceId === pmMt || priceId === pmYt) {
+  const pmAi = envId("STRIPE_PRICE_PRO_WITH_AI_MONTHLY");
+  const mxAi = envId("STRIPE_PRICE_MAX_WITH_AI_MONTHLY");
+  const pmAiTest = envId("STRIPE_PRICE_PRO_WITH_AI_MONTHLY_TEST");
+  const mxAiTest = envId("STRIPE_PRICE_MAX_WITH_AI_MONTHLY_TEST");
+  if (priceId === pmM || priceId === pmY || priceId === pmMt || priceId === pmYt || priceId === pmAi || priceId === pmAiTest) {
     return "pro";
   }
-  if (priceId === mxM || priceId === mxY || priceId === mxMt || priceId === mxYt) {
+  if (priceId === mxM || priceId === mxY || priceId === mxMt || priceId === mxYt || priceId === mxAi || priceId === mxAiTest) {
     return "max";
   }
   return null;
@@ -125,6 +129,15 @@ export function planFromPriceId(priceId: string): "pro" | "max" | null {
  *  which we fold into `incomplete` since the state machine treats them the
  *  same downstream (no active access). */
 function subscriptionHasIncludedAi(sub: Stripe.Subscription): boolean {
+  const bundled = [
+    envId("STRIPE_PRICE_PRO_WITH_AI_MONTHLY"),
+    envId("STRIPE_PRICE_MAX_WITH_AI_MONTHLY"),
+    envId("STRIPE_PRICE_PRO_WITH_AI_MONTHLY_TEST"),
+    envId("STRIPE_PRICE_MAX_WITH_AI_MONTHLY_TEST"),
+  ].filter(Boolean);
+  if (sub.items.data.some((item) => item.price?.id && bundled.includes(item.price.id))) {
+    return true;
+  }
   if (sub.metadata?.included_ai === "1" || sub.metadata?.add_ons?.includes("included_ai")) {
     return true;
   }

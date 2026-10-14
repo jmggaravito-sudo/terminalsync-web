@@ -1,0 +1,41 @@
+{
+  "id": "monday-001",
+  "categoryId": "sales",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 157,
+  "isNew": true,
+  "connectors": [
+    "monday"
+  ],
+  "es": {
+    "title": "Negocios estancados en mi tablero de ventas de monday.com",
+    "outcome": "Revisa tu tablero de ventas en monday.com y te dice qué negocios llevan más tiempo parados en cada etapa.",
+    "prompt": "Revisa mi tablero de ventas en monday.com.\n\nTablero: [nombre del tablero].\nEtapa que me preocupa: [por ejemplo, Negociación].\nDías de espera: [por ejemplo, más de 10].\n\nSi te falta algún dato, pregúntamelo antes de consultar. Lee los elementos del tablero y dame:\n1. Cuántos negocios hay en cada etapa.\n2. Una tabla con los de la etapa indicada: nombre, responsable, monto y última actualización.\n3. Los que llevan más tiempo sin cambios.\n4. Una acción sugerida para cada uno.\n\nSolo consulta: no cambies estados ni elementos. Si una columna no existe en el tablero, dímelo en vez de suponerla.",
+    "recommendedFiles": [
+      "Descripción de tus etapas de venta",
+      "Nombre exacto de tus tableros"
+    ],
+    "expectedResult": [
+      "Negocios por etapa",
+      "Tabla de la etapa indicada",
+      "Los más antiguos sin cambios",
+      "Acción sugerida para cada uno"
+    ]
+  },
+  "en": {
+    "title": "Stalled deals on my monday.com sales board",
+    "outcome": "Reviews your sales board in monday.com and tells you which deals have been stuck the longest in each stage.",
+    "prompt": "Review my sales board in monday.com.\n\nBoard: [board name].\nStage I'm worried about: [for example, Negotiation].\nDays waiting: [for example, more than 10].\n\nIf anything is missing, ask me before looking. Read the board items and give me:\n1. How many deals are in each stage.\n2. A table of the ones in the stage I indicated: name, owner, amount, and last update.\n3. The ones that have gone the longest without changes.\n4. A suggested action for each one.\n\nRead only: don't change statuses or items. If a column doesn't exist on the board, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Description of your sales stages",
+      "Exact names of your boards"
+    ],
+    "expectedResult": [
+      "Deals per stage",
+      "Table for the stage indicated",
+      "Oldest with no changes",
+      "Suggested action for each"
+    ]
+  }
+}

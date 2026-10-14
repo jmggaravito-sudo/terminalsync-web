@@ -1,0 +1,41 @@
+{
+  "id": "notion-002",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 164,
+  "isNew": true,
+  "connectors": [
+    "notion"
+  ],
+  "es": {
+    "title": "Guardar las notas de una reunión como página en Notion",
+    "outcome": "Ordena tus notas en un acta con acuerdos y tareas, y la guarda en Notion solo cuando tú lo confirmas.",
+    "prompt": "Quiero guardar las notas de una reunión en Notion.\n\nTítulo: [nombre de la reunión].\nFecha y participantes: [fecha y nombres].\nNotas: [pegar las notas tal como las tengo].\nDónde guardarla: [nombre de la página o base de datos].\nIdioma: [español / inglés].\n\nPrimero ordena las notas en un acta con: resumen, decisiones, tareas con responsable y fecha, y pendientes. Revisa que la página o base de datos de destino exista y dime si la encuentras. Muéstrame el acta completa y pídeme confirmación. No crees la página hasta que yo escriba \"confirmo\". No modifiques páginas existentes. Si una tarea no tiene responsable o fecha, márcala como pendiente en vez de inventarla.",
+    "recommendedFiles": [
+      "Notas o transcripción de la reunión",
+      "Plantilla de actas que usas"
+    ],
+    "expectedResult": [
+      "Acta ordenada",
+      "Página de destino encontrada",
+      "Confirmación antes de crear",
+      "Página creada en Notion"
+    ]
+  },
+  "en": {
+    "title": "Save meeting notes as a page in Notion",
+    "outcome": "Turns your notes into minutes with agreements and tasks, and saves them to Notion only when you confirm.",
+    "prompt": "I want to save the notes from a meeting in Notion.\n\nTitle: [meeting name].\nDate and participants: [date and names].\nNotes: [paste the notes as I have them].\nWhere to save it: [page or database name].\nLanguage: [English / Spanish].\n\nFirst organize the notes into minutes with: summary, decisions, tasks with owner and date, and open items. Check that the destination page or database exists and tell me whether you find it. Show me the full minutes and ask me to confirm. Don't create the page until I write \"confirm\". Don't modify existing pages. If a task has no owner or date, mark it as pending instead of making one up.",
+    "recommendedFiles": [
+      "Meeting notes or transcript",
+      "Meeting-minutes template you use"
+    ],
+    "expectedResult": [
+      "Organized minutes",
+      "Destination page found",
+      "Confirmation before creating",
+      "Page created in Notion"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "wordpress-001",
+  "categoryId": "marketing",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 179,
+  "isNew": true,
+  "connectors": [
+    "wordpress"
+  ],
+  "es": {
+    "title": "Escribir un artículo y guardarlo como borrador en WordPress",
+    "outcome": "Redacta un artículo para tu blog y lo guarda como borrador en tu sitio de WordPress, sin publicarlo.",
+    "prompt": "Quiero un artículo nuevo para el blog de mi sitio WordPress.\n\nTema: [de qué trata].\nPúblico: [quién lo va a leer].\nExtensión: [por ejemplo, 400 palabras].\nTono: [cercano / profesional].\nIdioma: [español / inglés].\nDatos que debe incluir: [precios, horarios, ubicación, etc.].\n\nPrimero propón el título, un esquema corto y el texto completo. No inventes datos del negocio; si falta información, pregúntame. Muéstrame el artículo y pídeme confirmación. No lo guardes hasta que yo escriba \"confirmo\". Guárdalo solo como borrador: no lo publiques. Después dime cómo quedó el título y el enlace al borrador, si está disponible.",
+    "recommendedFiles": [
+      "Datos reales de tu negocio",
+      "Artículos anteriores como referencia de tono"
+    ],
+    "expectedResult": [
+      "Título y esquema",
+      "Artículo completo",
+      "Confirmación antes de guardar",
+      "Borrador guardado en WordPress"
+    ]
+  },
+  "en": {
+    "title": "Write an article and save it as a draft in WordPress",
+    "outcome": "Writes an article for your blog and saves it as a draft on your WordPress site, without publishing it.",
+    "prompt": "I want a new article for the blog on my WordPress site.\n\nTopic: [what it's about].\nAudience: [who will read it].\nLength: [for example, 400 words].\nTone: [friendly / professional].\nLanguage: [English / Spanish].\nDetails it must include: [prices, hours, location, etc.].\n\nFirst propose the title, a short outline, and the full text. Don't make up business facts; if information is missing, ask me. Show me the article and ask me to confirm. Don't save it until I write \"confirm\". Save it as a draft only: don't publish it. Then tell me how the title turned out and the link to the draft, if available.",
+    "recommendedFiles": [
+      "Real details about your business",
+      "Previous articles as a tone reference"
+    ],
+    "expectedResult": [
+      "Title and outline",
+      "Full article",
+      "Confirmation before saving",
+      "Draft saved in WordPress"
+    ]
+  }
+}

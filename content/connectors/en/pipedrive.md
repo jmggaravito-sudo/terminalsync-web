@@ -52,7 +52,7 @@ This connector **doesn't ask you to paste an API key**. It uses your own Pipedri
 
 --- dev ---
 
-Pipedrive publishes its MCP server as a **remote/hosted server** at `https://mcp.pipedrive.ai/mcp`, documented at `pipedrive.com/en/features/mcp-server` and `support.pipedrive.com/en/article/mcp` (setup guides for Claude and ChatGPT, plus a published tools reference). There's no local stdio package — you connect to the hosted URL and bridge locally with `mcp-remote`:
+Pipedrive publishes its MCP server as a **remote/hosted server** at `https://mcp.pipedrive.ai/mcp`, documented at `pipedrive.com/en/features/mcp-server` and `support.pipedrive.com/en/article/mcp` (with a published tools reference). There's no local stdio package — you connect to the hosted URL and bridge locally with `mcp-remote`:
 
 ```
 npx -y mcp-remote@latest https://mcp.pipedrive.ai/mcp

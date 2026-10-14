@@ -1,0 +1,41 @@
+{
+  "id": "meta-ads-001",
+  "categoryId": "marketing",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 173,
+  "isNew": true,
+  "connectors": [
+    "meta-ads"
+  ],
+  "es": {
+    "title": "¿Cuánto gasté en anuncios esta semana? (Meta Ads)",
+    "outcome": "Lee el gasto y el rendimiento de tus campañas de Facebook e Instagram de la semana y te lo explica en simple.",
+    "prompt": "Quiero saber cómo van mis anuncios de Facebook e Instagram.\n\nCuenta publicitaria: [nombre o \"la que tenga\"; si hay varias, pregúntame cuál].\nPeriodo: [esta semana / últimos 7 días / este mes].\nMoneda: [USD / otra].\n\nSi te falta algún dato, pregúntamelo antes de consultar. Dime qué cuentas publicitarias tengo conectadas y, para la elegida, dame:\n1. El gasto total del periodo.\n2. Una tabla por campaña con gasto, impresiones, alcance, clics, CTR y costo por clic.\n3. Qué campaña gastó más y cómo le fue frente a las demás.\n4. Qué conviene revisar primero.\n\nSolo consulta: no cambies, pausas ni crees anuncios. Si un dato (por ejemplo, costo por cliente o ventas) no aparece, dímelo en vez de calcularlo o suponerlo.",
+    "recommendedFiles": [
+      "Presupuesto semanal de anuncios",
+      "Objetivo de la campaña"
+    ],
+    "expectedResult": [
+      "Gasto total del periodo",
+      "Tabla por campaña con métricas",
+      "Campaña que más gastó",
+      "Qué revisar primero"
+    ]
+  },
+  "en": {
+    "title": "How much did I spend on ads this week? (Meta Ads)",
+    "outcome": "Reads this week's spend and performance for your Facebook and Instagram campaigns and explains it simply.",
+    "prompt": "I want to know how my Facebook and Instagram ads are doing.\n\nAd account: [name or \"whichever I have\"; if there are several, ask me which].\nPeriod: [this week / last 7 days / this month].\nCurrency: [USD / other].\n\nIf anything is missing, ask me before looking. Tell me which ad accounts I have connected and, for the chosen one, give me:\n1. The total spend for the period.\n2. A table by campaign with spend, impressions, reach, clicks, CTR, and cost per click.\n3. Which campaign spent the most and how it did compared with the others.\n4. What I should look at first.\n\nRead only: don't change, pause, or create ads. If a figure (for example, cost per customer or sales) doesn't appear, tell me instead of calculating or guessing it.",
+    "recommendedFiles": [
+      "Weekly ad budget",
+      "Campaign goal"
+    ],
+    "expectedResult": [
+      "Total spend for the period",
+      "Table by campaign with metrics",
+      "Campaign that spent the most",
+      "What to look at first"
+    ]
+  }
+}

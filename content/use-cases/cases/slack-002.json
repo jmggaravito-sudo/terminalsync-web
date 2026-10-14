@@ -1,0 +1,41 @@
+{
+  "id": "slack-002",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 166,
+  "isNew": true,
+  "connectors": [
+    "slack"
+  ],
+  "es": {
+    "title": "Publicar una actualización para el equipo en Slack",
+    "outcome": "Redacta el anuncio para tu equipo y lo publica en el canal de Slack solo después de tu aprobación.",
+    "prompt": "Quiero publicar una actualización en Slack.\n\nCanal: [nombre del canal].\nQué quiero comunicar: [la novedad, el cambio o el recordatorio].\nTono: [cercano / formal].\nIdioma: [español / inglés].\n\nRedacta un mensaje breve, claro y fácil de leer, con lo que cambia, para quién y qué se espera de cada persona. Si es la respuesta a un hilo, dime en cuál y la respondes ahí. Muéstrame el mensaje y el canal exacto donde saldrá, y pídeme aprobación. No publiques nada hasta que yo escriba \"confirmo\". Publicar es visible para todo el canal, así que no lo hagas sin mi OK.",
+    "recommendedFiles": [
+      "Texto o notas de lo que quieres comunicar",
+      "Lista de personas a mencionar"
+    ],
+    "expectedResult": [
+      "Mensaje redactado",
+      "Canal de destino confirmado",
+      "Aprobación antes de publicar",
+      "Mensaje publicado"
+    ]
+  },
+  "en": {
+    "title": "Post an update for the team in Slack",
+    "outcome": "Drafts the announcement for your team and posts it in the Slack channel only after your approval.",
+    "prompt": "I want to post an update in Slack.\n\nChannel: [channel name].\nWhat I want to communicate: [the news, change, or reminder].\nTone: [friendly / formal].\nLanguage: [English / Spanish].\n\nWrite a short, clear, easy-to-read message with what changes, for whom, and what is expected from each person. If it's a reply to a thread, tell me which and reply there. Show me the message and the exact channel where it will go, and ask for my approval. Don't post anything until I write \"confirm\". Posting is visible to the whole channel, so don't do it without my OK.",
+    "recommendedFiles": [
+      "Text or notes of what you want to communicate",
+      "List of people to mention"
+    ],
+    "expectedResult": [
+      "Drafted message",
+      "Destination channel confirmed",
+      "Approval before posting",
+      "Message posted"
+    ]
+  }
+}

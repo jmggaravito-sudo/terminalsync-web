@@ -4,7 +4,9 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  LIVE_SEARCH_ROW_SIZE,
   LIVE_SEARCH_SOURCES,
+  liveSearchRows,
   liveSearchSourceLabel,
   liveSearchSourcesFor,
 } from "./liveSearchSources";
@@ -84,8 +86,18 @@ describe("LIVE_SEARCH_SOURCES", () => {
 
   it("todas las fuentes llevan logo (decisión de JM, 2026-10-09)", () => {
     for (const s of LIVE_SEARCH_SOURCES) {
-      expect(s.logo, `${s.name} sin logo`).not.toBeNull();
+      expect(s.logo, `${s.name} sin logo`).toMatch(/^[a-z0-9-]+$/);
     }
+  });
+
+  it("se reparten en filas de 7 sin cambiar el orden (hoy 7 + 7)", () => {
+    expect(LIVE_SEARCH_ROW_SIZE).toBe(7);
+    const rows = liveSearchRows(LIVE_SEARCH_SOURCES);
+    expect(rows.map((r) => r.length)).toEqual([7, 7]);
+    expect(rows.flat()).toEqual(LIVE_SEARCH_SOURCES);
+    expect(liveSearchRows(LIVE).map((r) => r.length)).toEqual([7]);
+    expect(liveSearchRows([1, 2, 3], 2)).toEqual([[1, 2], [3]]);
+    expect(liveSearchRows([])).toEqual([]);
   });
 
   it("Walmart quedó afuera (decisión de JM, 2026-10-09)", () => {
@@ -99,7 +111,6 @@ describe("LIVE_SEARCH_SOURCES", () => {
   it("cada logo existe en public/sources/ y no sobra ningún archivo", () => {
     const used = new Set<string>();
     for (const s of LIVE_SEARCH_SOURCES) {
-      if (!s.logo) continue;
       used.add(`${s.logo}.svg`);
       const file = path.join(ROOT, "public/sources", `${s.logo}.svg`);
       expect(existsSync(file), `${s.name}: falta ${file}`).toBe(true);
@@ -122,52 +133,90 @@ describe("landing-b: la fila estática coincide con la lista", () => {
     "utf8",
   );
   const block = html.match(
-    /<div class="live-src" data-live-search>([\s\S]*?)<\/div>\s*<\/div>/,
+    /<div class="live-src" data-live-search>([\s\S]*?)<p class="live-src-note">/,
   );
 
-  function parseChips(markup: string) {
-    const chips = [
+  /**
+   * Filas y cuadros del bloque. Los cuadros son los mismos de las integraciones
+   * de arriba (`.tiles-rows` > `.tiles-row` > `.tile`): solo logo, sin texto
+   * visible; el nombre va en `title` del cuadro y `alt` del logo.
+   */
+  function parseRows(markup: string) {
+    const rows = [
       ...markup.matchAll(
-        /<span class="src-chip([^"]*)" role="listitem"([^>]*)>((?:(?!<span class="src-chip)[\s\S])*?)<\/span>\n/g,
+        /<div class="tiles-row" role="none"([^>]*)>([\s\S]*?)<\/div>/g,
       ),
     ];
-    return chips.map(([, classes, attrs, inner]) => {
-      const lote3 = /data-live-search-lote="3"/.test(attrs);
-      expect(/\shidden(\s|$)/.test(attrs), `hidden ↔ lote 3 en ${inner}`).toBe(lote3);
-      const img = inner.match(/<img src="\/sources\/([a-z0-9-]+)\.svg" alt="([^"]+)"/);
-      const text = inner.replace(/<[^>]+>/g, "").trim();
-      if (img) {
-        expect(img[2], "alt = nombre").toBe(text);
-        expect(inner, "nombre visible aria-hidden junto al logo").toContain(
-          `<span aria-hidden="true">${text}</span>`,
+    return rows.map(([, rowAttrs, inner]) => {
+      const tiles = [
+        ...inner.matchAll(
+          /<span class="(tile(?: dark-logo)?)" role="listitem" title="([^"]+)"([^>]*)>([\s\S]*?)<\/span>/g,
+        ),
+      ].map(([, classes, title, attrs, content]) => {
+        const lote3 = /data-live-search-lote="3"/.test(attrs);
+        expect(/\shidden(\s|$)/.test(attrs), `hidden ↔ lote 3 en ${title}`).toBe(lote3);
+        const img = content.match(
+          /^<img src="\/sources\/([a-z0-9-]+)\.svg" alt="([^"]+)"( data-alt-en="([^"]+)")? loading="lazy" onerror="this\.parentNode\.remove\(\)" \/>$/,
         );
-      }
-      return {
-        label: text,
-        logo: img ? img[1] : null,
-        darkLogo: /\bdark-logo\b/.test(classes),
-        batch: lote3 ? "lote3" : "live",
-      };
+        expect(img, `cuadro sin logo o con texto: ${content}`).not.toBeNull();
+        expect(img![2], "alt = title").toBe(title);
+        return {
+          label: title,
+          en: img![4] ?? title,
+          logo: img![1],
+          darkLogo: classes.includes("dark-logo"),
+          batch: lote3 ? "lote3" : "live",
+        };
+      });
+      const rowLote3 = /data-live-search-lote="3"/.test(rowAttrs);
+      expect(/\shidden(\s|$)/.test(rowAttrs)).toBe(rowLote3);
+      // Una fila se oculta entera solo si todos sus cuadros son del lote 3.
+      expect(rowLote3, "fila oculta ↔ todo lote 3").toBe(
+        tiles.length > 0 && tiles.every((t) => t.batch === "lote3"),
+      );
+      return tiles;
     });
   }
 
   it("tiene el bloque, el rótulo y la nota de marcas", () => {
     expect(block).not.toBeNull();
-    expect(html).toContain("La IA de TS busca en vivo en…");
+    expect(block![1]).toContain(
+      '<h3 class="live-src-h" id="live-src-title">La IA de TS busca en vivo en…</h3>',
+    );
+    expect(block![1]).toContain(
+      '<div class="tiles-rows" role="list" aria-labelledby="live-src-title">',
+    );
     expect(html).toContain(
       "Las marcas pertenecen a sus respectivos dueños. TS consulta información pública; no implica afiliación.",
     );
   });
 
-  it("mismas fuentes, mismo orden, mismos logos, lote 3 oculto", () => {
-    expect(parseChips(block![1])).toEqual(
+  it("mismas fuentes, mismo orden, mismos logos, filas de 7, lote 3 oculto", () => {
+    const rows = parseRows(block![1]);
+    expect(rows.map((r) => r.length)).toEqual(
+      liveSearchRows(LIVE_SEARCH_SOURCES).map((r) => r.length),
+    );
+    expect(rows.flat()).toEqual(
       LIVE_SEARCH_SOURCES.map((s) => ({
         label: liveSearchSourceLabel(s, "es"),
+        en: liveSearchSourceLabel(s, "en"),
         logo: s.logo,
         darkLogo: Boolean(s.darkLogo),
         batch: s.batch,
       })),
     );
+  });
+
+  it("reusa los estilos de los cuadros de integraciones, sin copiarlos", () => {
+    // El cuadro sigue definido una sola vez, en la regla de las integraciones.
+    expect(html.match(/^\.tile\{/gm)?.length).toBe(1);
+    expect(html).not.toMatch(/\.live-src[^{]*\.tile\{[^}]*(width|height|border-radius)/);
+    // Lo único propio: fondo claro del logo oscuro en tema oscuro, y el gate.
+    expect(html).toContain(
+      "html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transparent}",
+    );
+    expect(html).toContain(".live-src [hidden]{display:none}");
+    expect(html).not.toContain("src-chip");
   });
 
   it("pregunta el interruptor a /api/live-search-sources", () => {
@@ -182,18 +231,12 @@ describe("landing-b: la fila estática coincide con la lista", () => {
     }
   });
 
-  it("si un logo no carga se oculta y queda el nombre; el alt sigue al idioma", () => {
-    const imgs = block![1].match(/<img [^>]*>/g) ?? [];
-    expect(imgs.length).toBe(LIVE_SEARCH_SOURCES.length);
-    for (const img of imgs) {
-      expect(img).toContain(
-        `onerror="this.nextElementSibling.removeAttribute('aria-hidden');this.remove()"`,
-      );
-    }
+  it("el alt y el title siguen al idioma", () => {
     expect(html).toContain("window.addEventListener('ts-lang',syncAlt)");
+    expect(html).toContain("img.alt=name;img.parentNode.title=name;");
   });
 
-  it("i18n.js traduce al inglés el rótulo, la nota y los nombres que cambian", () => {
+  it("i18n.js traduce al inglés el rótulo y la nota", () => {
     const i18n = readFileSync(
       path.join(ROOT, "public/landing-b/i18n.js"),
       "utf8",
@@ -202,9 +245,6 @@ describe("landing-b: la fila estática coincide con la lista", () => {
     expect(i18n).toContain(
       '"Las marcas pertenecen a sus respectivos dueños. TS consulta información pública; no implica afiliación.": "Brands belong to their respective owners. TS looks up public information; no affiliation implied."',
     );
-    for (const s of LIVE_SEARCH_SOURCES) {
-      if (s.es) expect(i18n).toContain(`"${s.es}": "${s.name}"`);
-    }
   });
 });
 
@@ -217,36 +257,47 @@ describe("IntegrationsMarquee: tercera fila", () => {
     );
     return renderToStaticMarkup(createElement(IntegrationsMarquee, { lang }));
   }
-  const shown = (html: string, label: string) =>
-    html.includes(`<span>${label}</span>`) ||
-    html.includes(`<span aria-hidden="true">${label}</span>`);
+  const liveBlock = (html: string) =>
+    html.slice(html.indexOf('class="ts-live-sources"'));
+  const tile = (s: (typeof LIVE_SEARCH_SOURCES)[number], lang: "es" | "en") => {
+    const label = liveSearchSourceLabel(s, lang);
+    const cls = s.darkLogo
+      ? "ts-integration-tile ts-integration-tile--dark-logo"
+      : "ts-integration-tile";
+    return `<div class="${cls}" title="${label}" role="listitem"><img src="/sources/${s.logo}.svg" alt="${label}" loading="lazy" width="24" height="24"/></div>`;
+  };
 
-  it("muestra rótulo, nota y solo producción por defecto (ES)", async () => {
+  it("mismo cuadro que las integraciones, solo producción por defecto (ES)", async () => {
     const html = await render(undefined, "es");
-    expect(html).toContain("La IA de TS busca en vivo en…");
-    expect(html).toContain("no implica afiliación");
-    for (const s of LIVE) expect(shown(html, liveSearchSourceLabel(s, "es")), s.name).toBe(true);
-    for (const s of LOTE3) expect(shown(html, liveSearchSourceLabel(s, "es")), s.name).toBe(false);
-    // Cada logo con alt = nombre en el idioma, y el nombre visible aria-hidden.
-    for (const s of LIVE) {
-      const label = liveSearchSourceLabel(s, "es");
-      expect(html).toContain(`src="/sources/${s.logo}.svg" alt="${label}"`);
-      expect(html).toContain(`<span aria-hidden="true">${label}</span>`);
-    }
-    // Logo oscuro (ChatGPT): clase para el fondo claro en tema oscuro.
-    expect(html).toContain("ts-source-chip ts-source-chip--dark-logo");
+    const block = liveBlock(html);
+    expect(block).toContain("La IA de TS busca en vivo en…");
+    expect(block).toContain("no implica afiliación");
+    for (const s of LIVE) expect(block, s.name).toContain(tile(s, "es"));
+    for (const s of LOTE3) expect(block, s.name).not.toContain(`/sources/${s.logo}.svg`);
+    expect(block.match(/class="ts-live-sources-row"/g)?.length).toBe(1);
+    // Sin texto visible en los cuadros (solo alt/title).
+    expect(block).not.toContain("<span");
   });
 
-  it("con el lote 3 prendido suma esas marcas (EN)", async () => {
+  it("con el lote 3 prendido: 14 cuadros en filas de 7 (EN)", async () => {
     const html = await render("1", "en");
-    expect(html).toContain("TS AI searches live on…");
-    expect(html).toContain("no affiliation implied");
-    for (const s of LIVE_SEARCH_SOURCES) {
-      const label = liveSearchSourceLabel(s, "en");
-      expect(shown(html, label), s.name).toBe(true);
-      expect(html).toContain(`src="/sources/${s.logo}.svg" alt="${label}"`);
-    }
-    expect(html).not.toContain("Walmart");
+    const block = liveBlock(html);
+    expect(block).toContain("TS AI searches live on…");
+    expect(block).toContain("no affiliation implied");
+    for (const s of LIVE_SEARCH_SOURCES) expect(block, s.name).toContain(tile(s, "en"));
+    const rows = block.split('class="ts-live-sources-row"').slice(1);
+    expect(rows.map((r) => (r.match(/role="listitem"/g) ?? []).length)).toEqual([7, 7]);
+    expect(block).not.toContain("Walmart");
+  });
+
+  it("las integraciones de arriba no cambian", async () => {
+    const html = await render(undefined, "es");
+    expect(html).toContain(
+      '<div class="ts-integration-tile"><img src="/connectors/gmail.svg" alt="gmail" loading="lazy" width="24" height="24"/></div>',
+    );
+    expect(html).toContain(
+      '<div class="ts-integration-tile ts-integration-tile--dark-logo"><img src="/connectors/notion.svg" alt="notion"',
+    );
   });
 });
 

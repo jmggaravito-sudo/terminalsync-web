@@ -1,0 +1,41 @@
+{
+  "id": "asana-002",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 156,
+  "isNew": true,
+  "connectors": [
+    "asana"
+  ],
+  "es": {
+    "title": "Crear una tarea en un proyecto de Asana",
+    "outcome": "Prepara una tarea con todos sus datos y la crea en Asana solo después de tu confirmación.",
+    "prompt": "Quiero crear una tarea en Asana.\n\nProyecto: [nombre del proyecto].\nTarea: [qué hay que hacer].\nResponsable: [yo / nombre].\nFecha de entrega: [fecha].\nDescripción: [detalles útiles, opcional].\n\nPrimero busca el proyecto en Asana y dime si lo encuentras; si hay varios con nombre parecido, pregúntame cuál. Luego muéstrame la tarea tal como la vas a crear (título, proyecto, responsable, fecha y descripción) y pídeme confirmación. No crees nada hasta que yo escriba \"confirmo\". No cambies ni cierres otras tareas.",
+    "recommendedFiles": [
+      "Notas de la reunión donde salió la tarea",
+      "Lista de responsables del equipo"
+    ],
+    "expectedResult": [
+      "Proyecto encontrado en Asana",
+      "Tarea lista para revisar",
+      "Confirmación antes de crear",
+      "Tarea creada"
+    ]
+  },
+  "en": {
+    "title": "Create a task in an Asana project",
+    "outcome": "Prepares a task with all its details and creates it in Asana only after your confirmation.",
+    "prompt": "I want to create a task in Asana.\n\nProject: [project name].\nTask: [what needs to be done].\nOwner: [me / name].\nDue date: [date].\nDescription: [useful details, optional].\n\nFirst look up the project in Asana and tell me whether you find it; if several have similar names, ask me which. Then show me the task as you would create it (title, project, owner, date, and description) and ask me to confirm. Don't create anything until I write \"confirm\". Don't change or close other tasks.",
+    "recommendedFiles": [
+      "Notes from the meeting where the task came up",
+      "List of team owners"
+    ],
+    "expectedResult": [
+      "Project found in Asana",
+      "Task ready to review",
+      "Confirmation before creating",
+      "Task created"
+    ]
+  }
+}
