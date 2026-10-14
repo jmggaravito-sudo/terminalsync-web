@@ -2,6 +2,7 @@
 name: Todoist
 logo: /connectors/todoist.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your to-do list, run by the AI"
 simpleSubtitle: "\"What's due today?\" \"Add: call the accountant Friday\" — your AI reads and updates your Todoist."

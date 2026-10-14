@@ -2,6 +2,7 @@
 name: Google Sheets
 logo: /connectors/google-sheets.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your spreadsheets, answering questions"
 simpleSubtitle: "The sheet where you track sales, clients and stock — now your AI reads and updates it for you."

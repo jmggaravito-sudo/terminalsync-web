@@ -2,6 +2,7 @@
 name: SQLite
 logo: /connectors/sqlite.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Preguntale a tu base SQLite local en español"
 simpleSubtitle: "\"Listame todas las tablas\", \"cuántas filas tiene customers\" — sin abrir ningún IDE."

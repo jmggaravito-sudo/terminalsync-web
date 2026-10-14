@@ -2,6 +2,7 @@
 name: Kit
 logo: /connectors/kit.svg
 category: messaging
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your newsletter, run by your AI"
 simpleSubtitle: "Drafts, segments and broadcasts — written in chat with your voice."

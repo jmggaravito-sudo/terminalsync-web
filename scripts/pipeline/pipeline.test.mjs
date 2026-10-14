@@ -11,6 +11,7 @@ import {
   summarizeReviews,
   surfaces,
   validateResearch,
+  MARKET_CODES,
 } from "./lib.mjs";
 
 const officialRemote = {
@@ -21,6 +22,7 @@ const officialRemote = {
   already_in_catalog: false,
   persona_fit: true,
   conversational_install: "remote_login",
+  markets: { codes: ["US", "CA", "GB"], evidence: ["https://docs.ramp.com/availability"] },
   official: {
     exists: true,
     kind: "remote",
@@ -69,6 +71,27 @@ describe("validateResearch", () => {
     const base = { name: "Siigo", slug: "siigo", verdict: "needs_own_build", reason: "sin MCP oficial", conversational_install: "unknown" };
     expect(validateResearch(base).ok).toBe(false);
     expect(validateResearch({ ...base, own_build_notes: "POST /auth + Partner-Id" }).ok).toBe(true);
+  });
+
+  it("requires markets with evidence for ship_official", () => {
+    const { markets: _m, ...noMarkets } = officialRemote;
+    expect(validateResearch(noMarkets).errors.join(" ")).toContain("markets");
+    expect(validateResearch({ ...officialRemote, markets: { codes: ["US"], evidence: [] } }).ok).toBe(false);
+  });
+
+  it("rejects unknown market codes and GLOBAL mixed with countries", () => {
+    const bad = (codes) => validateResearch({ ...officialRemote, markets: { codes, evidence: ["x"] } });
+    expect(bad(["ZZ"]).ok).toBe(false);
+    expect(bad(["us"]).ok).toBe(false);
+    expect(bad(["GLOBAL", "US"]).ok).toBe(false);
+    expect(bad([]).ok).toBe(false);
+    expect(bad(["GLOBAL"]).ok).toBe(true);
+    expect(bad(["CO", "MX"]).ok).toBe(true);
+  });
+
+  it("keeps the pipeline market list in sync with src/lib/markets.ts", async () => {
+    const { MARKET_CODES: appCodes } = await import("../../src/lib/markets.ts");
+    expect([...MARKET_CODES].sort()).toEqual([...appCodes].sort());
   });
 
   it("rejects junk", () => {

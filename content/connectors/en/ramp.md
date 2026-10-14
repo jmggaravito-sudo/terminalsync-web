@@ -2,6 +2,7 @@
 name: Ramp
 logo: /connectors/ramp.svg
 category: automation
+markets: ["US", "CA", "GB"]
 status: available
 simpleTitle: "Your company spend, answered in plain language"
 simpleSubtitle: "Official Ramp MCP server: cards, expenses, reimbursements and approvals over OAuth, no API key to paste."

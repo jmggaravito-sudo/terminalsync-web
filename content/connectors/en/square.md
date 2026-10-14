@@ -2,6 +2,7 @@
 name: Square
 logo: /connectors/square.svg
 category: automation
+markets: ["US", "CA", "GB", "AU", "IE", "FR", "ES", "JP"]
 status: available
 simpleTitle: "Ask your AI about your Square business — and let it act on it"
 simpleSubtitle: "Official Square server (by Block): payments, catalog, orders and customers."

@@ -2,6 +2,7 @@
 name: Intercom
 logo: /connectors/intercom.svg
 category: support
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tu bandeja de soporte, atendida contigo"
 simpleSubtitle: "\"Muéstrame las conversaciones sin leer\" \"Busca al cliente juan@empresa.com\" — la IA revisa tu Intercom y prepara la respuesta."

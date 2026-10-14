@@ -2,6 +2,7 @@
 name: Supabase
 logo: /connectors/supabase.svg
 category: database
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Que tu IA lea y escriba en tu base de datos"
 simpleSubtitle: "Postgres administrado de Supabase — con modo read-only para producción crítica."

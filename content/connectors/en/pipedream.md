@@ -2,6 +2,7 @@
 name: Pipedream
 logo: /connectors/pipedream.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Connect your AI to thousands of apps"
 simpleSubtitle: "Let it run approved actions in Slack, Gmail, Sheets, GitHub and more through Pipedream."

@@ -2,6 +2,7 @@
 name: Filesystem
 logo: /connectors/filesystem.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tu IA lee y escribe archivos en tu computadora"
 simpleSubtitle: "Eliges qué carpetas puede tocar — todo lo demás queda fuera de alcance."

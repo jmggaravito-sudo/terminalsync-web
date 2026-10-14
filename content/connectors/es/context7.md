@@ -2,6 +2,7 @@
 name: Context7
 logo: /connectors/context7.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Dale a tu IA documentación al día de las herramientas con las que programas"
 simpleSubtitle: "Server oficial de Upstash: docs actuales y por versión — se acabaron las respuestas viejas."

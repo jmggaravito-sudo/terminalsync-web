@@ -2,6 +2,7 @@
 name: Puppeteer
 logo: /connectors/puppeteer.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Que tu IA use un navegador real"
 simpleSubtitle: "Abre páginas, haz clic, completa formularios y saca capturas cuando leer HTML no alcanza."

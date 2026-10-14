@@ -20,9 +20,12 @@ Entrada: `.pipeline/research.json` (hechos verificados: úsalos, no los reinvent
 3. Logo en `public/connectors/<slug>.svg` (o `.png`).
 4. Una fila del conector en `content/connectors/SOURCES.md` con las fuentes oficiales leídas.
 5. Si es npm: `node scripts/verify-connector.mjs --file content/connectors/en/<slug>.md --file content/connectors/es/<slug>.md --write` para rellenar `installableForAi` y `verified*`.
-6. Pruebas: `npx vitest run src/lib/__tests__/voz-neutral-catalogo.test.ts` y las de conectores (`src/lib/connectors*.test.ts`).
+6. Pruebas: `npx vitest run src/lib/__tests__/voz-neutral-catalogo.test.ts` y las de conectores (`src/lib/connectors*.test.ts`) y `npx vitest run src/lib/markets.test.ts`.
 7. PR en borrador a `main`. El cuerpo debe incluir exactamente esta línea: `App PR: no aplica — la app consume el catálogo`. Describe fuentes, qué instala, límites y si el logo es oficial o de reserva.
 8. `.pipeline/build.json`: `{ "pr": <número>, "branch": "loop/connectors/...", "slug": "<slug>", "url": "<url del PR>" }`.
+
+## Mercados (obligatorio, en las dos fichas)
+Cada ficha lleva `markets` en el frontmatter, **idéntico en `en` y `es`**: un arreglo de códigos ISO 3166 alfa-2 en mayúsculas, o `["GLOBAL"]`. Cópialo de `research.json.markets.codes` (no lo reinventes); si ese campo falta, vuelve a la fuente oficial de disponibilidad. Los códigos permitidos están en `src/lib/markets.ts` — un código desconocido hace fallar `src/lib/markets.test.ts`. `GLOBAL` no se mezcla con países. No amplíes la lista "por si acaso": solo países que la fuente oficial justifica. Ponlo justo debajo de `category:`.
 
 ## Casos de uso (obligatorio, en las dos fichas)
 Cada ficha lleva la sección de casos de uso: `### What you can ask` en `en` y `### Qué le puedes pedir` en `es` (los mismos casos, localizados de verdad, no traducidos palabra por palabra). Esa sección es lo que el landing y la app muestran como casos de uso del conector.

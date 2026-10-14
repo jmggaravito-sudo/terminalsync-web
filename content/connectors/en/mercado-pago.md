@@ -2,6 +2,7 @@
 name: Mercado Pago
 logo: /connectors/mercado-pago.svg
 category: automation
+markets: ["AR", "BR", "MX", "CL", "CO", "PE", "UY"]
 status: available
 simpleTitle: "Ask your Mercado Pago account what got paid"
 simpleSubtitle: "Official Mercado Pago MCP: search payments and orders, review notifications, over OAuth — no API key to paste."

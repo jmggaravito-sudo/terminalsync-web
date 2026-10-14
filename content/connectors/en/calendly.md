@@ -2,6 +2,7 @@
 name: Calendly
 logo: /connectors/calendly.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your scheduling, handled in plain language"
 simpleSubtitle: "Official Calendly MCP server: check availability, book, and manage meetings over OAuth."

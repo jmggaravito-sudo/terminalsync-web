@@ -2,6 +2,7 @@
 name: Google Sheets
 logo: /connectors/google-sheets.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tus planillas, respondiendo preguntas"
 simpleSubtitle: "La planilla donde llevas ventas, clientes y stock — ahora tu IA la lee y la actualiza por ti."

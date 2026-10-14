@@ -2,6 +2,7 @@
 name: Sequential Thinking
 logo: /connectors/sequential-thinking.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your AI breaks down complex problems step by step"
 simpleSubtitle: "Useful for plans, debugging and decisions with several variables before answering."

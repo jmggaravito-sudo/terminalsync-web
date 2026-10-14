@@ -2,6 +2,7 @@
 name: Ramp
 logo: /connectors/ramp.svg
 category: automation
+markets: ["US", "CA", "GB"]
 status: available
 simpleTitle: "El gasto de tu empresa, respondido en lenguaje natural"
 simpleSubtitle: "Server oficial de Ramp: tarjetas, gastos, reembolsos y aprobaciones por OAuth, sin API key que pegar."

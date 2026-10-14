@@ -2,6 +2,7 @@
 name: Three.js
 logo: /connectors/threejs.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Previsualizá escenas 3D con tu IA"
 simpleSubtitle: "Deja que el agente renderice e itere escenas chicas de Three.js en una vista interactiva."

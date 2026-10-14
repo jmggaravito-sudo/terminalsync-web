@@ -2,6 +2,7 @@
 name: Intercom
 logo: /connectors/intercom.svg
 category: support
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your support inbox, handled with you"
 simpleSubtitle: "\"Show me the unread conversations\" \"Find customer juan@company.com\" — the AI reviews your Intercom and drafts the reply."

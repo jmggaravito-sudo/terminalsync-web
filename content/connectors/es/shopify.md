@@ -2,6 +2,7 @@
 name: Shopify
 logo: /connectors/shopify.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Pregúntale a tu IA por tu tienda de Shopify"
 simpleSubtitle: "Conector propio de Terminal Sync sobre la Admin API oficial de Shopify: ventas, pedidos, productos y clientes."

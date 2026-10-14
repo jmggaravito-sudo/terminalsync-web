@@ -33,7 +33,14 @@ export function adminNavItems(isEs: boolean): AdminNavItem[] {
         { slug: "leads-linkedin", label: isEs ? "Leads LinkedIn" : "LinkedIn Leads" },
       ],
     },
-    { kind: "link", slug: "integraciones", label: isEs ? "Integraciones" : "Integrations" },
+    {
+      kind: "group",
+      label: isEs ? "Integraciones" : "Integrations",
+      items: [
+        { slug: "integraciones", label: isEs ? "Supervisión y loops" : "Supervision & loops" },
+        { slug: "integraciones/por-pais", label: isEs ? "Por país" : "By country" },
+      ],
+    },
     { kind: "link", slug: "ai-center", label: isEs ? "Centro de IAs" : "AI Center" },
     { kind: "link", slug: "soporte", label: isEs ? "Soporte" : "Support" },
   ];
@@ -51,7 +58,12 @@ export function AdminNav({ lang }: { lang: string }) {
   const pathname = usePathname() || "";
   const items = adminNavItems(isEs);
   const atHome = /\/admin\/?$/.test(pathname);
-  const isActive = (slug: string) => pathname.includes(`/admin/${slug}`);
+  // The most specific nav slug wins, so /admin/integraciones/por-pais lights
+  // "Por país" and not also its prefix "integraciones".
+  const allSlugs = items.flatMap((i) => (i.kind === "link" ? [i.slug] : i.items.map((s) => s.slug)));
+  const isActive = (slug: string) =>
+    pathname.includes(`/admin/${slug}`) &&
+    !allSlugs.some((o) => o.length > slug.length && pathname.includes(`/admin/${o}`));
 
   return (
     <nav className="sticky top-0 z-20 border-b border-[var(--color-border)] bg-[var(--color-bg)]/85 backdrop-blur">

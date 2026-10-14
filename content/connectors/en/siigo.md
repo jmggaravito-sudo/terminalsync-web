@@ -2,6 +2,7 @@
 name: Siigo
 logo: /connectors/siigo.svg
 category: automation
+markets: ["CO"]
 status: available
 simpleTitle: "Your invoicing, answered in plain language"
 simpleSubtitle: "Official Siigo MCP: sales invoices, customers and products over OAuth, no API key to paste."

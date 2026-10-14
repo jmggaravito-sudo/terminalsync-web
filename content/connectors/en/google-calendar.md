@@ -2,6 +2,7 @@
 name: Google Calendar
 logo: /connectors/google-calendar.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your calendar, run by conversation"
 simpleSubtitle: "\"What do I have tomorrow?\" \"Book María for Thursday at 3\" — your AI reads and manages your calendar."

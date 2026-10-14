@@ -2,6 +2,7 @@
 name: Gusto
 logo: /connectors/gusto.svg
 category: automation
+markets: ["US"]
 status: available
 simpleTitle: "Tu nómina y tu equipo, respondiendo en voz alta"
 simpleSubtitle: "Server oficial de Gusto: empleados, contratistas, calendarios de pago e info de impuestos de nómina, leídos directo de tu cuenta."

@@ -2,6 +2,7 @@
 name: WhatsApp
 logo: /connectors/whatsapp.svg
 category: messaging
+markets: ["GLOBAL"]
 status: soon
 simpleTitle: "Tu WhatsApp Business, con IA que responde"
 simpleSubtitle: "Tu IA contesta tus clientes automáticamente mientras duermes. Tú apruebas, él envía."

@@ -2,6 +2,7 @@
 name: Puppeteer
 logo: /connectors/puppeteer.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Let your AI use a real browser"
 simpleSubtitle: "Open pages, click, fill forms and take screenshots when reading HTML is not enough."

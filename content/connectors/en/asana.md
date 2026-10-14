@@ -2,6 +2,7 @@
 name: Asana
 logo: /connectors/asana.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Ask your Asana projects what's actually going on"
 simpleSubtitle: "Official Asana MCP: tasks, projects and status updates over OAuth, no API key to paste."

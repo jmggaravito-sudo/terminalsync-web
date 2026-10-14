@@ -2,6 +2,7 @@
 name: Webflow
 logo: /connectors/webflow.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Let your AI work with your Webflow site"
 simpleSubtitle: "Edit the canvas, manage the CMS, audit SEO — from chat."

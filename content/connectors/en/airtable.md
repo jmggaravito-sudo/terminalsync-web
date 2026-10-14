@@ -2,6 +2,7 @@
 name: Airtable
 logo: /connectors/airtable.svg
 category: database
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your no-code database, in the agent"
 simpleSubtitle: "Airtable holds your CRMs, inventory, and trackers — now your AI reads them too."

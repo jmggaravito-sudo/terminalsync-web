@@ -2,6 +2,7 @@
 name: Google Business · Reseñas
 logo: /connectors/google-business.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tus reseñas, vigiladas y respondidas"
 simpleSubtitle: "\"¿Tengo reseñas nuevas?\" \"¿Bajó mi puntaje?\" — la IA lee tus reseñas de Google y te arma las respuestas para que apruebes."

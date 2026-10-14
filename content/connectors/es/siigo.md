@@ -2,6 +2,7 @@
 name: Siigo
 logo: /connectors/siigo.svg
 category: automation
+markets: ["CO"]
 status: available
 simpleTitle: "Tu facturación, respondida en lenguaje natural"
 simpleSubtitle: "MCP oficial de Siigo: facturas de venta, clientes y productos por OAuth, sin pegar ninguna API key."

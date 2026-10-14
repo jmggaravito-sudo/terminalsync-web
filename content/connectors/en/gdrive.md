@@ -2,6 +2,7 @@
 name: Google Drive
 logo: /connectors/gdrive.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your Drive talking to your AI (Anthropic version)"
 simpleSubtitle: "Read documents, search files, summarize sheets — direct OAuth without intermediaries."
