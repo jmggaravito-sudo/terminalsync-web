@@ -36,7 +36,7 @@ describe("GET /api/admin/integraciones/por-pais", () => {
     expect(siigo?.markets).toContain("CO");
     // Alegra was pulled back (status soon): hidden until re-verified.
     expect(body.rows.find((r) => r.slug === "alegra")).toBeUndefined();
-    expect(alegra?.status).toBe("login-pending");
+    expect(siigo?.status).toBe("login-pending");
     expect(body.rows.find((r) => r.slug === "pipedream")).toBeUndefined(); // hidden
   });
 });
