@@ -39,7 +39,9 @@ export const OAUTH_CONNECTORS = new Set(["gmail", "google-calendar", "google-she
 // Remote connectors whose OAuth server has no dynamic client registration: mcp-remote
 // cannot log in (smoke 2026-10-08, "does not support dynamic client registration"), so
 // they stay blocked until the app can pre-register a client with the vendor.
-const REMOTE_WITHOUT_DCR = new Set(["zoom"]);
+// alegra: pulled back 2026-10-14 — its endpoint moved (POST /mcp is 404, the root is OAuth-only and answers 400 to mcp-remote)
+// and the published ficha claimed Basic auth and delete tools while the current docs say Bearer and read-only.
+const REMOTE_WITHOUT_DCR = new Set(["zoom", "alegra"]);
 const KEY_REQUIRED_CONNECTORS = new Set(["postgres", "neon", "mongodb", "stripe", "todoist", "elasticsearch", "pipedream", "monday"]);
 
 function parseArgs(argv) {

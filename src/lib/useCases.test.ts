@@ -28,7 +28,7 @@ describe("content/use-cases", () => {
     const ids = new Set(raw.cases.map((c) => c.id));
     const missing = (lockedIds as string[]).filter((id) => !ids.has(id));
     expect(missing).toEqual([]);
-    expect(lockedIds).toHaveLength(186);
+    expect(lockedIds).toHaveLength(183);
   });
 
   it("gives every case non-empty es and en text and a known category", () => {
@@ -89,7 +89,6 @@ describe("content/use-cases", () => {
     const MIN_TAGGED: Record<string, number> = {
       "ahrefs": 2,
       "airtable": 2,
-      "alegra": 3,
       "asana": 2,
       "calendly": 2,
       "canva": 2,
