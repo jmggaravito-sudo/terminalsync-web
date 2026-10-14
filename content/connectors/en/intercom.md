@@ -3,51 +3,63 @@ name: Intercom
 logo: /connectors/intercom.svg
 category: support
 status: available
-simpleTitle: "Your support inbox, handled with you"
-simpleSubtitle: "\"Show me the unread conversations\" \"Find customer juan@company.com\" — the AI reviews your Intercom and drafts the reply."
-devTitle: "Intercom Connector (first-party)"
-devSubtitle: "TerminalSync's own MCP server over the official Intercom API — list conversations, read them, find contacts, and reply with confirmation."
+simpleTitle: "Ask your AI about your Intercom inbox"
+simpleSubtitle: "Official Intercom MCP: search conversations, contacts, companies and help articles over OAuth, no token to paste."
+devTitle: "Intercom MCP Connector"
+devSubtitle: "Official hosted Intercom MCP (mcp.intercom.com) — conversations, contacts, companies and articles through OAuth."
 ctaUrl: "https://www.intercom.com"
-tokenHelpUrl: "https://developers.intercom.com/building-apps/docs/authentication-types"
+tokenHelpUrl: "https://developers.intercom.com/docs/guides/mcp"
+manifest:
+  mcpServers:
+    intercom:
+      command: npx
+      args: ["-y", "mcp-remote@latest", "https://mcp.intercom.com/mcp"]
 affiliate: false
-tagline: "Read, understand, and answer your support"
-originalAuthor: "Intercom (REST API) · connector by Terminal Sync"
-originalAuthorUrl: "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/"
+tagline: "Your Intercom inbox, within reach of the agent"
+originalAuthor: "Intercom"
+originalAuthorUrl: "https://developers.intercom.com/docs/guides/mcp"
 license: "proprietary"
-installableForAi: false
-installableForAiReason: "no-manifest"
+licenseUrl: "https://www.intercom.com/legal/terms-and-policies"
+marketplaceSource: "official"
+marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
 aiToolsCount: 0
 aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"
 verifiedPackageVersion: null
 ---
-When your customers write in through **Intercom** — questions, complaints, requests — keeping up is a job of its own. This connector puts your AI on it: ask it to review your inbox in plain words and it tells you which conversations need attention, finds the customer you're looking for, and drafts the reply for you.
+**Intercom** is the messaging and support inbox many businesses use to talk to their customers. The official Intercom MCP server lets your agent look through that workspace — conversations, contacts, companies and help-center articles — with no token pasted into TerminalSync, just your own Intercom login.
 
-Ask *"what conversations do I have unread?"* and it lists what's pending. Say *"find customer ana@company.com"* and it pulls up their record. Ask *"reply that we've already fixed it"* and it writes the response — but only sends it after showing you and getting your confirmation, because a reply is seen by the customer.
+Ask *"Find the conversations from this customer and summarize the problem"* and the agent searches your inbox and reads them. Ask *"Which help articles do we have about refunds?"* and it searches your help center. It is mostly a **reading** connector: it can also leave **internal notes** (only your teammates see them) and create or edit **help-center articles**, but it **cannot reply to a customer** — that part stays with you in Intercom.
 
-### What you can ask it
+### What you can ask
 
-- *"Show me the unread support conversations."*
-- *"Read this customer's conversation and summarize the problem."*
-- *"Reply to this conversation that we shipped the replacement today."*
+- *"Search the conversations from ana@company.com and summarize what she needs."*
+- *"Read this conversation and tell me what the customer is asking for."*
+- *"Find the contact for this email and show me which company they belong to."*
+- *"List my help-center articles and find the ones about shipping."*
+- *"Add an internal note to this conversation saying we'll call them tomorrow."*
+- *"Draft a help-center article about our returns policy."*
 
-### How it connects
+### How you connect
 
-Intercom is a **first-party connector**: it runs Terminal Sync's small server over the official Intercom API — there's no npm package to install. You connect it from the app (Settings → Integrations → Intercom), and your access token is stored encrypted in your Keychain and synced across your machines.
+This connector **doesn't ask you to paste a token**. It uses your own Intercom login:
 
-Reading and searching run freely; **replying to a customer goes outward**, so the AI shows you what it will send and only sends the reply once you confirm.
+1. Enable the connector in TerminalSync.
+2. The `mcp-remote` bridge opens Intercom's login in your browser and asks you to authorize access.
+3. Approve it with your account. Intercom's own guide is at [developers.intercom.com](https://developers.intercom.com/docs/guides/mcp).
 
-> Note: to connect, generate an access token from Intercom's Developer Hub — the in-app support chat walks you through it. (A "Connect with Intercom" OAuth flow is on the way.)
+**Honest note:** this is a server **hosted by Intercom** (`https://mcp.intercom.com/mcp`), not something that runs on your computer. Intercom documents it for **US-hosted and EU-hosted workspaces only** (EU uses a different address, `mcp.eu.intercom.com`, which this connector does not use), and **Australia-hosted workspaces aren't supported**. The three write actions are internal notes and creating or updating articles; articles can be seen by your customers, so review before publishing. Intercom's page doesn't list plan or role requirements, so if the login fails, check with your Intercom admin.
 
 --- dev ---
 
-First-party MCP sidecar (`terminalsync-intercom-mcp`, in the `terminal-sync` repo) over the official Intercom REST API (base `api.intercom.io`, header `Intercom-Version: 2.11`). Endpoints sourced from the official `intercom-client` npm SDK (v7.x).
+Intercom publishes an official **remote MCP server** at `https://mcp.intercom.com/mcp` (US workspaces; EU at `https://mcp.eu.intercom.com/mcp`; AU-hosted workspaces unsupported), documented at `developers.intercom.com/docs/guides/mcp`. Transport is Streamable HTTP (the `/sse` endpoints are deprecated). Auth is **OAuth** (the authorization server advertises dynamic client registration at `/register` with PKCE S256); bearer-token auth is also documented but this connector uses the OAuth path. TerminalSync bridges the hosted endpoint locally with:
 
-Tools:
+```
+npx -y mcp-remote@latest https://mcp.intercom.com/mcp
+```
 
-- **Reads**: `intercom_me` (GET /me — who's connected), `intercom_list_conversations` (GET /conversations — id, open/closed state, read/unread), `intercom_get_conversation` (GET /conversations/{id} — every message), `intercom_find_contact` (POST /contacts/search by email).
-- **Write (gated)**: `intercom_reply` (POST /conversations/{id}/reply, `message_type: comment`, `type: admin`) — SAFE TWO-STEP WRITE. Without `confirm=true` it previews and sends nothing; with `confirm=true` it first resolves the `admin_id` via GET /me and then sends the reply.
+Tools (14, per the official page): **read-only** `search`, `fetch`, `search_conversations`, `get_conversation`, `search_contacts`, `get_contact`, `list_companies`, `get_company`, `list_articles`, `search_articles`, `get_article`; **write** `create_article`, `update_article`, `add_internal_note` (attributed to the admin who authorized the connection). A 401 on `add_internal_note` usually means the connection predates the write scope and must be reconnected.
 
-Intercom message bodies come as HTML, so the sidecar strips them to plain text before showing them. Auth is an Intercom access token (an app Access Token, or a Personal Access Token), read from the OS keychain (env `INTERCOM_ACCESS_TOKEN` for overrides). Terminal Sync stores the token in your Keychain, synced encrypted across machines with AES-256-GCM. A full OAuth flow is the planned follow-up so the token doesn't need re-pasting.
-
-License: the connector code is Terminal Sync's; the API and data are Intercom's (proprietary).
+License: proprietary SaaS terms (`intercom.com/legal/terms-and-policies`). Source: developers.intercom.com/docs/guides/mcp.
