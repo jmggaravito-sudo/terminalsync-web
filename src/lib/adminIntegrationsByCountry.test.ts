@@ -112,6 +112,6 @@ describe("real catalog", () => {
     }
     const siigo = rows.find((r) => r.slug === "siigo")!;
     expect(siigo.markets).toEqual(["CO"]);
-    expect(siigo.status).toBe("unverified");
+    expect(siigo.status).toBe("login-pending");
   });
 });
