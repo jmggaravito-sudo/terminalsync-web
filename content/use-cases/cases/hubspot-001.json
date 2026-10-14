@@ -1,0 +1,39 @@
+{
+  "id": "hubspot-001",
+  "categoryId": "sales",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 146,
+  "isNew": true,
+  "connectors": [
+    "hubspot"
+  ],
+  "es": {
+    "title": "Negocios estancados en mi CRM de HubSpot",
+    "outcome": "Busca los negocios de HubSpot que llevan días sin actividad y te dice a cuáles darles seguimiento primero.",
+    "prompt": "Quiero saber qué negocios se me están enfriando en HubSpot.\n\nEtapa a revisar: [por ejemplo, Propuesta enviada / todas las abiertas].\nDías sin actividad: [por ejemplo, 14].\nMoneda: [USD / otra].\n\nSi te falta algún dato, pregúntamelo antes de buscar. Busca los negocios abiertos en esa etapa sin actividad en ese tiempo y dame:\n1. Una tabla con negocio, contacto, monto, etapa y días sin actividad.\n2. Los cinco con más valor para retomar primero.\n3. Para cada uno, una idea de mensaje de seguimiento según lo que veas en el registro.\n\nSolo consulta: no cambies etapas ni registros. Si un dato no aparece en HubSpot, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Descripción de tu proceso de ventas",
+      "Etapas de tu embudo"
+    ],
+    "expectedResult": [
+      "Tabla de negocios estancados",
+      "Cinco prioridades por valor",
+      "Ideas de seguimiento"
+    ]
+  },
+  "en": {
+    "title": "Stalled deals in my HubSpot CRM",
+    "outcome": "Finds HubSpot deals that have gone days without activity and tells you which ones to follow up on first.",
+    "prompt": "I want to know which deals are going cold in HubSpot.\n\nStage to review: [for example, Proposal sent / all open stages].\nDays without activity: [for example, 14].\nCurrency: [USD / other].\n\nIf anything is missing, ask me before searching. Find the open deals in that stage with no activity in that time and give me:\n1. A table with deal, contact, amount, stage, and days without activity.\n2. The five most valuable ones to pick back up first.\n3. For each one, a follow-up message idea based on what you see in the record.\n\nRead only: don't change stages or records. If something doesn't appear in HubSpot, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Description of your sales process",
+      "Stages of your pipeline"
+    ],
+    "expectedResult": [
+      "Table of stalled deals",
+      "Top five by value",
+      "Follow-up ideas"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "pdf-001",
+  "categoryId": "legal",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 183,
+  "isNew": true,
+  "connectors": [
+    "pdf"
+  ],
+  "es": {
+    "title": "Resumir un contrato en PDF y encontrar las cláusulas clave",
+    "outcome": "Abre un contrato en PDF, resume lo importante y te señala plazos, pagos y condiciones de cancelación, con la página de cada uno.",
+    "prompt": "Ayúdame a entender un contrato en PDF.\n\nArchivo: [ruta del PDF en mi computadora].\nTipo de contrato: [alquiler / servicios / proveedor / empleo / otro].\nQué me preocupa: [cancelación / pagos y multas / renovación automática / exclusividad].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta el archivo, pregúntamelo antes de abrirlo. Léelo y dame:\n1. Un resumen en lenguaje simple de qué se acuerda y entre quiénes.\n2. Las cláusulas sobre plazos, pagos, multas, renovación y cancelación, citando la página de cada una.\n3. Condiciones que me parezcan poco claras o inusuales y por qué.\n4. Preguntas que convendría hacerle a un abogado antes de firmar.\n\nEsto es solo una lectura de apoyo y no sustituye la revisión de un abogado. No modifiques el archivo. Si algo no se puede leer, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Contrato en PDF",
+      "Lista de condiciones que ya acordaste de palabra"
+    ],
+    "expectedResult": [
+      "Resumen en lenguaje simple",
+      "Cláusulas clave con su página",
+      "Condiciones poco claras",
+      "Preguntas para tu abogado"
+    ]
+  },
+  "en": {
+    "title": "Summarize a PDF contract and find the key clauses",
+    "outcome": "Opens a PDF contract, summarizes what matters, and flags deadlines, payments, and cancellation terms, with the page of each.",
+    "prompt": "Help me understand a contract in PDF.\n\nFile: [path to the PDF on my computer].\nType of contract: [lease / services / supplier / employment / other].\nWhat worries me: [cancellation / payments and penalties / automatic renewal / exclusivity].\nLanguage for the answer: [English / Spanish].\n\nIf the file is missing, ask me before opening it. Read it and give me:\n1. A plain-language summary of what is agreed and between whom.\n2. The clauses on deadlines, payments, penalties, renewal, and cancellation, citing the page of each.\n3. Terms that seem unclear or unusual, and why.\n4. Questions worth asking a lawyer before signing.\n\nThis is a supporting read only and does not replace a lawyer's review. Don't modify the file. If something can't be read, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Contract in PDF",
+      "List of conditions you already agreed to verbally"
+    ],
+    "expectedResult": [
+      "Plain-language summary",
+      "Key clauses with their page",
+      "Unclear terms",
+      "Questions for your lawyer"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "airtable-002",
+  "categoryId": "ecommerce",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 162,
+  "isNew": true,
+  "connectors": [
+    "airtable"
+  ],
+  "es": {
+    "title": "Marcar un pedido como enviado en Airtable",
+    "outcome": "Encuentra el pedido en tu base de Airtable y actualiza su estado a enviado solo cuando tú lo confirmas.",
+    "prompt": "Quiero marcar un pedido como enviado en Airtable.\n\nBase: [nombre de la base].\nTabla: [nombre de la tabla de pedidos].\nPedido: [número o nombre del cliente].\nNuevo estado: [Enviado].\nNúmero de guía: [opcional].\n\nPrimero revisa la estructura de la tabla y busca el pedido; si hay más de uno que coincida, muéstramelos y pregúntame cuál. Luego muéstrame el cambio exacto (campo, valor actual y valor nuevo) y pídeme confirmación. No actualices nada hasta que yo escriba \"confirmo\". No borres registros ni modifiques otros campos.",
+    "recommendedFiles": [
+      "Número de guía del envío",
+      "Nombre de tu base y tabla"
+    ],
+    "expectedResult": [
+      "Pedido encontrado",
+      "Cambio exacto para revisar",
+      "Confirmación antes de actualizar",
+      "Pedido actualizado"
+    ]
+  },
+  "en": {
+    "title": "Mark an order as shipped in Airtable",
+    "outcome": "Finds the order in your Airtable base and updates its status to shipped only when you confirm.",
+    "prompt": "I want to mark an order as shipped in Airtable.\n\nBase: [base name].\nTable: [name of the orders table].\nOrder: [number or customer name].\nNew status: [Shipped].\nTracking number: [optional].\n\nFirst check the table's structure and find the order; if more than one matches, show them to me and ask which. Then show me the exact change (field, current value, and new value) and ask me to confirm. Don't update anything until I write \"confirm\". Don't delete records or change other fields.",
+    "recommendedFiles": [
+      "Shipment tracking number",
+      "Name of your base and table"
+    ],
+    "expectedResult": [
+      "Order found",
+      "Exact change to review",
+      "Confirmation before updating",
+      "Order updated"
+    ]
+  }
+}

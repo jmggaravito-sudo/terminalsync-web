@@ -1,6 +1,7 @@
 # Búsqueda en vivo: fila de fuentes en la landing
 
 Revisión de pautas de marca: 2026-10-08. Decisión de JM sobre logos: 2026-10-09.
+Cuadros iguales a los de integraciones: 2026-10-13.
 
 La landing muestra, debajo de las integraciones, una fila propia: **"La IA de TS
 busca en vivo en…" / "TS AI searches live on…"**. Son las fuentes públicas que
@@ -55,9 +56,31 @@ YouTube y Google. **Walmart no va** (decisión de JM del 2026-10-09).
 
 Solo prenderlo cuando el lote 3 esté en producción en la app.
 
+## Cómo se ve (pedido de JM del 2026-10-13)
+
+La fila usa **el mismo cuadro que las integraciones de arriba** en la portada:
+mismo tamaño, borde, radio, fondo y separación, y el logo del mismo tamaño.
+**Sin texto visible**: el nombre va en el `title` del cuadro (tooltip) y en el
+`alt` del logo, y cambia con el idioma.
+
+- Portada estática (`landing-b`): reusa `.tiles-rows` / `.tiles-row` / `.tile`.
+  Lo único propio del bloque es el título, el espacio, el `[hidden]` del lote 3
+  y `html.var-dark .live-src .tile.dark-logo` (fondo claro detrás de los logos
+  oscuros en tema oscuro: ChatGPT y TikTok). El `alt`/`title` en inglés sale de
+  `data-alt-en` cuando el nombre cambia ("Meta Ad Library"), porque `i18n.js`
+  solo traduce texto visible.
+- Portada React (`IntegrationsMarquee.tsx`): el mismo `LogoTile` que pinta los
+  cuadros de integraciones (`.ts-integration-tile`, y
+  `.ts-integration-tile--dark-logo` para los oscuros), en filas estáticas.
+- Filas de `LIVE_SEARCH_ROW_SIZE` (7) en el orden de la lista: hoy 7 + 7, como
+  las dos filas de integraciones. En la portada estática la fila 2 es entera del
+  lote 3, así que se oculta junto con sus cuadros si el lote 3 está apagado. En
+  móvil las filas hacen wrap, igual que las de integraciones.
+- Si un logo no carga, el cuadro se quita (nunca queda un cuadro vacío).
+
 ## Logos: decisión de JM del 2026-10-09
 
-**Todas las fuentes van con logo y nombre, y Walmart sale de la fila.** JM lo
+**Todas las fuentes van con logo, y Walmart sale de la fila.** JM lo
 decidió el 2026-10-09 ("Logos igual. Saca a Walmart"), asumiendo el riesgo de
 marca: la revisión de pautas del 2026-10-08 (tabla de abajo) encontró que casi
 todas estas marcas piden aprobación, licencia o pertenecer a un programa de
@@ -67,8 +90,9 @@ pública; no implica afiliación." va siempre debajo de la fila, y el copy evita
 palabras que sugieran alianza ("con", "partner", "powered by").
 
 `liveSearchSources.test.ts` verifica que cada fuente tenga logo, que Walmart no
-aparezca (lista, HTML, `i18n.js`, `public/sources/`) y que el HTML estático
-coincida con la lista.
+aparezca (lista, HTML, `i18n.js`, `public/sources/`), que el HTML estático
+coincida con la lista (orden, filas de 7, logos, `alt`/`title`, lote 3 oculto) y
+que los cuadros sean los de integraciones, sin texto visible.
 
 ### Origen de cada SVG
 
@@ -134,8 +158,12 @@ publicadas por cada marca, no asesoría legal.
    la marca, sin deformar ni recolorear).
 2. Entrada en `LIVE_SEARCH_SOURCES` (`liveSearchSources.ts`) con `logo:
    "<slug>"`, `batch` y `darkLogo: true` si el logo es negro/oscuro.
-3. El mismo chip en el bloque `data-live-search` de
-   `public/landing-b/index.html` (`<img alt="…">` + `<span
-   aria-hidden="true">…</span>`, con `hidden` y `data-live-search-lote="3"` si
-   va en el lote 3), y la traducción en `i18n.js` si el nombre cambia en inglés.
+3. El mismo cuadro en el bloque `data-live-search` de
+   `public/landing-b/index.html`, en la fila que le toque según el orden (7 por
+   fila): `<span class="tile" role="listitem" title="…"><img
+   src="/sources/<slug>.svg" alt="…" loading="lazy"
+   onerror="this.parentNode.remove()" /></span>`. Con `dark-logo` en la clase si
+   es oscuro, `data-alt-en="…"` en el `img` si el nombre cambia en inglés, y
+   `hidden` + `data-live-search-lote="3"` si va en el lote 3 (también en la fila,
+   si toda la fila es del lote 3).
 4. Sumar la marca a esta doc. El test falla si algo de lo anterior no coincide.

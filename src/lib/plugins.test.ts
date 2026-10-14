@@ -128,6 +128,8 @@ describe("plugins — catalog (Fase 1: first pilot)", () => {
       { slug: "square", connector: "square", skill: "pedir-resenas" },
       { slug: "meta-social", connector: "meta-social", skill: "contenido-social" },
       { slug: "airtable", connector: "airtable", skill: "rfm-segmentacion" },
+      { slug: "siigo", connector: "siigo", skill: "cotizaciones" },
+      { slug: "ramp", connector: "ramp", skill: "quarterly-tax-estimate-prep" },
     ] as const;
 
     for (const lang of ["en", "es"] as const) {

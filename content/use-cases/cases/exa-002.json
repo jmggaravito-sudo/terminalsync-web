@@ -1,0 +1,41 @@
+{
+  "id": "exa-002",
+  "categoryId": "strategy",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 186,
+  "isNew": true,
+  "connectors": [
+    "exa"
+  ],
+  "es": {
+    "title": "Investigar un tema del mercado con fuentes (Exa)",
+    "outcome": "Busca en la web artículos recientes y confiables sobre un tema de tu sector y te resume lo que importa para tu negocio.",
+    "prompt": "Quiero entender un tema que afecta a mi sector.\n\nTema: [por ejemplo, nuevas reglas de impuestos / tendencias de consumo / un nuevo competidor / un cambio de precios].\nMi negocio: [qué vendes y dónde].\nPaís o región: [EE. UU. / México / Colombia / otro].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta el tema o el país, pregúntamelos antes de buscar. Busca en la web tres a cinco fuentes recientes y creíbles y dame:\n1. Un resumen de lo que dicen, con las coincidencias y las diferencias entre fuentes.\n2. Qué significa en la práctica para un negocio como el mío.\n3. Los enlaces y la fecha de cada fuente.\n4. Lo que todavía no está claro.\n\nNo des asesoría legal ni fiscal; si el tema lo requiere, dime qué tipo de profesional consultar. Si no encuentras fuentes confiables, dímelo en vez de rellenar.",
+    "recommendedFiles": [
+      "Descripción de tu negocio",
+      "Preguntas concretas que tienes"
+    ],
+    "expectedResult": [
+      "Resumen con coincidencias y diferencias",
+      "Qué significa para tu negocio",
+      "Fuentes con fecha",
+      "Puntos aún sin aclarar"
+    ]
+  },
+  "en": {
+    "title": "Research a market topic with sources (Exa)",
+    "outcome": "Searches the web for recent, credible articles on a topic in your industry and summarizes what matters for your business.",
+    "prompt": "I want to understand a topic that affects my industry.\n\nTopic: [for example, new tax rules / consumer trends / a new competitor / a price change].\nMy business: [what you sell and where].\nCountry or region: [USA / Mexico / Colombia / other].\nLanguage for the answer: [English / Spanish].\n\nIf the topic or country is missing, ask me before searching. Search the web for three to five recent, credible sources and give me:\n1. A summary of what they say, with where sources agree and differ.\n2. What it means in practice for a business like mine.\n3. The links and the date of each source.\n4. What is still unclear.\n\nDon't give legal or tax advice; if the topic calls for it, tell me what kind of professional to consult. If you can't find reliable sources, tell me instead of filling the gaps.",
+    "recommendedFiles": [
+      "Description of your business",
+      "Specific questions you have"
+    ],
+    "expectedResult": [
+      "Summary with agreements and differences",
+      "What it means for your business",
+      "Sources with dates",
+      "Points still unclear"
+    ]
+  }
+}

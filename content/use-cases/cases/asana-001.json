@@ -1,0 +1,41 @@
+{
+  "id": "asana-001",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 155,
+  "isNew": true,
+  "connectors": [
+    "asana"
+  ],
+  "es": {
+    "title": "Mis tareas pendientes de la semana en Asana",
+    "outcome": "Lista las tareas que tienes por terminar esta semana en Asana y te ayuda a ordenarlas por prioridad.",
+    "prompt": "Muéstrame mis tareas pendientes en Asana.\n\nPeriodo: [esta semana / hoy y mañana / próximos 7 días].\nProyecto: [todos / nombre del proyecto].\nQué me preocupa: [entregas con fecha cercana / tareas atrasadas / ambas].\n\nSi te falta algún dato, pregúntamelo antes de buscar. Busca mis tareas incompletas y dame:\n1. Una tabla con tarea, proyecto, fecha de entrega y estado.\n2. Las tareas atrasadas, aparte.\n3. Un orden sugerido para trabajarlas, explicando el criterio.\n4. Qué tareas conviene delegar o mover de fecha.\n\nSolo consulta: no cambies fechas ni cierres tareas. Si una tarea no tiene fecha, dímelo en vez de suponerla.",
+    "recommendedFiles": [
+      "Prioridades del equipo esta semana",
+      "Fechas de entregas importantes"
+    ],
+    "expectedResult": [
+      "Tabla de tareas pendientes",
+      "Tareas atrasadas",
+      "Orden sugerido de trabajo",
+      "Tareas a delegar o mover"
+    ]
+  },
+  "en": {
+    "title": "My pending tasks for the week in Asana",
+    "outcome": "Lists the tasks you still have to finish this week in Asana and helps you order them by priority.",
+    "prompt": "Show me my pending tasks in Asana.\n\nPeriod: [this week / today and tomorrow / next 7 days].\nProject: [all / project name].\nWhat worries me: [deadlines coming up / overdue tasks / both].\n\nIf anything is missing, ask me before searching. Find my incomplete tasks and give me:\n1. A table with task, project, due date, and status.\n2. The overdue tasks, separately.\n3. A suggested order to work through them, explaining the criteria.\n4. Which tasks to delegate or reschedule.\n\nRead only: don't change dates or close tasks. If a task has no due date, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Team priorities this week",
+      "Dates of important deliveries"
+    ],
+    "expectedResult": [
+      "Table of pending tasks",
+      "Overdue tasks",
+      "Suggested work order",
+      "Tasks to delegate or reschedule"
+    ]
+  }
+}

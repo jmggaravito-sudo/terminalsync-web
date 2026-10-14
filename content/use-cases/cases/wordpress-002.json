@@ -1,0 +1,41 @@
+{
+  "id": "wordpress-002",
+  "categoryId": "marketing",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 180,
+  "isNew": true,
+  "connectors": [
+    "wordpress"
+  ],
+  "es": {
+    "title": "Publicar un borrador de WordPress que ya tengo listo",
+    "outcome": "Muestra el borrador que quieres publicar y lo publica en tu sitio solo después de tu aprobación.",
+    "prompt": "Quiero publicar un borrador que ya tengo en WordPress.\n\nTítulo del borrador: [título o tema].\nCuándo: [ahora].\n\nPrimero busca el borrador y muéstrame su título y su contenido completo. Revísalo y dime si ves errores, datos que se contradicen o enlaces que parecen faltar. Si hay más de un borrador parecido, muéstramelos y pregúntame cuál. Pídeme aprobación y no publiques nada hasta que yo escriba \"confirmo\", porque publicar lo hace visible para cualquiera. No modifiques ni borres otras entradas o páginas.",
+    "recommendedFiles": [
+      "Texto final aprobado",
+      "Fecha en que quieres que salga"
+    ],
+    "expectedResult": [
+      "Borrador encontrado",
+      "Revisión de errores",
+      "Aprobación antes de publicar",
+      "Entrada publicada"
+    ]
+  },
+  "en": {
+    "title": "Publish a WordPress draft I already have ready",
+    "outcome": "Shows the draft you want to publish and publishes it on your site only after your approval.",
+    "prompt": "I want to publish a draft I already have in WordPress.\n\nDraft title: [title or topic].\nWhen: [now].\n\nFirst find the draft and show me its title and full content. Review it and tell me whether you see mistakes, details that contradict each other, or links that seem to be missing. If there is more than one similar draft, show them to me and ask which. Ask for my approval and don't publish anything until I write \"confirm\", because publishing makes it visible to anyone. Don't modify or delete other posts or pages.",
+    "recommendedFiles": [
+      "Approved final text",
+      "Date you want it to go out"
+    ],
+    "expectedResult": [
+      "Draft found",
+      "Review for mistakes",
+      "Approval before publishing",
+      "Post published"
+    ]
+  }
+}

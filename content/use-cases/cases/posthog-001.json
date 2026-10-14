@@ -1,0 +1,41 @@
+{
+  "id": "posthog-001",
+  "categoryId": "strategy",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 171,
+  "isNew": true,
+  "connectors": [
+    "posthog"
+  ],
+  "es": {
+    "title": "¿Cuántos usuarios se registraron esta semana? (PostHog)",
+    "outcome": "Consulta PostHog y te dice cuántas personas se registraron, día por día, y qué errores afectaron a más usuarios.",
+    "prompt": "Quiero saber cómo va mi producto en PostHog.\n\nPeriodo: [últimos 7 días / últimos 30 días].\nEvento de registro: [nombre del evento, por ejemplo signed_up; si no lo sé, búscalo].\nQué más me interesa: [errores / páginas más vistas / ambos].\n\nSi te falta el periodo, pregúntamelo antes de consultar. Si no encuentras el evento de registro, muéstrame los eventos que sí existen y pregúntame cuál usar. Dame:\n1. Cuántas personas únicas se registraron, desglosadas por día.\n2. Si hubo algún día que se salga de lo normal.\n3. Los cinco errores que afectaron a más usuarios en ese periodo, si aplica.\n4. Una conclusión en dos frases para mi equipo.\n\nSolo consulta: no crees ni cambies nada en PostHog. Si un dato no existe, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Lista de eventos que mides",
+      "Meta de registros de la semana"
+    ],
+    "expectedResult": [
+      "Registros únicos por día",
+      "Días fuera de lo normal",
+      "Errores que afectan a más usuarios",
+      "Conclusión para el equipo"
+    ]
+  },
+  "en": {
+    "title": "How many users signed up this week? (PostHog)",
+    "outcome": "Queries PostHog and tells you how many people signed up, day by day, and which errors affected the most users.",
+    "prompt": "I want to know how my product is doing in PostHog.\n\nPeriod: [last 7 days / last 30 days].\nSignup event: [event name, for example signed_up; if I don't know it, find it].\nWhat else I care about: [errors / most viewed pages / both].\n\nIf the period is missing, ask me before looking. If you can't find the signup event, show me the events that do exist and ask me which to use. Give me:\n1. How many unique people signed up, broken down by day.\n2. Whether any day stands out from the usual.\n3. The five errors that affected the most users in that period, if applicable.\n4. A two-sentence takeaway for my team.\n\nRead only: don't create or change anything in PostHog. If something doesn't exist, tell me instead of guessing.",
+    "recommendedFiles": [
+      "List of events you track",
+      "Weekly signup goal"
+    ],
+    "expectedResult": [
+      "Unique signups by day",
+      "Days that stand out",
+      "Errors affecting the most users",
+      "Takeaway for the team"
+    ]
+  }
+}

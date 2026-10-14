@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Github, Instagram, Facebook } from "lucide-react";
 import type { Dict } from "@/content";
 import { Logo } from "@/components/Logo";
-import { CHROME_EXTENSION_PUBLIC } from "@/lib/launchFlags";
+import { CHROME_EXTENSION_PUBLIC, MULTI_AI_PUBLIC } from "@/lib/launchFlags";
 
 // Social handles confirmed live by JM. Add new ones here as accounts
 // come online — same handles also live in StructuredData.tsx's
@@ -65,11 +65,18 @@ export function Footer({ dict }: { dict: Dict }) {
               },
             ]
           : []),
-        {
-          key: "ai-terminal",
-          label: lang === "es" ? "Terminal IA" : "AI terminal",
-          href: `/${lang}/ai-terminal`,
-        },
+        // "Terminal IA" lleva a `/[lang]/ai-terminal`, que con
+        // `MULTI_AI_PUBLIC` apagado devuelve 404. Un enlace del pie a un 404
+        // es peor que no tener el enlace.
+        ...(MULTI_AI_PUBLIC
+          ? [
+              {
+                key: "ai-terminal",
+                label: lang === "es" ? "Terminal IA" : "AI terminal",
+                href: `/${lang}/ai-terminal`,
+              },
+            ]
+          : []),
         { key: "marketplace", label: dict.footer.links.marketplace, href: `/${lang}/marketplace` },
         { key: "plugins", label: "Plugins", href: `/${lang}/plugins` },
         { key: "connectors", label: dict.footer.links.connectors, href: `/${lang}/connectors` },

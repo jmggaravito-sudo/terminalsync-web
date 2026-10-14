@@ -1,0 +1,41 @@
+{
+  "id": "hubspot-003",
+  "categoryId": "sales",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 148,
+  "isNew": true,
+  "connectors": [
+    "hubspot"
+  ],
+  "es": {
+    "title": "Registrar una nota y una tarea en un contacto de HubSpot",
+    "outcome": "Guarda lo que hablaste con un cliente como nota en HubSpot y crea la tarea de seguimiento, con tu confirmación.",
+    "prompt": "Quiero dejar registrada una conversación con un cliente en HubSpot.\n\nContacto: [nombre y empresa o correo].\nQué hablamos: [resumen en una o dos frases].\nTarea de seguimiento: [qué hay que hacer y para cuándo].\n\nPrimero busca el contacto en HubSpot y dime cuál encontraste; si hay más de uno parecido, pregúntame cuál es. Luego muéstrame la nota y la tarea tal como las vas a guardar y pídeme confirmación. No registres nada hasta que yo escriba \"confirmo\". No modifiques otros datos del contacto ni de sus negocios.",
+    "recommendedFiles": [
+      "Notas de la reunión o llamada",
+      "Fecha del próximo paso"
+    ],
+    "expectedResult": [
+      "Contacto encontrado en HubSpot",
+      "Nota y tarea listas para revisar",
+      "Confirmación antes de guardar",
+      "Nota y tarea registradas"
+    ]
+  },
+  "en": {
+    "title": "Log a note and a task on a HubSpot contact",
+    "outcome": "Saves what you discussed with a customer as a note in HubSpot and creates the follow-up task, with your confirmation.",
+    "prompt": "I want to log a conversation with a customer in HubSpot.\n\nContact: [name and company or email].\nWhat we discussed: [summary in one or two sentences].\nFollow-up task: [what needs to be done and by when].\n\nFirst look up the contact in HubSpot and tell me which one you found; if there is more than one similar, ask me which. Then show me the note and the task as you would save them and ask me to confirm. Don't record anything until I write \"confirm\". Don't change other data on the contact or their deals.",
+    "recommendedFiles": [
+      "Notes from the meeting or call",
+      "Date of the next step"
+    ],
+    "expectedResult": [
+      "Contact found in HubSpot",
+      "Note and task ready to review",
+      "Confirmation before saving",
+      "Note and task logged"
+    ]
+  }
+}

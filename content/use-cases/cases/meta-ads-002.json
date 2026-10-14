@@ -1,0 +1,41 @@
+{
+  "id": "meta-ads-002",
+  "categoryId": "marketing",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 174,
+  "isNew": true,
+  "connectors": [
+    "meta-ads"
+  ],
+  "es": {
+    "title": "Comparar mis campañas de anuncios del último mes (Meta Ads)",
+    "outcome": "Compara tus campañas del último mes por costo por clic y alcance, para decidir cuáles revisar.",
+    "prompt": "Compara mis campañas de Facebook e Instagram del último mes.\n\nCuenta publicitaria: [nombre; si hay varias, pregúntame cuál].\nPeriodo: [últimos 30 días].\nQué priorizo: [bajo costo por clic / mayor alcance / mejor CTR].\n\nSi te falta algún dato, pregúntamelo antes de consultar. Lee las campañas del periodo y dame:\n1. Un ranking de campañas según lo que priorizo, con gasto, clics, CTR, costo por clic y alcance.\n2. Las campañas con costo por clic alto y poco alcance, para revisar.\n3. Las que mejor se ven y qué tienen en común, solo con lo que muestran los datos.\n4. Tres preguntas que debería hacerme antes de mover el presupuesto.\n\nSolo consulta: no cambies presupuestos, no pauses ni crees anuncios. No prometas resultados; si algún dato no aparece, dímelo.",
+    "recommendedFiles": [
+      "Objetivo de cada campaña",
+      "Presupuesto mensual"
+    ],
+    "expectedResult": [
+      "Ranking de campañas",
+      "Campañas a revisar",
+      "Campañas que mejor se ven",
+      "Preguntas antes de mover presupuesto"
+    ]
+  },
+  "en": {
+    "title": "Compare my ad campaigns for the last month (Meta Ads)",
+    "outcome": "Compares your campaigns for the last month by cost per click and reach, so you can decide which to review.",
+    "prompt": "Compare my Facebook and Instagram campaigns for the last month.\n\nAd account: [name; if there are several, ask me which].\nPeriod: [last 30 days].\nWhat I prioritize: [low cost per click / greater reach / better CTR].\n\nIf anything is missing, ask me before looking. Read the campaigns for the period and give me:\n1. A ranking of campaigns based on what I prioritize, with spend, clicks, CTR, cost per click, and reach.\n2. Campaigns with a high cost per click and little reach, to review.\n3. The ones that look best and what they have in common, using only what the data shows.\n4. Three questions I should ask myself before moving budget.\n\nRead only: don't change budgets, and don't pause or create ads. Don't promise results; if a figure doesn't appear, tell me.",
+    "recommendedFiles": [
+      "Goal of each campaign",
+      "Monthly budget"
+    ],
+    "expectedResult": [
+      "Campaign ranking",
+      "Campaigns to review",
+      "Best-looking campaigns",
+      "Questions before moving budget"
+    ]
+  }
+}

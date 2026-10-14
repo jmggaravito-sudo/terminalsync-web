@@ -1,0 +1,41 @@
+{
+  "id": "ahrefs-002",
+  "categoryId": "marketing",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 178,
+  "isNew": true,
+  "connectors": [
+    "ahrefs"
+  ],
+  "es": {
+    "title": "Enlaces que apuntan a mi sitio y cómo me comparo (Ahrefs)",
+    "outcome": "Revisa con Ahrefs quién te enlaza, qué enlaces perdiste y cómo está tu sitio frente a dos competidores.",
+    "prompt": "Quiero revisar los enlaces hacia mi sitio con Ahrefs.\n\nMi sitio: [dominio].\nCompetidores: [dominio 1 y dominio 2].\nPeriodo para enlaces perdidos: [últimos 30 días].\n\nSi te falta algún dato, pregúntamelo antes de consultar. Dame:\n1. Los mejores sitios que me enlazan, de mayor a menor calidad.\n2. Los enlaces que perdí en el periodo y cuáles valdría la pena recuperar.\n3. Una comparación de mi sitio con los dos competidores: fuerza del dominio, cantidad de sitios que enlazan y palabras clave principales.\n4. Tres ideas de contenido o alianzas para conseguir enlaces buenos de forma legítima.\n\nSolo consulta datos. No prometas resultados; si algo no está disponible en mi plan, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Dominios de tus competidores",
+      "Contenidos que ya publicaste"
+    ],
+    "expectedResult": [
+      "Mejores enlaces recibidos",
+      "Enlaces perdidos",
+      "Comparación con competidores",
+      "Tres ideas para conseguir enlaces"
+    ]
+  },
+  "en": {
+    "title": "Links pointing to my site and how I compare (Ahrefs)",
+    "outcome": "Reviews with Ahrefs who links to you, which links you lost, and how your site stacks up against two competitors.",
+    "prompt": "I want to review the links to my site with Ahrefs.\n\nMy site: [domain].\nCompetitors: [domain 1 and domain 2].\nPeriod for lost links: [last 30 days].\n\nIf anything is missing, ask me before looking. Give me:\n1. The best sites linking to me, from highest to lowest quality.\n2. The links I lost in the period and which are worth recovering.\n3. A comparison of my site with the two competitors: domain strength, number of linking sites, and main keywords.\n4. Three content or partnership ideas to earn good links legitimately.\n\nData lookup only. Don't promise results; if something isn't available on my plan, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Your competitors' domains",
+      "Content you've already published"
+    ],
+    "expectedResult": [
+      "Best incoming links",
+      "Lost links",
+      "Comparison with competitors",
+      "Three ideas to earn links"
+    ]
+  }
+}
