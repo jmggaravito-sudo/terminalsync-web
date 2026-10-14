@@ -10,7 +10,7 @@
  * same way the Connector Curation Loop does.
  *
  * What it does, per fixture (`scripts/skills-eval/fixtures/<skill>.json`):
- *   1) For each case, ask Claude twice — once with the generic baseline
+ *   1) For each case, ask the subject model twice — once with the generic baseline
  *      prompt, once with the skill-enabled prompt — over the same input.
  *   2) An LLM judge compares the two answers against the case's expected
  *      behavior and returns a structured verdict (scores 0-10, meets-expected,
@@ -60,7 +60,7 @@ export function resolveApiKey(env = process.env) {
   return env.SKILLS_EVAL_API_KEY || env.ZAI_API_KEY || env.ANTHROPIC_API_KEY || null;
 }
 const ANTHROPIC_URL = anthropicUrl();
-const DEFAULT_MODEL = process.env.SKILLS_EVAL_MODEL || process.env.ZAI_MODEL || "claude-opus-4-8";
+const DEFAULT_MODEL = process.env.SKILLS_EVAL_MODEL || process.env.ZAI_MODEL || "glm-5.3";
 const DEFAULT_SUBJECT_MODEL = process.env.SKILLS_EVAL_SUBJECT_MODEL || "glm-5.3-flash";
 const GEMINI_URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const DEFAULT_GEMINI_MODEL = process.env.SKILLS_EVAL_GEMINI_MODEL || "gemini-2.5-flash";
@@ -122,7 +122,7 @@ async function withRetry(fn, { attempts = 4, baseMs = 800 } = {}) {
  * política deliberada del harness — hasta hoy generaba evidencia y el veredicto
  * era humano, porque la IA que genera es juez y parte. Lo que hace defendible
  * automatizarlo es que el sujeto y el juez ahora son modelos DISTINTOS (ver
- * `runFixture`): Gemini responde, Claude califica.
+ * `runFixture`): el proveedor evaluado responde, el modelo juez (por defecto GLM) califica.
  *
  * Deliberadamente exigente — un umbral blando reintroduce el problema que todo
  * esto vino a cerrar: declarar compatibilidad sin evidencia real.
@@ -482,7 +482,7 @@ export function renderMarkdown(fixture, results, summary, meta = {}) {
     );
     lines.push("");
     lines.push(
-      "> El veredicto lo decide el loop (decisión JM 2026-08-07). Lo que lo hace defendible es que **el sujeto y el juez son modelos distintos**: el proveedor evaluado responde y Claude califica, así que el que produce no es el que aprueba. Umbral en `APPROVAL_THRESHOLDS`.",
+      "> El veredicto lo decide el loop (decisión JM 2026-08-07). Lo que lo hace defendible es que **el sujeto y el juez son modelos distintos**: el proveedor evaluado responde y el juez" + (meta.model ? " (`" + meta.model + "`)" : "") + " califica, así que el que produce no es el que aprueba. Umbral en `APPROVAL_THRESHOLDS`.",
     );
   } else {
     lines.push(
@@ -566,7 +566,7 @@ export function listFixtures() {
 /**
  * Llamar a Gemini como SUJETO de la evaluación.
  *
- * El juez sigue siendo Claude a propósito, incluso cuando el sujeto es Gemini
+ * El juez es siempre el modelo configurado (DEFAULT_MODEL, hoy GLM) a propósito, incluso cuando el sujeto es Gemini
  * — ver `runFixture`. Esa separación es lo que permite que el loop apruebe sin
  * un humano: mientras el que produce y el que califica sean el mismo modelo,
  * "juez y parte" es una objeción válida; con sujeto y juez distintos, deja de
@@ -673,12 +673,12 @@ function readJsonFile(p) {
 /**
  * Run one fixture. In DRY_RUN, subject answers and judge verdicts are read
  * from fixture files instead of the network — this is what makes the harness
- * testable and CI-safe. Otherwise it calls Claude for both subject runs and
+ * testable and CI-safe. Otherwise it calls the configured model (GLM by default) for both subject runs and
  * the judge, per case.
  */
 export async function runFixture(fixture, opts) {
   const { dryRun, answers, judged, apiKey, model } = opts;
-  // Qué modelo RESPONDE. El que JUZGA es siempre Claude — ver callSubject.
+  // Qué modelo RESPONDE. El que JUZGA es siempre el modelo juez configurado (GLM por defecto) — ver callSubject.
   const subjectProvider = opts.subjectProvider || DEFAULT_SUBJECT_PROVIDER;
   // Los casos corren EN PARALELO, no en serie. Medido 2026-10-12 con el
   // sujeto GLM: cada llamada de sujeto tarda 43–106s, y 15 llamadas
@@ -755,7 +755,7 @@ async function main() {
   const dryRun = process.env.DRY_RUN === "1" || process.env.DRY_RUN === "true";
   const model = DEFAULT_MODEL;
 
-  // Qué modelo RESPONDE. El juez es siempre Claude, incluso acá.
+  // Qué modelo RESPONDE. El juez es siempre el modelo juez configurado (GLM por defecto), incluso acá.
   const provIdx = argv.indexOf("--provider");
   const subjectProvider =
     (provIdx !== -1 ? argv[provIdx + 1] : process.env.SKILLS_EVAL_PROVIDER) || DEFAULT_SUBJECT_PROVIDER;

@@ -2,7 +2,7 @@
 
 > ✅ **APROBADA por el loop.** Cumplió el umbral automático — no requiere firma humana.
 
-> El veredicto lo decide el loop (decisión JM 2026-08-07). Lo que lo hace defendible es que **el sujeto y el juez son modelos distintos**: el proveedor evaluado responde y Claude califica, así que el que produce no es el que aprueba. Umbral en `APPROVAL_THRESHOLDS`.
+> El veredicto lo decide el loop (decisión JM 2026-08-07). Lo que lo hace defendible es que **el sujeto y el juez son modelos distintos**: el proveedor evaluado responde y el juez (`glm-5.3`) califica, así que el que produce no es el que aprueba. Umbral en `APPROVAL_THRESHOLDS`.
 
 - Skill: `cobros-vencidos`
 - Proveedor evaluado (sujeto): `glm`

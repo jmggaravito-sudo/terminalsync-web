@@ -349,6 +349,8 @@ describe("GET /api/marketplace/catalog", () => {
       "tax-prep-checklist",
       "1099-w9-organizer",
       "quarterly-tax-estimate-prep",
+      "cobros-vencidos",
+      "fijacion-de-precios",
     ] as const;
     const sorted = [...publicSlugs].sort();
 
