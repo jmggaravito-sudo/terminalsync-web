@@ -111,7 +111,7 @@ export function parseRecipe(server) {
   return { packageName, packageSpec, version, runtimeArgs };
 }
 
-function getStdioServer(data) {
+export function getStdioServer(data) {
   const servers = data?.manifest?.mcpServers;
   if (!servers || typeof servers !== "object" || Array.isArray(servers)) return null;
   const entries = Object.values(servers);

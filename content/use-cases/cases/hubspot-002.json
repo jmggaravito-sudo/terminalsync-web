@@ -1,0 +1,41 @@
+{
+  "id": "hubspot-002",
+  "categoryId": "marketing",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 147,
+  "isNew": true,
+  "connectors": [
+    "hubspot"
+  ],
+  "es": {
+    "title": "Leads de este mes y de dónde vinieron (HubSpot)",
+    "outcome": "Lista los contactos nuevos del mes en HubSpot, de qué fuente llegaron y cuáles aún no tienen seguimiento.",
+    "prompt": "Muéstrame los leads nuevos de este mes en HubSpot.\n\nPeriodo: [este mes / últimos 30 días].\nEtiqueta o estado que uso para leads: [por ejemplo, Lead / Nuevo].\n\nSi te falta algún dato, pregúntamelo antes de buscar. Busca los contactos creados en ese periodo y dame:\n1. Cuántos leads llegaron y de qué fuente (formulario, anuncio, referido, otra), si el dato existe.\n2. Una tabla con nombre, empresa, fuente y fecha de creación.\n3. Cuáles todavía no tienen ninguna actividad registrada.\n4. Qué fuente trajo más leads.\n\nSolo consulta, no edites contactos. Si la fuente no está registrada, dímelo en vez de suponerla.",
+    "recommendedFiles": [
+      "Lista de tus fuentes de leads",
+      "Meta de leads del mes"
+    ],
+    "expectedResult": [
+      "Número de leads por fuente",
+      "Tabla de contactos nuevos",
+      "Leads sin seguimiento",
+      "Fuente que más aporta"
+    ]
+  },
+  "en": {
+    "title": "This month's leads and where they came from (HubSpot)",
+    "outcome": "Lists this month's new contacts in HubSpot, which source they came from, and which still have no follow-up.",
+    "prompt": "Show me this month's new leads in HubSpot.\n\nPeriod: [this month / last 30 days].\nLabel or status I use for leads: [for example, Lead / New].\n\nIf anything is missing, ask me before searching. Find the contacts created in that period and give me:\n1. How many leads came in and from which source (form, ad, referral, other), if the data exists.\n2. A table with name, company, source, and creation date.\n3. Which ones still have no activity logged.\n4. Which source brought the most leads.\n\nRead only: don't edit contacts. If the source isn't recorded, tell me instead of guessing.",
+    "recommendedFiles": [
+      "List of your lead sources",
+      "Monthly lead goal"
+    ],
+    "expectedResult": [
+      "Leads by source",
+      "Table of new contacts",
+      "Leads with no follow-up",
+      "Top source"
+    ]
+  }
+}

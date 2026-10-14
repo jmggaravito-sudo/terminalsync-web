@@ -1,0 +1,41 @@
+{
+  "id": "slack-001",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 165,
+  "isNew": true,
+  "connectors": [
+    "slack"
+  ],
+  "es": {
+    "title": "Resumen de un canal de Slack con tareas pendientes",
+    "outcome": "Lee los últimos mensajes de un canal de Slack y te entrega un resumen con decisiones y pendientes.",
+    "prompt": "Resume lo que pasó en un canal de Slack.\n\nCanal: [nombre del canal].\nCuántos mensajes revisar: [por ejemplo, los últimos 50].\nQué necesito: [resumen general / decisiones / tareas pendientes].\nIdioma: [español / inglés].\n\nSi te falta el canal, pregúntamelo antes de leer. Lee los mensajes recientes del canal, incluyendo los hilos importantes, y dame:\n1. Un resumen de cinco líneas.\n2. Las decisiones tomadas y quién las tomó.\n3. Las tareas pendientes con responsable y fecha, si se mencionan.\n4. Preguntas que nadie ha respondido.\n\nSolo lectura: no publiques ni reacciones a nada. Si no tienes acceso al canal, dímelo en vez de suponer su contenido.",
+    "recommendedFiles": [
+      "Nombre del canal",
+      "Contexto del proyecto"
+    ],
+    "expectedResult": [
+      "Resumen del canal",
+      "Decisiones tomadas",
+      "Tareas pendientes",
+      "Preguntas sin respuesta"
+    ]
+  },
+  "en": {
+    "title": "Summary of a Slack channel with open tasks",
+    "outcome": "Reads the latest messages in a Slack channel and gives you a summary with decisions and open items.",
+    "prompt": "Summarize what happened in a Slack channel.\n\nChannel: [channel name].\nHow many messages to review: [for example, the last 50].\nWhat I need: [general summary / decisions / open tasks].\nLanguage: [English / Spanish].\n\nIf the channel is missing, ask me before reading. Read the channel's recent messages, including the important threads, and give me:\n1. A five-line summary.\n2. The decisions made and who made them.\n3. The open tasks with owner and date, if mentioned.\n4. Questions nobody has answered.\n\nRead only: don't post or react to anything. If you don't have access to the channel, tell me instead of guessing its content.",
+    "recommendedFiles": [
+      "Channel name",
+      "Project context"
+    ],
+    "expectedResult": [
+      "Channel summary",
+      "Decisions made",
+      "Open tasks",
+      "Unanswered questions"
+    ]
+  }
+}

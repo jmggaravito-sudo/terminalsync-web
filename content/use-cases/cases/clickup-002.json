@@ -1,0 +1,41 @@
+{
+  "id": "clickup-002",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 160,
+  "isNew": true,
+  "connectors": [
+    "clickup"
+  ],
+  "es": {
+    "title": "Crear una tarea de seguimiento en ClickUp",
+    "outcome": "Prepara la tarea con su lista y fecha, y la crea en ClickUp solo después de tu confirmación.",
+    "prompt": "Quiero crear una tarea en ClickUp.\n\nLista: [nombre de la lista].\nTarea: [qué hay que hacer].\nFecha de entrega: [fecha].\nDescripción: [detalles útiles, opcional].\n\nPrimero busca la lista en mi espacio y dime si la encuentras; si hay varias parecidas, pregúntame cuál. Luego muéstrame la tarea tal como la vas a crear (nombre, lista, fecha y descripción) y pídeme confirmación. No crees nada hasta que yo escriba \"confirmo\". No cambies otras tareas.",
+    "recommendedFiles": [
+      "Notas de la reunión o del cliente",
+      "Nombre exacto de la lista"
+    ],
+    "expectedResult": [
+      "Lista encontrada en ClickUp",
+      "Tarea lista para revisar",
+      "Confirmación antes de crear",
+      "Tarea creada"
+    ]
+  },
+  "en": {
+    "title": "Create a follow-up task in ClickUp",
+    "outcome": "Prepares the task with its list and date, and creates it in ClickUp only after your confirmation.",
+    "prompt": "I want to create a task in ClickUp.\n\nList: [list name].\nTask: [what needs to be done].\nDue date: [date].\nDescription: [useful details, optional].\n\nFirst look up the list in my workspace and tell me whether you find it; if several are similar, ask me which. Then show me the task as you would create it (name, list, date, and description) and ask me to confirm. Don't create anything until I write \"confirm\". Don't change other tasks.",
+    "recommendedFiles": [
+      "Notes from the meeting or the customer",
+      "Exact name of the list"
+    ],
+    "expectedResult": [
+      "List found in ClickUp",
+      "Task ready to review",
+      "Confirmation before creating",
+      "Task created"
+    ]
+  }
+}

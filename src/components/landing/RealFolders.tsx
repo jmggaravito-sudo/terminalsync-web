@@ -15,8 +15,8 @@ const T = {
       { name: "Contrato.pdf", tag: "v. actual" },
     ],
     connectorLabel: "conectada una vez",
-    aiCard: "Tu equipo de IAs — lee la última versión, sin subir nada",
-    ais: ["Claude", "Codex", "Gemini"],
+    aiCard: "Tu IA de TerminalSync — lee la última versión, sin subir nada",
+    ais: ["TerminalSync"],
   },
   en: {
     eyebrow: "Your files, where they already live",
@@ -31,16 +31,15 @@ const T = {
       { name: "Contract.pdf", tag: "latest" },
     ],
     connectorLabel: "connected once",
-    aiCard: "Your AI team — reads the latest version, no uploading needed",
-    ais: ["Claude", "Codex", "Gemini"],
+    aiCard: "Your TerminalSync AI — reads the latest version, no uploading needed",
+    ais: ["TerminalSync"],
   },
 } as const;
 
-const AI_COLORS = [
-  "bg-[var(--color-accent)]/15 text-[var(--color-accent)]",
-  "bg-emerald-500/15 text-emerald-400",
-  "bg-blue-500/15 text-blue-400",
-];
+// JM, 2026-10-07: la primera etapa no menciona Claude, Codex ni Gemini.
+// Esto eran tres chips con sus nombres bajo el título "Tu equipo de IAs";
+// hoy hay una sola IA, la de TerminalSync, y el cliente no elige ninguna.
+const AI_COLORS = ["bg-[var(--color-accent)]/15 text-[var(--color-accent)]"];
 
 function FileIcon({ name }: { name: string }) {
   const ext = name.split(".").pop()?.toLowerCase();

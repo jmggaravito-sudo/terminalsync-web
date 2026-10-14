@@ -18,11 +18,13 @@
  *   desincroniza de esta lista. El HTML estático no puede leer env vars, así
  *   que pregunta el interruptor a `/api/live-search-sources`.
  *
- * **Logos: decisión de JM del 2026-10-09.** Todas las fuentes van con su
- * logo y su nombre. La revisión de pautas del 2026-10-08 encontró que casi
- * todas estas marcas piden permiso o licencia para usar su logo (solo
- * Perplexity no); JM decidió usarlos igual, asumiendo ese riesgo de marca, y
- * sacar a Walmart de la fila. La nota "no implica afiliación" va siempre.
+ * **Logos: decisión de JM del 2026-10-09.** Todas las fuentes van con logo.
+ * Desde el 2026-10-13 (pedido de JM) se ven igual que los cuadros de
+ * integraciones de la portada: solo el logo, con el nombre en `alt` y `title`.
+ * La revisión de pautas del 2026-10-08 encontró que casi todas estas marcas
+ * piden permiso o licencia para usar su logo (solo Perplexity no); JM decidió
+ * usarlos igual, asumiendo ese riesgo de marca, y sacar a Walmart de la fila.
+ * La nota "no implica afiliación" va siempre.
  * Detalle, links por marca y origen de cada SVG en `docs/live-search-sources.md`.
  */
 
@@ -43,15 +45,15 @@ export const liveSearchLote3Enabled =
 export type LiveSearchBatch = "live" | "lote3";
 
 export interface LiveSearchSource {
-  /** Nombre de la marca/fuente en inglés. Es el texto y el `alt` del logo. */
+  /**
+   * Nombre de la marca/fuente en inglés. No se ve en pantalla: va en el `alt`
+   * del logo y en el `title` (tooltip) del cuadro.
+   */
   name: string;
   /** Nombre en español, solo si cambia (ej. "Biblioteca de anuncios de Meta"). */
   es?: string;
-  /**
-   * Archivo en `public/sources/<logo>.svg`. `null` = solo el nombre (hoy
-   * ninguna; queda para una fuente nueva que todavía no tenga logo).
-   */
-  logo: string | null;
+  /** Archivo en `public/sources/<logo>.svg`. Toda fuente lleva logo. */
+  logo: string;
   /** Logo negro/oscuro: en tema oscuro necesita fondo claro para verse. */
   darkLogo?: boolean;
   batch: LiveSearchBatch;
@@ -88,7 +90,7 @@ export const LIVE_SEARCH_SOURCES: readonly LiveSearchSource[] = [
   { name: "Airbnb", logo: "airbnb", batch: "lote3" },
 ];
 
-/** Texto visible de la fuente en el idioma pedido. */
+/** Nombre de la fuente en el idioma pedido (`alt` y `title` del cuadro). */
 export function liveSearchSourceLabel(
   source: LiveSearchSource,
   lang: "es" | "en",
@@ -101,6 +103,25 @@ export function liveSearchSourcesFor(
   lote3: boolean,
 ): readonly LiveSearchSource[] {
   return LIVE_SEARCH_SOURCES.filter((s) => s.batch === "live" || lote3);
+}
+
+/**
+ * Cuadros por fila. Las fuentes se reparten en filas de este largo, en el orden
+ * de la lista, como las dos filas de integraciones de arriba (hoy 7 + 7). En
+ * pantallas angostas cada fila hace wrap.
+ */
+export const LIVE_SEARCH_ROW_SIZE = 7;
+
+/** Parte la lista en filas de `size`, sin cambiar el orden. */
+export function liveSearchRows<T>(
+  sources: readonly T[],
+  size: number = LIVE_SEARCH_ROW_SIZE,
+): T[][] {
+  const rows: T[][] = [];
+  for (let i = 0; i < sources.length; i += size) {
+    rows.push(sources.slice(i, i + size));
+  }
+  return rows;
 }
 
 /** Las fuentes visibles en este build. */

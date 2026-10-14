@@ -53,8 +53,8 @@ export function StructuredData({ dict, lang }: Props) {
   // Plans mapped to SoftwareApplication offers so rich snippets can surface.
   const plans = [
     { id: "starter", price: "0" },
-    { id: "pro", price: "19" },
-    { id: "max", price: "39" },
+    { id: "pro", price: "34" },
+    { id: "max", price: "54" },
   ] as const;
 
   const software = {

@@ -1,0 +1,41 @@
+{
+  "id": "siigo-001",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 130,
+  "isNew": true,
+  "connectors": [
+    "siigo"
+  ],
+  "es": {
+    "title": "¿Cuánto facturé este mes en Siigo?",
+    "outcome": "Consulta tus facturas de venta en Siigo y te resume cuánto facturaste este mes y a qué clientes.",
+    "prompt": "Muéstrame cuánto he facturado en Siigo.\n\nPeriodo: [este mes / el mes pasado / del [fecha] al [fecha]].\nEmpresa en Siigo: [nombre, si manejo más de una].\nMoneda: [COP / otra].\n\nSi te falta el periodo o la empresa, pregúntamelos antes de consultar. Lee mis facturas de venta de ese periodo y dame:\n1. El total facturado.\n2. Una tabla con los clientes que más facturaron: cliente, número de facturas y valor.\n3. Las facturas de mayor valor.\n4. Cualquier cosa que te parezca rara (por ejemplo, un cliente que facturó mucho menos que de costumbre).\n\nSolo consulta, no crees ni cambies nada. Si un dato no aparece en Siigo, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Nombre de la empresa en Siigo",
+      "Periodo que quieres revisar"
+    ],
+    "expectedResult": [
+      "Total facturado del periodo",
+      "Clientes que más facturaron",
+      "Facturas de mayor valor",
+      "Alertas o datos raros"
+    ]
+  },
+  "en": {
+    "title": "How much did I invoice this month in Siigo?",
+    "outcome": "Reads your sales invoices in Siigo and summarizes how much you invoiced this month and to which customers.",
+    "prompt": "Show me how much I've invoiced in Siigo.\n\nPeriod: [this month / last month / from [date] to [date]].\nCompany in Siigo: [name, if I manage more than one].\nCurrency: [COP / other].\n\nIf the period or the company is missing, ask me before looking. Read my sales invoices for that period and give me:\n1. The total invoiced.\n2. A table of the customers who were invoiced the most: customer, number of invoices, and amount.\n3. The largest invoices.\n4. Anything that looks odd (for example, a customer who was invoiced far less than usual).\n\nRead only: don't create or change anything. If something doesn't appear in Siigo, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Company name in Siigo",
+      "Period you want to review"
+    ],
+    "expectedResult": [
+      "Total invoiced for the period",
+      "Top customers by amount",
+      "Largest invoices",
+      "Alerts or odd items"
+    ]
+  }
+}

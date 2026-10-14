@@ -1,0 +1,41 @@
+{
+  "id": "posthog-002",
+  "categoryId": "strategy",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 172,
+  "isNew": true,
+  "connectors": [
+    "posthog"
+  ],
+  "es": {
+    "title": "Lanzar una función nueva a un 20 % de usuarios (PostHog)",
+    "outcome": "Prepara un interruptor de función en PostHog para probar una novedad con una parte de tus usuarios, con tu confirmación.",
+    "prompt": "Quiero lanzar una novedad de forma gradual en mi producto usando PostHog.\n\nNombre de la función: [por ejemplo, nuevo-checkout].\nA qué porcentaje de usuarios: [por ejemplo, 20 %].\nPara qué la quiero: [probar si mejora las compras / evitar riesgos].\n\nPrimero revisa si ya existe un interruptor con un nombre parecido y dime. Luego muéstrame la configuración que vas a crear (nombre, porcentaje, a quién aplica) y pídeme confirmación. No crees nada hasta que yo escriba \"confirmo\". No modifiques ni apagues interruptores existentes. Al final dime qué debe hacer mi equipo técnico para usarlo en el producto.",
+    "recommendedFiles": [
+      "Descripción de la función",
+      "Métrica con la que medirás el resultado"
+    ],
+    "expectedResult": [
+      "Revisión de interruptores existentes",
+      "Configuración propuesta",
+      "Confirmación antes de crear",
+      "Interruptor creado y siguientes pasos"
+    ]
+  },
+  "en": {
+    "title": "Launch a new feature to 20% of users (PostHog)",
+    "outcome": "Prepares a feature flag in PostHog to try something new with part of your users, with your confirmation.",
+    "prompt": "I want to roll out something new gradually in my product using PostHog.\n\nFeature name: [for example, new-checkout].\nPercentage of users: [for example, 20%].\nWhat it's for: [test whether it improves purchases / reduce risk].\n\nFirst check whether a flag with a similar name already exists and tell me. Then show me the configuration you'll create (name, percentage, who it applies to) and ask me to confirm. Don't create anything until I write \"confirm\". Don't change or turn off existing flags. At the end, tell me what my technical team needs to do to use it in the product.",
+    "recommendedFiles": [
+      "Description of the feature",
+      "Metric you'll use to measure the result"
+    ],
+    "expectedResult": [
+      "Check of existing flags",
+      "Proposed configuration",
+      "Confirmation before creating",
+      "Flag created and next steps"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "alegra-002",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 134,
+  "isNew": true,
+  "connectors": [
+    "alegra"
+  ],
+  "es": {
+    "title": "Revisar el inventario de mis productos en Alegra",
+    "outcome": "Consulta el stock de cada producto en Alegra y te dice qué reponer primero.",
+    "prompt": "Muéstrame cuánto stock tengo de cada producto en Alegra.\n\nBodega: [todas / nombre de una bodega].\nUmbral de reposición: [por ejemplo, menos de 5 unidades].\nCategoría de productos: [todas / una en particular].\n\nSi te falta algún dato, pregúntamelo antes de consultar. Lee el inventario y dame:\n1. Una tabla con producto, stock actual y precio.\n2. Los productos por debajo del umbral, ordenados del más urgente al menos urgente.\n3. Los productos sin stock.\n4. Un resumen corto para enviar a quien hace las compras.\n\nSolo consulta: no ajustes inventario ni modifiques productos. Si un producto no muestra stock, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Lista de productos clave",
+      "Umbral de reposición"
+    ],
+    "expectedResult": [
+      "Tabla de stock por producto",
+      "Productos por reponer, por urgencia",
+      "Productos sin stock",
+      "Resumen para compras"
+    ]
+  },
+  "en": {
+    "title": "Review the inventory of my products in Alegra",
+    "outcome": "Reads the stock of each product in Alegra and tells you what to reorder first.",
+    "prompt": "Show me how much stock I have of each product in Alegra.\n\nWarehouse: [all / name of one warehouse].\nReorder threshold: [for example, fewer than 5 units].\nProduct category: [all / a specific one].\n\nIf anything is missing, ask me before looking. Read the inventory and give me:\n1. A table with product, current stock, and price.\n2. The products below the threshold, from most to least urgent.\n3. The products that are out of stock.\n4. A short summary I can send to whoever does the purchasing.\n\nRead only: don't adjust inventory or change products. If a product doesn't show stock, tell me instead of guessing.",
+    "recommendedFiles": [
+      "List of key products",
+      "Reorder threshold"
+    ],
+    "expectedResult": [
+      "Stock table by product",
+      "Products to reorder, by urgency",
+      "Out-of-stock products",
+      "Summary for purchasing"
+    ]
+  }
+}

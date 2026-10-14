@@ -3,6 +3,7 @@ import { listSlugs as listConnectorSlugs } from "@/lib/connectors";
 import { listSkillSlugs } from "@/lib/skills";
 import { TOOL_SLUGS } from "@/lib/vsPages";
 import { GEO_PAGE_SLUGS } from "@/lib/geoPages";
+import { MULTI_AI_PUBLIC } from "@/lib/launchFlags";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { listSlugs as listBlogSlugs } from "@/lib/blog";
 
@@ -21,6 +22,13 @@ async function listBundleSlugs(): Promise<string[]> {
   }
 }
 
+/** Las guías cuyo tema entero es sincronizar la IA de otro proveedor. */
+const MULTI_AI_GUIDE_SLUGS = new Set([
+  "sync-claude-code-between-macs",
+  "sync-codex-between-macs",
+  "sync-gemini-cli-between-macs",
+]);
+
 const BASE = "https://terminalsync.ai";
 const LANGS = ["es", "en"] as const;
 
@@ -37,13 +45,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
+  // JM 2026-10-07: la primera etapa no menciona que se trabaje con varias
+  // IAs, así que las páginas cuyo TEMA es eso salen del sitemap junto con la
+  // página. Un `true` en MULTI_AI_PUBLIC las devuelve — no se borró ninguna.
+  const MULTI_AI_PATHS = ["ai-terminal", "for-developers"];
+
   const STATIC_PATHS = [
-    "ai-terminal",
+    ...(MULTI_AI_PUBLIC ? MULTI_AI_PATHS : []),
     "skills",
     "cli-tools",
     "connectors",
     "stacks",
-    "for-developers",
     "legal/affiliates",
     "legal/privacy",
     "legal/extension-privacy",
@@ -97,6 +109,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     }
     for (const slug of GEO_PAGE_SLUGS) {
+      if (!MULTI_AI_PUBLIC && MULTI_AI_GUIDE_SLUGS.has(slug)) continue;
       entries.push({
         url: `${BASE}/${lang}/guides/${slug}`,
         lastModified: now,
