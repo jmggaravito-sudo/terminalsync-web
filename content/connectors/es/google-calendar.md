@@ -63,7 +63,7 @@ Las credenciales quedan guardadas cifradas en tu Keychain y sincronizadas entre 
 - Crear, editar y borrar eventos; traer el detalle de un evento específico.
 - Chequear disponibilidad de una franja horaria antes de agendar.
 
-La auth es OAuth 2.0 (`AUTH_METHOD=google_cloud`). Env de configuración: `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` de un OAuth client de Google Cloud, más `GOOGLE_REDIRECT_URI=http://localhost:3000/auth/callback` (un literal fijo, no un secreto). La primera corrida abre el consent del navegador; los tokens persisten después.
+La auth es OAuth 2.0 (`AUTH_METHOD=google_cloud`). Env de configuración: `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` de un OAuth client de Google Cloud, más `GOOGLE_REDIRECT_URI=http://localhost:3000/auth/callback` (un literal fijo, no un secreto). Verificado el 2026-10-14: este paquete no es un server MCP por stdio — levanta un servidor HTTP en el puerto 3000 y el login se hace visitando `/mcp/auth/url`; nunca responde el handshake MCP por stdio. Por eso este conector todavía no es instalable para la IA.
 
 Terminal Sync guarda el client id/secret + refresh token en tu Keychain, sincronizados cifrados entre máquinas con AES-256-GCM. Como crear/editar/borrar mutan un calendario real, el escritorio los pasa por un paso de confirmación.
 

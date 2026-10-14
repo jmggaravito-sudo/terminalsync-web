@@ -26,7 +26,16 @@ const PACKAGE_RE = /^(?:@[a-z0-9][a-z0-9._~-]*\/)?[a-z0-9][a-z0-9._~-]*$/;
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONNECTOR_DIRS = ["content/connectors/en", "content/connectors/es"];
 const FIRST_PARTY = new Set(["memory", "meta-ads", "meta-social"]);
-const OAUTH_CONNECTORS = new Set(["gmail", "google-calendar", "google-sheets"]);
+// Google connectors stay blocked, verified 2026-10-14 with real handshakes (not a verifier artifact):
+//  - gmail-mcp@2.4.0 and google-sheets-mcp@1.2.1 exit 1 on stdio with "GOOGLE_ACCESS_TOKEN required
+//    for stdio transport"; GOOGLE_CLIENT_ID/SECRET are only used by their HTTP transport. With a dummy
+//    GOOGLE_ACCESS_TOKEN they do list tools, but that is a ~1h token with no refresh and the app has
+//    no Google OAuth flow that mints it.
+//  - google-calendar-mcp@1.0.9 is not a stdio MCP server: it starts an HTTP server on :3000, logs to
+//    stdout and never answers initialize; login happens by visiting /mcp/auth/url.
+// Unblock only when the app supplies GOOGLE_ACCESS_TOKEN (or the manifests move to a package that
+// does its own stdio OAuth).
+export const OAUTH_CONNECTORS = new Set(["gmail", "google-calendar", "google-sheets"]);
 // Remote connectors whose OAuth server has no dynamic client registration: mcp-remote
 // cannot log in (smoke 2026-10-08, "does not support dynamic client registration"), so
 // they stay blocked until the app can pre-register a client with the vendor.
