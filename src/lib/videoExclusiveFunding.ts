@@ -6,6 +6,10 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 export const VIDEO_EXCLUSIVE_PURPOSE = "video-exclusive";
 export const CREDIT_FUNDING_PURPOSE_METADATA = "credit_funding_purpose";
 export const VIDEO_EXCLUSIVE_ISSUER_METADATA = "video_funding_issuer_id";
+export const VIDEO_EXCLUSIVE_DESTINATION_METADATA = "video_funding_destination";
+export const VIDEO_EXCLUSIVE_CHECKOUT_REQUEST_METADATA = "video_exclusive_checkout_request_id";
+const VIDEO_FUNDING_IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export function isVideoExclusiveFundingEnabled(value = process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED): boolean {
   return ["1", "true", "yes"].includes(value?.trim().toLowerCase() ?? "");
@@ -43,11 +47,19 @@ export async function allocateVideoExclusiveFunding(input: {
     throw new Error("Video-exclusive payment terms are not verified");
   }
   const issuerId = session.metadata?.[VIDEO_EXCLUSIVE_ISSUER_METADATA]?.trim();
+  const destination = session.metadata?.[VIDEO_EXCLUSIVE_DESTINATION_METADATA]?.trim();
+  const requestId = session.metadata?.[VIDEO_EXCLUSIVE_CHECKOUT_REQUEST_METADATA]?.trim();
   const accountId = session.metadata?.supabase_user_id?.trim();
   const paymentId = typeof session.payment_intent === "string"
     ? session.payment_intent
     : session.payment_intent?.id;
-  if (!issuerId || !accountId || !paymentId || !event.id) {
+  const configuredIssuer = process.env.VIDEO_FUNDING_SOURCE_ISSUER?.trim();
+  const configuredDestination = process.env.VIDEO_FUNDING_SOURCE_DESTINATION?.trim();
+  if (!issuerId || !accountId || !paymentId || !event.id || !requestId || !UUID.test(requestId) ||
+      !VIDEO_FUNDING_IDENTIFIER.test(issuerId) || !VIDEO_FUNDING_IDENTIFIER.test(destination ?? "") ||
+      !VIDEO_FUNDING_IDENTIFIER.test(configuredIssuer ?? "") ||
+      !VIDEO_FUNDING_IDENTIFIER.test(configuredDestination ?? "") ||
+      issuerId !== configuredIssuer || destination !== configuredDestination) {
     throw new Error("Video-exclusive payment identity is incomplete");
   }
 

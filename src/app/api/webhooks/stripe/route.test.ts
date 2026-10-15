@@ -193,8 +193,12 @@ describe("Stripe credit payment webhook", () => {
     event.livemode = true;
     event.data.object.metadata.credit_funding_purpose = "video-exclusive";
     event.data.object.metadata.video_funding_issuer_id = "enrolled-issuer";
+    event.data.object.metadata.video_funding_destination = "ledger-prod-7";
+    event.data.object.metadata.video_exclusive_checkout_request_id = "123e4567-e89b-42d3-a456-426614174000";
     mocks.constructEvent.mockReturnValue(event);
     process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED = "true";
+    process.env.VIDEO_FUNDING_SOURCE_ISSUER = "enrolled-issuer";
+    process.env.VIDEO_FUNDING_SOURCE_DESTINATION = "ledger-prod-7";
 
     const res = await POST(signedRequest());
 
