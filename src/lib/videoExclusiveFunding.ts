@@ -3,8 +3,8 @@ import "server-only";
 import type Stripe from "stripe";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
-export const VIDEO_EXCLUSIVE_DESTINATION = "video-exclusive";
-export const CREDIT_FUNDING_DESTINATION_METADATA = "credit_funding_destination";
+export const VIDEO_EXCLUSIVE_PURPOSE = "video-exclusive";
+export const CREDIT_FUNDING_PURPOSE_METADATA = "credit_funding_purpose";
 export const VIDEO_EXCLUSIVE_ISSUER_METADATA = "video_funding_issuer_id";
 
 export function isVideoExclusiveFundingEnabled(value = process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED): boolean {
@@ -38,7 +38,7 @@ export async function allocateVideoExclusiveFunding(input: {
     session.payment_status !== "paid" ||
     session.currency?.toLowerCase() !== "usd" ||
     !Number.isSafeInteger(input.amountMicros) || input.amountMicros <= 0 ||
-    session.metadata?.[CREDIT_FUNDING_DESTINATION_METADATA] !== VIDEO_EXCLUSIVE_DESTINATION
+    session.metadata?.[CREDIT_FUNDING_PURPOSE_METADATA] !== VIDEO_EXCLUSIVE_PURPOSE
   ) {
     throw new Error("Video-exclusive payment terms are not verified");
   }
@@ -60,7 +60,7 @@ export async function allocateVideoExclusiveFunding(input: {
     p_provider_payment_id: paymentId,
     p_account_id: accountId,
     p_issuer_id: issuerId,
-    p_destination: VIDEO_EXCLUSIVE_DESTINATION,
+    p_purpose: VIDEO_EXCLUSIVE_PURPOSE,
     p_currency: "USD",
     p_amount_micros: input.amountMicros,
   });

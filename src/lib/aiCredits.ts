@@ -151,9 +151,9 @@ export function creditMetadata(input: {
 }): CreditPaymentMetadata {
   return {
     source: CREDIT_CHECKOUT_SOURCE,
-    // Persist the funding destination on the provider checkout itself. The
+    // Persist the funding purpose on the provider checkout itself. The
     // webhook never derives or changes this choice during a retry.
-    credit_funding_destination: "general",
+    credit_funding_purpose: "general",
     supabase_user_id: input.userId,
     credit_amount_cents: String(input.creditPackage.amountCents),
     credit_amount_micros: String(input.creditPackage.amountMicros),
