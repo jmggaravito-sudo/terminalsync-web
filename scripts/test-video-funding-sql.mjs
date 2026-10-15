@@ -47,12 +47,64 @@ await test('read wrong account or namespace returns null',async()=>{
 await test('anonymous and signed-in cannot read funding RPC',async()=>{
  for(const role of ['anon','authenticated']){
   await db.exec('SET ROLE '+role);
-  try{await assert.rejects(q('SELECT public.get_video_exclusive_funding($1::uuid,$2::uuid,$3)',[a,receipt.allocationId,'synthetic-ledger']),/permission denied/)}finally{await db.exec('RESET ROLE')}
+  try{
+   await assert.rejects(q('SELECT public.get_video_exclusive_funding($1::uuid,$2::uuid,$3)',[a,receipt.allocationId,'synthetic-ledger']),/permission denied/);
+   await assert.rejects(q('SELECT * FROM public.claim_video_funding_outbox($1,1,30)',['synthetic-ledger']),/permission denied/);
+   await assert.rejects(q('SELECT public.ack_video_funding_outbox($1::uuid,$2::uuid,$3,$4::uuid)',[a,receipt.allocationId,'synthetic-ledger','44444444-4444-4444-8444-444444444444']),/permission denied/);
+  }finally{await db.exec('RESET ROLE')}
  }
 });
 await test('service role can read immutable receipt',async()=>{
  await db.exec('SET ROLE service_role');
  try{assert.deepEqual((await q('SELECT public.get_video_exclusive_funding($1::uuid,$2::uuid,$3) AS receipt',[a,receipt.allocationId,'synthetic-ledger']))[0].receipt,receipt)}finally{await db.exec('RESET ROLE')}
+});
+let firstClaim, secondClaim;
+await test('outbox delivery remains disabled by default',async()=>{
+ assert.equal((await q('SELECT * FROM public.claim_video_funding_outbox($1,1,30)',['synthetic-ledger'])).length,0);
+ await assert.rejects(q('SELECT * FROM public.claim_video_funding_outbox($1,101,30)',['synthetic-ledger']),/invalid outbox claim arguments/);
+});
+await db.exec('UPDATE video_funding_private.video_funding_settings SET outbox_delivery_enabled=true');
+await test('service role claims only the configured destination with the same receipt',async()=>{
+ await db.exec('SET ROLE service_role');
+ try{
+  const rows=await q('SELECT * FROM public.claim_video_funding_outbox($1,1,30)',['synthetic-ledger']);
+  assert.equal(rows.length,1); firstClaim=rows[0];
+  assert.equal(firstClaim.allocationId,receipt.allocationId);
+  assert.equal(firstClaim.accountId,a); assert.equal(firstClaim.destination,'synthetic-ledger');
+  assert.deepEqual(firstClaim.receipt,receipt); assert.ok(firstClaim.claimToken);
+ }finally{await db.exec('RESET ROLE')}
+});
+await test('ack rejects account/destination mismatch without delivering',async()=>{
+ for(const [account,destination] of [[b,'synthetic-ledger'],[a,'wrong-ledger']])
+  assert.equal((await q('SELECT public.ack_video_funding_outbox($1::uuid,$2::uuid,$3,$4::uuid) AS ok',[account,firstClaim.allocationId,destination,firstClaim.claimToken]))[0].ok,false);
+ assert.equal((await q('SELECT delivered_at FROM video_funding_private.video_funding_outbox WHERE allocation_id=$1::uuid',[firstClaim.allocationId]))[0].delivered_at,null);
+});
+await db.exec(`UPDATE video_funding_private.video_funding_outbox SET lease_expires_at=clock_timestamp()-interval '1 second' WHERE allocation_id='${receipt.allocationId}'`);
+await test('expired lease reclaims same allocation with a fresh fencing token',async()=>{
+ await db.exec('SET ROLE service_role');
+ try{
+  const rows=await q('SELECT * FROM public.claim_video_funding_outbox($1,1,30)',['synthetic-ledger']);
+  assert.equal(rows.length,1); secondClaim=rows[0];
+  assert.equal(secondClaim.allocationId,firstClaim.allocationId);
+  assert.deepEqual(secondClaim.receipt,firstClaim.receipt);
+  assert.notEqual(secondClaim.claimToken,firstClaim.claimToken);
+ }finally{await db.exec('RESET ROLE')}
+});
+await test('stale lease cannot ack a re-claimed allocation',async()=>{
+ assert.equal((await q('SELECT public.ack_video_funding_outbox($1::uuid,$2::uuid,$3,$4::uuid) AS ok',[a,firstClaim.allocationId,'synthetic-ledger',firstClaim.claimToken]))[0].ok,false);
+});
+await test('ack is idempotent only for delivered lease identity',async()=>{
+ await db.exec('SET ROLE service_role');
+ try{
+  assert.equal((await q('SELECT public.ack_video_funding_outbox($1::uuid,$2::uuid,$3,$4::uuid) AS ok',[a,secondClaim.allocationId,'synthetic-ledger',secondClaim.claimToken]))[0].ok,true);
+  assert.equal((await q('SELECT public.ack_video_funding_outbox($1::uuid,$2::uuid,$3,$4::uuid) AS ok',[a,secondClaim.allocationId,'synthetic-ledger',secondClaim.claimToken]))[0].ok,true);
+  assert.equal((await q('SELECT public.ack_video_funding_outbox($1::uuid,$2::uuid,$3,$4::uuid) AS ok',[a,secondClaim.allocationId,'synthetic-ledger',firstClaim.claimToken]))[0].ok,false);
+ }finally{await db.exec('RESET ROLE')}
+});
+await test('delivery timeout and ack never change or reassign credit balances',async()=>{
+ assert.equal(Number((await q('SELECT balance_micros FROM public.ai_credit_accounts WHERE user_id=$1::uuid',[a]))[0].balance_micros),500000);
+ assert.equal((await q('SELECT attempts FROM video_funding_private.video_funding_outbox WHERE allocation_id=$1::uuid',[receipt.allocationId]))[0].attempts,2);
+ assert.equal((await q('SELECT * FROM public.claim_video_funding_outbox($1,1,30)',['synthetic-ledger'])).length,0);
 });
 await test('final balances conserve one general grant and one exclusive allocation',async()=>{
  assert.equal(Number((await q('SELECT balance_micros FROM public.ai_credit_accounts WHERE user_id=$1::uuid',[a]))[0].balance_micros),500000);

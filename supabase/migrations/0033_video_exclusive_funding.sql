@@ -9,6 +9,7 @@ grant usage on schema video_funding_private to service_role;
 create table video_funding_private.video_funding_settings (
   singleton boolean primary key default true check (singleton),
   enabled boolean not null default false,
+  outbox_delivery_enabled boolean not null default false,
   -- Exact receiving namespace / ledger-deployment pin, not the product purpose.
   -- It remains NULL until the destination owner supplies the trusted value.
   destination text,
@@ -69,7 +70,13 @@ create table video_funding_private.video_funding_outbox (
   payload jsonb not null,
   attempts integer not null default 0 check (attempts >= 0),
   created_at timestamptz not null default now(),
-  delivered_at timestamptz
+  delivered_at timestamptz,
+  claim_token uuid,
+  lease_expires_at timestamptz,
+  delivered_claim_token uuid,
+  check ((claim_token is null) = (lease_expires_at is null)),
+  check ((delivered_at is null) = (delivered_claim_token is null)),
+  check (delivered_at is null or claim_token is null)
 );
 
 alter table video_funding_private.video_funding_settings enable row level security;
@@ -425,4 +432,187 @@ $$;
 revoke all on function public.get_video_exclusive_funding(uuid, uuid, text)
   from public, anon, authenticated;
 grant execute on function public.get_video_exclusive_funding(uuid, uuid, text)
+  to service_role;
+
+-- Claims are destination-scoped and disabled until an operator explicitly
+-- enables outbox_delivery_enabled. SKIP LOCKED supports parallel workers;
+-- expired leases are retried with the same allocationId and a fresh token.
+create or replace function video_funding_private.claim_video_funding_outbox(
+  p_destination text,
+  p_limit integer default 20,
+  p_lease_seconds integer default 300
+)
+returns table (
+  "allocationId" uuid,
+  "accountId" uuid,
+  destination text,
+  receipt jsonb,
+  "claimToken" uuid,
+  "leaseExpiresAt" timestamptz
+)
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_destination text;
+  v_delivery_enabled boolean;
+begin
+  if nullif(trim(p_destination), '') is null
+     or p_limit is null or p_limit < 1 or p_limit > 100
+     or p_lease_seconds is null or p_lease_seconds < 30 or p_lease_seconds > 3600 then
+    raise exception 'invalid outbox claim arguments';
+  end if;
+
+  select s.destination, s.outbox_delivery_enabled
+    into v_destination, v_delivery_enabled
+    from video_funding_private.video_funding_settings s
+   where s.singleton = true
+   for share;
+
+  if not found or v_delivery_enabled is not true
+     or v_destination is distinct from p_destination then
+    return;
+  end if;
+
+  return query
+  with claimable as (
+    select o.allocation_id
+      from video_funding_private.video_funding_outbox o
+      join video_funding_private.video_funding_allocations a
+        on a.allocation_id = o.allocation_id
+     where o.delivered_at is null
+       and (o.lease_expires_at is null or o.lease_expires_at <= clock_timestamp())
+       and a.destination = p_destination
+     order by o.created_at, o.allocation_id
+     for update of o skip locked
+     limit p_limit
+  )
+  update video_funding_private.video_funding_outbox o
+     set attempts = o.attempts + 1,
+         claim_token = gen_random_uuid(),
+         lease_expires_at = clock_timestamp() + make_interval(secs => p_lease_seconds)
+    from claimable c, video_funding_private.video_funding_allocations a
+   where o.allocation_id = c.allocation_id
+     and a.allocation_id = o.allocation_id
+  returning a.allocation_id, a.account_id, a.destination,
+            o.payload, o.claim_token, o.lease_expires_at;
+end;
+$$;
+
+create or replace function video_funding_private.ack_video_funding_outbox(
+  p_account_id uuid,
+  p_allocation_id uuid,
+  p_destination text,
+  p_claim_token uuid
+)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_configured_destination text;
+  v_outbox video_funding_private.video_funding_outbox%rowtype;
+begin
+  if p_account_id is null or p_allocation_id is null
+     or nullif(trim(p_destination), '') is null or p_claim_token is null then
+    raise exception 'invalid outbox acknowledgement arguments';
+  end if;
+
+  select destination into v_configured_destination
+    from video_funding_private.video_funding_settings
+   where singleton = true
+   for share;
+  if not found or v_configured_destination is distinct from p_destination then
+    return false;
+  end if;
+
+  select o.* into v_outbox
+    from video_funding_private.video_funding_outbox o
+    join video_funding_private.video_funding_allocations a
+      on a.allocation_id = o.allocation_id
+   where o.allocation_id = p_allocation_id
+     and a.account_id = p_account_id
+     and a.destination = p_destination
+   for update of o;
+  if not found then return false; end if;
+
+  -- A repeat ack is idempotent only for the exact token that delivered this
+  -- row. Any token from an expired/reclaimed lease is rejected.
+  if v_outbox.delivered_at is not null then
+    return v_outbox.delivered_claim_token = p_claim_token;
+  end if;
+  if v_outbox.claim_token is distinct from p_claim_token
+     or v_outbox.lease_expires_at <= clock_timestamp() then
+    return false;
+  end if;
+
+  update video_funding_private.video_funding_outbox
+     set delivered_at = clock_timestamp(),
+         delivered_claim_token = p_claim_token,
+         claim_token = null,
+         lease_expires_at = null
+   where allocation_id = p_allocation_id
+     and delivered_at is null
+     and claim_token = p_claim_token;
+  return found;
+end;
+$$;
+
+revoke all on function video_funding_private.claim_video_funding_outbox(text, integer, integer)
+  from public, anon, authenticated;
+grant execute on function video_funding_private.claim_video_funding_outbox(text, integer, integer)
+  to service_role;
+revoke all on function video_funding_private.ack_video_funding_outbox(uuid, uuid, text, uuid)
+  from public, anon, authenticated;
+grant execute on function video_funding_private.ack_video_funding_outbox(uuid, uuid, text, uuid)
+  to service_role;
+
+-- Service-role-only PostgREST wrappers; no table privileges or client execution.
+create or replace function public.claim_video_funding_outbox(
+  p_destination text,
+  p_limit integer default 20,
+  p_lease_seconds integer default 300
+)
+returns table (
+  "allocationId" uuid,
+  "accountId" uuid,
+  destination text,
+  receipt jsonb,
+  "claimToken" uuid,
+  "leaseExpiresAt" timestamptz
+)
+language sql
+security invoker
+set search_path = ''
+as $$
+  select * from video_funding_private.claim_video_funding_outbox(
+    p_destination, p_limit, p_lease_seconds
+  );
+$$;
+
+create or replace function public.ack_video_funding_outbox(
+  p_account_id uuid,
+  p_allocation_id uuid,
+  p_destination text,
+  p_claim_token uuid
+)
+returns boolean
+language sql
+security invoker
+set search_path = ''
+as $$
+  select video_funding_private.ack_video_funding_outbox(
+    p_account_id, p_allocation_id, p_destination, p_claim_token
+  );
+$$;
+
+revoke all on function public.claim_video_funding_outbox(text, integer, integer)
+  from public, anon, authenticated;
+grant execute on function public.claim_video_funding_outbox(text, integer, integer)
+  to service_role;
+revoke all on function public.ack_video_funding_outbox(uuid, uuid, text, uuid)
+  from public, anon, authenticated;
+grant execute on function public.ack_video_funding_outbox(uuid, uuid, text, uuid)
   to service_role;
