@@ -4,12 +4,14 @@ const mocks = vi.hoisted(() => ({
   constructEvent: vi.fn(),
   grantPurchasedCredits: vi.fn(),
   allocateVideoFunding: vi.fn(),
+  retrieveSession: vi.fn(),
 }));
 
 vi.mock("@/lib/stripe", () => ({
   stripe: {
     webhooks: { constructEvent: mocks.constructEvent },
     customers: { retrieve: vi.fn() },
+    checkout: { sessions: { retrieve: mocks.retrieveSession } },
   },
 }));
 
@@ -50,6 +52,8 @@ function creditEvent() {
       object: {
         id: "cs_credit_123",
         livemode: true,
+        mode: "payment",
+        url: "https://checkout.stripe.test/session",
         amount_total: 1000,
         currency: "usd",
         payment_status: "paid",
@@ -80,7 +84,12 @@ beforeEach(() => {
   process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
   mocks.constructEvent.mockReturnValue(creditEvent());
   mocks.grantPurchasedCredits.mockResolvedValue(undefined);
-  mocks.allocateVideoFunding.mockResolvedValue({ error: null });
+  mocks.allocateVideoFunding.mockImplementation(async (name: string) =>
+    name === "reconcile_video_exclusive_checkout"
+      ? { data: true, error: null }
+      : { data: { allocationId: "allocation-1" }, error: null },
+  );
+  mocks.retrieveSession.mockImplementation(async (id: string) => ({ ...creditEvent().data.object, id }));
 });
 
 afterEach(() => {
@@ -196,6 +205,7 @@ describe("Stripe credit payment webhook", () => {
     event.data.object.metadata.video_funding_destination = "ledger-prod-7";
     event.data.object.metadata.video_exclusive_checkout_request_id = "123e4567-e89b-42d3-a456-426614174000";
     mocks.constructEvent.mockReturnValue(event);
+    mocks.retrieveSession.mockResolvedValue(event.data.object);
     process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED = "true";
     process.env.VIDEO_FUNDING_SOURCE_ISSUER = "enrolled-issuer";
     process.env.VIDEO_FUNDING_SOURCE_DESTINATION = "ledger-prod-7";

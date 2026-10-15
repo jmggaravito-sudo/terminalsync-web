@@ -124,6 +124,35 @@ describe("POST /api/credits/video-exclusive/checkout", () => {
     expect(await replay.json()).toMatchObject({ checkoutId: "cs_mock" });
   });
 
+  it("does not recreate when Stripe succeeded but complete persistence returned an error", async () => {
+    enable();
+    mocks.rpc
+      .mockResolvedValueOnce({ data: { status: "create", idempotencyKey: "video-exclusive:0123456789abcdef0123456789abcdef" }, error: null })
+      .mockResolvedValueOnce({ data: null, error: { message: "synthetic persistence failure" } })
+      .mockResolvedValueOnce({ data: { status: "reconcile_required" }, error: null });
+    const first = await POST(request({ amountCents: 1000, requestId: rid }));
+    expect(first.status).toBe(409);
+    const replay = await POST(request({ amountCents: 1000, requestId: rid }));
+    expect(replay.status).toBe(409);
+    expect(await replay.json()).toMatchObject({ code: "checkout_reconcile_required" });
+    expect(mocks.stripeCreate).toHaveBeenCalledOnce();
+  });
+
+  it("returns a committed session on replay when the completion response was lost", async () => {
+    enable();
+    mocks.rpc
+      .mockResolvedValueOnce({ data: { status: "create", idempotencyKey: "video-exclusive:0123456789abcdef0123456789abcdef" }, error: null })
+      // Simulate a timeout after Postgres committed but before the RPC response reached this server.
+      .mockResolvedValueOnce({ data: null, error: { message: "synthetic lost response" } })
+      .mockResolvedValueOnce({ data: { status: "created", checkoutId: "cs_mock", url: "https://checkout.stripe.test/session" }, error: null });
+    const first = await POST(request({ amountCents: 1000, requestId: rid }));
+    expect(first.status).toBe(409);
+    const replay = await POST(request({ amountCents: 1000, requestId: rid }));
+    expect(replay.status).toBe(200);
+    expect(await replay.json()).toMatchObject({ checkoutId: "cs_mock", url: "https://checkout.stripe.test/session" });
+    expect(mocks.stripeCreate).toHaveBeenCalledOnce();
+  });
+
   it("fails closed on mutated terms for a pinned request", async () => {
     enable();
     mocks.rpc.mockResolvedValueOnce({ data: null, error: { message: "terms mismatch" } });

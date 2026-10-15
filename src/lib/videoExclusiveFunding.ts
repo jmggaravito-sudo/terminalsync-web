@@ -2,6 +2,7 @@ import "server-only";
 
 import type Stripe from "stripe";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { stripe } from "@/lib/stripe";
 
 export const VIDEO_EXCLUSIVE_PURPOSE = "video-exclusive";
 export const CREDIT_FUNDING_PURPOSE_METADATA = "credit_funding_purpose";
@@ -63,21 +64,76 @@ export async function allocateVideoExclusiveFunding(input: {
     throw new Error("Video-exclusive payment identity is incomplete");
   }
 
+  // A signed webhook supplies a trusted existing session ID. Retrieve it from
+  // Stripe before reconciling a creating/ambiguous durable intent; never infer
+  // or synthesize a session ID/URL and never issue another create request here.
+  if (!stripe) throw new Error("Video-exclusive session verification is unavailable");
+  let verifiedSession: Stripe.Checkout.Session;
+  try {
+    verifiedSession = await stripe.checkout.sessions.retrieve(session.id);
+  } catch {
+    throw new Error("Video-exclusive session verification failed");
+  }
+  const verifiedMetadata = verifiedSession.metadata;
+  const verifiedPaymentId = typeof verifiedSession.payment_intent === "string"
+    ? verifiedSession.payment_intent
+    : verifiedSession.payment_intent?.id;
+  const expectedCents = input.amountMicros / 10_000;
+  if (
+    verifiedSession.id !== session.id ||
+    verifiedPaymentId !== paymentId ||
+    verifiedSession.livemode !== true ||
+    verifiedSession.mode !== "payment" ||
+    verifiedSession.payment_status !== "paid" ||
+    verifiedSession.currency?.toLowerCase() !== "usd" ||
+    verifiedSession.amount_total !== expectedCents ||
+    !verifiedSession.url ||
+    verifiedMetadata?.source !== "terminalsync_credits" ||
+    verifiedMetadata.credit_funding_purpose !== VIDEO_EXCLUSIVE_PURPOSE ||
+    verifiedMetadata.supabase_user_id !== accountId ||
+    verifiedMetadata.credit_amount_cents !== String(expectedCents) ||
+    verifiedMetadata.credit_amount_micros !== String(input.amountMicros) ||
+    verifiedMetadata.rail !== "stripe" ||
+    verifiedMetadata[VIDEO_EXCLUSIVE_ISSUER_METADATA] !== issuerId ||
+    verifiedMetadata[VIDEO_EXCLUSIVE_DESTINATION_METADATA] !== destination ||
+    verifiedMetadata[VIDEO_EXCLUSIVE_CHECKOUT_REQUEST_METADATA] !== requestId
+  ) {
+    throw new Error("Video-exclusive provider session does not match checkout terms");
+  }
+
   const sb = getSupabaseAdmin();
   if (!sb) throw new Error("Supabase admin not configured");
+  const { data: reconciled, error: reconcileError } = await sb.rpc("reconcile_video_exclusive_checkout", {
+    p_account_id: accountId,
+    p_request_id: requestId,
+    p_stripe_session_id: verifiedSession.id,
+    p_stripe_session_url: verifiedSession.url,
+    p_issuer_id: issuerId,
+    p_destination: destination,
+    p_amount_cents: expectedCents,
+    p_amount_micros: input.amountMicros,
+    p_currency: verifiedSession.currency,
+    p_mode: verifiedSession.mode,
+    p_livemode: verifiedSession.livemode,
+    p_payment_status: verifiedSession.payment_status,
+    p_metadata: verifiedMetadata,
+  });
+  if (reconcileError || reconciled !== true) {
+    throw new Error("Video-exclusive checkout reconciliation did not match");
+  }
   const { error } = await sb.rpc("allocate_video_exclusive_funding_pinned", {
     p_signature_verified_live: true,
     p_event_livemode: true,
     p_source_event_id: event.id,
-    p_provider_payment_id: paymentId,
+    p_provider_payment_id: verifiedPaymentId,
     p_account_id: accountId,
     p_issuer_id: issuerId,
     p_destination: destination,
     p_request_id: requestId,
-    p_checkout_session_id: session.id,
+    p_checkout_session_id: verifiedSession.id,
     p_purpose: VIDEO_EXCLUSIVE_PURPOSE,
     p_currency: "USD",
     p_amount_micros: input.amountMicros,
   });
-  if (error) throw new Error(`Could not allocate video-exclusive funding: ${error.message}`);
+  if (error) throw new Error("Could not allocate video-exclusive funding");
 }

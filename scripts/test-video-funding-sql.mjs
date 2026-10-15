@@ -23,6 +23,8 @@ const grant=async(payment='pi_one',amount=300000,account=a,key='general-one')=>(
 await test('unrelated private privilege survives',async()=>assert.equal((await q("SELECT has_table_privilege('service_role','private.unrelated','SELECT') AS ok"))[0].ok,true));
 await test('default disabled',async()=>await assert.rejects(alloc(),/disabled/));
 const reserve=async(account=a,request='33333333-3333-4333-8333-333333333333',amount=1000,issuer='test-source',destination='synthetic-ledger')=>(await q('SELECT public.reserve_video_exclusive_checkout($1::uuid,$2::uuid,$3::int,$4,$5) AS intent',[account,request,amount,issuer,destination]))[0].intent;
+const checkoutMeta=(account,request,amount=1000,issuer='test-source',destination='synthetic-ledger')=>({source:'terminalsync_credits',credit_funding_purpose:'video-exclusive',supabase_user_id:account,video_exclusive_checkout_request_id:request,video_funding_issuer_id:issuer,video_funding_destination:destination,credit_amount_cents:String(amount),credit_amount_micros:String(amount*10000),rail:'stripe'});
+const reconcile=async(account,request,sessionId,amount=1000,issuer='test-source',destination='synthetic-ledger',meta=checkoutMeta(account,request,amount,issuer,destination),url='https://checkout.stripe.test/durable',mode='payment',currency='usd',livemode=true,paymentStatus='paid')=>(await q('SELECT public.reconcile_video_exclusive_checkout($1::uuid,$2::uuid,$3,$4,$5,$6,$7::int,$8::bigint,$9,$10,$11::boolean,$12,$13::jsonb) AS ok',[account,request,sessionId,url,issuer,destination,amount,amount*10000,currency,mode,livemode,paymentStatus,JSON.stringify(meta)]))[0].ok;
 await test('checkout intent cannot be reserved while authority is disabled',async()=>await assert.rejects(reserve(),/disabled/));
 const settings=await q("SELECT column_name FROM information_schema.columns WHERE table_schema='video_funding_private' AND table_name='video_funding_settings'");
 await db.exec(`UPDATE video_funding_private.video_funding_settings SET enabled=true${settings.some(x=>x.column_name==='destination')?", destination='synthetic-ledger'":''}; INSERT INTO video_funding_private.video_funding_issuers(issuer_id,enabled) VALUES('test-source',true),('other-source',true);`);
@@ -55,8 +57,9 @@ await test('changing SQL authority after reservation cannot reroute the pinned i
  assert.equal((await q('SELECT destination FROM video_funding_private.video_exclusive_checkout_intents WHERE account_id=$1::uuid AND request_id=$2::uuid',[a,checkoutRequest]))[0].destination,'synthetic-ledger');
  await db.exec("UPDATE video_funding_private.video_funding_settings SET destination='synthetic-ledger'");
 });
-await test('completed intent replay returns exact stored session after provider TTL',async()=>{
- assert.equal((await q('SELECT public.complete_video_exclusive_checkout($1::uuid,$2::uuid,$3,$4,$5) AS ok',[a,checkoutRequest,checkoutIntent.idempotencyKey,'cs_durable','https://checkout.stripe.test/durable']))[0].ok,true);
+await test('retrieved paid session reconciles creating intent and duplicate reconciliation is exact',async()=>{
+ assert.equal(await reconcile(a,checkoutRequest,'cs_durable'),true);
+ assert.equal(await reconcile(a,checkoutRequest,'cs_durable'),true);
  assert.deepEqual(await reserve(a,checkoutRequest),{status:'created',checkoutId:'cs_durable',url:'https://checkout.stripe.test/durable'});
  assert.equal((await q('SELECT count(*)::int AS n FROM video_funding_private.video_exclusive_checkout_intents WHERE account_id=$1::uuid AND request_id=$2::uuid',[a,checkoutRequest]))[0].n,1);
 });
@@ -65,6 +68,35 @@ await test('ambiguous request stays reconcile-only even after a fresh reservatio
  const intent=await reserve(b,request,2000,'test-source','synthetic-ledger');
  assert.equal((await q('SELECT public.mark_video_exclusive_checkout_ambiguous($1::uuid,$2::uuid,$3) AS ok',[b,request,intent.idempotencyKey]))[0].ok,true);
  assert.deepEqual(await reserve(b,request,2000,'test-source','synthetic-ledger'),{status:'reconcile_required'});
+ assert.equal(await reconcile(b,request,'cs_reconciled',2000),true);
+ assert.deepEqual(await reserve(b,request,2000,'test-source','synthetic-ledger'),{status:'created',checkoutId:'cs_reconciled',url:'https://checkout.stripe.test/durable'});
+});
+await test('reconciliation rejects provider metadata or terms mismatch',async()=>{
+ const request='55555555-5555-4555-8555-555555555556';
+ await reserve(b,request,1000,'test-source','synthetic-ledger');
+ await assert.rejects(reconcile(b,request,'cs_mismatch',1000,'test-source','synthetic-ledger',{...checkoutMeta(b,request),'video_funding_destination':'attacker-ledger'}),/does not match durable/);
+ await assert.rejects(reconcile(b,request,'cs_mismatch',1000,'test-source','synthetic-ledger',{...checkoutMeta(b,request),'supabase_user_id':a}),/does not match durable/);
+ await assert.rejects(reconcile(b,request,'cs_mismatch',1000,'test-source','synthetic-ledger',{...checkoutMeta(b,request),'video_exclusive_checkout_request_id':checkoutRequest}),/does not match durable/);
+ await assert.rejects(reconcile(b,request,'cs_mismatch',1000,'other-source','synthetic-ledger',checkoutMeta(b,request,1000,'other-source','synthetic-ledger')),/does not match durable/);
+ await assert.rejects(reconcile(b,request,'cs_mismatch',2000),/does not match durable/);
+ await assert.rejects(reconcile(b,request,'cs_mismatch',1000,'test-source','synthetic-ledger',checkoutMeta(b,request),'https://checkout.stripe.test/durable','subscription'),/invalid provider session/);
+ await assert.rejects(reconcile(b,request,'cs_mismatch',1000,'test-source','synthetic-ledger',checkoutMeta(b,request),'https://checkout.stripe.test/durable','payment','eur'),/invalid provider session/);
+ await assert.rejects(reconcile(b,request,'cs_mismatch',1000,'test-source','synthetic-ledger',checkoutMeta(b,request),'https://checkout.stripe.test/durable','payment','usd',false),/invalid provider session/);
+ await assert.rejects(reconcile(b,request,'cs_mismatch',1000,'test-source','synthetic-ledger',checkoutMeta(b,request),'https://checkout.stripe.test/durable','payment','usd',true,'unpaid'),/invalid provider session/);
+});
+await test('completed intent cannot be rebound to a different Stripe session or URL',async()=>{
+ assert.equal(await reconcile(a,checkoutRequest,'cs_durable',1000,'test-source','synthetic-ledger',checkoutMeta(a,checkoutRequest),'https://checkout.stripe.test/other'),false);
+ assert.equal((await q('SELECT public.complete_video_exclusive_checkout($1::uuid,$2::uuid,$3,$4,$5) AS ok',[a,checkoutRequest,checkoutIntent.idempotencyKey,'cs_durable','https://checkout.stripe.test/durable']))[0].ok,true);
+});
+await test('committed completion response can be replayed without mutating stored session',async()=>{
+ const request='55555555-5555-4555-8555-555555555557';
+ const intent=await reserve(b,request,1000,'test-source','synthetic-ledger');
+ const completeSql='SELECT public.complete_video_exclusive_checkout($1::uuid,$2::uuid,$3,$4,$5) AS ok';
+ const args=[b,request,intent.idempotencyKey,'cs_complete','https://checkout.stripe.test/complete'];
+ assert.equal((await q(completeSql,args))[0].ok,true);
+ assert.equal((await q(completeSql,args))[0].ok,true);
+ assert.equal((await q(completeSql,[...args.slice(0,4),'https://checkout.stripe.test/changed']))[0].ok,false);
+ assert.deepEqual(await reserve(b,request),{status:'created',checkoutId:'cs_complete',url:'https://checkout.stripe.test/complete'});
 });
 await test('pinned webhook allocation requires matching durable intent and SQL destination',async()=>{
  await db.exec('BEGIN');
@@ -119,6 +151,9 @@ await test('anonymous and signed-in cannot read funding RPC',async()=>{
    await assert.rejects(q('SELECT public.reserve_video_exclusive_checkout($1::uuid,$2::uuid,1000,$3,$4)',[a,'77777777-7777-4777-8777-777777777777','test-source','synthetic-ledger']),/permission denied/);
    await assert.rejects(q('SELECT public.complete_video_exclusive_checkout($1::uuid,$2::uuid,$3,$4,$5)',[a,'33333333-3333-4333-8333-333333333333','key','cs_fake','https://checkout.stripe.test/fake']),/permission denied/);
    await assert.rejects(q('SELECT public.mark_video_exclusive_checkout_ambiguous($1::uuid,$2::uuid,$3)',[a,'33333333-3333-4333-8333-333333333333','key']),/permission denied/);
+   await assert.rejects(q('SELECT public.reconcile_video_exclusive_checkout($1::uuid,$2::uuid,$3,$4,$5,$6,1000,10000000,$7,$8,true,$9,$10::jsonb)',[
+    a,'33333333-3333-4333-8333-333333333333','cs_fake','https://checkout.stripe.test/fake','test-source','synthetic-ledger','usd','payment','paid',JSON.stringify(checkoutMeta(a,'33333333-3333-4333-8333-333333333333'))
+   ]),/permission denied/);
    await assert.rejects(q('SELECT public.allocate_video_exclusive_funding_pinned(true,true,$1,$2,$3::uuid,$4,$5,$6::uuid,$7,$8,$9,$10::bigint)',[
     'evt_denied','pi_denied',a,'test-source','synthetic-ledger','33333333-3333-4333-8333-333333333333','cs_fake','video-exclusive','USD',10000000
    ]),/permission denied/);
@@ -135,6 +170,7 @@ await test('service role alone can reserve a server-owned checkout intent',async
  try{
   const intent=await reserve(a,'77777777-7777-4777-8777-777777777777',1000,'test-source','synthetic-ledger');
   assert.equal(intent.status,'create');
+  assert.equal(await reconcile(a,'77777777-7777-4777-8777-777777777777','cs_service'),true);
   assert.equal((await q("SELECT has_table_privilege('service_role','video_funding_private.video_exclusive_checkout_intents','SELECT') AS ok"))[0].ok,false);
  }finally{await db.exec('RESET ROLE');await db.exec('UPDATE video_funding_private.video_funding_settings SET enabled=false')}
 });
