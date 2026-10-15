@@ -17,6 +17,8 @@ interface Pending {
   months: number;
 }
 
+type CompPlan = "max" | "pro" | "team";
+
 async function authedFetch(path: string, init?: RequestInit) {
   const sb = getSupabaseBrowser();
   const token = sb ? (await sb.auth.getSession()).data.session?.access_token : null;
@@ -36,7 +38,7 @@ export function CompClient({ lang }: { lang: string }) {
   const t = (es: string, en: string) => (isEs ? es : en);
 
   const [email, setEmail] = useState("");
-  const [plan, setPlan] = useState<"max" | "pro">("max");
+  const [plan, setPlan] = useState<CompPlan>("max");
   const [months, setMonths] = useState(12);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
@@ -144,8 +146,8 @@ export function CompClient({ lang }: { lang: string }) {
           </h1>
           <p className="text-[13px] text-[var(--color-fg-muted)] mt-1">
             {t(
-              "Otorgá Pro/Max gratis a influencers. Si la cuenta ya existe, se aplica al toque. Si todavía no se registró, queda pre-otorgado: recibe el plan solo cuando crea su cuenta.",
-              "Grant Pro/Max for free to influencers. If the account already exists it applies instantly. If they haven't signed up yet it's pre-granted: they get the plan automatically when they create their account.",
+              "Otorgá Pro/Max gratis a influencers. Si la cuenta ya existe, se aplica al toque. Team se pre-otorga solo antes del registro: no cambia una suscripción existente.",
+              "Grant Pro/Max for free to influencers. If the account already exists it applies instantly. Team is pre-granted only before signup: it does not change an existing subscription.",
             )}
           </p>
         </header>
@@ -169,11 +171,12 @@ export function CompClient({ lang }: { lang: string }) {
               </label>
               <select
                 value={plan}
-                onChange={(e) => setPlan(e.target.value as "max" | "pro")}
+                onChange={(e) => setPlan(e.target.value as CompPlan)}
                 className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-[14px]"
               >
                 <option value="max">Max</option>
                 <option value="pro">Pro</option>
+                <option value="team">Team</option>
               </select>
             </div>
             <div>
@@ -197,6 +200,14 @@ export function CompClient({ lang }: { lang: string }) {
               {busy ? t("Otorgando…", "Granting…") : t("Otorgar", "Grant")}
             </button>
           </div>
+          {plan === "team" ? (
+            <p className="mt-3 text-[12px] text-[var(--color-fg-muted)]">
+              {t(
+                "Team queda pendiente hasta que esa persona cree una cuenta nueva; sus invitaciones, aprobaciones y entregas siguen con sus propios controles.",
+                "Team stays pending until that person creates a new account; invitations, approvals, and deliveries keep their own controls.",
+              )}
+            </p>
+          ) : null}
         </div>
 
         {msg ? (

@@ -9,7 +9,7 @@ interface Props {
 }
 
 /**
- * /[lang]/admin/comp — grant free Pro/Max ("comp") accounts to influencers.
+ * /[lang]/admin/comp — grant free Pro/Max comps or pre-grant Team before signup.
  * Thin shell; the Client component calls /api/admin/comp with the user's
  * Bearer token, so the auth gate lives in the API route (ADMIN_EMAILS),
  * consistent with the rest of /admin.
