@@ -283,10 +283,11 @@ export interface Dict {
       // variantes de traer la propia cuenta ("yo por ahora no quiero
       // ofrecer eso") porque la app no permite conectarla: el interruptor
       // de opciones avanzadas no se puede prender desde ninguna pantalla.
-      // Quedan tres planes y `pro`/`max` son los que traen la IA incluida.
+      // `team` es anuncio informativo; no está conectado a checkout.
       starter: Plan;
       pro: PaidPlan;
       max: PaidPlan;
+      team: PaidPlan;
     };
   };
   trust: {
