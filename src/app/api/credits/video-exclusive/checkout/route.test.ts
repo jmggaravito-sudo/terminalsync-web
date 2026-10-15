@@ -170,6 +170,17 @@ describe("POST /api/credits/video-exclusive/checkout", () => {
     expect(mocks.stripeCreate).not.toHaveBeenCalled();
   });
 
+  it("does not expose a URL or recreate a terminal paid checkout on replay", async () => {
+    enable();
+    mocks.rpc.mockResolvedValueOnce({ data: { status: "paid" }, error: null });
+    const res = await POST(request({ amountCents: 1000, requestId: rid }));
+    expect(res.status).toBe(409);
+    const body = await res.json();
+    expect(body).toMatchObject({ code: "checkout_already_completed" });
+    expect(body).not.toHaveProperty("url");
+    expect(mocks.stripeCreate).not.toHaveBeenCalled();
+  });
+
   it("does not log provider error text and persists ambiguous outcomes", async () => {
     enable();
     const log = vi.spyOn(console, "error").mockImplementation(() => {});

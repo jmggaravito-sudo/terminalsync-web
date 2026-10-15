@@ -77,6 +77,10 @@ export async function POST(req: Request) {
       typeof reserve.data.url === "string" && typeof reserve.data.checkoutId === "string") {
     return json({ url: reserve.data.url, rail: "stripe", checkoutId: reserve.data.checkoutId }, 200);
   }
+  if (reserve.data.status === "paid") {
+    // A terminal paid session is not an open checkout; never return a stale or null URL.
+    return json({ error: "This checkout is already complete.", code: "checkout_already_completed" }, 409);
+  }
   if (reserve.data.status === "reconcile_required") {
     return json({ error: "This checkout request needs reconciliation before it can be retried.", code: "checkout_reconcile_required" }, 409);
   }

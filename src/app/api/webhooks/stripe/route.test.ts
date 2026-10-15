@@ -197,7 +197,7 @@ describe("Stripe credit payment webhook", () => {
     expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
   });
 
-  it("routes only a live-signed exclusive event to the transactional RPC", async () => {
+  it("routes a live-signed exclusive event even when the paid session has no active Checkout URL", async () => {
     const event = creditEvent();
     event.livemode = true;
     event.data.object.metadata.credit_funding_purpose = "video-exclusive";
@@ -205,7 +205,7 @@ describe("Stripe credit payment webhook", () => {
     event.data.object.metadata.video_funding_destination = "ledger-prod-7";
     event.data.object.metadata.video_exclusive_checkout_request_id = "123e4567-e89b-42d3-a456-426614174000";
     mocks.constructEvent.mockReturnValue(event);
-    mocks.retrieveSession.mockResolvedValue(event.data.object);
+    mocks.retrieveSession.mockResolvedValue({ ...event.data.object, url: null });
     process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED = "true";
     process.env.VIDEO_FUNDING_SOURCE_ISSUER = "enrolled-issuer";
     process.env.VIDEO_FUNDING_SOURCE_DESTINATION = "ledger-prod-7";

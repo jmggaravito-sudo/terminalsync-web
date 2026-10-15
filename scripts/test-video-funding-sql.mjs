@@ -19,6 +19,7 @@ await db.exec(sql);
 await db.exec(sql34);
 const q=async(s,p=[]) => (await db.query(s,p)).rows;
 const alloc=async(payment='pi_one',event='evt_one',amount=300000,account=a,issuer='test-source') => (await q('SELECT public.allocate_video_exclusive_funding(true,true,$1,$2,$3::uuid,$4,$5,$6,$7::bigint) AS receipt',[event,payment,account,issuer,'video-exclusive','USD',amount]))[0].receipt;
+const allocatePinned=async(account,request,sessionId,payment,event,amount=10000000)=>(await q('SELECT public.allocate_video_exclusive_funding_pinned(true,true,$1,$2,$3::uuid,$4,$5,$6::uuid,$7,$8,$9,$10::bigint) AS receipt',[event,payment,account,'test-source','synthetic-ledger',request,sessionId,'video-exclusive','USD',amount]))[0].receipt;
 const grant=async(payment='pi_one',amount=300000,account=a,key='general-one')=>(await q("SELECT public.grant_ai_credits($1::uuid,$2::bigint,'stripe',$3,'cs_synthetic',$4,'{}'::jsonb) AS balance",[account,amount,payment,key]))[0].balance;
 await test('unrelated private privilege survives',async()=>assert.equal((await q("SELECT has_table_privilege('service_role','private.unrelated','SELECT') AS ok"))[0].ok,true));
 await test('default disabled',async()=>await assert.rejects(alloc(),/disabled/));
@@ -60,8 +61,33 @@ await test('changing SQL authority after reservation cannot reroute the pinned i
 await test('retrieved paid session reconciles creating intent and duplicate reconciliation is exact',async()=>{
  assert.equal(await reconcile(a,checkoutRequest,'cs_durable'),true);
  assert.equal(await reconcile(a,checkoutRequest,'cs_durable'),true);
- assert.deepEqual(await reserve(a,checkoutRequest),{status:'created',checkoutId:'cs_durable',url:'https://checkout.stripe.test/durable'});
+ assert.deepEqual(await reserve(a,checkoutRequest),{status:'paid'});
  assert.equal((await q('SELECT count(*)::int AS n FROM video_funding_private.video_exclusive_checkout_intents WHERE account_id=$1::uuid AND request_id=$2::uuid',[a,checkoutRequest]))[0].n,1);
+});
+await test('paid completed session with null URL reconciles creating intent to terminal state',async()=>{
+ const request='55555555-5555-4555-8555-555555555558';
+ await reserve(a,request,1000,'test-source','synthetic-ledger');
+ assert.equal(await reconcile(a,request,'cs_paid_no_url',1000,'test-source','synthetic-ledger',checkoutMeta(a,request),null),true);
+ assert.deepEqual(await reserve(a,request),{status:'paid'});
+ const row=(await q('SELECT state,stripe_session_id,stripe_session_url FROM video_funding_private.video_exclusive_checkout_intents WHERE account_id=$1::uuid AND request_id=$2::uuid',[a,request]))[0];
+ assert.deepEqual(row,{state:'paid',stripe_session_id:'cs_paid_no_url',stripe_session_url:null});
+});
+await test('paid completed session with null URL reconciles ambiguous intent to terminal state',async()=>{
+ const request='55555555-5555-4555-8555-555555555559';
+ const intent=await reserve(b,request,1000,'test-source','synthetic-ledger');
+ await q('SELECT public.mark_video_exclusive_checkout_ambiguous($1::uuid,$2::uuid,$3)',[b,request,intent.idempotencyKey]);
+ assert.equal(await reconcile(b,request,'cs_ambiguous_paid_no_url',1000,'test-source','synthetic-ledger',checkoutMeta(b,request),null),true);
+ assert.deepEqual(await reserve(b,request),{status:'paid'});
+});
+await test('null paid-session URL preserves a previously stored URL without replaying it as open',async()=>{
+ const request='55555555-5555-4555-8555-555555555560';
+ const intent=await reserve(b,request,1000,'test-source','synthetic-ledger');
+ const url='https://checkout.stripe.test/preserved';
+ await q('SELECT public.complete_video_exclusive_checkout($1::uuid,$2::uuid,$3,$4,$5)',[b,request,intent.idempotencyKey,'cs_preserved',url]);
+ assert.equal(await reconcile(b,request,'cs_preserved',1000,'test-source','synthetic-ledger',checkoutMeta(b,request),null),true);
+ const row=(await q('SELECT state,stripe_session_id,stripe_session_url FROM video_funding_private.video_exclusive_checkout_intents WHERE account_id=$1::uuid AND request_id=$2::uuid',[b,request]))[0];
+ assert.deepEqual(row,{state:'paid',stripe_session_id:'cs_preserved',stripe_session_url:url});
+ assert.deepEqual(await reserve(b,request),{status:'paid'});
 });
 await test('ambiguous request stays reconcile-only even after a fresh reservation attempt',async()=>{
  const request='55555555-5555-4555-8555-555555555555';
@@ -69,7 +95,7 @@ await test('ambiguous request stays reconcile-only even after a fresh reservatio
  assert.equal((await q('SELECT public.mark_video_exclusive_checkout_ambiguous($1::uuid,$2::uuid,$3) AS ok',[b,request,intent.idempotencyKey]))[0].ok,true);
  assert.deepEqual(await reserve(b,request,2000,'test-source','synthetic-ledger'),{status:'reconcile_required'});
  assert.equal(await reconcile(b,request,'cs_reconciled',2000),true);
- assert.deepEqual(await reserve(b,request,2000,'test-source','synthetic-ledger'),{status:'created',checkoutId:'cs_reconciled',url:'https://checkout.stripe.test/durable'});
+ assert.deepEqual(await reserve(b,request,2000,'test-source','synthetic-ledger'),{status:'paid'});
 });
 await test('reconciliation rejects provider metadata or terms mismatch',async()=>{
  const request='55555555-5555-4555-8555-555555555556';
@@ -226,5 +252,21 @@ await test('final balances conserve one general grant and one exclusive allocati
  assert.equal(Number((await q('SELECT balance_micros FROM public.ai_credit_accounts WHERE user_id=$1::uuid',[a]))[0].balance_micros),500000);
  assert.equal((await q('SELECT count(*)::int AS n FROM video_funding_private.video_funding_outbox'))[0].n,1);
  assert.equal((await q('SELECT count(*)::int AS n FROM video_funding_private.video_funding_allocations'))[0].n,1);
+});
+await test('null-URL paid sessions from creating and ambiguous intents can allocate exactly once',async()=>{
+ await db.exec("UPDATE video_funding_private.video_funding_settings SET enabled=true, destination='synthetic-ledger'");
+ const cases=[
+  {account:a,request:'55555555-5555-4555-8555-555555555561',session:'cs_paid_create',payment:'pi_paid_create',event:'evt_paid_create',ambiguous:false},
+  {account:b,request:'55555555-5555-4555-8555-555555555562',session:'cs_paid_ambiguous',payment:'pi_paid_ambiguous',event:'evt_paid_ambiguous',ambiguous:true},
+ ];
+ for(const c of cases){
+  const intent=await reserve(c.account,c.request,1000,'test-source','synthetic-ledger');
+  if(c.ambiguous) await q('SELECT public.mark_video_exclusive_checkout_ambiguous($1::uuid,$2::uuid,$3)',[c.account,c.request,intent.idempotencyKey]);
+  assert.equal(await reconcile(c.account,c.request,c.session,1000,'test-source','synthetic-ledger',checkoutMeta(c.account,c.request),null),true);
+  const first=await allocatePinned(c.account,c.request,c.session,c.payment,c.event);
+  assert.equal(first.state,'committed_exclusive');
+  assert.deepEqual(await allocatePinned(c.account,c.request,c.session,c.payment,c.event+'_retry'),first);
+  assert.equal((await q('SELECT count(*)::int AS n FROM video_funding_private.video_funding_allocations WHERE provider_payment_id=$1',[c.payment]))[0].n,1);
+ }
 });
 await db.close();console.log('LIMIT: embedded single-session Postgres; no concurrent-process lock certification, no provider/real money.');process.exitCode=fails?1:0;

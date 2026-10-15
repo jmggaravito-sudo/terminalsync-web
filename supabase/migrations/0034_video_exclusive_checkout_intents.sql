@@ -13,14 +13,17 @@ create table video_funding_private.video_exclusive_checkout_intents (
   issuer_id text not null references video_funding_private.video_funding_issuers(issuer_id),
   destination text not null check (destination ~ '^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$'),
   idempotency_key text not null unique,
-  state text not null check (state in ('creating', 'created', 'ambiguous')),
+  state text not null check (state in ('creating', 'created', 'ambiguous', 'paid')),
   stripe_session_id text unique,
   stripe_session_url text,
   created_at timestamptz,
   requested_at timestamptz not null default clock_timestamp(),
   primary key (account_id, request_id),
-  check ((state = 'created') = (stripe_session_id is not null and stripe_session_url is not null and created_at is not null)),
-  check (state = 'created' or (stripe_session_id is null and stripe_session_url is null and created_at is null))
+  check (
+    (state in ('creating', 'ambiguous') and stripe_session_id is null and stripe_session_url is null and created_at is null)
+    or (state = 'created' and stripe_session_id is not null and stripe_session_url is not null and created_at is not null)
+    or (state = 'paid' and stripe_session_id is not null and created_at is not null)
+  )
 );
 
 alter table video_funding_private.video_exclusive_checkout_intents enable row level security;
@@ -90,6 +93,10 @@ begin
         'url', v_intent.stripe_session_url
       );
     end if;
+    if v_intent.state = 'paid' then
+      -- Terminal replay: never return an old or null Checkout URL as an open checkout.
+      return jsonb_build_object('status', 'paid');
+    end if;
     -- A row in creating may represent a crash/timeout after Stripe accepted
     -- the request. Do not rely on provider idempotency TTL to recreate it.
     return jsonb_build_object('status', 'reconcile_required');
@@ -136,10 +143,10 @@ begin
   if found then return true; end if;
   select * into v_intent from video_funding_private.video_exclusive_checkout_intents
    where account_id = p_account_id and request_id = p_request_id;
-  return found and v_intent.state = 'created'
+  return found and v_intent.state in ('created', 'paid')
      and v_intent.idempotency_key = p_idempotency_key
      and v_intent.stripe_session_id = p_stripe_session_id
-     and v_intent.stripe_session_url = p_stripe_session_url;
+     and (v_intent.state = 'paid' or v_intent.stripe_session_url = p_stripe_session_url);
 end;
 $$;
 
@@ -160,8 +167,8 @@ $$;
 
 -- Reconciliation is allowed only for a provider session retrieved by trusted
 -- server code (normally from its signed live webhook). The SQL checks every
--- immutable term before changing creating/ambiguous to created. No URL or
--- session identifier is synthesized here.
+-- immutable term before changing creating/ambiguous to terminal paid. A prior
+-- URL is retained if present; a missing post-payment URL is never synthesized.
 create or replace function video_funding_private.reconcile_video_exclusive_checkout(
   p_account_id uuid,
   p_request_id uuid,
@@ -190,7 +197,6 @@ declare
 begin
   if p_account_id is null or p_request_id is null
      or nullif(trim(p_stripe_session_id), '') is null
-     or nullif(trim(p_stripe_session_url), '') is null
      or p_issuer_id is null or p_destination is null
      or p_amount_cents not in (1000, 2000)
      or p_amount_micros <> p_amount_cents::bigint * 10000
@@ -236,15 +242,35 @@ begin
     raise exception 'provider session does not match durable checkout intent';
   end if;
 
+  if v_intent.state = 'paid' then
+    if v_intent.stripe_session_id is distinct from p_stripe_session_id
+       or (nullif(trim(p_stripe_session_url), '') is not null
+           and v_intent.stripe_session_url is not null
+           and v_intent.stripe_session_url is distinct from nullif(trim(p_stripe_session_url), '')) then
+      return false;
+    end if;
+    update video_funding_private.video_exclusive_checkout_intents
+       set stripe_session_url = coalesce(stripe_session_url, nullif(trim(p_stripe_session_url), ''))
+     where account_id = p_account_id and request_id = p_request_id;
+    return found;
+  end if;
   if v_intent.state = 'created' then
-    return v_intent.stripe_session_id is not distinct from p_stripe_session_id
-       and v_intent.stripe_session_url is not distinct from p_stripe_session_url;
+    if v_intent.stripe_session_id is distinct from p_stripe_session_id
+       or (nullif(trim(p_stripe_session_url), '') is not null
+           and v_intent.stripe_session_url is distinct from nullif(trim(p_stripe_session_url), '')) then
+      return false;
+    end if;
+    update video_funding_private.video_exclusive_checkout_intents
+       set state = 'paid',
+           stripe_session_url = coalesce(stripe_session_url, nullif(trim(p_stripe_session_url), ''))
+     where account_id = p_account_id and request_id = p_request_id;
+    return found;
   end if;
   if v_intent.state not in ('creating', 'ambiguous') then return false; end if;
 
   update video_funding_private.video_exclusive_checkout_intents
-     set state = 'created', stripe_session_id = p_stripe_session_id,
-         stripe_session_url = p_stripe_session_url, created_at = clock_timestamp()
+     set state = 'paid', stripe_session_id = p_stripe_session_id,
+         stripe_session_url = nullif(trim(p_stripe_session_url), ''), created_at = clock_timestamp()
    where account_id = p_account_id and request_id = p_request_id;
   return found;
 end;
@@ -285,7 +311,7 @@ begin
   end if;
   select * into v_intent
     from video_funding_private.video_exclusive_checkout_intents
-   where account_id = p_account_id and request_id = p_request_id and state = 'created'
+   where account_id = p_account_id and request_id = p_request_id and state in ('created', 'paid')
    for share;
   if not found or v_intent.issuer_id is distinct from p_issuer_id
      or v_intent.destination is distinct from p_destination

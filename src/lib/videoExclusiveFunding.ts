@@ -87,7 +87,6 @@ export async function allocateVideoExclusiveFunding(input: {
     verifiedSession.payment_status !== "paid" ||
     verifiedSession.currency?.toLowerCase() !== "usd" ||
     verifiedSession.amount_total !== expectedCents ||
-    !verifiedSession.url ||
     verifiedMetadata?.source !== "terminalsync_credits" ||
     verifiedMetadata.credit_funding_purpose !== VIDEO_EXCLUSIVE_PURPOSE ||
     verifiedMetadata.supabase_user_id !== accountId ||
