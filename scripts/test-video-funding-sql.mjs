@@ -21,9 +21,21 @@ await test('unrelated private privilege survives',async()=>assert.equal((await q
 await test('default disabled',async()=>await assert.rejects(alloc(),/disabled/));
 const settings=await q("SELECT column_name FROM information_schema.columns WHERE table_schema='video_funding_private' AND table_name='video_funding_settings'");
 await db.exec(`UPDATE video_funding_private.video_funding_settings SET enabled=true${settings.some(x=>x.column_name==='destination')?", destination='synthetic-ledger'":''}; INSERT INTO video_funding_private.video_funding_issuers(issuer_id,enabled) VALUES('test-source',true),('other-source',true);`);
+await test('issuer IDs reject whitespace and overlong consumer-incompatible values',async()=>{
+ await assert.rejects(db.exec("INSERT INTO video_funding_private.video_funding_issuers(issuer_id) VALUES('bad source')"));
+ await assert.rejects(db.exec(`INSERT INTO video_funding_private.video_funding_issuers(issuer_id) VALUES('${'x'.repeat(129)}')`));
+});
+await test('configured destination rejects consumer-incompatible values',async()=>{
+ await assert.rejects(db.exec("UPDATE video_funding_private.video_funding_settings SET destination='bad destination'"));
+ await assert.rejects(db.exec(`UPDATE video_funding_private.video_funding_settings SET destination='${'x'.repeat(129)}'`));
+});
+await test('allocation RPC validates issuer ID before insert',async()=>await assert.rejects(alloc('pi_bad_issuer','evt_bad_issuer',300000,a,'bad issuer'),/invalid exclusive funding terms/));
 let receipt;
 await test('new exclusive allocation',async()=>{receipt=await alloc();assert.equal(receipt.state,'committed_exclusive');assert.equal(receipt.amountMicros,300000)});
 await test('receipt strict wire currency and destination',async()=>{assert.deepEqual(Object.keys(receipt).sort(),['version','accountId','allocationId','issuerId','destination','currency','amountMicros','state'].sort());assert.equal(receipt.currency,'USD');assert.equal(receipt.destination,'synthetic-ledger')});
+await test('allocation table rejects invalid destination even on direct privileged insert',async()=>{
+ await assert.rejects(db.exec(`INSERT INTO video_funding_private.video_funding_allocations(rail,provider_payment_id,source_event_id,account_id,issuer_id,purpose,destination,currency,amount_micros) VALUES('stripe','pi_bad_destination','evt_bad_destination','${a}','test-source','video-exclusive','bad destination','USD',1)`));
+});
 await test('same-payment replay same receipt',async()=>assert.deepEqual(await alloc(),receipt));
 await test('different event same payment same receipt',async()=>assert.deepEqual(await alloc('pi_one','evt_two'),receipt));
 await test('changed amount rejected',async()=>await assert.rejects(alloc('pi_one','evt_one',400000)));

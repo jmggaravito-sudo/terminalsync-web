@@ -12,7 +12,9 @@ create table video_funding_private.video_funding_settings (
   outbox_delivery_enabled boolean not null default false,
   -- Exact receiving namespace / ledger-deployment pin, not the product purpose.
   -- It remains NULL until the destination owner supplies the trusted value.
-  destination text,
+  destination text check (
+    destination is null or destination ~ '^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$'
+  ),
   purpose text not null default 'video-exclusive'
     check (purpose = 'video-exclusive')
 );
@@ -21,7 +23,9 @@ values (true, false)
 on conflict (singleton) do nothing;
 
 create table video_funding_private.video_funding_issuers (
-  issuer_id text primary key check (length(trim(issuer_id)) between 1 and 160),
+  issuer_id text primary key check (
+    issuer_id ~ '^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$'
+  ),
   enabled boolean not null default false,
   created_at timestamptz not null default now()
 );
@@ -51,7 +55,9 @@ create table video_funding_private.video_funding_allocations (
   account_id uuid not null references auth.users(id) on delete restrict,
   issuer_id text not null references video_funding_private.video_funding_issuers(issuer_id),
   purpose text not null check (purpose = 'video-exclusive'),
-  destination text not null,
+  destination text not null check (
+    destination ~ '^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$'
+  ),
   currency text not null check (currency = 'USD'),
   amount_micros bigint not null check (
     amount_micros > 0 and amount_micros <= 9007199254740991
@@ -265,6 +271,8 @@ begin
   if p_account_id is null or p_amount_micros is null or p_amount_micros <= 0
      or p_amount_micros > 9007199254740991
      or p_purpose is distinct from 'video-exclusive'
+     or p_issuer_id is null
+     or p_issuer_id !~ '^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$'
      or upper(coalesce(p_currency, '')) <> 'USD' then
     raise exception 'invalid exclusive funding terms';
   end if;
@@ -312,6 +320,8 @@ begin
   -- return its original receipt while paused, without minting anything new.
   if coalesce(v_enabled, false) is not true
      or nullif(trim(v_destination), '') is null
+     or v_destination !~ '^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$'
+     or p_issuer_id !~ '^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$'
      or v_purpose is distinct from p_purpose then
     raise exception 'video exclusive funding is disabled';
   end if;
