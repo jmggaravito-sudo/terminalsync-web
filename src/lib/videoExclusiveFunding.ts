@@ -65,13 +65,16 @@ export async function allocateVideoExclusiveFunding(input: {
 
   const sb = getSupabaseAdmin();
   if (!sb) throw new Error("Supabase admin not configured");
-  const { error } = await sb.rpc("allocate_video_exclusive_funding", {
+  const { error } = await sb.rpc("allocate_video_exclusive_funding_pinned", {
     p_signature_verified_live: true,
     p_event_livemode: true,
     p_source_event_id: event.id,
     p_provider_payment_id: paymentId,
     p_account_id: accountId,
     p_issuer_id: issuerId,
+    p_destination: destination,
+    p_request_id: requestId,
+    p_checkout_session_id: session.id,
     p_purpose: VIDEO_EXCLUSIVE_PURPOSE,
     p_currency: "USD",
     p_amount_micros: input.amountMicros,

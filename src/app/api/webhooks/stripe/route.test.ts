@@ -204,13 +204,16 @@ describe("Stripe credit payment webhook", () => {
 
     expect(res.status).toBe(200);
     expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
-    expect(mocks.allocateVideoFunding).toHaveBeenCalledWith("allocate_video_exclusive_funding", {
+    expect(mocks.allocateVideoFunding).toHaveBeenCalledWith("allocate_video_exclusive_funding_pinned", {
       p_signature_verified_live: true,
       p_event_livemode: true,
       p_source_event_id: "evt_credit_123",
       p_provider_payment_id: "pi_credit_123",
       p_account_id: "user-verified",
       p_issuer_id: "enrolled-issuer",
+      p_destination: "ledger-prod-7",
+      p_request_id: "123e4567-e89b-42d3-a456-426614174000",
+      p_checkout_session_id: "cs_credit_123",
       p_purpose: "video-exclusive",
       p_currency: "USD",
       p_amount_micros: 10_000_000,

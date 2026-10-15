@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({ rpc: vi.fn() }));
 vi.mock("server-only", () => ({}));
@@ -32,6 +32,7 @@ afterEach(() => {
   delete process.env.VIDEO_FUNDING_SOURCE_ISSUER;
   delete process.env.VIDEO_FUNDING_SOURCE_DESTINATION;
 });
+beforeEach(() => vi.clearAllMocks());
 
 describe("allocateVideoExclusiveFunding", () => {
   it("requires purpose and issuer/destination to match validated server config", async () => {
@@ -58,5 +59,25 @@ describe("allocateVideoExclusiveFunding", () => {
       signatureVerifiedWithLiveSecret: true,
     })).rejects.toThrow("identity is incomplete");
     expect(mocks.rpc).not.toHaveBeenCalled();
+  });
+
+  it("sends the SQL-pinned request, issuer, and destination to the allocation wrapper", async () => {
+    process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED = "1";
+    process.env.VIDEO_FUNDING_SOURCE_ISSUER = "verified-issuer";
+    process.env.VIDEO_FUNDING_SOURCE_DESTINATION = "ledger-prod-7";
+    mocks.rpc.mockResolvedValue({ error: null });
+    await allocateVideoExclusiveFunding({
+      event,
+      session: session(),
+      amountMicros: 10_000_000,
+      signatureVerifiedWithLiveSecret: true,
+    });
+    expect(mocks.rpc).toHaveBeenCalledWith("allocate_video_exclusive_funding_pinned", expect.objectContaining({
+      p_issuer_id: "verified-issuer",
+      p_destination: "ledger-prod-7",
+      p_request_id: "123e4567-e89b-42d3-a456-426614174000",
+      p_checkout_session_id: "cs_live_1",
+      p_amount_micros: 10_000_000,
+    }));
   });
 });

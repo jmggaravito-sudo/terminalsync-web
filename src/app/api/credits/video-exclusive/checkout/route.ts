@@ -1,9 +1,9 @@
-import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/marketplace/auth";
 import { corsHeaders, preflight } from "@/lib/cors";
 import { creditPackageFor, normalizeCreditLang } from "@/lib/aiCredits";
 import { isVideoExclusiveFundingEnabled, VIDEO_EXCLUSIVE_PURPOSE } from "@/lib/videoExclusiveFunding";
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { siteUrl, stripe } from "@/lib/stripe";
 
 export const runtime = "nodejs";
@@ -54,6 +54,36 @@ export async function POST(req: Request) {
   const issuerId = process.env.VIDEO_FUNDING_SOURCE_ISSUER!.trim();
   const destination = process.env.VIDEO_FUNDING_SOURCE_DESTINATION!.trim();
   const lang = normalizeCreditLang(body.lang);
+  const sb = getSupabaseAdmin();
+  if (!sb) return json({ error: "Video checkout is not available.", code: "authority_unavailable" }, 503);
+
+  let reserve: { data?: Record<string, unknown> | null; error?: unknown };
+  try {
+    const result = await sb.rpc("reserve_video_exclusive_checkout", {
+      p_account_id: user.id,
+      p_request_id: body.requestId,
+      p_amount_cents: creditPackage.amountCents,
+      p_issuer_id: issuerId,
+      p_destination: destination,
+    });
+    reserve = result as typeof reserve;
+  } catch {
+    return json({ error: "Video checkout authority is unavailable.", code: "authority_unavailable" }, 503);
+  }
+  if (reserve.error || !reserve.data || typeof reserve.data.status !== "string") {
+    return json({ error: "Video checkout authority is unavailable.", code: "authority_unavailable" }, 503);
+  }
+  if (reserve.data.status === "created" &&
+      typeof reserve.data.url === "string" && typeof reserve.data.checkoutId === "string") {
+    return json({ url: reserve.data.url, rail: "stripe", checkoutId: reserve.data.checkoutId }, 200);
+  }
+  if (reserve.data.status === "reconcile_required") {
+    return json({ error: "This checkout request needs reconciliation before it can be retried.", code: "checkout_reconcile_required" }, 409);
+  }
+  if (reserve.data.status !== "create" || typeof reserve.data.idempotencyKey !== "string") {
+    return json({ error: "Video checkout authority is unavailable.", code: "authority_unavailable" }, 503);
+  }
+
   const metadata: Record<string, string> = {
     source: "terminalsync_credits",
     credit_funding_purpose: VIDEO_EXCLUSIVE_PURPOSE,
@@ -65,10 +95,9 @@ export async function POST(req: Request) {
     video_funding_destination: destination,
     video_exclusive_checkout_request_id: body.requestId,
   };
-  // Same authenticated account + request id always maps to one Stripe key;
-  // the provider rejects replay with changed payload instead of creating a
-  // second session. The account identifier never comes from the request body.
-  const idempotencyKey = `video-exclusive:${createHash("sha256").update(`${user.id}:${body.requestId}`).digest("hex")}`;
+  // The durable SQL intent owns this key and pins the terms before any provider
+  // call. Replays after Stripe's idempotency TTL never call create again.
+  const idempotencyKey = reserve.data.idempotencyKey;
   const base = siteUrl().replace(/\/+$/, "");
   const returnBase = `${base}/${lang}`;
 
@@ -93,13 +122,41 @@ export async function POST(req: Request) {
       metadata,
       payment_intent_data: { metadata },
     }, { idempotencyKey });
-    if (!session.url) throw new Error("Stripe did not return a checkout URL");
+    if (!session.url) {
+      await sb.rpc("mark_video_exclusive_checkout_ambiguous", {
+        p_account_id: user.id,
+        p_request_id: body.requestId,
+        p_idempotency_key: idempotencyKey,
+      });
+      console.error("[video-exclusive-checkout] failure category", { category: "stripe_response_incomplete" });
+      return json({ error: "Checkout needs reconciliation before retry.", code: "checkout_reconcile_required" }, 409);
+    }
+    const completed = await sb.rpc("complete_video_exclusive_checkout", {
+      p_account_id: user.id,
+      p_request_id: body.requestId,
+      p_idempotency_key: idempotencyKey,
+      p_stripe_session_id: session.id,
+      p_stripe_session_url: session.url,
+    });
+    if (completed.error || completed.data !== true) {
+      // Leave the durable row in `creating`: it blocks every retry and can be
+      // reconciled by the immutable request ID in Stripe metadata.
+      console.error("[video-exclusive-checkout] failure category", { category: "intent_completion_failed" });
+      return json({ error: "Checkout needs reconciliation before retry.", code: "checkout_reconcile_required" }, 409);
+    }
     return json({ url: session.url, rail: "stripe", checkoutId: session.id }, 200);
-  } catch (err) {
-    console.error("[video-exclusive-checkout] provider failed", {
-      userId: user.id,
-      amountCents: creditPackage.amountCents,
-      error: err instanceof Error ? err.message : String(err),
+  } catch {
+    try {
+      await sb.rpc("mark_video_exclusive_checkout_ambiguous", {
+        p_account_id: user.id,
+        p_request_id: body.requestId,
+        p_idempotency_key: idempotencyKey,
+      });
+    } catch {
+      // The pre-existing `creating` row already fails closed if marking fails.
+    }
+    console.error("[video-exclusive-checkout] failure category", {
+      category: "provider_outcome_ambiguous",
     });
     return json({ error: "Video checkout is temporarily unavailable.", code: "provider_unavailable" }, 502);
   }
