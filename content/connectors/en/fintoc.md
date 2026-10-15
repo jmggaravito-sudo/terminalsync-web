@@ -39,7 +39,7 @@ Ask *"Show me this week's bank movements for the business account"* and it pulls
 - *"Show me this week's bank movements for the business account."*
 - *"Did the payment from the link I sent the construction company go through?"*
 - *"Show me the active subscriptions and which ones failed on the last charge."*
-- *"Create a customer for Distribuidora Andina and generate a payment link for $250,000 CLP."*
+- *"Create a customer for Distribuidora Central and generate a payment link for $250,000 CLP."*
 - *"Set up a $1,500 MXN monthly subscription for client García."*
 - *"Refund yesterday's payment for the customer who canceled their order."*
 
