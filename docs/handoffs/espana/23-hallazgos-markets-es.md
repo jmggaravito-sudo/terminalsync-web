@@ -39,7 +39,7 @@ No cambian `markets`. Son sugerencias para la ficha en español si decides trata
 
 ## Qué se echa de menos para España y no está en el catálogo
 
-Ver `20-mapa-integraciones-espana.md` y `21-handoff-pipeline-integraciones.md`. En una frase: la fila más débil del catálogo para un autónomo español es **facturación y contabilidad local** (solo Alegra declara `ES`), y los MCP oficiales que acabo de verificar son Holded, FacturaDirecta, Factuarea, y para RR. HH. y banca, Factorial y Qonto.
+Ver `20-mapa-integraciones-espana.md` y `21-handoff-pipeline-integraciones.md`. En una frase: la fila más débil del catálogo para un autónomo español es **facturación y contabilidad local** (solo Alegra declara `ES`), y los MCP oficiales que acabo de verificar son Holded, Factuarea (FacturaDirecta lo declara solo en su propio servidor) y, para RR. HH. y banca, Factorial y Qonto.
 
 ## Si añades una ficha nueva con `ES`
 
