@@ -40,5 +40,5 @@ export function updateTeamSeatCount(
     throw new RangeError("Team seat count must be a positive safe integer");
   }
 
-  return { ...current, seatCount: requestedSeatCount };
+  return { seatCount: requestedSeatCount, capabilities: TEAM_SEAT_CAPABILITIES };
 }

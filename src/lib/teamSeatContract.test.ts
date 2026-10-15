@@ -29,4 +29,17 @@ describe("Team seat contract", () => {
     expect(Object.keys(contract.capabilities).sort()).toEqual(["receive", "send"]);
     expect(Object.isFrozen(contract.capabilities)).toBe(true);
   });
+
+  it("normalizes runtime-tampered capabilities during seat-count updates", () => {
+    const current = {
+      seatCount: 2,
+      capabilities: { send: false, receive: true, receiverOnly: true },
+    } as unknown as ReturnType<typeof createTeamSeatContract>;
+
+    const updated = updateTeamSeatCount(current, 4);
+    expect(updated.seatCount).toBe(4);
+    expect(updated.capabilities).toBe(createTeamSeatContract(1).capabilities);
+    expect(updated.capabilities).toEqual({ send: true, receive: true });
+    expect(Object.keys(updated.capabilities).sort()).toEqual(["receive", "send"]);
+  });
 });
