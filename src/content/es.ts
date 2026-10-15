@@ -269,7 +269,7 @@ const es: Dict = {
   midCta: {
     eyebrow: "Pruébalo gratis",
     title: "Deja de mirar la pantalla esperando a tu IA.",
-    body: "7 días de Pro gratis. Cancelas antes del día 7 y no te cobramos. Si te convence, te quedas. Si no, dejas de usarlo y listo.",
+    body: "Cada usuario nuevo recibe 7 días con todas las funciones gratis. No hay cobro durante la prueba. Al terminar, eliges un plan para continuar.",
     ctaPrimary: "Descargar gratis",
     ctaSecondary: "Ver precios",
   },
@@ -424,13 +424,13 @@ const es: Dict = {
   pricing: {
     title: "Simple, como debe ser",
     subtitle:
-      "Empieza gratis. 7 días con todas las funciones de Max — cancelas antes del día 7 y no se cobra nada. Las IAs se usan con tu propia suscripción (o sus planes gratuitos): TS no te revende tokens.",
+      "Empieza gratis. Cada usuario nuevo recibe 7 días con todas las funciones sin costo. Al terminar, eliges un plan para continuar. Las IAs se usan con tu propia suscripción (o sus planes gratuitos): TS no te revende tokens.",
     perMonth: "/mes",
     free: "Gratis",
     trial: {
       eyebrow: "7 días gratis con todas las funciones",
       explainer:
-        "Pruebas las funciones de Max los primeros 7 días, sin importar qué plan elijas después. Cancelas antes del día 7 y no se cobra nada.",
+        "Cada usuario nuevo recibe 7 días con todas las funciones sin costo. Durante la prueba no hay cobros. Al terminar, eliges un plan para continuar.",
     },
     quiz: {
       cta: "¿Cuál plan necesito?",
@@ -509,7 +509,7 @@ const es: Dict = {
           "Avisos por correo / Telegram",
           "Extensión Chrome Pro incluida",
         ],
-        cta: "Probar 7 días gratis",
+        cta: "Iniciar prueba de 7 días con todas las funciones",
       },
       max: {
         name: "Max",
@@ -527,7 +527,7 @@ const es: Dict = {
           "Programación en pareja (solo lectura)",
           "Soporte prioritario por correo",
         ],
-        cta: "Probar 7 días gratis",
+        cta: "Iniciar prueba de 7 días con todas las funciones",
       },
       team: {
         name: "Team · próximamente",
@@ -565,7 +565,7 @@ const es: Dict = {
   trust: {
     title: "Tus archivos son tuyos. Punto.",
     body: "Tus secretos, tus ajustes, tu memoria y tus conversaciones con la IA se cifran en tu computadora antes de salir. Todo va a TU nube, no a la nuestra — tus archivos nunca pasan por nuestros servidores.",
-    guarantee: "Pruébalo 7 días gratis. Cancelas antes del día 7 y no te cobramos.",
+    guarantee: "Cada usuario nuevo recibe 7 días con todas las funciones sin costo. Al terminar, eliges un plan para continuar.",
     features: {
       e2ee: "AES-256 en todo lo sensible",
       keychain: "Llaves solo en tu dispositivo",
