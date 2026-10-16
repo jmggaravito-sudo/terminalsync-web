@@ -31,7 +31,8 @@ const session = (overrides: Record<string, string> = {}, url: string | null = "h
     rail: "stripe",
     video_funding_issuer_id: "verified-issuer",
     video_funding_destination: "ledger-prod-7",
-    video_exclusive_checkout_request_id: "123e4567-e89b-42d3-a456-426614174000",
+    video_exclusive_checkout_quote_id: "opaque-provider-quote",
+    video_exclusive_checkout_request_hash: "a".repeat(64),
     ...overrides,
   },
 }) as unknown as Stripe.Checkout.Session;
@@ -57,13 +58,13 @@ describe("allocateVideoExclusiveFunding", () => {
     expect(mocks.rpc).not.toHaveBeenCalled();
   });
 
-  it("rejects missing immutable checkout request marker", async () => {
+  it("rejects malformed immutable quote markers", async () => {
     process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED = "1";
     process.env.VIDEO_FUNDING_SOURCE_ISSUER = "verified-issuer";
     process.env.VIDEO_FUNDING_SOURCE_DESTINATION = "ledger-prod-7";
     await expect(allocateVideoExclusiveFunding({
       event,
-      session: session({ video_exclusive_checkout_request_id: "not-a-uuid" }),
+      session: session({ video_exclusive_checkout_request_hash: "not-a-hash" }),
       amountMicros: 10_000_000,
       signatureVerifiedWithLiveSecret: true,
     })).rejects.toThrow("identity is incomplete");
@@ -85,7 +86,8 @@ describe("allocateVideoExclusiveFunding", () => {
     expect(mocks.rpc).toHaveBeenCalledWith("allocate_video_exclusive_funding_pinned", expect.objectContaining({
       p_issuer_id: "verified-issuer",
       p_destination: "ledger-prod-7",
-      p_request_id: "123e4567-e89b-42d3-a456-426614174000",
+      p_quote_id: "opaque-provider-quote",
+      p_request_hash: "a".repeat(64),
       p_checkout_session_id: "cs_live_1",
       p_amount_micros: 10_000_000,
     }));
@@ -132,7 +134,8 @@ describe("allocateVideoExclusiveFunding", () => {
       p_livemode: true,
       p_metadata: expect.objectContaining({
         supabase_user_id: "00000000-0000-4000-8000-000000000001",
-        video_exclusive_checkout_request_id: "123e4567-e89b-42d3-a456-426614174000",
+        video_exclusive_checkout_quote_id: "opaque-provider-quote",
+    video_exclusive_checkout_request_hash: "a".repeat(64),
         video_funding_issuer_id: "verified-issuer",
         video_funding_destination: "ledger-prod-7",
       }),

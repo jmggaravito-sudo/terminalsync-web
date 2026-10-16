@@ -1,6 +1,7 @@
 import "server-only";
 
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/;
+const QUOTE_ID = /^[^\x00-\x1F\x7F]{1,500}$/;
 const HASH = /^[a-f0-9]{64}$/i;
 const MAX_RESPONSE_BYTES = 4096;
 
@@ -57,7 +58,7 @@ export async function readVideoCheckoutTerms(input: {
   gatewayUrl?: string;
   fetcher?: typeof fetch;
 }): Promise<VideoCheckoutTerms> {
-  if (!ID.test(input.quoteId) || !HASH.test(input.requestHash) || !input.authorization?.startsWith("Bearer ")) {
+  if (!QUOTE_ID.test(input.quoteId) || !HASH.test(input.requestHash) || !input.authorization?.startsWith("Bearer ")) {
     throw new Error("quote_authority_unavailable");
   }
   const origin = fixedGatewayOrigin(input.gatewayUrl ?? process.env.VIDEO_EXECUTION_GATEWAY_URL);

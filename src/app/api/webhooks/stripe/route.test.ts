@@ -203,7 +203,8 @@ describe("Stripe credit payment webhook", () => {
     event.data.object.metadata.credit_funding_purpose = "video-exclusive";
     event.data.object.metadata.video_funding_issuer_id = "enrolled-issuer";
     event.data.object.metadata.video_funding_destination = "ledger-prod-7";
-    event.data.object.metadata.video_exclusive_checkout_request_id = "123e4567-e89b-42d3-a456-426614174000";
+    event.data.object.metadata.video_exclusive_checkout_quote_id = "opaque-provider-quote";
+    event.data.object.metadata.video_exclusive_checkout_request_hash = "a".repeat(64);
     mocks.constructEvent.mockReturnValue(event);
     mocks.retrieveSession.mockResolvedValue({ ...event.data.object, url: null });
     process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED = "true";
@@ -222,7 +223,8 @@ describe("Stripe credit payment webhook", () => {
       p_account_id: "user-verified",
       p_issuer_id: "enrolled-issuer",
       p_destination: "ledger-prod-7",
-      p_request_id: "123e4567-e89b-42d3-a456-426614174000",
+      p_quote_id: "opaque-provider-quote",
+      p_request_hash: "a".repeat(64),
       p_checkout_session_id: "cs_credit_123",
       p_purpose: "video-exclusive",
       p_currency: "USD",

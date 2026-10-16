@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/marketplace/auth";
 import { corsHeaders, preflight } from "@/lib/cors";
-import { creditPackageFor, normalizeCreditLang } from "@/lib/aiCredits";
+import { normalizeCreditLang } from "@/lib/aiCredits";
 import { isVideoExclusiveFundingEnabled, VIDEO_EXCLUSIVE_PURPOSE } from "@/lib/videoExclusiveFunding";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { siteUrl, stripe } from "@/lib/stripe";
+import { readVideoCheckoutTerms } from "@/lib/videoQuoteCheckout";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/;
-const REQUEST_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const enabled = (value: string | undefined) => ["1", "true", "yes"].includes(value?.trim().toLowerCase() ?? "");
 
 export async function OPTIONS(req: Request) {
@@ -42,13 +42,18 @@ export async function POST(req: Request) {
   } catch {
     return json({ error: "Invalid request.", code: "invalid_request" }, 400);
   }
-  if (Object.keys(body).some((key) => !["amountCents", "requestId", "lang"].includes(key))) {
+  if (Object.keys(body).some((key) => !["quoteId", "requestHash", "lang"].includes(key))) {
     return json({ error: "Unsupported request fields.", code: "invalid_request" }, 400);
   }
-  const creditPackage = creditPackageFor(body.amountCents);
-  if (!creditPackage) return json({ error: "Choose a supported package.", code: "invalid_amount" }, 400);
-  if (typeof body.requestId !== "string" || !REQUEST_ID.test(body.requestId)) {
-    return json({ error: "A valid request id is required.", code: "invalid_request" }, 400);
+  if (typeof body.quoteId !== "string" || !body.quoteId.trim() || body.quoteId !== body.quoteId.trim() || body.quoteId.length > 500 || /[\x00-\x1F\x7F]/.test(body.quoteId) ||
+      typeof body.requestHash !== "string" || !/^[a-f0-9]{64}$/i.test(body.requestHash)) {
+    return json({ error: "A valid Video quote is required.", code: "invalid_request" }, 400);
+  }
+  let checkoutTerms;
+  try {
+    checkoutTerms = await readVideoCheckoutTerms({ authorization: req.headers.get("authorization"), quoteId: body.quoteId, requestHash: body.requestHash });
+  } catch {
+    return json({ error: "Video quote is unavailable.", code: "quote_authority_unavailable" }, 503);
   }
 
   const issuerId = process.env.VIDEO_FUNDING_SOURCE_ISSUER!.trim();
@@ -61,8 +66,9 @@ export async function POST(req: Request) {
   try {
     const result = await sb.rpc("reserve_video_exclusive_checkout", {
       p_account_id: user.id,
-      p_request_id: body.requestId,
-      p_amount_cents: creditPackage.amountCents,
+      p_quote_id: checkoutTerms.quoteId,
+      p_request_hash: checkoutTerms.requestHash,
+      p_amount_cents: checkoutTerms.amountCents,
       p_issuer_id: issuerId,
       p_destination: destination,
     });
@@ -92,12 +98,13 @@ export async function POST(req: Request) {
     source: "terminalsync_credits",
     credit_funding_purpose: VIDEO_EXCLUSIVE_PURPOSE,
     supabase_user_id: user.id,
-    credit_amount_cents: String(creditPackage.amountCents),
-    credit_amount_micros: String(creditPackage.amountMicros),
+    credit_amount_cents: String(checkoutTerms.amountCents),
+    credit_amount_micros: String(checkoutTerms.amountMicros),
     rail: "stripe",
     video_funding_issuer_id: issuerId,
     video_funding_destination: destination,
-    video_exclusive_checkout_request_id: body.requestId,
+    video_exclusive_checkout_quote_id: checkoutTerms.quoteId,
+    video_exclusive_checkout_request_hash: checkoutTerms.requestHash,
   };
   // The durable SQL intent owns this key and pins the terms before any provider
   // call. Replays after Stripe's idempotency TTL never call create again.
@@ -111,9 +118,9 @@ export async function POST(req: Request) {
       line_items: [{
         price_data: {
           currency: "usd",
-          unit_amount: creditPackage.amountCents,
+          unit_amount: checkoutTerms.amountCents,
           product_data: {
-            name: `Terminal Sync Video credits — $${creditPackage.usd}`,
+            name: `Terminal Sync Video checkout`,
             description: "Exclusive prepaid funding for Video execution",
           },
         },
@@ -129,7 +136,8 @@ export async function POST(req: Request) {
     if (!session.url) {
       await sb.rpc("mark_video_exclusive_checkout_ambiguous", {
         p_account_id: user.id,
-        p_request_id: body.requestId,
+        p_quote_id: checkoutTerms.quoteId,
+      p_request_hash: checkoutTerms.requestHash,
         p_idempotency_key: idempotencyKey,
       });
       console.error("[video-exclusive-checkout] failure category", { category: "stripe_response_incomplete" });
@@ -137,7 +145,8 @@ export async function POST(req: Request) {
     }
     const completed = await sb.rpc("complete_video_exclusive_checkout", {
       p_account_id: user.id,
-      p_request_id: body.requestId,
+      p_quote_id: checkoutTerms.quoteId,
+      p_request_hash: checkoutTerms.requestHash,
       p_idempotency_key: idempotencyKey,
       p_stripe_session_id: session.id,
       p_stripe_session_url: session.url,
@@ -153,7 +162,8 @@ export async function POST(req: Request) {
     try {
       await sb.rpc("mark_video_exclusive_checkout_ambiguous", {
         p_account_id: user.id,
-        p_request_id: body.requestId,
+        p_quote_id: checkoutTerms.quoteId,
+      p_request_hash: checkoutTerms.requestHash,
         p_idempotency_key: idempotencyKey,
       });
     } catch {
