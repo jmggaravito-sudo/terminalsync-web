@@ -165,7 +165,7 @@ export function surfaces({ research, merged }) {
 
 const ROLE_LABEL = { sources: "Fuentes oficiales", voice: "Voz y vocabulario", install: "Instalación", honesty: "Honestidad" };
 
-export function buildReport({ research, build, decision, supervision, merged, mergeNote, checks, nameFallback }) {
+export function buildReport({ research, build, decision, supervision, globalSupervision, merged, mergeNote, checks, nameFallback }) {
   const name = research?.name ?? nameFallback ?? "(sin nombre)";
   const L = [];
   L.push(`# Integración: ${name}`);
@@ -187,6 +187,7 @@ export function buildReport({ research, build, decision, supervision, merged, me
       L.push(`**País solicitado:** ${supervision.country ?? "sin datos"}.`);
       if (supervision.checks) L.push(`**Ficha:** país listado=${supervision.checks.marketListed}, disponible=${supervision.checks.statusAvailable}, instalable declarado=${supervision.checks.declaredInstallable}, verificador=${supervision.checks.probeReason}.`);
     }
+    L.push(`**Supervisión global marketplace → app:** ${globalSupervision?.status === "success" ? "pasó" : globalSupervision?.status === "failure" ? "falló" : "no verificada"}${globalSupervision?.url ? ` — ${globalSupervision.url}` : ""}.`);
     L.push("**Smoke instalado y cuenta real:** no ejecutado. La ficha sola nunca certifica uso por clientes.", "");
   }
   if (research.verdict !== "ship_official") {

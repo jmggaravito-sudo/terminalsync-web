@@ -13,6 +13,10 @@ describe("country-aware integration answer", () => {
       .toBe("already_cataloged");
     expect(pipelineAnswer({ verdict: "exists", reason: "status: soon" }, "CO", { outcome: "catalog_blocked" }).outcome)
       .toBe("catalog_blocked");
+    expect(pipelineAnswer({ verdict: "exists" }, "CO", { outcome: "needs_app_smoke" }, { status: "failure" }).outcome)
+      .toBe("global_blocked");
+    expect(pipelineAnswer({ verdict: "exists" }, "CO", { outcome: "needs_app_smoke" }, { status: "success" }).outcome)
+      .toBe("already_cataloged");
   });
 
   it("requires official MCP and country evidence before build", () => {

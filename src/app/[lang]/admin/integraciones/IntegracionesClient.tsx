@@ -477,6 +477,7 @@ function LoopCard({
             country_unverified: "No pudimos confirmar que funcione en ese país.",
             already_cataloged: "Ya tiene ficha en el catálogo; eso no prueba que se pueda conectar todavía.",
             catalog_blocked: "No: aparece en el catálogo, pero la supervisión encontró que todavía no se puede instalar.",
+            global_blocked: "La supervisión entre el catálogo y la app falló; no está certificado.",
             needs_build: "No hay integración oficial lista: haría falta construirla.",
             cannot_build: "No se puede avanzar automáticamente con la evidencia disponible.",
           }[loop.run.answer.outcome] : {
@@ -484,6 +485,7 @@ function LoopCard({
             country_unverified: "Availability in this country is unverified.",
             already_cataloged: "It is in the catalog; that does not prove it can connect yet.",
             catalog_blocked: "No: it appears in the catalog, but supervision found it cannot be installed yet.",
+            global_blocked: "Marketplace-to-app supervision failed; this is not certified.",
             needs_build: "No ready official integration; a custom build is needed.",
             cannot_build: "Cannot proceed automatically with the available evidence.",
           }[loop.run.answer.outcome]}</strong>
@@ -492,6 +494,13 @@ function LoopCard({
             {isEs ? "Supervisión de ficha: " : "Catalog supervision: "}
             {loop.run.answer.supervision.checks?.probeReason ?? loop.run.answer.supervision.outcome}.
             {isEs ? " Prueba en app instalada y login real: pendiente." : " Installed-app and real login smoke: pending."}
+          </p> : null}
+          {"globalSupervision" in loop.run.answer && loop.run.answer.globalSupervision ? <p className="mt-1 text-[var(--color-fg-muted)]">
+            {isEs ? "Supervisión marketplace → app: " : "Marketplace → app supervision: "}
+            {loop.run.answer.globalSupervision.status === "success" ? isEs ? "pasó" : "passed"
+              : loop.run.answer.globalSupervision.status === "failure" ? isEs ? "falló" : "failed"
+              : isEs ? "no verificada" : "unverified"}.
+            {isEs ? " Esto aún no prueba login real en la app instalada." : " This still does not prove real login in an installed app."}
           </p> : null}
         </div>
       ) : null}

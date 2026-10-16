@@ -75,14 +75,20 @@ describe("/api/admin/integraciones/run", () => {
     const supervisionZip = zipSync({ "supervision.json": strToU8(JSON.stringify({
       outcome: "catalog_blocked", country: "CO", checks: { probeReason: "needs-oauth" }, appSmoke: "not_run",
     })) });
+    const globalZip = zipSync({ "global-supervision.json": strToU8(JSON.stringify({
+      status: "success", scope: "global-marketplace-app",
+    })) });
     vi.stubGlobal("fetch", vi.fn(async (url: string) => {
       if (url.includes("/artifacts?")) return new Response(JSON.stringify({ artifacts: [{
         name: "pipeline-research", expired: false, archive_download_url: "https://api.github.com/artifact.zip",
       }, {
         name: "pipeline-supervision", expired: false, archive_download_url: "https://api.github.com/supervision.zip",
+      }, {
+        name: "pipeline-global-supervision", expired: false, archive_download_url: "https://api.github.com/global.zip",
       }] }), { status: 200 });
       if (url.endsWith("/artifact.zip")) return new Response(zip, { status: 200 });
       if (url.endsWith("/supervision.zip")) return new Response(supervisionZip, { status: 200 });
+      if (url.endsWith("/global.zip")) return new Response(globalZip, { status: 200 });
       if (url.includes("/runs?")) return new Response(JSON.stringify({ workflow_runs: url.includes("/workflows/222/runs?") ? [{
         id: 123, display_title: "Integration · Alegra · CO", status: "completed", conclusion: "success",
         html_url: "https://github.com/example/run/123", created_at: "2026-10-16T19:00:00Z",
@@ -94,6 +100,7 @@ describe("/api/admin/integraciones/run", () => {
     const answer = body.loops.find((loop: { id: string }) => loop.id === "integration-pipeline").run.answer;
     expect(answer.outcome).toBe("catalog_blocked");
     expect(answer.supervision.appSmoke).toBe("not_run");
+    expect(answer.globalSupervision.status).toBe("success");
   });
 
   it("returns all configured integration loops and marks CLI curation as pending", async () => {

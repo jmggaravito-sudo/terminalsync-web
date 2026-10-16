@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { authenticate, isAdmin } from "@/lib/marketplace/auth";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { unzipSync, strFromU8 } from "fflate";
-import { pipelineAnswer, validPipelineCountry, type PipelineResearch, type PipelineSupervision } from "@/lib/integrationPipelineResult";
+import { pipelineAnswer, validPipelineCountry, type PipelineResearch, type PipelineSupervision, type PipelineGlobalSupervision } from "@/lib/integrationPipelineResult";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -330,7 +330,10 @@ async function fetchPipelineAnswer(run: GhRun, token: GithubToken) {
   const supervision = research.verdict === "exists"
     ? await readArtifact("pipeline-supervision", "supervision.json") as PipelineSupervision | null
     : null;
-  return pipelineAnswer(research, country, supervision);
+  const globalSupervision = research.verdict === "exists"
+    ? await readArtifact("pipeline-global-supervision", "global-supervision.json") as PipelineGlobalSupervision | null
+    : null;
+  return pipelineAnswer(research, country, supervision, globalSupervision);
 }
 
 export interface LastLoopRun {
