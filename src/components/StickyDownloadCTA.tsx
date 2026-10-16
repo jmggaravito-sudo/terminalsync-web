@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import type { Dict } from "@/content";
+import { browserStorage, needsDecision } from "@/lib/consent";
 
 /**
  * Floating download CTA, mobile-only. Appears after the user scrolls
@@ -31,12 +32,7 @@ export function StickyDownloadCTA({ dict }: { dict: Dict }) {
     // Cookie banner check — if it's still open, hide ourselves so we
     // don't crowd the bottom of the screen.
     const checkCookie = () => {
-      try {
-        const stored = localStorage.getItem("terminalsync:cookie-consent-v1");
-        setCookieBannerOpen(!stored);
-      } catch {
-        setCookieBannerOpen(false);
-      }
+      setCookieBannerOpen(needsDecision(browserStorage()));
     };
     checkCookie();
     const interval = setInterval(checkCookie, 1000);

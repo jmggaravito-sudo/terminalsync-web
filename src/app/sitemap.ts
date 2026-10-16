@@ -3,7 +3,7 @@ import { listSlugs as listConnectorSlugs } from "@/lib/connectors";
 import { listSkillSlugs } from "@/lib/skills";
 import { TOOL_SLUGS } from "@/lib/vsPages";
 import { GEO_PAGE_SLUGS } from "@/lib/geoPages";
-import { MULTI_AI_PUBLIC } from "@/lib/launchFlags";
+import { LEGAL_ES_PUBLIC, MULTI_AI_PUBLIC } from "@/lib/launchFlags";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { listSlugs as listBlogSlugs } from "@/lib/blog";
 
@@ -60,6 +60,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "legal/privacy",
     "legal/extension-privacy",
     "legal/terms",
+    "legal/cookies",
+    // Borrador pendiente de abogado: fuera del sitemap hasta LEGAL_ES_PUBLIC.
+    ...(LEGAL_ES_PUBLIC ? ["legal/aviso-legal", "legal/subprocessors"] : []),
     "legal/security",
     "about",
     "support",

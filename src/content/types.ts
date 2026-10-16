@@ -344,7 +344,11 @@ export interface Dict {
       | "privacy"
       | "terms"
       | "security"
-      | "dataDeletion",
+      | "dataDeletion"
+      | "cookies"
+      | "legalNotice"
+      | "subprocessors"
+      | "cookieSettings",
       string
     >;
     tagline: string;

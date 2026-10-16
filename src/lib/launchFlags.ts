@@ -95,3 +95,24 @@ export const LANDING_B = true;
  * devuelve, pero el ranking tarda en recuperarse.
  */
 export const MULTI_AI_PUBLIC = false;
+
+/**
+ * ¿Las páginas legales nuevas para España (aviso legal, subencargados) están
+ * listas para el público?
+ *
+ * **Apagado a propósito (2026-10-16).** Son un BORRADOR: el texto lo tiene que
+ * validar un abogado con ejercicio en España y faltan datos que solo JM puede
+ * dar (identificación fiscal, registro, representante en la UE). Con el
+ * interruptor en `false`:
+ *
+ * - las páginas responden (para que el abogado las lea) pero con un aviso de
+ *   borrador, los campos `[PENDIENTE: …]` visibles y `noindex`;
+ * - no salen en el sitemap ni en el pie.
+ *
+ * Con `true` los marcadores desaparecen, así que `legalEs.test.ts` falla si se
+ * enciende mientras quede algún dato pendiente en `src/content/legalEntity.ts`.
+ *
+ * La política de cookies y el gestor de consentimiento NO dependen de este
+ * interruptor: el banner está activo siempre y enlaza a la política.
+ */
+export const LEGAL_ES_PUBLIC = false;

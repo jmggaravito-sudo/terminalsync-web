@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { track } from "@vercel/analytics";
+import { analyticsAllowed, browserStorage, effectiveConsent } from "@/lib/consent";
 
 /**
  * Single delegated listener for every `[data-cta]` element on the page.
@@ -28,7 +29,13 @@ export function CtaTracker() {
       return "other";
     };
 
+    // Defensa en profundidad: ConsentGate ya solo monta este componente con
+    // consentimiento, pero se vuelve a comprobar en cada evento por si la
+    // persona retira su decisión sin recargar la página.
+    const mayTrack = () => analyticsAllowed(effectiveConsent(browserStorage()));
+
     const onClick = (ev: MouseEvent) => {
+      if (!mayTrack()) return;
       const target = ev.target as HTMLElement | null;
       if (!target) return;
       const cta = target.closest<HTMLElement>("[data-cta]");
@@ -43,7 +50,7 @@ export function CtaTracker() {
 
     let fired75 = false;
     const onScroll = () => {
-      if (fired75) return;
+      if (fired75 || !mayTrack()) return;
       const doc = document.documentElement;
       const scrolled = window.scrollY + window.innerHeight;
       const total = doc.scrollHeight;
