@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "verify:connectors": "node scripts/verify-connector.mjs --all --write --json --concurrency 1",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:video-funding-sql": "node scripts/test-video-funding-sql.mjs && node scripts/test-video-quote-checkout-sql.mjs",
+    "test:video-quote-checkout-sql": "node scripts/test-video-quote-checkout-sql.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.117.1",
@@ -19,6 +21,7 @@
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "clsx": "^2.1.1",
+    "fflate": "^0.8.3",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.400.0",
     "next": "16.2.4",
@@ -30,6 +33,7 @@
     "stripe": "^22.0.2"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.10",
     "@tailwindcss/postcss": "^4.2.4",
     "@types/node": "^22.0.0",
     "@types/react": "^19.1.0",

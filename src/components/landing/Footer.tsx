@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Github, Instagram, Facebook } from "lucide-react";
 import type { Dict } from "@/content";
 import { Logo } from "@/components/Logo";
-import { CHROME_EXTENSION_PUBLIC, MULTI_AI_PUBLIC } from "@/lib/launchFlags";
+import { CHROME_EXTENSION_PUBLIC, LEGAL_ES_PUBLIC, MULTI_AI_PUBLIC } from "@/lib/launchFlags";
+import { CookieSettingsLink } from "@/components/consent/CookieSettingsLink";
 
 // Social handles confirmed live by JM. Add new ones here as accounts
 // come online — same handles also live in StructuredData.tsx's
@@ -114,6 +115,24 @@ export function Footer({ dict }: { dict: Dict }) {
           label: dict.footer.links.dataDeletion,
           href: `/${lang}/legal/data-deletion`,
         },
+        { key: "cookies", label: dict.footer.links.cookies, href: `/${lang}/legal/cookies` },
+        // Borrador pendiente de abogado: ver LEGAL_ES_PUBLIC en launchFlags.ts.
+        ...(LEGAL_ES_PUBLIC
+          ? [
+              {
+                key: "legalNotice",
+                label: dict.footer.links.legalNotice,
+                href: `/${lang}/legal/aviso-legal`,
+              },
+              {
+                key: "subprocessors",
+                label: dict.footer.links.subprocessors,
+                href: `/${lang}/legal/subprocessors`,
+              },
+            ]
+          : []),
+        // Enlace permanente para cambiar o retirar el consentimiento.
+        { key: "cookieSettings", label: dict.footer.links.cookieSettings, href: "#" },
       ],
     },
   ];
@@ -155,12 +174,19 @@ export function Footer({ dict }: { dict: Dict }) {
             <ul className="mt-3 space-y-2">
               {col.links.map((l) => (
                 <li key={l.key}>
+                  {l.key === "cookieSettings" ? (
+                    <CookieSettingsLink
+                      label={l.label}
+                      className="text-[13px] text-[var(--color-fg-muted)] hover:text-[var(--color-fg-strong)] transition-colors text-left"
+                    />
+                  ) : (
                   <Link
                     className="text-[13px] text-[var(--color-fg-muted)] hover:text-[var(--color-fg-strong)] transition-colors"
                     href={l.href}
                   >
                     {l.label}
                   </Link>
+                  )}
                 </li>
               ))}
             </ul>

@@ -1,6 +1,7 @@
 name: Integration Supervision Loop
 
 on:
+  workflow_call:
   workflow_dispatch:
   schedule:
     # Tuesday 14:00 UTC / 09:00 Bogotá, after the four Monday marketplace loops.

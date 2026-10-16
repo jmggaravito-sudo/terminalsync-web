@@ -60,7 +60,7 @@ export function resolveApiKey(env = process.env) {
   return env.SKILLS_EVAL_API_KEY || env.ZAI_API_KEY || env.ANTHROPIC_API_KEY || null;
 }
 const ANTHROPIC_URL = anthropicUrl();
-const DEFAULT_MODEL = process.env.SKILLS_EVAL_MODEL || process.env.ZAI_MODEL || "glm-5.3";
+const DEFAULT_MODEL = process.env.SKILLS_EVAL_MODEL || process.env.ZAI_MODEL || "glm-5.3-flash";
 const DEFAULT_SUBJECT_MODEL = process.env.SKILLS_EVAL_SUBJECT_MODEL || "glm-5.3-flash";
 const GEMINI_URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const DEFAULT_GEMINI_MODEL = process.env.SKILLS_EVAL_GEMINI_MODEL || "gemini-2.5-flash";

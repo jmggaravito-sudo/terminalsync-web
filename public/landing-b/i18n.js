@@ -53,8 +53,11 @@
     "TS — Espacios de trabajo": "TS — Workspaces",
     "Contexto": "Context",
     "Tus archivos": "Your files",
-    "Espacios separados, cada uno con su contexto": "Separate workspaces, each with its own context",
-    "Explora estos recorridos interactivos de ejemplo para ver cómo se organiza el trabajo.": "Explore these interactive example walkthroughs to see how work is organized.",
+    "No te lo contamos. Te lo mostramos.": "We won't just tell you. We'll show you.",
+    "Explora demos interactivos y descubre cómo trabajan tus espacios y agentes de IA en situaciones reales.": "Explore interactive demos and see how your workspaces and AI agents handle real situations.",
+    "Así trabaja un espacio por dentro": "How a workspace works inside",
+    "Un espacio que entiende el trabajo.": "A workspace that understands the work.",
+    "Cada espacio reúne sus archivos, reglas, memoria y herramientas para que su agente pueda continuar el trabajo sin empezar de cero.": "Each workspace brings together its files, rules, memory, and tools so its agent can continue the work without starting from scratch.",
     "Continuidad": "Continuity",
     "Mensajería": "Messaging",
     "Asistente de ideas": "Idea assistant",
@@ -812,6 +815,8 @@
     "Herramientas CLI": "CLI tools",
     "Legal": "Legal",
     "Privacidad": "Privacy",
+    "Cookies": "Cookies",
+    "Configurar cookies": "Cookie settings",
     "Términos": "Terms",
     "Seguridad": "Security",
     "© 2026 TS. Todos los derechos reservados.": "© 2026 TS. All rights reserved.",
@@ -938,12 +943,33 @@
     // re-render hero rotator / dynamic bits
     window.dispatchEvent(new CustomEvent('ts-lang', { detail: { lang: lang } }));
     // Reuse the current dashboard image as both hero cover and future video poster.
-    var cov = document.querySelector('.hero-shot img');
+    var heroVideo = document.getElementById('heroVideo');
+    var heroVideoSource = document.getElementById('heroVideoSource');
+    var heroShot = document.querySelector('.hero-shot');
+    var cov = document.getElementById('heroCover');
+    if (heroShot) heroShot.classList.add('hero-shot-video');
+    if (heroVideoSource) heroVideoSource.src = '/landing-b/assets/ts-corporate-' + lang + '.mp4';
+    if (heroVideo) {
+      heroVideo.hidden = false;
+      heroVideo.poster = '/landing-b/assets/ts-corporate-poster-' + lang + '.jpg';
+      heroVideo.setAttribute('aria-label', lang === 'en'
+        ? 'TerminalSync corporate video'
+        : 'Video corporativo de TerminalSync');
+      heroVideo.load();
+    }
     if (cov) {
+      cov.hidden = true;
       cov.src = '/landing-b/assets/dashboard-workspaces-video-poster-' + lang + '.png';
       cov.alt = lang === 'en'
         ? 'TS dashboard with separate workspaces for clients, projects, and departments.'
         : 'Dashboard de TS con espacios separados para clientes, proyectos y departamentos.';
+    }
+  var spaceProof = document.getElementById('spaceProofImage');
+    if (spaceProof) {
+    spaceProof.src = '/landing-b/assets/workspace-capture-' + lang + '.html';
+    spaceProof.title = lang === 'en'
+        ? 'Marketing and Advertising workspace with a conversation and its own context panel.'
+        : 'Espacio Marketing y Publicidad con conversación y panel de contexto propio.';
     }
   }
 

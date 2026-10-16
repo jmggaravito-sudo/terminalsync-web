@@ -46,6 +46,8 @@ export function validateResearch(r) {
       }
       if (!Array.isArray(m.evidence) || m.evidence.length === 0 || !m.evidence.every(isStr)) {
         errors.push("markets.evidence must cite the page(s) that justify the countries (GLOBAL included)");
+      } else if (r.verdict === "ship_official" && !m.evidence.some((item) => /^https:\/\//.test(item))) {
+        errors.push("ship_official markets.evidence needs an official https URL, not just a catalog file");
       }
     }
   }
@@ -163,7 +165,7 @@ export function surfaces({ research, merged }) {
 
 const ROLE_LABEL = { sources: "Fuentes oficiales", voice: "Voz y vocabulario", install: "Instalación", honesty: "Honestidad" };
 
-export function buildReport({ research, build, decision, merged, mergeNote, checks, nameFallback }) {
+export function buildReport({ research, build, decision, supervision, globalSupervision, merged, mergeNote, checks, nameFallback }) {
   const name = research?.name ?? nameFallback ?? "(sin nombre)";
   const L = [];
   L.push(`# Integración: ${name}`);
@@ -177,6 +179,17 @@ export function buildReport({ research, build, decision, merged, mergeNote, chec
     L.push(`**MCP oficial:** ${research.official.kind} · \`${research.official.endpoint_or_package}\` · publicado por ${research.official.publisher}`);
   }
   L.push("");
+  if (research.verdict === "exists") {
+    L.push("## Supervisión de la ficha existente");
+    if (!supervision) L.push("No se pudo ejecutar o leer la supervisión de esta ficha; queda sin verificar.");
+    else {
+      L.push(`**Resultado:** ${supervision.outcome === "catalog_blocked" ? "bloqueada en catálogo/instalación" : supervision.outcome === "needs_app_smoke" ? "pasó revisión local; falta smoke de app y login real" : "falta ficha verificable"}.`);
+      L.push(`**País solicitado:** ${supervision.country ?? "sin datos"}.`);
+      if (supervision.checks) L.push(`**Ficha:** país listado=${supervision.checks.marketListed}, disponible=${supervision.checks.statusAvailable}, instalable declarado=${supervision.checks.declaredInstallable}, verificador=${supervision.checks.probeReason}.`);
+    }
+    L.push(`**Supervisión global marketplace → app:** ${globalSupervision?.status === "success" ? "pasó" : globalSupervision?.status === "failure" ? "falló" : "no verificada"}${globalSupervision?.url ? ` — ${globalSupervision.url}` : ""}.`);
+    L.push("**Smoke instalado y cuenta real:** no ejecutado. La ficha sola nunca certifica uso por clientes.", "");
+  }
   if (research.verdict !== "ship_official") {
     L.push("## Qué hacer ahora");
     if (research.verdict === "needs_own_build") {

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { authenticate, isAdmin } from "@/lib/marketplace/auth";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { unzipSync, strFromU8 } from "fflate";
+import { pipelineAnswer, validPipelineCountry, type PipelineResearch, type PipelineSupervision, type PipelineGlobalSupervision } from "@/lib/integrationPipelineResult";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,6 +29,7 @@ interface LoopConfig {
   /** The focus is not a hint but the input (e.g. the integration name). */
   requiresFocus?: boolean;
   acceptsDryRun?: boolean;
+  requiresCountry?: boolean;
   disabledReason?: { es: string; en: string };
 }
 
@@ -65,12 +68,12 @@ const LOOP_CONFIGS: LoopConfig[] = [
     id: "integration-pipeline",
     kind: "pipeline",
     title: {
-      es: "Integración completa (solo el nombre)",
-      en: "Full integration (name only)",
+      es: "¿Podemos integrar esta herramienta en tu país?",
+      en: "Can we integrate this tool in your country?",
     },
     description: {
-      es: "Escribe el nombre de una integración y el pipeline la investiga, la construye, la revisa con agentes independientes, corre la supervisión y deja el reporte. Todo con GLM. Solo mergea solo si INTEGRATION_AUTOMERGE está activo.",
-      en: "Type an integration name and the pipeline researches it, builds it, has independent agents review it, runs supervision and leaves a report. All on GLM. It only merges by itself when INTEGRATION_AUTOMERGE is on.",
+      es: "Escribe el servicio y el país. Primero verificamos con fuentes oficiales si existe una vía compatible; investigar no significa que ya esté listo para clientes.",
+      en: "Enter the service and country. We first check official sources for a compatible path; research does not mean customers can use it yet.",
     },
     repo: WEB_REPO,
     workflow: "integration-pipeline.yml",
@@ -78,6 +81,7 @@ const LOOP_CONFIGS: LoopConfig[] = [
     acceptsFocus: true,
     requiresFocus: true,
     acceptsDryRun: true,
+    requiresCountry: true,
   },
   {
     id: "connectors-curation",
@@ -181,6 +185,8 @@ function baseHeaders(token: GithubToken | string): Record<string, string> {
 }
 
 interface GhRun {
+  id: number;
+  display_title: string;
   status: string;
   conclusion: string | null;
   html_url: string;
@@ -191,10 +197,13 @@ interface GhRunsResponse {
 }
 
 export interface IntegracionesRunStatus {
+  id?: number;
+  display_title?: string;
   status: string;
   conclusion: string | null;
   html_url: string;
   created_at: string;
+  answer?: ReturnType<typeof pipelineAnswer> | null;
 }
 
 interface WorkflowUnavailableDetails {
@@ -283,11 +292,48 @@ async function fetchLatestRun(
   const run = json.workflow_runs?.[0];
   if (!run) return null;
   return {
+    id: run.id,
+    display_title: run.display_title,
     status: run.status,
     conclusion: run.conclusion,
     html_url: run.html_url,
     created_at: run.created_at,
+    answer: loop.id === "integration-pipeline" && run.status === "completed"
+      ? await fetchPipelineAnswer(run, token).catch(() => null)
+      : null,
   };
+}
+
+async function fetchPipelineAnswer(run: GhRun, token: GithubToken) {
+  const match = /^Integration · .+ · ([A-Z]{2})$/.exec(run.display_title ?? "");
+  const country = match?.[1];
+  if (!validPipelineCountry(country)) return null;
+  const res = await fetch(`https://api.github.com/repos/${OWNER}/${WEB_REPO}/actions/runs/${run.id}/artifacts?per_page=100`, {
+    headers: { ...baseHeaders(token), Accept: "application/vnd.github+json" }, cache: "no-store",
+  });
+  if (!res.ok) return null;
+  const data = await res.json() as { artifacts?: { name: string; archive_download_url: string; expired: boolean }[] };
+  async function readArtifact(name: string, fileName: string) {
+    const artifact = data.artifacts?.find((item) => item.name === name && !item.expired);
+    if (!artifact) return null;
+    const zipRes = await fetch(artifact.archive_download_url, {
+      headers: { ...baseHeaders(token), Accept: "application/vnd.github+json" }, cache: "no-store",
+    });
+    if (!zipRes.ok) return null;
+    const bytes = new Uint8Array(await zipRes.arrayBuffer());
+    if (bytes.length > 1_000_000) return null;
+    const file = unzipSync(bytes, { filter: (entry) => entry.name === fileName && entry.originalSize <= 100_000 })[fileName];
+    return file && file.length <= 100_000 ? JSON.parse(strFromU8(file)) as unknown : null;
+  }
+  const research = await readArtifact("pipeline-research", "research.json") as PipelineResearch | null;
+  if (!research) return null;
+  const supervision = research.verdict === "exists"
+    ? await readArtifact("pipeline-supervision", "supervision.json") as PipelineSupervision | null
+    : null;
+  const globalSupervision = research.verdict === "exists"
+    ? await readArtifact("pipeline-global-supervision", "global-supervision.json") as PipelineGlobalSupervision | null
+    : null;
+  return pipelineAnswer(research, country, supervision, globalSupervision);
 }
 
 export interface LastLoopRun {
@@ -420,6 +466,7 @@ export async function POST(req: Request) {
   }
 
   const focus = typeof raw.focus === "string" ? raw.focus.trim() : "";
+  const country = typeof raw.country === "string" ? raw.country : "";
   if (loop.requiresFocus) {
     // Same shape the pipeline workflow enforces before the name reaches an agent prompt.
     if (!/^[A-Za-z0-9][A-Za-z0-9 ._&+-]{0,59}$/.test(focus)) {
@@ -432,6 +479,9 @@ export async function POST(req: Request) {
       );
     }
   }
+  if (loop.requiresCountry && !validPipelineCountry(country)) {
+    return NextResponse.json({ error: "Elige un país para verificar esta integración." }, { status: 400 });
+  }
 
   try {
     const workflow = await fetchWorkflowMetadata(loop, token);
@@ -439,6 +489,7 @@ export async function POST(req: Request) {
     if (loop.acceptsFocus && typeof raw.focus === "string" && raw.focus.trim())
       inputs.focus = raw.focus.trim();
     if (loop.acceptsDryRun) inputs.dry_run = raw.dryRun === true;
+    if (loop.requiresCountry) inputs.country = country;
 
     const res = await fetch(
       `https://api.github.com/repos/${OWNER}/${loop.repo}/actions/workflows/${workflow.id}/dispatches`,

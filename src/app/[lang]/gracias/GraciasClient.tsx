@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { track } from "@vercel/analytics";
+import { analyticsAllowed, browserStorage, effectiveConsent } from "@/lib/consent";
 
 /**
  * Auto-fire the download once on mount, and emit a `download_landed` event so
@@ -17,7 +18,11 @@ import { track } from "@vercel/analytics";
  */
 export function GraciasClient({ lang, variant }: { lang: string; variant: "dev" | "consumer" }) {
   useEffect(() => {
-    track("download_landed", { lang, variant });
+    // Solo se mide con consentimiento de analítica (ConsentGate monta Analytics
+    // únicamente en ese caso; aquí se vuelve a comprobar antes de emitir).
+    if (analyticsAllowed(effectiveConsent(browserStorage()))) {
+      track("download_landed", { lang, variant });
+    }
     const iframe = document.createElement("iframe");
     iframe.src = "/api/download?direct=1";
     iframe.style.display = "none";

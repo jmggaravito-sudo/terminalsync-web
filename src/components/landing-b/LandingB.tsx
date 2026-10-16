@@ -16,7 +16,6 @@ import { WindowsEarlyAccess } from "@/components/landing/WindowsEarlyAccess";
 import { StructuredData } from "@/components/StructuredData";
 import { AgentWidget } from "@/components/AgentWidget";
 import { StickyDownloadCTA } from "@/components/StickyDownloadCTA";
-import { CookieBanner } from "@/components/CookieBanner";
 
 // Below-the-fold — split as own JS chunks.
 const FAQ = dynamic(() =>
@@ -95,7 +94,6 @@ export function LandingB({ dict, lang, faq }: Props) {
 
       <AgentWidget dict={dict} />
       <StickyDownloadCTA dict={dict} />
-      <CookieBanner dict={dict} />
     </>
   );
 }

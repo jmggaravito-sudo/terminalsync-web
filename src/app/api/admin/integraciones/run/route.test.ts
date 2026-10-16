@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { zipSync, strToU8 } from "fflate";
 
 const mocks = vi.hoisted(() => ({
   authenticate: vi.fn(),
@@ -67,6 +68,41 @@ afterEach(() => {
 });
 
 describe("/api/admin/integraciones/run", () => {
+  it("reads the latest country research artifact without claiming catalog presence is customer-ready", async () => {
+    const zip = zipSync({ "research.json": strToU8(JSON.stringify({
+      verdict: "exists", reason: "Ficha soon; falta OAuth", markets: { codes: ["CO"] },
+    })) });
+    const supervisionZip = zipSync({ "supervision.json": strToU8(JSON.stringify({
+      outcome: "catalog_blocked", country: "CO", checks: { probeReason: "needs-oauth" }, appSmoke: "not_run",
+    })) });
+    const globalZip = zipSync({ "global-supervision.json": strToU8(JSON.stringify({
+      status: "success", scope: "global-marketplace-app",
+    })) });
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      if (url.includes("/artifacts?")) return new Response(JSON.stringify({ artifacts: [{
+        name: "pipeline-research", expired: false, archive_download_url: "https://api.github.com/artifact.zip",
+      }, {
+        name: "pipeline-supervision", expired: false, archive_download_url: "https://api.github.com/supervision.zip",
+      }, {
+        name: "pipeline-global-supervision", expired: false, archive_download_url: "https://api.github.com/global.zip",
+      }] }), { status: 200 });
+      if (url.endsWith("/artifact.zip")) return new Response(zip, { status: 200 });
+      if (url.endsWith("/supervision.zip")) return new Response(supervisionZip, { status: 200 });
+      if (url.endsWith("/global.zip")) return new Response(globalZip, { status: 200 });
+      if (url.includes("/runs?")) return new Response(JSON.stringify({ workflow_runs: url.includes("/workflows/222/runs?") ? [{
+        id: 123, display_title: "Integration · Alegra · CO", status: "completed", conclusion: "success",
+        html_url: "https://github.com/example/run/123", created_at: "2026-10-16T19:00:00Z",
+      }] : [] }), { status: 200 });
+      return workflowResponse(url.includes("integration-pipeline") ? 222 : 123, url.includes("integration-pipeline") ? "integration-pipeline" : "other");
+    }));
+    const { GET } = await loadRoute({ integrationsToken: "actions-read" });
+    const body = await (await GET(request())).json();
+    const answer = body.loops.find((loop: { id: string }) => loop.id === "integration-pipeline").run.answer;
+    expect(answer.outcome).toBe("catalog_blocked");
+    expect(answer.supervision.appSmoke).toBe("not_run");
+    expect(answer.globalSupervision.status).toBe("success");
+  });
+
   it("returns all configured integration loops and marks CLI curation as pending", async () => {
     vi.stubGlobal(
       "fetch",
@@ -163,7 +199,7 @@ describe("/api/admin/integraciones/run", () => {
     );
   });
 
-  it("dispatches the integration pipeline with only the integration name", async () => {
+  it("dispatches the integration pipeline with integration and country", async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(workflowResponse(222, "integration-pipeline"))
@@ -172,7 +208,7 @@ describe("/api/admin/integraciones/run", () => {
 
     const { POST } = await loadRoute({ integrationsToken: "actions-write" });
     const res = await POST(
-      request("POST", { loopId: "integration-pipeline", focus: "  Ramp  " }),
+      request("POST", { loopId: "integration-pipeline", focus: "  Ramp  ", country: "CO" }),
     );
 
     expect(res.status).toBe(200);
@@ -183,10 +219,21 @@ describe("/api/admin/integraciones/run", () => {
         method: "POST",
         body: JSON.stringify({
           ref: "main",
-          inputs: { focus: "Ramp", dry_run: false },
+          inputs: { focus: "Ramp", dry_run: false, country: "CO" },
         }),
       }),
     );
+  });
+
+  it("rejects missing, global, or unknown country before calling GitHub", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const { POST } = await loadRoute({ integrationsToken: "actions-write" });
+    for (const country of [undefined, "", "GLOBAL", "ZZ", "co"]) {
+      const res = await POST(request("POST", { loopId: "integration-pipeline", focus: "Alegra", country }));
+      expect(res.status).toBe(400);
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("refuses to start the pipeline without a clean integration name and never calls GitHub", async () => {
@@ -214,6 +261,7 @@ describe("/api/admin/integraciones/run", () => {
     const body = await (await GET(request("GET"))).json();
     const pipeline = body.loops.find((l: { id: string }) => l.id === "integration-pipeline");
     expect(pipeline.requiresFocus).toBe(true);
+    expect(pipeline.requiresCountry).toBe(true);
     expect(pipeline.acceptsFocus).toBe(true);
     expect(body.loops.find((l: { id: string }) => l.id === "kits-curation").requiresFocus).toBeUndefined();
   });

@@ -1,6 +1,6 @@
-# Integration Pipeline — del nombre a las tres superficies
+# Integration Pipeline — del servicio y país a una decisión verificable
 
-Escribes el nombre de una integración en **Admin → Integraciones** ("Integración completa") y el pipeline la investiga, la construye, la hace revisar por agentes independientes, espera el CI y deja un reporte. Todos los agentes corren sobre **GLM (Z.ai)**.
+Escribes el nombre y país en **Admin → Integraciones** y el panel hace una investigación sin construir ni publicar. El resultado distingue una vía oficial verificable de una ficha ya existente, una construcción propia pendiente, o falta de evidencia. **Ninguno de esos resultados certifica por sí solo que un cliente pueda conectar el servicio.** La corrida completa por CLI puede construir, revisar, esperar CI y reportar; todos los agentes corren sobre GLM (Z.ai).
 
 Workflow: `.github/workflows/integration-pipeline.yml`. Prompts: `.github/pipeline/prompts/`. Lógica sin modelo (alcance, decisión, reporte): `scripts/pipeline/` con tests.
 
@@ -24,7 +24,7 @@ Workflow: `.github/workflows/integration-pipeline.yml`. Prompts: `.github/pipeli
 |---|---|
 | `ship_official` | Se construye y se revisa (etapas 2–7). |
 | `needs_own_build` | **No se construye nada.** El reporte trae los hechos verificados de la API (autenticación, endpoints, límites) y las alternativas de terceros, y la decisión de construir un MCP propio es tuya. |
-| `exists` | Ya está en el catálogo. |
+| `exists` | Se supervisa esa ficha concreta (mercado, estado, instalabilidad y verificador), y corre el loop existente de supervisión marketplace → app. El reporte muestra ambos resultados. Una ficha existente no prueba login ni app instalada. |
 | `skip` | Descartado, con el motivo. |
 
 | Decisión | Significado |
@@ -53,18 +53,19 @@ Workflow: `.github/workflows/integration-pipeline.yml`. Prompts: `.github/pipeli
 
 ## Cómo correrlo
 
-Panel: Admin → Integraciones → "Integración completa (solo el nombre)". Con "Dry run" solo investiga y reporta (no construye, no crea PR).
+Panel: Admin → Integraciones → "¿Podemos integrar esta herramienta en tu país?". El botón "Investigar" siempre corre sin construir ni crear PR. Los controles técnicos de curación/supervisión están plegados; el formulario anterior "Agregar candidato" ya no se muestra en esta página.
 
 Línea de comandos:
 
 ```bash
-gh workflow run integration-pipeline.yml -R jmggaravito-sudo/terminalsync-web -f focus="Ramp"
-gh workflow run integration-pipeline.yml -R jmggaravito-sudo/terminalsync-web -f focus="Siigo" -f dry_run=true
+gh workflow run integration-pipeline.yml -R jmggaravito-sudo/terminalsync-web -f focus="Ramp" -f country=US
+gh workflow run integration-pipeline.yml -R jmggaravito-sudo/terminalsync-web -f focus="Siigo" -f country=CO -f dry_run=true
 ```
 
 ## Límites actuales
 
 - **Solo conectores.** Plugins, kits y skills siguen en sus loops semanales.
+- **Investigación no equivale a certificación completa.** Si el veredicto es `exists`, la misma corrida ejecuta la supervisión focalizada y reutiliza el loop global marketplace → app; sus veredictos quedan en el reporte. Ese loop comprueba catálogo servido y mapeo de la app en la rama lab, **no** login de una cuenta real ni smoke instalado. Una ficha `soon` o `installableForAi: false` sale bloqueada.
 - **GLM como revisor no está medido** contra una revisión humana. Por eso el merge automático parte apagado.
 - La supervisión de un PR descarga el catálogo **de producción**, no el del PR: si producción está en rojo, el check falla en todos los PRs hasta que se corrija.
 - Costo estimado por integración: unos USD 8–12 de GLM (investigador, constructor de hasta 80 turnos, cuatro revisores de hasta 50). Es una estimación a partir de las trazas de los loops, no una medición.

@@ -86,18 +86,16 @@ const LOOPS: LoopInfo[] = [
       en: "CLI tools",
     },
     what: {
-      es: "Hoy se pueden agregar candidatos de Herramientas CLI por formulario. El loop automático queda visible como pendiente hasta crear cli-curation-loop.yml.",
-      en: "CLI tool candidates can be added through the form today. The automatic loop stays visible as pending until cli-curation-loop.yml exists.",
+      es: "El loop automático de Herramientas CLI sigue pendiente hasta crear cli-curation-loop.yml.",
+      en: "The automatic CLI tools loop remains pending until cli-curation-loop.yml exists.",
     },
     steps: {
       es: [
-        "Creás el candidato CLI en el panel.",
-        "El PR queda oculto/pendiente hasta revisión.",
+        "Todavía no se puede lanzar la curación CLI desde aquí.",
         "Cuando exista el workflow CLI, el botón de curación se podrá correr desde el mismo panel.",
       ],
       en: [
-        "Create the CLI candidate in the panel.",
-        "The PR stays hidden/pending until review.",
+        "CLI curation cannot be launched from here yet.",
         "Once the CLI workflow exists, its curation button can run from the same panel.",
       ],
     },
@@ -105,11 +103,11 @@ const LOOPS: LoopInfo[] = [
 ];
 
 /**
- * Purely informational accordion below Panel A + Panel B on
+ * Purely informational accordion below the integration request panel on
  * /admin/integraciones. No fetches, no auth gate, no side effects — just
  * explains in plain language what each loop does and its steps, so JM
  * knows what a supervision run means before clicking "Correr ahora".
- * Renders regardless of auth state (unlike the two panels above).
+ * Renders regardless of auth state (unlike the authenticated panel above).
  */
 export function LoopsInfoSection({ lang }: { lang: string }) {
   const isEs = lang !== "en";
