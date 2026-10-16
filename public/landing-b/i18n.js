@@ -948,10 +948,10 @@
         ? 'TS dashboard with separate workspaces for clients, projects, and departments.'
         : 'Dashboard de TS con espacios separados para clientes, proyectos y departamentos.';
     }
-    var spaceProof = document.getElementById('spaceProofImage');
+  var spaceProof = document.getElementById('spaceProofImage');
     if (spaceProof) {
-      spaceProof.src = '/landing-b/assets/workspace-context-' + lang + '.svg';
-      spaceProof.alt = lang === 'en'
+    spaceProof.src = '/landing-b/assets/workspace-capture-' + lang + '.html';
+    spaceProof.title = lang === 'en'
         ? 'Marketing and Advertising workspace with a conversation and its own context panel.'
         : 'Espacio Marketing y Publicidad con conversación y panel de contexto propio.';
     }
