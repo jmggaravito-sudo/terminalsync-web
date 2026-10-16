@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   constructEvent: vi.fn(),
   grantPurchasedCredits: vi.fn(),
+  allocateVideoFunding: vi.fn(),
 }));
 
 vi.mock("@/lib/stripe", () => ({
@@ -24,8 +25,11 @@ vi.mock("@/lib/subscriptionsSync", () => ({
   revokeSubscription: vi.fn(),
 }));
 
-vi.mock("@/lib/supabaseAdmin", () => ({ getSupabaseAdmin: vi.fn() }));
+vi.mock("@/lib/supabaseAdmin", () => ({
+  getSupabaseAdmin: vi.fn(() => ({ rpc: mocks.allocateVideoFunding })),
+}));
 vi.mock("@/lib/userLang", () => ({ resolveUserLang: vi.fn() }));
+vi.mock("server-only", () => ({}));
 
 vi.mock("@/lib/aiCredits", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/aiCredits")>();
@@ -41,9 +45,11 @@ function creditEvent() {
   return {
     id: "evt_credit_123",
     type: "checkout.session.completed",
+    livemode: true,
     data: {
       object: {
         id: "cs_credit_123",
+        livemode: true,
         amount_total: 1000,
         currency: "usd",
         payment_status: "paid",
@@ -54,7 +60,7 @@ function creditEvent() {
           credit_amount_cents: "1000",
           credit_amount_micros: "10000000",
           rail: "stripe",
-        },
+        } as Record<string, string>,
       },
     },
   };
@@ -70,9 +76,11 @@ function signedRequest() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  delete process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED;
   process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
   mocks.constructEvent.mockReturnValue(creditEvent());
   mocks.grantPurchasedCredits.mockResolvedValue(undefined);
+  mocks.allocateVideoFunding.mockResolvedValue({ error: null });
 });
 
 afterEach(() => {
@@ -93,6 +101,31 @@ describe("Stripe credit payment webhook", () => {
     }));
   });
 
+  it("honors the checkout-persisted general purpose even if video funding is enabled later", async () => {
+    const event = creditEvent();
+    event.data.object.metadata.credit_funding_purpose = "general";
+    mocks.constructEvent.mockReturnValue(event);
+    process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED = "1";
+
+    const res = await POST(signedRequest());
+
+    expect(res.status).toBe(200);
+    expect(mocks.grantPurchasedCredits).toHaveBeenCalledOnce();
+    expect(mocks.allocateVideoFunding).not.toHaveBeenCalled();
+  });
+
+  it("fails closed for an unknown checkout purpose instead of granting general credits", async () => {
+    const event = creditEvent();
+    event.data.object.metadata.credit_funding_purpose = "unrecognized";
+    mocks.constructEvent.mockReturnValue(event);
+
+    const res = await POST(signedRequest());
+
+    expect(res.status).toBe(500);
+    expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+    expect(mocks.allocateVideoFunding).not.toHaveBeenCalled();
+  });
+
   it("returns 500 so Stripe retries when the paid balance cannot be granted", async () => {
     mocks.grantPurchasedCredits.mockRejectedValueOnce(new Error("database unavailable"));
 
@@ -110,6 +143,139 @@ describe("Stripe credit payment webhook", () => {
     const res = await POST(signedRequest());
 
     expect(res.status).toBe(500);
+    expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+  });
+
+  it("fails closed for an exclusive purpose while the feature flag is off", async () => {
+    const event = creditEvent();
+    event.data.object.metadata.credit_funding_purpose = "video-exclusive";
+    event.data.object.metadata.video_funding_issuer_id = "issuer-not-configured";
+    mocks.constructEvent.mockReturnValue(event);
+    delete process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED;
+
+    const res = await POST(signedRequest());
+
+    expect(res.status).toBe(500);
+    expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+    expect(mocks.allocateVideoFunding).not.toHaveBeenCalled();
+  });
+
+  it("ignores a signed test-mode exclusive event without granting either balance", async () => {
+    const event = creditEvent();
+    event.livemode = false;
+    event.data.object.livemode = false;
+    event.data.object.metadata.credit_funding_purpose = "video-exclusive";
+    event.data.object.metadata.video_funding_issuer_id = "issuer-not-configured";
+    mocks.constructEvent.mockReturnValue(event);
+    process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED = "1";
+
+    const res = await POST(signedRequest());
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ received: true, ignored: "test_credit_event" });
+    expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+    expect(mocks.allocateVideoFunding).not.toHaveBeenCalled();
+  });
+
+  it("rejects mismatched Stripe event and checkout livemode", async () => {
+    const event = creditEvent();
+    event.data.object.livemode = false;
+    mocks.constructEvent.mockReturnValue(event);
+
+    const res = await POST(signedRequest());
+
+    expect(res.status).toBe(400);
+    expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+  });
+
+  it("routes only a live-signed exclusive event to the transactional RPC", async () => {
+    const event = creditEvent();
+    event.livemode = true;
+    event.data.object.metadata.credit_funding_purpose = "video-exclusive";
+    event.data.object.metadata.video_funding_issuer_id = "enrolled-issuer";
+    mocks.constructEvent.mockReturnValue(event);
+    process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED = "true";
+
+    const res = await POST(signedRequest());
+
+    expect(res.status).toBe(200);
+    expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+    expect(mocks.allocateVideoFunding).toHaveBeenCalledWith("allocate_video_exclusive_funding", {
+      p_signature_verified_live: true,
+      p_event_livemode: true,
+      p_source_event_id: "evt_credit_123",
+      p_provider_payment_id: "pi_credit_123",
+      p_account_id: "user-verified",
+      p_issuer_id: "enrolled-issuer",
+      p_purpose: "video-exclusive",
+      p_currency: "USD",
+      p_amount_micros: 10_000_000,
+    });
+  });
+
+  it("fails closed if a test signing secret verifies an event claiming live mode", async () => {
+    const event = creditEvent();
+    event.data.object.metadata.credit_funding_purpose = "video-exclusive";
+    event.data.object.metadata.video_funding_issuer_id = "enrolled-issuer";
+    mocks.constructEvent.mockImplementation((_raw, _signature, secret) => {
+      if (secret === "whsec_live") throw new Error("wrong secret");
+      return event;
+    });
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec_live";
+    process.env.STRIPE_TEST_WEBHOOK_SECRET = "whsec_test";
+    process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED = "1";
+
+    const res = await POST(signedRequest());
+
+    expect(res.status).toBe(400);
+    expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+    expect(mocks.allocateVideoFunding).not.toHaveBeenCalled();
+  });
+
+  it("rejects a test-secret signature claiming live mode before general credit grant", async () => {
+    const event = creditEvent();
+    event.data.object.metadata.credit_funding_purpose = "general";
+    mocks.constructEvent.mockImplementation((_raw, _signature, secret) => {
+      if (secret === "whsec_live") throw new Error("wrong secret");
+      return event;
+    });
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec_live";
+    process.env.STRIPE_TEST_WEBHOOK_SECRET = "whsec_test";
+
+    const res = await POST(signedRequest());
+
+    expect(res.status).toBe(400);
+    expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+    expect(mocks.allocateVideoFunding).not.toHaveBeenCalled();
+  });
+});
+
+// Keep #411's completed and delayed-payment test-mode regressions when #423
+// supersedes it; no provider or database calls are made by these tests.
+describe("general-credit environment boundary (#411)", () => {
+  it.each(["checkout.session.completed", "checkout.session.async_payment_succeeded"])(
+    "never grants general funds for a test event: %s", async type => {
+      const event = creditEvent();
+      event.type = type;
+      event.livemode = false;
+      event.data.object.livemode = false;
+      mocks.constructEvent.mockReturnValue(event);
+      const r = await POST(signedRequest());
+      expect(r.status).toBe(200);
+      expect(await r.json()).toEqual({ received: true, ignored: "test_credit_event" });
+      expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+      expect(mocks.allocateVideoFunding).not.toHaveBeenCalled();
+    });
+  it("refuses live general credits when live and test signing secrets are equal", async () => {
+    process.env.STRIPE_WEBHOOK_SECRET = "same-private-fixture";
+    process.env.STRIPE_TEST_WEBHOOK_SECRET = "same-private-fixture";
+    expect((await POST(signedRequest())).status).toBe(400);
+    expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+  });
+  it("refuses live general credits when only the test signing secret exists", async () => {
+    delete process.env.STRIPE_WEBHOOK_SECRET;
+    process.env.STRIPE_TEST_WEBHOOK_SECRET = "only-test-fixture";
+    expect((await POST(signedRequest())).status).toBe(400);
     expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
   });
 });
