@@ -9,7 +9,7 @@ simpleSubtitle: "Official Tiendanube MCP: products, stock, orders, customers, co
 devTitle: "Tiendanube MCP Connector"
 devSubtitle: "Official hosted Tiendanube/Nuvemshop MCP (admin-mcp.tiendanube.com) — catalog, stock, orders, coupons and promotions over OAuth."
 ctaUrl: "https://www.tiendanube.com"
-tokenHelpUrl: "https://nuvemshop.dev/en-US/ai-agents/admin-mcp"
+tokenHelpUrl: "https://nuvemshop.dev/ai-agents/admin-mcp"
 manifest:
   mcpServers:
     tiendanube:
@@ -18,7 +18,7 @@ manifest:
 affiliate: false
 tagline: "Your Tiendanube store, within reach of the agent"
 originalAuthor: "Tiendanube (Nuvemshop)"
-originalAuthorUrl: "https://nuvemshop.dev/en-US/ai-agents/admin-mcp"
+originalAuthorUrl: "https://nuvemshop.dev/ai-agents/admin-mcp"
 license: "proprietary"
 licenseUrl: "https://www.tiendanube.com/terminos"
 marketplaceSource: "official"
@@ -50,7 +50,7 @@ This connector **doesn't ask you to paste an API key**. It uses your store accou
 
 1. Enable the connector in TerminalSync.
 2. The `mcp-remote` bridge opens Tiendanube's login in your browser and asks you to authorize access to your store.
-3. Approve it with your account — one connection maps to a single store, and the connector can only see and do what that account is allowed to. The official guide lives at [nuvemshop.dev](https://nuvemshop.dev/en-US/ai-agents/admin-mcp).
+3. Approve it with your account — one connection maps to a single store, and the connector can only see and do what that account is allowed to. The official guide lives at [nuvemshop.dev](https://nuvemshop.dev/ai-agents/admin-mcp).
 
 **Brazilian stores:** in Brazil the platform operates as Nuvemshop, with its own address for the same server, in Portuguese. The catalog connector ships the Tiendanube address; the Nuvemshop one is documented in the technical section below.
 
@@ -58,7 +58,7 @@ This connector **doesn't ask you to paste an API key**. It uses your store accou
 
 --- dev ---
 
-Tiendanube (Nuvemshop in Brazil) publishes an **official remote MCP server**, the Admin MCP, on its developer portal ([nuvemshop.dev/en-US/ai-agents/admin-mcp](https://nuvemshop.dev/en-US/ai-agents/admin-mcp); overview at [/ai-agents/mcps](https://nuvemshop.dev/en-US/ai-agents/mcps)). Each brand has its own endpoint, with identical tools:
+Tiendanube (Nuvemshop in Brazil) publishes an **official remote MCP server**, the Admin MCP, on its developer portal ([nuvemshop.dev/ai-agents/admin-mcp](https://nuvemshop.dev/ai-agents/admin-mcp); overview at [/ai-agents/mcps](https://nuvemshop.dev/ai-agents/mcps)). Each brand has its own endpoint, with identical tools:
 
 - Tiendanube (Argentina, Mexico, Chile, Colombia; default language es): `https://admin-mcp.tiendanube.com/mcp`
 - Nuvemshop (Brazil; default language pt-BR): `https://admin-mcp.nuvemshop.com.br/mcp`
@@ -86,4 +86,4 @@ There are 28 tools in six groups; the docs type each one's behavior (read / writ
 
 **Disclosure:** hosted server that reads and writes real store data; the `delete_*` tools are irreversible and the docs recommend deactivating coupons (`valid=false`) and promotions (`published=false`) instead of deleting them. The official Storefront MCP (per store, `https://<store-domain>/api/mcp`) is a separate server for buyer-side actions and is not part of this connector. The page mentions no plan requirements.
 
-License: proprietary SaaS terms (`tiendanube.com/terminos`). Source: nuvemshop.dev/en-US/ai-agents/admin-mcp.
+License: proprietary SaaS terms (`tiendanube.com/terminos`). Source: nuvemshop.dev/ai-agents/admin-mcp.
