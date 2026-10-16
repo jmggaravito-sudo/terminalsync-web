@@ -125,7 +125,7 @@ jobs:
           TS_CROSS_REPO_TOKEN: ${{ secrets.TS_CROSS_REPO_TOKEN }}
           ANTHROPIC_BASE_URL: https://open.bigmodel.cn/api/anthropic
           ZAI_API_KEY: ${{ secrets.Z_AI_API_KEY }}
-          ZAI_MODEL: ${{ vars.ZAI_MODEL || 'glm-5.3' }}
+          ZAI_MODEL: ${{ vars.ZAI_MODEL || 'glm-5.3-flash' }}
           SKILLS_EVAL_PROVIDER: glm
         with:
           anthropic_api_key: ${{ secrets.Z_AI_API_KEY }}
