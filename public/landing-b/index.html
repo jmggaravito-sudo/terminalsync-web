@@ -76,7 +76,7 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 
 /* ── hero ── */
 .hero{padding:clamp(48px,6vw,84px) 0 clamp(36px,4vw,56px)}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:clamp(32px,4vw,60px);align-items:center}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,4vw,60px);align-items:center}
 .hero-copy{min-width:0}
 .hero h1{font-size:clamp(34px,4vw,55px);line-height:1.08;font-weight:600;letter-spacing:-.03em}
 .hero h1 em{font-style:normal;color:var(--violet)}
@@ -95,9 +95,13 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .win-bar .ctx-pill::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--violet)}
 .win-shot{aspect-ratio:1525/909;background:#fff}
 .win-shot img{width:100%;height:100%;object-fit:cover;object-position:top center}
-.hero-preview{background:#d4d5d8}
+.hero-preview{background:transparent;border:0;box-shadow:none;border-radius:24px}
 .hero-shot{aspect-ratio:1600/1273;background:#d4d5d8}
 .hero-shot img{object-fit:contain}
+.hero-shot-video{aspect-ratio:16/9;background:#101217}
+.hero-video{width:100%;height:100%;display:block;object-fit:cover;border:0;background:#eef0f7}
+.hero-shot-video .hero-video{object-fit:contain}
+.hero-video[hidden],.hero-shot img[hidden]{display:none}
 
 /* ── prueba visual de un espacio ── */
 .space-proof{padding:clamp(44px,5.5vw,76px) 0;border-top:1px solid var(--line);background:var(--bg)}
@@ -106,9 +110,9 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .space-proof-copy p{margin-top:16px;font-size:16.5px;line-height:1.62;color:var(--fg-2)}
 .space-proof-label{display:inline-flex;align-items:center;gap:8px;margin-bottom:15px;font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-2)}
 .space-proof-label::before{content:'';width:9px;height:9px;border-radius:50%;background:var(--accent)}
-.space-proof-shot{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);overflow:hidden;box-shadow:0 30px 64px -40px rgba(16,24,40,.42)}
-.space-proof-shot iframe{display:block;width:100%;aspect-ratio:16/9;border:0;background:#dfe3ea}
-@media (max-width:760px){.space-proof-grid{grid-template-columns:1fr}.space-proof-copy{max-width:62ch}.space-proof-shot{border-radius:var(--r)}}
+.space-proof-shot{border:0;border-radius:24px;background:transparent;overflow:hidden;box-shadow:none;aspect-ratio:16/9}
+.space-proof-shot iframe{display:block;width:145%;height:145%;margin:-22.5% 0 0 -22.5%;border:0;background:#dfe3ea}
+@media (max-width:760px){.space-proof-grid{grid-template-columns:1fr}.space-proof-copy{max-width:62ch}.space-proof-shot iframe{width:128%;height:128%;margin:-14% 0 0 -14%}}
 
 /* ── barra de secciones pegajosa ── */
 .subnav{position:sticky;top:66px;z-index:30;background:var(--pane-2);backdrop-filter:blur(12px);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -359,7 +363,12 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
       <p class="hero-plat">Apple Silicon e Intel · macOS 13+ · <a href="#windows">Windows en lista de espera</a></p>
     </div>
     <div class="win hero-preview">
-      <div class="win-shot hero-shot"><img src="/landing-b/assets/dashboard-workspaces-video-poster-es.png" alt="Dashboard de TS con espacios separados para clientes, proyectos y departamentos." fetchpriority="high" /></div>
+      <div class="win-shot hero-shot">
+        <video id="heroVideo" class="hero-video" controls playsinline preload="metadata" poster="/landing-b/assets/ts-corporate-poster-es.jpg" aria-label="Video corporativo de TerminalSync">
+          <source src="/landing-b/assets/ts-corporate-es.mp4" type="video/mp4" />
+        </video>
+        <img id="heroCover" hidden src="/landing-b/assets/dashboard-workspaces-video-poster-es.png" alt="Dashboard de TS con espacios separados para clientes, proyectos y departamentos." fetchpriority="high" />
+      </div>
     </div>
   </div>
 </section>
