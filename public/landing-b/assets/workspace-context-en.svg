@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 860" role="img" aria-labelledby="title desc">
+  <title id="title">A TerminalSync workspace with its context</title>
+  <desc id="desc">View of Marketing and Advertising with a conversation and its own context panel.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#f8f9fb"/><stop offset="1" stop-color="#eef1f5"/></linearGradient>
+    <linearGradient id="brand" x1="0" x2="1"><stop stop-color="#6a48e8"/><stop offset="1" stop-color="#8b6cf0"/></linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#22263a" flood-opacity=".14"/></filter>
+  </defs>
+  <rect width="1440" height="860" rx="28" fill="url(#bg)"/>
+  <rect x="24" y="24" width="1392" height="812" rx="22" fill="#fff" stroke="#dfe3ea" filter="url(#shadow)"/>
+  <rect x="24" y="24" width="1392" height="72" rx="22" fill="#fff"/>
+  <circle cx="58" cy="60" r="13" fill="#6a48e8"/><circle cx="58" cy="60" r="5" fill="#fff"/>
+  <text x="86" y="66" font-family="Arial,sans-serif" font-size="24" font-weight="700" fill="#17191f">TS</text>
+  <rect x="190" y="43" width="480" height="35" rx="17" fill="#f4f5f7" stroke="#e1e4ea"/>
+  <text x="215" y="66" font-family="Arial,sans-serif" font-size="15" fill="#8a909b">Buscar una sesión, archivo o computadora…</text>
+  <text x="1115" y="66" font-family="Arial,sans-serif" font-size="15" fill="#565b64">Sincronizar</text>
+  <rect x="1240" y="39" width="150" height="42" rx="21" fill="#12b77a"/><text x="1264" y="66" font-family="Arial,sans-serif" font-size="15" font-weight="700" fill="#fff">Nuevo espacio</text>
+  <rect x="24" y="96" width="1392" height="72" fill="#fbfbfc" stroke="#e7e9ee"/>
+  <text x="72" y="140" font-family="Arial,sans-serif" font-size="21" font-weight="700" fill="#17191f">Marketing and Advertising</text>
+  <rect x="390" y="118" width="250" height="34" rx="17" fill="url(#brand)"/><text x="425" y="141" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#fff">✦ Active workspace context</text>
+  <rect x="24" y="168" width="980" height="668" fill="#fff"/>
+  <text x="72" y="214" font-family="Arial,sans-serif" font-size="13" font-weight="700" letter-spacing="1.5" fill="#6a48e8">CONVERSATION</text>
+  <rect x="72" y="242" width="760" height="86" rx="18" fill="#f1edff"/>
+  <text x="98" y="276" font-family="Arial,sans-serif" font-size="17" fill="#252832">Prepare the Paso Firme launch campaign</text>
+  <text x="98" y="304" font-family="Arial,sans-serif" font-size="15" fill="#626875">using the tone we use for new clients.</text>
+  <rect x="270" y="360" width="562" height="154" rx="18" fill="#f7fbf9" stroke="#d8eee3"/>
+  <circle cx="305" cy="395" r="16" fill="#12b77a"/><text x="299" y="401" font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#fff">✓</text>
+  <text x="338" y="399" font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#17191f">Work prepared</text>
+  <text x="302" y="437" font-family="Arial,sans-serif" font-size="15" fill="#565b64">I used this workspace rules, files, and memory.</text>
+  <text x="302" y="467" font-family="Arial,sans-serif" font-size="15" fill="#565b64">The campaign is ready to review and approve.</text>
+  <rect x="302" y="483" width="170" height="9" rx="4" fill="#d7eee2"/><rect x="484" y="483" width="105" height="9" rx="4" fill="#e5e8ed"/>
+  <rect x="72" y="580" width="760" height="76" rx="18" fill="#fff" stroke="#dfe3ea"/>
+  <text x="98" y="626" font-family="Arial,sans-serif" font-size="16" fill="#9aa0aa">Type your message…</text>
+  <circle cx="790" cy="618" r="22" fill="#6a48e8"/><path d="M782 618h16M791 610l8 8-8 8" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="72" y="690" width="176" height="34" rx="17" fill="#f2ecff"/><text x="94" y="712" font-family="Arial,sans-serif" font-size="13" font-weight="700" fill="#4e2bbd">✦ Workspace agent</text>
+  <rect x="264" y="690" width="146" height="34" rx="17" fill="#f3f5f7"/><text x="286" y="712" font-family="Arial,sans-serif" font-size="13" fill="#565b64">Pending approval</text>
+  <rect x="1004" y="168" width="412" height="668" fill="#fffdf4" stroke="#e9e3c9"/>
+  <text x="1042" y="220" font-family="Arial,sans-serif" font-size="20" font-weight="700" fill="#17191f">Context</text>
+  <rect x="1042" y="252" width="336" height="58" rx="14" fill="#fff" stroke="#e2e4e9"/><text x="1066" y="287" font-family="Arial,sans-serif" font-size="16" fill="#17191f">▣ Documents</text><text x="1330" y="287" font-family="Arial,sans-serif" font-size="15" font-weight="700" fill="#6a48e8">3</text>
+  <rect x="1042" y="326" width="336" height="58" rx="14" fill="#fff" stroke="#e2e4e9"/><text x="1066" y="361" font-family="Arial,sans-serif" font-size="16" fill="#17191f">◌ Memory</text><text x="1330" y="361" font-family="Arial,sans-serif" font-size="15" font-weight="700" fill="#6a48e8">4</text>
+  <rect x="1042" y="400" width="336" height="58" rx="14" fill="#fff" stroke="#e2e4e9"/><text x="1066" y="435" font-family="Arial,sans-serif" font-size="16" fill="#17191f">✦ Rules</text><text x="1330" y="435" font-family="Arial,sans-serif" font-size="15" font-weight="700" fill="#6a48e8">2</text>
+  <rect x="1042" y="474" width="336" height="58" rx="14" fill="#fff" stroke="#e2e4e9"/><text x="1066" y="509" font-family="Arial,sans-serif" font-size="16" fill="#17191f">♧ Tools</text><text x="1330" y="509" font-family="Arial,sans-serif" font-size="15" font-weight="700" fill="#6a48e8">8</text>
+  <rect x="1042" y="584" width="336" height="88" rx="16" fill="#f2ecff"/><text x="1066" y="616" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#4e2bbd">This workspace knows its work</text><text x="1066" y="644" font-family="Arial,sans-serif" font-size="14" fill="#565b64">Its agent works with this context.</text>
+  <text x="1042" y="742" font-family="Arial,sans-serif" font-size="13" fill="#8a909b">Context propio · IA incluida</text>
+</svg>
