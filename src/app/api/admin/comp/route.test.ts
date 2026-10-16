@@ -271,6 +271,15 @@ describe("admin comp included-AI entitlement", () => {
     expect(response.status).toBe(409);
     expect(mocks.rpc).toHaveBeenCalledWith("admin_revoke_comp", { p_email: "person@example.com" });
   });
+
+  it("reports Team-only revoke without claiming to change a non-comp base subscription", async () => {
+    mocks.rpc.mockResolvedValueOnce({ data: [{ result: "ok_no_base_comp", revoked_user_id: "user-1" }], error: null });
+    mocks.getSupabaseAdmin.mockReturnValue(supabaseFor({}));
+    const { DELETE } = await import("./route");
+    const response = await DELETE(request("DELETE", { email: "person@example.com" }));
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({ teamRevoked: true, baseSubscriptionUnchanged: true });
+  });
 });
 
 describe("Team comp schema and admin UI", () => {
@@ -288,6 +297,11 @@ describe("Team comp schema and admin UI", () => {
     expect(migration).toContain("where public.team_memberships.source='admin_comp'");
     expect(migration).toContain("create or replace function public.admin_revoke_comp");
     expect(migration).toContain("delete from public.courtesy_entitlement");
+    const revoke = migration.slice(migration.indexOf("create or replace function public.admin_revoke_comp"), migration.indexOf("revoke all on function public.admin_grant_team_comp"));
+    expect(revoke).not.toContain("insert into public.subscriptions");
+    expect(revoke).toContain("stripe_customer_id='comp'");
+    expect(revoke).toContain("stripe_subscription_id='comp_' || left(target_id::text,8)");
+    expect(revoke).toContain("'ok_no_base_comp'");
     expect(migration).toContain("for update");
   });
 

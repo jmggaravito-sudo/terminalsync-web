@@ -61,12 +61,17 @@ BEGIN
   DELETE FROM public.comp_grants WHERE email=p_email;
   UPDATE public.team_memberships SET status='revoked', updated_at=now()
     WHERE user_id=target_id AND source='admin_comp' AND status='active';
-  INSERT INTO public.subscriptions (user_id,stripe_customer_id,plan,status,ai_included,cancel_at_period_end,updated_at)
-  VALUES (target_id,'comp','free','canceled',false,false,now())
-  ON CONFLICT (user_id) DO UPDATE SET stripe_customer_id='comp', plan='free',status='canceled',
-    ai_included=false,cancel_at_period_end=false,updated_at=now();
-  DELETE FROM public.courtesy_entitlement WHERE user_id=target_id::text AND tier='included_ai';
-  RETURN QUERY SELECT 'ok',target_id;
+  -- Only a row carrying both admin-comp sentinels is owned by this endpoint.
+  -- A free/trial/Pro/Max/provider row (or absent row) remains untouched.
+  UPDATE public.subscriptions SET plan='free',status='canceled',ai_included=false,
+    cancel_at_period_end=false,updated_at=now()
+    WHERE user_id=target_id AND stripe_customer_id='comp'
+      AND stripe_subscription_id='comp_' || left(target_id::text,8);
+  IF FOUND THEN
+    DELETE FROM public.courtesy_entitlement WHERE user_id=target_id::text AND tier='included_ai';
+    RETURN QUERY SELECT 'ok',target_id; RETURN;
+  END IF;
+  RETURN QUERY SELECT 'ok_no_base_comp',target_id;
 END; $$;
 REVOKE ALL ON FUNCTION public.admin_grant_team_comp(uuid,timestamptz,timestamptz,text) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.admin_revoke_comp(citext) FROM PUBLIC, anon, authenticated;

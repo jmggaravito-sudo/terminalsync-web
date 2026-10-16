@@ -353,6 +353,7 @@ export async function DELETE(req: Request) {
   const result = Array.isArray(data) ? data[0] : data;
   if (result?.result === "paid_subscription") return NextResponse.json({ error: "that account has a real paid subscription — refusing to revoke it here" }, { status: 409 });
   if (result?.result === "not_found") return NextResponse.json({ ok: true, email, pendingRemoved: true });
+  if (result?.result === "ok_no_base_comp") return NextResponse.json({ ok: true, email, teamRevoked: true, baseSubscriptionUnchanged: true });
   if (result?.result !== "ok") return NextResponse.json({ error: "comp revoke failed" }, { status: 500 });
   return NextResponse.json({ ok: true, email, plan: "free" });
 }
