@@ -266,3 +266,33 @@ describe("Stripe credit payment webhook", () => {
     expect(mocks.allocateVideoFunding).not.toHaveBeenCalled();
   });
 });
+
+// Keep #411's completed and delayed-payment test-mode regressions when #423
+// supersedes it; no provider or database calls are made by these tests.
+describe("general-credit environment boundary (#411)", () => {
+  it.each(["checkout.session.completed", "checkout.session.async_payment_succeeded"])(
+    "never grants general funds for a test event: %s", async type => {
+      const event = creditEvent();
+      event.type = type;
+      event.livemode = false;
+      event.data.object.livemode = false;
+      mocks.constructEvent.mockReturnValue(event);
+      const r = await POST(signedRequest());
+      expect(r.status).toBe(200);
+      expect(await r.json()).toEqual({ received: true, ignored: "test_credit_event" });
+      expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+      expect(mocks.allocateVideoFunding).not.toHaveBeenCalled();
+    });
+  it("refuses live general credits when live and test signing secrets are equal", async () => {
+    process.env.STRIPE_WEBHOOK_SECRET = "same-private-fixture";
+    process.env.STRIPE_TEST_WEBHOOK_SECRET = "same-private-fixture";
+    expect((await POST(signedRequest())).status).toBe(400);
+    expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+  });
+  it("refuses live general credits when only the test signing secret exists", async () => {
+    delete process.env.STRIPE_WEBHOOK_SECRET;
+    process.env.STRIPE_TEST_WEBHOOK_SECRET = "only-test-fixture";
+    expect((await POST(signedRequest())).status).toBe(400);
+    expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+  });
+});

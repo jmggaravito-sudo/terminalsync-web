@@ -269,7 +269,7 @@ const en: Dict = {
   midCta: {
     eyebrow: "Try it free",
     title: "Stop staring at the screen waiting on your AI.",
-    body: "7 days of Pro free. Cancel before day 7 and you're not charged. If it clicks, you stay. If not, you stop using it. Done.",
+    body: "Every new user gets 7 days with all features, free. No charge during the trial. After 7 days, choose a plan to continue.",
     ctaPrimary: "Download free",
     ctaSecondary: "See pricing",
   },
@@ -424,13 +424,13 @@ const en: Dict = {
   pricing: {
     title: "Simple, as it should be",
     subtitle:
-      "Start free. 7 days with every Max feature — cancel before day 7 and you're not charged. AIs run on your own subscription (or their free plans): TS doesn't resell you tokens.",
+      "Start free. Every new user gets 7 days with all features at no charge. After 7 days, choose a plan to continue. AIs run on your own subscription (or their free plans): TS doesn't resell you tokens.",
     perMonth: "/mo",
     free: "Free",
     trial: {
       eyebrow: "7 days free with all features",
       explainer:
-        "You get full Max features for the first 7 days regardless of which plan you pick. Cancel before day 7 and nothing is charged.",
+        "Every new user gets 7 days with all features at no charge. After the trial, choose a plan to continue. You won't be charged during the trial.",
     },
     quiz: {
       cta: "Which plan do I need?",
@@ -509,7 +509,7 @@ const en: Dict = {
           "Alerts via email / Telegram",
           "Chrome Extension Pro included",
         ],
-        cta: "Start 7-day free trial",
+        cta: "Start your 7-day all-feature trial",
       },
       max: {
         name: "Max",
@@ -527,7 +527,21 @@ const en: Dict = {
           "Pair programming (read-only)",
           "Priority email support",
         ],
-        cta: "Start 7-day free trial",
+        cta: "Start your 7-day all-feature trial",
+      },
+      team: {
+        name: "Team · coming soon",
+        badge: "Coming soon",
+        price: "$59",
+        priceNote: "/employee/mo",
+        tagline: "Max for teams with separate user workspaces.",
+        features: [
+          "Everything in Max, plus collaboration across different users' workspaces",
+          "Each person keeps their own workspace",
+          "Sharing answers or documents requires approval before sending",
+          "Announced plan; cross-account collaboration is not available yet",
+        ],
+        cta: "Coming soon",
       },
     },
   },
@@ -551,7 +565,7 @@ const en: Dict = {
   trust: {
     title: "Your files are yours. Full stop.",
     body: "Your secrets, settings, memory and AI conversations are encrypted on your computer before leaving. Everything goes to YOUR cloud, not ours — your files never pass through our servers.",
-    guarantee: "Try it 7 days free. Cancel before day 7 and you're not charged.",
+    guarantee: "Every new user gets 7 days with all features at no charge. After 7 days, choose a plan to continue.",
     features: {
       e2ee: "AES-256 on everything sensitive",
       keychain: "Keys only on your device",
