@@ -36,11 +36,12 @@ const FIRST_PARTY = new Set(["memory", "meta-ads", "meta-social"]);
 // Unblock only when the app supplies GOOGLE_ACCESS_TOKEN (or the manifests move to a package that
 // does its own stdio OAuth).
 export const OAUTH_CONNECTORS = new Set(["gmail", "google-calendar", "google-sheets"]);
-// Remote connectors whose OAuth server mcp-remote cannot log in to, so they stay
-// blocked until the app can pre-register a client with the vendor.
-// zoom/alegra: no dynamic client registration (smoke 2026-10-08, "does not support dynamic client registration").
-// alegra: pulled back 2026-10-14 — its endpoint moved (POST /mcp is 404, the root is OAuth-only and answers 400 to mcp-remote)
-// and the published ficha claimed Basic auth and delete tools while the current docs say Bearer and read-only.
+// Remote connectors mcp-remote cannot log in to: keep blocked until an
+// account authorization and installed-app smoke pass.
+// zoom: no dynamic client registration (smoke 2026-10-08).
+// alegra: current MCP lives at the root and advertises DCR + PKCE, but a
+// no-account mcp-remote probe still returns HTTP 400 before browser login.
+// The traditional API's Basic auth and write tools are NOT this read-only MCP.
 // factorial: blocked 2026-10-16 — its OAuth metadata (served at mcp.factorialhr.com) declares issuer
 // https://api.factorialhr.com/, and mcp-remote@latest enforces RFC 8414 §3.3 (issuer must match the
 // origin it was fetched from), aborting with IssuerMismatchError before the browser login (smoke 2026-10-16).
