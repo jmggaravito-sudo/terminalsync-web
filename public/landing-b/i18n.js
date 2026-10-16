@@ -942,7 +942,9 @@
     window.dispatchEvent(new CustomEvent('ts-lang', { detail: { lang: lang } }));
     // Reuse the current dashboard image as both hero cover and future video poster.
     var heroVideo = document.getElementById('heroVideo');
+    var heroShot = document.querySelector('.hero-shot');
     var cov = document.getElementById('heroCover');
+    if (heroShot) heroShot.classList.toggle('hero-shot-video', lang === 'es');
     if (heroVideo) {
       heroVideo.hidden = lang === 'en';
       if (lang === 'en') heroVideo.pause();
