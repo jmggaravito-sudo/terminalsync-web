@@ -16,6 +16,7 @@ import {
   getCurrentSubscriptionForUser,
   isChangeableSubscription,
 } from "@/lib/planChange";
+import { isValidTeamSeatCount } from "@/lib/teamSeatCheckout";
 
 export const runtime = "nodejs";
 
@@ -45,6 +46,8 @@ interface Body {
   /** TerminalSync AI included in the same subscription (+$15/mo). */
   includedAi?: boolean;
   addOns?: string[];
+  /** Number of Team seats. Required for Team; never inferred from a price. */
+  seats?: number;
 }
 
 // CORS for the Tauri desktop app. Tauri v2 sends requests with a
@@ -102,6 +105,12 @@ export async function POST(req: Request) {
       { status: 400, headers: cors },
     );
   }
+  if (plan === "team" && !isValidTeamSeatCount(body.seats)) {
+    return NextResponse.json(
+      { error: "Team seat count must be a positive safe integer." },
+      { status: 400, headers: cors },
+    );
+  }
   // New Pro/Max purchases always include AI at the combined price. Ignore
   // older clients' add-on flags so they cannot create a two-line invoice or
   // silently buy a base plan without AI.
@@ -109,7 +118,9 @@ export async function POST(req: Request) {
   const price = includedAi ? bundledPriceIdFor(plan) : priceIdFor(plan);
   if (!price) {
     const envVar =
-      plan === "max"
+      plan === "team"
+        ? "STRIPE_PRICE_TEAM"
+        : plan === "max"
         ? "STRIPE_PRICE_MAX_WITH_AI_MONTHLY"
         : plan === "pro"
           ? "STRIPE_PRICE_PRO_WITH_AI_MONTHLY"
@@ -117,6 +128,19 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         error: `Missing Stripe price for plan "${plan}". Set ${envVar} in the environment.`,
+      },
+      { status: 503, headers: cors },
+    );
+  }
+  // Team is not safe to sell yet: the subscription table/check, Stripe
+  // webhook price mapping, and no-card 7-day entitlement lifecycle are not
+  // implemented together. Do not create a paid subscription that would sync
+  // as `free` or give the impression that the promised trial is active.
+  if (plan === "team") {
+    return NextResponse.json(
+      {
+        error:
+          "Team checkout is not available until Team trial entitlements and subscription sync are ready.",
       },
       { status: 503, headers: cors },
     );

@@ -1,9 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 
-const { createSession } = vi.hoisted(() => ({
+const { createSession, teamPrice } = vi.hoisted(() => ({
   createSession: vi.fn(async (_params: Record<string, unknown>) => ({
     url: "https://checkout.stripe.test/session",
   })),
+  teamPrice: { value: "price_team_monthly" as string | null },
 }));
 
 vi.mock("@/lib/stripe", () => ({
@@ -11,7 +12,7 @@ vi.mock("@/lib/stripe", () => ({
   TRIAL_DAYS: 7,
   normalizePlanId: (plan: string) => plan,
   bundledPriceIdFor: (plan: string) => `price_${plan}_ai`,
-  priceIdFor: (plan: string) => `price_${plan}_legacy`,
+  priceIdFor: (plan: string) => plan === "team" ? teamPrice.value : `price_${plan}_legacy`,
   siteUrl: () => "https://terminalsync.ai",
 }));
 
@@ -44,4 +45,46 @@ describe("checkout Pro/Max with included AI", () => {
       expect(params.metadata.included_ai).toBe("1");
     });
   }
+});
+
+describe("Team checkout fail-closed foundation", () => {
+  it("rejects invalid or missing Team seat quantities", async () => {
+    createSession.mockClear();
+    for (const seats of [undefined, 0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1, "2"]) {
+      const response = await POST(new Request("https://terminalsync.ai/api/checkout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ plan: "team", seats }),
+      }));
+      expect(response.status).toBe(400);
+    }
+    expect(createSession).not.toHaveBeenCalled();
+  });
+
+  it("fails closed without STRIPE_PRICE_TEAM", async () => {
+    createSession.mockClear();
+    teamPrice.value = null;
+    const response = await POST(new Request("https://terminalsync.ai/api/checkout", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ plan: "team", seats: 3 }),
+    }));
+    expect(response.status).toBe(503);
+    expect((await response.json()).error).toContain("STRIPE_PRICE_TEAM");
+    expect(createSession).not.toHaveBeenCalled();
+    teamPrice.value = "price_team_monthly";
+  });
+
+  it("does not create a Stripe session even with a price until trial/entitlement sync is ready", async () => {
+    createSession.mockClear();
+    teamPrice.value = "price_team_monthly";
+    const response = await POST(new Request("https://terminalsync.ai/api/checkout", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ plan: "team", seats: 3 }),
+    }));
+    expect(response.status).toBe(503);
+    expect((await response.json()).error).toContain("trial entitlements");
+    expect(createSession).not.toHaveBeenCalled();
+  });
 });
