@@ -32,7 +32,7 @@ verifiedPackageVersion: null
 ---
 **PayPal** is one of the most widely used ways for businesses to send and receive money — PayPal itself says it serves businesses in nearly 200 markets. The official PayPal MCP server connects your agent straight to your merchant account: transactions, invoices, disputes, subscriptions and more, using your own PayPal login — no API key pasted into TerminalSync.
 
-Ask *"Show me this week's transactions and flag the ones still pending"* and the agent pulls them straight from your account. *"Which invoices are still unpaid?"* has it review your invoice list in seconds. It's built for the questions a business owner actually has: did the money come in, who hasn't paid, what is this dispute about, and what subscription plans you have active. And when you ask for something that writes to your account — creating and sending an invoice, sending a payment reminder — the agent shows you what it's about to do and asks for your confirmation first.
+Ask *"Show me this week's transactions and flag the ones still pending"* and the agent pulls them straight from your account. *"Which invoices are still unpaid?"* has it review your invoice list in seconds. It's built for the questions a business owner actually has: did the money come in, who hasn't paid, what is this dispute about, and what subscription plans you have active. Creating or sending invoices and reminders changes your real account. Review the requested action and your AI client's approval settings before allowing it; the OAuth login is not a separate confirmation for each action.
 
 ### What you can ask
 

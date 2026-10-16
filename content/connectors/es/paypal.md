@@ -32,7 +32,7 @@ verifiedPackageVersion: null
 ---
 **PayPal** es una de las formas más usadas por los negocios para enviar y recibir dinero: el propio PayPal dice que atiende negocios en casi 200 mercados. El server MCP oficial de PayPal conecta a tu agente directamente con tu cuenta de comercio: transacciones, facturas, disputas, suscripciones y más, con el login de tu propia cuenta — sin pegar ninguna API key en TerminalSync.
 
-Le preguntas *"Muéstrame las transacciones de esta semana y márcame las que siguen pendientes"* y el agente las trae directo de tu cuenta. *"¿Qué facturas siguen sin pagar?"* y revisa tu lista de facturas en segundos. Está pensado para las preguntas reales de un dueño de negocio: si entró el dinero, quién no ha pagado, de qué trata esta disputa y qué planes de suscripción tengo activos. Y cuando le pides algo que escribe en tu cuenta — crear y enviar una factura, mandar un recordatorio de pago — el agente te muestra qué va a hacer y te pide confirmación antes de ejecutarlo.
+Le preguntas *"Muéstrame las transacciones de esta semana y márcame las que siguen pendientes"* y el agente las trae directo de tu cuenta. *"¿Qué facturas siguen sin pagar?"* y revisa tu lista de facturas en segundos. Está pensado para las preguntas reales de un dueño de negocio: si entró el dinero, quién no ha pagado, de qué trata esta disputa y qué planes de suscripción tengo activos. Crear o enviar facturas y recordatorios modifica tu cuenta real. Revisa la acción y la configuración de aprobaciones de tu cliente de IA antes de permitirla; iniciar sesión con OAuth no equivale a confirmar cada acción por separado.
 
 ### Qué le puedes pedir
 
