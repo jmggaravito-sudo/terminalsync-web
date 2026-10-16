@@ -12,7 +12,7 @@ export const stripe: Stripe | null = secret
     })
   : null;
 
-export type PlanId = "pro" | "max" | "agency";
+export type PlanId = "pro" | "max" | "agency" | "team";
 
 /**
  * Read an env var and strip surrounding whitespace/newlines. Pasting a
@@ -65,12 +65,16 @@ export function priceIdFor(plan: PlanId): string | null {
     return envId("STRIPE_PRICE_MAX_MONTHLY", "STRIPE_PRICE_DEV_MONTHLY");
   }
   if (plan === "agency") return envId("STRIPE_PRICE_AGENCY");
+  if (plan === "team") return envId("STRIPE_PRICE_TEAM");
   return null;
 }
 
-/** Maps a PlanId to the Supabase `subscriptions.plan` enum value. Used
- * by the Stripe webhook to upsert the plan after checkout completes. */
-export function planToSupabase(plan: PlanId): "pro" | "max" | "team" {
+/** Only base-plan purchases may update `subscriptions.plan`. Team is a
+ * composable membership/seat entitlement and must never replace Pro or Max. */
+export type SubscriptionPlanId = Exclude<PlanId, "team">;
+
+/** Maps a base PlanId to the Supabase `subscriptions.plan` enum value. */
+export function planToSupabase(plan: SubscriptionPlanId): "pro" | "max" | "team" {
   if (plan === "agency") return "team";
   return plan;
 }
@@ -80,7 +84,7 @@ export function planToSupabase(plan: PlanId): "pro" | "max" | "team" {
  *  checkout body — without this they would 400 on the rename rollout day. */
 export function normalizePlanId(input: string): PlanId | null {
   if (input === "dev") return "max";
-  if (input === "pro" || input === "max" || input === "agency") return input;
+  if (input === "pro" || input === "max" || input === "agency" || input === "team") return input;
   return null;
 }
 

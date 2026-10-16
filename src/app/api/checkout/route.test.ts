@@ -15,4 +15,8 @@ describe("checkout trial eligibility", () => {
   it("does not apply a trial to agency", () => {
     expect(shouldApplyCheckoutTrial("agency")).toBe(false);
   });
+
+  it("does not apply a Stripe trial to Team; the agreed no-card trial is separately gated", () => {
+    expect(shouldApplyCheckoutTrial("team")).toBe(false);
+  });
 });

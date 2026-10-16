@@ -96,6 +96,19 @@ export async function POST(req: Request) {
     );
   }
 
+  // Team is a separate seat entitlement, not a base subscription plan. Keep
+  // both payment rails closed until its no-card trial and webhook lifecycle
+  // are implemented; mpAmountFor returning null is only a secondary guard.
+  if (plan === "team") {
+    return NextResponse.json(
+      {
+        error:
+          "Team checkout is not available until Team trial entitlements and subscription sync are ready.",
+      },
+      { status: 503, headers: cors },
+    );
+  }
+
   // Plan-less subscription: the amount lives in code/env, not on a dashboard
   // plan (the associated-plan flow needs a tokenized card). Agency is lead-gen.
   const includedAi = wantsIncludedAi(body);
