@@ -77,10 +77,11 @@ describe("validateResearch", () => {
     const { markets: _m, ...noMarkets } = officialRemote;
     expect(validateResearch(noMarkets).errors.join(" ")).toContain("markets");
     expect(validateResearch({ ...officialRemote, markets: { codes: ["US"], evidence: [] } }).ok).toBe(false);
+    expect(validateResearch({ ...officialRemote, markets: { codes: ["CO"], evidence: ["content/connectors/en/alegra.md"] } }).ok).toBe(false);
   });
 
   it("rejects unknown market codes and GLOBAL mixed with countries", () => {
-    const bad = (codes) => validateResearch({ ...officialRemote, markets: { codes, evidence: ["x"] } });
+    const bad = (codes) => validateResearch({ ...officialRemote, markets: { codes, evidence: ["https://vendor.test/markets"] } });
     expect(bad(["ZZ"]).ok).toBe(false);
     expect(bad(["us"]).ok).toBe(false);
     expect(bad(["GLOBAL", "US"]).ok).toBe(false);
@@ -238,6 +239,10 @@ describe("cli", () => {
     const dir = tmp();
     fs.writeFileSync(path.join(dir, "research.json"), JSON.stringify(officialRemote));
     const out = execFileSync("node", [cli, "research-validate", path.join(dir, "research.json")], { encoding: "utf8" });
+    const inCountry = execFileSync("node", [cli, "research-validate", path.join(dir, "research.json"), "US"], { encoding: "utf8" });
+    const outOfCountry = execFileSync("node", [cli, "research-validate", path.join(dir, "research.json"), "CO"], { encoding: "utf8" });
+    expect(inCountry).toContain("target_supported=true");
+    expect(outOfCountry).toContain("target_supported=false");
     expect(out).toContain("verdict=ship_official");
     expect(out).toContain("slug=ramp");
     fs.writeFileSync(path.join(dir, "bad.json"), "{}");

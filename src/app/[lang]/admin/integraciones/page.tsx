@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/content";
 import { IntegracionesClient } from "./IntegracionesClient";
-import { AgregarCandidatoPanel } from "./AgregarCandidatoPanel";
 import { LoopsInfoSection } from "./LoopsInfoSection";
 
 export const dynamic = "force-dynamic";
@@ -26,13 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * supervisión de paridad de connectors entre las 4 IAs (Claude/Codex/
  * Gemini/GLM) — workflow `connector-loop.yml` en el repo `terminal-sync`.
  *
- * Panel B ("Agregar candidato"): formulario para crear un candidato de
- * skill o connector como PR draft en ESTE repo (ver AgregarCandidatoPanel +
- * POST /api/admin/integraciones/candidate). Vive como componente hermano,
- * no dentro de IntegracionesClient — son features independientes que
- * comparten página.
- *
- * Debajo de los dos paneles: LoopsInfoSection, un acordeón puramente
+ * Debajo del panel: LoopsInfoSection, un acordeón puramente
  * informativo ("¿Qué hace cada loop?") sin fetches ni gate de auth propio —
  * explica en criollo qué hace la supervisión y qué hacen los loops de
  * curación, para que JM sepa qué dispara antes de tocar "Correr ahora".
@@ -57,7 +50,6 @@ export default async function IntegracionesPage({ params }: Props) {
         </nav>
       </section>
       <IntegracionesClient lang={lang} />
-      <AgregarCandidatoPanel lang={lang} />
       <LoopsInfoSection lang={lang} />
     </>
   );

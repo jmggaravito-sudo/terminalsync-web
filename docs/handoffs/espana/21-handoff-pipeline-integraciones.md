@@ -13,8 +13,8 @@ Esta lista sale de `20-mapa-integraciones-espana.md` (ahí están las fuentes y 
 5. **Comando** (ejemplos; yo no los ejecuté):
 
 ```bash
-gh workflow run integration-pipeline.yml -R jmggaravito-sudo/terminalsync-web -f focus="Holded"
-gh workflow run integration-pipeline.yml -R jmggaravito-sudo/terminalsync-web -f focus="Quipu" -f dry_run=true
+gh workflow run integration-pipeline.yml -R jmggaravito-sudo/terminalsync-web -f focus="Holded" -f country=ES
+gh workflow run integration-pipeline.yml -R jmggaravito-sudo/terminalsync-web -f focus="Quipu" -f country=ES -f dry_run=true
 ```
 
 ## Tanda A: se espera `ship_official` (corrida completa)
