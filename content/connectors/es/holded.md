@@ -2,7 +2,7 @@
 name: Holded
 logo: /connectors/holded.png
 category: automation
-markets: ["ES"]
+markets: ["ES", "US"]
 status: available
 simpleTitle: "Pregúntale a tu Holded por facturas, stock y clientes"
 simpleSubtitle: "MCP oficial de Holded: facturación, contabilidad, CRM e inventario por OAuth, sin pegar ninguna API key."
@@ -25,12 +25,12 @@ marketplaceSource: "official"
 marketplaceCategory: "web"
 installableForAi: true
 installableForAiReason: "remote-needs-login"
-aiToolsCount: 0
-aiReadOnlyTools: 0
+aiToolsCount: 360
+aiReadOnlyTools: 151
 verifiedAt: "2026-10-16T10:38:51.524Z"
 verifiedPackageVersion: null
 ---
-**Holded** es la plataforma de gestión con la que muchas pymes españolas manejan el día a día del negocio: facturación, contabilidad, CRM, inventario, proyectos y equipo, con el cumplimiento fiscal español (AEAT, SII, Veri*factu) integrado. El server MCP oficial de Holded le da a tu agente acceso directo a esos datos — sin pegar ninguna API key en TerminalSync, solo con el login de tu propia cuenta de Holded.
+**Holded** es la plataforma de gestión con la que muchas pymes españolas manejan el día a día del negocio: facturación, contabilidad, CRM, inventario, proyectos y equipo, con el cumplimiento fiscal español (Veri*Factu, AEAT) integrado y SII y TicketBAI como complementos. El server MCP oficial de Holded le da a tu agente acceso directo a esos datos — sin pegar ninguna API key en TerminalSync, solo con el login de tu propia cuenta de Holded.
 
 Le preguntas *"Muéstrame las facturas sin cobrar de este mes"* y el agente las trae directo de tu cuenta. Le pides que arme un presupuesto y queda listo como borrador para que tú lo conviertas en factura. Puedes consultar y resumir facturas, presupuestos, tickets, contactos, productos, stock, almacenes, gastos y compras; y en las áreas operativas también crear y actualizar: contactos, oportunidades del CRM, presupuestos y proformas en borrador, proyectos, inventario y documentos de la bandeja de entrada.
 
@@ -43,7 +43,7 @@ Le preguntas *"Muéstrame las facturas sin cobrar de este mes"* y el agente las 
 - *"Actualiza el teléfono y el email de la cliente García S.L. en sus datos de contacto."*
 - *"Sube esta factura de proveedor a la bandeja de entrada y etiquétala como 'gastos de oficina'."*
 
-Las acciones que cambian datos — crear un presupuesto, actualizar un contacto, subir un documento — van con confirmación: la IA te muestra qué va a hacer y espera tu aprobación antes de ejecutar. Tal como lo plantea Holded: *"la IA redacta y organiza; tú emites y cobras."*
+Los tres últimos casos necesitan el perfil **Operativo**; con el Analítico (el preseleccionado) la IA es de solo lectura. Las acciones que cambian datos — crear un presupuesto, actualizar un contacto, subir un documento — van con confirmación: la IA te muestra qué va a hacer y espera tu aprobación antes de ejecutar. Tal como lo plantea Holded: *"la IA redacta y organiza; tú emites y cobras."*
 
 ### Cómo te conectas
 
@@ -55,7 +55,7 @@ Este conector **no te pide pegar ninguna API key**. Usa el login de tu propia cu
 
 **Requisito:** tu cuenta de Holded necesita tener el acceso a la API activado. La API de Holded está disponible en todos los planes de pago, no en el plan gratuito.
 
-**Aviso honesto:** es un **server hospedado por Holded** (`https://mcp.holded.com/mcp`), no algo que corre en tu computadora. Al autorizar eliges un perfil de permisos: **Analítico** (solo lectura, el preseleccionado) o **Operativo** (añade escritura para tareas operativas). La contabilidad (asientos, remesas, impuestos, pagos, nóminas), las facturas y documentos fiscales, el equipo y RRHH, los ajustes y la firma digital son **siempre de solo lectura**: la IA puede consultarlos, no modificarlos. Y no puedes concederle a la IA un permiso que tú no tengas — el agente queda acotado a lo que tu usuario puede hacer en Holded.
+**Aviso honesto:** es un **server hospedado por Holded** (`https://mcp.holded.com/mcp`), no algo que corre en tu computadora. Al autorizar eliges un perfil de permisos: **Analítico** (solo lectura, el preseleccionado) o **Operativo** (añade escritura para tareas operativas). La contabilidad (asientos, remesas, impuestos, pagos, nóminas), las facturas y documentos fiscales, el equipo y RRHH, los ajustes y la firma digital son **siempre de solo lectura con los perfiles de Holded**: la IA puede consultarlos, no modificarlos. Y no puedes concederle a la IA un permiso que tú no tengas — el agente queda acotado a lo que tu usuario puede hacer en Holded.
 
 --- dev ---
 
@@ -77,10 +77,10 @@ npx -y mcp-remote@latest https://mcp.holded.com/mcp
 
 Áreas con lectura y escritura (perfil Operativo): contactos; CRM y pipeline (oportunidades, eventos, embudos, reservas y actividades); presupuestos y proformas (como borradores que el usuario convierte en factura); proyectos; inventario operativo (productos, almacenes, pedidos de venta y compra, envíos, órdenes de producción); y subida de documentos a la bandeja de entrada con etiquetas.
 
-Áreas **siempre en solo lectura**: contabilidad (asientos, remesas, impuestos/AEAT, pagos, nóminas); facturas y documentos fiscales (facturas, tickets, SII, factura electrónica, TPV); Equipo/RRHH; ajustes y administración del sistema; herramientas de desarrollador; firma digital y facturación.
+Áreas **en solo lectura con los perfiles recomendados**: contabilidad (asientos, remesas, impuestos/AEAT, pagos, nóminas); facturas y documentos fiscales (facturas, tickets, SII, factura electrónica, TPV); Equipo/RRHH; ajustes y administración del sistema; herramientas de desarrollador; firma digital y facturación. Con un permiso a medida por áreas, Holded permite activar la escritura solo en una de ellas, bajo tu responsabilidad — algo que la doc desaconseja por el riesgo que conlleva.
 
-La doc no publica una lista estática de tools: cita la especificación OpenAPI completa del API de Holded (`api.holded.com/openapi/es.json`) como fuente de las tools del MCP.
+La doc de desarrolladores publica la referencia estática de tools (`holded.com/es/desarrolladores/mcp/herramientas`): **360 herramientas**, una por cada operación del API de Holded, agrupadas por área (Ventas, Contactos, Contabilidad, Tesorería, CRM, Proyectos, Inventario, Equipo y RRHH, Calendario, Bandeja de entrada, Desarrolladores) y con el acceso marcado por herramienta: 151 de solo lectura y 209 de escritura. El artículo del centro de ayuda no lista las tools; cita la especificación OpenAPI completa del API (`api.holded.com/openapi/es.json`).
 
-**Divulgación:** server hospedado que lee y, con el perfil Operativo, escribe en áreas operativas; todo lo que toca dinero, impuestos o personas queda en solo lectura. Requisito documentado: una cuenta de Holded con acceso a la API activado — disponible en todos los planes de pago, no en el gratuito; el uso del API tiene un tope mensual de llamadas según el plan (holded.com/es/desarrolladores/limite-de-tasa).
+**Divulgación:** server hospedado que lee y, con el perfil Operativo, escribe en áreas operativas; todo lo que toca dinero, impuestos o personas queda en solo lectura con los perfiles recomendados. Requisito documentado: una cuenta de Holded con acceso a la API activado — disponible en todos los planes de pago, no en el gratuito; el uso del API tiene un tope mensual de llamadas según el plan (holded.com/es/desarrolladores/limite-de-tasa).
 
 Licencia: SaaS propietario (términos y condiciones, `holded.com/tac`). Fuente: help.holded.com/es/articles/15646468-connect-holded-with-ia.
