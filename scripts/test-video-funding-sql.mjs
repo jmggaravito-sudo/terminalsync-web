@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 const root=fileURLToPath(new URL('../',import.meta.url)).replace(/\/$/,'');
-const sql=readFileSync(root+'/supabase/migrations/0033_video_exclusive_funding.sql','utf8');
+const sql=readFileSync(root+'/supabase/migrations/0034_video_exclusive_funding.sql','utf8');
 console.log('SQL SHA256',createHash('sha256').update(sql).digest('hex'));
 const db=new PGlite();let fails=0;
 const test=async(name,f)=>{try{await f();console.log('PASS',name)}catch(e){fails++;console.log('FAIL',name,e.message)}};
