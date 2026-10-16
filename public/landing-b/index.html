@@ -760,7 +760,7 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 
 <div class="wrap foot">
   <span>© 2026 TS</span><span class="sp"></span>
-  <a href="/es/legal/privacy" data-lhref="/legal/privacy">Privacidad</a><a href="/es/legal/terms" data-lhref="/legal/terms">Términos</a><a href="/es/casos-de-uso" data-lhref="/casos-de-uso">Casos de uso</a><a href="/es/connectors" data-lhref="/connectors">Integraciones</a><a href="mailto:hola@terminalsync.ai">Contacto</a>
+  <a href="/es/legal/privacy" data-lhref="/legal/privacy">Privacidad</a><a href="/es/legal/terms" data-lhref="/legal/terms">Términos</a><a href="/es/legal/cookies" data-lhref="/legal/cookies">Cookies</a><a href="#" data-cookie-settings>Configurar cookies</a><a href="/es/casos-de-uso" data-lhref="/casos-de-uso">Casos de uso</a><a href="/es/connectors" data-lhref="/connectors">Integraciones</a><a href="mailto:hola@terminalsync.ai">Contacto</a>
 </div>
 
 <div class="lb" id="lb" hidden>
@@ -925,7 +925,8 @@ f.innerHTML='<p style="margin:0;font-weight:600">'+(LANG==='en'?'Done. We will e
 catch(_){b.disabled=false;b.textContent=LANG==='en'?'Try again':'Intenta de nuevo';}});})();
 lucide.createIcons();
 </script>
-<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
-<script defer src="/_vercel/insights/script.js"></script>
+<!-- Gestor de consentimiento. Vercel Web Analytics NO se carga aquí: lo inyecta
+     consent.js solo si la persona acepta la categoría de analítica. -->
+<script src="/consent.js"></script>
 </body>
 </html>

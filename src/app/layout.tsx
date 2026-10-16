@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { defaultLocale } from "@/content";
 import { RewardfulLoader } from "@/components/RewardfulLoader";
-import { CtaTracker } from "@/components/analytics/CtaTracker";
+import { ConsentGate } from "@/components/consent/ConsentGate";
+import { CookieBanner } from "@/components/consent/CookieBanner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -100,9 +99,9 @@ export default function RootLayout({
       <body>
         {children}
         <RewardfulLoader />
-        <CtaTracker />
-        <Analytics />
-        <SpeedInsights />
+        {/* Analítica, medición de clics y Sentry: solo tras consentimiento. */}
+        <ConsentGate />
+        <CookieBanner />
       </body>
     </html>
   );

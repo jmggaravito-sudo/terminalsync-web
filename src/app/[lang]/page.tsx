@@ -27,7 +27,6 @@ import { Pricing } from "@/components/landing/Pricing";
 import { Trust } from "@/components/landing/Trust";
 import { Footer } from "@/components/landing/Footer";
 import { AgentWidget } from "@/components/AgentWidget";
-import { CookieBanner } from "@/components/CookieBanner";
 import { StickyDownloadCTA } from "@/components/StickyDownloadCTA";
 import { StructuredData } from "@/components/StructuredData";
 
@@ -111,7 +110,6 @@ export default async function Landing({ params }: Props) {
       <Footer dict={d} />
       <AgentWidget dict={d} />
       <StickyDownloadCTA dict={d} />
-      <CookieBanner dict={d} />
     </>
   );
 }

@@ -815,6 +815,8 @@
     "Herramientas CLI": "CLI tools",
     "Legal": "Legal",
     "Privacidad": "Privacy",
+    "Cookies": "Cookies",
+    "Configurar cookies": "Cookie settings",
     "Términos": "Terms",
     "Seguridad": "Security",
     "© 2026 TS. Todos los derechos reservados.": "© 2026 TS. All rights reserved.",
