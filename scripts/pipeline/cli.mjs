@@ -105,12 +105,22 @@ switch (cmd) {
       : rawBuild;
     const decision = readJson(path.join(dir, "decision.json"));
     const supervision = readJson(path.join(dir, "supervision.json"));
+    const globalSupervision = research?.verdict === "exists" ? {
+      scope: "global-marketplace-app",
+      status: ["success", "failure", "cancelled"].includes(process.env.GLOBAL_SUPERVISION_STATUS)
+        ? process.env.GLOBAL_SUPERVISION_STATUS : "not_run",
+      url: process.env.GITHUB_RUN_ID && process.env.GITHUB_REPOSITORY
+        ? `${process.env.GITHUB_SERVER_URL || "https://github.com"}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+        : null,
+    } : null;
+    if (globalSupervision) fs.writeFileSync(path.join(dir, "global-supervision.json"), JSON.stringify(globalSupervision, null, 2));
     console.log(
       buildReport({
         research,
         build,
         decision,
         supervision,
+        globalSupervision,
         merged: merged === "true",
         mergeNote: mergeNote || undefined,
         checks: checks || undefined,

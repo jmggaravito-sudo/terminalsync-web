@@ -14,7 +14,13 @@ export interface PipelineSupervision {
   appSmoke?: "not_run";
 }
 
-export function pipelineAnswer(research: PipelineResearch, country: MarketCode, supervision?: PipelineSupervision | null) {
+export interface PipelineGlobalSupervision {
+  scope?: "global-marketplace-app";
+  status?: "success" | "failure" | "cancelled" | "not_run";
+  url?: string | null;
+}
+
+export function pipelineAnswer(research: PipelineResearch, country: MarketCode, supervision?: PipelineSupervision | null, globalSupervision?: PipelineGlobalSupervision | null) {
   const codes = research.markets?.codes ?? [];
   const supported = codes.includes(country) || codes.includes("GLOBAL");
   const evidence = (research.markets?.evidence ?? []).filter((item) => /^https:\/\//.test(item)).slice(0, 3);
@@ -25,8 +31,10 @@ export function pipelineAnswer(research: PipelineResearch, country: MarketCode, 
     return { outcome: "country_unverified" as const, reason: research.reason ?? "", evidence };
   }
   if (research.verdict === "exists") {
-    return { outcome: supervision?.outcome === "catalog_blocked" ? "catalog_blocked" as const : "already_cataloged" as const,
-      reason: research.reason ?? "", evidence, supervision: supervision ?? null };
+    return { outcome: supervision?.outcome === "catalog_blocked" ? "catalog_blocked" as const
+      : globalSupervision?.status === "failure" ? "global_blocked" as const : "already_cataloged" as const,
+      reason: research.reason ?? "", evidence, supervision: supervision ?? null,
+      globalSupervision: globalSupervision ?? null };
   }
   if (research.verdict === "needs_own_build") {
     return { outcome: "needs_build" as const, reason: research.reason ?? "", evidence };

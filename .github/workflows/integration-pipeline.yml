@@ -201,6 +201,13 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+  supervise_marketplace_existing:
+    name: "2 · Supervisar marketplace y app"
+    needs: research
+    if: needs.research.outputs.verdict == 'exists'
+    uses: ./.github/workflows/integration-supervision-loop.yml
+    secrets: inherit
+
   review:
     name: "3 · Revisor ${{ matrix.role }}"
     needs: [research, build]
@@ -418,7 +425,7 @@ jobs:
 
   report:
     name: "7 · Reporte"
-    needs: [research, build, supervise_existing, decide, fix, finalize]
+    needs: [research, build, supervise_existing, supervise_marketplace_existing, decide, fix, finalize]
     if: always() && needs.research.result != 'skipped'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -441,10 +448,19 @@ jobs:
           MERGED: ${{ needs.finalize.outputs.merged }}
           NOTE: ${{ needs.finalize.outputs.note }}
           CHECKS: ${{ needs.finalize.outputs.checks }}
+          GLOBAL_SUPERVISION_STATUS: ${{ needs.supervise_marketplace_existing.result }}
         run: |
           mkdir -p "$PIPELINE_DIR"
           node scripts/pipeline/cli.mjs report "$PIPELINE_DIR" "$MERGED" "$NOTE" "$CHECKS" > report.md
           cat report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pipeline-global-supervision
+          path: .pipeline/global-supervision.json
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Comment the report on the PR
         if: needs.build.outputs.pr != ''

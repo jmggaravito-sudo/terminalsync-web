@@ -24,7 +24,7 @@ Workflow: `.github/workflows/integration-pipeline.yml`. Prompts: `.github/pipeli
 |---|---|
 | `ship_official` | Se construye y se revisa (etapas 2–7). |
 | `needs_own_build` | **No se construye nada.** El reporte trae los hechos verificados de la API (autenticación, endpoints, límites) y las alternativas de terceros, y la decisión de construir un MCP propio es tuya. |
-| `exists` | Se supervisa esa ficha concreta (mercado, estado, instalabilidad declarada y verificador del conector) y se informa si está bloqueada. Una ficha existente no prueba login ni app instalada. |
+| `exists` | Se supervisa esa ficha concreta (mercado, estado, instalabilidad y verificador), y corre el loop existente de supervisión marketplace → app. El reporte muestra ambos resultados. Una ficha existente no prueba login ni app instalada. |
 | `skip` | Descartado, con el motivo. |
 
 | Decisión | Significado |
@@ -65,7 +65,7 @@ gh workflow run integration-pipeline.yml -R jmggaravito-sudo/terminalsync-web -f
 ## Límites actuales
 
 - **Solo conectores.** Plugins, kits y skills siguen en sus loops semanales.
-- **Investigación no equivale a supervisión completa.** Si el veredicto es `exists`, corre la supervisión focalizada de la ficha y registra el resultado, pero los loops globales marketplace/app siguen siendo independientes; todavía no hay certificación automática de login real ni smoke instalado por solicitud. Una ficha `soon` o `installableForAi: false` sale bloqueada.
+- **Investigación no equivale a certificación completa.** Si el veredicto es `exists`, la misma corrida ejecuta la supervisión focalizada y reutiliza el loop global marketplace → app; sus veredictos quedan en el reporte. Ese loop comprueba catálogo servido y mapeo de la app en la rama lab, **no** login de una cuenta real ni smoke instalado. Una ficha `soon` o `installableForAi: false` sale bloqueada.
 - **GLM como revisor no está medido** contra una revisión humana. Por eso el merge automático parte apagado.
 - La supervisión de un PR descarga el catálogo **de producción**, no el del PR: si producción está en rojo, el check falla en todos los PRs hasta que se corrija.
 - Costo estimado por integración: unos USD 8–12 de GLM (investigador, constructor de hasta 80 turnos, cuatro revisores de hasta 50). Es una estimación a partir de las trazas de los loops, no una medición.

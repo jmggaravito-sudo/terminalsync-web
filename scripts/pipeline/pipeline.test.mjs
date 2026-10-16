@@ -215,6 +215,17 @@ describe("surfaces / report", () => {
     expect(md).not.toContain("Revisión por agentes");
   });
 
+  it("reports focused and global supervision separately for an existing connector", () => {
+    const md = buildReport({
+      research: { name: "Alegra", slug: "alegra", verdict: "exists", reason: "ficha previa" },
+      supervision: { country: "CO", outcome: "catalog_blocked", checks: { marketListed: true, statusAvailable: false, declaredInstallable: false, probeReason: "needs-oauth" } },
+      globalSupervision: { status: "success", url: "https://github.com/o/r/actions/runs/123" },
+    });
+    expect(md).toContain("bloqueada en catálogo/instalación");
+    expect(md).toContain("Supervisión global marketplace → app:** pasó");
+    expect(md).toContain("Smoke instalado y cuenta real:** no ejecutado");
+  });
+
   it("reports the three surfaces, reviewers and findings for a built connector", () => {
     const decision = decide({
       research: officialRemote,
