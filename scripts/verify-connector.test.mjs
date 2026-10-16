@@ -45,6 +45,19 @@ describe("remote connectors (mcp-remote)", () => {
 });
 
 describe("remote connectors where mcp-remote cannot log in", () => {
+  it.each(["en", "es"])("keeps Alegra %s on the OAuth root and blocked until login works", async (lang) => {
+    const { verifyFile } = await import("./verify-connector.mjs");
+    const file = `content/connectors/${lang}/alegra.md`;
+    const text = (await import("node:fs")).readFileSync(file, "utf8");
+    const data = (await import("gray-matter")).default(text).data;
+    expect(data.manifest.mcpServers.alegra.args).toEqual(["-y", "mcp-remote@latest", "https://mcp.alegra.com"]);
+    expect(data.manifest.mcpServers.alegra.env).toBeUndefined();
+    expect(text).not.toContain("ALEGRA_API_TOKEN_BASE64");
+    expect(data.installableForAi).toBe(false);
+    expect(await verifyFile(file, { verifiedAt: "2026-10-16T00:00:00.000Z" })).toMatchObject({
+      slug: "alegra", installableForAi: false, installableForAiReason: "needs-oauth",
+    });
+  });
   it("keeps zoom blocked: mcp-remote cannot log in there", async () => {
     const { verifyFile } = await import("./verify-connector.mjs");
     const r = await verifyFile("content/connectors/en/zoom.md", { verifiedAt: "2026-10-08T00:00:00.000Z" });
