@@ -98,6 +98,8 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .hero-preview{background:#d4d5d8}
 .hero-shot{aspect-ratio:1600/1273;background:#d4d5d8}
 .hero-shot img{object-fit:contain}
+.hero-video{width:100%;height:100%;display:block;object-fit:cover;border:0;background:#eef0f7}
+.hero-video[hidden],.hero-shot img[hidden]{display:none}
 
 /* ── prueba visual de un espacio ── */
 .space-proof{padding:clamp(44px,5.5vw,76px) 0;border-top:1px solid var(--line);background:var(--bg)}
@@ -359,7 +361,12 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
       <p class="hero-plat">Apple Silicon e Intel · macOS 13+ · <a href="#windows">Windows en lista de espera</a></p>
     </div>
     <div class="win hero-preview">
-      <div class="win-shot hero-shot"><img src="/landing-b/assets/dashboard-workspaces-video-poster-es.png" alt="Dashboard de TS con espacios separados para clientes, proyectos y departamentos." fetchpriority="high" /></div>
+      <div class="win-shot hero-shot">
+        <video id="heroVideo" class="hero-video" controls playsinline preload="metadata" poster="/landing-b/assets/ts-corporate-poster-es.jpg" aria-label="Video corporativo de TerminalSync">
+          <source src="/landing-b/assets/ts-corporate-es.mp4" type="video/mp4" />
+        </video>
+        <img id="heroCover" hidden src="/landing-b/assets/dashboard-workspaces-video-poster-es.png" alt="Dashboard de TS con espacios separados para clientes, proyectos y departamentos." fetchpriority="high" />
+      </div>
     </div>
   </div>
 </section>
