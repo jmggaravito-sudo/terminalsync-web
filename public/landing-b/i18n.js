@@ -53,8 +53,11 @@
     "TS — Espacios de trabajo": "TS — Workspaces",
     "Contexto": "Context",
     "Tus archivos": "Your files",
-    "Espacios separados, cada uno con su contexto": "Separate workspaces, each with its own context",
-    "Explora estos recorridos interactivos de ejemplo para ver cómo se organiza el trabajo.": "Explore these interactive example walkthroughs to see how work is organized.",
+    "No te lo contamos. Te lo mostramos.": "We won't just tell you. We'll show you.",
+    "Explora demos interactivos y descubre cómo trabajan tus espacios y agentes de IA en situaciones reales.": "Explore interactive demos and see how your workspaces and AI agents handle real situations.",
+    "Así trabaja un espacio por dentro": "How a workspace works inside",
+    "Un espacio que entiende el trabajo.": "A workspace that understands the work.",
+    "Cada espacio reúne sus archivos, reglas, memoria y herramientas para que su agente pueda continuar el trabajo sin empezar de cero.": "Each workspace brings together its files, rules, memory, and tools so its agent can continue the work without starting from scratch.",
     "Continuidad": "Continuity",
     "Mensajería": "Messaging",
     "Asistente de ideas": "Idea assistant",
@@ -944,6 +947,13 @@
       cov.alt = lang === 'en'
         ? 'TS dashboard with separate workspaces for clients, projects, and departments.'
         : 'Dashboard de TS con espacios separados para clientes, proyectos y departamentos.';
+    }
+  var spaceProof = document.getElementById('spaceProofImage');
+    if (spaceProof) {
+    spaceProof.src = '/landing-b/assets/workspace-capture-' + lang + '.html';
+    spaceProof.title = lang === 'en'
+        ? 'Marketing and Advertising workspace with a conversation and its own context panel.'
+        : 'Espacio Marketing y Publicidad con conversación y panel de contexto propio.';
     }
   }
 

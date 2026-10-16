@@ -102,6 +102,17 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .hero-shot{aspect-ratio:1600/1273;background:#d4d5d8}
 .hero-shot img{object-fit:contain}
 
+/* ── prueba visual de un espacio ── */
+.space-proof{padding:clamp(44px,5.5vw,76px) 0;border-top:1px solid var(--line);background:var(--bg)}
+.space-proof-grid{display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr);gap:clamp(30px,5vw,72px);align-items:center}
+.space-proof-copy h2{font-size:clamp(27px,3.1vw,40px);line-height:1.14;font-weight:600}
+.space-proof-copy p{margin-top:16px;font-size:16.5px;line-height:1.62;color:var(--fg-2)}
+.space-proof-label{display:inline-flex;align-items:center;gap:8px;margin-bottom:15px;font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-2)}
+.space-proof-label::before{content:'';width:9px;height:9px;border-radius:50%;background:var(--accent)}
+.space-proof-shot{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);overflow:hidden;box-shadow:0 30px 64px -40px rgba(16,24,40,.42)}
+.space-proof-shot iframe{display:block;width:100%;aspect-ratio:16/9;border:0;background:#dfe3ea}
+@media (max-width:760px){.space-proof-grid{grid-template-columns:1fr}.space-proof-copy{max-width:62ch}.space-proof-shot{border-radius:var(--r)}}
+
 /* ── barra de secciones pegajosa ── */
 .subnav{position:sticky;top:66px;z-index:30;background:var(--pane-2);backdrop-filter:blur(12px);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .subnav-in{display:flex;align-items:center;gap:4px;height:54px;position:relative}
@@ -356,6 +367,19 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
   </div>
 </section>
 
+<section class="space-proof" id="espacio">
+  <div class="wrap space-proof-grid">
+    <div class="space-proof-copy">
+      <span class="space-proof-label">Así trabaja un espacio por dentro</span>
+      <h2>Un espacio que entiende el trabajo.</h2>
+      <p>Cada espacio reúne sus archivos, reglas, memoria y herramientas para que su agente pueda continuar el trabajo sin empezar de cero.</p>
+    </div>
+    <figure class="space-proof-shot">
+          <iframe id="spaceProofImage" src="/landing-b/assets/workspace-capture-es.html" title="Espacio Marketing y Publicidad con conversación, trabajo preparado y panel de contexto propio." loading="lazy" tabindex="-1"></iframe>
+    </figure>
+  </div>
+</section>
+
 <div class="subnav">
   <div class="wrap subnav-in">
     <div class="subnav-scroll">
@@ -374,8 +398,8 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 <section class="sec first" id="capacidades">
   <div class="wrap">
     <div class="head">
-      <h2 class="head-mark"><span class="mk"><i data-lucide="sparkles" width="22" height="22"></i></span>Espacios separados, cada uno con su contexto</h2>
-      <p class="sub">Explora estos recorridos interactivos de ejemplo para ver cómo se organiza el trabajo.</p>
+      <h2 class="head-mark"><span class="mk"><i data-lucide="sparkles" width="22" height="22"></i></span>No te lo contamos. Te lo mostramos.</h2>
+      <p class="sub">Explora demos interactivos y descubre cómo trabajan tus espacios y agentes de IA en situaciones reales.</p>
     </div>
     <div class="dgrid">
       <a class="dcard" href="/landing-b/demos/demo-contexto.html">
