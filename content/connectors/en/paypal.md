@@ -32,7 +32,7 @@ verifiedPackageVersion: null
 ---
 **PayPal** is one of the most widely used ways for businesses to send and receive money — PayPal itself says it serves businesses in nearly 200 markets. The official PayPal MCP server connects your agent straight to your merchant account: transactions, invoices, disputes, subscriptions and more, using your own PayPal login — no API key pasted into TerminalSync.
 
-Ask *"Show me this week's transactions and flag the ones still pending"* and the agent pulls them straight from your account. *"Which invoices are still unpaid?"* has it review your invoice list in seconds. It's built for the questions a business owner actually has: did the money come in, who hasn't paid, what is this dispute about, and who is subscribed to what. And when you ask for something that writes to your account — creating and sending an invoice, sending a payment reminder — the agent shows you what it's about to do and asks for your confirmation first.
+Ask *"Show me this week's transactions and flag the ones still pending"* and the agent pulls them straight from your account. *"Which invoices are still unpaid?"* has it review your invoice list in seconds. It's built for the questions a business owner actually has: did the money come in, who hasn't paid, what is this dispute about, and what subscription plans you have active. And when you ask for something that writes to your account — creating and sending an invoice, sending a payment reminder — the agent shows you what it's about to do and asks for your confirmation first.
 
 ### What you can ask
 
@@ -40,7 +40,7 @@ Ask *"Show me this week's transactions and flag the ones still pending"* and the
 - *"Which invoices are still unpaid? Send a reminder to the client who's late."*
 - *"Create a PayPal invoice for $850 for the November retainer and send it to the client."*
 - *"Is there any open dispute? Show me the details."*
-- *"Show me my active subscriptions and what each one bills."*
+- *"Show me my subscription plans and what each one bills."*
 
 ### How you connect
 
@@ -54,7 +54,7 @@ This connector **doesn't ask you to paste an API key**. It uses your own PayPal 
 
 --- dev ---
 
-PayPal (PayPal Holdings, Inc.) publishes an official **remote MCP server** at `https://mcp.paypal.com/sse` (SSE), documented at developer.paypal.com/tools/mcp-server/. A Streamable HTTP endpoint (`/http`) is also documented — unauthenticated probes returned 404 in this run, so the manifest pins `/sse`, the endpoint PayPal's own `mcp-remote` setup example (the `paypal-commerce-ai` config) uses. A sandbox server exists at `https://mcp.sandbox.paypal.com`.
+PayPal (PayPal Holdings, Inc.) publishes an official **remote MCP server** at `https://mcp.paypal.com/sse` (SSE), documented at developer.paypal.com/tools/mcp-server/. A Streamable HTTP endpoint (`/http`) is also documented — unauthenticated probes returned 404 in this run, so the manifest pins `/sse`, the endpoint PayPal's own `mcp-remote` setup example uses. A sandbox server exists at `https://mcp.sandbox.paypal.com`.
 
 Auth is a browser OAuth login: PayPal's docs say the client "sends you to the PayPal login page", you "Log into PayPal" and then "Authorize the client to work with the MCP server". PayPal also documents that *"With remote MCP server, users can continue their tasks across devices with a single login after authentication"*, plus a Bearer alternative using a client ID/secret from the Developer Dashboard. TerminalSync uses the OAuth flow (no secret to paste); per PayPal's troubleshooting docs, the bridge keeps login tokens under `~/.mcp-auth`.
 

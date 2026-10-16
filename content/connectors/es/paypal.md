@@ -30,9 +30,9 @@ aiReadOnlyTools: 0
 verifiedAt: "2026-10-16T10:40:27.000Z"
 verifiedPackageVersion: null
 ---
-**PayPal** es una de las formas más usadas por los negocios para enviar y recibir dinero: el propio PayPal dice que atiende negocios en casi 200 mercados. El server MCP oficial de PayPal conecta a tu agente directo con tu cuenta de comercio: transacciones, facturas, disputas, suscripciones y más, con el login de tu propia cuenta — sin pegar ninguna API key en TerminalSync.
+**PayPal** es una de las formas más usadas por los negocios para enviar y recibir dinero: el propio PayPal dice que atiende negocios en casi 200 mercados. El server MCP oficial de PayPal conecta a tu agente directamente con tu cuenta de comercio: transacciones, facturas, disputas, suscripciones y más, con el login de tu propia cuenta — sin pegar ninguna API key en TerminalSync.
 
-Le preguntas *"Muéstrame las transacciones de esta semana y márcame las que siguen pendientes"* y el agente las trae directo de tu cuenta. *"¿Qué facturas siguen sin pagar?"* y revisa tu lista de facturas en segundos. Está pensado para las preguntas reales de un dueño de negocio: si entró el dinero, quién no ha pagado, de qué trata esta disputa y quién tiene qué suscripción. Y cuando le pides algo que escribe en tu cuenta — crear y enviar una factura, mandar un recordatorio de pago — el agente te muestra qué va a hacer y te pide confirmación antes de ejecutarlo.
+Le preguntas *"Muéstrame las transacciones de esta semana y márcame las que siguen pendientes"* y el agente las trae directo de tu cuenta. *"¿Qué facturas siguen sin pagar?"* y revisa tu lista de facturas en segundos. Está pensado para las preguntas reales de un dueño de negocio: si entró el dinero, quién no ha pagado, de qué trata esta disputa y qué planes de suscripción tengo activos. Y cuando le pides algo que escribe en tu cuenta — crear y enviar una factura, mandar un recordatorio de pago — el agente te muestra qué va a hacer y te pide confirmación antes de ejecutarlo.
 
 ### Qué le puedes pedir
 
@@ -40,7 +40,7 @@ Le preguntas *"Muéstrame las transacciones de esta semana y márcame las que si
 - *"¿Qué facturas siguen sin pagar? Mándale un recordatorio al cliente que va tarde."*
 - *"Crea una factura de PayPal por $850 por los honorarios de noviembre y envíala al cliente."*
 - *"¿Hay alguna disputa abierta? Muéstrame los detalles."*
-- *"Muéstrame mis suscripciones activas y cuánto cobra cada una."*
+- *"Muéstrame mis planes de suscripción y cuánto cobra cada uno."*
 
 ### Cómo te conectas
 
@@ -54,7 +54,7 @@ Este conector **no te pide pegar ninguna API key**. Usa el login de tu propia cu
 
 --- dev ---
 
-PayPal (PayPal Holdings, Inc.) publica un **server MCP remoto oficial** en `https://mcp.paypal.com/sse` (SSE), documentado en developer.paypal.com/tools/mcp-server/. También documenta un endpoint Streamable HTTP (`/http`) — en el smoke de esta corrida respondió 404 sin autenticar, así que el manifest usa `/sse`, el endpoint del propio ejemplo oficial de setup con `mcp-remote` (la config `paypal-commerce-ai`). Existe además un server de sandbox en `https://mcp.sandbox.paypal.com`.
+PayPal (PayPal Holdings, Inc.) publica un **server MCP remoto oficial** en `https://mcp.paypal.com/sse` (SSE), documentado en developer.paypal.com/tools/mcp-server/. También documenta un endpoint Streamable HTTP (`/http`) — en el smoke de esta corrida respondió 404 sin autenticar, así que el manifest usa `/sse`, el endpoint del propio ejemplo oficial de setup con `mcp-remote`. Existe además un server de sandbox en `https://mcp.sandbox.paypal.com`.
 
 La autenticación es un login OAuth en el navegador: la doc de PayPal dice que el cliente *"sends you to the PayPal login page"*, haces *"Log into PayPal"* y luego *"Authorize the client to work with the MCP server"*. PayPal también documenta que *"With remote MCP server, users can continue their tasks across devices with a single login after authentication"* y una alternativa Bearer con client ID/secret del Developer Dashboard. TerminalSync usa el flujo OAuth (sin secret que pegar); según la sección de troubleshooting de PayPal, el puente guarda los tokens del login en `~/.mcp-auth`.
 
