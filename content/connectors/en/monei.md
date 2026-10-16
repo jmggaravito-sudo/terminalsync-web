@@ -30,7 +30,7 @@ aiReadOnlyTools: 0
 verifiedAt: "2026-10-16T10:39:26.157Z"
 verifiedPackageVersion: null
 ---
-**MONEI** is the payments platform businesses run on in Spain: it's a payment institution regulated by the Banco de España (license #6911), PCI DSS Level 1 certified, and a Bizum Direct Acquirer — which is what lets your customers pay over the local rails Spanish shoppers actually use, like Bizum, card, SEPA and MB WAY. MONEI bills its MCP server as *"the first European payment platform with native AI agent support"*, and it works with any MCP-compatible assistant — including the one in TerminalSync.
+**MONEI** is the payments platform businesses run on in Spain: it's a payment institution regulated by the Banco de España (license #6911), PCI DSS Level 1 certified, and a Bizum Direct Acquirer — which is what lets your customers pay over the local rails Spanish shoppers actually use, like Bizum, card and SEPA — and MB WAY for customers in Portugal. MONEI bills its MCP server as *"the first European payment platform with native AI agent support"*, and it works with any MCP-compatible assistant — including the one in TerminalSync.
 
 Once connected, the agent answers the questions you'd normally open the dashboard for: whether a specific payment came through, which payments failed this week, how much you collected in March and your success rate. It can also do the operational side — create a payment link and send it to a customer by email or SMS. Every write (creating or sending a link) is shown to you first, and the agent asks for your confirmation before running it.
 
@@ -40,7 +40,7 @@ Once connected, the agent answers the questions you'd normally open the dashboar
 - *"Show me all the payments that failed this week."*
 - *"What was my revenue for March, and what's my success rate?"*
 - *"Generate a €50 payment link for order #42 and send it to the customer by email."*
-- *"List my active subscriptions and show me the details of the gym client's one."*
+- *"List my active subscriptions and show me the details of the gym client's subscription."*
 - *"What payment methods do I have enabled on my account?"*
 
 ### How you connect
