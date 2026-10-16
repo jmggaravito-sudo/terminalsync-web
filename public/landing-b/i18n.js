@@ -941,8 +941,16 @@
     // re-render hero rotator / dynamic bits
     window.dispatchEvent(new CustomEvent('ts-lang', { detail: { lang: lang } }));
     // Reuse the current dashboard image as both hero cover and future video poster.
-    var cov = document.querySelector('.hero-shot img');
+    var heroVideo = document.getElementById('heroVideo');
+    var heroShot = document.querySelector('.hero-shot');
+    var cov = document.getElementById('heroCover');
+    if (heroShot) heroShot.classList.toggle('hero-shot-video', lang === 'es');
+    if (heroVideo) {
+      heroVideo.hidden = lang === 'en';
+      if (lang === 'en') heroVideo.pause();
+    }
     if (cov) {
+      cov.hidden = lang === 'es';
       cov.src = '/landing-b/assets/dashboard-workspaces-video-poster-' + lang + '.png';
       cov.alt = lang === 'en'
         ? 'TS dashboard with separate workspaces for clients, projects, and departments.'
