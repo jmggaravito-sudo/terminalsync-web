@@ -51,3 +51,20 @@ describe("remote connectors without dynamic client registration", () => {
     expect(r).toMatchObject({ slug: "zoom", installableForAi: false, installableForAiReason: "needs-oauth" });
   });
 });
+
+import fs from "node:fs";
+import matter from "gray-matter";
+import { OAUTH_CONNECTORS } from "./verify-connector.mjs";
+
+describe("Google connectors stay blocked until the app can supply GOOGLE_ACCESS_TOKEN", () => {
+  it("keeps gmail, google-calendar and google-sheets in OAUTH_CONNECTORS", () => {
+    expect([...OAUTH_CONNECTORS].sort()).toEqual(["gmail", "google-calendar", "google-sheets"]);
+  });
+  it.each(["en", "es"])("%s fichas are not installable and say needs-oauth", (lang) => {
+    for (const slug of OAUTH_CONNECTORS) {
+      const { data } = matter(fs.readFileSync(`content/connectors/${lang}/${slug}.md`, "utf8"));
+      expect(data.installableForAi).toBe(false);
+      expect(data.installableForAiReason).toBe("needs-oauth");
+    }
+  });
+});

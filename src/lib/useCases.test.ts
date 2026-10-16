@@ -28,7 +28,7 @@ describe("content/use-cases", () => {
     const ids = new Set(raw.cases.map((c) => c.id));
     const missing = (lockedIds as string[]).filter((id) => !ids.has(id));
     expect(missing).toEqual([]);
-    expect(lockedIds).toHaveLength(129);
+    expect(lockedIds).toHaveLength(183);
   });
 
   it("gives every case non-empty es and en text and a known category", () => {
@@ -86,7 +86,34 @@ describe("content/use-cases", () => {
 
   it("keeps the connector-tag snapshot (minimum tagged cases per connector)", () => {
     // Floor, not exact: adding tags is fine; losing one must be deliberate.
-    const MIN_TAGGED: Record<string, number> = { "google-maps": 2 };
+    const MIN_TAGGED: Record<string, number> = {
+      "ahrefs": 2,
+      "airtable": 2,
+      "asana": 2,
+      "calendly": 2,
+      "canva": 2,
+      "clickup": 2,
+      "exa": 2,
+      "google-maps": 2,
+      "gusto": 2,
+      "hubspot": 3,
+      "klaviyo": 2,
+      "mercado-pago": 3,
+      "meta-ads": 2,
+      "meta-social": 2,
+      "monday": 2,
+      "notion": 2,
+      "pdf": 2,
+      "posthog": 2,
+      "ramp": 2,
+      "siigo": 3,
+      "slack": 2,
+      "square": 2,
+      "stripe": 3,
+      "webflow": 2,
+      "wordpress": 2,
+      "xero": 2,
+    };
     const counts: Record<string, number> = {};
     for (const c of raw.cases) {
       for (const slug of c.connectors ?? []) counts[slug] = (counts[slug] ?? 0) + 1;

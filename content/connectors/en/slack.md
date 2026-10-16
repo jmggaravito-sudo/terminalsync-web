@@ -2,6 +2,7 @@
 name: Slack
 logo: /connectors/slack.svg
 category: messaging
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Let your AI read and write in Slack"
 simpleSubtitle: "Channels, threads, users, profiles, messages and reactions — with explicit scopes."

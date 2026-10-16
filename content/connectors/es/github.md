@@ -2,6 +2,7 @@
 name: GitHub
 logo: /connectors/github.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Que tu IA trabaje sobre tus repos"
 simpleSubtitle: "Lee archivos, abre pull requests, busca en issues — desde el chat, con los permisos que tú elijas."

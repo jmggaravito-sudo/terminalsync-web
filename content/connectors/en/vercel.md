@@ -2,6 +2,7 @@
 name: Vercel
 logo: /connectors/vercel.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Deploys without leaving chat"
 simpleSubtitle: "\"How's the deploy?\" \"Promote staging to prod\" — straight to the agent."

@@ -2,6 +2,7 @@
 name: Ramp
 logo: /connectors/ramp.svg
 category: automation
+markets: ["US", "CA", "GB"]
 status: available
 simpleTitle: "Your company spend, answered in plain language"
 simpleSubtitle: "Official Ramp MCP server: cards, expenses, reimbursements and approvals over OAuth, no API key to paste."
@@ -22,6 +23,12 @@ license: "proprietary"
 licenseUrl: "https://ramp.com/legal/terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-10-14T16:56:24.622Z"
+verifiedPackageVersion: null
 ---
 **Ramp** is the spend-management platform many small and mid-size businesses run their corporate cards, bill pay, expense policies and reimbursements on. The official Ramp connector is a **hosted MCP server** (`https://mcp.ramp.com/mcp`), published by Ramp, that lets your agent answer questions about your spend and take the routine actions using your own Ramp login — no API key to paste.
 

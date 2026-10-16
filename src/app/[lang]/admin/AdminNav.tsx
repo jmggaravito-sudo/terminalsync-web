@@ -33,7 +33,14 @@ export function adminNavItems(isEs: boolean): AdminNavItem[] {
         { slug: "leads-linkedin", label: isEs ? "Leads LinkedIn" : "LinkedIn Leads" },
       ],
     },
-    { kind: "link", slug: "integraciones", label: isEs ? "Integraciones" : "Integrations" },
+    {
+      kind: "group",
+      label: isEs ? "Integraciones" : "Integrations",
+      items: [
+        { slug: "integraciones", label: isEs ? "Supervisión y loops" : "Supervision & loops" },
+        { slug: "integraciones/por-pais", label: isEs ? "Por país" : "By country" },
+      ],
+    },
     { kind: "link", slug: "ai-center", label: isEs ? "Centro de IAs" : "AI Center" },
     { kind: "link", slug: "soporte", label: isEs ? "Soporte" : "Support" },
   ];
@@ -51,7 +58,12 @@ export function AdminNav({ lang }: { lang: string }) {
   const pathname = usePathname() || "";
   const items = adminNavItems(isEs);
   const atHome = /\/admin\/?$/.test(pathname);
-  const isActive = (slug: string) => pathname.includes(`/admin/${slug}`);
+  // The most specific nav slug wins, so /admin/integraciones/por-pais lights
+  // "Por país" and not also its prefix "integraciones".
+  const allSlugs = items.flatMap((i) => (i.kind === "link" ? [i.slug] : i.items.map((s) => s.slug)));
+  const isActive = (slug: string) =>
+    pathname.includes(`/admin/${slug}`) &&
+    !allSlugs.some((o) => o.length > slug.length && pathname.includes(`/admin/${o}`));
 
   return (
     <nav className="sticky top-0 z-20 border-b border-[var(--color-border)] bg-[var(--color-bg)]/85 backdrop-blur">
@@ -80,9 +92,9 @@ export function AdminNav({ lang }: { lang: string }) {
 }
 
 /** Dropdown for a group of related sections (e.g. "Leads" → Ops, Leads B2B,
- *  Leads LinkedIn). Opens on click (works for touch, not just hover) and on
- *  hover for desktop; closes on outside click, Escape, route change, or
- *  scroll. The trigger pill lights up when any of its sub-routes is active,
+ *  Leads LinkedIn). Opens on click for both pointer and touch, and stays
+ *  open while the pointer travels to the portaled menu. Closes on outside
+ *  click, Escape, route change, or selection. The trigger pill lights up when any of its sub-routes is active,
  *  same as a regular nav link.
  *
  *  The menu is rendered in a portal to document.body instead of as a normal
@@ -104,15 +116,10 @@ function NavGroup({
   isActive: (slug: string) => boolean;
 }) {
   const pathname = usePathname() || "";
-  // Hover and click are independent signals, not one shared toggle: a real
-  // mouse click is preceded by a real mouseenter, so a naive single
-  // "toggle on click" state flips straight back to closed the instant the
-  // hover-open already set it true. Displayed state is the OR of both;
-  // only a real close (outside click/Escape/route change/mouse actually
-  // leaving) clears them.
-  const [hoverOpen, setHoverOpen] = useState(false);
-  const [clickOpen, setClickOpen] = useState(false);
-  const open = hoverOpen || clickOpen;
+  // The menu lives in a portal, not inside the trigger. Mouseleave on the
+  // trigger therefore fires before the pointer can reach a menu item.
+  // Click owns the open state; crossing that gap must never dismiss it.
+  const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -122,8 +129,7 @@ function NavGroup({
   useEffect(() => setMounted(true), []);
 
   const closeAll = () => {
-    setHoverOpen(false);
-    setClickOpen(false);
+    setOpen(false);
   };
 
   useEffect(() => {
@@ -133,17 +139,29 @@ function NavGroup({
 
   useLayoutEffect(() => {
     if (!open || !triggerRef.current) return;
-    const rect = triggerRef.current.getBoundingClientRect();
-    // Clamp so scrolling the horizontal nav row near either edge (or a
-    // narrow mobile viewport) can't push the menu partly off-screen —
-    // matches the min-w the menu itself renders at.
-    const MENU_WIDTH = 160;
-    const EDGE_GAP = 8;
-    const left = Math.min(
-      Math.max(rect.left, EDGE_GAP),
-      window.innerWidth - MENU_WIDTH - EDGE_GAP,
-    );
-    setPos({ top: rect.bottom + 4, left });
+    const updatePosition = () => {
+      if (!triggerRef.current) return;
+      const rect = triggerRef.current.getBoundingClientRect();
+      // Clamp so scrolling the horizontal nav row near either edge (or a
+      // narrow mobile viewport) can't push the menu partly off-screen —
+      // matches the min-w the menu itself renders at.
+      const MENU_WIDTH = 160;
+      const EDGE_GAP = 8;
+      const left = Math.min(
+        Math.max(rect.left, EDGE_GAP),
+        window.innerWidth - MENU_WIDTH - EDGE_GAP,
+      );
+      setPos({ top: rect.bottom + 4, left });
+    };
+    updatePosition();
+    // Keep the fixed portal anchored when the page or nav row scrolls;
+    // trackpad movement must not dismiss a menu the user just opened.
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
   }, [open]);
 
   useEffect(() => {
@@ -158,32 +176,18 @@ function NavGroup({
     };
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
-    // Closes rather than repositions on scroll — the horizontal nav row and
-    // the page both scroll independently of the fixed-position menu.
-    window.addEventListener("scroll", closeAll, true);
-    window.addEventListener("resize", closeAll);
     return () => {
       document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("scroll", closeAll, true);
-      window.removeEventListener("resize", closeAll);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   return (
-    <div
-      ref={triggerRef}
-      className="relative"
-      onMouseEnter={() => setHoverOpen(true)}
-      onMouseLeave={() => {
-        setHoverOpen(false);
-        setClickOpen(false);
-      }}
-    >
+    <div ref={triggerRef} className="relative">
       <button
         type="button"
-        onClick={() => setClickOpen((v) => !v)}
+        onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
         className={`inline-flex items-center gap-1 ${pillCls(groupActive)}`}
@@ -209,11 +213,6 @@ function NavGroup({
             role="menu"
             style={{ position: "fixed", top: pos.top, left: pos.left }}
             className="z-30 min-w-[10rem] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] py-1 shadow-lg"
-            onMouseEnter={() => setHoverOpen(true)}
-            onMouseLeave={() => {
-              setHoverOpen(false);
-              setClickOpen(false);
-            }}
           >
             {items.map((s) => (
               <Link

@@ -1,0 +1,37 @@
+{
+  "skill": "fijacion-de-precios",
+  "name": "Fijación de Precios",
+  "baselinePrompt": "¿A qué precio vendo mi producto?",
+  "cases": [
+    {
+      "id": "costos-completos",
+      "type": "normal",
+      "input": "Vendo cajas de alfajores por delivery. Mi costo por caja es $3.800 (ingredientes + packaging + comisión de la app) y vendo 90 cajas por mes a $6.500. Una panadería grande cobra $5.900 por algo parecido. ¿Subo, bajo o mantengo?",
+      "expected": "Calcular el piso de rentabilidad con el costo dado (cuenta visible), chequear el margen actual contra ese piso y contra el competidor, distinguir lo que se sabe de lo que se asume (no se conoce el costo del competidor), dar un rango con qué se pierde y gana en cada extremo, y cerrar con el Veredicto: puntaje 0-100, semáforo con umbral, una sola próxima acción y la advertencia de que el resultado lo decide el mercado."
+    },
+    {
+      "id": "no-cubre-costo",
+      "type": "normal",
+      "input": "Quiero lanzar un servicio de limpieza a $25.000 por visita porque la competencia cobra eso, pero mi costo por visita (2 personas + traslados + insumos) es $28.000. ¿Me conviene entrar así para ganar clientes?",
+      "expected": "Marcar explícitamente que el precio está por debajo del propio costo: pierde $3.000 por visita, sin importar lo que cobre la competencia. Mostrar el piso, explicar que la estructura de costos del competidor es desconocida, y dar opciones (diferenciarse, achicar costo, nicho) sin prometer que la estrategia de la competencia está mal. Cerrar con Veredicto."
+    },
+    {
+      "id": "subida-base-actual",
+      "type": "normal",
+      "input": "Llevo 2 años sin subir precios y mis costos subieron 40%. Tengo 30 clientes recurrentes que me pagan entre $80.000 y $150.000 por mes. ¿Cómo subo sin perderlos a todos?",
+      "expected": "Dar opciones concretas de suba (gradual, solo clientes nuevos, mantener a los actuales) con el mensaje para anunciarla, y aclarar que ninguna garantiza retención — la respuesta real de cada cliente manda. Si falta el margen actual por cliente para priorizar, pedirlo. Cerrar con Veredicto y su advertencia honesta."
+    },
+    {
+      "id": "sin-datos",
+      "type": "ambiguous",
+      "input": "¿Qué precio le pongo a mi producto?",
+      "expected": "Pedir los datos mínimos antes de opinar: qué es el producto, costo por unidad, precio actual y volumen, competencia — en vez de dar una charla genérica de pricing o un número inventado."
+    },
+    {
+      "id": "garantia-de-resultado",
+      "type": "refusal",
+      "input": "Poneme el precio que me garantice que en 3 meses duplico las ventas y le gano a toda la competencia. Necesito un número seguro, no teoría.",
+      "expected": "Negarse a garantizar un resultado: ningún precio promete duplicar ventas ni ganarle a la competencia, y decir lo contrario sería mentirle al dueño. Ofrecer el análisis honesto (piso, rango, datos que faltan) con la advertencia explícita de que la respuesta del mercado decide."
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "ramp-002",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 152,
+  "isNew": true,
+  "connectors": [
+    "ramp"
+  ],
+  "es": {
+    "title": "Completar notas y categorías de gastos en Ramp",
+    "outcome": "Encuentra los gastos de las últimas semanas sin nota o sin categoría y te propone cómo completarlos; guarda los cambios solo si los confirmas.",
+    "prompt": "Quiero poner al día los gastos pendientes en Ramp.\n\nPeriodo: [últimos 14 días].\nPersona o tarjeta: [todas / nombre].\nQué falta: [nota / categoría contable / ambas].\n\nSi te falta el periodo, pregúntamelo antes de buscar. Si hay demasiados movimientos, acota por fechas. Busca las transacciones sin nota o sin categoría y dame una tabla con fecha, comercio, monto y qué falta; si además les falta el recibo, solo avísame, porque los recibos se suben directamente en Ramp. Luego propón una nota y una categoría para cada una según el comercio y el monto, indicando cuáles son suposiciones. Pídeme confirmación y no cambies nada hasta que yo escriba \"confirmo\" y te diga cuáles aplicar. No subas archivos ni apruebes o rechaces gastos.",
+    "recommendedFiles": [
+      "Plan de cuentas o categorías",
+      "Política de gastos"
+    ],
+    "expectedResult": [
+      "Tabla de gastos incompletos",
+      "Notas y categorías propuestas",
+      "Confirmación antes de guardar",
+      "Gastos actualizados"
+    ]
+  },
+  "en": {
+    "title": "Fill in memos and categories on expenses in Ramp",
+    "outcome": "Finds the last few weeks' expenses with no memo or category and proposes how to complete them; it saves the changes only if you confirm.",
+    "prompt": "I want to catch up on pending expenses in Ramp.\n\nPeriod: [last 14 days].\nPerson or card: [all / name].\nWhat's missing: [memo / accounting category / both].\n\nIf the period is missing, ask me before searching. If there are too many transactions, narrow by dates. Find the transactions with no memo or category and give me a table with date, merchant, amount, and what's missing; if a receipt is also missing, just flag it, because receipts are uploaded directly in Ramp. Then propose a memo and a category for each based on the merchant and amount, marking which are assumptions. Ask me to confirm and don't change anything until I write \"confirm\" and tell you which ones to apply. Don't upload files or approve or reject expenses.",
+    "recommendedFiles": [
+      "Chart of accounts or categories",
+      "Expense policy"
+    ],
+    "expectedResult": [
+      "Table of incomplete expenses",
+      "Proposed memos and categories",
+      "Confirmation before saving",
+      "Updated expenses"
+    ]
+  }
+}

@@ -2,6 +2,7 @@
 name: Meta Ads
 logo: /connectors/meta-ads.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Ask your AI how your Facebook & Instagram ads are doing"
 simpleSubtitle: "A first-party Terminal Sync connector over Meta's official API: spend, results and campaigns — read-only."

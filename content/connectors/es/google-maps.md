@@ -2,6 +2,7 @@
 name: Google Maps
 logo: /connectors/google-maps.svg
 category: research
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Que tu IA entienda direcciones, lugares y rutas"
 simpleSubtitle: "Convierte direcciones, encuentra lugares cercanos y calcula distancias sin abrir Maps a mano."

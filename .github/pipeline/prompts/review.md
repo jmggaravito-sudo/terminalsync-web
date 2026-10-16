@@ -17,6 +17,9 @@ Entrada: `.pipeline/research.json`, `.pipeline/build.json` (número de PR y rama
 ## ROLE: sources — Fuentes oficiales
 Verifica con WebFetch los hechos clave de las dos fichas y de la fila de `SOURCES.md` contra la documentación **oficial** del proveedor: endpoint o paquete, autenticación, qué hace, qué NO hace, planes/roles/precios mencionados, herramientas citadas. Cualquier dato que la fuente oficial no confirme es un hallazgo. Comprueba también que `research.json.official.sources` sean páginas reales y que el publisher sea realmente el proveedor (regla #3).
 
+### Mercados (`markets`) — parte del rol sources
+Las dos fichas deben tener `markets` idéntico (códigos ISO alfa-2 permitidos en `src/lib/markets.ts`, o `["GLOBAL"]`). Verifica con WebFetch contra la documentación **oficial** de disponibilidad del proveedor: cada país listado debe estar respaldado, y `GLOBAL` solo es válido si el producto es de verdad mundial (selector de país, lista de regiones). País listado sin respaldo, o país soportado omitido sin motivo, es un hallazgo `fix`; si no puedes verificar la disponibilidad, `hold` con el motivo. Compáralo con `research.json.markets`.
+
 ## ROLE: voice — Voz y vocabulario
 - Español **neutro con tú** en la ficha `es`: nada de voseo (vos, tenés, pedí, mirá, conectá, usá, creá…) ni regionalismos (planilla, despachante, acá, blastear, retipear, scrollear). El test automático solo atrapa unas pocas formas; tú lees el archivo entero.
 - La ficha `en` está en inglés de verdad; la `es` en español de verdad; mismas secciones y mismo contenido.

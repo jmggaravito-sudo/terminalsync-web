@@ -2,6 +2,7 @@
 name: PDF
 logo: /connectors/pdf.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Let your AI read and mark up PDFs"
 simpleSubtitle: "Open local papers or approved research URLs, search pages, extract text and annotate documents."

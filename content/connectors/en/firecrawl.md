@@ -2,6 +2,7 @@
 name: Firecrawl
 logo: /connectors/firecrawl.svg
 category: research
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Turn any website into clean data your AI can read"
 simpleSubtitle: "Official Firecrawl server: scrape a page, search the web, or crawl a whole site."

@@ -118,7 +118,7 @@ describe("GET /api/marketplace/catalog", () => {
     const es = await callCatalog("es");
     const en = await callCatalog("en");
     for (const { body } of [es, en]) {
-      expect(body.useCases.cases).toHaveLength(129);
+      expect(body.useCases.cases).toHaveLength(183);
       expect(body.useCases.categories).toHaveLength(14);
       const categoryIds = new Set(body.useCases.categories.map((c) => c.id));
       for (const c of body.useCases.cases) {
@@ -349,6 +349,8 @@ describe("GET /api/marketplace/catalog", () => {
       "tax-prep-checklist",
       "1099-w9-organizer",
       "quarterly-tax-estimate-prep",
+      "cobros-vencidos",
+      "fijacion-de-precios",
     ] as const;
     const sorted = [...publicSlugs].sort();
 
@@ -841,3 +843,13 @@ function makeSupabaseStubForDuplicateBundleSlug(): SupabaseClient {
     },
   } as unknown as SupabaseClient;
 }
+
+describe("catalog connectors expose markets", () => {
+  it("every first-party connector carries a non-empty markets array (en and es)", async () => {
+    for (const lang of ["en", "es"]) {
+      const { body } = await callCatalog(lang);
+      const missing = body.connectors.filter((c) => !c.markets?.length).map((c) => c.slug);
+      expect(missing, `connectors without markets (${lang})`).toEqual([]);
+    }
+  });
+});

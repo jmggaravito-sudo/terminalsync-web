@@ -2,6 +2,7 @@
 name: Canva
 logo: /connectors/canva.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Generate and edit Canva designs from your agent"
 simpleSubtitle: "Official Canva MCP: design generation, editing and export over OAuth."

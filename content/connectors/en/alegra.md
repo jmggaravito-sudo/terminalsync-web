@@ -2,7 +2,8 @@
 name: Alegra
 logo: /connectors/alegra.svg
 category: automation
-status: available
+markets: ["CO", "MX", "AR", "PE", "CR", "PA", "DO", "VE", "ES"]
+status: soon
 simpleTitle: "Your invoicing and your books, answered in plain language"
 simpleSubtitle: "Official Alegra MCP: invoices, contacts, inventory, banks, payments and reports, straight from your account."
 devTitle: "Alegra MCP Connector"
@@ -24,8 +25,8 @@ license: "MIT"
 licenseUrl: "https://opensource.org/licenses/MIT"
 marketplaceSource: "official"
 marketplaceCategory: "web"
-installableForAi: true
-installableForAiReason: "remote-needs-login"
+installableForAi: false
+installableForAiReason: "needs-oauth"
 aiToolsCount: 0
 aiReadOnlyTools: 0
 verifiedAt: "2026-10-10T07:31:32.656Z"

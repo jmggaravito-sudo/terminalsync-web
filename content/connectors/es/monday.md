@@ -2,6 +2,7 @@
 name: monday.com
 logo: /connectors/monday.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tu tablero de trabajo, manejado por la IA"
 simpleSubtitle: "\"¿Qué está trabado?\" \"Agrega el lead nuevo al tablero de ventas\" — tu IA lee y actualiza monday.com."

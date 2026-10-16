@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "verify:connectors": "node scripts/verify-connector.mjs --all --write --json --concurrency 1",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:video-funding-sql": "node scripts/test-video-funding-sql.mjs && node scripts/test-video-quote-checkout-sql.mjs",
+    "test:video-quote-checkout-sql": "node scripts/test-video-quote-checkout-sql.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.117.1",
@@ -30,6 +32,7 @@
     "stripe": "^22.0.2"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.10",
     "@tailwindcss/postcss": "^4.2.4",
     "@types/node": "^22.0.0",
     "@types/react": "^19.1.0",

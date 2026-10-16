@@ -2,6 +2,7 @@
 name: Ramp
 logo: /connectors/ramp.svg
 category: automation
+markets: ["US", "CA", "GB"]
 status: available
 simpleTitle: "El gasto de tu empresa, respondido en lenguaje natural"
 simpleSubtitle: "Server oficial de Ramp: tarjetas, gastos, reembolsos y aprobaciones por OAuth, sin API key que pegar."
@@ -22,6 +23,12 @@ license: "proprietary"
 licenseUrl: "https://ramp.com/legal/terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
+aiToolsCount: 0
+aiReadOnlyTools: 0
+verifiedAt: "2026-10-14T16:56:24.622Z"
+verifiedPackageVersion: null
 ---
 **Ramp** es la plataforma de gestión de gasto con la que muchas pymes manejan sus tarjetas corporativas, el pago de facturas, las políticas de gastos y los reembolsos. El conector oficial de Ramp es un **server MCP hospedado** (`https://mcp.ramp.com/mcp`), publicado por Ramp, que le da a tu agente acceso para responder preguntas sobre el gasto de tu empresa y hacer las acciones rutinarias con tu propio login de Ramp — sin pegar ninguna API key.
 

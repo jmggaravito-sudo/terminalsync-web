@@ -2,6 +2,7 @@
 name: Supabase
 logo: /connectors/supabase.svg
 category: database
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Let your AI read and write your database"
 simpleSubtitle: "Supabase-managed Postgres — with read-only mode for critical production."

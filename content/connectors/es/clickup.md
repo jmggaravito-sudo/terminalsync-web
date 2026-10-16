@@ -2,6 +2,7 @@
 name: ClickUp
 logo: /connectors/clickup.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tus proyectos, manejados por conversación"
 simpleSubtitle: "\"¿Qué vence esta semana?\" \"Crea una tarea para el cliente nuevo\" — tu IA lee y actualiza ClickUp."

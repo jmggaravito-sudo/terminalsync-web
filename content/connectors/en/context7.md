@@ -2,6 +2,7 @@
 name: Context7
 logo: /connectors/context7.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Give your AI up-to-date docs for the tools you code with"
 simpleSubtitle: "Official Upstash server: current, version-specific library docs — no more outdated answers."

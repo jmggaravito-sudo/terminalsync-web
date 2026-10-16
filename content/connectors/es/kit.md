@@ -2,6 +2,7 @@
 name: Kit
 logo: /connectors/kit.svg
 category: messaging
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tu newsletter, manejada por tu IA"
 simpleSubtitle: "Borradores, segmentos y broadcasts — escritos en chat con tu tono."

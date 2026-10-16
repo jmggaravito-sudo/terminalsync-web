@@ -2,6 +2,7 @@
 name: Zapier
 logo: /connectors/zapier.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Dale acciones a tu agente en miles de apps"
 simpleSubtitle: "MCP oficial de Zapier: Gmail, Slack, Sheets, CRMs y 9.000+ apps con tu cuenta de Zapier."

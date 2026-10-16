@@ -2,6 +2,7 @@
 name: Map
 logo: /connectors/map.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Show places on a 3D globe"
 simpleSubtitle: "Search for addresses or landmarks and let the agent open an interactive map view."

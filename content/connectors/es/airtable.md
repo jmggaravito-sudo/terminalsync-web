@@ -2,6 +2,7 @@
 name: Airtable
 logo: /connectors/airtable.svg
 category: database
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tu base de datos de no-código, en el agente"
 simpleSubtitle: "Airtable guarda tus CRMs, inventarios y trackers — ahora tu IA los lee también."

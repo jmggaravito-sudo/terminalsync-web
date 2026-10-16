@@ -2,6 +2,7 @@
 name: X (Twitter)
 logo: /connectors/twitter.svg
 category: messaging
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Post and listen on X, from the chat"
 simpleSubtitle: "\"Post this update\" \"What are people saying about us?\" — your AI posts to X and searches it for you."

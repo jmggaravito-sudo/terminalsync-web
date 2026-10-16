@@ -2,6 +2,7 @@
 name: GitLab
 logo: /connectors/gitlab.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Let your AI help with GitLab projects"
 simpleSubtitle: "Read files, draft issues and prepare merge requests without jumping between screens."

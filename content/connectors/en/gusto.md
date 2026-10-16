@@ -2,6 +2,7 @@
 name: Gusto
 logo: /connectors/gusto.svg
 category: automation
+markets: ["US"]
 status: available
 simpleTitle: "Payroll and team info, answering out loud"
 simpleSubtitle: "Official Gusto server: employees, contractors, pay schedules and payroll tax info, read straight from your account."

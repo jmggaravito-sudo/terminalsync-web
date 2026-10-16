@@ -2,6 +2,7 @@
 name: Memory
 logo: /connectors/memory.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tu IA recuerda entre conversaciones"
 simpleSubtitle: "Guarda preferencias, hechos y relaciones para que el agente no arranque de cero cada vez."

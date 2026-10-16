@@ -94,8 +94,8 @@ const es: Dict = {
         body: "Vive en tu propia computadora, no en nuestros servidores. Nadie más la puede leer. Si quieres tenerla en todos tus equipos, la sincronizamos cifrada a tu propia nube.",
       },
       {
-        title: "Funciona con cualquier IA",
-        body: "Una sola memoria para todo tu equipo de IAs — Claude, Codex y las que vengan. No la repites en cada una.",
+        title: "Una sola memoria, en todos tus espacios",
+        body: "Lo que tu empresa aprende en un espacio de trabajo lo sabe en todos. No lo repites en cada uno.",
       },
       {
         title: "Encuentra lo que importa",
@@ -269,7 +269,7 @@ const es: Dict = {
   midCta: {
     eyebrow: "Pruébalo gratis",
     title: "Deja de mirar la pantalla esperando a tu IA.",
-    body: "7 días de Pro gratis. Cancelas antes del día 7 y no te cobramos. Si te convence, te quedas. Si no, dejas de usarlo y listo.",
+    body: "Cada usuario nuevo recibe 7 días con todas las funciones gratis. No hay cobro durante la prueba. Al terminar, eliges un plan para continuar.",
     ctaPrimary: "Descargar gratis",
     ctaSecondary: "Ver precios",
   },
@@ -354,7 +354,7 @@ const es: Dict = {
         apiCostMix: "Costo API mix (≈ $1.50/h)",
         devTimeSolo: "Tu tiempo a tarifa plena",
         devTimeWithTs: "Tu tiempo, 25 % menos horas",
-        subscription: "TS Pro (12 × $19 = $228)",
+        subscription: "TS Pro (12 × $34 = $408)",
         timeSaving:
           "El 25 % de ahorro de tiempo viene de no esperar rate limits, no swappear contexto entre tools, y mandar cada tarea al modelo más barato y rápido.",
       },
@@ -424,13 +424,13 @@ const es: Dict = {
   pricing: {
     title: "Simple, como debe ser",
     subtitle:
-      "Empieza gratis. 7 días con todas las funciones de Max — cancelas antes del día 7 y no se cobra nada. Las IAs se usan con tu propia suscripción (o sus planes gratuitos): TS no te revende tokens.",
+      "Empieza gratis. Cada usuario nuevo recibe 7 días con todas las funciones sin costo. Al terminar, eliges un plan para continuar. Las IAs se usan con tu propia suscripción (o sus planes gratuitos): TS no te revende tokens.",
     perMonth: "/mes",
     free: "Gratis",
     trial: {
       eyebrow: "7 días gratis con todas las funciones",
       explainer:
-        "Pruebas las funciones de Max los primeros 7 días, sin importar qué plan elijas después. Cancelas antes del día 7 y no se cobra nada.",
+        "Cada usuario nuevo recibe 7 días con todas las funciones sin costo. Durante la prueba no hay cobros. Al terminar, eliges un plan para continuar.",
     },
     quiz: {
       cta: "¿Cuál plan necesito?",
@@ -485,7 +485,6 @@ const es: Dict = {
         tagline: "Para quien empieza a organizar su empresa con IA.",
         features: [
           "3 espacios de trabajo activos con persistencia real",
-          "Usa 1, 2 o las 3 IAs — con tu propia suscripción",
           "AES-256 · ni nosotros lo leemos",
           "Sync con Google Drive (tu cuenta)",
           "2 dispositivos vinculados",
@@ -493,16 +492,16 @@ const es: Dict = {
         cta: "Descargar gratis",
       },
       pro: {
-        name: "Pro · traes tu IA",
+        name: "Pro",
         badge: "7 días gratis",
-        price: "$19",
+        price: "$34",
         priceNote: "/mes",
-        priceCop: "$79.000",
+        priceCop: "$139.000",
         priceNoteCop: "COP/mes",
-        tagline: "Traes tu cuenta de Claude, Codex o Gemini.",
+        tagline: "La IA viene incluida — no conectas ninguna cuenta.",
         features: [
+          "IA de TerminalSync incluida — nada que configurar",
           "10 espacios de trabajo con persistencia + resurrección",
-          "Claude + Codex + Gemini en un espacio de trabajo",
           "Tu empresa recuerda todo — no explicas dos veces",
           "Bóveda de claves por proyecto",
           "Sesión en cualquier dispositivo (móvil + navegador)",
@@ -510,32 +509,16 @@ const es: Dict = {
           "Avisos por correo / Telegram",
           "Extensión Chrome Pro incluida",
         ],
-        cta: "Probar 7 días gratis",
-      },
-      proAi: {
-        name: "Pro",
-        badge: "7 días gratis",
-        price: "$34",
-        priceNote: "/mes",
-        priceCop: "$139.000",
-        priceNoteCop: "COP/mes",
-        tagline: "Pro con la IA de TS incluida — sin cuenta propia.",
-        features: [
-          "Todo lo de Pro — espacios, memoria y celular",
-          "IA de TS incluida — sin cuenta propia",
-          "Después de la prueba, sigues con nuestra IA",
-          "Ideal para empezar rápido — menos configuración",
-        ],
-        cta: "Probar 7 días gratis",
+        cta: "Iniciar prueba de 7 días con todas las funciones",
       },
       max: {
-        name: "Max · traes tu IA",
+        name: "Max",
         badge: "7 días gratis",
-        price: "$39",
+        price: "$54",
         priceNote: "/mes",
-        priceCop: "$159.000",
+        priceCop: "$219.000",
         priceNoteCop: "COP/mes",
-        tagline: "Max trayendo tu propia cuenta de IA.",
+        tagline: "Pro, con espacios ilimitados y herramientas de equipo.",
         features: [
           "Todo lo de Pro, más:",
           "Espacios de trabajo ilimitados",
@@ -544,23 +527,21 @@ const es: Dict = {
           "Programación en pareja (solo lectura)",
           "Soporte prioritario por correo",
         ],
-        cta: "Probar 7 días gratis",
+        cta: "Iniciar prueba de 7 días con todas las funciones",
       },
-      maxAi: {
-        name: "Max",
-        badge: "7 días gratis",
-        price: "$54",
-        priceNote: "/mes",
-        priceCop: "$219.000",
-        priceNoteCop: "COP/mes",
-        tagline: "Max con la IA de TS incluida — sin cuenta propia.",
+      team: {
+        name: "Team · próximamente",
+        badge: "Próximamente",
+        price: "$59",
+        priceNote: "/empleado/mes",
+        tagline: "Max para equipos con espacios de usuarios distintos.",
         features: [
-          "Todo lo de Max — ilimitado, equipo y soporte",
-          "IA de TS incluida — sin cuenta propia",
-          "Cero fricción para equipos — menos configuración",
-          "Costo simple — plataforma + IA",
+          "Todo lo de Max, más colaboración entre espacios de usuarios distintos",
+          "Cada persona conserva su propio espacio de trabajo",
+          "Compartir respuestas o documentos requiere aprobación antes de enviarlos",
+          "Plan anunciado; colaboración entre cuentas aún no disponible",
         ],
-        cta: "Probar 7 días gratis",
+        cta: "Próximamente",
       },
     },
   },
@@ -584,7 +565,7 @@ const es: Dict = {
   trust: {
     title: "Tus archivos son tuyos. Punto.",
     body: "Tus secretos, tus ajustes, tu memoria y tus conversaciones con la IA se cifran en tu computadora antes de salir. Todo va a TU nube, no a la nuestra — tus archivos nunca pasan por nuestros servidores.",
-    guarantee: "Pruébalo 7 días gratis. Cancelas antes del día 7 y no te cobramos.",
+    guarantee: "Cada usuario nuevo recibe 7 días con todas las funciones sin costo. Al terminar, eliges un plan para continuar.",
     features: {
       e2ee: "AES-256 en todo lo sensible",
       keychain: "Llaves solo en tu dispositivo",
@@ -651,7 +632,7 @@ const es: Dict = {
     tagline: "Ventas y soporte · En línea",
     close: "Cerrar",
     greeting:
-      "¡Hola! Soy tu asistente de TS. Puedo ayudarte con Claude Code, Codex, Gemini, memoria, conectores, planes o problemas técnicos. ¿Qué quieres hacer?",
+      "¡Hola! Soy tu asistente de TS. Puedo ayudarte con espacios de trabajo, memoria, conectores, planes o problemas técnicos. ¿Qué quieres hacer?",
     placeholder: "Escribe tu mensaje…",
     send: "Enviar",
     you: "Tú",
@@ -663,7 +644,7 @@ const es: Dict = {
     ],
     replies: {
       install:
-        "Descarga TS, crea un espacio de trabajo y elige la IA que quieres usar: Claude Code, Codex, Gemini CLI o Sin IA. Desde Integraciones puedes configurar conectores, skills y herramientas del espacio de trabajo. Si me dices tu caso de uso, te recomiendo por dónde empezar.",
+        "Descarga TS y crea un espacio de trabajo: la IA viene incluida y lista, no tienes que elegir ni conectar nada. Desde Integraciones puedes configurar conectores, skills y herramientas del espacio de trabajo. Si me dices tu caso de uso, te recomiendo por dónde empezar.",
       pricing:
         "Tenemos planes para probar, power users y usuarios técnicos/equipos. Starter sirve para empezar; Pro agrega capacidades avanzadas como memoria/integraciones; Max está pensado para Git-native sync, vault de secretos y workflows más completos. Mira la sección de Precios para el detalle actualizado. ¿Quieres que te recomiende un plan según tu uso?",
       security:

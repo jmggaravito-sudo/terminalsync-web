@@ -1,0 +1,41 @@
+{
+  "id": "gusto-002",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 154,
+  "isNew": true,
+  "connectors": [
+    "gusto"
+  ],
+  "es": {
+    "title": "Pagos a contratistas del trimestre en Gusto",
+    "outcome": "Suma lo pagado a cada contratista en Gusto durante el trimestre, útil para revisar con tu contador.",
+    "prompt": "Quiero revisar lo que le pagué a mis contratistas en Gusto.\n\nPeriodo: [último trimestre / año hasta hoy / del [fecha] al [fecha]].\nContratista específico: [todos / nombre].\n\nSi te falta el periodo, pregúntamelo antes de consultar. Lee los pagos a contratistas y dame:\n1. El total pagado a contratistas en el periodo.\n2. Una tabla por contratista: nombre, número de pagos, total y fecha del último pago.\n3. Los contratistas que superan [monto, por ejemplo $600 USD] en el año, para comentarlo con mi contador.\n4. Pagos que se vean fuera de lo normal.\n\nEsta consulta es solo de lectura: no pagues ni cambies datos. No des asesoría fiscal; solo muestra los datos y, si algo no aparece en Gusto, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Lista de contratistas",
+      "Preguntas para tu contador"
+    ],
+    "expectedResult": [
+      "Total pagado a contratistas",
+      "Tabla por contratista",
+      "Contratistas sobre el monto indicado",
+      "Pagos fuera de lo normal"
+    ]
+  },
+  "en": {
+    "title": "Contractor payments this quarter in Gusto",
+    "outcome": "Adds up what you paid each contractor in Gusto during the quarter, useful to review with your accountant.",
+    "prompt": "I want to review what I paid my contractors in Gusto.\n\nPeriod: [last quarter / year to date / from [date] to [date]].\nSpecific contractor: [all / name].\n\nIf the period is missing, ask me before looking. Read the contractor payments and give me:\n1. The total paid to contractors in the period.\n2. A table by contractor: name, number of payments, total, and date of the last payment.\n3. The contractors who exceed [amount, for example $600 USD] for the year, to discuss with my accountant.\n4. Payments that look out of the ordinary.\n\nThis is read only: don't pay anyone or change data. Don't give tax advice; just show the data, and if something doesn't appear in Gusto, tell me instead of guessing.",
+    "recommendedFiles": [
+      "List of contractors",
+      "Questions for your accountant"
+    ],
+    "expectedResult": [
+      "Total paid to contractors",
+      "Table by contractor",
+      "Contractors above the amount",
+      "Unusual payments"
+    ]
+  }
+}

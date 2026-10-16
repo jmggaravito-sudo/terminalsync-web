@@ -2,6 +2,7 @@
 name: PostHog
 logo: /connectors/posthog.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Ask your product analytics in plain language"
 simpleSubtitle: "Official PostHog server: feature flags, insights, experiments, and error tracking."

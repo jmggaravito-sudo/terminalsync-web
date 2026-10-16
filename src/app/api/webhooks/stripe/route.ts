@@ -18,6 +18,11 @@ import {
   grantPurchasedCredits,
   parseCreditPaymentMetadata,
 } from "@/lib/aiCredits";
+import {
+  allocateVideoExclusiveFunding,
+  CREDIT_FUNDING_PURPOSE_METADATA,
+  VIDEO_EXCLUSIVE_PURPOSE,
+} from "@/lib/videoExclusiveFunding";
 
 /** Friendly plan + cycle label from Stripe metadata. Falls back to a
  *  generic name if metadata wasn't propagated (older subs). */
@@ -84,11 +89,15 @@ export async function POST(req: Request) {
 
   const raw = await req.text();
   let event: Stripe.Event | null = null;
+  let signatureVerifiedWithLiveSecret = false;
   let lastError: unknown = null;
   for (const secret of [liveSecret, testSecret]) {
     if (!secret) continue;
     try {
       event = stripe.webhooks.constructEvent(raw, signature, secret);
+      // If both configured secrets are identical, verification cannot prove
+      // which Stripe mode signed the request; treat it as non-live evidence.
+      signatureVerifiedWithLiveSecret = secret === liveSecret && secret !== testSecret;
       break;
     } catch (err) {
       lastError = err;
@@ -100,8 +109,24 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
+  // Credit ledgers fund real spending. A valid provider test signature is not
+  // evidence of money received; also reject a mode mismatch before either
+  // general or exclusive credit paths can run.
+  if (isCreditPaymentEvent(event)) {
+    const session = event.data.object as Stripe.Checkout.Session;
+    if (typeof event.livemode !== "boolean" || session.livemode !== event.livemode) {
+      return NextResponse.json({ error: "Credit payment mode mismatch" }, { status: 400 });
+    }
+    if (event.livemode && !signatureVerifiedWithLiveSecret) {
+      return NextResponse.json({ error: "Credit payment requires a live webhook signature" }, { status: 400 });
+    }
+    if (!event.livemode) {
+      return NextResponse.json({ received: true, ignored: "test_credit_event" });
+    }
+  }
+
   try {
-    await handle(event);
+    await handle(event, signatureVerifiedWithLiveSecret);
   } catch (err) {
     console.error("[stripe] handler error", err);
     // Credit grants are money. A transient DB/migration failure must make
@@ -119,7 +144,7 @@ export async function POST(req: Request) {
   return NextResponse.json({ received: true });
 }
 
-async function handle(event: Stripe.Event) {
+async function handle(event: Stripe.Event, signatureVerifiedWithLiveSecret: boolean) {
   switch (event.type) {
     case "checkout.session.completed": {
       // User just finished checkout. For Pro this happens even before the
@@ -131,7 +156,7 @@ async function handle(event: Stripe.Event) {
         // Delayed payment methods can emit completed while still unpaid; their
         // later async_payment_succeeded event is the one that grants balance.
         if (session.payment_status === "paid") {
-          await handleCreditCheckout(session);
+          await handleCreditCheckout(session, event, signatureVerifiedWithLiveSecret);
         }
         break;
       }
@@ -201,7 +226,7 @@ async function handle(event: Stripe.Event) {
     case "checkout.session.async_payment_succeeded": {
       const session = event.data.object as Stripe.Checkout.Session;
       if (session.metadata?.source === CREDIT_CHECKOUT_SOURCE) {
-        await handleCreditCheckout(session);
+        await handleCreditCheckout(session, event, signatureVerifiedWithLiveSecret);
       }
       break;
     }
@@ -553,7 +578,11 @@ function isCreditPaymentEvent(event: Stripe.Event): boolean {
   return session.metadata?.source === CREDIT_CHECKOUT_SOURCE;
 }
 
-async function handleCreditCheckout(session: Stripe.Checkout.Session) {
+async function handleCreditCheckout(
+  session: Stripe.Checkout.Session,
+  event: Stripe.Event,
+  signatureVerifiedWithLiveSecret: boolean,
+) {
   const parsed = parseCreditPaymentMetadata(session.metadata);
   if (!parsed) throw new Error(`Credit checkout ${session.id} has invalid metadata`);
   if (session.payment_status !== "paid") {
@@ -570,6 +599,29 @@ async function handleCreditCheckout(session: Stripe.Checkout.Session) {
     typeof session.payment_intent === "string"
       ? session.payment_intent
       : session.payment_intent?.id ?? null;
+
+  // The current checkout does not emit the exclusive marker. Only a separately
+  // authorized server-created checkout can select this funding purpose.
+  // A marker that arrives while the gate is off fails the webhook (and retries)
+  // rather than falling through and minting general credits.
+  const fundingPurpose = session.metadata?.[CREDIT_FUNDING_PURPOSE_METADATA];
+  if (fundingPurpose === VIDEO_EXCLUSIVE_PURPOSE) {
+    await allocateVideoExclusiveFunding({
+      event,
+      session,
+      amountMicros: parsed.creditPackage.amountMicros,
+      signatureVerifiedWithLiveSecret,
+    });
+    console.log("[credits] video-exclusive allocation committed", {
+      sessionId: session.id,
+      eventId: event.id,
+    });
+    return;
+  }
+  if (fundingPurpose && fundingPurpose !== "general") {
+    throw new Error("Credit checkout has an unsupported funding purpose");
+  }
+
   await grantPurchasedCredits({
     userId: parsed.userId,
     amountMicros: parsed.creditPackage.amountMicros,
