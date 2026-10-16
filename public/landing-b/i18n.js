@@ -942,15 +942,21 @@
     window.dispatchEvent(new CustomEvent('ts-lang', { detail: { lang: lang } }));
     // Reuse the current dashboard image as both hero cover and future video poster.
     var heroVideo = document.getElementById('heroVideo');
+    var heroVideoSource = document.getElementById('heroVideoSource');
     var heroShot = document.querySelector('.hero-shot');
     var cov = document.getElementById('heroCover');
-    if (heroShot) heroShot.classList.toggle('hero-shot-video', lang === 'es');
+    if (heroShot) heroShot.classList.add('hero-shot-video');
+    if (heroVideoSource) heroVideoSource.src = '/landing-b/assets/ts-corporate-' + lang + '.mp4';
     if (heroVideo) {
-      heroVideo.hidden = lang === 'en';
-      if (lang === 'en') heroVideo.pause();
+      heroVideo.hidden = false;
+      heroVideo.poster = '/landing-b/assets/ts-corporate-poster-' + lang + '.jpg';
+      heroVideo.setAttribute('aria-label', lang === 'en'
+        ? 'TerminalSync corporate video'
+        : 'Video corporativo de TerminalSync');
+      heroVideo.load();
     }
     if (cov) {
-      cov.hidden = lang === 'es';
+      cov.hidden = true;
       cov.src = '/landing-b/assets/dashboard-workspaces-video-poster-' + lang + '.png';
       cov.alt = lang === 'en'
         ? 'TS dashboard with separate workspaces for clients, projects, and departments.'
