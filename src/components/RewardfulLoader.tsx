@@ -1,26 +1,29 @@
 "use client";
 
 import { useEffect } from "react";
-
-const STORAGE_KEY = "terminalsync:cookie-consent-v1";
+import {
+  CONSENT_EVENT,
+  affiliatesAllowed,
+  browserStorage,
+  effectiveConsent,
+  type ConsentCategories,
+} from "@/lib/consent";
 
 /**
- * Loads Rewardful's affiliate tracker only after the user has accepted
- * cookies. Without consent (or if the user picked "necessary only"), the
- * script never executes and no tracking cookie is set.
+ * Carga el rastreador de afiliados de Rewardful SOLO si la persona ha aceptado
+ * la categoría "Afiliados" del gestor de cookies. Sin consentimiento (o si
+ * rechaza), `rw.js` no se descarga y no se crea ninguna cookie.
  *
- * Sequence:
- *  1. Always inject the inline queue snippet — it just defines
- *     window.rewardful as a no-op queue. No cookies, no fetch.
- *  2. If consent is "accepted" on mount → inject rw.js immediately.
- *  3. If consent is "necessary" or unset → wait for the
- *     "ts:cookies:accepted" event and inject then. Lets a user who
- *     rejects on first visit and accepts later still get attribution
- *     from the same session.
+ * Secuencia:
+ *  1. Se inyecta siempre la cola en línea: solo define `window.rewardful` como
+ *     una función vacía. Sin cookies, sin peticiones.
+ *  2. Si al montar ya hay consentimiento de afiliados -> se inyecta `rw.js`.
+ *  3. Si no, se espera a `CONSENT_EVENT` y se inyecta si la decisión lo incluye.
  *
- * Set the API key via NEXT_PUBLIC_REWARDFUL_API_KEY in Vercel env. With
- * no key, the component is a no-op so dev/preview without the key keeps
- * working.
+ * Formato de consentimiento y migración del valor antiguo: `src/lib/consent.ts`
+ * (un "accepted" del banner anterior cuenta solo como afiliados).
+ *
+ * La clave de API va en NEXT_PUBLIC_REWARDFUL_API_KEY. Sin clave, no hace nada.
  */
 export function RewardfulLoader() {
   useEffect(() => {
@@ -44,22 +47,18 @@ export function RewardfulLoader() {
       document.head.appendChild(s);
     }
 
-    let consent: string | null = null;
-    try {
-      consent = localStorage.getItem(STORAGE_KEY);
-    } catch {
-      /* private mode */
-    }
-
-    if (consent === "accepted") {
+    if (affiliatesAllowed(effectiveConsent(browserStorage()))) {
       injectMainScript();
       return;
     }
 
-    // Wait for the user to accept later in the session.
-    const onAccept = () => injectMainScript();
-    window.addEventListener("ts:cookies:accepted", onAccept);
-    return () => window.removeEventListener("ts:cookies:accepted", onAccept);
+    // Esperar a que la persona acepte más tarde en la sesión.
+    const onChange = (ev: Event) => {
+      const detail = (ev as CustomEvent<ConsentCategories>).detail;
+      if (affiliatesAllowed(detail)) injectMainScript();
+    };
+    window.addEventListener(CONSENT_EVENT, onChange);
+    return () => window.removeEventListener(CONSENT_EVENT, onChange);
   }, []);
 
   return null;

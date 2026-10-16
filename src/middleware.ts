@@ -13,15 +13,10 @@ export function middleware(req: NextRequest) {
   if (LANDING_B && /^\/(?:es|en)\/?$/.test(pathname)) {
     const url = req.nextUrl.clone();
     url.pathname = "/landing-b/index.html";
-    const res = NextResponse.rewrite(url);
-    if (!req.cookies.get("tsync_landing")) {
-      res.cookies.set("tsync_landing", "consumer", {
-        maxAge: 60 * 60 * 24 * 30,
-        sameSite: "lax",
-        path: "/",
-      });
-    }
-    return res;
+    // Ya NO se fija aquí la cookie `tsync_landing`: es de atribución
+    // (analítica) y no puede crearse antes del consentimiento. La crea
+    // `public/consent.js` en la home estática, solo si se acepta la analítica.
+    return NextResponse.rewrite(url);
   }
 
   // Kill switch — when NEW_SIGNUPS_DISABLED=true, send first-time visitors to
@@ -56,24 +51,12 @@ export function middleware(req: NextRequest) {
     pathname.includes(".") ||
     locales.some((l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`))
   ) {
-    // Stamp the landing source as a cookie so the post-signup welcome flow
-    // can pick the right copy variant (dev vs consumer). The cookie persists
-    // across pages until the user signs up; the auth callback reads it and
-    // forwards it to n8n. We only set it if absent so a visitor who first
-    // saw /for-developers and later browses to / keeps the dev attribution.
-    const res = NextResponse.next();
-    if (!req.cookies.get("tsync_landing")) {
-      const isDev = /^\/(?:es|en)\/for-developers(?:\/|$)/.test(pathname);
-      const isConsumerHome = /^\/(?:es|en)\/?$/.test(pathname);
-      if (isDev || isConsumerHome) {
-        res.cookies.set("tsync_landing", isDev ? "dev" : "consumer", {
-          maxAge: 60 * 60 * 24 * 30, // 30 days
-          sameSite: "lax",
-          path: "/",
-        });
-      }
-    }
-    return res;
+    // La cookie `tsync_landing` (origen dev/consumer para el correo de
+    // bienvenida) ya no se fija en el servidor: es atribución y solo puede
+    // crearse con consentimiento de analítica. La crea `ConsentGate` en el
+    // cliente (ver src/components/consent/ConsentGate.tsx). Sin cookie, el
+    // callback de auth usa la variante "consumer" por defecto.
+    return NextResponse.next();
   }
 
   // Parse Accept-Language for the best match.
