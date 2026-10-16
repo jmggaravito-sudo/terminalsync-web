@@ -1,0 +1,37 @@
+{
+  "id": "str-007",
+  "categoryId": "strategy",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 101,
+  "es": {
+    "title": "Diagnóstico del negocio en 360°",
+    "outcome": "Radiografía clara del estado del negocio.",
+    "prompt": "Quiero un diagnóstico completo de mi negocio para saber dónde estoy.\n\nMi negocio: [describir].\nAntigüedad: [tiempo].\nTamaño actual: [empleados, facturación].\nLo que siento: [intuiciones sobre fortalezas/debilidades].\n\nDame: evaluación 1-10 de 8 dimensiones críticas (ventas, marketing, operaciones, finanzas, equipo, tecnología, atención, estrategia), las 3 más fuertes, las 3 más débiles y plan de mejora priorizado.",
+    "recommendedFiles": [
+      "Datos del negocio",
+      "Resultados financieros"
+    ],
+    "expectedResult": [
+      "Evaluación 8 dimensiones",
+      "Top fortalezas",
+      "Top debilidades",
+      "Plan de mejora"
+    ]
+  },
+  "en": {
+    "title": "360° business diagnosis",
+    "outcome": "A clear picture of how the business is doing.",
+    "prompt": "I want a complete diagnosis of my business to know where I stand.\n\nMy business: [describe].\nAge: [time].\nCurrent size: [employees, revenue].\nWhat I feel: [intuitions about strengths/weaknesses].\n\nGive me: 1-10 evaluation of 8 critical dimensions (sales, marketing, operations, finance, team, technology, customer service, strategy), the top 3 strengths, the top 3 weaknesses and a prioritized improvement plan.",
+    "recommendedFiles": [
+      "Business data",
+      "Financial results"
+    ],
+    "expectedResult": [
+      "8-dimension evaluation",
+      "Top strengths",
+      "Top weaknesses",
+      "Prioritized improvement plan"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "sup-010",
+  "categoryId": "support",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 32,
+  "es": {
+    "title": "Documentar procedimiento de soporte",
+    "outcome": "Proceso paso a paso para responder rápido y consistente.",
+    "prompt": "Quiero documentar cómo se debe manejar el soporte al cliente en mi empresa.\n\nMi negocio: [describir].\nTipos de consulta más comunes: [listar].\nTiempos de respuesta deseados: [horas].\n\nDame un procedimiento paso a paso: cómo recibir la consulta, cómo clasificarla por urgencia, qué responder en menos de X horas, cuándo escalar a otra persona y cómo cerrar el caso correctamente.",
+    "recommendedFiles": [
+      "Tipos de consulta que recibes"
+    ],
+    "expectedResult": [
+      "Proceso paso a paso",
+      "Clasificación de urgencia",
+      "Plantillas iniciales",
+      "Criterios de escalación"
+    ]
+  },
+  "en": {
+    "title": "Document the support procedure",
+    "outcome": "Step-by-step process to respond quickly and consistently.",
+    "prompt": "I want to document how support should be handled in my company.\n\nMy business: [describe].\nMost common types of inquiries: [list].\nDesired response times: [hours].\n\nGive me a step-by-step procedure: how to receive the inquiry, how to classify it by urgency, what to reply in less than X hours, when to escalate to someone else and how to properly close the case.",
+    "recommendedFiles": [
+      "Types of inquiries you receive"
+    ],
+    "expectedResult": [
+      "Step-by-step procedure",
+      "Urgency classification",
+      "Initial templates",
+      "Escalation criteria"
+    ]
+  }
+}

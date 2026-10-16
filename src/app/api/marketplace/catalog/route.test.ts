@@ -114,6 +114,28 @@ describe("GET /api/marketplace/catalog", () => {
     expect(Array.isArray(body.bundles)).toBe(true);
   });
 
+  it("serves the single-source use cases in one language per request", async () => {
+    const es = await callCatalog("es");
+    const en = await callCatalog("en");
+    for (const { body } of [es, en]) {
+      expect(body.useCases.cases).toHaveLength(183);
+      expect(body.useCases.categories).toHaveLength(14);
+      const categoryIds = new Set(body.useCases.categories.map((c) => c.id));
+      for (const c of body.useCases.cases) {
+        expect(categoryIds.has(c.categoryId)).toBe(true);
+        expect(c).not.toHaveProperty("es");
+        expect(c).not.toHaveProperty("en");
+        expect(c.title.length).toBeGreaterThan(0);
+        expect(c.prompt.length).toBeGreaterThan(0);
+        expect(c.expectedResult.length).toBeGreaterThan(0);
+      }
+    }
+    const esFirst = es.body.useCases.cases[0];
+    const enFirst = en.body.useCases.cases.find((c) => c.id === esFirst.id);
+    expect(enFirst?.title).not.toBe(esFirst.title);
+    expect(esFirst.level).toBe(enFirst?.level);
+  });
+
   it("returns non-empty connectors/skills/cliTools (first-party content shipped)", async () => {
     // These three pillars read from `content/<pillar>/<lang>/*.md`,
     // which is committed in the repo. An empty array would mean the
@@ -327,6 +349,8 @@ describe("GET /api/marketplace/catalog", () => {
       "tax-prep-checklist",
       "1099-w9-organizer",
       "quarterly-tax-estimate-prep",
+      "cobros-vencidos",
+      "fijacion-de-precios",
     ] as const;
     const sorted = [...publicSlugs].sort();
 
@@ -424,15 +448,12 @@ describe("GET /api/marketplace/catalog", () => {
       installableForAiReason: "contains-uninstallable",
     });
 
-    // Ideogram and Higgsfield are explicitly supervised as false, so the
-    // kit is blocked even though its other item is a skill.
+    // Ideogram and Higgsfield are remote (mcp-remote) connectors: the app logs
+    // the person in once on install, so the kit is installable.
     const creativeKit = body.bundles.find(
       (b) => b.slug === "social-ad-creative-studio",
     );
-    expect(creativeKit).toMatchObject({
-      installableForAi: false,
-      installableForAiReason: "contains-uninstallable",
-    });
+    expect(creativeKit).toMatchObject({ installableForAi: true });
   });
 
   it("normalizes connector logos to absolute terminalsync.ai URLs backed by committed assets", async () => {
@@ -822,3 +843,13 @@ function makeSupabaseStubForDuplicateBundleSlug(): SupabaseClient {
     },
   } as unknown as SupabaseClient;
 }
+
+describe("catalog connectors expose markets", () => {
+  it("every first-party connector carries a non-empty markets array (en and es)", async () => {
+    for (const lang of ["en", "es"]) {
+      const { body } = await callCatalog(lang);
+      const missing = body.connectors.filter((c) => !c.markets?.length).map((c) => c.slug);
+      expect(missing, `connectors without markets (${lang})`).toEqual([]);
+    }
+  });
+});

@@ -2,6 +2,7 @@
 name: Firecrawl
 logo: /connectors/firecrawl.svg
 category: research
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Convierte cualquier sitio web en datos limpios que tu IA pueda leer"
 simpleSubtitle: "Server oficial de Firecrawl: scrapear una página, buscar en la web, o recorrer un sitio entero."

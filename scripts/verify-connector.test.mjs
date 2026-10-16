@@ -28,3 +28,43 @@ describe("connector installability contract", () => {
     expect(responseMatchesId({ id: 1, result: {} }, 1)).toBe(true);
   });
 });
+
+import { isMcpRemote } from "./verify-connector.mjs";
+import { REASONS } from "./verify-connector.mjs";
+
+describe("remote connectors (mcp-remote)", () => {
+  it("detects an mcp-remote recipe, pinned or not", () => {
+    expect(isMcpRemote({ command: "npx", args: ["-y", "mcp-remote", "https://mcp.siigo.com"] })).toBe(true);
+    expect(isMcpRemote({ command: "npx", args: ["-y", "mcp-remote@latest", "https://x.test/mcp"] })).toBe(true);
+    expect(isMcpRemote({ command: "npx", args: ["-y", "@scope/other-server"] })).toBe(false);
+    expect(isMcpRemote(null)).toBe(false);
+  });
+  it("knows the remote-needs-login reason", () => {
+    expect(REASONS.has("remote-needs-login")).toBe(true);
+  });
+});
+
+describe("remote connectors without dynamic client registration", () => {
+  it("keeps zoom blocked: mcp-remote cannot log in there", async () => {
+    const { verifyFile } = await import("./verify-connector.mjs");
+    const r = await verifyFile("content/connectors/en/zoom.md", { verifiedAt: "2026-10-08T00:00:00.000Z" });
+    expect(r).toMatchObject({ slug: "zoom", installableForAi: false, installableForAiReason: "needs-oauth" });
+  });
+});
+
+import fs from "node:fs";
+import matter from "gray-matter";
+import { OAUTH_CONNECTORS } from "./verify-connector.mjs";
+
+describe("Google connectors stay blocked until the app can supply GOOGLE_ACCESS_TOKEN", () => {
+  it("keeps gmail, google-calendar and google-sheets in OAUTH_CONNECTORS", () => {
+    expect([...OAUTH_CONNECTORS].sort()).toEqual(["gmail", "google-calendar", "google-sheets"]);
+  });
+  it.each(["en", "es"])("%s fichas are not installable and say needs-oauth", (lang) => {
+    for (const slug of OAUTH_CONNECTORS) {
+      const { data } = matter(fs.readFileSync(`content/connectors/${lang}/${slug}.md`, "utf8"));
+      expect(data.installableForAi).toBe(false);
+      expect(data.installableForAiReason).toBe("needs-oauth");
+    }
+  });
+});

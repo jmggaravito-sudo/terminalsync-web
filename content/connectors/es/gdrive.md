@@ -2,6 +2,7 @@
 name: Google Drive
 logo: /connectors/gdrive.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tu Drive hablándole a tu IA (versión Anthropic)"
 simpleSubtitle: "Lee documentos, busca archivos, resume sheets — OAuth directo sin intermediarios."

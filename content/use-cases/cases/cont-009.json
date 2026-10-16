@@ -1,0 +1,34 @@
+{
+  "id": "cont-009",
+  "categoryId": "continuity",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 128,
+  "isNew": true,
+  "es": {
+    "title": "Preparar respuesta rápida desde WhatsApp",
+    "outcome": "Una respuesta lista para copiar y mandar en WhatsApp sin sonar improvisado.",
+    "prompt": "Tengo que responder un mensaje importante por WhatsApp y quiero hacerlo bien pero rápido.\n\nMensaje que recibí: [pegar].\nContexto de la relación: [cliente / proveedor / equipo / personal].\nObjetivo de mi respuesta: [aclarar / cerrar / posponer / ofrecer].\nTono que quiero: [profesional / cálido / firme].\n\nDame: 2 opciones de respuesta cortas, listas para copiar a WhatsApp, con el tono indicado y un cierre claro que invite a continuar la conversación.",
+    "recommendedFiles": [
+      "Mensaje original del cliente"
+    ],
+    "expectedResult": [
+      "Opción 1 corta",
+      "Opción 2 alternativa",
+      "Sugerencia de seguimiento"
+    ]
+  },
+  "en": {
+    "title": "Prepare a quick reply from WhatsApp",
+    "outcome": "A reply ready to copy and send on WhatsApp without sounding improvised.",
+    "prompt": "I need to reply to an important message on WhatsApp and I want to do it well but fast.\n\nMessage I received: [paste].\nRelationship context: [client / supplier / team / staff].\nGoal of my reply: [clarify / close / postpone / offer].\nTone I want: [professional / warm / firm].\n\nGive me: 2 short response options, ready to copy to WhatsApp, with the indicated tone and a clear closing that invites continuing the conversation.",
+    "recommendedFiles": [
+      "Original client message"
+    ],
+    "expectedResult": [
+      "Short option 1",
+      "Alternative option 2",
+      "Follow-up suggestion"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "webflow-001",
+  "categoryId": "marketing",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 181,
+  "isNew": true,
+  "connectors": [
+    "webflow"
+  ],
+  "es": {
+    "title": "Auditar el SEO básico de mi sitio en Webflow",
+    "outcome": "Revisa tus páginas y colecciones en Webflow y lista dónde faltan descripciones, textos alternativos o títulos.",
+    "prompt": "Quiero una auditoría básica de SEO de mi sitio en Webflow.\n\nSitio: [nombre del sitio].\nQué revisar: [descripciones meta / textos alternativos de imágenes / títulos / todo].\nColección prioritaria: [por ejemplo, blog / productos / todas].\n\nSi te falta el sitio, pregúntamelo antes de consultar. Primero lista mis colecciones y sus campos para ubicar dónde está el contenido. Luego revisa páginas y elementos y dame:\n1. Una tabla con páginas o elementos a los que les falta descripción, texto alternativo o título, o que están demasiado cortos o largos.\n2. Las cinco correcciones que más valen la pena.\n3. Una propuesta de texto para cada una de esas cinco.\n\nSolo consulta: no edites nada en este paso. Si algo no se puede revisar con los permisos que tienes, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Páginas más importantes del sitio",
+      "Palabras clave de tu negocio"
+    ],
+    "expectedResult": [
+      "Colecciones y campos",
+      "Tabla de elementos con problemas",
+      "Cinco correcciones prioritarias",
+      "Textos propuestos"
+    ]
+  },
+  "en": {
+    "title": "Audit the basic SEO of my Webflow site",
+    "outcome": "Reviews your pages and collections in Webflow and lists where descriptions, alt text, or titles are missing.",
+    "prompt": "I want a basic SEO audit of my Webflow site.\n\nSite: [site name].\nWhat to review: [meta descriptions / image alt text / titles / everything].\nPriority collection: [for example, blog / products / all].\n\nIf the site is missing, ask me before looking. First list my collections and their fields to find where the content is. Then review pages and items and give me:\n1. A table of pages or items that are missing a description, alt text, or a title, or that are too short or too long.\n2. The five fixes that are worth the most.\n3. A proposed text for each of those five.\n\nRead only: don't edit anything in this step. If something can't be reviewed with the permissions you have, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Most important pages on the site",
+      "Your business's keywords"
+    ],
+    "expectedResult": [
+      "Collections and fields",
+      "Table of items with issues",
+      "Five priority fixes",
+      "Proposed texts"
+    ]
+  }
+}

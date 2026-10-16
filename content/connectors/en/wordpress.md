@@ -2,6 +2,7 @@
 name: WordPress
 logo: /connectors/wordpress.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your website, updated by conversation"
 simpleSubtitle: "\"Draft a post about the new service\" — your AI writes and publishes to your WordPress site."

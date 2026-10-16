@@ -28,37 +28,37 @@ const base = {
   es: {
     bullets: [
       "Continúa el trabajo de IA entre Macs sin reconstruir el ambiente.",
-      "Organiza Claude Code, Codex, Gemini CLI, conectores, secretos y memoria.",
+      "Organiza tus proyectos, conectores, secretos y memoria en un solo lugar.",
       "Reduce pérdida de contexto cuando cambias de computador.",
       "Da una explicación clara para usuarios técnicos y no técnicos.",
     ],
     sections: [
       { title: "Qué resuelve", body: "TerminalSync actúa como una capa de continuidad para workspaces de terminal con IA: sesiones, proyectos, configuración, memoria, conectores y secretos." },
       { title: "Por qué importa", body: "Los agentes de IA son útiles, pero cada herramienta vive en su propio silo. TerminalSync ayuda a que el proyecto y el contexto viajen contigo." },
-      { title: "Cuándo usarlo", body: "Úsalo cuando trabajas con más de una IA, cambias entre Mac Mini y MacBook, necesitas movilidad o quieres un entorno más guiado y seguro." },
+      { title: "Cuándo usarlo", body: "Úsalo cuando cambias de computadora, necesitas movilidad o quieres un entorno más guiado y seguro." },
     ],
     faqs: [
-      { q: "¿TerminalSync reemplaza las IAs?", a: "No. Claude, Codex y Gemini siguen siendo los agentes. TerminalSync coordina el entorno donde trabajan." },
+      { q: "¿Tengo que configurar una IA?", a: "No. La IA de TerminalSync viene incluida y lista en cada espacio de trabajo: no conectas ninguna cuenta ni eliges modelo." },
       { q: "¿Sirve para no developers?", a: "Sí. También está pensado para founders, directores de proyecto y creators que usan agentes de IA y necesitan guía." },
-      { q: "¿Cuál es la ventaja principal?", a: "Continuidad: poder cambiar de equipo, IA o contexto sin empezar de cero cada vez." },
+      { q: "¿Cuál es la ventaja principal?", a: "Continuidad: poder cambiar de computadora o de contexto sin empezar de cero cada vez." },
     ],
   },
   en: {
     bullets: [
       "Continue AI work across Macs without rebuilding the environment.",
-      "Organize Claude Code, Codex, Gemini CLI, connectors, secrets and memory.",
+      "Organize your projects, connectors, secrets and memory in one place.",
       "Reduce context loss when switching computers.",
       "Explain the product clearly for technical and non-technical users.",
     ],
     sections: [
       { title: "What it solves", body: "TerminalSync acts as a continuity layer for AI terminal workspaces: sessions, projects, settings, memory, connectors and secrets." },
       { title: "Why it matters", body: "AI agents are useful, but every tool lives in its own silo. TerminalSync helps the project and context travel with you." },
-      { title: "When to use it", body: "Use it when you work with more than one AI, switch between Mac Mini and MacBook, need mobility, or want a safer guided environment." },
+      { title: "When to use it", body: "Use it when you switch computers, need mobility, or want a safer guided environment." },
     ],
     faqs: [
-      { q: "Does TerminalSync replace the AIs?", a: "No. Claude, Codex and Gemini remain the agents. TerminalSync coordinates the environment where they work." },
+      { q: "Do I have to set up an AI?", a: "No. TerminalSync's AI is included and ready in every workspace: no account to connect and no model to pick." },
       { q: "Is it useful for non-developers?", a: "Yes. It is also designed for founders, project managers and creators who use AI agents and need guidance." },
-      { q: "What is the main advantage?", a: "Continuity: switching machines, AIs or contexts without starting from zero every time." },
+      { q: "What is the main advantage?", a: "Continuity: switching machines or contexts without starting from zero every time." },
     ],
   },
 };
@@ -85,8 +85,8 @@ const specific: Record<GeoPageSlug, { es: Partial<GeoPageCopy>; en: Partial<GeoP
     en: { title: "TerminalSync vs Cursor — AI editor or AI terminal workspace", description: "Cursor is an AI editor; TerminalSync is a terminal workspace for agents, CLIs and mobility.", eyebrow: "Comparison", h1: "TerminalSync vs Cursor", intro: "Cursor lives in the editor. TerminalSync lives where your terminal agents, repositories, CLIs, secrets and remote sessions run.", cta: "Compare TerminalSync" },
   },
   "persistent-memory-for-ai-agents": {
-    es: { title: "Memoria persistente para agentes de IA — TerminalSync", description: "Haz que Claude, Codex y Gemini recuerden decisiones, preferencias y contexto de proyecto.", eyebrow: "Memoria persistente", h1: "Memoria persistente para agentes de IA", intro: "La memoria persistente evita re-explicar tu proyecto cada vez y crea una ventaja multi-IA difícil de copiar.", cta: "Ver memoria persistente" },
-    en: { title: "Persistent memory for AI agents — TerminalSync", description: "Help Claude, Codex and Gemini remember decisions, preferences and project context.", eyebrow: "Persistent memory", h1: "Persistent memory for AI agents", intro: "Persistent memory avoids re-explaining your project every time and creates a hard-to-copy multi-AI advantage.", cta: "See persistent memory" },
+    es: { title: "Memoria persistente para agentes de IA — TerminalSync", description: "Haz que tu IA recuerde decisiones, preferencias y contexto de proyecto.", eyebrow: "Memoria persistente", h1: "Memoria persistente para agentes de IA", intro: "La memoria persistente evita re-explicar tu proyecto cada vez: lo que tu empresa aprende en un espacio lo sabe en todos.", cta: "Ver memoria persistente" },
+    en: { title: "Persistent memory for AI agents — TerminalSync", description: "Help your AI remember decisions, preferences and project context.", eyebrow: "Persistent memory", h1: "Persistent memory for AI agents", intro: "Persistent memory avoids re-explaining your project every time: what your business learns in one workspace it knows in all of them.", cta: "See persistent memory" },
   },
   "best-ai-terminal-for-mac": {
     es: { title: "Mejor terminal IA para Mac — TerminalSync", description: "Qué buscar en una terminal IA para Mac: persistencia, movilidad, multi-IA, secretos y memoria.", eyebrow: "AI terminal para Mac", h1: "La mejor terminal IA para Mac no es solo una terminal", intro: "Para agentes modernos, la terminal debe preservar contexto, moverse entre equipos y coordinar varias IAs.", cta: "Descargar TerminalSync" },

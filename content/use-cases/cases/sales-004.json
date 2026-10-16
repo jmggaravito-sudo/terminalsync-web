@@ -1,0 +1,39 @@
+{
+  "id": "sales-004",
+  "categoryId": "sales",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 4,
+  "es": {
+    "title": "Crear guion de llamada en frío",
+    "outcome": "Guion claro de 60 segundos para abrir conversaciones nuevas.",
+    "prompt": "Necesito un guion de llamada en frío que no suene a vendedor agresivo.\n\nMi empresa: [describir].\nA quién llamo: [perfil del decisor].\nQué les ofrezco: [beneficio principal en una frase].\n\nDame: apertura de 15 segundos, propuesta de valor en una frase, una pregunta abierta para descubrir necesidad, manejo de las 3 objeciones más comunes y un cierre claro pidiendo agendar.",
+    "recommendedFiles": [
+      "Lista de prospectos",
+      "Tu propuesta de valor"
+    ],
+    "expectedResult": [
+      "Apertura",
+      "Propuesta de valor",
+      "Pregunta clave",
+      "Manejo de objeciones",
+      "Cierre"
+    ]
+  },
+  "en": {
+    "title": "Create a cold call script",
+    "outcome": "Clear 60-second script to start new conversations.",
+    "prompt": "I need a cold call script that doesn't sound like an aggressive salesperson.\n\nMy company: [describe].\nWho I'm calling: [decision-maker profile].\nWhat I offer them: [main benefit in one sentence].\n\nGive me: a 15-second opening, a one-sentence value proposition, an open question to uncover needs, handling for the 3 most common objections, and a clear close asking to schedule.",
+    "recommendedFiles": [
+      "Prospect list",
+      "Your value proposition"
+    ],
+    "expectedResult": [
+      "Opening",
+      "Value proposition",
+      "Key question",
+      "Objection handling",
+      "Close"
+    ]
+  }
+}

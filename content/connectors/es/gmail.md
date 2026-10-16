@@ -2,6 +2,7 @@
 name: Gmail
 logo: /connectors/gmail.svg
 category: messaging
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tu inbox, hablando con tu IA"
 simpleSubtitle: "\"¿Algo urgente hoy?\" \"Resumime los correos de mi cliente X\" — sin pegar nada."
@@ -58,7 +59,7 @@ Los dos valores quedan guardados cifrados en tu Keychain y sincronizados entre t
 
 `gmail-mcp` (Adam Jones / @domdomegg — el mismo autor de nuestros conectores de Google Sheets y Airtable) habla la Gmail API por OAuth. Tools verificadas contra el README: lectura/búsqueda — `gmail_get_profile`, `gmail_messages_list` (search operators), `gmail_message_get`, `gmail_threads_list`; escritura/administración — `gmail_message_send`, `gmail_message_forward`, `gmail_message_modify` (etiquetas), `gmail_message_archive`, `gmail_message_trash`/`_untrash`, `gmail_message_delete`.
 
-La auth es OAuth 2.0 con `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` (el server actúa como OAuth proxy hacia Google — mismo patrón que `google-sheets-mcp`, así un solo proyecto de Google respalda Sheets, Calendar y Gmail). La primera corrida abre el consent del navegador; los tokens persisten después.
+La auth es OAuth 2.0 con `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` (el server actúa como OAuth proxy hacia Google — mismo patrón que `google-sheets-mcp`, así un solo proyecto de Google respalda Sheets, Calendar y Gmail). Verificado el 2026-10-14: por stdio este paquete NO usa el client id/secret ni abre el navegador — termina con "GOOGLE_ACCESS_TOKEN required for stdio transport" (el OAuth solo existe en su transporte HTTP). Por eso este conector todavía no es instalable para la IA: la app tendría que aportar un access token de Google.
 
 Terminal Sync guarda el client id/secret + refresh token en tu Keychain, sincronizados cifrados entre máquinas con AES-256-GCM. Los envíos son públicos/irreversibles, así que el escritorio pasa `gmail_message_send`/`_forward`/`_delete` por un paso de confirmación; leer y buscar corren libremente.
 

@@ -2,6 +2,7 @@
 name: MongoDB
 logo: /connectors/mongodb.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Ask — and act on — your MongoDB in plain language"
 simpleSubtitle: "Official MongoDB server: query your databases and manage Atlas without a shell."

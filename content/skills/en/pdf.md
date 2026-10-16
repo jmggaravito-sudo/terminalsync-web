@@ -6,7 +6,7 @@ vendors: ["claude"]
 author: "Anthropic"
 status: available
 tagline: "Editable PDFs straight from a prompt"
-description: "Reads, fills, merges, splits, watermarks, and generates PDFs — including detecting and filling real AcroForm fields instead of retyping a form as chat text. Ships natively with Claude; nothing to install."
+description: "Reads, fills, merges, splits, watermarks, and generates PDFs — including detecting and filling real AcroForm fields instead of retyping a form as chat text. Included by default; nothing to install."
 license: "proprietary"
 licenseUrl: "https://github.com/anthropics/skills/blob/main/skills/pdf/LICENSE.txt"
 marketplaceSource: "anthropic"
@@ -33,8 +33,8 @@ Do not use it for Word documents, slide decks, or spreadsheets — that's the DO
 ## How to use
 
 1. Share the PDF and say exactly what you need: *"Fill this form with [the specific values]"* or *"Merge these three invoices into one, in date order."*
-2. For a form, Claude checks whether it has fillable fields before doing anything — if it doesn't, say so instead of getting a fake-looking result.
-3. Give the real data to fill in — Claude does not invent names, amounts, or dates that weren't provided.
+2. For a form, the AI checks whether it has fillable fields before doing anything — if it doesn't, say so instead of getting a fake-looking result.
+3. Give the real data to fill in — the AI does not invent names, amounts, or dates that weren't provided.
 4. Review the exported PDF before sending it, especially for anything with legal or financial weight (contracts, signed forms) — the skill fills and formats accurately, but the content and the decision to send it are still yours.
 
 ## Best for

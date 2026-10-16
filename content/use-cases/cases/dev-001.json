@@ -1,0 +1,38 @@
+{
+  "id": "dev-001",
+  "categoryId": "dev",
+  "recommendedAI": "codex",
+  "level": "Intermedio",
+  "order": 83,
+  "popular": true,
+  "es": {
+    "title": "Automatizar tarea repetitiva",
+    "outcome": "Automatización que ahorra horas semanales.",
+    "prompt": "Tengo una tarea repetitiva que quiero automatizar.\n\nTarea: [describir paso a paso lo que hago manualmente].\nFrecuencia: [diaria / semanal].\nHerramientas que uso: [listar].\nResultado esperado: [qué debe quedar al final].\n\nDame: análisis de qué se puede automatizar, herramientas recomendadas (gratuitas si es posible), código o configuración paso a paso y cómo probarlo antes de usarlo en serio.",
+    "recommendedFiles": [
+      "Capturas del proceso actual",
+      "Ejemplos de archivos involucrados"
+    ],
+    "expectedResult": [
+      "Análisis",
+      "Herramientas",
+      "Pasos",
+      "Cómo probar"
+    ]
+  },
+  "en": {
+    "title": "Automate repetitive task",
+    "outcome": "Automation that saves hours weekly.",
+    "prompt": "I have a repetitive task I want to automate.\n\nTask: [describe step-by-step what I do manually].\nFrequency: [daily / weekly].\nTools I use: [list].\nExpected result: [what should be the final result].\n\nGive me: analysis of what can be automated, recommended tools (free if possible), code or step-by-step configuration and how to test it before using it in production.",
+    "recommendedFiles": [
+      "Screenshots of current process",
+      "Examples of files involved"
+    ],
+    "expectedResult": [
+      "Analysis",
+      "Tools",
+      "Steps",
+      "How to test"
+    ]
+  }
+}

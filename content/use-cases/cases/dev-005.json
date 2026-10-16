@@ -1,0 +1,37 @@
+{
+  "id": "dev-005",
+  "categoryId": "dev",
+  "recommendedAI": "codex",
+  "level": "Avanzado",
+  "order": 87,
+  "es": {
+    "title": "Crear panel/dashboard interno",
+    "outcome": "Tablero simple para ver el negocio en una pantalla.",
+    "prompt": "Quiero un panel donde pueda ver el estado de mi negocio de un vistazo.\n\nMi negocio: [describir].\nDatos que quiero monitorear: [ventas / leads / inventario / soporte].\nHerramientas donde están los datos: [listar].\nQuién lo va a ver: [yo / equipo].\n\nDame: KPIs que debe mostrar, estructura visual (qué arriba, qué abajo), herramientas recomendadas para construirlo y plan paso a paso para implementarlo.",
+    "recommendedFiles": [
+      "Datos actuales",
+      "Reportes manuales que haces hoy"
+    ],
+    "expectedResult": [
+      "KPIs",
+      "Estructura visual",
+      "Herramientas",
+      "Plan de implementación"
+    ]
+  },
+  "en": {
+    "title": "Create internal dashboard",
+    "outcome": "Simple dashboard to see the business at a glance.",
+    "prompt": "I want a dashboard where I can see the state of my business at a glance.\n\nMy business: [describe].\nData I want to monitor: [sales / leads / inventory / support].\nTools where the data lives: [list].\nWho will view it: [me / team].\n\nGive me: KPIs it should show, visual layout (what goes on top, what goes below), recommended tools to build it and a step-by-step implementation plan.",
+    "recommendedFiles": [
+      "Current data",
+      "Manual reports you produce today"
+    ],
+    "expectedResult": [
+      "KPIs",
+      "Visual layout",
+      "Tools",
+      "Implementation plan"
+    ]
+  }
+}

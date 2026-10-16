@@ -2,6 +2,7 @@
 name: Ideogram
 logo: /connectors/ideogram.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Crea imágenes de marca desde tu agente"
 simpleSubtitle: "MCP oficial de Ideogram: generación, edición e iteración visual con OAuth."
@@ -22,8 +23,8 @@ license: "proprietary"
 licenseUrl: "https://ideogram.ai/terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
-installableForAi: false
-installableForAiReason: "recipe-not-npx"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
 aiToolsCount: 0
 aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"

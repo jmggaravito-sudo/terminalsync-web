@@ -5,7 +5,7 @@ logo: /skills/brand-voice.svg
 category: marketing
 status: available
 catalogReady: false
-simpleTitle: "Make Claude write in YOUR voice"
+simpleTitle: "Make your AI write in YOUR voice"
 simpleSubtitle: "Feed it 5 samples of your writing once. From then on, every email, post, ad copy sounds like you."
 devTitle: "Brand Voice Skill"
 devSubtitle: "Few-shot voice modeling: stores 3-7 prose samples + a tone manifest, then enforces them on every generation."
@@ -16,7 +16,7 @@ tsInstallable: true
 author: "TerminalSync"
 license: "proprietary"
 ---
-The fastest way to break the "GPT smell" off your content. Drop in 3-5 emails, posts, or articles you've written. Claude pattern-matches your sentence rhythm, vocabulary quirks, and tone — every output from then on sounds like you wrote it.
+The fastest way to break the "GPT smell" off your content. Drop in 3-5 emails, posts, or articles you've written. The AI pattern-matches your sentence rhythm, vocabulary quirks, and tone — every output from then on sounds like you wrote it.
 
 Tested with newsletter writers, founders posting on LinkedIn, and copywriters drafting client work. Works for English, Spanish, and Portuguese.
 

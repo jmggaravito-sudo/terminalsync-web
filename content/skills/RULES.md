@@ -114,7 +114,7 @@ tagline: "Short one-line promise"
 description: "Concrete description of what the assistant does and when it helps."
 license: "proprietary"
 marketplaceSource: "terminalsync"
-compatibleWith: ["claude", "codex", "gemini"]  # las 4 IAs — ver "Cross-provider coverage"
+compatibleWith: ["claude"]  # hoy solo GLM (vía claude) — ver `vendors` abajo
 ---
 ```
 
@@ -124,9 +124,11 @@ Required field meanings:
 - `logo`: local `/skills/<slug>.svg` path or an approved existing asset.
 - `category`: one of the allowed categories below.
 - `vendors`: the agent/provider surfaces where this skill can run. **Una skill
-  nueva se publica con las tres (`claude`, `codex`, `gemini`) o no se publica** —
-  GLM/TerminalSync hereda la de Claude, así que esas tres son las 4 IAs. No
-  copies este bloque con menos: ver "Cross-provider coverage" abajo.
+  nueva se publica con los vendors en los que fue evaluada.** Decisión JM
+  2026-10-08: el producto es solo GLM por ahora, así que hoy eso es
+  `["claude"]` (GLM/TerminalSync hereda la de Claude) con evals sobre GLM; ya no
+  se exige publicar con las tres (`claude`, `codex`, `gemini`). Nunca declares un
+  vendor sin evals ahí: ver "Cross-provider coverage" abajo.
 - `author`: original author or maintainer.
 - `status`: publication state; use `available` only after review approval.
 - `tagline`: short catalog-card promise.
@@ -268,13 +270,13 @@ Se tratan como deuda, no como diseño. Se declaran solo donde tienen evidencia
 
 #### Cómo se corre
 
-    GEMINI_API_KEY=... ANTHROPIC_API_KEY=... \
-      node scripts/skills-eval/run-evals.mjs <slug> --provider gemini
+    ZAI_API_KEY=... ZAI_MODEL=glm-5.3 \
+      node scripts/skills-eval/run-evals.mjs <slug>   # proveedor GLM por defecto
 
 - **Mediana de 3 corridas**, no una. Medido el 2026-08-07: la misma skill con
   el mismo prompt dio 5/5, 4/5 y 5/5 en tres corridas seguidas — una sola es un
   sorteo en el margen.
-- El **sujeto** es el proveedor evaluado y el **juez** es Claude: modelos
+- El **sujeto** es GLM (modelo `glm-5.3-flash`) y el **juez** es GLM con otro modelo (`glm-5.3`): modelos
   distintos, así el que produce no es el que aprueba.
 - `--local` evalúa el `SKILL.md` del repo antes de publicarlo, que es el orden
   correcto: medir el arreglo sin tener que shipearlo primero.

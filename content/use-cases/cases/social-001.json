@@ -1,0 +1,41 @@
+{
+  "id": "social-001",
+  "categoryId": "social",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 114,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__social_profile"
+  ],
+  "es": {
+    "title": "Qué publica mi competencia en redes",
+    "outcome": "Revisa los perfiles públicos de Instagram o Facebook de negocios, marcas o creadores de tu rubro y te resume qué publican, cada cuánto y qué les funciona.",
+    "prompt": "Quiero ver qué publican en redes los negocios y las marcas con los que compito.\n\nPerfiles a revisar: [de 1 a 3 cuentas de negocios, marcas o creadores — el usuario (@ejemplo) o el enlace del perfil de Instagram o de la página de Facebook].\nMi negocio: [qué vendes o qué servicio das].\nCiudad y país de mi mercado: [por ejemplo: Miami, Florida, EE. UU. / Medellín, Colombia].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta algún perfil, el país o el idioma, pregúntamelos antes de buscar. Revisa solo perfiles públicos de negocios, marcas o creadores: si una cuenta es de una persona privada, no la busques y dímelo. De cada perfil, mira sus publicaciones más recientes y dame: cuántos seguidores tiene, cada cuánto publica, qué temas y formatos repite, qué publicaciones tienen más likes y comentarios, y qué tono usa. Termina con cinco ideas de publicaciones para mi negocio inspiradas en lo que les funciona, sin copiarlas.\n\nUsa solo los números que aparezcan en los perfiles; si no ves un dato, dímelo.",
+    "recommendedFiles": [
+      "Cuentas de tus competidores",
+      "Tus publicaciones recientes"
+    ],
+    "expectedResult": [
+      "Resumen de cada perfil",
+      "Publicaciones que mejor les funcionan",
+      "Temas y formatos que repiten",
+      "Ideas para tus publicaciones"
+    ]
+  },
+  "en": {
+    "title": "What my competitors post on social media",
+    "outcome": "Reviews the public Instagram or Facebook profiles of businesses, brands, or creators in your field and sums up what they post, how often, and what works for them.",
+    "prompt": "I want to see what the businesses and brands I compete with post on social media.\n\nProfiles to review: [1 to 3 accounts of businesses, brands, or creators — the username (@example) or the link to the Instagram profile or Facebook page].\nMy business: [what you sell or what service you offer].\nCity and country of my market: [for example: Miami, Florida, USA / Medellín, Colombia].\nLanguage for the answer: [English / Spanish].\n\nIf a profile, the country, or the language is missing, ask me before searching. Only review public profiles of businesses, brands, or creators: if an account belongs to a private person, don't look it up and tell me. For each profile, look at its most recent posts and give me: how many followers it has, how often it posts, which topics and formats it repeats, which posts get the most likes and comments, and what tone it uses. Finish with five post ideas for my business inspired by what works for them, without copying them.\n\nUse only the numbers that appear on the profiles; if you can't see something, tell me.",
+    "recommendedFiles": [
+      "Your competitors' accounts",
+      "Your recent posts"
+    ],
+    "expectedResult": [
+      "Summary of each profile",
+      "Posts that work best for them",
+      "Topics and formats they repeat",
+      "Ideas for your posts"
+    ]
+  }
+}

@@ -2,6 +2,7 @@
 name: Calendly
 logo: /connectors/calendly.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your scheduling, handled in plain language"
 simpleSubtitle: "Official Calendly MCP server: check availability, book, and manage meetings over OAuth."
@@ -22,8 +23,8 @@ license: "proprietary"
 licenseUrl: "https://calendly.com/legal"
 marketplaceSource: "official"
 marketplaceCategory: "web"
-installableForAi: false
-installableForAiReason: "recipe-not-npx"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
 aiToolsCount: 0
 aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"

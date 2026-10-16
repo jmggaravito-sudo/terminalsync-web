@@ -2,6 +2,7 @@
 name: X (Twitter)
 logo: /connectors/twitter.svg
 category: messaging
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Publica y escucha en X, desde el chat"
 simpleSubtitle: "\"Publica este anuncio\" \"¿Qué dicen de nosotros?\" — tu IA publica en X y lo busca por ti."

@@ -2,6 +2,7 @@
 name: Canva
 logo: /connectors/canva.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Generate and edit Canva designs from your agent"
 simpleSubtitle: "Official Canva MCP: design generation, editing and export over OAuth."
@@ -22,8 +23,8 @@ license: "proprietary"
 licenseUrl: "https://www.canva.com/policies/canva-developer-terms/"
 marketplaceSource: "official"
 marketplaceCategory: "web"
-installableForAi: false
-installableForAiReason: "recipe-not-npx"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
 aiToolsCount: 0
 aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"

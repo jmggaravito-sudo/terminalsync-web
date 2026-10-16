@@ -2,6 +2,7 @@
 name: PostgreSQL
 logo: /connectors/postgres.svg
 category: database
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Que tu IA consulte tu base Postgres en modo seguro"
 simpleSubtitle: "Mira cómo está armada la base y haz preguntas — sin tocar nada, sin escribir SQL."

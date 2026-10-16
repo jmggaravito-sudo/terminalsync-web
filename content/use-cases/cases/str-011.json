@@ -1,0 +1,40 @@
+{
+  "id": "str-011",
+  "categoryId": "strategy",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 97,
+  "popular": true,
+  "es": {
+    "title": "Convertir WhatsApp en canal de ventas",
+    "outcome": "Plan comercial para usar WhatsApp Business como motor real de leads y cierres.",
+    "prompt": "Quiero convertir WhatsApp Business en un canal real de ventas para mi negocio.\n\nQué vendo: [describir].\nTicket promedio: [monto].\nCómo llegan hoy mis leads: [Meta Ads / orgánico / referidos / web].\nQué parte del proceso más se cae: [respuesta inicial / seguimiento / cierre / postventa].\n\nDame: estrategia comercial para WhatsApp, cómo captar mejor los leads, cómo calificarlos, qué mensajes usar en cada etapa, cuándo pasar a llamada o vendedor humano y qué métricas debo seguir para saber si WhatsApp sí está vendiendo.",
+    "recommendedFiles": [
+      "Oferta actual",
+      "Embudo comercial actual",
+      "Mensajes de ventas actuales"
+    ],
+    "expectedResult": [
+      "Estrategia por etapas",
+      "Mensajes por etapa",
+      "Reglas de handoff",
+      "KPIs comerciales"
+    ]
+  },
+  "en": {
+    "title": "Turn WhatsApp into a sales channel",
+    "outcome": "Commercial plan to use WhatsApp Business as a real lead and closing engine.",
+    "prompt": "I want to turn WhatsApp Business into a real sales channel for my business.\n\nWhat I sell: [describe].\nAverage ticket: [amount].\nHow my leads arrive today: [Meta Ads / organic / referrals / website].\nWhich part of the process fails most: [initial response / follow-up / closing / after-sales].\n\nGive me: commercial strategy for WhatsApp, how to capture leads better, how to qualify them, what messages to use at each stage, when to move to a call or human seller and what metrics I should track to know if WhatsApp is actually selling.",
+    "recommendedFiles": [
+      "Current offer",
+      "Current sales funnel",
+      "Current sales messages"
+    ],
+    "expectedResult": [
+      "Stage-by-stage strategy",
+      "Messages per stage",
+      "Handoff rules",
+      "Sales KPIs"
+    ]
+  }
+}

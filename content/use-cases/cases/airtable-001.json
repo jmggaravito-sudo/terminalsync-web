@@ -1,0 +1,41 @@
+{
+  "id": "airtable-001",
+  "categoryId": "ecommerce",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 161,
+  "isNew": true,
+  "connectors": [
+    "airtable"
+  ],
+  "es": {
+    "title": "Productos con poco inventario en Airtable",
+    "outcome": "Busca en tu base de Airtable los productos que se están acabando y arma un resumen para reponer.",
+    "prompt": "Revisa mi inventario en Airtable.\n\nBase: [nombre de la base].\nTabla: [nombre de la tabla de inventario].\nUmbral de poco inventario: [por ejemplo, menos de 5 unidades].\n\nSi te falta la base, la tabla o el umbral, pregúntamelo antes de buscar. Primero revisa la estructura de la tabla para identificar qué columna tiene la existencia. Luego busca los registros por debajo del umbral y dame:\n1. Una tabla con producto, existencia y proveedor, si esa columna existe.\n2. Los productos agotados, aparte.\n3. Un resumen corto para pasarle a quien hace las compras.\n\nSolo consulta: no edites registros. Si una columna no existe, dímelo en vez de suponerla.",
+    "recommendedFiles": [
+      "Nombre de tu base y tabla",
+      "Lista de proveedores"
+    ],
+    "expectedResult": [
+      "Estructura de la tabla revisada",
+      "Productos con poco inventario",
+      "Productos agotados",
+      "Resumen para compras"
+    ]
+  },
+  "en": {
+    "title": "Low-stock products in Airtable",
+    "outcome": "Searches your Airtable base for products that are running out and builds a summary for reordering.",
+    "prompt": "Review my inventory in Airtable.\n\nBase: [base name].\nTable: [name of the inventory table].\nLow-stock threshold: [for example, fewer than 5 units].\n\nIf the base, the table, or the threshold is missing, ask me before searching. First check the table's structure to identify which column holds the stock. Then find the records below the threshold and give me:\n1. A table with product, stock, and supplier, if that column exists.\n2. The sold-out products, separately.\n3. A short summary to hand to whoever does the purchasing.\n\nRead only: don't edit records. If a column doesn't exist, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Name of your base and table",
+      "List of suppliers"
+    ],
+    "expectedResult": [
+      "Table structure checked",
+      "Low-stock products",
+      "Sold-out products",
+      "Summary for purchasing"
+    ]
+  }
+}

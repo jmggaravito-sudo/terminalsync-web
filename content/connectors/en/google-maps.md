@@ -2,6 +2,7 @@
 name: Google Maps
 logo: /connectors/google-maps.svg
 category: research
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Let your AI understand addresses, places and routes"
 simpleSubtitle: "Convert addresses, find nearby places and calculate distances without opening Maps by hand."

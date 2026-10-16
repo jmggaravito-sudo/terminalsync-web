@@ -2,6 +2,7 @@
 name: Neon
 logo: /connectors/neon.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Ask — and act on — your Neon Postgres in plain language"
 simpleSubtitle: "Official Neon server: manage projects, branches, and run SQL."

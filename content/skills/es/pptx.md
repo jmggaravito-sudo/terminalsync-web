@@ -5,8 +5,8 @@ category: productivity
 vendors: ["claude"]
 author: "Anthropic"
 status: available
-tagline: "PowerPoint a velocidad de prompt"
-description: "Arma y edita presentaciones PowerPoint (.pptx/.potx) con layouts de slide reales, charts nativos, notas de speaker y reuso de templates — en vez de un esquema de viñetas disfrazado de deck. Viene nativo con Claude; no hay nada que instalar."
+tagline: "Presentaciones listas para proyectar"
+description: "Crea y edita presentaciones de PowerPoint (.pptx y .potx) con diseños de diapositiva de verdad, gráficos propios de PowerPoint, notas para quien expone y reuso de tus plantillas — en vez de una lista de viñetas disfrazada de presentación. Ya viene incluido: no hay nada que instalar."
 license: "proprietary"
 licenseUrl: "https://github.com/anthropics/skills/blob/main/skills/pptx/LICENSE.txt"
 marketplaceSource: "anthropic"
@@ -33,9 +33,9 @@ No la uses para documentos Word, PDFs o planillas — para eso están las skills
 ## Cómo usarlo
 
 1. Describí el deck: audiencia, ocasión, cantidad de slides y los números o historia reales que tiene que llevar — ej. *"un deck de revisión con cliente de 10 slides, los KPIs del mes pasado, terminando con un ask de renovación."*
-2. Si tenés un template de marca o un deck existente, compartilo — Claude trabaja con tus layouts y colores en vez de inventar unos nuevos.
+2. Si tenés un template de marca o un deck existente, compartilo — la IA trabaja con tus diseños y colores en vez de inventar unos nuevos.
 3. Dale los datos reales para cualquier chart; la skill no inventa cifras para llenar una slide que se ve vacía.
-4. Abrí el archivo exportado en PowerPoint o Keynote para una última pasada — Claude revisa su propio render por slides rotas, pero el pitch y el ask siguen siendo decisión tuya.
+4. Abrí el archivo exportado en PowerPoint o Keynote para una última pasada — La IA revisa su propio render por slides rotas, pero el pitch y el ask siguen siendo decisión tuya.
 
 ## Ideal para
 

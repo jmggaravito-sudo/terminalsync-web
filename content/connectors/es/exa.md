@@ -2,6 +2,7 @@
 name: Exa
 logo: /connectors/exa.svg
 category: research
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Dale a tu IA búsqueda web en tiempo real, hecha para IA"
 simpleSubtitle: "Server oficial de Exa: resultados limpios y listos para usar — más research de empresas y personas."

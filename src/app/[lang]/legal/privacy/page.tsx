@@ -45,8 +45,21 @@ export default async function PrivacyPage({ params }: Props) {
         lang="es"
         title="Política de Privacidad"
         subtitle="Esta política describe qué datos recolectamos, por qué, cómo los protegemos y cómo podés ejercer tus derechos sobre ellos."
-        lastUpdated="Última actualización: 6 de octubre de 2026"
+        lastUpdated="Última actualización: 7 de octubre de 2026"
       >
+        <h2>Gmail: acceso opcional de solo lectura</h2>
+        <p>Terminal Sync (TerminalSync o TS) solicita <code>gmail.readonly</code>
+          solo si conectás Gmail. Lee remitentes, destinatarios, asuntos, fechas,
+          cuerpos y adjuntos para buscar, mostrar e importar los mensajes que
+          elegís. No envía, borra, mueve, marca ni modifica correo. Ver Inbox no
+          incorpora el correo a la IA: vos elegís enviarlo a un espacio.</p>
+        <p>Los correos y adjuntos importados se guardan en tu computadora.
+          Al pedir una respuesta, el contexto habilitado puede enviarse a los
+          proveedores de IA descritos abajo. Podés pausar, excluir o quitar la
+          copia del contexto. Desconectar Gmail no borra copias ya importadas ni
+          recupera datos ya enviados al proveedor. Los originales quedan en Gmail.</p>
+        <p>La información completa sobre los permisos de Google está en nuestra
+          <a href="/privacy"> política de datos de Google</a>.</p>
         <h2>1. Quiénes somos</h2>
         <p>
           TerminalSync es una aplicación de escritorio que sincroniza el estado
@@ -146,11 +159,12 @@ export default async function PrivacyPage({ params }: Props) {
         <ul>
           <li><strong>Z.ai (Zhipu AI)</strong>, empresa china: recibe tu mensaje,
             el material activo de tu panel de Contexto y la conversación previa
-            de ese espacio, y genera la respuesta. Sus términos{" "}
-            <strong>no prometen</strong> que no vayan a usar lo que enviás para
-            mejorar sus propios modelos. Si un documento no puede salir de tu
-            empresa, no lo pongas en Contexto:{" "}
-            <a href="https://z.ai/terms/privacy-policy">su política</a>.</li>
+            de ese espacio, y genera la respuesta. Nuestra política prohíbe que Terminal Sync
+            o sus proveedores usen los datos de Google para desarrollar, mejorar
+            o entrenar modelos de IA generales o no personalizados. Para recibir
+            esos datos, el proveedor debe respaldar esa restricción con términos
+            contractuales y controles de procesamiento aplicables.
+            <a href="https://z.ai/terms/privacy-policy"> Política del proveedor</a>.</li>
           <li><strong>Cloudflare</strong>: el servidor intermedio por el que ese
             pedido viaja hacia Z.ai (y, si la IA busca negocios o reseñas, hacia
             SearchApi). Verifica que tu plan esté al día y cuenta
@@ -230,8 +244,20 @@ export default async function PrivacyPage({ params }: Props) {
       lang="en"
       title="Privacy Policy"
       subtitle="This policy describes what data we collect, why, how we protect it, and how you can exercise your rights over it."
-      lastUpdated="Last updated: October 6, 2026"
+      lastUpdated="Last updated: October 7, 2026"
     >
+      <h2>Gmail: optional read-only access</h2>
+      <p>Terminal Sync (TerminalSync or TS) requests <code>gmail.readonly</code>
+        only when you connect Gmail. It reads senders, recipients, subjects, dates,
+        bodies and attachments to search, display and import messages you select.
+        It cannot send, delete, move, mark or modify mail. Viewing Inbox does not
+        add messages to AI: you choose to send them to a workspace.</p>
+      <p>Imported emails and attachments are saved on your computer. When you
+        request an answer, enabled context may be sent to the AI providers
+        disclosed below. You can pause, exclude or remove imported context.
+        Disconnecting Gmail does not erase imported copies or recall data already
+        sent to a provider. Original messages remain in Gmail.</p>
+      <p>See our <a href="/privacy">complete Google data policy</a> for details.</p>
       <h2>1. Who we are</h2>
       <p>
         TerminalSync is a desktop application that syncs the state of your
@@ -331,11 +357,12 @@ export default async function PrivacyPage({ params }: Props) {
       <ul>
         <li><strong>Z.ai (Zhipu AI)</strong>, a Chinese company: receives your
           message, the active material in your Context panel and the earlier
-          conversation in that workspace, and generates the answer. Their terms{" "}
-          <strong>do not promise</strong> that they won't use what you send to
-          improve their own models. If a document can't leave your company,
-          don't put it in Context:{" "}
-          <a href="https://z.ai/terms/privacy-policy">their policy</a>.</li>
+          conversation in that workspace, and generates the answer. Our policy prohibits Terminal Sync and
+          its providers from using Google user data to develop, improve or train
+          generalized or non-personalized AI models. Before receiving that data,
+          a provider must support this restriction through applicable contractual
+          terms and processing controls.
+          <a href="https://z.ai/terms/privacy-policy"> Provider policy</a>.</li>
         <li><strong>Cloudflare</strong>: the middle server that request travels
           through on its way to Z.ai (and, when the AI looks up businesses or
           reviews, to SearchApi). It checks that your plan is current and

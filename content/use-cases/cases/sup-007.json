@@ -1,0 +1,33 @@
+{
+  "id": "sup-007",
+  "categoryId": "support",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 29,
+  "es": {
+    "title": "Disculpas por error grave",
+    "outcome": "Mensaje de disculpa que recupera la confianza del cliente.",
+    "prompt": "Mi empresa cometió un error con un cliente y necesito pedir disculpas formalmente.\n\nQué pasó: [describir].\nImpacto al cliente: [describir].\nQué vamos a hacer para compensar: [opciones].\n\nDame un mensaje de disculpa sincero, profesional y que no minimice el error. Que reconozca, explique brevemente la causa sin excusarse, ofrezca compensación concreta y compromiso futuro.",
+    "recommendedFiles": [
+      "Contexto del error"
+    ],
+    "expectedResult": [
+      "Mensaje completo",
+      "Versión email",
+      "Versión WhatsApp"
+    ]
+  },
+  "en": {
+    "title": "Apology for a serious error",
+    "outcome": "Apology message that regains the customer's trust.",
+    "prompt": "My company made a mistake with a customer and I need to apologize formally.\n\nWhat happened: [describe].\nImpact on the customer: [describe].\nWhat we will do to compensate: [options].\n\nGive me a sincere, professional apology message that does not minimize the error. It should acknowledge, briefly explain the cause without making excuses, offer concrete compensation and a commitment for the future.",
+    "recommendedFiles": [
+      "Error context"
+    ],
+    "expectedResult": [
+      "Full message",
+      "Email version",
+      "WhatsApp version"
+    ]
+  }
+}

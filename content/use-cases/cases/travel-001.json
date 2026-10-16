@@ -1,0 +1,41 @@
+{
+  "id": "travel-001",
+  "categoryId": "travel",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 116,
+  "isNew": true,
+  "requiredSearchTools": [
+    "business-search__tripadvisor_search"
+  ],
+  "es": {
+    "title": "Mi reputación en Tripadvisor",
+    "outcome": "Revisa cómo aparece tu hotel, restaurante o tour en Tripadvisor, cómo te comparas con los de tu zona y, si se pueden leer, qué dicen tus reseñas.",
+    "prompt": "Quiero saber cómo está mi reputación en Tripadvisor.\n\nMi negocio: [nombre exacto, como aparece en Tripadvisor].\nTipo: [hotel / restaurante / tour o actividad / otro].\nCiudad y país: [por ejemplo: Orlando, Florida, EE. UU. / Cartagena, Colombia].\nIdioma de la respuesta: [español / inglés].\n\nSi te falta la ciudad, el país o el idioma, pregúntamelos antes de buscar. Busca mi negocio en Tripadvisor y dame su calificación, número de opiniones, ranking en la ciudad y rango de precio, si aparecen. Busca también los negocios de mi tipo mejor calificados en la zona y arma una tabla para compararme. Si además puedes leer las reseñas de Tripadvisor, resume qué elogian y de qué se quejan mis clientes y sugiéreme una respuesta para la reseña negativa más reciente. Termina con cinco acciones para mejorar mi reputación.\n\nSi no encuentras mi negocio o un dato no aparece en Tripadvisor, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Nombre exacto del negocio",
+      "Lista de servicios o del menú"
+    ],
+    "expectedResult": [
+      "Cómo apareces en Tripadvisor",
+      "Comparación con los mejores de tu zona",
+      "Qué elogian y qué critican, si se pueden leer las reseñas",
+      "Acciones para mejorar tu reputación"
+    ]
+  },
+  "en": {
+    "title": "My Tripadvisor reputation",
+    "outcome": "Reviews how your hotel, restaurant, or tour shows up on Tripadvisor, how you compare with others in your area, and, if they can be read, what your reviews say.",
+    "prompt": "I want to know how my reputation looks on Tripadvisor.\n\nMy business: [exact name, as it appears on Tripadvisor].\nType: [hotel / restaurant / tour or activity / other].\nCity and country: [for example: Orlando, Florida, USA / Cartagena, Colombia].\nLanguage for the answer: [English / Spanish].\n\nIf the city, the country, or the language is missing, ask me before searching. Look up my business on Tripadvisor and give me its rating, number of reviews, ranking in the city, and price range, if they appear. Also look up the best-rated businesses of my type in the area and build a table to compare me with them. If you can also read the Tripadvisor reviews, sum up what my customers praise and complain about and suggest a reply to the most recent negative review. Finish with five actions to improve my reputation.\n\nIf you can't find my business or something doesn't appear on Tripadvisor, tell me instead of guessing.",
+    "recommendedFiles": [
+      "Exact business name",
+      "List of services or the menu"
+    ],
+    "expectedResult": [
+      "How you show up on Tripadvisor",
+      "Comparison with the best in your area",
+      "What people praise and criticize, if the reviews can be read",
+      "Actions to improve your reputation"
+    ]
+  }
+}

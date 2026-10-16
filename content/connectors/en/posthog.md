@@ -2,6 +2,7 @@
 name: PostHog
 logo: /connectors/posthog.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Ask your product analytics in plain language"
 simpleSubtitle: "Official PostHog server: feature flags, insights, experiments, and error tracking."
@@ -24,8 +25,8 @@ license: "MIT"
 licenseUrl: "https://github.com/PostHog/mcp/blob/main/LICENSE"
 marketplaceSource: "official"
 marketplaceCategory: "web"
-installableForAi: false
-installableForAiReason: "recipe-not-npx"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
 aiToolsCount: 0
 aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"

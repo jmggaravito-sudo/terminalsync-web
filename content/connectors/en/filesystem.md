@@ -2,6 +2,7 @@
 name: Filesystem
 logo: /connectors/filesystem.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your AI reads and writes files on your computer"
 simpleSubtitle: "You pick which folders it can touch — everything else is out of reach."

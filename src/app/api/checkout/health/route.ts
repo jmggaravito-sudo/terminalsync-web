@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { includedAiPriceId, priceIdFor } from "@/lib/stripe";
+import { bundledPriceIdFor, priceIdFor } from "@/lib/stripe";
 
 /**
  * ¿Cada plan que la aplicación ofrece tiene precio cargado en ESTE ambiente?
@@ -49,15 +49,13 @@ function modoDeCobro(): "real" | "prueba" | "sin-llave" | "desconocido" {
 
 export function GET() {
   const precios = {
-    pro: Boolean(priceIdFor("pro")),
-    max: Boolean(priceIdFor("max")),
+    pro: Boolean(bundledPriceIdFor("pro")),
+    max: Boolean(bundledPriceIdFor("max")),
     agency: Boolean(priceIdFor("agency")),
-    includedAi: Boolean(includedAiPriceId()),
   };
 
   // Agency se vende por correo, no por este camino, así que su ausencia no
-  // rompe a nadie y no cuenta para `ok`. Los otros tres SÍ: son los tres
-  // botones que la aplicación le puede mostrar a un cliente.
+  // rompe a nadie y no cuenta para `ok`. Pro y Max son precios únicos con IA.
   const cobro = modoDeCobro();
   // El webhook es lo que convierte un pago en un plan activo. Sin él el
   // cliente paga y la aplicación nunca se entera.
@@ -66,7 +64,6 @@ export function GET() {
   const ok =
     precios.pro &&
     precios.max &&
-    precios.includedAi &&
     cobro === "real" &&
     webhookConfigurado;
 

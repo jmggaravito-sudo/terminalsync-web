@@ -94,7 +94,7 @@ export function Pricing({ dict }: { dict: Dict }) {
         </div>
       </button>
 
-      <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-stretch">
+      <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
         <PlanCard
           id="plan-starter"
           name={dict.pricing.plans.starter.name}
@@ -117,15 +117,6 @@ export function Pricing({ dict }: { dict: Dict }) {
           copy={dict.pricing.plans.pro}
           dict={dict}
           currency={currency}
-          highlighted={highlighted === "pro"}
-        />
-
-        <PaidCard
-          id="plan-proAi"
-          plan="pro"
-          copy={dict.pricing.plans.proAi}
-          dict={dict}
-          currency={currency}
           featured
           highlighted={highlighted === "pro"}
         />
@@ -138,15 +129,16 @@ export function Pricing({ dict }: { dict: Dict }) {
           currency={currency}
           highlighted={highlighted === "max"}
         />
-
-        <PaidCard
-          id="plan-maxAi"
-          plan="max"
-          copy={dict.pricing.plans.maxAi}
-          dict={dict}
-          currency={currency}
-          highlighted={highlighted === "max"}
-        />
+        <article className="rounded-2xl border border-[var(--color-accent)]/35 bg-[var(--color-panel)] p-5 flex flex-col">
+          <div className="text-xs font-semibold uppercase tracking-wide text-[var(--color-accent)]">{dict.pricing.plans.team.badge}</div>
+          <h3 className="mt-2 text-xl font-semibold text-[var(--color-fg-strong)]">{dict.pricing.plans.team.name}</h3>
+          <p className="mt-3 text-3xl font-bold text-[var(--color-fg-strong)]">{dict.pricing.plans.team.price}<span className="ml-1 text-sm font-normal text-[var(--color-fg-muted)]">{dict.pricing.plans.team.priceNote}</span></p>
+          <p className="mt-3 text-sm text-[var(--color-fg-muted)]">{dict.pricing.plans.team.tagline}</p>
+          <ul className="mt-5 space-y-3 text-sm text-[var(--color-fg-muted)]">
+            {dict.pricing.plans.team.features.map((feature) => <li key={feature} className="flex gap-2"><Check size={16} className="shrink-0 text-[var(--color-accent)]" />{feature}</li>)}
+          </ul>
+          <div className="mt-auto pt-5 text-xs font-medium text-[var(--color-fg-muted)]">{dict.pricing.plans.team.cta}</div>
+        </article>
       </div>
 
       <PlanQuiz

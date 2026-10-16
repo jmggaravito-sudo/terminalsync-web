@@ -5,7 +5,7 @@ logo: /skills/brand-voice.svg
 category: marketing
 status: available
 catalogReady: false
-simpleTitle: "Hacé que Claude escriba en TU voz"
+simpleTitle: "Haz que tu IA escriba en TU voz"
 simpleSubtitle: "Dale 5 muestras de tu escritura una sola vez. De ahí en más cada mail, post, copy de anuncio suena a ti."
 devTitle: "Brand Voice Skill"
 devSubtitle: "Modelado de voz few-shot: guarda 3-7 muestras + un manifest de tono, y lo aplica en cada generación."
@@ -16,7 +16,7 @@ tsInstallable: true
 author: "TerminalSync"
 license: "proprietary"
 ---
-La forma más rápida de quitarle el "olor a GPT" a tu contenido. Pasale 3-5 mails, posts o artículos que hayas escrito. Claude detecta tu ritmo de oración, tus tics de vocabulario y tu tono — todo lo que produzca después suena como si lo hubieras escrito vos.
+La forma más rápida de quitarle el "olor a GPT" a tu contenido. Pasale 3-5 mails, posts o artículos que hayas escrito. La IA detecta tu ritmo de oración, tus tics de vocabulario y tu tono — todo lo que produzca después suena como si lo hubieras escrito vos.
 
 Probada con redactores de newsletter, founders que postean en LinkedIn y copywriters trabajando para clientes. Funciona en español, inglés y portugués.
 

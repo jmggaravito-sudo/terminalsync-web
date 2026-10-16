@@ -1,0 +1,35 @@
+{
+  "id": "dev-006",
+  "categoryId": "dev",
+  "recommendedAI": "codex",
+  "level": "Básico",
+  "order": 88,
+  "es": {
+    "title": "Crear formulario web",
+    "outcome": "Formulario que captura información ordenada de clientes.",
+    "prompt": "Necesito un formulario web para capturar información de mis clientes/prospectos.\n\nPropósito: [contactar / cotizar / agendar / encuesta].\nCampos necesarios: [listar].\nDonde irá la información: [email / hoja de cálculo / CRM].\n\nDame: estructura del formulario, validaciones útiles, mensajes de éxito y error, integración recomendada y cómo embebido en mi web/Instagram.",
+    "recommendedFiles": [
+      "URL de tu web"
+    ],
+    "expectedResult": [
+      "Estructura",
+      "Validaciones",
+      "Mensajes",
+      "Integración"
+    ]
+  },
+  "en": {
+    "title": "Create web form",
+    "outcome": "Form that captures organized customer information.",
+    "prompt": "I need a web form to capture information from my customers/prospects.\n\nPurpose: [contact / quote / schedule / survey].\nRequired fields: [list].\nWhere the information will go: [email / spreadsheet / CRM].\n\nGive me: form structure, useful validations, success and error messages, recommended integration and how to embed it on my website/Instagram.",
+    "recommendedFiles": [
+      "Your website URL"
+    ],
+    "expectedResult": [
+      "Structure",
+      "Validations",
+      "Messages",
+      "Integration"
+    ]
+  }
+}

@@ -2,6 +2,7 @@
 name: Gusto
 logo: /connectors/gusto.svg
 category: automation
+markets: ["US"]
 status: available
 simpleTitle: "Payroll and team info, answering out loud"
 simpleSubtitle: "Official Gusto server: employees, contractors, pay schedules and payroll tax info, read straight from your account."
@@ -22,8 +23,8 @@ license: "proprietary"
 licenseUrl: "https://gusto.com/legal/terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
-installableForAi: false
-installableForAiReason: "recipe-not-npx"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
 aiToolsCount: 0
 aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"

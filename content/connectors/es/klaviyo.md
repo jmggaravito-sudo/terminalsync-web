@@ -2,6 +2,7 @@
 name: Klaviyo
 logo: /connectors/klaviyo.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Maneja tu marketing por email y SMS preguntando"
 simpleSubtitle: "MCP oficial de Klaviyo: campañas, flows, perfiles y reportes por OAuth."
@@ -22,8 +23,8 @@ license: "proprietary"
 licenseUrl: "https://www.klaviyo.com/legal/api-terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
-installableForAi: false
-installableForAiReason: "recipe-not-npx"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
 aiToolsCount: 0
 aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"

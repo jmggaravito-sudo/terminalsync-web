@@ -2,6 +2,7 @@
 name: Xero
 logo: /connectors/xero.svg
 category: automation
+markets: ["US", "CA", "GB", "AU", "NZ"]
 status: available
 simpleTitle: "Your accounting, answering out loud"
 simpleSubtitle: "\"Who owes me money?\" \"What's overdue?\" \"How did we do last month?\" — your AI reads your books for you."
@@ -50,7 +51,7 @@ Xero connects through a **Custom Connection** — Xero's way of linking one app 
 
 Both values are stored encrypted in your Keychain and synced across your machines. The connection is tied to your one company, so the AI only ever sees your books — nothing else.
 
-> Heads up: Custom Connections need a paid Xero plan and are the one genuinely fiddly setup step. If you're in Latin America and use **Alegra** or **Siigo** instead of Xero, those don't have a connector yet — tell us and we'll look at building one. In the meantime, many of the "invoices and budget" questions also work through the **Google Sheets** connector if you track them in a spreadsheet.
+> Heads up: Custom Connections need a paid Xero plan and are the one genuinely fiddly setup step. If you're in Latin America and use **Alegra** or **Siigo** instead of Xero, both have their own connector in the catalog — look for them there. In the meantime, many of the "invoices and budget" questions also work through the **Google Sheets** connector if you track them in a spreadsheet.
 
 --- dev ---
 

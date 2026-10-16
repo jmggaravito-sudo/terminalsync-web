@@ -2,6 +2,7 @@
 name: Kit
 logo: /connectors/kit.svg
 category: messaging
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your newsletter, run by your AI"
 simpleSubtitle: "Drafts, segments and broadcasts — written in chat with your voice."
@@ -22,7 +23,7 @@ verifiedPackageVersion: null
 ---
 Kit (formerly ConvertKit) is where your list lives. But writing a broadcast, segmenting subscribers and scheduling it takes you 30 minutes every time — and you always forget a field.
 
-With this connector, you ask Claude *"draft a broadcast summarizing the latest post, send it only to subscribers who opened the last 3 emails, and schedule it for Tuesday 9am"* — and it sets up the draft in Kit, ready for you to approve.
+With this connector, you ask the AI *"draft a broadcast summarizing the latest post, send it only to subscribers who opened the last 3 emails, and schedule it for Tuesday 9am"* — and it sets up the draft in Kit, ready for you to approve.
 
 Set up once, follows you across machines via Terminal Sync.
 

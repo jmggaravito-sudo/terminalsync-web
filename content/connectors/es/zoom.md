@@ -2,6 +2,7 @@
 name: Zoom
 logo: /connectors/zoom.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Encuentra lo que se dijo en tus reuniones de Zoom"
 simpleSubtitle: "Server oficial de Zoom: resúmenes, transcripciones, grabaciones, chat y documentos, en lenguaje natural."
@@ -23,7 +24,7 @@ licenseUrl: "https://github.com/zoom/mcp-registry/blob/main/LICENSE"
 marketplaceSource: "official"
 marketplaceCategory: "productivity"
 installableForAi: false
-installableForAiReason: "recipe-not-npx"
+installableForAiReason: "needs-oauth"
 aiToolsCount: 0
 aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"

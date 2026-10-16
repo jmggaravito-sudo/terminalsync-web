@@ -2,6 +2,7 @@
 name: Higgsfield
 logo: /connectors/higgsfield.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Generate images and videos from your agent"
 simpleSubtitle: "Official Higgsfield MCP: 30+ creative models for images, video, characters and history."
@@ -22,8 +23,8 @@ license: "proprietary"
 licenseUrl: "https://higgsfield.ai/terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
-installableForAi: false
-installableForAiReason: "recipe-not-npx"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
 aiToolsCount: 0
 aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"

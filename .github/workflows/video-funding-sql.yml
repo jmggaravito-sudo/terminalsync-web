@@ -1,0 +1,23 @@
+name: Video funding SQL
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/**'
+      - 'scripts/test-video-funding-sql.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/video-funding-sql.yml'
+permissions:
+  contents: read
+jobs:
+  sql-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run test:video-funding-sql

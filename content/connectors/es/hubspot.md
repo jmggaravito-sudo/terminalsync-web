@@ -2,6 +2,7 @@
 name: HubSpot
 logo: /connectors/hubspot.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tu CRM, trabajando mientras hablas"
 simpleSubtitle: "\"¿Qué clientes no compran hace 60 días?\" \"Registra una llamada con María\" — tu IA lee y actualiza tu CRM."

@@ -6,7 +6,7 @@ vendors: ["claude"]
 author: "Anthropic"
 status: available
 tagline: "PDFs editables directo desde un prompt"
-description: "Lee, llena, combina, divide, marca con watermark y genera PDFs — incluyendo detectar y llenar campos AcroForm reales en vez de retipear un formulario como texto en el chat. Viene nativo con Claude; no hay nada que instalar."
+description: "Lee, llena, combina, divide, marca con watermark y genera PDFs — incluyendo detectar y llenar campos AcroForm reales en vez de retipear un formulario como texto en el chat. Ya viene incluido: no hay nada que instalar."
 license: "proprietary"
 licenseUrl: "https://github.com/anthropics/skills/blob/main/skills/pdf/LICENSE.txt"
 marketplaceSource: "anthropic"
@@ -33,8 +33,8 @@ No la uses para documentos Word, presentaciones o planillas — para eso están 
 ## Cómo usarlo
 
 1. Compartí el PDF y decí exactamente qué necesitás: *"Llená este formulario con [los valores específicos]"* o *"Combiná estas tres facturas en una, en orden de fecha."*
-2. Para un formulario, Claude chequea si tiene campos rellenables antes de hacer nada — si no los tiene, te lo dice en vez de darte un resultado que parece llenado pero no lo es.
-3. Dale los datos reales para llenar — Claude no inventa nombres, montos o fechas que no le diste.
+2. Para un formulario, la IA revisa si tiene campos rellenables antes de hacer nada — si no los tiene, te lo dice en vez de darte un resultado que parece llenado pero no lo es.
+3. Dale los datos reales para llenar — la IA no inventa nombres, montos o fechas que no le diste.
 4. Revisá el PDF exportado antes de mandarlo, especialmente si tiene peso legal o financiero (contratos, formularios firmados) — la skill llena y formatea con precisión, pero el contenido y la decisión de enviarlo siguen siendo tuyos.
 
 ## Ideal para

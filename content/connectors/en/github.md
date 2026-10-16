@@ -2,6 +2,7 @@
 name: GitHub
 logo: /connectors/github.svg
 category: dev
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Let your AI work with your repos"
 simpleSubtitle: "Files, issues, PRs and code search from chat — limited by the token you provide."

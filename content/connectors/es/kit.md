@@ -2,6 +2,7 @@
 name: Kit
 logo: /connectors/kit.svg
 category: messaging
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Tu newsletter, manejada por tu IA"
 simpleSubtitle: "Borradores, segmentos y broadcasts — escritos en chat con tu tono."
@@ -22,7 +23,7 @@ verifiedPackageVersion: null
 ---
 Kit (antes ConvertKit) es donde vive tu lista. Pero escribir un broadcast, segmentar suscriptores y schedulear te lleva 30 minutos cada vez — y siempre se te olvida un campo.
 
-Con este conector, le pides a Claude *"escribe un broadcast con el resumen del último post, mándalo solo a los suscriptores que abrieron los últimos 3 emails y prográmalo para el martes 9am"* — y él arma el draft en Kit listo para que tú solo lo apruebes.
+Con este conector, le pides a la IA *"escribe un broadcast con el resumen del último post, mándalo solo a los suscriptores que abrieron los últimos 3 emails y prográmalo para el martes 9am"* — y él arma el draft en Kit listo para que tú solo lo apruebes.
 
 Configurado una vez, viaja contigo gracias a Terminal Sync.
 

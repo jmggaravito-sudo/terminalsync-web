@@ -1,0 +1,34 @@
+{
+  "id": "sup-001",
+  "categoryId": "support",
+  "recommendedAI": "claude",
+  "level": "Básico",
+  "order": 21,
+  "popular": true,
+  "es": {
+    "title": "Responder reclamo difícil",
+    "outcome": "Respuesta empática y profesional que calma al cliente y propone solución.",
+    "prompt": "Un cliente me escribió un reclamo y necesito responder profesionalmente.\n\nLo que dice el cliente: [pegar mensaje].\nContexto del problema: [explicar].\nLo que puedo ofrecer: [opciones de solución].\n\nDame una respuesta que: reconozca el problema, muestre empatía, ofrezca solución concreta y mantenga la relación. Tono profesional pero humano.",
+    "recommendedFiles": [
+      "Mensaje del cliente",
+      "Historial de compras"
+    ],
+    "expectedResult": [
+      "Respuesta completa",
+      "Opciones de seguimiento"
+    ]
+  },
+  "en": {
+    "title": "Respond to a difficult complaint",
+    "outcome": "Empathetic and professional response that calms the customer and proposes a solution.",
+    "prompt": "A customer wrote me a complaint and I need to respond professionally.\n\nWhat the customer says: [paste message].\nContext of the problem: [explain].\nWhat I can offer: [options for resolution].\n\nGive me a response that: acknowledges the problem, shows empathy, offers a concrete solution and maintains the relationship. Tone professional but human.",
+    "recommendedFiles": [
+      "Customer message",
+      "Purchase history"
+    ],
+    "expectedResult": [
+      "Complete response",
+      "Follow-up options"
+    ]
+  }
+}

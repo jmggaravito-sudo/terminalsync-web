@@ -94,8 +94,8 @@ const en: Dict = {
         body: "It lives on your own computer, not our servers. No one else can read it. If you want it on all your machines, we sync it encrypted to your own cloud.",
       },
       {
-        title: "Works with any AI",
-        body: "One memory for your whole AI team — Claude, Codex and whatever comes next. You don't repeat it for each one.",
+        title: "One memory, across every workspace",
+        body: "What your business learns in one workspace it knows in all of them. You don't repeat it for each one.",
       },
       {
         title: "Finds what matters",
@@ -269,7 +269,7 @@ const en: Dict = {
   midCta: {
     eyebrow: "Try it free",
     title: "Stop staring at the screen waiting on your AI.",
-    body: "7 days of Pro free. Cancel before day 7 and you're not charged. If it clicks, you stay. If not, you stop using it. Done.",
+    body: "Every new user gets 7 days with all features, free. No charge during the trial. After 7 days, choose a plan to continue.",
     ctaPrimary: "Download free",
     ctaSecondary: "See pricing",
   },
@@ -354,7 +354,7 @@ const en: Dict = {
         apiCostMix: "API cost mixed (≈ $1.50/h)",
         devTimeSolo: "Your time at full rate",
         devTimeWithTs: "Your time, 25% fewer hours",
-        subscription: "TS Pro (12 × $19 = $228)",
+        subscription: "TS Pro (12 × $34 = $408)",
         timeSaving:
           "The 25% time savings come from skipping rate limits, not swapping context between tools, and routing each task to the cheapest, fastest model.",
       },
@@ -424,13 +424,13 @@ const en: Dict = {
   pricing: {
     title: "Simple, as it should be",
     subtitle:
-      "Start free. 7 days with every Max feature — cancel before day 7 and you're not charged. AIs run on your own subscription (or their free plans): TS doesn't resell you tokens.",
+      "Start free. Every new user gets 7 days with all features at no charge. After 7 days, choose a plan to continue. AIs run on your own subscription (or their free plans): TS doesn't resell you tokens.",
     perMonth: "/mo",
     free: "Free",
     trial: {
       eyebrow: "7 days free with all features",
       explainer:
-        "You get full Max features for the first 7 days regardless of which plan you pick. Cancel before day 7 and nothing is charged.",
+        "Every new user gets 7 days with all features at no charge. After the trial, choose a plan to continue. You won't be charged during the trial.",
     },
     quiz: {
       cta: "Which plan do I need?",
@@ -485,7 +485,6 @@ const en: Dict = {
         tagline: "For anyone starting to organize their business with AI.",
         features: [
           "3 active workspaces with real persistence",
-          "Use 1, 2 or all 3 AIs — on your own subscription",
           "AES-256 · not even we can read it",
           "Google Drive sync (your account)",
           "2 linked devices",
@@ -493,49 +492,33 @@ const en: Dict = {
         cta: "Download free",
       },
       pro: {
-        name: "Pro · bring your own AI",
-        badge: "7 days free",
-        price: "$19",
-        priceNote: "/mo",
-        priceCop: "$79,000",
-        priceNoteCop: "COP/mo",
-        tagline: "Bring your own Claude, Codex, or Gemini account.",
-        features: [
-          "10 workspaces with persistence + resurrection",
-          "Claude + Codex + Gemini in one workspace",
-          "Your business remembers everything — no explaining twice",
-          "Per-project key vault",
-          "Session on any device (mobile + browser)",
-          "Continue your work from WhatsApp and Telegram",
-          "Alerts via email / Telegram",
-          "Chrome Extension Pro included",
-        ],
-        cta: "Start 7-day free trial",
-      },
-      proAi: {
         name: "Pro",
         badge: "7 days free",
         price: "$34",
         priceNote: "/mo",
         priceCop: "$139,000",
         priceNoteCop: "COP/mo",
-        tagline: "Pro with TS's AI included — no account needed.",
+        tagline: "The AI comes included — no account to connect.",
         features: [
-          "Everything in Pro — spaces, memory, and mobile",
-          "TS AI included — no account needed",
-          "After the trial, keep using our AI",
-          "Great for getting started fast — less setup",
+          "TerminalSync AI included — nothing to set up",
+          "10 workspaces with persistence + resurrection",
+          "Your business remembers everything — explain it once",
+          "Per-project key vault",
+          "Session on any device (mobile + browser)",
+          "Continue your work from WhatsApp and Telegram",
+          "Alerts via email / Telegram",
+          "Chrome Extension Pro included",
         ],
-        cta: "Start 7-day free trial",
+        cta: "Start your 7-day all-feature trial",
       },
       max: {
-        name: "Max · bring your own AI",
+        name: "Max",
         badge: "7 days free",
-        price: "$39",
+        price: "$54",
         priceNote: "/mo",
-        priceCop: "$159,000",
+        priceCop: "$219,000",
         priceNoteCop: "COP/mo",
-        tagline: "Max, bringing your own AI account.",
+        tagline: "Pro, with unlimited workspaces and team tools.",
         features: [
           "Everything in Pro, plus:",
           "Unlimited workspaces",
@@ -544,23 +527,21 @@ const en: Dict = {
           "Pair programming (read-only)",
           "Priority email support",
         ],
-        cta: "Start 7-day free trial",
+        cta: "Start your 7-day all-feature trial",
       },
-      maxAi: {
-        name: "Max",
-        badge: "7 days free",
-        price: "$54",
-        priceNote: "/mo",
-        priceCop: "$219,000",
-        priceNoteCop: "COP/mo",
-        tagline: "Max with TS's AI included — no account needed.",
+      team: {
+        name: "Team · coming soon",
+        badge: "Coming soon",
+        price: "$59",
+        priceNote: "/employee/mo",
+        tagline: "Max for teams with separate user workspaces.",
         features: [
-          "Everything in Max — unlimited, team, and support",
-          "TS AI included — no account needed",
-          "Zero friction for teams — less setup",
-          "Simple cost — platform + AI",
+          "Everything in Max, plus collaboration across different users' workspaces",
+          "Each person keeps their own workspace",
+          "Sharing answers or documents requires approval before sending",
+          "Announced plan; cross-account collaboration is not available yet",
         ],
-        cta: "Start 7-day free trial",
+        cta: "Coming soon",
       },
     },
   },
@@ -584,7 +565,7 @@ const en: Dict = {
   trust: {
     title: "Your files are yours. Full stop.",
     body: "Your secrets, settings, memory and AI conversations are encrypted on your computer before leaving. Everything goes to YOUR cloud, not ours — your files never pass through our servers.",
-    guarantee: "Try it 7 days free. Cancel before day 7 and you're not charged.",
+    guarantee: "Every new user gets 7 days with all features at no charge. After 7 days, choose a plan to continue.",
     features: {
       e2ee: "AES-256 on everything sensitive",
       keychain: "Keys only on your device",
@@ -651,7 +632,7 @@ const en: Dict = {
     tagline: "Sales & support · Online",
     close: "Close",
     greeting:
-      "Hi! I'm your TS assistant. I can help with Claude Code, Codex, Gemini, memory, connectors, plans or technical issues. What are you trying to do?",
+      "Hi! I'm your TS assistant. I can help with workspaces, memory, connectors, plans or technical issues. What are you trying to do?",
     placeholder: "Type your message…",
     send: "Send",
     you: "You",
@@ -663,7 +644,7 @@ const en: Dict = {
     ],
     replies: {
       install:
-        "Download TS, create a workspace and choose the AI you want to use: Claude Code, Codex, Gemini CLI or No AI. In Integrations you can configure connectors, skills and workspace tools. Tell me your use case and I can recommend the best starting point.",
+        "Download TS and create a workspace: the AI is included and ready, nothing to choose and nothing to connect. In Integrations you can configure connectors, skills and workspace tools. Tell me your use case and I can recommend the best starting point.",
       pricing:
         "There are plans for trying the product, power users and technical users/teams. Starter is for getting started; Pro adds advanced capabilities like memory/integrations; Max is for Git-native sync, secrets vault and our most complete workflows. Check Pricing for the current details. Want me to recommend a plan for your use case?",
       security:

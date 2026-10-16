@@ -1,0 +1,39 @@
+{
+  "id": "siigo-002",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 131,
+  "isNew": true,
+  "connectors": [
+    "siigo"
+  ],
+  "es": {
+    "title": "Revisar mi inventario y saldos en Siigo",
+    "outcome": "Consulta tu catálogo de productos en Siigo y te dice qué te queda poco y qué precios tienes configurados.",
+    "prompt": "Quiero revisar el inventario de mi catálogo en Siigo.\n\nEmpresa en Siigo: [nombre, si manejo más de una].\nQué me preocupa: [productos que se me están acabando / productos sin movimiento / precios desactualizados].\nUmbral de \"poco inventario\": [por ejemplo, menos de 10 unidades].\n\nSi te falta algún dato, pregúntamelo antes de consultar. Lee mis productos con su código, saldo, descripción y precio, y dame:\n1. Los productos con saldo por debajo del umbral, de menor a mayor.\n2. Los productos con saldo en cero o negativo.\n3. Una lista de productos cuyo precio o descripción conviene revisar.\n\nSolo consulta: no modifiques productos. Si un producto no muestra saldo o precio, dímelo en vez de suponerlo.",
+    "recommendedFiles": [
+      "Lista de productos prioritarios",
+      "Umbral de inventario que usas"
+    ],
+    "expectedResult": [
+      "Productos con poco saldo",
+      "Productos en cero o negativos",
+      "Precios o descripciones a revisar"
+    ]
+  },
+  "en": {
+    "title": "Review my inventory and balances in Siigo",
+    "outcome": "Reads your product catalog in Siigo and tells you what is running low and which prices you have set up.",
+    "prompt": "I want to review the inventory in my Siigo catalog.\n\nCompany in Siigo: [name, if I manage more than one].\nWhat worries me: [products running out / products that don't move / outdated prices].\n\"Low stock\" threshold: [for example, fewer than 10 units].\n\nIf anything is missing, ask me before looking. Read my products with their code, balance, description, and price, and give me:\n1. The products below the threshold, from lowest to highest.\n2. The products with zero or negative balance.\n3. A list of products whose price or description is worth reviewing.\n\nRead only: don't modify any products. If a product doesn't show a balance or price, tell me instead of guessing.",
+    "recommendedFiles": [
+      "List of priority products",
+      "The stock threshold you use"
+    ],
+    "expectedResult": [
+      "Products running low",
+      "Products at zero or negative",
+      "Prices or descriptions to review"
+    ]
+  }
+}

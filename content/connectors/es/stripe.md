@@ -2,6 +2,7 @@
 name: Stripe
 logo: /connectors/stripe.svg
 category: automation
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Pregúntale a tu IA por tus pagos — y deja que actúe sobre ellos"
 simpleSubtitle: "Server oficial de Stripe: clientes, facturas, pagos, suscripciones y reembolsos."

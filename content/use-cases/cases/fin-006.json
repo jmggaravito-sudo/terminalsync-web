@@ -1,0 +1,39 @@
+{
+  "id": "fin-006",
+  "categoryId": "finance",
+  "recommendedAI": "claude",
+  "level": "Avanzado",
+  "order": 58,
+  "es": {
+    "title": "Evaluar una inversión",
+    "outcome": "Decisión informada sobre si vale la pena una inversión nueva.",
+    "prompt": "Estoy considerando una inversión importante en mi negocio y quiero evaluarla seriamente.\n\nLa inversión: [describir].\nCosto total: [monto].\nIngreso esperado: [monto y plazo].\nRiesgos identificados: [listar].\n\nDame: análisis de retorno esperado, tiempo de recuperación, escenarios optimista/realista/pesimista, riesgos detallados con mitigación y recomendación final con justificación.",
+    "recommendedFiles": [
+      "Cotización del proveedor",
+      "Proyecciones de ingresos"
+    ],
+    "expectedResult": [
+      "ROI esperado",
+      "Tiempo de recuperación",
+      "Escenarios",
+      "Riesgos",
+      "Recomendación"
+    ]
+  },
+  "en": {
+    "title": "Evaluate an investment",
+    "outcome": "Informed decision about whether a new investment is worth it.",
+    "prompt": "I am considering a major investment in my business and want to evaluate it seriously.\n\nThe investment: [describe].\nTotal cost: [amount].\nExpected income: [amount and timeframe].\nIdentified risks: [list].\n\nGive me: analysis of expected return, payback period, optimistic/realistic/pessimistic scenarios, risks detailed with mitigation, and a final recommendation with justification.",
+    "recommendedFiles": [
+      "Supplier quote",
+      "Revenue projections"
+    ],
+    "expectedResult": [
+      "Expected ROI",
+      "Payback period",
+      "Scenarios",
+      "Risks",
+      "Recommendation"
+    ]
+  }
+}

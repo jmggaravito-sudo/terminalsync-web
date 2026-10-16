@@ -471,7 +471,7 @@ const WORKFLOW_META: Record<
   j1CWMGmncSyICQ6U: {
     project: "TerminalSync",
     description:
-      "Sync-AI · Support & Sales Agent — agente de soporte+ventas para Terminal Sync. Inactivo hasta que agreguemos ANTHROPIC_API_KEY.",
+      "Sync-AI · Support & Sales Agent — agente de soporte+ventas para Terminal Sync. Inactivo hasta que agreguemos ZAI_API_KEY.",
     cadence: "cuando llega un mensaje",
   },
   hZ5UzReXzaW9iegF: {

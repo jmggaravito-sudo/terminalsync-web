@@ -382,6 +382,43 @@ body {
   .ts-marquee-left, .ts-marquee-right { animation: none; }
 }
 
+/* ─── Búsqueda en vivo: fila propia, separada de las integraciones ───── */
+.ts-live-sources {
+  margin: 32px auto 0;
+  padding: 24px 16px 0;
+  max-width: 760px;
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+}
+.ts-live-sources-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-fg-strong);
+  letter-spacing: -0.01em;
+}
+/* Filas de cuadros: el cuadro es el mismo de las integraciones
+   (.ts-integration-tile); acá solo se acomodan las filas (como el marquee:
+   12px entre cuadros y entre filas), estáticas y centradas, con wrap en móvil. */
+.ts-live-sources-rows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+.ts-live-sources-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+.ts-live-sources-note {
+  margin-top: 14px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--color-fg-muted);
+}
+
 /* Admin Ops readability override: JM requested every actionable button on
    /admin/ops to be white with black text. Scoped to Ops surfaces only. */
 .admin-ops-readable-buttons button,

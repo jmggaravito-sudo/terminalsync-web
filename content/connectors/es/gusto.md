@@ -2,6 +2,7 @@
 name: Gusto
 logo: /connectors/gusto.svg
 category: automation
+markets: ["US"]
 status: available
 simpleTitle: "Tu nómina y tu equipo, respondiendo en voz alta"
 simpleSubtitle: "Server oficial de Gusto: empleados, contratistas, calendarios de pago e info de impuestos de nómina, leídos directo de tu cuenta."
@@ -22,8 +23,8 @@ license: "proprietary"
 licenseUrl: "https://gusto.com/legal/terms"
 marketplaceSource: "official"
 marketplaceCategory: "web"
-installableForAi: false
-installableForAiReason: "recipe-not-npx"
+installableForAi: true
+installableForAiReason: "remote-needs-login"
 aiToolsCount: 0
 aiReadOnlyTools: 0
 verifiedAt: "2026-09-19T12:19:33.156Z"

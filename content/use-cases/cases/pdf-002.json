@@ -1,0 +1,41 @@
+{
+  "id": "pdf-002",
+  "categoryId": "legal",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 184,
+  "isNew": true,
+  "connectors": [
+    "pdf"
+  ],
+  "es": {
+    "title": "Marcar las cláusulas importantes de un PDF y guardar una copia",
+    "outcome": "Resalta en tu PDF las cláusulas que te importan y guarda una copia anotada, sin tocar el original.",
+    "prompt": "Quiero marcar en un PDF las cláusulas que debo revisar.\n\nArchivo: [ruta del PDF].\nQué resaltar: [pagos y multas / plazos / cancelación / datos de las partes].\nNota o sello para agregar: [por ejemplo, REVISAR, o ninguno].\n\nSi te falta el archivo o no está en una carpeta donde puedas guardar, dímelo antes de empezar. Busca esas cláusulas en el documento y lista en qué página está cada una. Muéstrame qué vas a resaltar y qué nota agregarás, y pídeme confirmación. No guardes nada hasta que yo escriba \"confirmo\". Guarda el resultado como una copia nueva con las anotaciones: nunca sobrescribas el original. Dime dónde quedó la copia.",
+    "recommendedFiles": [
+      "PDF original",
+      "Lista de temas que quieres revisar"
+    ],
+    "expectedResult": [
+      "Cláusulas encontradas por página",
+      "Anotaciones propuestas",
+      "Confirmación antes de guardar",
+      "Copia anotada guardada"
+    ]
+  },
+  "en": {
+    "title": "Highlight the important clauses in a PDF and save a copy",
+    "outcome": "Highlights the clauses you care about in your PDF and saves an annotated copy, without touching the original.",
+    "prompt": "I want to mark the clauses I need to review in a PDF.\n\nFile: [path to the PDF].\nWhat to highlight: [payments and penalties / deadlines / cancellation / party details].\nNote or stamp to add: [for example, REVIEW, or none].\n\nIf the file is missing or isn't in a folder where you can save, tell me before starting. Find those clauses in the document and list which page each is on. Show me what you'll highlight and what note you'll add, and ask me to confirm. Don't save anything until I write \"confirm\". Save the result as a new copy with the annotations: never overwrite the original. Tell me where the copy ended up.",
+    "recommendedFiles": [
+      "Original PDF",
+      "List of topics you want to review"
+    ],
+    "expectedResult": [
+      "Clauses found by page",
+      "Proposed annotations",
+      "Confirmation before saving",
+      "Annotated copy saved"
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "str-010",
+  "categoryId": "strategy",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 104,
+  "es": {
+    "title": "Definir ventaja competitiva",
+    "outcome": "Claridad sobre qué te hace único y defendible en el mercado.",
+    "prompt": "Quiero definir con claridad qué hace único a mi negocio y por qué los clientes me eligen.\n\nMi negocio: [describir].\nMis competidores principales: [listar].\nLo que dicen mis clientes felices: [destacar].\nLo que yo creo que me diferencia: [hipótesis].\n\nDame: análisis de mi ventaja real vs percibida, cómo defenderla en el tiempo, cómo comunicarla mejor y plan para fortalecerla en los próximos 12 meses.",
+    "recommendedFiles": [
+      "Testimonios",
+      "Análisis de competencia"
+    ],
+    "expectedResult": [
+      "Ventaja real",
+      "Cómo defenderla",
+      "Cómo comunicarla",
+      "Plan a 12 meses"
+    ]
+  },
+  "en": {
+    "title": "Define competitive advantage",
+    "outcome": "Clarity on what makes you unique and defensible in the market.",
+    "prompt": "I want to clearly define what makes my business unique and why customers choose me.\n\nMy business: [describe].\nMy main competitors: [list].\nWhat my happy customers say: [highlight].\nWhat I believe differentiates me: [hypothesis].\n\nGive me: analysis of my real vs perceived advantage, how to defend it over time, how to communicate it better and a plan to strengthen it over the next 12 months.",
+    "recommendedFiles": [
+      "Testimonials",
+      "Competitor analysis"
+    ],
+    "expectedResult": [
+      "Real advantage",
+      "How to defend it",
+      "How to communicate it",
+      "12-month plan"
+    ]
+  }
+}

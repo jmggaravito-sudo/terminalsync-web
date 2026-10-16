@@ -2,6 +2,7 @@
 name: monday.com
 logo: /connectors/monday.svg
 category: productivity
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Your work board, run by the AI"
 simpleSubtitle: "\"What's blocked?\" \"Add the new lead to the sales board\" — your AI reads and updates monday.com."

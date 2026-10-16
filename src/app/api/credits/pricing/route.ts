@@ -28,7 +28,7 @@ export async function OPTIONS(req: Request) {
   return preflight(req, "GET, OPTIONS");
 }
 
-export async function GET(req?: Request) {
+export async function GET(req: Request) {
   const { rate, trm, source } = await copRateForCredits();
   const packages: Record<string, number> = {};
   for (const amountCents of [1000, 2000]) {
@@ -54,7 +54,7 @@ export async function GET(req?: Request) {
       // every keystroke of a form that polls it.
       headers: {
         "Cache-Control": "public, max-age=300, s-maxage=300",
-        ...corsHeaders(req?.headers.get("origin") ?? null, "GET, OPTIONS"),
+        ...corsHeaders(req.headers.get("origin") ?? null, "GET, OPTIONS"),
       },
     },
   );

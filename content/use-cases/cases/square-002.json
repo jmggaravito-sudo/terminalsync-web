@@ -1,0 +1,41 @@
+{
+  "id": "square-002",
+  "categoryId": "ecommerce",
+  "recommendedAI": "glm",
+  "level": "Intermedio",
+  "order": 145,
+  "isNew": true,
+  "connectors": [
+    "square"
+  ],
+  "es": {
+    "title": "Agregar un producto al catálogo de Square",
+    "outcome": "Prepara un producto nuevo para tu catálogo en Square y lo crea solo después de tu confirmación.",
+    "prompt": "Quiero agregar un producto a mi catálogo de Square.\n\nNombre: [nombre del producto o servicio].\nPrecio: [monto y moneda].\nCategoría: [categoría del catálogo].\nDescripción corta: [una frase].\n\nPrimero revisa mi catálogo para ver si ya existe algo parecido y avísame. Luego muéstrame cómo quedaría el producto (nombre, precio, categoría y descripción) y pídeme confirmación. No crees nada hasta que yo escriba \"confirmo\". No modifiques ni borres productos existentes ni cobres a nadie.",
+    "recommendedFiles": [
+      "Lista de precios",
+      "Fotos o descripciones del producto"
+    ],
+    "expectedResult": [
+      "Revisión de duplicados en el catálogo",
+      "Vista previa del producto",
+      "Confirmación antes de crear",
+      "Producto agregado"
+    ]
+  },
+  "en": {
+    "title": "Add an item to the Square catalog",
+    "outcome": "Prepares a new item for your Square catalog and creates it only after your confirmation.",
+    "prompt": "I want to add an item to my Square catalog.\n\nName: [name of the product or service].\nPrice: [amount and currency].\nCategory: [catalog category].\nShort description: [one sentence].\n\nFirst check my catalog to see whether something similar already exists and tell me. Then show me how the item would look (name, price, category, and description) and ask me to confirm. Don't create anything until I write \"confirm\". Don't change or delete existing items, and don't charge anyone.",
+    "recommendedFiles": [
+      "Price list",
+      "Product photos or descriptions"
+    ],
+    "expectedResult": [
+      "Duplicate check in the catalog",
+      "Item preview",
+      "Confirmation before creating",
+      "Item added"
+    ]
+  }
+}

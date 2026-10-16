@@ -21,7 +21,7 @@
  *   - Mark the discovery row as review_status='approved'.
  *
  * Lower-confidence rows (0.5 ≤ x < 0.8) get the optional Claude pass
- * if ANTHROPIC_API_KEY is set — Claude reads the raw description and
+ * if ZAI_API_KEY is set — GLM reads the raw description and
  * source URL, decides keep/skip, and writes a richer description_md.
  * If no key, those rows just stay pending for human review.
  *
@@ -38,7 +38,7 @@ import { resolveLogo } from "./lib/logoResolver.mjs";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
+const ZAI_KEY = process.env.ZAI_API_KEY;
 if (!SUPABASE_URL || !SUPABASE_KEY) {
   console.error("Missing SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY");
   process.exit(1);
@@ -107,7 +107,7 @@ async function alreadyPublished(slug, repoUrl) {
 
 async function classifyWithClaude(row) {
   // Returns { keep: bool, description_md: string } or null if API absent.
-  if (!ANTHROPIC_KEY) return null;
+  if (!ZAI_KEY) return null;
   const prompt = `You are evaluating an MCP connector for the public TerminalSync marketplace. Decide if it should be listed.
 
 Item:
@@ -123,25 +123,25 @@ Listing rules:
 
 Respond as JSON only: {"keep": true|false, "reason": "short", "description_md": "one paragraph plain prose, no markdown headers, <= 400 chars"}`;
 
-  const r = await fetch("https://api.anthropic.com/v1/messages", {
+  const r = await fetch(`${(process.env.ANTHROPIC_BASE_URL || "https://open.bigmodel.cn/api/anthropic").replace(/\/+$/, "")}/v1/messages`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": ANTHROPIC_KEY,
+      "x-api-key": ZAI_KEY,
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
+      model: process.env.ZAI_MODEL || "glm-5.3-flash",
       max_tokens: 400,
       messages: [{ role: "user", content: prompt }],
     }),
   });
   if (!r.ok) {
-    console.warn("Claude API error", r.status, await r.text().catch(() => ""));
+    console.warn("GLM API error", r.status, await r.text().catch(() => ""));
     return null;
   }
   const j = await r.json();
-  const text = j.content?.[0]?.text ?? "";
+  const text = j.content?.find((b) => b.type === "text")?.text ?? "";
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) return null;
   try {
@@ -230,7 +230,7 @@ async function main() {
   console.log(`curated publisher: ${publisherId}`);
   console.log(
     `mode=${DRY_RUN ? "DRY_RUN" : "LIVE"} min_auto=${MIN_CONFIDENCE_AUTO} min_claude=${MIN_CONFIDENCE_CLAUDE} claude=${
-      ANTHROPIC_KEY ? "yes" : "no"
+      ZAI_KEY ? "yes" : "no"
     }`,
   );
 

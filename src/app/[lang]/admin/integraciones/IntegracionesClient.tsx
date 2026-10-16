@@ -51,6 +51,7 @@ interface LoopStatus {
   workflow: string | null;
   ref: string;
   acceptsFocus?: boolean;
+  requiresFocus?: boolean;
   acceptsDryRun?: boolean;
   disabledReason?: { es: string; en: string };
   run: RunStatus | null;
@@ -353,12 +354,24 @@ function LoopCard({
 
       {loop.acceptsFocus ? (
         <label className="mt-3 block text-[12px] text-[var(--color-fg-muted)]">
-          {isEs ? "Foco opcional" : "Optional focus"}
+          {loop.requiresFocus
+            ? isEs
+              ? "Nombre de la integración"
+              : "Integration name"
+            : isEs
+              ? "Foco opcional"
+              : "Optional focus"}
           <input
             value={focus}
             onChange={(e) => onFocus(e.target.value)}
             placeholder={
-              isEs ? "ej: asana, docx, ventas" : "e.g. asana, docx, sales"
+              loop.requiresFocus
+                ? isEs
+                  ? "ej: Ramp, Calendly"
+                  : "e.g. Ramp, Calendly"
+                : isEs
+                  ? "ej: asana, docx, ventas"
+                  : "e.g. asana, docx, sales"
             }
             className="mt-1 w-full rounded-xl border border-[var(--color-border)] bg-transparent px-3 py-2 text-[13px] text-[var(--color-fg)] outline-none"
           />
@@ -423,7 +436,9 @@ function LoopCard({
         <button
           type="button"
           onClick={onRun}
-          disabled={dispatching || disabled}
+          disabled={
+            dispatching || disabled || (loop.requiresFocus === true && !focus.trim())
+          }
           className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[var(--color-accent)] px-4 py-2 text-[13px] font-semibold text-white disabled:opacity-45"
         >
           {dispatching ? (

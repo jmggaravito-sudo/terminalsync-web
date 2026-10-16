@@ -1,0 +1,37 @@
+{
+  "id": "ec-003",
+  "categoryId": "ecommerce",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 75,
+  "es": {
+    "title": "Estrategia de cross-sell y up-sell",
+    "outcome": "Plan para vender más a cada cliente.",
+    "prompt": "Quiero aumentar el ticket promedio de mis ventas con cross-sell y up-sell.\n\nMi tienda: [describir].\nProductos principales: [listar].\nTicket promedio actual: [monto].\nMeta: [aumento %].\n\nDame: estrategia clara con productos a cruzar, cuándo y dónde mostrarlos en el viaje del cliente (carrito, post-compra, email), copy para cada momento y combos sugeridos con descuento.",
+    "recommendedFiles": [
+      "Catálogo de productos",
+      "Datos de ventas combinadas"
+    ],
+    "expectedResult": [
+      "Estrategia",
+      "Productos a cruzar",
+      "Copy por momento",
+      "Combos sugeridos"
+    ]
+  },
+  "en": {
+    "title": "Cross-sell and Up-sell Strategy",
+    "outcome": "Plan to sell more to each customer.",
+    "prompt": "I want to increase my average order value with cross-sell and up-sell.\n\nMy store: [describe].\nMain products: [list].\nCurrent average order value: [amount].\nGoal: [increase %].\n\nGive me: a clear strategy with products to cross-sell, when and where to show them in the customer journey (cart, post-purchase, email), copy for each moment and suggested bundles with discounts.",
+    "recommendedFiles": [
+      "Product catalog",
+      "Combined sales data"
+    ],
+    "expectedResult": [
+      "Strategy",
+      "Products to cross-sell",
+      "Copy by moment",
+      "Suggested bundles"
+    ]
+  }
+}

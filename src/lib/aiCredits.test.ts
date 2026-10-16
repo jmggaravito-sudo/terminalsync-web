@@ -48,6 +48,7 @@ describe("AI credit checkout contracts", () => {
     // time the payment confirms — otherwise a real payment gets rejected and
     // the customer pays without receiving credits.
     expect(metadata.cop_amount).toBe("34600");
+    expect(metadata.credit_funding_purpose).toBe("general");
     expect(parseCreditPaymentMetadata(metadata)?.copAmount).toBe(34_600);
 
     // A junk or negative amount reads as "not recorded" rather than as a price.

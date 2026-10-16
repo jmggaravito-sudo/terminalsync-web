@@ -1,0 +1,39 @@
+{
+  "id": "sales-010",
+  "categoryId": "sales",
+  "recommendedAI": "claude",
+  "level": "Intermedio",
+  "order": 10,
+  "es": {
+    "title": "Crear secuencia de nurturing",
+    "outcome": "Plan de 5 mensajes para mantener calientes a los prospectos.",
+    "prompt": "Tengo prospectos que aún no compran pero están interesados. Quiero una secuencia de mensajes para mantenerlos cerca.\n\nMi producto/servicio: [describir].\nDuración del ciclo de venta típico: [días/semanas].\nCanal preferido: [email/WhatsApp].\n\nDame una secuencia de 5 mensajes para enviar durante 30 días: 1 que aporte valor, 1 caso de éxito, 1 que despierte urgencia, 1 con oferta clara y 1 de cierre amable.",
+    "recommendedFiles": [
+      "Casos de éxito",
+      "Contenido útil que ya tengas"
+    ],
+    "expectedResult": [
+      "Mensaje 1: valor",
+      "Mensaje 2: caso de éxito",
+      "Mensaje 3: urgencia",
+      "Mensaje 4: oferta",
+      "Mensaje 5: cierre"
+    ]
+  },
+  "en": {
+    "title": "Create nurturing sequence",
+    "outcome": "5-message plan to keep prospects warm.",
+    "prompt": "I have prospects who haven't bought yet but are interested. I want a message sequence to keep them close.\n\nMy product/service: [describe].\nTypical sales cycle length: [days/weeks].\nPreferred channel: [email/WhatsApp].\n\nGive me a sequence of 5 messages to send over 30 days: 1 that provides value, 1 success story, 1 that creates urgency, 1 with a clear offer and 1 for a courteous close.",
+    "recommendedFiles": [
+      "Success stories",
+      "Useful content you already have"
+    ],
+    "expectedResult": [
+      "Message 1: value",
+      "Message 2: success story",
+      "Message 3: urgency",
+      "Message 4: offer",
+      "Message 5: close"
+    ]
+  }
+}

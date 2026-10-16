@@ -2,6 +2,7 @@
 name: Brave Search
 logo: /connectors/brave-search.svg
 category: research
+markets: ["GLOBAL"]
 status: available
 simpleTitle: "Que tu IA busque en la web con Brave"
 simpleSubtitle: "Resultados web y búsquedas locales desde un índice independiente, no Google."
