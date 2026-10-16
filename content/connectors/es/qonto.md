@@ -32,7 +32,7 @@ verifiedPackageVersion: null
 ---
 **Qonto** es la cuenta bancaria de negocio en la que se apoyan autónomos y pymes de España y Francia (y de otros países europeos): tarjetas, transferencias, facturación y la gestión del día a día en un solo lugar. El server MCP oficial de Qonto le da a tu agente acceso directo a esa cuenta — sin pegar ninguna API key en TerminalSync, solo con el login de tu propia cuenta de Qonto.
 
-Le preguntas *"¿Cuánto gasté el mes pasado?"* y te trae las transacciones de la cuenta. Le pides *"Muéstrame lo que me deben"* y revisa tus facturas de clientes para encontrar lo que está vencido y necesita un seguimiento. También se ocupa de la parte operativa: armar y enviar facturas de clientes, crear links de pago, bloquear una tarjeta, invitar a alguien nuevo al equipo. Cada escritura te pide confirmación antes de ejecutarse, y las operaciones sensibles con dinero siguen necesitando tu aprobación en la app móvil de Qonto — igual que si las hicieras tú mismo.
+Le preguntas *"¿Cuánto gasté el mes pasado?"* y te trae las transacciones de la cuenta. Le pides *"Muéstrame lo que me deben"* y revisa tus facturas de clientes para encontrar lo que está vencido y necesita un seguimiento. También se ocupa de la parte operativa: armar y enviar facturas de clientes, crear links de pago, bloquear una tarjeta, invitar a alguien nuevo al equipo. Estas acciones pueden modificar tu cuenta real: revisa la acción y la configuración de aprobaciones de tu cliente de IA antes de permitirla. Las operaciones que Qonto clasifica como sensibles, como crear ciertos tipos de tarjeta, requieren además aprobación en su app móvil; eso no significa que cada escritura tenga una confirmación separada.
 
 ### Qué le puedes pedir
 

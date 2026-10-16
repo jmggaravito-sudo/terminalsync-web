@@ -32,7 +32,7 @@ verifiedPackageVersion: null
 ---
 **Qonto** is the business account freelancers and small companies run on in Spain and France (and other European countries): cards, transfers, invoicing and day-to-day bookkeeping in one place. The official Qonto MCP server lets your agent read and act on that account directly — no API key to paste into TerminalSync, just your own Qonto login.
 
-Ask *"What did I spend last month?"* and it pulls the transactions from your account. Ask *"Show me what I'm owed"* and it goes through your client invoices to find what's overdue and needs a follow-up. It also handles the operational side: drafting and sending client invoices, creating payment links, locking a card, inviting new teammates. Every write is confirmed with you before it runs, and money-sensitive operations still require your approval in the Qonto mobile app — exactly as if you were doing them yourself.
+Ask *"What did I spend last month?"* and it pulls the transactions from your account. Ask *"Show me what I'm owed"* and it goes through your client invoices to find what's overdue and needs a follow-up. It also handles the operational side: drafting and sending client invoices, creating payment links, locking a card, inviting new teammates. These actions can change your real account: review the requested action and your AI client's approval settings before allowing it. Operations that Qonto classifies as sensitive, such as creating certain card types, additionally require approval in its mobile app; that does not mean every write has a separate confirmation.
 
 ### What you can ask
 
