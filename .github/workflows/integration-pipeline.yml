@@ -1,4 +1,5 @@
 name: Integration Pipeline
+run-name: Integration · ${{ inputs.focus }} · ${{ inputs.country }}
 
 # Name in, integration out. One agent per stage, every agent on GLM (Z.ai):
 #
@@ -32,6 +33,11 @@ on:
         description: "Nombre de la integración (ej. Ramp, Calendly)"
         required: true
         type: string
+      country:
+        description: "País a verificar (código ISO, ej. CO)"
+        required: true
+        type: choice
+        options: [US, MX, CO, AR, CL, PE, EC, DO, GT, CR, PA, UY, PY, BO, VE, SV, HN, NI, BR, PR, CA, GB, ES, FR, IE, JP, AU, NZ]
       dry_run:
         description: "Solo investiga y reporta: no construye, no crea PR, no mergea"
         required: false
@@ -39,7 +45,7 @@ on:
         type: boolean
 
 concurrency:
-  group: integration-pipeline-${{ inputs.focus }}
+  group: integration-pipeline-${{ inputs.focus }}-${{ inputs.country }}
   cancel-in-progress: false
 
 permissions:
@@ -60,6 +66,7 @@ jobs:
     outputs:
       verdict: ${{ steps.validate.outputs.verdict }}
       slug: ${{ steps.validate.outputs.slug }}
+      target_supported: ${{ steps.validate.outputs.target_supported }}
     steps:
       - uses: actions/checkout@v4
 
@@ -70,10 +77,15 @@ jobs:
       - name: Validate the integration name
         env:
           FOCUS: ${{ inputs.focus }}
+          COUNTRY: ${{ inputs.country }}
         run: |
           # The name goes into an agent prompt: keep it to a plain product name.
           if ! printf '%s' "$FOCUS" | grep -Eq '^[A-Za-z0-9][A-Za-z0-9 ._&+-]{0,59}$'; then
             echo "::error::El nombre debe ser un nombre de producto simple (letras, números, espacios, . _ & + -; máx. 60)."
+            exit 1
+          fi
+          if ! printf '%s' "$COUNTRY" | grep -Eq '^(US|MX|CO|AR|CL|PE|EC|DO|GT|CR|PA|UY|PY|BO|VE|SV|HN|NI|BR|PR|CA|GB|ES|FR|IE|JP|AU|NZ)$'; then
+            echo "::error::Elige un país válido."
             exit 1
           fi
           mkdir -p "$PIPELINE_DIR"
@@ -94,11 +106,12 @@ jobs:
           prompt: |
             Eres el agente INVESTIGADOR del pipeline de integraciones. Lee y sigue .github/pipeline/prompts/research.md.
             INTEGRATION_NAME: "${{ inputs.focus }}"
+            TARGET_COUNTRY: "${{ inputs.country }}"
             Escribe el resultado en .pipeline/research.json y termina.
 
       - name: Validate research.json
         id: validate
-        run: node scripts/pipeline/cli.mjs research-validate "$PIPELINE_DIR/research.json" | tee -a "$GITHUB_OUTPUT"
+        run: node scripts/pipeline/cli.mjs research-validate "$PIPELINE_DIR/research.json" "${{ inputs.country }}" | tee -a "$GITHUB_OUTPUT"
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -111,7 +124,7 @@ jobs:
   build:
     name: "2 · Constructor"
     needs: research
-    if: needs.research.outputs.verdict == 'ship_official' && inputs.dry_run != true
+    if: needs.research.outputs.verdict == 'ship_official' && needs.research.outputs.target_supported == 'true' && inputs.dry_run != true
     runs-on: ubuntu-latest
     timeout-minutes: 90
     outputs:
@@ -158,6 +171,33 @@ jobs:
         with:
           name: pipeline-build
           path: .pipeline/build.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+  supervise_existing:
+    name: "2 · Supervisar ficha existente"
+    needs: research
+    if: needs.research.outputs.verdict == 'exists'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: pipeline-research
+          path: .pipeline
+      - name: Verify this connector's catalog and installability
+        run: node scripts/pipeline/supervise-existing.mjs .pipeline/research.json "${{ inputs.country }}" .pipeline/supervision.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pipeline-supervision
+          path: .pipeline/supervision.json
           if-no-files-found: ignore
           retention-days: 14
 
@@ -378,7 +418,7 @@ jobs:
 
   report:
     name: "7 · Reporte"
-    needs: [research, build, decide, fix, finalize]
+    needs: [research, build, supervise_existing, decide, fix, finalize]
     if: always() && needs.research.result != 'skipped'
     runs-on: ubuntu-latest
     timeout-minutes: 10

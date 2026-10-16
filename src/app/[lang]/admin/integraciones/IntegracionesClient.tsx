@@ -16,14 +16,19 @@ import {
   Ban,
 } from "lucide-react";
 import { authedFetch, getSupabaseBrowser } from "@/lib/supabase/browser";
+import { MARKETS, MARKET_CODES, type MarketCode } from "@/lib/markets";
+import type { pipelineAnswer } from "@/lib/integrationPipelineResult";
 
 type AuthState = "checking" | "anon" | "ready" | "forbidden";
 
 interface RunStatus {
+  id?: number;
+  display_title?: string;
   status: string;
   conclusion: string | null;
   html_url: string;
   created_at: string;
+  answer?: ReturnType<typeof pipelineAnswer> | null;
 }
 
 interface LastLoopRun {
@@ -53,6 +58,7 @@ interface LoopStatus {
   acceptsFocus?: boolean;
   requiresFocus?: boolean;
   acceptsDryRun?: boolean;
+  requiresCountry?: boolean;
   disabledReason?: { es: string; en: string };
   run: RunStatus | null;
   lastLoopRun: LastLoopRun | null;
@@ -80,9 +86,10 @@ export function IntegracionesClient({ lang }: { lang: string }) {
   const [dispatchError, setDispatchError] = useState<Record<string, string>>(
     {},
   );
-  const [watching, setWatching] = useState(false);
+  const [watching, setWatching] = useState<{ loopId: string; previousRunId: number | null } | null>(null);
   const [focusByLoop, setFocusByLoop] = useState<Record<string, string>>({});
   const [dryRunByLoop, setDryRunByLoop] = useState<Record<string, boolean>>({});
+  const [countryByLoop, setCountryByLoop] = useState<Record<string, string>>({});
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -176,8 +183,11 @@ export function IntegracionesClient({ lang }: { lang: string }) {
   }, [auth, loops, watching, loadStatus]);
 
   useEffect(() => {
-    if (watching && loops.some((loop) => loop.run?.status === "completed"))
-      setWatching(false);
+    if (watching) {
+      const run = loops.find((loop) => loop.id === watching.loopId)?.run;
+      if (run?.id && run.id !== watching.previousRunId && run.status === "completed")
+        setWatching(null);
+    }
   }, [watching, loops]);
 
   async function runNow(loop: LoopStatus) {
@@ -189,12 +199,13 @@ export function IntegracionesClient({ lang }: { lang: string }) {
         body: JSON.stringify({
           loopId: loop.id,
           focus: focusByLoop[loop.id] ?? "",
-          dryRun: dryRunByLoop[loop.id] === true,
+          dryRun: loop.id === "integration-pipeline" ? true : dryRunByLoop[loop.id] === true,
+          country: countryByLoop[loop.id] ?? "",
         }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? `API ${res.status}`);
-      setWatching(true);
+      setWatching({ loopId: loop.id, previousRunId: loop.run?.id ?? null });
       setTimeout(() => void loadStatus(), 3000);
     } catch (e) {
       setDispatchError((prev) => ({
@@ -254,12 +265,12 @@ export function IntegracionesClient({ lang }: { lang: string }) {
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h2 className="text-[16px] font-semibold tracking-tight text-[var(--color-fg-strong)]">
-                  {isEs ? "Loops de integraciones" : "Integration loops"}
+                  {isEs ? "Pedir una integración" : "Request an integration"}
                 </h2>
                 <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--color-fg-muted)]">
                   {isEs
-                    ? "Corré cada loop desde acá. Los loops de curación abren PRs draft; nada se publica solo."
-                    : "Run each loop from here. Curation loops open draft PRs; nothing publishes itself."}
+                    ? "Escribe el servicio y el país. Te diremos si hay una vía oficial para prepararlo; eso no significa que ya funcione para clientes."
+                    : "Enter the service and country. We'll tell you whether an official path exists; that does not mean customers can use it yet."}
                 </p>
               </div>
               <button
@@ -277,14 +288,15 @@ export function IntegracionesClient({ lang }: { lang: string }) {
               </div>
             ) : null}
 
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              {loops.map((loop) => (
+            <div className="mt-5">
+              {loops.filter((loop) => loop.id === "integration-pipeline").map((loop) => (
                 <LoopCard
                   key={loop.id}
                   loop={loop}
                   isEs={isEs}
                   focus={focusByLoop[loop.id] ?? ""}
-                  dryRun={dryRunByLoop[loop.id] === true}
+                  dryRun={dryRunByLoop[loop.id] ?? true}
+                  country={countryByLoop[loop.id] ?? ""}
                   dispatching={dispatching === loop.id}
                   dispatchError={dispatchError[loop.id] || null}
                   onFocus={(value) =>
@@ -293,10 +305,27 @@ export function IntegracionesClient({ lang }: { lang: string }) {
                   onDryRun={(value) =>
                     setDryRunByLoop((prev) => ({ ...prev, [loop.id]: value }))
                   }
+                  onCountry={(value) => setCountryByLoop((prev) => ({ ...prev, [loop.id]: value }))}
                   onRun={() => void runNow(loop)}
                 />
               ))}
             </div>
+            <details className="mt-5 border-t border-[var(--color-border)] pt-4">
+              <summary className="cursor-pointer text-[12px] text-[var(--color-fg-muted)]">
+                {isEs ? "Operación técnica: curación y supervisión" : "Technical operations: curation and supervision"}
+              </summary>
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                {loops.filter((loop) => loop.id !== "integration-pipeline").map((loop) => (
+                  <LoopCard key={loop.id} loop={loop} isEs={isEs}
+                    focus={focusByLoop[loop.id] ?? ""} dryRun={dryRunByLoop[loop.id] === true}
+                    country="" dispatching={dispatching === loop.id}
+                    dispatchError={dispatchError[loop.id] || null}
+                    onFocus={(value) => setFocusByLoop((prev) => ({ ...prev, [loop.id]: value }))}
+                    onDryRun={(value) => setDryRunByLoop((prev) => ({ ...prev, [loop.id]: value }))}
+                    onCountry={() => {}} onRun={() => void runNow(loop)} />
+                ))}
+              </div>
+            </details>
           </div>
         ) : null}
       </section>
@@ -309,20 +338,24 @@ function LoopCard({
   isEs,
   focus,
   dryRun,
+  country,
   dispatching,
   dispatchError,
   onFocus,
   onDryRun,
+  onCountry,
   onRun,
 }: {
   loop: LoopStatus;
   isEs: boolean;
   focus: string;
   dryRun: boolean;
+  country: string;
   dispatching: boolean;
   dispatchError: string | null;
   onFocus: (value: string) => void;
   onDryRun: (value: boolean) => void;
+  onCountry: (value: string) => void;
   onRun: () => void;
 }) {
   const lang = isEs ? "es" : "en";
@@ -338,10 +371,18 @@ function LoopCard({
             {loop.description[lang]}
           </p>
         </div>
-        <RunBadge run={loop.run} disabled={disabled} isEs={isEs} />
+        {loop.requiresCountry ? (
+          <span className="text-[12px] text-[var(--color-fg-muted)]">
+            {loop.run?.status === "in_progress" || loop.run?.status === "queued"
+              ? isEs ? "Investigando…" : "Researching…"
+              : loop.run?.status === "completed"
+                ? isEs ? "Investigación terminada" : "Research finished"
+                : null}
+          </span>
+        ) : <RunBadge run={loop.run} disabled={disabled} isEs={isEs} />}
       </div>
 
-      <dl className="mt-3 grid grid-cols-2 gap-2 text-[11.5px] text-[var(--color-fg-dim)]">
+      {!loop.requiresCountry ? <dl className="mt-3 grid grid-cols-2 gap-2 text-[11.5px] text-[var(--color-fg-dim)]">
         <div>
           <dt className="font-mono uppercase">Repo</dt>
           <dd>{loop.repo}</dd>
@@ -350,7 +391,7 @@ function LoopCard({
           <dt className="font-mono uppercase">Workflow</dt>
           <dd>{loop.workflow ?? (isEs ? "pendiente" : "pending")}</dd>
         </div>
-      </dl>
+      </dl> : null}
 
       {loop.acceptsFocus ? (
         <label className="mt-3 block text-[12px] text-[var(--color-fg-muted)]">
@@ -378,7 +419,20 @@ function LoopCard({
         </label>
       ) : null}
 
-      {loop.acceptsDryRun ? (
+      {loop.requiresCountry ? (
+        <label className="mt-3 block text-[12px] text-[var(--color-fg-muted)]">
+          {isEs ? "País" : "Country"}
+          <select value={country} onChange={(e) => onCountry(e.target.value)}
+            className="mt-1 w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-[13px] text-[var(--color-fg)]">
+            <option value="">{isEs ? "Elige un país" : "Choose a country"}</option>
+            {MARKET_CODES.filter((code): code is Exclude<MarketCode, "GLOBAL"> => code !== "GLOBAL").map((code) => (
+              <option key={code} value={code}>{MARKETS[code][lang]}</option>
+            ))}
+          </select>
+        </label>
+      ) : null}
+
+      {loop.acceptsDryRun && !loop.requiresCountry ? (
         <label className="mt-3 flex items-center gap-2 text-[12px] text-[var(--color-fg-muted)]">
           <input
             type="checkbox"
@@ -386,8 +440,8 @@ function LoopCard({
             onChange={(e) => onDryRun(e.target.checked)}
           />
           {isEs
-            ? "Dry run: investigar sin abrir PR ni registrar run"
-            : "Dry run: investigate without opening PR or recording run"}
+            ? "Solo investigar (no construir ni publicar)"
+            : "Research only (do not build or publish)"}
         </label>
       ) : null}
 
@@ -407,6 +461,46 @@ function LoopCard({
         <div className="mt-3 rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-[12.5px] text-red-400">
           {dispatchError}
         </div>
+      ) : null}
+
+      {loop.requiresCountry && loop.run?.display_title?.startsWith("Integration · ") ? (
+        <p className="mt-3 text-[12px] text-[var(--color-fg-muted)]">
+          {isEs ? "Última investigación: " : "Latest research: "}{loop.run.display_title}
+        </p>
+      ) : null}
+
+      {loop.requiresCountry && loop.run?.answer &&
+        (!focus.trim() || !country || loop.run.display_title === `Integration · ${focus.trim()} · ${country}`) ? (
+        <div className="mt-3 rounded-xl border border-[var(--color-border)] p-3 text-[13px]">
+          <strong>{isEs ? {
+            can_build: "Sí hay vía oficial para prepararla en ese país; aún no está lista para clientes.",
+            country_unverified: "No pudimos confirmar que funcione en ese país.",
+            already_cataloged: "Ya tiene ficha en el catálogo; eso no prueba que se pueda conectar todavía.",
+            catalog_blocked: "No: aparece en el catálogo, pero la supervisión encontró que todavía no se puede instalar.",
+            needs_build: "No hay integración oficial lista: haría falta construirla.",
+            cannot_build: "No se puede avanzar automáticamente con la evidencia disponible.",
+          }[loop.run.answer.outcome] : {
+            can_build: "An official path exists for this country; not yet customer-ready.",
+            country_unverified: "Availability in this country is unverified.",
+            already_cataloged: "It is in the catalog; that does not prove it can connect yet.",
+            catalog_blocked: "No: it appears in the catalog, but supervision found it cannot be installed yet.",
+            needs_build: "No ready official integration; a custom build is needed.",
+            cannot_build: "Cannot proceed automatically with the available evidence.",
+          }[loop.run.answer.outcome]}</strong>
+          {loop.run.answer.reason ? <p className="mt-1 text-[var(--color-fg-muted)]">{loop.run.answer.reason}</p> : null}
+          {loop.run.answer.supervision ? <p className="mt-1 text-[var(--color-fg-muted)]">
+            {isEs ? "Supervisión de ficha: " : "Catalog supervision: "}
+            {loop.run.answer.supervision.checks?.probeReason ?? loop.run.answer.supervision.outcome}.
+            {isEs ? " Prueba en app instalada y login real: pendiente." : " Installed-app and real login smoke: pending."}
+          </p> : null}
+        </div>
+      ) : null}
+
+      {loop.requiresCountry && loop.run?.status === "completed" && !loop.run.answer &&
+        loop.run.display_title?.startsWith("Integration · ") ? (
+        <p className="mt-3 text-[12px] text-[var(--color-fg-muted)]">
+          {isEs ? "No se pudo leer un resultado verificable. Abre la corrida para revisar el motivo; no lo tomes como aprobación." : "No verifiable result was available. Open the run to inspect why; do not treat it as approval."}
+        </p>
       ) : null}
 
       <div className="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-border)] pt-3">
@@ -437,7 +531,7 @@ function LoopCard({
           type="button"
           onClick={onRun}
           disabled={
-            dispatching || disabled || (loop.requiresFocus === true && !focus.trim())
+            dispatching || disabled || (loop.requiresFocus === true && !focus.trim()) || (loop.requiresCountry === true && !country)
           }
           className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[var(--color-accent)] px-4 py-2 text-[13px] font-semibold text-white disabled:opacity-45"
         >
@@ -452,6 +546,8 @@ function LoopCard({
             ? isEs
               ? "Disparando…"
               : "Dispatching…"
+            : loop.requiresCountry
+              ? isEs ? "Investigar" : "Research"
             : isEs
               ? "Correr"
               : "Run"}

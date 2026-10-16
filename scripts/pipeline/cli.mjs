@@ -13,6 +13,7 @@ import {
   checkScope,
   decide,
   validateResearch,
+  MARKET_CODES,
 } from "./lib.mjs";
 
 function readJson(file) {
@@ -47,6 +48,14 @@ switch (cmd) {
       console.error(`research.json invalid:\n- ${v.errors.join("\n- ")}`);
       process.exit(1);
     }
+    const country = args[1];
+    if (country && (country === "GLOBAL" || !MARKET_CODES.includes(country))) {
+      console.error(`invalid country: ${country}`);
+      process.exit(1);
+    }
+    const targetSupported = country && r.verdict === "ship_official" &&
+      (r.markets?.codes?.includes(country) || r.markets?.codes?.includes("GLOBAL"));
+    console.log(`target_supported=${targetSupported === true}`);
     console.log(`verdict=${r.verdict}`);
     console.log(`slug=${r.slug}`);
     console.log(`conversational=${r.conversational_install}`);
@@ -95,11 +104,13 @@ switch (cmd) {
       ? { ...rawBuild, url: repo && Number.isInteger(Number(rawBuild.pr)) ? `https://github.com/${repo}/pull/${Number(rawBuild.pr)}` : undefined }
       : rawBuild;
     const decision = readJson(path.join(dir, "decision.json"));
+    const supervision = readJson(path.join(dir, "supervision.json"));
     console.log(
       buildReport({
         research,
         build,
         decision,
+        supervision,
         merged: merged === "true",
         mergeNote: mergeNote || undefined,
         checks: checks || undefined,
