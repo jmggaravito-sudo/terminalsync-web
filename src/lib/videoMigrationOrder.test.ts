@@ -9,5 +9,7 @@ describe("migration version ordering", () => {
     expect(versions.filter(v => v === "0034")).toHaveLength(1);
     expect(files).toContain("0033_comp_customer_sentinel_uniqueness.sql");
     expect(files).toContain("0034_video_exclusive_funding.sql");
+    expect(versions.filter(v => v === "0035")).toHaveLength(1);
+    expect(files).toContain("0035_video_exclusive_checkout_intents.sql");
   });
 });

@@ -4,12 +4,14 @@ const mocks = vi.hoisted(() => ({
   constructEvent: vi.fn(),
   grantPurchasedCredits: vi.fn(),
   allocateVideoFunding: vi.fn(),
+  retrieveSession: vi.fn(),
 }));
 
 vi.mock("@/lib/stripe", () => ({
   stripe: {
     webhooks: { constructEvent: mocks.constructEvent },
     customers: { retrieve: vi.fn() },
+    checkout: { sessions: { retrieve: mocks.retrieveSession } },
   },
 }));
 
@@ -50,6 +52,8 @@ function creditEvent() {
       object: {
         id: "cs_credit_123",
         livemode: true,
+        mode: "payment",
+        url: "https://checkout.stripe.test/session",
         amount_total: 1000,
         currency: "usd",
         payment_status: "paid",
@@ -80,7 +84,12 @@ beforeEach(() => {
   process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
   mocks.constructEvent.mockReturnValue(creditEvent());
   mocks.grantPurchasedCredits.mockResolvedValue(undefined);
-  mocks.allocateVideoFunding.mockResolvedValue({ error: null });
+  mocks.allocateVideoFunding.mockImplementation(async (name: string) =>
+    name === "reconcile_video_exclusive_checkout"
+      ? { data: true, error: null }
+      : { data: { allocationId: "allocation-1" }, error: null },
+  );
+  mocks.retrieveSession.mockImplementation(async (id: string) => ({ ...creditEvent().data.object, id }));
 });
 
 afterEach(() => {
@@ -188,25 +197,33 @@ describe("Stripe credit payment webhook", () => {
     expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
   });
 
-  it("routes only a live-signed exclusive event to the transactional RPC", async () => {
+  it("routes a live-signed exclusive event even when the paid session has no active Checkout URL", async () => {
     const event = creditEvent();
     event.livemode = true;
     event.data.object.metadata.credit_funding_purpose = "video-exclusive";
     event.data.object.metadata.video_funding_issuer_id = "enrolled-issuer";
+    event.data.object.metadata.video_funding_destination = "ledger-prod-7";
+    event.data.object.metadata.video_exclusive_checkout_request_id = "123e4567-e89b-42d3-a456-426614174000";
     mocks.constructEvent.mockReturnValue(event);
+    mocks.retrieveSession.mockResolvedValue({ ...event.data.object, url: null });
     process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED = "true";
+    process.env.VIDEO_FUNDING_SOURCE_ISSUER = "enrolled-issuer";
+    process.env.VIDEO_FUNDING_SOURCE_DESTINATION = "ledger-prod-7";
 
     const res = await POST(signedRequest());
 
     expect(res.status).toBe(200);
     expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
-    expect(mocks.allocateVideoFunding).toHaveBeenCalledWith("allocate_video_exclusive_funding", {
+    expect(mocks.allocateVideoFunding).toHaveBeenCalledWith("allocate_video_exclusive_funding_pinned", {
       p_signature_verified_live: true,
       p_event_livemode: true,
       p_source_event_id: "evt_credit_123",
       p_provider_payment_id: "pi_credit_123",
       p_account_id: "user-verified",
       p_issuer_id: "enrolled-issuer",
+      p_destination: "ledger-prod-7",
+      p_request_id: "123e4567-e89b-42d3-a456-426614174000",
+      p_checkout_session_id: "cs_credit_123",
       p_purpose: "video-exclusive",
       p_currency: "USD",
       p_amount_micros: 10_000_000,
