@@ -44,11 +44,16 @@ describe("remote connectors (mcp-remote)", () => {
   });
 });
 
-describe("remote connectors without dynamic client registration", () => {
+describe("remote connectors where mcp-remote cannot log in", () => {
   it("keeps zoom blocked: mcp-remote cannot log in there", async () => {
     const { verifyFile } = await import("./verify-connector.mjs");
     const r = await verifyFile("content/connectors/en/zoom.md", { verifiedAt: "2026-10-08T00:00:00.000Z" });
     expect(r).toMatchObject({ slug: "zoom", installableForAi: false, installableForAiReason: "needs-oauth" });
+  });
+  it("keeps factorial blocked: its OAuth issuer lives on another domain and mcp-remote rejects the mismatch", async () => {
+    const { verifyFile } = await import("./verify-connector.mjs");
+    const r = await verifyFile("content/connectors/en/factorial.md", { verifiedAt: "2026-10-16T00:00:00.000Z" });
+    expect(r).toMatchObject({ slug: "factorial", installableForAi: false, installableForAiReason: "needs-oauth" });
   });
 });
 
