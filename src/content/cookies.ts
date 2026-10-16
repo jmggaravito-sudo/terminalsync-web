@@ -56,6 +56,21 @@ export const COOKIE_ROWS: CookieRow[] = [
     duration: { es: "Hasta que la borres", en: "Until you delete it" },
   },
   {
+    name: "ts_region",
+    provider: "TerminalSync",
+    kind: "cookie",
+    category: "necessary",
+    party: "own",
+    purpose: {
+      es: "Indica si visitas desde Europa («eu») o desde otra región («row») para decidir si te mostramos el aviso de cookies. Se calcula a partir del país de tu conexión en el momento de la visita; no guarda tu IP ni ningún dato personal.",
+      en: "Tells us whether you are visiting from Europe (“eu”) or from another region (“row”) so we know whether to show the cookie notice. It is derived from the country of your connection at the time of the visit; it does not store your IP or any personal data.",
+    },
+    duration: {
+      es: "Sesión (se borra al cerrar el navegador)",
+      en: "Session (deleted when you close the browser)",
+    },
+  },
+  {
     name: "terminalsync:theme · ts-theme · ts_lang",
     provider: "TerminalSync",
     kind: "localStorage",

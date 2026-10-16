@@ -12,6 +12,8 @@
  * necesarias están apagadas. Rechazar es el estado por defecto.
  */
 
+import { browserRegion, type Region } from "./region";
+
 export const CONSENT_KEY = "terminalsync:cookie-consent-v2";
 /** Clave del banner anterior (valores "accepted" | "necessary"). */
 export const LEGACY_CONSENT_KEY = "terminalsync:cookie-consent-v1";
@@ -100,17 +102,31 @@ export function readConsentRecord(storage: StorageLike | null | undefined): Cons
  * sirve como consentimiento para medir. El banner vuelve a preguntar (no hay
  * registro v2) y mientras tanto la analítica queda apagada.
  */
-export function effectiveConsent(storage: StorageLike | null | undefined): ConsentCategories {
+export function effectiveConsent(
+  storage: StorageLike | null | undefined,
+  region: Region = browserRegion(),
+): ConsentCategories {
   const rec = readConsentRecord(storage);
+  // Una decisión guardada se respeta SIEMPRE, en cualquier región.
   if (rec) return { ...rec.categories };
+  // Fuera de Europa, sin decisión: como antes de la web de España (todo activo,
+  // sin banner). El valor antiguo v1 no importa aquí.
+  if (region === "row") return { ...ALL_CONSENT };
   if (safeGet(storage, LEGACY_CONSENT_KEY) === "accepted") {
     return { analytics: false, affiliates: true };
   }
   return { ...NO_CONSENT };
 }
 
-/** ¿Hay que mostrar el banner? Sí si no hay registro v2 de la versión vigente. */
-export function needsDecision(storage: StorageLike | null | undefined): boolean {
+/**
+ * ¿Hay que mostrar el banner? En Europa (o ante la duda) sí si no hay registro
+ * v2 de la versión vigente. Fuera de Europa nunca: no hay banner.
+ */
+export function needsDecision(
+  storage: StorageLike | null | undefined,
+  region: Region = browserRegion(),
+): boolean {
+  if (region === "row") return false;
   return readConsentRecord(storage) === null;
 }
 

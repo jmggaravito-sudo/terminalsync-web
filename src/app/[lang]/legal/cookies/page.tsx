@@ -78,8 +78,8 @@ export default async function CookiesPage({ params }: Props) {
       <h2>{es ? "2. Qué usa este sitio" : "2. What this site uses"}</h2>
       <p>
         {es
-          ? "Esta tabla recoge todo lo que el sitio guarda o carga hoy. Solo las filas «Necesaria» se usan sin preguntarte. El resto no se carga hasta que lo aceptas."
-          : "This table lists everything the site stores or loads today. Only the “Necessary” rows are used without asking you. Everything else does not load until you accept it."}
+          ? "Esta tabla recoge todo lo que el sitio guarda o carga hoy. Si visitas desde Europa, solo las filas «Necesaria» se usan sin preguntarte y el resto no se carga hasta que lo aceptas."
+          : "This table lists everything the site stores or loads today. If you visit from Europe, only the “Necessary” rows are used without asking you and everything else does not load until you accept it."}
       </p>
       <div className="not-prose overflow-x-auto mb-6">
         <table className="w-full text-[13px] border-collapse min-w-[720px]">
@@ -143,9 +143,16 @@ export default async function CookiesPage({ params }: Props) {
 
       <h2>{es ? "3. Cómo aceptar, rechazar o cambiar tu decisión" : "3. How to accept, reject or change your decision"}</h2>
       <p>
+        <strong>
+          {es
+            ? "El aviso de cookies se muestra a los visitantes de Europa (Unión Europea, Espacio Económico Europeo, Reino Unido y Suiza), y también cuando no podemos determinar tu país. Desde otras regiones no se muestra y el sitio carga la analítica y las herramientas de afiliados sin pedir permiso previo; aun así puedes retirarlas en cualquier momento desde «Configurar cookies»."
+            : "The cookie notice is shown to visitors from Europe (European Union, European Economic Area, United Kingdom and Switzerland), and also when we cannot determine your country. From other regions it is not shown and the site loads analytics and affiliate tools without asking first; you can still turn them off at any time from “Configure cookies”."}
+        </strong>
+      </p>
+      <p>
         {es
-          ? "La primera vez que entras ves un aviso con tres botones del mismo tamaño: «Aceptar todas», «Rechazar todas» y «Configurar». Rechazar es tan fácil como aceptar y no te impide usar el sitio. Si no eliges nada, no se carga ninguna analítica ni herramienta de afiliados."
-          : "The first time you visit you see a notice with three equally sized buttons: “Accept all”, “Reject all” and “Configure”. Rejecting is as easy as accepting and does not stop you from using the site. If you choose nothing, no analytics or affiliate tools are loaded."}
+          ? "En Europa, la primera vez que entras ves un aviso con tres botones del mismo tamaño: «Aceptar todas», «Rechazar todas» y «Configurar». Rechazar es tan fácil como aceptar y no te impide usar el sitio. Si no eliges nada, no se carga ninguna analítica ni herramienta de afiliados."
+          : "In Europe, the first time you visit you see a notice with three equally sized buttons: “Accept all”, “Reject all” and “Configure”. Rejecting is as easy as accepting and does not stop you from using the site. If you choose nothing, no analytics or affiliate tools are loaded."}
       </p>
       <p>
         {es

@@ -6,7 +6,10 @@
    también en src/lib/consent.ts y src/components/consent/copy.ts:
    src/lib/consent.test.ts comprueba que coinciden.
 
-   Regla: nada de analítica (Vercel Web Analytics), ni eventos, ni la cookie de
+   Banner estricto SOLO para visitantes de Europa (cookie ts_region=eu o ausente).
+   Fuera de Europa (ts_region=row) no hay banner y la analítica carga como antes.
+
+   Regla (en Europa): nada de analítica (Vercel Web Analytics), ni eventos, ni la cookie de
    atribución se activan antes de que la persona acepte la categoría. Rechazar
    es el estado por defecto. BORRADOR: textos pendientes de validación legal. */
 (function () {
@@ -60,6 +63,16 @@
     return location.pathname.indexOf('/en') === 0 ? 'en' : 'es';
   }
 
+  /* Región (cookie ts_region, la fija el middleware desde x-vercel-ip-country).
+     Solo el valor exacto "row" (fuera de Europa) relaja; cualquier otra cosa, o
+     la ausencia de cookie, es Europa (fail-safe). Misma regla que src/lib/region.ts. */
+  function region() {
+    try {
+      var m = /(?:^|;\s*)ts_region=([^;]*)/.exec(document.cookie || '');
+      return m && m[1] === 'row' ? 'row' : 'eu';
+    } catch (e) { return 'eu'; }
+  }
+
   function storage() {
     try { return window.localStorage; } catch (e) { return null; }
   }
@@ -78,7 +91,10 @@
 
   function effective() {
     var r = readRecord();
+    // Una decisión guardada se respeta siempre, en cualquier región.
     if (r) return { analytics: r.categories.analytics, affiliates: r.categories.affiliates };
+    // Fuera de Europa sin decisión: como antes (analítica activa, sin banner).
+    if (region() === 'row') return { analytics: true, affiliates: true };
     return { analytics: false, affiliates: false };
   }
 
@@ -235,8 +251,10 @@
 
   window.tsConsent = { open: openSettings, get: effective };
 
-  // Arranque: aplicar una decisión vigente o preguntar.
+  // Arranque: aplicar una decisión vigente; si no la hay, preguntar SOLO en Europa
+  // (o ante la duda). Fuera de Europa no hay banner y todo carga como antes.
   var rec = readRecord();
   if (rec) applyConsent(effective());
+  else if (region() === 'row') applyConsent(effective());
   else showBanner();
 })();

@@ -15,6 +15,7 @@ import {
   writeConsent,
   type ConsentCategories,
 } from "@/lib/consent";
+import { browserRegion } from "@/lib/region";
 
 // Los tres botones del banner comparten EXACTAMENTE la misma clase: mismo
 // tamaño, color y peso. Rechazar no puede ser menos visible que aceptar.
@@ -41,8 +42,10 @@ export function CookieBanner() {
 
   useEffect(() => {
     const storage = browserStorage();
-    // Sin almacenamiento (modo privado) también preguntamos.
-    if (!storage || needsDecision(storage)) setMode("banner");
+    // Banner estricto SOLO en Europa (y ante la duda: fail-safe = Europa).
+    // Fuera de Europa no hay banner; el panel sigue abierto desde el pie.
+    // Sin almacenamiento (modo privado) en Europa también preguntamos.
+    if (browserRegion() === "eu" && (!storage || needsDecision(storage))) setMode("banner");
     const open = () => {
       setDraft(effectiveConsent(browserStorage()));
       setMode("panel");

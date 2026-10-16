@@ -160,8 +160,18 @@ describe("no hay analítica antes del consentimiento (React)", () => {
     expect(read("src/app/[lang]/gracias/GraciasClient.tsx")).toContain("analyticsAllowed(");
   });
 
-  it("el middleware ya no crea cookies de atribución antes del consentimiento", () => {
-    expect(read("src/middleware.ts")).not.toMatch(/cookies\.set/);
+  it("el middleware no crea la cookie de atribución (solo la de región, necesaria)", async () => {
+    const { NextRequest } = await import("next/server");
+    const { middleware } = await import("@/middleware");
+    for (const country of ["ES", "US", undefined]) {
+      const res = middleware(
+        new NextRequest("https://terminalsync.ai/es", {
+          headers: country ? { "x-vercel-ip-country": country } : {},
+        }),
+      );
+      const names = res.cookies.getAll().map((c) => c.name);
+      expect(names).toEqual(["ts_region"]);
+    }
   });
 
   it("Sentry del navegador no se inicializa a nivel de módulo y se carga bajo demanda", () => {
@@ -195,7 +205,7 @@ describe("home estática: sin analítica antes del consentimiento", () => {
   });
 
   /** Doble mínimo del DOM: suficiente para ejecutar consent.js tal cual. */
-  function run(opts: { stored?: string; pathname?: string }) {
+  function run(opts: { stored?: string; pathname?: string; cookie?: string }) {
     const appended: Array<{ parent: string; node: any }> = [];
     const store: Record<string, string> = opts.stored ? { [CONSENT_KEY]: opts.stored } : {};
     const makeNode = (tag: string): any => {
@@ -248,7 +258,7 @@ describe("home estática: sin analítica antes del consentimiento", () => {
     const doc: any = {
       head,
       body,
-      cookie: "",
+      cookie: opts.cookie ?? "",
       createElement: makeNode,
       createTextNode: (t: string) => ({ textContent: t, parentNode: null }),
       getElementById: () => null,
@@ -355,6 +365,85 @@ describe("home estática: sin analítica antes del consentimiento", () => {
       CONSENT_COPY.en.reject,
       CONSENT_COPY.en.configure,
     ]);
+  });
+
+  describe("según la región (cookie ts_region)", () => {
+    it("ts_region=eu: banner y sin analítica (igual que antes)", () => {
+      const r = run({ cookie: "ts_region=eu" });
+      expect(r.dialog()).toBeTruthy();
+      expect(r.insights()).toHaveLength(0);
+    });
+
+    it("sin cookie ts_region o con valor raro: Europa (fail-safe)", () => {
+      for (const cookie of ["", "otra=1", "ts_region=", "ts_region=ROW", "ts_region=xx", "x_ts_region=row"]) {
+        const r = run({ cookie });
+        expect(r.dialog(), cookie).toBeTruthy();
+        expect(r.insights(), cookie).toHaveLength(0);
+      }
+    });
+
+    it("ts_region=row sin decisión: sin banner, analítica y tsync_landing como antes", () => {
+      const r = run({ cookie: "a=1; ts_region=row" });
+      expect(r.dialog()).toBeFalsy();
+      expect(r.insights()).toHaveLength(1);
+      expect(r.doc.cookie).toContain("tsync_landing=consumer");
+    });
+
+    it("ts_region=row con rechazo guardado: se respeta (sin analítica ni banner)", () => {
+      const stored = JSON.stringify({
+        version: CONSENT_VERSION,
+        date: "2026-10-16T10:00:00.000Z",
+        categories: { analytics: false, affiliates: false },
+      });
+      const r = run({ cookie: "ts_region=row", stored });
+      expect(r.dialog()).toBeFalsy();
+      expect(r.insights()).toHaveLength(0);
+    });
+
+    it("ts_region=row con aceptación guardada: carga la analítica una vez", () => {
+      const stored = JSON.stringify({
+        version: CONSENT_VERSION,
+        date: "2026-10-16T10:00:00.000Z",
+        categories: { analytics: true, affiliates: true },
+      });
+      const r = run({ cookie: "ts_region=row", stored });
+      expect(r.dialog()).toBeFalsy();
+      expect(r.insights()).toHaveLength(1);
+    });
+  });
+});
+
+describe("región: Europa (estricto) vs resto del mundo (como antes)", () => {
+  describe("consent.ts", () => {
+    it("Europa y duda: sin decisión todo apagado y hay que preguntar", () => {
+      for (const region of ["eu"] as const) {
+        const s = memoryStorage();
+        expect(effectiveConsent(s, region)).toEqual(NO_CONSENT);
+        expect(needsDecision(s, region)).toBe(true);
+        expect(needsDecision(null, region)).toBe(true);
+      }
+    });
+
+    it("resto del mundo: sin decisión todo activo y nunca hay banner", () => {
+      const s = memoryStorage();
+      expect(effectiveConsent(s, "row")).toEqual(ALL_CONSENT);
+      expect(analyticsAllowed(effectiveConsent(s, "row"))).toBe(true);
+      expect(needsDecision(s, "row")).toBe(false);
+      expect(needsDecision(null, "row")).toBe(false);
+    });
+
+    it("resto del mundo: una decisión guardada se respeta", () => {
+      const s = memoryStorage();
+      writeConsent(s, NO_CONSENT);
+      expect(effectiveConsent(s, "row")).toEqual(NO_CONSENT);
+      writeConsent(s, { analytics: false, affiliates: true });
+      expect(effectiveConsent(s, "row")).toEqual({ analytics: false, affiliates: true });
+    });
+
+    it("sin DOM (servidor) la región por defecto es Europa: fail-safe", () => {
+      expect(effectiveConsent(memoryStorage())).toEqual(NO_CONSENT);
+      expect(needsDecision(memoryStorage())).toBe(true);
+    });
   });
 });
 
