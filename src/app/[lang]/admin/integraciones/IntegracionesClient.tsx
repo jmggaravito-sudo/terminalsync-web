@@ -489,19 +489,28 @@ function LoopCard({
             needs_build: "No ready official integration; a custom build is needed.",
             cannot_build: "Cannot proceed automatically with the available evidence.",
           }[loop.run.answer.outcome]}</strong>
-          {loop.run.answer.reason ? <p className="mt-1 text-[var(--color-fg-muted)]">{loop.run.answer.reason}</p> : null}
           {loop.run.answer.supervision ? <p className="mt-1 text-[var(--color-fg-muted)]">
-            {isEs ? "Supervisión de ficha: " : "Catalog supervision: "}
-            {loop.run.answer.supervision.checks?.probeReason ?? loop.run.answer.supervision.outcome}.
-            {isEs ? " Prueba en app instalada y login real: pendiente." : " Installed-app and real login smoke: pending."}
+            {loop.run.answer.supervision.outcome === "catalog_blocked"
+              ? isEs ? "La conexión de la cuenta todavía no funciona. No se puede ofrecer a clientes." : "Account connection does not work yet. It cannot be offered to customers."
+              : loop.run.answer.supervision.outcome === "needs_app_smoke"
+                ? isEs ? "La ficha pasó la revisión técnica. Falta probarla en una app instalada con una cuenta real." : "The catalog entry passed technical checks. An installed-app test with a real account is still needed."
+                : isEs ? "No encontramos una ficha completa para verificar." : "No complete catalog entry was found to check."}
           </p> : null}
           {"globalSupervision" in loop.run.answer && loop.run.answer.globalSupervision ? <p className="mt-1 text-[var(--color-fg-muted)]">
-            {isEs ? "Supervisión marketplace → app: " : "Marketplace → app supervision: "}
-            {loop.run.answer.globalSupervision.status === "success" ? isEs ? "pasó" : "passed"
-              : loop.run.answer.globalSupervision.status === "failure" ? isEs ? "falló" : "failed"
-              : isEs ? "no verificada" : "unverified"}.
-            {isEs ? " Esto aún no prueba login real en la app instalada." : " This still does not prove real login in an installed app."}
+            {loop.run.answer.globalSupervision.status === "success"
+              ? isEs ? "La revisión general del catálogo y la app pasó; no prueba el acceso a tu cuenta." : "The general catalog-to-app check passed; it does not prove access to your account."
+              : loop.run.answer.globalSupervision.status === "failure"
+                ? isEs ? "La revisión general del catálogo y la app falló." : "The general catalog-to-app check failed."
+                : isEs ? "La revisión general del catálogo y la app no se pudo confirmar." : "The general catalog-to-app check could not be confirmed."}
           </p> : null}
+          {loop.run.answer.reason || loop.run.answer.supervision ? <details className="mt-2 text-[11px] text-[var(--color-fg-muted)]">
+            <summary className="cursor-pointer">{isEs ? "Ver detalles técnicos" : "Show technical details"}</summary>
+            {loop.run.answer.reason ? <p className="mt-1 break-words">{loop.run.answer.reason}</p> : null}
+            {loop.run.answer.supervision ? <p className="mt-1">
+              {isEs ? "Verificador: " : "Verifier: "}{loop.run.answer.supervision.checks?.probeReason ?? loop.run.answer.supervision.outcome}
+              {"globalSupervision" in loop.run.answer && loop.run.answer.globalSupervision?.url ? <> · <a className="underline" href={loop.run.answer.globalSupervision.url} target="_blank" rel="noreferrer">{isEs ? "Evidencia" : "Evidence"}</a></> : null}
+            </p> : null}
+          </details> : null}
         </div>
       ) : null}
 
