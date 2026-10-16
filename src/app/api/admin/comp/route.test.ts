@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 
 const mocks = vi.hoisted(() => ({
   authenticate: vi.fn(),
   isAdmin: vi.fn(),
   getSupabaseAdmin: vi.fn(),
+  rpc: vi.fn(),
   grantIncludedAi: vi.fn(),
   revokeIncludedAiForUser: vi.fn(),
 }));
@@ -64,7 +65,7 @@ function supabaseFor(resultsByTable: Record<string, QueryResult | QueryResult[]>
     (queries[table] ??= []).push(q);
     return q;
   });
-  return { from, queries };
+  return { from, queries, rpc: mocks.rpc };
 }
 
 function request(method: "POST" | "DELETE", body: Record<string, unknown>) {
@@ -81,6 +82,7 @@ beforeEach(() => {
   mocks.isAdmin.mockReturnValue(true);
   mocks.grantIncludedAi.mockResolvedValue(true);
   mocks.revokeIncludedAiForUser.mockResolvedValue(true);
+  mocks.rpc.mockResolvedValue({ data: "ok", error: null });
 });
 
 afterEach(() => {
@@ -155,10 +157,17 @@ describe("admin comp included-AI entitlement", () => {
     expect(mocks.grantIncludedAi).not.toHaveBeenCalled();
   });
 
+  it("returns failure when the Team pre-grant insert fails", async () => {
+    const sb = supabaseFor({ profiles: { data: null, error: null }, team_comp_grants: { error: { message: "write failed" } } });
+    mocks.getSupabaseAdmin.mockReturnValue(sb);
+    const { POST } = await import("./route");
+    const response = await POST(request("POST", { email: "new@example.com", plan: "team" }));
+    expect(response.status).toBe(500);
+  });
+
   it("grants existing users additive Team membership without changing Pro/Max subscription", async () => {
     const sb = supabaseFor({
       profiles: { data: { id: "user-1", email: "person@example.com" }, error: null },
-      team_memberships: [{ data: null, error: null }, { error: null }],
     });
     mocks.getSupabaseAdmin.mockReturnValue(sb);
 
@@ -166,7 +175,7 @@ describe("admin comp included-AI entitlement", () => {
     const response = await POST(request("POST", { email: "person@example.com", plan: "team" }));
 
     expect(response.status).toBe(200);
-    expect(sb.queries.team_memberships[1].upsert).toHaveBeenCalledWith(expect.objectContaining({ user_id: "user-1", source: "admin_comp", status: "active" }), { onConflict: "user_id" });
+    expect(mocks.rpc).toHaveBeenCalledWith("admin_grant_team_comp", expect.objectContaining({ p_user_id: "user-1" }));
     expect(sb.queries.subscriptions).toBeUndefined();
     expect(sb.queries.comp_grants).toBeUndefined();
     expect(mocks.grantIncludedAi).not.toHaveBeenCalled();
@@ -175,15 +184,15 @@ describe("admin comp included-AI entitlement", () => {
   it("does not overwrite an existing paid Team membership", async () => {
     const sb = supabaseFor({
       profiles: { data: { id: "user-1", email: "person@example.com" }, error: null },
-      team_memberships: { data: { source: "paid" }, error: null },
     });
+    mocks.rpc.mockResolvedValueOnce({ data: "paid_membership", error: null });
     mocks.getSupabaseAdmin.mockReturnValue(sb);
 
     const { POST } = await import("./route");
     const response = await POST(request("POST", { email: "person@example.com", plan: "team" }));
 
     expect(response.status).toBe(409);
-    expect(sb.queries.team_memberships[0].upsert).not.toHaveBeenCalled();
+    expect(mocks.rpc).toHaveBeenCalledWith("admin_grant_team_comp", expect.any(Object));
     expect(sb.queries.subscriptions).toBeUndefined();
   });
 
@@ -239,53 +248,47 @@ describe("admin comp included-AI entitlement", () => {
 
   it("revokes the included-AI entitlement when a comp is revoked", async () => {
     const sb = supabaseFor({
-      comp_grants: { error: null },
-      team_comp_grants: { error: null },
-      team_memberships: { error: null },
-      profiles: { data: { id: "user-1", email: "person@example.com" }, error: null },
-      subscriptions: [
-        { data: { stripe_customer_id: "comp" }, error: null },
-        { error: null },
-      ],
     });
+    mocks.rpc.mockResolvedValueOnce({ data: [{ result: "ok", revoked_user_id: "user-1" }], error: null });
     mocks.getSupabaseAdmin.mockReturnValue(sb);
 
     const { DELETE } = await import("./route");
     const response = await DELETE(request("DELETE", { email: "person@example.com" }));
 
     expect(response.status).toBe(200);
-    expect(mocks.revokeIncludedAiForUser).toHaveBeenCalledWith("user-1");
-    expect(sb.queries.subscriptions[1].upsert).toHaveBeenCalledWith(
-      expect.objectContaining({ user_id: "user-1", plan: "free", ai_included: false }),
-      { onConflict: "user_id" },
-    );
+    expect(mocks.rpc).toHaveBeenCalledWith("admin_revoke_comp", { p_email: "person@example.com" });
   });
 
   it("does not partially revoke Team when base subscription validation fails", async () => {
     const sb = supabaseFor({
-      profiles: { data: { id: "user-1", email: "person@example.com" }, error: null },
-      subscriptions: { data: null, error: { message: "database unavailable" } },
     });
+    mocks.rpc.mockResolvedValueOnce({ data: [{ result: "paid_subscription", revoked_user_id: "user-1" }], error: null });
     mocks.getSupabaseAdmin.mockReturnValue(sb);
 
     const { DELETE } = await import("./route");
     const response = await DELETE(request("DELETE", { email: "person@example.com" }));
 
-    expect(response.status).toBe(503);
-    expect(sb.queries.team_comp_grants).toBeUndefined();
-    expect(sb.queries.team_memberships).toBeUndefined();
-    expect(sb.queries.comp_grants).toBeUndefined();
+    expect(response.status).toBe(409);
+    expect(mocks.rpc).toHaveBeenCalledWith("admin_revoke_comp", { p_email: "person@example.com" });
   });
 });
 
 describe("Team comp schema and admin UI", () => {
   it("stores Team as an additive membership without rewriting subscription plans", () => {
     const migration = readFileSync(resolve(process.cwd(), "supabase/migrations/0037_team_comp_entitlements.sql"), "utf8").toLowerCase().replace(/\s+/g, " ");
+    const migrations = readdirSync(resolve(process.cwd(), "supabase/migrations"));
+    expect(migrations.filter((name) => name.startsWith("0037_")).length).toBe(1);
     expect(migration).toContain("create table public.team_memberships");
     expect(migration).toContain("create table public.team_comp_grants");
     expect(migration).toContain("insert into public.team_memberships");
     expect(migration).not.toContain("set plan='team'");
     expect(migration).toContain("where public.team_memberships.source = 'admin_comp'");
+    expect(migration).toContain("create or replace function public.admin_grant_team_comp");
+    expect(migration).toContain("on conflict (user_id) do update set status='active', source='admin_comp'");
+    expect(migration).toContain("where public.team_memberships.source='admin_comp'");
+    expect(migration).toContain("create or replace function public.admin_revoke_comp");
+    expect(migration).toContain("delete from public.courtesy_entitlement");
+    expect(migration).toContain("for update");
   });
 
   it("shows Team in the comp selector with its additive-membership boundary", () => {

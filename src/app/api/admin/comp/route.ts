@@ -3,7 +3,6 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { authenticate, isAdmin } from "@/lib/marketplace/auth";
 import {
   grantIncludedAi,
-  revokeIncludedAiForUser,
 } from "@/lib/subscriptionState";
 
 /**
@@ -173,15 +172,9 @@ export async function POST(req: Request) {
   const target = lookup.target;
 
   if (plan === "team") {
-    const { data: existingMembership, error: membershipLookupError } = await sb
-      .from("team_memberships")
-      .select("source")
-      .eq("user_id", target.id)
-      .maybeSingle();
-    if (membershipLookupError) return NextResponse.json({ error: "Team membership lookup failed" }, { status: 503 });
-    if (existingMembership?.source === "paid") return NextResponse.json({ error: "that account already has a paid Team membership" }, { status: 409 });
-    const { error } = await sb.from("team_memberships").upsert({ user_id: target.id, status: "active", source: "admin_comp", starts_at: new Date().toISOString(), expires_at: new Date(Date.now() + months * 30 * 86400_000).toISOString(), granted_by: user.email, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
+    const { data, error } = await sb.rpc("admin_grant_team_comp", { p_user_id: target.id, p_starts_at: new Date().toISOString(), p_expires_at: new Date(Date.now() + months * 30 * 86400_000).toISOString(), p_granted_by: user.email });
     if (error) return NextResponse.json({ error: "Team membership grant failed" }, { status: 500 });
+    if (data === "paid_membership") return NextResponse.json({ error: "that account already has a paid Team membership" }, { status: 409 });
     return NextResponse.json({ ok: true, email: target.email, userId: target.id, plan, months });
   }
 
@@ -355,81 +348,11 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: "email required" }, { status: 400 });
   }
 
-  const lookup = await userIdForEmail(sb, email);
-  if (lookup.kind === "error") {
-    return NextResponse.json({ error: "profile lookup failed" }, { status: 503 });
-  }
-
-  if (lookup.kind === "found") {
-    // Check before deleting a queued grant or modifying any subscription, so a
-    // profile lookup cannot turn a failed revoke into a partial revoke.
-    const { data: existing, error: existingError } = await sb
-      .from("subscriptions")
-      .select("stripe_customer_id,provider_customer_id,provider_subscription_id")
-      .eq("user_id", lookup.target.id)
-      .maybeSingle();
-    if (existingError) {
-      return NextResponse.json({ error: "subscription lookup failed" }, { status: 503 });
-    }
-    if (hasRealPaidSubscription(existing)) {
-      return NextResponse.json(
-        { error: "that account has a real Stripe subscription — refusing to revoke it here" },
-        { status: 409 },
-      );
-    }
-  }
-
-  // Validate the base subscription before mutating any entitlement, so a
-  // failed lookup or paid-account guard cannot leave a partial Team revoke.
-  const { error: teamPendingError } = await sb.from("team_comp_grants").delete().eq("email", email);
-  if (teamPendingError) return NextResponse.json({ error: "Team pre-grant removal failed" }, { status: 500 });
-  if (lookup.kind === "found") {
-    const { error } = await sb.from("team_memberships").update({ status: "revoked", updated_at: new Date().toISOString() }).eq("user_id", lookup.target.id).eq("source", "admin_comp").eq("status", "active");
-    if (error) return NextResponse.json({ error: "Team membership revoke failed" }, { status: 500 });
-  }
-
-  // Clear a pending pre-grant only after the account/subscription checks have
-  // succeeded, so the operation fails closed on an unavailable lookup.
-  const { error: pendingDeleteError } = await sb
-    .from("comp_grants")
-    .delete()
-    .eq("email", email);
-  if (pendingDeleteError) {
-    return NextResponse.json({ error: "pending pre-grant removal failed" }, { status: 500 });
-  }
-
-  if (lookup.kind === "not_found") {
-    // No account — the only thing to remove was the pending pre-grant, done.
-    return NextResponse.json({ ok: true, email, pendingRemoved: true });
-  }
-
-  const target = lookup.target;
-  // Only revoke if this is actually a comp — never touch a real paid sub.
-  const { error } = await sb
-    .from("subscriptions")
-    .upsert(
-      {
-        user_id: target.id,
-        stripe_customer_id: COMP_CUSTOMER,
-        plan: "free",
-        status: "canceled",
-        ai_included: false,
-        cancel_at_period_end: false,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "user_id" },
-    );
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  const includedAiRevoked = await revokeIncludedAiForUser(target.id);
-  if (!includedAiRevoked) {
-    return NextResponse.json(
-      { error: "included AI entitlement revoke failed" },
-      { status: 500 },
-    );
-  }
-
-  return NextResponse.json({ ok: true, email: target.email, plan: "free" });
+  const { data, error } = await sb.rpc("admin_revoke_comp", { p_email: email });
+  if (error) return NextResponse.json({ error: "comp revoke failed" }, { status: 500 });
+  const result = Array.isArray(data) ? data[0] : data;
+  if (result?.result === "paid_subscription") return NextResponse.json({ error: "that account has a real paid subscription — refusing to revoke it here" }, { status: 409 });
+  if (result?.result === "not_found") return NextResponse.json({ ok: true, email, pendingRemoved: true });
+  if (result?.result !== "ok") return NextResponse.json({ error: "comp revoke failed" }, { status: 500 });
+  return NextResponse.json({ ok: true, email, plan: "free" });
 }

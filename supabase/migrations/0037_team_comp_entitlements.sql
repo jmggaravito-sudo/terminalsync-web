@@ -23,6 +23,56 @@ ALTER TABLE public.team_comp_grants ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.team_memberships, public.team_comp_grants FROM PUBLIC, anon, authenticated;
 GRANT ALL ON public.team_memberships, public.team_comp_grants TO service_role;
 
+-- Serialize Team comp grants with paid membership creation and make revocation
+-- of Team + base comp + included-AI one transaction. SECURITY DEFINER is
+-- restricted to service_role; callers must not split these mutations.
+CREATE OR REPLACE FUNCTION public.admin_grant_team_comp(
+  p_user_id uuid, p_starts_at timestamptz, p_expires_at timestamptz, p_granted_by text
+) RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE current_source text;
+BEGIN
+  INSERT INTO public.team_memberships (user_id,status,source,starts_at,expires_at,granted_by)
+  VALUES (p_user_id,'active','admin_comp',p_starts_at,p_expires_at,p_granted_by)
+  ON CONFLICT (user_id) DO UPDATE SET status='active', source='admin_comp',
+    starts_at=EXCLUDED.starts_at, expires_at=EXCLUDED.expires_at,
+    granted_by=EXCLUDED.granted_by, updated_at=now()
+  WHERE public.team_memberships.source='admin_comp';
+  IF NOT FOUND THEN RETURN 'paid_membership'; END IF;
+  RETURN 'ok';
+END; $$;
+
+CREATE OR REPLACE FUNCTION public.admin_revoke_comp(p_email citext)
+RETURNS TABLE(result text, revoked_user_id uuid)
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE target_id uuid; sub public.subscriptions%rowtype;
+BEGIN
+  SELECT p.id INTO target_id FROM public.profiles p WHERE lower(p.email)=lower(p_email) FOR UPDATE;
+  IF target_id IS NULL THEN
+    DELETE FROM public.team_comp_grants WHERE email=p_email;
+    DELETE FROM public.comp_grants WHERE email=p_email;
+    RETURN QUERY SELECT 'not_found', NULL::uuid; RETURN;
+  END IF;
+  SELECT * INTO sub FROM public.subscriptions WHERE user_id=target_id FOR UPDATE;
+  IF FOUND AND ((sub.stripe_customer_id IS NOT NULL AND sub.stripe_customer_id <> 'comp')
+    OR sub.provider_customer_id IS NOT NULL OR sub.provider_subscription_id IS NOT NULL) THEN
+    RETURN QUERY SELECT 'paid_subscription', target_id; RETURN;
+  END IF;
+  DELETE FROM public.team_comp_grants WHERE email=p_email;
+  DELETE FROM public.comp_grants WHERE email=p_email;
+  UPDATE public.team_memberships SET status='revoked', updated_at=now()
+    WHERE user_id=target_id AND source='admin_comp' AND status='active';
+  INSERT INTO public.subscriptions (user_id,stripe_customer_id,plan,status,ai_included,cancel_at_period_end,updated_at)
+  VALUES (target_id,'comp','free','canceled',false,false,now())
+  ON CONFLICT (user_id) DO UPDATE SET stripe_customer_id='comp', plan='free',status='canceled',
+    ai_included=false,cancel_at_period_end=false,updated_at=now();
+  DELETE FROM public.courtesy_entitlement WHERE user_id=target_id::text AND tier='included_ai';
+  RETURN QUERY SELECT 'ok',target_id;
+END; $$;
+REVOKE ALL ON FUNCTION public.admin_grant_team_comp(uuid,timestamptz,timestamptz,text) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.admin_revoke_comp(citext) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_grant_team_comp(uuid,timestamptz,timestamptz,text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.admin_revoke_comp(citext) TO service_role;
+
 -- Preserve signup's existing base-plan comp behavior, then claim the separate
 -- Team grant without modifying subscriptions.plan.
 CREATE OR REPLACE FUNCTION public.handle_new_user()
