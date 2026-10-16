@@ -34,8 +34,12 @@ function query(result: QueryResult) {
     "limit",
     "maybeSingle",
     "upsert",
+    "update",
     "delete",
     "eq",
+    "is",
+    "order",
+    "in",
   ]) {
     q[method] = vi.fn(() => q);
   }
@@ -130,10 +134,10 @@ describe("admin comp included-AI entitlement", () => {
     expect(migration).toContain("'included_ai'");
   });
 
-  it("allows a Team comp only as a pending pre-grant for a new account", async () => {
+  it("stores a new-user Team grant separately from base-plan comp grants", async () => {
     const sb = supabaseFor({
       profiles: { data: null, error: null },
-      comp_grants: { error: null },
+      team_comp_grants: { error: null },
     });
     mocks.getSupabaseAdmin.mockReturnValue(sb);
 
@@ -143,16 +147,35 @@ describe("admin comp included-AI entitlement", () => {
 
     expect(response.status).toBe(200);
     expect(body).toMatchObject({ ok: true, pending: true, email: "new@example.com", plan: "team" });
-    expect(sb.queries.comp_grants[0].upsert).toHaveBeenCalledWith(
-      expect.objectContaining({ email: "new@example.com", plan: "team" }),
+    expect(sb.queries.team_comp_grants[0].upsert).toHaveBeenCalledWith(
+      expect.objectContaining({ email: "new@example.com", months: 12 }),
       { onConflict: "email" },
     );
+    expect(sb.queries.comp_grants).toBeUndefined();
     expect(mocks.grantIncludedAi).not.toHaveBeenCalled();
   });
 
-  it("refuses to turn an existing account into Team from the comp page", async () => {
+  it("grants existing users additive Team membership without changing Pro/Max subscription", async () => {
     const sb = supabaseFor({
       profiles: { data: { id: "user-1", email: "person@example.com" }, error: null },
+      team_memberships: [{ data: null, error: null }, { error: null }],
+    });
+    mocks.getSupabaseAdmin.mockReturnValue(sb);
+
+    const { POST } = await import("./route");
+    const response = await POST(request("POST", { email: "person@example.com", plan: "team" }));
+
+    expect(response.status).toBe(200);
+    expect(sb.queries.team_memberships[1].upsert).toHaveBeenCalledWith(expect.objectContaining({ user_id: "user-1", source: "admin_comp", status: "active" }), { onConflict: "user_id" });
+    expect(sb.queries.subscriptions).toBeUndefined();
+    expect(sb.queries.comp_grants).toBeUndefined();
+    expect(mocks.grantIncludedAi).not.toHaveBeenCalled();
+  });
+
+  it("does not overwrite an existing paid Team membership", async () => {
+    const sb = supabaseFor({
+      profiles: { data: { id: "user-1", email: "person@example.com" }, error: null },
+      team_memberships: { data: { source: "paid" }, error: null },
     });
     mocks.getSupabaseAdmin.mockReturnValue(sb);
 
@@ -160,9 +183,8 @@ describe("admin comp included-AI entitlement", () => {
     const response = await POST(request("POST", { email: "person@example.com", plan: "team" }));
 
     expect(response.status).toBe(409);
+    expect(sb.queries.team_memberships[0].upsert).not.toHaveBeenCalled();
     expect(sb.queries.subscriptions).toBeUndefined();
-    expect(sb.queries.comp_grants).toBeUndefined();
-    expect(mocks.grantIncludedAi).not.toHaveBeenCalled();
   });
 
   it("fails closed when profile lookup fails instead of creating a pre-grant", async () => {
@@ -218,6 +240,8 @@ describe("admin comp included-AI entitlement", () => {
   it("revokes the included-AI entitlement when a comp is revoked", async () => {
     const sb = supabaseFor({
       comp_grants: { error: null },
+      team_comp_grants: { error: null },
+      team_memberships: { error: null },
       profiles: { data: { id: "user-1", email: "person@example.com" }, error: null },
       subscriptions: [
         { data: { stripe_customer_id: "comp" }, error: null },
@@ -236,30 +260,41 @@ describe("admin comp included-AI entitlement", () => {
       { onConflict: "user_id" },
     );
   });
+
+  it("does not partially revoke Team when base subscription validation fails", async () => {
+    const sb = supabaseFor({
+      profiles: { data: { id: "user-1", email: "person@example.com" }, error: null },
+      subscriptions: { data: null, error: { message: "database unavailable" } },
+    });
+    mocks.getSupabaseAdmin.mockReturnValue(sb);
+
+    const { DELETE } = await import("./route");
+    const response = await DELETE(request("DELETE", { email: "person@example.com" }));
+
+    expect(response.status).toBe(503);
+    expect(sb.queries.team_comp_grants).toBeUndefined();
+    expect(sb.queries.team_memberships).toBeUndefined();
+    expect(sb.queries.comp_grants).toBeUndefined();
+  });
 });
 
 describe("Team comp schema and admin UI", () => {
-  it("extends only the plan constraints and rank; it does not add a payment or sharing switch", () => {
-    const migration = readFileSync(
-      resolve(process.cwd(), "supabase/migrations/0034_team_comp_grants.sql"),
-      "utf8",
-    ).toLowerCase().replace(/\s+/g, " ");
-
-    expect(migration).toContain("'free', 'pro', 'max', 'team', 'dev', 'done_for_you'");
-    expect(migration).toContain("'pro', 'max', 'team'");
-    expect(migration).toContain("when 'team' then 3");
-    expect(migration).toContain("when 'done_for_you' then 4");
-    expect(migration).not.toContain("create table");
-    expect(migration).not.toContain("team_roster");
+  it("stores Team as an additive membership without rewriting subscription plans", () => {
+    const migration = readFileSync(resolve(process.cwd(), "supabase/migrations/0037_team_comp_entitlements.sql"), "utf8").toLowerCase().replace(/\s+/g, " ");
+    expect(migration).toContain("create table public.team_memberships");
+    expect(migration).toContain("create table public.team_comp_grants");
+    expect(migration).toContain("insert into public.team_memberships");
+    expect(migration).not.toContain("set plan='team'");
+    expect(migration).toContain("where public.team_memberships.source = 'admin_comp'");
   });
 
-  it("shows Team in the comp selector with its pre-grant-only boundary", () => {
+  it("shows Team in the comp selector with its additive-membership boundary", () => {
     const client = readFileSync(
       resolve(process.cwd(), "src/app/[lang]/admin/comp/CompClient.tsx"),
       "utf8",
     );
 
     expect(client).toContain('<option value="team">Team</option>');
-    expect(client).toContain("Team se pre-otorga solo antes del registro");
+    expect(client).toContain("Team no reemplaza el plan base");
   });
 });

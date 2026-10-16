@@ -8,8 +8,8 @@ import {
 
 /**
  * Admin-only "comp account" grants — give an influencer (or anyone) a free
- * Pro/Max plan without going through Stripe. Team can only be pre-granted
- * before signup: it must not overwrite an existing account's subscription.
+ * Pro/Max plan without going through Stripe. Team is an additive membership
+ * and never changes the base subscription.
  *
  * How it works: the `me` view derives `plan` from the `subscriptions` table
  * (LEFT JOIN … WHERE status IN ('active','trialing')). So granting a plan is
@@ -135,6 +135,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "profile lookup failed" }, { status: 503 });
   }
   if (lookup.kind === "not_found") {
+    if (plan === "team") {
+      const { error } = await sb.from("team_comp_grants").upsert({ email, months, granted_by: user.email, claimed_at: null, claimed_user_id: null, updated_at: new Date().toISOString() }, { onConflict: "email" });
+      if (error) return NextResponse.json({ error: "Team pre-grant failed" }, { status: 500 });
+      return NextResponse.json({ ok: true, pending: true, email, plan, months });
+    }
     // No account yet → PRE-GRANT. Store the intent keyed by email; the
     // `handle_new_user` DB trigger consumes it automatically when this
     // person signs up (migration 0016). Zero manual work after this.
@@ -167,14 +172,17 @@ export async function POST(req: Request) {
 
   const target = lookup.target;
 
-  // Team is deliberately pre-grant-only for now. It keeps this admin utility
-  // from turning an established account into a Team member or bypassing the
-  // separate Team roster/invitation and approval gates.
   if (plan === "team") {
-    return NextResponse.json(
-      { error: "Team must be pre-granted before the account is created" },
-      { status: 409 },
-    );
+    const { data: existingMembership, error: membershipLookupError } = await sb
+      .from("team_memberships")
+      .select("source")
+      .eq("user_id", target.id)
+      .maybeSingle();
+    if (membershipLookupError) return NextResponse.json({ error: "Team membership lookup failed" }, { status: 503 });
+    if (existingMembership?.source === "paid") return NextResponse.json({ error: "that account already has a paid Team membership" }, { status: 409 });
+    const { error } = await sb.from("team_memberships").upsert({ user_id: target.id, status: "active", source: "admin_comp", starts_at: new Date().toISOString(), expires_at: new Date(Date.now() + months * 30 * 86400_000).toISOString(), granted_by: user.email, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
+    if (error) return NextResponse.json({ error: "Team membership grant failed" }, { status: 500 });
+    return NextResponse.json({ ok: true, email: target.email, userId: target.id, plan, months });
   }
 
   // Mirror DELETE's paid-account protection before mutating an existing
@@ -308,6 +316,18 @@ export async function GET(req: Request) {
     }));
   }
 
+  const { data: memberships, error: membershipsError } = await sb.from("team_memberships").select("user_id,status,expires_at,updated_at").eq("source", "admin_comp").eq("status", "active");
+  if (membershipsError) return NextResponse.json({ error: "Team membership lookup failed" }, { status: 500 });
+  const teamIds = (memberships ?? []).map((m) => m.user_id as string);
+  if (teamIds.length) {
+    const { data: teamProfiles, error: teamProfilesError } = await sb.from("profiles").select("id,email").in("id", teamIds);
+    if (teamProfilesError) return NextResponse.json({ error: "Team profile lookup failed" }, { status: 500 });
+    for (const m of memberships ?? []) comps.push({ email: teamProfiles?.find((p) => p.id === m.user_id)?.email ?? "(unknown)", plan: "team", status: m.status, currentPeriodEnd: m.expires_at, updatedAt: m.updated_at });
+  }
+  const { data: pendingTeam, error: pendingTeamError } = await sb.from("team_comp_grants").select("email,months").is("claimed_at", null).order("updated_at", { ascending: false });
+  if (pendingTeamError) return NextResponse.json({ error: "Team pre-grant lookup failed" }, { status: 500 });
+  pending.push(...(pendingTeam ?? []).map((g) => ({ email: g.email as string, plan: "team", months: g.months as number })));
+
   return NextResponse.json({ comps, pending });
 }
 
@@ -357,6 +377,15 @@ export async function DELETE(req: Request) {
         { status: 409 },
       );
     }
+  }
+
+  // Validate the base subscription before mutating any entitlement, so a
+  // failed lookup or paid-account guard cannot leave a partial Team revoke.
+  const { error: teamPendingError } = await sb.from("team_comp_grants").delete().eq("email", email);
+  if (teamPendingError) return NextResponse.json({ error: "Team pre-grant removal failed" }, { status: 500 });
+  if (lookup.kind === "found") {
+    const { error } = await sb.from("team_memberships").update({ status: "revoked", updated_at: new Date().toISOString() }).eq("user_id", lookup.target.id).eq("source", "admin_comp").eq("status", "active");
+    if (error) return NextResponse.json({ error: "Team membership revoke failed" }, { status: 500 });
   }
 
   // Clear a pending pre-grant only after the account/subscription checks have

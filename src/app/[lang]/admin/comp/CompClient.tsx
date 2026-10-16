@@ -146,8 +146,8 @@ export function CompClient({ lang }: { lang: string }) {
           </h1>
           <p className="text-[13px] text-[var(--color-fg-muted)] mt-1">
             {t(
-              "Otorgá Pro/Max gratis a influencers. Si la cuenta ya existe, se aplica al toque. Team se pre-otorga solo antes del registro: no cambia una suscripción existente.",
-              "Grant Pro/Max for free to influencers. If the account already exists it applies instantly. Team is pre-granted only before signup: it does not change an existing subscription.",
+              "Otorgá Pro/Max gratis o una membresía Team adicional. Team no reemplaza el plan base.",
+              "Grant Pro/Max for free or add a Team membership. Team never replaces the base plan.",
             )}
           </p>
         </header>
@@ -203,8 +203,8 @@ export function CompClient({ lang }: { lang: string }) {
           {plan === "team" ? (
             <p className="mt-3 text-[12px] text-[var(--color-fg-muted)]">
               {t(
-                "Team queda pendiente hasta que esa persona cree una cuenta nueva; sus invitaciones, aprobaciones y entregas siguen con sus propios controles.",
-                "Team stays pending until that person creates a new account; invitations, approvals, and deliveries keep their own controls.",
+                "Team agrega acceso de membresía sin cambiar Pro/Max; las invitaciones, aprobaciones y entregas conservan sus propios controles.",
+                "Team adds membership access without changing Pro/Max; invitations, approvals, and deliveries keep their own controls.",
               )}
             </p>
           ) : null}
