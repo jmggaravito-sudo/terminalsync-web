@@ -56,7 +56,7 @@ Necesitas un **token MCP de Brevo** — un tipo de API key que Brevo creó espec
 3. Copia el token en ese mismo momento. La advertencia de la guía oficial, textual: *"Copy your token immediately and store it securely. It grants full read/write access to your account."* (copia tu token de inmediato y guárdalo de forma segura; otorga acceso total de lectura y escritura a tu cuenta).
 4. Pégalo cuando TerminalSync te pida `BREVO_MCP_TOKEN`. Se guarda cifrado en los Secretos de la app y se envía al server como el header `Authorization: Bearer …`.
 
-**Aviso honesto:** es un **server hospedado por Brevo** (`mcp.brevo.com`), no algo que corre en tu computadora: tus pedidos viajan al servidor de Brevo, que responde con los datos de tu cuenta. El token **no tiene scopes**: la guía de Brevo dice que otorga acceso total de lectura y escritura, así que el agente puede leer y cambiar todo lo que tu cuenta puede — crear y enviar campañas, modificar contactos y listas, tocar tu CRM. La documentación no describe un mecanismo de confirmación del lado del servidor. Si quieres una superficie más acotada, Brevo publica 27 servers individuales por módulo (solo contactos, solo gestión de campañas de email, y así); este conector usa el server principal con todo combinado.
+**Aviso honesto:** es un **server hospedado por Brevo** (`mcp.brevo.com`), no algo que corre en tu computadora: tus pedidos viajan al servidor de Brevo, que responde con los datos de tu cuenta. El token **no tiene scopes**: la guía de Brevo dice que otorga acceso total de lectura y escritura, así que el agente puede leer y cambiar todo lo que tu cuenta puede — crear y enviar campañas, modificar contactos y listas, tocar tu CRM. La documentación no describe un mecanismo de confirmación del lado del servidor. Si quieres que el agente tenga un alcance más acotado, Brevo publica 27 servers individuales por módulo (solo contactos, solo gestión de campañas de email, y así); este conector usa el server principal con todo combinado.
 
 --- dev ---
 
@@ -72,7 +72,7 @@ npx -y mcp-remote@latest https://mcp.brevo.com/v1/brevo/mcp --header "Authorizat
 
 **Los 27 módulos documentados**, cada uno servido también como server propio en `https://mcp.brevo.com/v1/<módulo>/mcp` (la doc señala que un set de tools más chico *"can improve response quality"* — puede mejorar la calidad de la respuesta; cambia la URL del puente para acotar la superficie del agente):
 
-| Server de módulo | Qué cubre |
+| Server de módulo | Qué cubre (descripción de Brevo) |
 | ------------------------------- | ------------------------------------ |
 | `brevo_contacts` | Administrar contactos y listas |
 | `brevo_email_campaign_management` | Crear y administrar campañas de email |
