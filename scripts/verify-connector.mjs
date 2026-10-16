@@ -40,7 +40,8 @@ export const OAUTH_CONNECTORS = new Set(["gmail", "google-calendar", "google-she
 // account authorization and installed-app smoke pass.
 // zoom: no dynamic client registration (smoke 2026-10-08).
 // alegra: current MCP lives at the root and advertises DCR + PKCE, but a
-// no-account mcp-remote probe still returns HTTP 400 before browser login.
+// no-account mcp-remote probe still gets HTTP 400 invalid_redirect_uri for
+// its http://localhost:<port>/oauth/callback before browser login.
 // The traditional API's Basic auth and write tools are NOT this read-only MCP.
 // factorial: blocked 2026-10-16 — its OAuth metadata (served at mcp.factorialhr.com) declares issuer
 // https://api.factorialhr.com/, and mcp-remote@latest enforces RFC 8414 §3.3 (issuer must match the

@@ -41,11 +41,11 @@ verifiedPackageVersion: null
 
 Alegra says to paste `https://mcp.alegra.com` into a compatible MCP client and sign in with the existing Alegra account to authorize access. **Do not create or paste an API token or Base64 string.** [Basic authentication for the traditional API](https://developer.alegra.com/reference/autenticaci%C3%B3n) belongs to a different interface, not this MCP flow.
 
-**TerminalSync status:** not installable yet. Opening an Alegra account does not connect it automatically. The app's current remote client does not reach Alegra's authorization screen: an isolated no-account probe ended with HTTP 400 before login. We will not request account access or present it as ready until OAuth works and an expressly authorized installed read-only smoke passes.
+**TerminalSync status:** not installable yet. Opening an Alegra account does not connect it automatically. The app's current remote client does not reach Alegra's authorization screen: Alegra rejected its local redirect URI (`invalid_redirect_uri`, HTTP 400). We will not request account access or present it as ready until OAuth works and an expressly authorized installed read-only smoke passes.
 
 --- dev ---
 
 - Alegra's published MCP endpoint is `https://mcp.alegra.com` (root, **not** `/mcp`). `POST /mcp` returns 404; unauthenticated `POST /` returns a 401 Bearer challenge linking OAuth metadata.
 - OAuth metadata: authorization server `https://auth-api.alegra.com`; dynamic registration, PKCE S256, advertised scope `owner`. Although Alegra markets the MCP as read-only, inspect the actual consent and tool list before enabling it in TerminalSync.
-- The manifest points to the correct endpoint as a future recipe, but `installableForAi: false` and `needs-oauth` are intentional: `mcp-remote@latest` returned HTTP 400 before opening a browser in a no-account probe. Do not apply traditional API Basic instructions or write/delete tool claims to this MCP.
+- The manifest points to the correct endpoint as a future recipe, but `installableForAi: false` and `needs-oauth` are intentional: Alegra rejected `mcp-remote@latest`'s `http://localhost:<port>/oauth/callback` with `invalid_redirect_uri` before opening a browser. Do not apply traditional API Basic instructions or write/delete tool claims to this MCP.
 - Source: [Alegra MCP](https://www.alegra.com/mcp/). Real-account connection and installed smoke remain **unverified**.

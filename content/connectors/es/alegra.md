@@ -41,11 +41,11 @@ verifiedPackageVersion: null
 
 Alegra indica que se pega `https://mcp.alegra.com` en un cliente MCP compatible y se autoriza iniciando sesión con la cuenta habitual de Alegra. **No hay que generar ni pegar un token API o una cadena Base64.** La [autenticación Basic del API tradicional](https://developer.alegra.com/reference/autenticaci%C3%B3n) corresponde a otra interfaz, no a este flujo MCP.
 
-**Estado en TerminalSync:** todavía no se puede instalar. Abrir una cuenta Alegra no la conecta automáticamente. El cliente remoto actual de la app no llega a la pantalla de autorización de Alegra: la prueba aislada terminó con HTTP 400 antes del inicio de sesión. No se solicitará acceso a tu cuenta ni se presentará como lista hasta que el flujo OAuth funcione y pase un smoke de lectura con autorización expresa.
+**Estado en TerminalSync:** todavía no se puede instalar. Abrir una cuenta Alegra no la conecta automáticamente. El cliente remoto actual de la app no llega a la pantalla de autorización: Alegra rechazó su URI local de retorno (`invalid_redirect_uri`, HTTP 400). No se solicitará acceso a tu cuenta ni se presentará como lista hasta que el flujo OAuth funcione y pase un smoke de lectura con autorización expresa.
 
 --- dev ---
 
 - Endpoint MCP publicado por Alegra: `https://mcp.alegra.com` (raíz, **no** `/mcp`). `POST /mcp` devuelve 404; `POST /` sin credencial devuelve 401 con desafío Bearer y enlace a metadata OAuth.
 - Metadata OAuth: servidor de autorización `https://auth-api.alegra.com`; registro dinámico, PKCE S256 y scope anunciado `owner`. Aunque Alegra promociona el MCP como solo lectura, hay que inspeccionar el consentimiento y las herramientas reales antes de habilitarlo en TerminalSync.
-- El manifest apunta al endpoint correcto como receta futura, pero `installableForAi: false` y `needs-oauth` son deliberados: `mcp-remote@latest` recibió HTTP 400 antes de abrir el navegador en una prueba sin cuenta. No copiar al MCP las instrucciones Basic ni las herramientas de escritura/borrado del API tradicional.
+- El manifest apunta al endpoint correcto como receta futura, pero `installableForAi: false` y `needs-oauth` son deliberados: Alegra rechazó el callback `http://localhost:<puerto>/oauth/callback` de `mcp-remote@latest` con `invalid_redirect_uri` antes de abrir el navegador. No copiar al MCP las instrucciones Basic ni las herramientas de escritura/borrado del API tradicional.
 - Fuente: [Alegra MCP](https://www.alegra.com/mcp/). La conexión de una cuenta real y el smoke instalado siguen **no verificados**.
