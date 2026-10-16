@@ -32,7 +32,7 @@ verifiedPackageVersion: null
 ---
 **MONEI** is the payments platform businesses run on in Spain: it's a payment institution regulated by the Banco de España (license #6911), PCI DSS Level 1 certified, and a Bizum Direct Acquirer — which is what lets your customers pay over the local rails Spanish shoppers actually use, like Bizum, card and SEPA — and MB WAY for customers in Portugal. MONEI bills its MCP server as *"the first European payment platform with native AI agent support"*, and it works with any MCP-compatible assistant — including the one in TerminalSync.
 
-Once connected, the agent answers the questions you'd normally open the dashboard for: whether a specific payment came through, which payments failed this week, how much you collected in March and your success rate. It can also do the operational side — create a payment link and send it to a customer by email or SMS. Every write (creating or sending a link) is shown to you first, and the agent asks for your confirmation before running it.
+Once connected, the agent answers the questions you'd normally open the dashboard for: whether a specific payment came through, which payments failed this week, how much you collected in March and your success rate. It can also do the operational side — create a payment link and send it to a customer by email or SMS. Creating or sending a link changes your real account. Review the requested action and your AI client's approval settings before allowing it; OAuth consent is not a separate confirmation for each action.
 
 ### What you can ask
 
@@ -49,9 +49,9 @@ This connector **doesn't ask you to paste an API key**. It uses your own MONEI a
 
 1. Enable the connector in TerminalSync.
 2. The `mcp-remote` bridge opens MONEI's login in your browser and asks you to authorize access.
-3. Approve it with your account — the connector can only see and do what that account allows. MONEI limits the granted permissions to reading payments and subscriptions, creating payment links, and reading your account info. You need an active MONEI account (MONEI serves businesses in Spain and Andorra). The official documentation is at [github.com/MONEI/MONEI-MCP-Server](https://github.com/MONEI/MONEI-MCP-Server).
+3. Review the actual permissions shown by MONEI before authorizing. Its public repository describes payment and subscription reads, payment-link creation and account reads, but this does not independently certify the permissions of the hosted deployment. Do not approve broader access than you intend. You need an active MONEI account. The official repository is [MONEI/MONEI-MCP-Server](https://github.com/MONEI/MONEI-MCP-Server).
 
-**Honest note:** this is a server **hosted by MONEI** (`https://mcp.monei.com`), not something that runs on your computer. It reads your payments, subscriptions and account info, and it can create and send payment links — nothing more. Money-moving operations are blocked at the server level, not just hidden: the agent cannot refund payments, capture or cancel them, charge cards or Bizum directly, make payouts, cancel subscriptions, or change your account settings or credentials. Those stay in the MONEI dashboard. Every tool call is audit-logged, and usage is capped at 60 requests per minute per account. It's also a young open-source project (MIT) with its roadmap still open — early-stage, which is worth knowing before you rely on it.
+**Honest note:** this server is **hosted by MONEI** (`https://mcp.monei.com`), not on your computer. The public repository describes payment queries and payment-link creation/sending, with restrictions on other operations. TerminalSync has not independently verified those restrictions against an authenticated hosted account. The hosted authorization metadata advertises a broader permission catalog than the four permissions in the repository; supported permissions are not proof of what your account actually grants. Review the consent screen and provider account controls before connecting. The public code is MIT licensed; that alone does not certify the hosted deployment.
 
 --- dev ---
 
@@ -63,7 +63,7 @@ TerminalSync bridges the hosted endpoint locally with:
 npx -y mcp-remote@latest https://mcp.monei.com
 ```
 
-Auth is **OAuth 2.0 + PKCE** (RFC 7636) with single-use state tokens, and tokens are scoped to `payments:read`, `payments:create`, `subscriptions:read`, `account:read` — no API key involved. The vendor's OAuth discovery (`oauth.monei.com/.well-known/oauth-authorization-server`) publishes a `registration_endpoint` (dynamic client registration, PKCE `S256`, and `client_id_metadata_document_supported`), which is what lets `mcp-remote` register its client and reach the browser login.
+Authentication uses **OAuth with browser login**. The public repository describes OAuth 2.0 + PKCE and four permissions (`payments:read`, `payments:create`, `subscriptions:read`, `account:read`); treat this as a description of that code, not a verified limit on the hosted service. The hosted authorization discovery at `oauth.monei.com/.well-known/oauth-authorization-server` advertises dynamic registration and PKCE `S256`, but also a broader scope catalog. Review the actual requested/granted permissions before consenting; this review did not sign in, obtain account tokens or test financial operations.
 
 Documented MCP tools, verbatim from the official README:
 
@@ -80,6 +80,6 @@ Documented MCP tools, verbatim from the official README:
 
 Payment amounts are in cents (smallest currency unit): €10.50 = 1050.
 
-**Security disclosure:** restricted operations are **hard-blocked at the server level**, not just hidden from the tool list — refunding payments, capturing/canceling payments, charging cards/Bizum directly, card/Bizum payouts, canceling subscriptions, modifying account settings, creating/deleting API keys, and deleting webhooks. A manually crafted call is rejected with a message pointing to `dashboard.monei.com`. Rate limiting is a per-account sliding window of 60 req/min, and every tool call is audit-logged with timestamps, account ID and sanitized parameters. The repo can also be self-hosted (npm/Docker with a MONEI API key) — TerminalSync ships the hosted endpoint. The project is young (12 commits, 0 stars at the time of writing) with an open roadmap (npm publishing, webhook notifications, Bizum-specific tools, settlement reporting). **This run's smoke test:** the `mcp-remote` bridge completed dynamic client registration against `oauth.monei.com` and reached the authorization step on `https://mcp.monei.com` — the login itself needs a human with a MONEI account.
+**Security disclosure:** the public repository documents server-side restrictions, audit logging and a per-account rate limit. Those are vendor/code claims, not independently verified runtime guarantees for the hosted endpoint. In particular, this listing does not promise that refunds, captures, cancellations, payouts or settings changes are impossible for every hosted authorization. Do not grant access on that assumption. An unauthenticated check reaching the authorization step verifies reachability only, not granted permissions or enforcement. No account was connected and no financial operation was performed during this review.
 
 License: MIT (repo `LICENSE`, "© MONEI"). Source: github.com/MONEI/MONEI-MCP-Server — official MONEI MCP Server README. Vendor: MONEI Digital Payments, S.L. (Banco de España license #6911).
