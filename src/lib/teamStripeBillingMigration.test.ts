@@ -105,6 +105,8 @@ describe("Team Stripe billing RPC event ordering", () => {
     return result.rows[0].result;
   }
 
+  // This test applies the real migration in PGlite and can exceed Vitest's
+  // 5s default while the full suite runs in parallel on constrained hosts.
   it("fails closed on conflicting events in the same Stripe timestamp second", async () => {
     const db = await database();
     try {
@@ -133,7 +135,7 @@ describe("Team Stripe billing RPC event ordering", () => {
     } finally {
       await db.close();
     }
-  });
+  }, 15_000);
 
   it("binds each Stripe customer to one user and rolls back conflicting event IDs", async () => {
     const db = await database();
