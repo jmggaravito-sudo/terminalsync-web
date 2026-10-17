@@ -4,9 +4,9 @@ import { describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { citext } from "@electric-sql/pglite/contrib/citext";
 
-const migration = (n: number) => readFileSync(join(process.cwd(), `supabase/migrations/${String(n).padStart(4, "0")}_${({37:"team_comp_entitlements",38:"team_stripe_billing",39:"team_shared_spaces_metadata",40:"team_universal_trial",41:"team_entitlement_and_alias_reconciliation",42:"team_metadata_invites",43:"team_metadata_requests",44:"team_trial_on_signup",45:"team_paid_roster",46:"team_paid_roster_api"} as Record<number,string>)[n]}.sql`), "utf8");
+const migration = (n: number) => readFileSync(join(process.cwd(), `supabase/migrations/${String(n).padStart(4, "0")}_${({37:"team_comp_entitlements",38:"team_stripe_billing",39:"team_shared_spaces_metadata",40:"team_universal_trial",41:"team_entitlement_and_alias_reconciliation",42:"team_metadata_invites",43:"team_metadata_requests",44:"team_trial_on_signup",45:"team_paid_roster",46:"team_paid_roster_api",47:"team_invitation_owner_alias_projection"} as Record<number,string>)[n]}.sql`), "utf8");
 
-describe("Team migrations 0037-0046 contract", () => {
+describe("Team migrations 0037-0047 contract", () => {
   it("applies the real ordered chain and preserves signup, shared-space, approval, and roster contracts", async () => {
     const db = new PGlite({ extensions: { citext } });
     try {
@@ -117,6 +117,58 @@ describe("Team migrations 0037-0046 contract", () => {
       expect((await db.query<{ ok: boolean }>(
         `SELECT has_function_privilege('authenticated','public.respond_team_space_request(uuid,uuid,boolean)','EXECUTE') AS ok`
       )).rows[0].ok).toBe(false);
+
+      // Migration 0047 is additive: the legacy v1 invitation contract must
+      // remain byte-for-byte equivalent while v2 adds only the claimed public
+      // owner alias to an invitee-only projection.
+      const legacyBefore = (await db.query(
+        `SELECT * FROM public.list_team_invitations($1::uuid)`, [employeeId]
+      )).rows;
+      const legacyDefinitionBefore = (await db.query<{ definition: string }>(
+        `SELECT pg_get_functiondef('public.list_team_invitations(uuid)'::regprocedure) AS definition`
+      )).rows[0].definition;
+      await db.exec(migration(47));
+      const aliasProjection = (await db.query<{
+        id: string; space_id: string; space_name: string; owner_alias: string | null;
+        role: string; status: string; created_at: string; responded_at: string | null;
+      }>(
+        `SELECT * FROM public.list_team_invitations_v2($1::uuid)`, [employeeId]
+      )).rows;
+      expect(aliasProjection).toHaveLength(1);
+      expect(aliasProjection[0]).toMatchObject({
+        id: invitationId,
+        space_id: space,
+        space_name: "Contract space",
+        owner_alias: "contract-owner",
+        role: "invitee",
+        status: "accepted",
+      });
+      expect(Object.keys(aliasProjection[0]).sort()).toEqual([
+        "created_at", "id", "owner_alias", "responded_at", "role", "space_id", "space_name", "status",
+      ]);
+      const serializedProjection = JSON.stringify(aliasProjection);
+      for (const privateValue of [newId, employeeId, "new@example.test", "employee@example.test"]) {
+        expect(serializedProjection).not.toContain(privateValue);
+      }
+      expect((await db.query(
+        `SELECT * FROM public.list_team_invitations_v2($1::uuid)`, [newId]
+      )).rows).toHaveLength(0);
+      expect((await db.query(
+        `SELECT * FROM public.list_team_invitations($1::uuid)`, [employeeId]
+      )).rows).toEqual(legacyBefore);
+      expect((await db.query<{ definition: string }>(
+        `SELECT pg_get_functiondef('public.list_team_invitations(uuid)'::regprocedure) AS definition`
+      )).rows[0].definition).toBe(legacyDefinitionBefore);
+      expect((await db.query<{ ok: boolean }>(
+        `SELECT has_function_privilege('service_role','public.list_team_invitations_v2(uuid)','EXECUTE') AS ok`
+      )).rows[0].ok).toBe(true);
+      // The SQL PUBLIC pseudo-role is reflected through effective privileges
+      // of ordinary roles; PostgreSQL does not accept it as a role name here.
+      for (const role of ["anon", "authenticated"]) {
+        expect((await db.query<{ ok: boolean }>(
+          `SELECT has_function_privilege($1,'public.list_team_invitations_v2(uuid)','EXECUTE') AS ok`, [role]
+        )).rows[0].ok).toBe(false);
+      }
     } finally { await db.close(); }
   }, 30_000);
 });
