@@ -144,7 +144,7 @@ describe("Team checkout intent migrations 0049-0050", () => {
     } finally { await db.close(); }
   });
 
-  it("blocks active paid billing but allows expired, canceled, noncurrent, and trial-only rows", async () => {
+  it("blocks current active/trialing billing, including NULL period ends, but allows expired, canceled, and future rows", async () => {
     const db = await database();
     try {
       const reserve = (requestId: string) => db.query<any>(
@@ -161,6 +161,8 @@ describe("Team checkout intent migrations 0049-0050", () => {
       await expect(reserve("10000000-0000-0000-0000-000000000009")).rejects.toThrow(/active paid Team subscription/);
       await db.exec(`UPDATE public.team_billing_subscriptions SET status='trialing' WHERE stripe_subscription_id='sub-active';`);
       await expect(reserve("10000000-0000-0000-0000-000000000010")).rejects.toThrow(/active paid Team subscription/);
+      await db.exec(`UPDATE public.team_billing_subscriptions SET current_period_end=NULL WHERE stripe_subscription_id='sub-active';`);
+      await expect(reserve("10000000-0000-0000-0000-000000000011")).rejects.toThrow(/active paid Team subscription/);
       expect(migration0050).toContain("pg_catalog.pg_advisory_xact_lock");
       expect(migration0050).toContain("state IN ('reserved', 'checkout_created', 'ambiguous')");
       expect(migration0050).not.toMatch(/INSERT\s+INTO\s+public\.(team_memberships|team_paid_roster_members|subscriptions)/i);

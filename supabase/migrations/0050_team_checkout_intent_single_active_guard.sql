@@ -46,8 +46,7 @@ BEGIN
     WHERE b.user_id = p_owner_user_id
       AND b.status IN ('active', 'trialing')
       AND (b.current_period_start IS NULL OR b.current_period_start <= pg_catalog.now())
-      AND b.current_period_end IS NOT NULL
-      AND b.current_period_end > pg_catalog.now()
+      AND (b.current_period_end IS NULL OR b.current_period_end > pg_catalog.now())
   ) THEN
     RAISE EXCEPTION 'active paid Team subscription already exists';
   END IF;
