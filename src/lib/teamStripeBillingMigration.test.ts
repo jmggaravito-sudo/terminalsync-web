@@ -137,6 +137,8 @@ describe("Team Stripe billing RPC event ordering", () => {
     }
   }, 15_000);
 
+  // This case also applies the full production migration in PGlite; give it
+  // the same bounded allowance as the adjacent migration-heavy conflict case.
   it("binds each Stripe customer to one user and rolls back conflicting event IDs", async () => {
     const db = await database();
     try {
@@ -155,5 +157,5 @@ describe("Team Stripe billing RPC event ordering", () => {
     } finally {
       await db.close();
     }
-  });
+  }, 15_000);
 });
