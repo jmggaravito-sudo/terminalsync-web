@@ -4,7 +4,7 @@ export const runtime = "nodejs";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export async function GET(req: Request) {
   try { const u=await verifiedTeamUser(req); if(!u)return NextResponse.json({error:"Unauthorized"},{status:401});
-    return NextResponse.json(await teamMetadataRpc("list_team_space_requests",{p_user_id:u.id}));
+    return NextResponse.json(await teamMetadataRpc("list_team_space_requests_v2",{p_user_id:u.id}));
   } catch(e) { const f=teamMetadataFailure(e,"Could not list requests"); return NextResponse.json({error:f.status===503?"Could not list requests":f.error},{status:f.status}); }
 }
 export async function POST(req: Request) {

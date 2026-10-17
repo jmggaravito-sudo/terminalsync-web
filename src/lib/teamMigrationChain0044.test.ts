@@ -4,9 +4,9 @@ import { describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { citext } from "@electric-sql/pglite/contrib/citext";
 
-const migration = (n: number) => readFileSync(join(process.cwd(), `supabase/migrations/${String(n).padStart(4, "0")}_${({37:"team_comp_entitlements",38:"team_stripe_billing",39:"team_shared_spaces_metadata",40:"team_universal_trial",41:"team_entitlement_and_alias_reconciliation",42:"team_metadata_invites",43:"team_metadata_requests",44:"team_trial_on_signup",45:"team_paid_roster",46:"team_paid_roster_api",47:"team_invitation_owner_alias_projection"} as Record<number,string>)[n]}.sql`), "utf8");
+const migration = (n: number) => readFileSync(join(process.cwd(), `supabase/migrations/${String(n).padStart(4, "0")}_${({37:"team_comp_entitlements",38:"team_stripe_billing",39:"team_shared_spaces_metadata",40:"team_universal_trial",41:"team_entitlement_and_alias_reconciliation",42:"team_metadata_invites",43:"team_metadata_requests",44:"team_trial_on_signup",45:"team_paid_roster",46:"team_paid_roster_api",47:"team_invitation_owner_alias_projection",48:"team_request_participant_projection"} as Record<number,string>)[n]}.sql`), "utf8");
 
-describe("Team migrations 0037-0047 contract", () => {
+describe("Team migrations 0037-0048 contract", () => {
   it("applies the real ordered chain and preserves signup, shared-space, approval, and roster contracts", async () => {
     const db = new PGlite({ extensions: { citext } });
     try {
@@ -169,6 +169,37 @@ describe("Team migrations 0037-0047 contract", () => {
           `SELECT has_function_privilege($1,'public.list_team_invitations_v2(uuid)','EXECUTE') AS ok`, [role]
         )).rows[0].ok).toBe(false);
       }
+      const legacyRequestDefinition = (await db.query<{ definition: string }>(
+        `SELECT pg_get_functiondef('public.list_team_space_requests(uuid)'::regprocedure) AS definition`
+      )).rows[0].definition;
+      await db.exec(migration(48));
+      const requesterProjection = (await db.query<{id:string;space_id:string;space_name:string;role:string;can_respond:boolean;status:string;request_kind:string;metadata:Record<string,unknown>;created_at:string;responded_at:string|null}>(
+        `SELECT * FROM public.list_team_space_requests_v2($1::uuid)`, [employeeId]
+      )).rows;
+      expect(requesterProjection).toHaveLength(1);
+      expect(requesterProjection[0]).toMatchObject({ role: "requester", can_respond: false, status: "accepted" });
+      const ownerProjection = (await db.query<{id:string;space_id:string;space_name:string;role:string;can_respond:boolean;status:string;request_kind:string;metadata:Record<string,unknown>;created_at:string;responded_at:string|null}>(
+        `SELECT * FROM public.list_team_space_requests_v2($1::uuid)`, [newId]
+      )).rows;
+      expect(ownerProjection).toHaveLength(1);
+      expect(ownerProjection[0]).toMatchObject({ role: "owner", can_respond: false, status: "accepted" });
+      expect((await db.query(`SELECT * FROM public.list_team_space_requests_v2($1::uuid)`, [oldId])).rows).toHaveLength(0);
+      const projectedRequests = JSON.stringify([...requesterProjection, ...ownerProjection]);
+      for (const privateValue of [newId, employeeId, "new@example.test", "employee@example.test", "a".repeat(64)]) {
+        expect(projectedRequests).not.toContain(privateValue);
+      }
+      expect(Object.keys(ownerProjection[0]).sort()).toEqual([
+        "can_respond", "created_at", "id", "metadata", "request_kind", "responded_at", "role", "space_id", "space_name", "status",
+      ]);
+      expect((await db.query<{ definition: string }>(
+        `SELECT pg_get_functiondef('public.list_team_space_requests(uuid)'::regprocedure) AS definition`
+      )).rows[0].definition).toBe(legacyRequestDefinition);
+      expect((await db.query<{ ok: boolean }>(
+        `SELECT has_function_privilege('service_role','public.list_team_space_requests_v2(uuid)','EXECUTE') AS ok`
+      )).rows[0].ok).toBe(true);
+      for (const role of ["anon", "authenticated"]) expect((await db.query<{ ok: boolean }>(
+        `SELECT has_function_privilege($1,'public.list_team_space_requests_v2(uuid)','EXECUTE') AS ok`, [role]
+      )).rows[0].ok).toBe(false);
     } finally { await db.close(); }
   }, 30_000);
 });
