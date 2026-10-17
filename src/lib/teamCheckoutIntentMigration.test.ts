@@ -3,7 +3,8 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 
-const migration = readFileSync(join(process.cwd(), "supabase/migrations/0049_team_checkout_intents.sql"), "utf8");
+const migration0049 = readFileSync(join(process.cwd(), "supabase/migrations/0049_team_checkout_intents.sql"), "utf8");
+const migration0050 = readFileSync(join(process.cwd(), "supabase/migrations/0050_team_checkout_intent_single_active_guard.sql"), "utf8");
 const owner = "00000000-0000-0000-0000-000000000001";
 const employee = "00000000-0000-0000-0000-000000000002";
 const request = "10000000-0000-0000-0000-000000000001";
@@ -18,11 +19,12 @@ async function database() {
     CREATE TABLE public.team_trial_entitlements(user_id uuid,starts_at timestamptz,expires_at timestamptz);
     CREATE TABLE public.team_paid_roster_members(owner_user_id uuid,employee_user_id uuid,created_at timestamptz DEFAULT now());
     CREATE TABLE public.subscriptions(user_id uuid,plan text);`);
-  await db.exec(migration);
+  await db.exec(migration0049);
+  await db.exec(migration0050);
   return db;
 }
 
-describe("Team checkout intent migration 0049", () => {
+describe("Team checkout intent migrations 0049-0050", () => {
   it("keeps intents private and every RPC service-role-only", async () => {
     const db = await database();
     try {
@@ -60,6 +62,8 @@ describe("Team checkout intent migration 0049", () => {
       await expect(reserve("price_team123", 9007199254740992)).rejects.toThrow(/invalid Team checkout intent/);
       await expect(reserve("price_team123", 4, "payment")).rejects.toThrow(/invalid Team checkout intent/);
       await expect(reserve("bad-price")).rejects.toThrow(/invalid Team checkout intent/);
+      const differentRequest = "10000000-0000-0000-0000-000000000007";
+      await expect(reserve("price_team123", 4, "subscription", differentRequest)).rejects.toThrow(/already in flight/);
       const bind = (key: string, session: string) => db.query<{bind_team_checkout_session:string}>(`SELECT public.bind_team_checkout_session($1::uuid,$2::text,$3::text)`, [first.id,key,session]);
       expect((await bind(first.idempotency_key,"cs_team_1")).rows[0].bind_team_checkout_session).toBe("checkout_created");
       expect((await bind(first.idempotency_key,"cs_team_1")).rows[0].bind_team_checkout_session).toBe("checkout_created");
@@ -75,7 +79,15 @@ describe("Team checkout intent migration 0049", () => {
       expect((await reconcile(first.idempotency_key,"cs_team_1","sub_1","completed")).rows[0].reconcile_team_checkout_intent).toBe("completed");
       expect((await reconcile(first.idempotency_key,"cs_team_1","sub_1","completed")).rows[0].reconcile_team_checkout_intent).toBe("completed");
       await expect(reconcile(first.idempotency_key,"cs_team_1","sub_2","completed")).rejects.toThrow(/state conflict/);
+      // Exact replay remains available after terminal outcomes.
+      const expiredRequest = "10000000-0000-0000-0000-000000000006";
+      const expired = (await reserve("price_team123", 4, "subscription", expiredRequest)).rows[0];
+      await db.query(`SELECT public.bind_team_checkout_session($1::uuid,$2::text,'cs_expired')`, [expired.id,expired.idempotency_key]);
+      await db.query(`SELECT public.reconcile_team_checkout_intent($1::uuid,$2::uuid,'price_team123',4,'subscription',$3::text,'cs_expired',NULL,'expired')`, [expired.id,owner,expired.idempotency_key]);
+      expect((await reserve("price_team123", 4, "subscription", expiredRequest)).rows[0].id).toBe(expired.id);
 
+      // Remove the terminal fixture so ambiguity can be exercised independently.
+      await db.exec(`DELETE FROM public.team_checkout_intents WHERE id='${expired.id}'`);
       const ambiguousRequest = "10000000-0000-0000-0000-000000000002";
       const ambiguous = (await reserve("price_team123", 4, "subscription", ambiguousRequest)).rows[0];
       const markAmbiguous = () => db.query<{mark_team_checkout_intent_ambiguous:string}>(
@@ -117,7 +129,7 @@ describe("Team checkout intent migration 0049", () => {
       expect(memberEntitlement.seat_limit).toBe(3);
       expect(Date.parse(ownerEntitlement.expires_at)).toBeLessThan(Date.now()+3*24*60*60*1000);
       expect(Date.parse(memberEntitlement.expires_at)).toBe(Date.parse(ownerEntitlement.expires_at));
-      expect(migration).toContain("ORDER BY b.seat_count DESC, b.current_period_end DESC NULLS FIRST, b.stripe_subscription_id ASC");
+      expect(migration0049).toContain("ORDER BY b.seat_count DESC, b.current_period_end DESC NULLS FIRST, b.stripe_subscription_id ASC");
       expect((await db.query(`SELECT state FROM public.team_checkout_intents`)).rows).toEqual([]);
       expect((await db.query(`SELECT * FROM public.team_memberships`)).rows).toEqual([]);
       expect((await db.query(`SELECT * FROM public.team_paid_roster_members`)).rows).toHaveLength(1);
@@ -129,6 +141,29 @@ describe("Team checkout intent migration 0049", () => {
       )).rows[0];
       expect(compensatedTrial).toMatchObject({ eligible: true, seat_limit: 1, source: "admin_comp" });
       expect(Date.parse(compensatedTrial.expires_at)).toBeGreaterThan(Date.now()+5*24*60*60*1000);
+    } finally { await db.close(); }
+  });
+
+  it("blocks active paid billing but allows expired, canceled, noncurrent, and trial-only rows", async () => {
+    const db = await database();
+    try {
+      const reserve = (requestId: string) => db.query<any>(
+        `SELECT * FROM public.reserve_team_checkout_intent($1::uuid,$2::uuid,'price_team123',4,'subscription')`, [owner,requestId]);
+      await db.exec(`INSERT INTO public.team_billing_subscriptions VALUES
+        ('sub-expired','${owner}','active',4,now()-interval '3 days',now()-interval '1 day'),
+        ('sub-canceled','${owner}','canceled',4,now()-interval '1 day',now()+interval '2 days'),
+        ('sub-future','${owner}','active',4,now()+interval '1 day',now()+interval '9 days'),
+        ('sub-trial','${employee}','trialing',4,now()-interval '1 day',now()+interval '2 days');`);
+      await expect(reserve("10000000-0000-0000-0000-000000000008")).resolves.toBeDefined();
+      await db.exec(`DELETE FROM public.team_checkout_intents; DELETE FROM public.team_billing_subscriptions;
+        INSERT INTO public.team_billing_subscriptions VALUES
+        ('sub-active','${owner}','active',4,now()-interval '1 day',now()+interval '2 days');`);
+      await expect(reserve("10000000-0000-0000-0000-000000000009")).rejects.toThrow(/active paid Team subscription/);
+      await db.exec(`UPDATE public.team_billing_subscriptions SET status='trialing' WHERE stripe_subscription_id='sub-active';`);
+      await expect(reserve("10000000-0000-0000-0000-000000000010")).rejects.toThrow(/active paid Team subscription/);
+      expect(migration0050).toContain("pg_catalog.pg_advisory_xact_lock");
+      expect(migration0050).toContain("state IN ('reserved', 'checkout_created', 'ambiguous')");
+      expect(migration0050).not.toMatch(/INSERT\s+INTO\s+public\.(team_memberships|team_paid_roster_members|subscriptions)/i);
     } finally { await db.close(); }
   });
 });
