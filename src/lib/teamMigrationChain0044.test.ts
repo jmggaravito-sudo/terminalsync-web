@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { citext } from "@electric-sql/pglite/contrib/citext";
 
-const migration = (n: number) => readFileSync(join(process.cwd(), `supabase/migrations/${String(n).padStart(4, "0")}_${({37:"team_comp_entitlements",38:"team_stripe_billing",39:"team_shared_spaces_metadata",40:"team_universal_trial",41:"team_entitlement_and_alias_reconciliation",42:"team_metadata_invites",43:"team_metadata_requests",44:"team_trial_on_signup"} as Record<number,string>)[n]}.sql`), "utf8");
+const migration = (n: number) => readFileSync(join(process.cwd(), `supabase/migrations/${String(n).padStart(4, "0")}_${({37:"team_comp_entitlements",38:"team_stripe_billing",39:"team_shared_spaces_metadata",40:"team_universal_trial",41:"team_entitlement_and_alias_reconciliation",42:"team_metadata_invites",43:"team_metadata_requests",44:"team_trial_on_signup",45:"team_paid_roster",46:"team_paid_roster_api"} as Record<number,string>)[n]}.sql`), "utf8");
 
-describe("Team migrations 0037-0044 contract", () => {
-  it("applies the real ordered chain and grants only new users an immutable 168-hour trial", async () => {
+describe("Team migrations 0037-0046 contract", () => {
+  it("applies the real ordered chain and preserves signup, shared-space, approval, and roster contracts", async () => {
     const db = new PGlite({ extensions: { citext } });
     try {
       await db.exec(`
@@ -38,11 +38,85 @@ describe("Team migrations 0037-0044 contract", () => {
       expect(Date.parse(grant.rows[0].expires_at)-Date.parse(grant.rows[0].starts_at)).toBe(168*60*60*1000);
       expect((await db.query(`SELECT plan,status FROM public.subscriptions WHERE user_id=$1::uuid`,[newId])).rows).toEqual([{plan:"free",status:"active"}]);
       const original = grant.rows[0];
-      await db.exec(`CREATE TRIGGER duplicate_signup_test AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.grant_team_trial_on_signup()`);
-      await db.exec(`INSERT INTO auth.users(id,email) VALUES ('00000000-0000-0000-0000-000000000045','later@example.test')`);
+      // Re-fire the real trigger function with the same NEW.id on a minimal
+      // probe table to prove ON CONFLICT leaves the original grant unchanged.
+      await db.exec(`CREATE TABLE public.duplicate_signup_probe(id uuid);
+        CREATE TRIGGER duplicate_signup_test AFTER INSERT ON public.duplicate_signup_probe
+        FOR EACH ROW EXECUTE FUNCTION public.grant_team_trial_on_signup();
+        INSERT INTO public.duplicate_signup_probe(id) VALUES ('${newId}')`);
       expect((await db.query(`SELECT starts_at,expires_at FROM public.team_trial_entitlements WHERE user_id=$1::uuid`,[newId])).rows).toEqual([original]);
       expect((await db.query<{ can_exec: boolean }>(`SELECT has_function_privilege('authenticated','public.grant_team_trial_on_signup()','EXECUTE') AS can_exec`)).rows[0].can_exec).toBe(false);
-      expect((await db.query<{ n: number }>(`SELECT count(*)::int AS n FROM public.team_trial_entitlements`)).rows[0].n).toBe(2);
+      expect((await db.query<{ n: number }>(`SELECT count(*)::int AS n FROM public.team_trial_entitlements`)).rows[0].n).toBe(1);
+
+      // Later Team migrations must compose with this exact earlier schema, not
+      // just pass when applied alone against hand-written table substitutes.
+      for (const n of [45, 46]) await db.exec(migration(n));
+      const employeeId = "00000000-0000-0000-0000-000000000046";
+      await db.exec(`INSERT INTO auth.users(id,email) VALUES ('${employeeId}','employee@example.test')`);
+      await db.exec(`INSERT INTO public.team_billing_subscriptions
+        (stripe_subscription_id,user_id,stripe_customer_id,stripe_price_id,seat_count,status,
+         latest_event_id,latest_event_created_at)
+        VALUES ('sub-contract','${newId}','cus-contract','price-team',2,'active','evt-contract',now())`);
+      expect((await db.query<{ assign_team_paid_employee: string }>(
+        `SELECT public.assign_team_paid_employee($1::uuid,$2::uuid)`, [newId, employeeId]
+      )).rows[0].assign_team_paid_employee).toBe("assigned");
+      expect((await db.query<{ eligible: boolean; source: string }>(
+        `SELECT eligible,source FROM public.get_team_entitlement($1::uuid)`, [employeeId]
+      )).rows[0]).toEqual({ eligible: true, source: "paid" });
+      const snapshot = (await db.query<{ roster: any }>(
+        `SELECT public.list_team_paid_roster($1::uuid) AS roster`, [newId]
+      )).rows[0].roster;
+      expect(snapshot).toMatchObject({ has_active_team: true, seat_limit: 2, assigned_count: 1, occupied_seats: 2, available_slots: 0 });
+      expect(snapshot.roster).toHaveLength(1);
+      expect(snapshot.roster[0]).toMatchObject({ employee_user_id: employeeId, eligible: true });
+      expect((await db.query<{ ok: boolean }>(
+        `SELECT has_function_privilege('authenticated','public.list_team_paid_roster(uuid)','EXECUTE') AS ok`
+      )).rows[0].ok).toBe(false);
+      expect((await db.query<{ ok: boolean }>(
+        `SELECT has_function_privilege('service_role','public.list_team_paid_roster(uuid)','EXECUTE') AS ok`
+      )).rows[0].ok).toBe(true);
+      for (const signature of [
+        "public.assign_team_paid_employee(uuid,uuid)",
+        "public.revoke_team_paid_employee(uuid,uuid)",
+        "public.get_team_entitlement(uuid)",
+      ]) {
+        expect((await db.query<{ ok: boolean }>(
+          `SELECT has_function_privilege('authenticated',$1,'EXECUTE') AS ok`, [signature]
+        )).rows[0].ok).toBe(false);
+      }
+      expect((await db.query<{ ok: boolean }>(
+        `SELECT has_table_privilege('authenticated','public.team_paid_roster_members','SELECT') AS ok`
+      )).rows[0].ok).toBe(false);
+
+      // Exercise the metadata invitation and owner-approval path across the
+      // ordered migrations, ensuring migration application leaves callable
+      // functions and the acceptance relationship expected by requests.
+      await db.query(`SELECT * FROM public.claim_team_alias($1::uuid,'contract-owner')`, [newId]);
+      await db.query(`SELECT * FROM public.claim_team_alias($1::uuid,'contract-employee')`, [employeeId]);
+      const space = (await db.query<{ id: string }>(
+        `SELECT id FROM public.register_team_space($1::uuid,'Contract space',NULL,NULL)`, [newId]
+      )).rows[0]?.id;
+      expect(space).toBeTruthy();
+      expect((await db.query<{ result: string }>(
+        `SELECT result FROM public.invite_team_alias($1::uuid,$2::uuid,'contract-employee')`, [newId, space]
+      )).rows[0].result).toBe("submitted");
+      const invitationId = (await db.query<{ id: string }>(
+        `SELECT id FROM public.team_space_invitations WHERE space_id=$1::uuid`, [space]
+      )).rows[0].id;
+      expect((await db.query<{ result: string }>(
+        `SELECT result FROM public.respond_team_invitation($1::uuid,$2::uuid,true)`, [employeeId, invitationId]
+      )).rows[0].result).toBe("accepted");
+      const request = (await db.query<{ id: string; status: string }>(
+        `SELECT id,status FROM public.create_team_space_request($1::uuid,$2::uuid,'document',$3::text,$4::jsonb)`,
+        [employeeId, space, "a".repeat(64), JSON.stringify({ label: "contract metadata", itemCount: 1 })]
+      )).rows[0];
+      expect(request.status).toBe("pending");
+      expect((await db.query<{ status: string }>(
+        `SELECT status FROM public.respond_team_space_request($1::uuid,$2::uuid,true)`, [newId, request.id]
+      )).rows[0].status).toBe("accepted");
+      expect((await db.query<{ ok: boolean }>(
+        `SELECT has_function_privilege('authenticated','public.respond_team_space_request(uuid,uuid,boolean)','EXECUTE') AS ok`
+      )).rows[0].ok).toBe(false);
     } finally { await db.close(); }
   }, 30_000);
 });
