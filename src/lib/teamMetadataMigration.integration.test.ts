@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 
 const migration=readFileSync(join(process.cwd(),"supabase/migrations/0042_team_metadata_invites.sql"),"utf8");
+const projectionMigration=readFileSync(join(process.cwd(),"supabase/migrations/0047_team_invitation_owner_alias_projection.sql"),"utf8");
 const owner="00000000-0000-0000-0000-000000000001", invitee="00000000-0000-0000-0000-000000000002", noEnt="00000000-0000-0000-0000-000000000003", other="00000000-0000-0000-0000-000000000004";
 
 describe("Team metadata 0042 integration",()=>{
@@ -27,6 +28,7 @@ describe("Team metadata 0042 integration",()=>{
     REVOKE ALL ON public.team_aliases,public.team_shared_spaces,public.team_space_invitations,public.team_space_requests,public.team_space_proposals FROM PUBLIC,anon,authenticated;
    `);
    await db.exec(migration);
+   await db.exec(projectionMigration);
    await db.query(`SELECT * FROM public.claim_team_alias($1,'owner-alias')`,[owner]);
    await db.query(`SELECT * FROM public.claim_team_alias($1,'invitee-alias')`,[invitee]);
    await db.query(`SELECT * FROM public.claim_team_alias($1,'disabled-user')`,[noEnt]).catch(()=>undefined);
@@ -45,6 +47,10 @@ describe("Team metadata 0042 integration",()=>{
    expect(pendingOwner.rows).toHaveLength(0);
    const pendingRecipient=await db.query<{status:string;role:string}>(`SELECT * FROM public.list_team_invitations($1)`,[invitee]);
    expect(pendingRecipient.rows).toHaveLength(1); expect(pendingRecipient.rows[0]).toMatchObject({status:"pending",role:"invitee"});
+   const projection=await db.query<{id:string;space_id:string;space_name:string;owner_alias:string|null;role:string;status:string}>(`SELECT * FROM public.list_team_invitations_v2($1)`,[invitee]);
+   expect(projection.rows).toHaveLength(1); expect(projection.rows[0]).toMatchObject({id:expect.any(String),space_id:sid,space_name:"Private metadata",owner_alias:"owner-alias",role:"invitee",status:"pending"});
+   expect(Object.keys(projection.rows[0])).not.toContain("owner_user_id");
+   const ownerProjection=await db.query(`SELECT * FROM public.list_team_invitations_v2($1)`,[owner]); expect(ownerProjection.rows).toHaveLength(0);
    await db.query(`UPDATE public.test_entitlements SET eligible=false WHERE user_id=$1`,[owner]);
    const failClosed=await db.query<{result:string}>(`SELECT * FROM public.respond_team_invitation($1,(SELECT id FROM public.team_space_invitations WHERE space_id=$2),true)`,[invitee,sid]);
    expect(failClosed.rows[0].result).toBe("unavailable");
