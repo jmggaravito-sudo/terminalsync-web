@@ -7,6 +7,15 @@
 (function () {
   // Diccionario: clave = texto español EXACTO (trim) → inglés.
   const ES_EN = {
+    // Team: announced plan only; no checkout or trial signup.
+    "/ empleado / mes": "/ employee / month",
+    "Un complemento de colaboración para equipos. Pro y Max no cambian.": "A collaboration add-on for teams. Pro and Max stay unchanged.",
+    "Previsto: Max más colaboración entre espacios de usuarios distintos": "Planned: Max plus collaboration across separate user workspaces",
+    "Cada persona conserva su propio espacio de trabajo": "Each person keeps their own workspace",
+    "Compartir respuestas o documentos requiere aprobación antes de enviarlos": "Sharing answers or documents requires approval before sending",
+    "Previsto: prueba Team de 7 días con todas las funciones, sin tarjeta": "Planned: 7-day Team trial with all Team features, no card required",
+    "Team será solo con Stripe; el pago y registro a prueba aún no están disponibles": "Stripe-only for Team; paid checkout and trial signup are not available yet",
+    "Próximamente · aún sin pago ni registro": "Coming soon · no checkout or signup yet",
     // ── landing-formato-b ──
     "Cada espacio sabe de lo suyo.": "Each workspace knows its own.",
     "La IA trabaja en varias tareas a la vez.": "The AI works on several tasks at once.",
