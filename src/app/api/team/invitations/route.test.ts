@@ -1,0 +1,14 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+const { getSupabaseAdmin, teamMetadataRpc }=vi.hoisted(()=>({getSupabaseAdmin:vi.fn(),teamMetadataRpc:vi.fn()}));
+vi.mock("@/lib/supabaseAdmin",()=>({getSupabaseAdmin}));
+vi.mock("@/lib/teamMetadata",async(importOriginal)=>({...await importOriginal<typeof import("@/lib/teamMetadata")>(),teamMetadataRpc}));
+import { GET, POST } from "./route";
+import { TeamMetadataError } from "@/lib/teamMetadata";
+describe("Team invitations API",()=>{
+ beforeEach(()=>{vi.clearAllMocks();getSupabaseAdmin.mockReturnValue({auth:{getUser:vi.fn(async(t:string)=>t==="good"?{data:{user:{id:"verified"}},error:null}:{data:{user:null},error:Object.assign(new Error(),{status:401})})}});teamMetadataRpc.mockResolvedValue([{result:"submitted"}]);});
+ it("rejects absent or invalid authentication before calling the RPC",async()=>{expect((await GET(new Request("https://x.test"))).status).toBe(401);expect((await GET(new Request("https://x.test",{headers:{authorization:"Bearer bad"}}))).status).toBe(401);expect(teamMetadataRpc).not.toHaveBeenCalled();});
+ it("reports admin configuration failure as 503 rather than success or unauthorized",async()=>{getSupabaseAdmin.mockReturnValueOnce(null);const response=await GET(new Request("https://x.test",{headers:{authorization:"Bearer good"}}));expect(response.status).toBe(503);expect(teamMetadataRpc).not.toHaveBeenCalled();});
+ it("distinguishes malformed body from backend failure without exposing backend details",async()=>{const bad=await POST(new Request("https://x.test",{method:"POST",headers:{authorization:"Bearer good","content-type":"application/json"},body:"{"}));expect(bad.status).toBe(400);teamMetadataRpc.mockRejectedValueOnce(new TeamMetadataError("secret raw database detail"));const failed=await POST(new Request("https://x.test",{method:"POST",headers:{authorization:"Bearer good","content-type":"application/json"},body:JSON.stringify({spaceId:"space",alias:"x"})}));expect(failed.status).toBe(503);expect(await failed.text()).not.toContain("secret raw");});
+ it("uses verified identity and does not pass body-supplied user identifiers",async()=>{const response=await POST(new Request("https://x.test",{method:"POST",headers:{authorization:"Bearer good","content-type":"application/json"},body:JSON.stringify({userId:"attacker",ownerId:"attacker",spaceId:"space",alias:"hidden"})}));expect(response.status).toBe(200);expect(teamMetadataRpc).toHaveBeenCalledWith("invite_team_alias",{p_user_id:"verified",p_space_id:"space",p_alias:"hidden"});});
+ it("returns the generic, identity-free invitation result",async()=>{const response=await POST(new Request("https://x.test",{method:"POST",headers:{authorization:"Bearer good","content-type":"application/json"},body:JSON.stringify({spaceId:"space",alias:"does-not-exist"})}));const body=await response.text();expect(body).toContain("submitted");expect(body).not.toContain("does-not-exist");});
+});

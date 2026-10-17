@@ -1,0 +1,4 @@
+import { NextResponse } from "next/server";
+import { teamMetadataFailure, teamMetadataRpc, verifiedTeamUser } from "@/lib/teamMetadata";
+export const runtime = "nodejs";
+export async function POST(req: Request) { try { const u=await verifiedTeamUser(req); if(!u)return NextResponse.json({error:"Unauthorized"},{status:401}); const b=await req.json(); if(!b||typeof b.invitationId!=="string"||typeof b.accept!=="boolean")return NextResponse.json({error:"Invalid response metadata"},{status:400}); return NextResponse.json(await teamMetadataRpc("respond_team_invitation",{p_user_id:u.id,p_invitation_id:b.invitationId,p_accept:b.accept})); } catch(e) { const f=teamMetadataFailure(e,"Could not respond to invitation"); return NextResponse.json({error:f.status===503?"Could not respond to invitation":f.error},{status:f.status}); } }
