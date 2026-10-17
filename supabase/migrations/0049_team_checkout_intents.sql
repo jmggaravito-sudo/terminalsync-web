@@ -117,7 +117,8 @@ BEGIN
 END; $$;
 
 -- Reconciliation receives owner and immutable checkout terms from a trusted
--- server-side verifier, then advances only a matching previously bound intent.
+-- server-side verifier. For an ambiguous intent with no known session ID, it
+-- atomically binds the verified session while applying the terminal outcome.
 -- It never creates subscriptions, entitlements, roster rows, or Stripe resources.
 CREATE OR REPLACE FUNCTION public.reconcile_team_checkout_intent(
   p_intent_id uuid, p_owner_user_id uuid, p_stripe_price_id text, p_seats bigint,
@@ -144,7 +145,7 @@ BEGIN
     OR intent.stripe_price_id IS DISTINCT FROM p_stripe_price_id
     OR intent.seats IS DISTINCT FROM p_seats
     OR intent.mode IS DISTINCT FROM p_mode
-    OR intent.stripe_session_id IS DISTINCT FROM p_stripe_session_id THEN
+    OR (intent.stripe_session_id IS NOT NULL AND intent.stripe_session_id IS DISTINCT FROM p_stripe_session_id) THEN
     RAISE EXCEPTION 'Team checkout reconciliation does not match intent';
   END IF;
   IF intent.state = p_outcome AND intent.stripe_subscription_id IS NOT DISTINCT FROM p_stripe_subscription_id THEN
@@ -152,6 +153,7 @@ BEGIN
   END IF;
   IF intent.state NOT IN ('checkout_created', 'ambiguous') THEN RAISE EXCEPTION 'Team checkout intent state conflict'; END IF;
   UPDATE public.team_checkout_intents SET state = p_outcome,
+    stripe_session_id = p_stripe_session_id,
     stripe_subscription_id = p_stripe_subscription_id, updated_at = pg_catalog.now() WHERE id = p_intent_id;
   RETURN p_outcome;
 END; $$;

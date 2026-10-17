@@ -65,8 +65,8 @@ describe("Team checkout intent migration 0049", () => {
       expect((await bind(first.idempotency_key,"cs_team_1")).rows[0].bind_team_checkout_session).toBe("checkout_created");
       await expect(bind("wrong-key","cs_team_1")).rejects.toThrow(/key mismatch/);
       await expect(bind(first.idempotency_key,"cs_team_2")).rejects.toThrow(/state conflict/);
-      const reconcile = (key: string, session: string, sub: string | null, outcome: string, ownerId = owner, price = "price_team123", seats = 4, mode = "subscription") => db.query<{reconcile_team_checkout_intent:string}>(
-        `SELECT public.reconcile_team_checkout_intent($1::uuid,$2::uuid,$3::text,$4::bigint,$5::text,$6::text,$7::text,$8::text,$9::text)`, [first.id,ownerId,price,seats,mode,key,session,sub,outcome]);
+      const reconcile = (key: string, session: string, sub: string | null, outcome: string, ownerId = owner, price = "price_team123", seats = 4, mode = "subscription", intentId = first.id) => db.query<{reconcile_team_checkout_intent:string}>(
+        `SELECT public.reconcile_team_checkout_intent($1::uuid,$2::uuid,$3::text,$4::bigint,$5::text,$6::text,$7::text,$8::text,$9::text)`, [intentId,ownerId,price,seats,mode,key,session,sub,outcome]);
       await expect(reconcile(first.idempotency_key,"cs_wrong","sub_1","completed")).rejects.toThrow(/does not match/);
       await expect(reconcile(first.idempotency_key,"cs_team_1","sub_1","completed","00000000-0000-0000-0000-000000000002")).rejects.toThrow(/does not match/);
       await expect(reconcile(first.idempotency_key,"cs_team_1","sub_1","completed",owner,"price_wrong")).rejects.toThrow(/does not match/);
@@ -84,9 +84,13 @@ describe("Team checkout intent migration 0049", () => {
       expect((await markAmbiguous()).rows[0].mark_team_checkout_intent_ambiguous).toBe("ambiguous");
       await expect(reserve("price_team123", 4, "subscription", ambiguousRequest)).rejects.toThrow(/ambiguous; reconciliation required/);
       await expect(db.query(`SELECT public.bind_team_checkout_session($1::uuid,$2::text,'cs_retry')`, [ambiguous.id,ambiguous.idempotency_key])).rejects.toThrow(/state conflict/);
+      await expect(reconcile(ambiguous.idempotency_key,"cs_verified","sub_ambiguous","completed","00000000-0000-0000-0000-000000000002","price_team123",4,"subscription",ambiguous.id)).rejects.toThrow(/does not match/);
+      expect((await reconcile(ambiguous.idempotency_key,"cs_verified","sub_ambiguous","completed",owner,"price_team123",4,"subscription",ambiguous.id)).rows[0].reconcile_team_checkout_intent).toBe("completed");
+      expect((await reconcile(ambiguous.idempotency_key,"cs_verified","sub_ambiguous","completed",owner,"price_team123",4,"subscription",ambiguous.id)).rows[0].reconcile_team_checkout_intent).toBe("completed");
+      await expect(reconcile(ambiguous.idempotency_key,"cs_different","sub_ambiguous","completed",owner,"price_team123",4,"subscription",ambiguous.id)).rejects.toThrow(/does not match/);
       const ambiguousRow = (await db.query<{state:string;stripe_session_id:string|null;stripe_subscription_id:string|null}>(
         `SELECT state,stripe_session_id,stripe_subscription_id FROM public.team_checkout_intents WHERE id=$1::uuid`,[ambiguous.id])).rows[0];
-      expect(ambiguousRow).toEqual({ state: "ambiguous", stripe_session_id: null, stripe_subscription_id: null });
+      expect(ambiguousRow).toEqual({ state: "completed", stripe_session_id: "cs_verified", stripe_subscription_id: "sub_ambiguous" });
       await expect(db.exec(`INSERT INTO public.team_checkout_intents(owner_user_id,request_id,stripe_price_id,seats,mode,state,idempotency_key)
         VALUES ('${owner}','10000000-0000-0000-0000-000000000003','price_team123',4,'subscription','completed','invalid-lifecycle')`)).rejects.toThrow();
       await expect(db.exec(`INSERT INTO public.team_checkout_intents(owner_user_id,request_id,stripe_price_id,seats,mode,idempotency_key)
