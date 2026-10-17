@@ -29,12 +29,14 @@ describe("Team checkout intent migration 0049", () => {
       expect((await db.query<{rowsecurity:boolean}>(`SELECT rowsecurity FROM pg_tables WHERE schemaname='public' AND tablename='team_checkout_intents'`)).rows[0].rowsecurity).toBe(true);
       for (const role of ["anon", "authenticated"]) {
         expect((await db.query<{ok:boolean}>(`SELECT has_table_privilege($1,'public.team_checkout_intents','SELECT') AS ok`, [role])).rows[0].ok).toBe(false);
-        for (const sig of ["public.reserve_team_checkout_intent(uuid,uuid,text,bigint,text)", "public.bind_team_checkout_session(uuid,text,text)", "public.reconcile_team_checkout_intent(uuid,text,text,text,text)"]) {
+        for (const sig of ["public.reserve_team_checkout_intent(uuid,uuid,text,bigint,text)", "public.mark_team_checkout_intent_ambiguous(uuid,text)", "public.bind_team_checkout_session(uuid,text,text)", "public.reconcile_team_checkout_intent(uuid,uuid,text,bigint,text,text,text,text,text)"]) {
           expect((await db.query<{ok:boolean}>(`SELECT has_function_privilege($1,$2,'EXECUTE') AS ok`, [role,sig])).rows[0].ok).toBe(false);
         }
       }
       expect((await db.query<{ok:boolean}>(`SELECT has_table_privilege('service_role','public.team_checkout_intents','SELECT') AS ok`)).rows[0].ok).toBe(true);
-      expect((await db.query<{ok:boolean}>(`SELECT has_function_privilege('service_role','public.reserve_team_checkout_intent(uuid,uuid,text,bigint,text)','EXECUTE') AS ok`)).rows[0].ok).toBe(true);
+      for (const sig of ["public.reserve_team_checkout_intent(uuid,uuid,text,bigint,text)", "public.mark_team_checkout_intent_ambiguous(uuid,text)", "public.bind_team_checkout_session(uuid,text,text)", "public.reconcile_team_checkout_intent(uuid,uuid,text,bigint,text,text,text,text,text)"]) {
+        expect((await db.query<{ok:boolean}>(`SELECT has_function_privilege('service_role',$1,'EXECUTE') AS ok`, [sig])).rows[0].ok).toBe(true);
+      }
       await db.exec("SET ROLE authenticated");
       await expect(db.query(`SELECT * FROM public.reserve_team_checkout_intent($1::uuid,$2::uuid,'price_team123',4,'subscription')`, [owner,request])).rejects.toThrow(/permission denied/);
       await db.exec("RESET ROLE");
@@ -46,8 +48,8 @@ describe("Team checkout intent migration 0049", () => {
   it("reserves/replays immutable terms, rejects invalid or mismatched terms, and only binds one consistent lifecycle", async () => {
     const db = await database();
     try {
-      const reserve = (price = "price_team123", seats = 4, mode = "subscription") => db.query<any>(
-        `SELECT * FROM public.reserve_team_checkout_intent($1::uuid,$2::uuid,$3::text,$4::bigint,$5::text)`, [owner,request,price,seats,mode]);
+      const reserve = (price = "price_team123", seats = 4, mode = "subscription", requestId = request) => db.query<any>(
+        `SELECT * FROM public.reserve_team_checkout_intent($1::uuid,$2::uuid,$3::text,$4::bigint,$5::text)`, [owner,requestId,price,seats,mode]);
       const first = (await reserve()).rows[0];
       const replay = (await reserve()).rows[0];
       expect(replay.id).toBe(first.id);
@@ -55,18 +57,42 @@ describe("Team checkout intent migration 0049", () => {
       expect(replay).toMatchObject({ owner_user_id: owner, request_id: request, stripe_price_id: "price_team123", seats: 4, mode: "subscription", state: "reserved" });
       await expect(reserve("price_other")).rejects.toThrow(/terms conflict/);
       await expect(reserve("price_other", 0)).rejects.toThrow(/invalid Team checkout intent/);
+      await expect(reserve("price_team123", 9007199254740992)).rejects.toThrow(/invalid Team checkout intent/);
+      await expect(reserve("price_team123", 4, "payment")).rejects.toThrow(/invalid Team checkout intent/);
       await expect(reserve("bad-price")).rejects.toThrow(/invalid Team checkout intent/);
       const bind = (key: string, session: string) => db.query<{bind_team_checkout_session:string}>(`SELECT public.bind_team_checkout_session($1::uuid,$2::text,$3::text)`, [first.id,key,session]);
       expect((await bind(first.idempotency_key,"cs_team_1")).rows[0].bind_team_checkout_session).toBe("checkout_created");
       expect((await bind(first.idempotency_key,"cs_team_1")).rows[0].bind_team_checkout_session).toBe("checkout_created");
       await expect(bind("wrong-key","cs_team_1")).rejects.toThrow(/key mismatch/);
       await expect(bind(first.idempotency_key,"cs_team_2")).rejects.toThrow(/state conflict/);
-      const reconcile = (key: string, session: string, sub: string | null, outcome: string) => db.query<{reconcile_team_checkout_intent:string}>(
-        `SELECT public.reconcile_team_checkout_intent($1::uuid,$2::text,$3::text,$4::text,$5::text)`, [first.id,key,session,sub,outcome]);
+      const reconcile = (key: string, session: string, sub: string | null, outcome: string, ownerId = owner, price = "price_team123", seats = 4, mode = "subscription") => db.query<{reconcile_team_checkout_intent:string}>(
+        `SELECT public.reconcile_team_checkout_intent($1::uuid,$2::uuid,$3::text,$4::bigint,$5::text,$6::text,$7::text,$8::text,$9::text)`, [first.id,ownerId,price,seats,mode,key,session,sub,outcome]);
       await expect(reconcile(first.idempotency_key,"cs_wrong","sub_1","completed")).rejects.toThrow(/does not match/);
+      await expect(reconcile(first.idempotency_key,"cs_team_1","sub_1","completed","00000000-0000-0000-0000-000000000002")).rejects.toThrow(/does not match/);
+      await expect(reconcile(first.idempotency_key,"cs_team_1","sub_1","completed",owner,"price_wrong")).rejects.toThrow(/does not match/);
+      await expect(reconcile(first.idempotency_key,"cs_team_1","sub_1","completed",owner,"price_team123",3)).rejects.toThrow(/does not match/);
+      await expect(reconcile(first.idempotency_key,"cs_team_1","sub_1","completed",owner,"price_team123",4,"payment")).rejects.toThrow(/invalid Team checkout reconciliation/);
       expect((await reconcile(first.idempotency_key,"cs_team_1","sub_1","completed")).rows[0].reconcile_team_checkout_intent).toBe("completed");
       expect((await reconcile(first.idempotency_key,"cs_team_1","sub_1","completed")).rows[0].reconcile_team_checkout_intent).toBe("completed");
       await expect(reconcile(first.idempotency_key,"cs_team_1","sub_2","completed")).rejects.toThrow(/state conflict/);
+
+      const ambiguousRequest = "10000000-0000-0000-0000-000000000002";
+      const ambiguous = (await reserve("price_team123", 4, "subscription", ambiguousRequest)).rows[0];
+      const markAmbiguous = () => db.query<{mark_team_checkout_intent_ambiguous:string}>(
+        `SELECT public.mark_team_checkout_intent_ambiguous($1::uuid,$2::text)`, [ambiguous.id,ambiguous.idempotency_key]);
+      expect((await markAmbiguous()).rows[0].mark_team_checkout_intent_ambiguous).toBe("ambiguous");
+      expect((await markAmbiguous()).rows[0].mark_team_checkout_intent_ambiguous).toBe("ambiguous");
+      await expect(reserve("price_team123", 4, "subscription", ambiguousRequest)).rejects.toThrow(/ambiguous; reconciliation required/);
+      await expect(db.query(`SELECT public.bind_team_checkout_session($1::uuid,$2::text,'cs_retry')`, [ambiguous.id,ambiguous.idempotency_key])).rejects.toThrow(/state conflict/);
+      const ambiguousRow = (await db.query<{state:string;stripe_session_id:string|null;stripe_subscription_id:string|null}>(
+        `SELECT state,stripe_session_id,stripe_subscription_id FROM public.team_checkout_intents WHERE id=$1::uuid`,[ambiguous.id])).rows[0];
+      expect(ambiguousRow).toEqual({ state: "ambiguous", stripe_session_id: null, stripe_subscription_id: null });
+      await expect(db.exec(`INSERT INTO public.team_checkout_intents(owner_user_id,request_id,stripe_price_id,seats,mode,state,idempotency_key)
+        VALUES ('${owner}','10000000-0000-0000-0000-000000000003','price_team123',4,'subscription','completed','invalid-lifecycle')`)).rejects.toThrow();
+      await expect(db.exec(`INSERT INTO public.team_checkout_intents(owner_user_id,request_id,stripe_price_id,seats,mode,idempotency_key)
+        VALUES ('${owner}','10000000-0000-0000-0000-000000000004','price_team123',9007199254740992,'subscription','invalid-seat-range')`)).rejects.toThrow();
+      await expect(db.exec(`INSERT INTO public.team_checkout_intents(owner_user_id,request_id,stripe_price_id,seats,mode,idempotency_key)
+        VALUES ('${owner}','10000000-0000-0000-0000-000000000005','price_team123',4,'payment','invalid-mode')`)).rejects.toThrow();
       expect((await db.query(`SELECT * FROM public.team_memberships`)).rows).toEqual([]);
       expect((await db.query(`SELECT * FROM public.team_paid_roster_members`)).rows).toEqual([]);
       expect((await db.query(`SELECT * FROM public.team_billing_subscriptions`)).rows).toEqual([]);

@@ -6,18 +6,23 @@ CREATE TABLE public.team_checkout_intents (
   owner_user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   request_id uuid NOT NULL,
   stripe_price_id text NOT NULL CHECK (stripe_price_id ~ '^price_[A-Za-z0-9]+$'),
-  seats bigint NOT NULL CHECK (seats > 0),
-  mode text NOT NULL CHECK (mode IN ('subscription', 'payment')),
+  seats bigint NOT NULL CHECK (seats > 0 AND seats <= 9007199254740991),
+  mode text NOT NULL CHECK (mode = 'subscription'),
   state text NOT NULL DEFAULT 'reserved'
-    CHECK (state IN ('reserved', 'checkout_created', 'completed', 'expired', 'canceled')),
+    CHECK (state IN ('reserved', 'checkout_created', 'ambiguous', 'completed', 'expired', 'canceled')),
   idempotency_key text NOT NULL UNIQUE,
   stripe_session_id text UNIQUE,
   stripe_subscription_id text UNIQUE,
   created_at timestamptz NOT NULL DEFAULT pg_catalog.now(),
   updated_at timestamptz NOT NULL DEFAULT pg_catalog.now(),
   UNIQUE (owner_user_id, request_id),
-  CHECK ((state IN ('completed') AND stripe_subscription_id IS NOT NULL)
-      OR (state <> 'completed' AND stripe_subscription_id IS NULL))
+  CHECK (
+    (state = 'reserved' AND stripe_session_id IS NULL AND stripe_subscription_id IS NULL)
+    OR (state = 'checkout_created' AND stripe_session_id IS NOT NULL AND stripe_subscription_id IS NULL)
+    OR (state = 'ambiguous' AND stripe_subscription_id IS NULL)
+    OR (state = 'completed' AND stripe_session_id IS NOT NULL AND stripe_subscription_id IS NOT NULL)
+    OR (state IN ('expired', 'canceled') AND stripe_session_id IS NOT NULL AND stripe_subscription_id IS NULL)
+  )
 );
 ALTER TABLE public.team_checkout_intents ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.team_checkout_intents FROM PUBLIC, anon, authenticated;
@@ -36,8 +41,8 @@ DECLARE result public.team_checkout_intents%rowtype;
 BEGIN
   IF p_owner_user_id IS NULL OR p_request_id IS NULL
     OR p_stripe_price_id IS NULL OR p_stripe_price_id !~ '^price_[A-Za-z0-9]+$'
-    OR p_seats IS NULL OR p_seats <= 0
-    OR p_mode IS NULL OR p_mode NOT IN ('subscription', 'payment') THEN
+    OR p_seats IS NULL OR p_seats <= 0 OR p_seats > 9007199254740991
+    OR p_mode IS DISTINCT FROM 'subscription' THEN
     RAISE EXCEPTION 'invalid Team checkout intent';
   END IF;
   PERFORM pg_catalog.pg_advisory_xact_lock(
@@ -49,6 +54,9 @@ BEGIN
       OR result.seats IS DISTINCT FROM p_seats OR result.mode IS DISTINCT FROM p_mode THEN
       RAISE EXCEPTION 'Team checkout intent terms conflict';
     END IF;
+    IF result.state = 'ambiguous' THEN
+      RAISE EXCEPTION 'Team checkout intent is ambiguous; reconciliation required';
+    END IF;
     RETURN result;
   END IF;
   INSERT INTO public.team_checkout_intents
@@ -57,6 +65,30 @@ BEGIN
       'team-checkout:' || pg_catalog.gen_random_uuid()::text)
     RETURNING * INTO result;
   RETURN result;
+END; $$;
+
+-- A caller that cannot prove whether the provider created a session must
+-- durably quarantine the intent. Replaying reserve will then fail closed.
+CREATE OR REPLACE FUNCTION public.mark_team_checkout_intent_ambiguous(
+  p_intent_id uuid, p_idempotency_key text
+) RETURNS text
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+DECLARE intent public.team_checkout_intents%rowtype;
+BEGIN
+  IF p_intent_id IS NULL OR nullif(pg_catalog.btrim(p_idempotency_key), '') IS NULL THEN
+    RAISE EXCEPTION 'invalid Team checkout intent ambiguity marker';
+  END IF;
+  SELECT * INTO intent FROM public.team_checkout_intents WHERE id = p_intent_id FOR UPDATE;
+  IF NOT FOUND OR intent.idempotency_key IS DISTINCT FROM p_idempotency_key THEN
+    RAISE EXCEPTION 'Team checkout intent key mismatch';
+  END IF;
+  IF intent.state = 'ambiguous' THEN RETURN 'ambiguous'; END IF;
+  IF intent.state NOT IN ('reserved', 'checkout_created') THEN
+    RAISE EXCEPTION 'Team checkout intent state conflict';
+  END IF;
+  UPDATE public.team_checkout_intents SET state = 'ambiguous', updated_at = pg_catalog.now()
+    WHERE id = p_intent_id;
+  RETURN 'ambiguous';
 END; $$;
 
 -- Bind exactly one provider session to the reserved intent. Repeating the
@@ -84,16 +116,22 @@ BEGIN
   RETURN 'checkout_created';
 END; $$;
 
--- Reconciliation only advances a previously bound intent. This RPC never
--- creates subscriptions, entitlements, roster rows, or Stripe resources.
+-- Reconciliation receives owner and immutable checkout terms from a trusted
+-- server-side verifier, then advances only a matching previously bound intent.
+-- It never creates subscriptions, entitlements, roster rows, or Stripe resources.
 CREATE OR REPLACE FUNCTION public.reconcile_team_checkout_intent(
-  p_intent_id uuid, p_idempotency_key text, p_stripe_session_id text,
+  p_intent_id uuid, p_owner_user_id uuid, p_stripe_price_id text, p_seats bigint,
+  p_mode text, p_idempotency_key text, p_stripe_session_id text,
   p_stripe_subscription_id text, p_outcome text
 ) RETURNS text
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 DECLARE intent public.team_checkout_intents%rowtype;
 BEGIN
-  IF p_intent_id IS NULL OR nullif(pg_catalog.btrim(p_idempotency_key), '') IS NULL
+  IF p_intent_id IS NULL OR p_owner_user_id IS NULL
+    OR p_stripe_price_id IS NULL OR p_stripe_price_id !~ '^price_[A-Za-z0-9]+$'
+    OR p_seats IS NULL OR p_seats <= 0 OR p_seats > 9007199254740991
+    OR p_mode IS DISTINCT FROM 'subscription'
+    OR nullif(pg_catalog.btrim(p_idempotency_key), '') IS NULL
     OR nullif(pg_catalog.btrim(p_stripe_session_id), '') IS NULL
     OR p_outcome IS NULL OR p_outcome NOT IN ('completed', 'expired', 'canceled')
     OR (p_outcome = 'completed' AND nullif(pg_catalog.btrim(p_stripe_subscription_id), '') IS NULL)
@@ -102,24 +140,30 @@ BEGIN
   END IF;
   SELECT * INTO intent FROM public.team_checkout_intents WHERE id = p_intent_id FOR UPDATE;
   IF NOT FOUND OR intent.idempotency_key IS DISTINCT FROM p_idempotency_key
+    OR intent.owner_user_id IS DISTINCT FROM p_owner_user_id
+    OR intent.stripe_price_id IS DISTINCT FROM p_stripe_price_id
+    OR intent.seats IS DISTINCT FROM p_seats
+    OR intent.mode IS DISTINCT FROM p_mode
     OR intent.stripe_session_id IS DISTINCT FROM p_stripe_session_id THEN
     RAISE EXCEPTION 'Team checkout reconciliation does not match intent';
   END IF;
   IF intent.state = p_outcome AND intent.stripe_subscription_id IS NOT DISTINCT FROM p_stripe_subscription_id THEN
     RETURN intent.state;
   END IF;
-  IF intent.state <> 'checkout_created' THEN RAISE EXCEPTION 'Team checkout intent state conflict'; END IF;
+  IF intent.state NOT IN ('checkout_created', 'ambiguous') THEN RAISE EXCEPTION 'Team checkout intent state conflict'; END IF;
   UPDATE public.team_checkout_intents SET state = p_outcome,
     stripe_subscription_id = p_stripe_subscription_id, updated_at = pg_catalog.now() WHERE id = p_intent_id;
   RETURN p_outcome;
 END; $$;
 
 REVOKE ALL ON FUNCTION public.reserve_team_checkout_intent(uuid,uuid,text,bigint,text),
+  public.mark_team_checkout_intent_ambiguous(uuid,text),
   public.bind_team_checkout_session(uuid,text,text),
-  public.reconcile_team_checkout_intent(uuid,text,text,text,text) FROM PUBLIC, anon, authenticated;
+  public.reconcile_team_checkout_intent(uuid,uuid,text,bigint,text,text,text,text,text) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.reserve_team_checkout_intent(uuid,uuid,text,bigint,text),
+  public.mark_team_checkout_intent_ambiguous(uuid,text),
   public.bind_team_checkout_session(uuid,text,text),
-  public.reconcile_team_checkout_intent(uuid,text,text,text,text) TO service_role;
+  public.reconcile_team_checkout_intent(uuid,uuid,text,bigint,text,text,text,text,text) TO service_role;
 
 -- A single canonical paid subscription governs both owner and roster-member
 -- paid capacity. Trial and compensation precedence/expiry behavior is unchanged.
