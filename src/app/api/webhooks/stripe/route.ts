@@ -23,6 +23,13 @@ import {
   CREDIT_FUNDING_PURPOSE_METADATA,
   VIDEO_EXCLUSIVE_PURPOSE,
 } from "@/lib/videoExclusiveFunding";
+import {
+  InvalidTeamStripeEventError,
+  isTeamCheckoutCandidate,
+  isTeamSubscriptionCandidate,
+  parseTeamStripeSubscription,
+  syncTeamStripeSubscription,
+} from "@/lib/teamStripeLifecycle";
 
 /** Friendly plan + cycle label from Stripe metadata. Falls back to a
  *  generic name if metadata wasn't propagated (older subs). */
@@ -122,6 +129,45 @@ export async function POST(req: Request) {
     }
     if (!event.livemode) {
       return NextResponse.json({ received: true, ignored: "test_credit_event" });
+    }
+  }
+
+  // Team fulfillment is intentionally isolated from the legacy subscription
+  // mapper: Team is an additive entitlement and must never write
+  // subscriptions.plan or run the Pro/Max revocation path. Checkout itself
+  // stays disabled until the no-card trial and membership lifecycle ship.
+  if (isTeamCheckoutCandidate(event)) {
+    return NextResponse.json(
+      { received: false, error: "Team checkout fulfillment is not enabled" },
+      { status: 503 },
+    );
+  }
+  if (isTeamSubscriptionCandidate(event)) {
+    if (!event.livemode) {
+      return NextResponse.json({ received: true, ignored: "test_team_event" });
+    }
+    if (!signatureVerifiedWithLiveSecret) {
+      return NextResponse.json(
+        { received: false, error: "Team entitlement requires a live webhook signature" },
+        { status: 400 },
+      );
+    }
+    try {
+      const command = parseTeamStripeSubscription(event);
+      await syncTeamStripeSubscription(command);
+      return NextResponse.json({ received: true });
+    } catch (err) {
+      if (err instanceof InvalidTeamStripeEventError) {
+        return NextResponse.json({ received: false, error: err.message }, { status: 400 });
+      }
+      console.error("[stripe] Team subscription sync failed", {
+        eventId: event.id,
+        error: err instanceof Error ? err.message : "unknown error",
+      });
+      return NextResponse.json(
+        { received: false, error: "Team entitlement sync failed; retry required" },
+        { status: 500 },
+      );
     }
   }
 
