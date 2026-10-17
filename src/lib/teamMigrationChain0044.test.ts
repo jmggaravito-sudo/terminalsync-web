@@ -4,9 +4,9 @@ import { describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { citext } from "@electric-sql/pglite/contrib/citext";
 
-const migration = (n: number) => readFileSync(join(process.cwd(), `supabase/migrations/${String(n).padStart(4, "0")}_${({37:"team_comp_entitlements",38:"team_stripe_billing",39:"team_shared_spaces_metadata",40:"team_universal_trial",41:"team_entitlement_and_alias_reconciliation",42:"team_metadata_invites",43:"team_metadata_requests",44:"team_trial_on_signup",45:"team_paid_roster",46:"team_paid_roster_api",47:"team_invitation_owner_alias_projection",48:"team_request_participant_projection"} as Record<number,string>)[n]}.sql`), "utf8");
+const migration = (n: number) => readFileSync(join(process.cwd(), `supabase/migrations/${String(n).padStart(4, "0")}_${({37:"team_comp_entitlements",38:"team_stripe_billing",39:"team_shared_spaces_metadata",40:"team_universal_trial",41:"team_entitlement_and_alias_reconciliation",42:"team_metadata_invites",43:"team_metadata_requests",44:"team_trial_on_signup",45:"team_paid_roster",46:"team_paid_roster_api",47:"team_invitation_owner_alias_projection",48:"team_request_participant_projection",49:"team_checkout_intents"} as Record<number,string>)[n]}.sql`), "utf8");
 
-describe("Team migrations 0037-0048 contract", () => {
+describe("Team migrations 0037-0049 contract", () => {
   it("applies the real ordered chain and preserves signup, shared-space, approval, and roster contracts", async () => {
     const db = new PGlite({ extensions: { citext } });
     try {
@@ -200,6 +200,27 @@ describe("Team migrations 0037-0048 contract", () => {
       for (const role of ["anon", "authenticated"]) expect((await db.query<{ ok: boolean }>(
         `SELECT has_function_privilege($1,'public.list_team_space_requests_v2(uuid)','EXECUTE') AS ok`, [role]
       )).rows[0].ok).toBe(false);
+
+      // The latest ordered migration extends the chain with private checkout
+      // preparation and leaves existing entitlement/roster state untouched.
+      await db.exec(`INSERT INTO public.team_billing_subscriptions
+        (stripe_subscription_id,user_id,stripe_customer_id,stripe_price_id,seat_count,status,
+         current_period_start,current_period_end,latest_event_id,latest_event_created_at)
+        VALUES ('sub-smaller-later','${newId}','cus-contract','price-team',1,'active',now()-interval '1 day',now()+interval '9 days','evt-later',now())`);
+      await db.exec(migration(49));
+      const canonicalOwner = (await db.query<{seat_limit:number;expires_at:string|null}>(
+        `SELECT seat_limit,expires_at FROM public.get_team_entitlement($1::uuid)`, [newId]
+      )).rows[0];
+      const canonicalEmployee = (await db.query<{seat_limit:number;expires_at:string|null}>(
+        `SELECT seat_limit,expires_at FROM public.get_team_entitlement($1::uuid)`, [employeeId]
+      )).rows[0];
+      expect(canonicalOwner).toEqual({ seat_limit: 2, expires_at: null });
+      expect(canonicalEmployee).toEqual({ seat_limit: 2, expires_at: null });
+      const canonicalRoster = (await db.query<{snapshot:any}>(
+        `SELECT public.list_team_paid_roster($1::uuid) AS snapshot`, [newId]
+      )).rows[0].snapshot;
+      expect(canonicalRoster.seat_limit).toBe(2);
+      expect((await db.query(`SELECT * FROM public.team_checkout_intents`)).rows).toEqual([]);
     } finally { await db.close(); }
   }, 30_000);
 });
