@@ -38,7 +38,9 @@ describe("paid Team roster migration", () => {
       expect(entitlement.rows[0]).toEqual({ eligible: true, seat_limit: 3, source: "paid" });
       await db.exec(`UPDATE public.team_billing_subscriptions SET seat_count=2 WHERE stripe_subscription_id='sub1'`);
       entitlement = await db.query(`SELECT eligible,seat_limit,source FROM public.get_team_entitlement($1::uuid)`, [employee1]);
-      expect(entitlement.rows[0].eligible).toBe(false);
+      expect(entitlement.rows[0]).toEqual({ eligible: true, seat_limit: 2, source: "paid" });
+      entitlement = await db.query(`SELECT eligible,seat_limit,source FROM public.get_team_entitlement($1::uuid)`, [employee2]);
+      expect(entitlement.rows[0]).toEqual({ eligible: false, seat_limit: 1, source: null });
       await db.exec(`UPDATE public.team_billing_subscriptions SET seat_count=3,current_period_end=now()-interval '1 second' WHERE stripe_subscription_id='sub1'`);
       entitlement = await db.query(`SELECT eligible FROM public.get_team_entitlement($1::uuid)`, [employee2]);
       expect(entitlement.rows[0].eligible).toBe(false);

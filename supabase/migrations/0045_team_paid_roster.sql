@@ -35,23 +35,32 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
       WHERE r.employee_user_id=p_user_id AND b.status IN ('active','trialing')
         AND (b.current_period_end IS NULL OR b.current_period_end > pg_catalog.now())
         AND (b.current_period_start IS NULL OR b.current_period_start <= pg_catalog.now())
-        AND (SELECT count(*) FROM public.team_paid_roster_members r2 WHERE r2.owner_user_id=r.owner_user_id) < b.seat_count
+        AND EXISTS (
+          SELECT 1 FROM (
+            SELECT r2.employee_user_id, row_number() OVER (ORDER BY r2.created_at, r2.employee_user_id) AS roster_rank
+              FROM public.team_paid_roster_members r2 WHERE r2.owner_user_id=r.owner_user_id
+          ) ranked
+          WHERE ranked.employee_user_id=r.employee_user_id AND ranked.roster_rank < b.seat_count
+        )
   ), sources AS (SELECT * FROM direct_sources UNION ALL SELECT * FROM roster_sources)
   SELECT EXISTS(SELECT 1 FROM sources), coalesce((SELECT max(s.seat_limit) FROM sources s),1),
     (SELECT s.source FROM sources s ORDER BY CASE s.source WHEN 'paid' THEN 1 WHEN 'admin_comp' THEN 2 ELSE 3 END LIMIT 1),
     (SELECT s.expires_at FROM sources s ORDER BY CASE WHEN s.expires_at IS NULL THEN 0 ELSE 1 END,s.expires_at DESC LIMIT 1)
 $$;
 
--- Serialize mutations on the owner's billing row; seat_count includes owner.
+-- Advisory serialization key is the owner UUID. This serializes all roster
+-- assignments for an owner, even when several paid subscriptions/seat rows
+-- tie or change, so concurrent inserts cannot claim the same capacity.
 CREATE OR REPLACE FUNCTION public.assign_team_paid_employee(p_owner_user_id uuid,p_employee_user_id uuid)
 RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 DECLARE billing public.team_billing_subscriptions%rowtype;
 BEGIN
  IF p_owner_user_id IS NULL OR p_employee_user_id IS NULL OR p_owner_user_id=p_employee_user_id THEN RAISE EXCEPTION 'invalid roster member'; END IF;
+ PERFORM pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(p_owner_user_id::text,0));
  SELECT * INTO billing FROM public.team_billing_subscriptions b WHERE b.user_id=p_owner_user_id AND b.status IN ('active','trialing')
    AND (b.current_period_end IS NULL OR b.current_period_end>pg_catalog.now())
    AND (b.current_period_start IS NULL OR b.current_period_start<=pg_catalog.now())
-   ORDER BY b.seat_count DESC,b.current_period_end DESC NULLS FIRST LIMIT 1 FOR UPDATE;
+   ORDER BY b.seat_count DESC,b.current_period_end DESC NULLS FIRST,b.stripe_subscription_id ASC LIMIT 1 FOR UPDATE;
  IF NOT FOUND THEN RAISE EXCEPTION 'active paid Team required'; END IF;
  IF EXISTS(SELECT 1 FROM public.team_paid_roster_members WHERE owner_user_id=p_owner_user_id AND employee_user_id=p_employee_user_id) THEN RETURN 'already_assigned'; END IF;
  IF (SELECT count(*) FROM public.team_paid_roster_members WHERE owner_user_id=p_owner_user_id)+1 >= billing.seat_count THEN RAISE EXCEPTION 'paid Team seat capacity reached'; END IF;
