@@ -1,0 +1,7 @@
+import { NextResponse } from "next/server";
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { teamMetadataRpc } from "@/lib/teamMetadata";
+export const runtime = "nodejs";
+async function user(req: Request) { const h=req.headers.get("authorization")??""; const token=h.startsWith("Bearer ")?h.slice(7).trim():""; if(!token)return null; const sb=getSupabaseAdmin(); if(!sb)return null; const {data,error}=await sb.auth.getUser(token); return error?null:data.user; }
+export async function GET(req: Request) { const u=await user(req); if(!u)return NextResponse.json({error:"Unauthorized"},{status:401}); try { return NextResponse.json(await teamMetadataRpc("list_team_spaces",{p_user_id:u.id})); } catch { return NextResponse.json({error:"Could not list spaces"},{status:503}); } }
+export async function POST(req: Request) { const u=await user(req); if(!u)return NextResponse.json({error:"Unauthorized"},{status:401}); try { const b=await req.json(); if(typeof b.name!=="string"||b.name.length>120||(b.description!=null&&(typeof b.description!=="string"||b.description.length>500))||(b.externalRef!=null&&(typeof b.externalRef!=="string"||b.externalRef.length>256)))return NextResponse.json({error:"Invalid metadata"},{status:400}); const data=await teamMetadataRpc("register_team_space",{p_user_id:u.id,p_name:b.name,p_description:b.description??null,p_external_ref:b.externalRef??null}); return NextResponse.json(data,{status:201}); } catch { return NextResponse.json({error:"Could not register space"},{status:400}); } }
