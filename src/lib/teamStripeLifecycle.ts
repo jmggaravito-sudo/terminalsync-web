@@ -1,13 +1,8 @@
 import type Stripe from "stripe";
 import { envId } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
-
-/** Stable server-stamped metadata contract for Team subscriptions. */
-export const TEAM_STRIPE_METADATA = {
-  plan: "team",
-  source: "terminalsync_team",
-  billingVersion: "1",
-} as const;
+import { TEAM_STRIPE_METADATA } from "@/lib/teamStripeMetadata";
+export { TEAM_STRIPE_METADATA } from "@/lib/teamStripeMetadata";
 
 export type TeamStripeEventType =
   | "customer.subscription.created"
