@@ -51,11 +51,19 @@ interface TopUpRow {
   createdAt: string;
 }
 
+interface DebitRow {
+  id: string;
+  idempotencyKey: string;
+  amountMicros: number;
+  createdAt: string;
+}
+
 interface LedgerResponse {
   ok: true;
   balanceMicros: number;
   currency: string;
   topUps: TopUpRow[];
+  debits: DebitRow[];
   nextSince: string | null;
 }
 
@@ -103,9 +111,9 @@ export async function GET(req: Request) {
   try {
     let ledgerQuery = sb
       .from("ai_credit_ledger")
-      .select("id, amount_micros, rail, created_at")
+      .select("id, kind, idempotency_key, amount_micros, rail, created_at")
       .eq("user_id", user.id)
-      .eq("kind", "top_up")
+      .in("kind", ["top_up", "debit"])
       .order("created_at", { ascending: true })
       .limit(100);
     if (since) {
@@ -131,24 +139,47 @@ export async function GET(req: Request) {
       | { balance_micros: number; currency: string; updated_at: string }
       | null;
 
-    type LedgerRow = { id: string; amount_micros: number; rail: string | null; created_at: string };
+    type LedgerRow = {
+      id: string;
+      kind?: string;
+      idempotency_key?: string;
+      amount_micros: number;
+      rail: string | null;
+      created_at: string;
+    };
     const ledgerRows = (ledgerRes.data ?? []) as LedgerRow[];
 
-    const topUps: TopUpRow[] = ledgerRows.map((row) => ({
-      id: row.id,
-      amountMicros: row.amount_micros,
-      rail: row.rail,
-      createdAt: row.created_at,
-    }));
+    const topUps: TopUpRow[] = ledgerRows
+      .filter((row) => row.kind !== "debit")
+      .map((row) => ({
+        id: row.id,
+        amountMicros: row.amount_micros,
+        rail: row.rail,
+        createdAt: row.created_at,
+      }));
 
-    const nextSince =
-      topUps.length > 0 ? topUps[topUps.length - 1].createdAt : since;
+    // Gastos del servidor. Se devuelven con monto positivo y con la clave que
+    // la app usó al descontar, así un equipo que ya aplicó ese gasto lo
+    // reconoce y no lo descuenta dos veces.
+    const debits: DebitRow[] = ledgerRows
+      .filter((row) => row.kind === "debit" && row.idempotency_key)
+      .map((row) => ({
+        id: row.id,
+        idempotencyKey: row.idempotency_key as string,
+        amountMicros: -row.amount_micros,
+        createdAt: row.created_at,
+      }));
+
+    // El cursor avanza con la última fila de cualquier tipo, en orden de tiempo.
+    const lastRow = ledgerRows[ledgerRows.length - 1];
+    const nextSince = lastRow ? lastRow.created_at : since;
 
     const body: LedgerResponse = {
       ok: true,
       balanceMicros: account?.balance_micros ?? 0,
       currency: account?.currency ?? DEFAULT_CURRENCY,
       topUps,
+      debits,
       nextSince,
     };
     return json(body, 200);
