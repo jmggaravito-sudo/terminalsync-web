@@ -73,6 +73,10 @@ describe("universal Team trial migration", () => {
       await db.exec(`INSERT INTO public.team_trial_entitlements(user_id, starts_at, expires_at)
         VALUES ('${preexistingUserId}', '${existingStart}', '${existingExpiry}')`);
       await db.exec(signupMigration);
+      const acl = await db.query<{ can_execute: boolean }>(
+        `SELECT has_function_privilege('authenticated', 'public.grant_team_trial_on_signup()', 'EXECUTE') AS can_execute`,
+      );
+      expect(acl.rows[0].can_execute).toBe(false);
       const before = await db.query<{ at: string }>(`SELECT clock_timestamp() AS at`);
       const startFloor = Date.parse(before.rows[0].at);
       const entitlement = await db.query<{ starts_at: string; expires_at: string }>(
@@ -83,16 +87,15 @@ describe("universal Team trial migration", () => {
       expect(Date.parse(entitlement.rows[0].expires_at)).toBe(Date.parse(existingExpiry));
       const frozen = entitlement.rows[0];
       const newUserId = "00000000-0000-0000-0000-000000000011";
-      await db.exec(`INSERT INTO auth.users VALUES ('${newUserId}')`);
+      await db.exec(`CREATE TRIGGER grant_team_trial_on_signup_duplicate_test AFTER INSERT ON auth.users
+        FOR EACH ROW EXECUTE FUNCTION public.grant_team_trial_on_signup();
+        INSERT INTO auth.users VALUES ('${newUserId}')`);
       const newEntitlement = await db.query<{ starts_at: string; expires_at: string }>(
         `SELECT starts_at, expires_at FROM public.team_trial_entitlements WHERE user_id='${newUserId}'`,
       );
       expect(newEntitlement.rows).toHaveLength(1);
       expect(Date.parse(newEntitlement.rows[0].starts_at)).toBeGreaterThanOrEqual(startFloor);
       expect(Date.parse(newEntitlement.rows[0].expires_at) - Date.parse(newEntitlement.rows[0].starts_at)).toBe(168 * 60 * 60 * 1000);
-      await db.exec(`DROP TRIGGER grant_team_trial_on_signup ON auth.users;
-        CREATE TRIGGER grant_team_trial_on_signup_duplicate_test AFTER INSERT ON auth.users
-        FOR EACH ROW EXECUTE FUNCTION public.grant_team_trial_on_signup();`);
       await db.exec(`INSERT INTO auth.users VALUES ('00000000-0000-0000-0000-000000000012')`);
       const afterDuplicate = await db.query<{ starts_at: string; expires_at: string }>(
         `SELECT starts_at, expires_at FROM public.team_trial_entitlements WHERE user_id='${preexistingUserId}'`,
