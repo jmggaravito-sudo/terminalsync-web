@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { authedFetch } from "@/lib/supabase/browser";
-import { parseReceivedInvitations, receivedSpaceLabel, type ReceivedInvitation } from "./receivedSpaces";
+import { parseReceivedInvitations, partitionReceivedInvitations, receivedSpaceLabel, type ReceivedInvitation } from "./receivedSpaces";
 
 type Entitlement = { eligible?: boolean; seat_limit?: number; source?: string | null; expires_at?: string | null };
 
@@ -14,6 +14,7 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
   const [entitlement, setEntitlement] = useState<Entitlement | null>(null);
   const [invitations, setInvitations] = useState<ReceivedInvitation[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const collections = partitionReceivedInvitations(invitations);
 
   const load = useCallback(async () => {
     setLoading(true); setError(null); setAuthenticated(true);
@@ -45,28 +46,40 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
       });
       if (response.status === 401) { setAuthenticated(false); return; }
       if (!response.ok) throw new Error("respond");
-      setInvitations((current) => current.filter((item) => item.id !== invitation.id));
+      setInvitations((current) => accept
+        ? current.map((item) => item.id === invitation.id ? { ...item, status: "accepted" } : item)
+        : current.filter((item) => item.id !== invitation.id));
     } catch {
       setError(es ? "No pudimos actualizar la invitación. Intenta de nuevo." : "We couldn't update the invitation. Please try again.");
     } finally { setBusyId(null); }
   }
 
-  return <main style={{ maxWidth: 760, margin: "3rem auto", padding: "0 1.25rem", color: "#172033" }}>
-    <h1>{es ? "Espacios compartidos" : "Shared spaces"}</h1>
-    <p>{es ? "Invitaciones que recibiste" : "Invitations you received"}</p>
+  return <section aria-labelledby="team-heading" style={{ maxWidth: 760, margin: "3rem auto", padding: "0 1.25rem", color: "#172033" }}>
+    <h1 id="team-heading">{es ? "Espacios compartidos" : "Shared spaces"}</h1>
     {loading ? <p role="status">{es ? "Cargando…" : "Loading…"}</p> : null}
     {!loading && !authenticated ? <p role="status">{es ? "Inicia sesión para ver tus invitaciones." : "Sign in to view your invitations."}</p> : null}
     {!loading && authenticated && error ? <div role="alert"><p>{error}</p><button onClick={() => void load()}>{es ? "Reintentar" : "Retry"}</button></div> : null}
     {!loading && authenticated && entitlement && entitlement.eligible === false ? <p>{es ? "Tu cuenta no tiene acceso Team activo en este momento." : "Your account does not currently have active Team access."}</p> : null}
-    {!loading && authenticated && !error && invitations.length === 0 ? <p>{es ? "No tienes invitaciones pendientes." : "You have no pending invitations."}</p> : null}
-    {!loading && authenticated && invitations.length > 0 ? <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "1rem" }}>
-      {invitations.map((invitation) => <li key={invitation.id} style={{ border: "1px solid #d5dbea", borderRadius: 12, padding: "1rem" }}>
+    {!loading && authenticated && !error && collections.pending.length === 0 && collections.received.length === 0 ? <p>{es ? "No tienes invitaciones ni espacios recibidos." : "You have no invitations or received spaces."}</p> : null}
+    {!loading && authenticated && collections.pending.length > 0 ? <section aria-labelledby="pending-heading">
+      <h2 id="pending-heading">{es ? "Invitaciones pendientes" : "Pending invitations"}</h2>
+      <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "1rem" }}>
+      {collections.pending.map((invitation) => <li key={invitation.id} style={{ border: "1px solid #d5dbea", borderRadius: 12, padding: "1rem" }}>
         <strong>{receivedSpaceLabel(invitation, lang)}</strong>
         <div style={{ display: "flex", gap: ".75rem", marginTop: ".85rem" }}>
           <button disabled={busyId === invitation.id} onClick={() => void respond(invitation, true)}>{es ? "Aceptar" : "Accept"}</button>
           <button disabled={busyId === invitation.id} onClick={() => void respond(invitation, false)}>{es ? "Rechazar" : "Decline"}</button>
         </div>
       </li>)}
-    </ul> : null}
-  </main>;
+      </ul>
+    </section> : null}
+    {!loading && authenticated && collections.received.length > 0 ? <section aria-labelledby="received-heading">
+      <h2 id="received-heading">{es ? "Espacios recibidos" : "Received spaces"}</h2>
+      <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "1rem" }}>
+      {collections.received.map((invitation) => <li key={invitation.id} style={{ border: "1px solid #d5dbea", borderRadius: 12, padding: "1rem" }}>
+        <strong>{receivedSpaceLabel(invitation, lang)}</strong>
+      </li>)}
+      </ul>
+    </section> : null}
+  </section>;
 }
