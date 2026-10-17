@@ -1,5 +1,6 @@
 import {readFileSync} from "node:fs"; import {join} from "node:path"; import {describe,expect,it} from "vitest"; import {PGlite} from "@electric-sql/pglite";
 const sql=readFileSync(join(process.cwd(),"supabase/migrations/0043_team_metadata_requests.sql"),"utf8");
+const projectionSql=readFileSync(join(process.cwd(),"supabase/migrations/0048_team_request_participant_projection.sql"),"utf8");
 const owner="00000000-0000-0000-0000-000000000001",member="00000000-0000-0000-0000-000000000002",outsider="00000000-0000-0000-0000-000000000003",hash="a".repeat(64);
 describe("Team metadata request migration 0043",()=>it("executes, enforces accepted-invite entitlement and owner-only terminal approval without access grants",async()=>{
  const db=new PGlite(); try {
@@ -12,6 +13,8 @@ describe("Team metadata request migration 0043",()=>it("executes, enforces accep
    INSERT INTO public.team_shared_spaces(owner_user_id,name) VALUES('${owner}','Private');
    INSERT INTO public.team_space_invitations(space_id,inviter_user_id,invitee_user_id,status) SELECT id,'${owner}','${member}','accepted' FROM public.team_shared_spaces;`);
   await db.exec(sql);
+  const legacyDefinition=(await db.query<{definition:string}>(`SELECT pg_get_functiondef('public.list_team_space_requests(uuid)'::regprocedure) definition`)).rows[0].definition;
+  await db.exec(projectionSql);
   const sid=(await db.query<{id:string}>(`SELECT id FROM public.team_shared_spaces`)).rows[0].id;
   await db.query(`UPDATE public.team_space_invitations SET inviter_user_id=$1`,[outsider]);
   expect((await db.query(`SELECT * FROM public.create_team_space_request($1,$2,'document',$3,'{}')`,[member,sid,hash])).rows).toHaveLength(0);
@@ -23,6 +26,20 @@ describe("Team metadata request migration 0043",()=>it("executes, enforces accep
   for (const invalid of ['{"itemCount":-1}','{"itemCount":1.5}','{"itemCount":1000001}']) await expect(db.query(`SELECT * FROM public.create_team_space_request($1,$2,'document',$3,$4::jsonb)`,[member,sid,hash,invalid])).rejects.toThrow();
   expect((await db.query(`SELECT * FROM public.create_team_space_request($1,$2,'context',$3,'{}')`,[outsider,sid,hash])).rows).toHaveLength(0);
   const rid=(await db.query<{id:string}>(`SELECT id FROM public.team_space_requests`)).rows[0].id;
+  const ownerProjection=await db.query<{id:string;space_id:string;space_name:string;role:string;can_respond:boolean;status:string;request_kind:string;metadata:Record<string,unknown>;created_at:string;responded_at:string|null}>(`SELECT * FROM public.list_team_space_requests_v2($1)`,[owner]);
+  expect(ownerProjection.rows).toHaveLength(1);
+  expect(ownerProjection.rows[0]).toMatchObject({id:rid,space_id:sid,space_name:"Private",role:"owner",can_respond:true,status:"pending",request_kind:"document",metadata:{label:"Annual index"}});
+  const requesterProjection=await db.query<{id:string;space_id:string;space_name:string;role:string;can_respond:boolean;status:string;request_kind:string;metadata:Record<string,unknown>;created_at:string;responded_at:string|null}>(`SELECT * FROM public.list_team_space_requests_v2($1)`,[member]);
+  expect(requesterProjection.rows).toHaveLength(1);
+  expect(requesterProjection.rows[0]).toMatchObject({role:"requester",can_respond:false,status:"pending"});
+  const serialized=JSON.stringify([...ownerProjection.rows,...requesterProjection.rows]);
+  for(const privateValue of [owner,member,outsider,hash]) expect(serialized).not.toContain(privateValue);
+  expect(Object.keys(ownerProjection.rows[0]).sort()).toEqual(["can_respond","created_at","id","metadata","request_kind","responded_at","role","space_id","space_name","status"]);
+  expect((await db.query(`SELECT * FROM public.list_team_space_requests_v2($1)`,[outsider])).rows).toHaveLength(0);
+  expect((await db.query<{definition:string}>(`SELECT pg_get_functiondef('public.list_team_space_requests(uuid)'::regprocedure) definition`)).rows[0].definition).toBe(legacyDefinition);
+  expect((await db.query<{requester_user_id:string;manifest_hash:string}>(`SELECT requester_user_id,manifest_hash FROM public.list_team_space_requests($1)`,[owner])).rows[0]).toMatchObject({requester_user_id:member,manifest_hash:hash});
+  expect((await db.query<{ok:boolean}>(`SELECT has_function_privilege('service_role','public.list_team_space_requests_v2(uuid)','EXECUTE') ok`)).rows[0].ok).toBe(true);
+  for(const role of ["anon","authenticated"]) expect((await db.query<{ok:boolean}>(`SELECT has_function_privilege($1,'public.list_team_space_requests_v2(uuid)','EXECUTE') ok`,[role])).rows[0].ok).toBe(false);
   expect((await db.query(`SELECT * FROM public.respond_team_space_request($1,$2,true)`,[member,rid])).rows).toHaveLength(0);
   await db.query(`UPDATE public.elig SET eligible=false WHERE user_id=$1`,[member]);
   expect((await db.query(`SELECT * FROM public.respond_team_space_request($1,$2,true)`,[owner,rid])).rows).toHaveLength(0);
