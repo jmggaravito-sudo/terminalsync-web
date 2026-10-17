@@ -28,10 +28,11 @@ interface RecordedCalls {
   accountEq: Array<[string, unknown]>;
   ledgerEq: Array<[string, unknown]>;
   ledgerGt: Array<[string, unknown]>;
+  ledgerIn: Array<[string, unknown]>;
 }
 
 function newCalls(): RecordedCalls {
-  return { accountEq: [], ledgerEq: [], ledgerGt: [] };
+  return { accountEq: [], ledgerEq: [], ledgerGt: [], ledgerIn: [] };
 }
 
 /**
@@ -88,6 +89,10 @@ function makeSupabaseStub(
           },
           gt(col: string, val: unknown) {
             calls.ledgerGt.push([col, val]);
+            return builder;
+          },
+          in(col: string, vals: unknown) {
+            calls.ledgerIn.push([col, vals]);
             return builder;
           },
           then(resolve: (v: { data: unknown; error: unknown }) => unknown) {
@@ -158,6 +163,7 @@ describe("GET /api/credits/ledger", () => {
       balanceMicros: 0,
       currency: "USD",
       topUps: [],
+      debits: [],
       nextSince: null,
     });
   });
@@ -197,6 +203,7 @@ describe("GET /api/credits/ledger", () => {
       ok: true,
       balanceMicros: 30_000_000,
       currency: "USD",
+      debits: [],
       topUps: [
         {
           id: "ledger-1",
@@ -266,7 +273,7 @@ describe("GET /api/credits/ledger", () => {
 
     expect(calls.accountEq).toContainEqual(["user_id", "user-verified"]);
     expect(calls.ledgerEq).toContainEqual(["user_id", "user-verified"]);
-    expect(calls.ledgerEq).toContainEqual(["kind", "top_up"]);
+    expect(calls.ledgerIn).toContainEqual(["kind", ["top_up", "debit"]]);
     // Nothing in the recorded filters should reference any other user id —
     // the stub itself is single-user, so this is a defensive re-check that
     // the route filters by the authenticated id rather than, say, a body
@@ -307,5 +314,45 @@ describe("GET /api/credits/ledger", () => {
     const res = await GET(request());
     expect(res.status).toBe(500);
     expect(await res.json()).toMatchObject({ code: "storage_failed" });
+  });
+});
+
+describe("GET /api/credits/ledger — gastos del servidor", () => {
+  it("devuelve los gastos aparte, con monto positivo y la clave que usó la app", async () => {
+    const calls = newCalls();
+    mocks.authenticate.mockResolvedValue({ id: "user-verified", email: "x@y.z" });
+    mocks.getSupabaseAdmin.mockReturnValue(
+      makeSupabaseStub(
+        {
+          account: { balance_micros: 199_700_000, currency: "USD", updated_at: "2026-10-17T12:00:00Z" },
+          ledgerRows: [
+            { id: "t1", kind: "top_up", idempotency_key: "k-top", amount_micros: 200_000_000, rail: "stripe", created_at: "2026-10-17T10:00:00Z" },
+            { id: "d1", kind: "debit", idempotency_key: "design-video:quote-1", amount_micros: -300_000, rail: null, created_at: "2026-10-17T11:00:00Z" },
+          ] as unknown as LedgerRow[],
+        },
+        calls,
+      ) as unknown as SupabaseClient,
+    );
+
+    const res = await GET(new Request("https://terminalsync.ai/api/credits/ledger", { headers: { authorization: "Bearer t" } }));
+    const body = await res.json();
+
+    expect(body.topUps.map((t: { id: string }) => t.id)).toEqual(["t1"]);
+    expect(body.debits).toEqual([
+      { id: "d1", idempotencyKey: "design-video:quote-1", amountMicros: 300_000, createdAt: "2026-10-17T11:00:00Z" },
+    ]);
+    expect(body.nextSince).toBe("2026-10-17T11:00:00Z");
+  });
+
+  it("sin gastos, la lista viene vacía y el cursor sigue igual", async () => {
+    const calls = newCalls();
+    mocks.authenticate.mockResolvedValue({ id: "user-verified", email: "x@y.z" });
+    mocks.getSupabaseAdmin.mockReturnValue(
+      makeSupabaseStub({ account: null, ledgerRows: [] }, calls) as unknown as SupabaseClient,
+    );
+    const res = await GET(new Request("https://terminalsync.ai/api/credits/ledger?since=2026-10-16T00:00:00Z", { headers: { authorization: "Bearer t" } }));
+    const body = await res.json();
+    expect(body.debits).toEqual([]);
+    expect(body.nextSince).toBe("2026-10-16T00:00:00Z");
   });
 });
