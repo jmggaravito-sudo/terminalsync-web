@@ -5,18 +5,19 @@ import { getDict } from "@/content";
 import { Pricing } from "./Pricing";
 
 describe("Team card on the public pricing surface", () => {
-  it.each(["en", "es"] as const)("renders localized Team pricing and non-actionable readiness disclosure in %s", (locale) => {
+  it.each(["en", "es"] as const)("frames the planned Team trial and sharing as upcoming without enabling checkout in %s", (locale) => {
     const html = renderToStaticMarkup(createElement(Pricing, { dict: getDict(locale) }));
     const card = html.match(/<article id="plan-team"[\s\S]*?<\/article>/)?.[0];
 
     expect(card).toBeTruthy();
     expect(card).toContain("$59");
     expect(card).toContain(locale === "en" ? "Team" : "Team");
-    expect(card).toContain(locale === "en" ? "7-day" : "7 días");
-    expect(card).toContain(locale === "en" ? "no card required" : "sin tarjeta");
-    expect(card).toContain("Stripe");
-    expect(card).toContain(locale === "en" ? "checkout and trial signup are not available yet" : "pago y registro a prueba aún no están disponibles");
-    expect(card).toContain(locale === "en" ? "Pro and Max stay unchanged" : "Pro y Max no cambian");
+    expect(card).toContain(locale === "en" ? "/employee/mo" : "/empleado/mes");
+    expect(card).toContain(locale === "en" ? "At launch, new users" : "Al lanzamiento, los nuevos usuarios");
+    expect(card).toContain(locale === "en" ? "there will be no automatic charge" : "no habrá cobro automático");
+    expect(card).toContain(locale === "en" ? "will require approval" : "requerirá aprobación");
+    expect(card).toContain(locale === "en" ? "Coming soon: shared spaces" : "Próximamente: espacios compartidos");
+    expect(card).toContain(locale === "en" ? "Coming soon · no checkout yet" : "Próximamente · aún sin pago");
     expect(card).not.toContain("<button");
     expect(card).not.toContain("href=");
   });
