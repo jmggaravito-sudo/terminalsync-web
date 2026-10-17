@@ -9,13 +9,13 @@
   const ES_EN = {
     // Team: announced plan only; no checkout or trial signup.
     "/ empleado / mes": "/ employee / month",
-    "Un complemento de colaboración para equipos. Pro y Max no cambian.": "A collaboration add-on for teams. Pro and Max stay unchanged.",
-    "Previsto: Max más colaboración entre espacios de usuarios distintos": "Planned: Max plus collaboration across separate user workspaces",
+    "$59 por empleado al mes. Pro y Max no cambian. Al lanzamiento, los nuevos usuarios podrán acceder a una prueba Team completa de 7 días, sin tarjeta. Al terminar, eliges un plan; no habrá cobro automático.": "$59 per employee per month. Pro and Max stay unchanged. At launch, new users will be offered a full 7-day Team trial with no card. After the trial, choose a plan; there will be no automatic charge.",
+    "Próximamente: espacios compartidos para colaborar en equipo": "Coming soon: shared spaces for team collaboration",
     "Cada persona conserva su propio espacio de trabajo": "Each person keeps their own workspace",
-    "Compartir respuestas o documentos requiere aprobación antes de enviarlos": "Sharing answers or documents requires approval before sending",
-    "Previsto: prueba Team de 7 días con todas las funciones, sin tarjeta": "Planned: 7-day Team trial with all Team features, no card required",
-    "Team será solo con Stripe; el pago y registro a prueba aún no están disponibles": "Stripe-only for Team; paid checkout and trial signup are not available yet",
-    "Próximamente · aún sin pago ni registro": "Coming soon · no checkout or signup yet",
+    "Al lanzamiento, compartir respuestas o documentos requerirá aprobación antes de enviarlos": "At launch, sharing answers or documents will require approval before sending",
+    "Al lanzamiento, al terminar la prueba de 7 días, eliges si continúas; no habrá cobro automático": "At launch, after the 7-day trial, choose whether to continue; there will be no automatic charge",
+    "La prueba Team y el checkout aún no están disponibles. Al lanzamiento, la facturación Team será exclusivamente por Stripe": "The Team trial and checkout are not available yet. At launch, Team billing will be Stripe-only",
+    "Próximamente · aún sin prueba ni checkout": "Coming soon · no trial or checkout yet",
     // ── landing-formato-b ──
     "Cada espacio sabe de lo suyo.": "Each workspace knows its own.",
     "La IA trabaja en varias tareas a la vez.": "The AI works on several tasks at once.",

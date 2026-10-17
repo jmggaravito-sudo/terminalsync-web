@@ -9,10 +9,12 @@ describe("Team on the actual static production landing", () => {
   it("publishes the approved announcement without enabling checkout or signup", () => {
     expect(card).toContain("$59");
     expect(card).toContain("/ empleado / mes");
-    expect(card).toContain("7 días");
-    expect(card).toContain("sin tarjeta");
+    expect(card).toContain("Al lanzamiento, los nuevos usuarios podrán acceder a una prueba Team completa de 7 días, sin tarjeta");
+    expect(card).toContain("Al terminar, eliges un plan; no habrá cobro automático");
+    expect(card).toContain("Próximamente: espacios compartidos para colaborar en equipo");
+    expect(card).toContain("Al lanzamiento, compartir respuestas o documentos requerirá aprobación antes de enviarlos");
     expect(card).toContain("Stripe");
-    expect(card).toContain("pago y registro a prueba aún no están disponibles");
+    expect(card).toContain("La prueba Team y el checkout aún no están disponibles");
     expect(card).toContain("Pro y Max no cambian");
     expect(card).not.toMatch(/<(?:a|button|form)\b|href=|data-cta=/);
     expect(html).toContain("grid-column:1/-1");
@@ -23,8 +25,10 @@ describe("Team on the actual static production landing", () => {
       if (!text || text === "Team" || text === "$59") continue;
       expect(i18n).toContain(JSON.stringify(text) + ": ");
     }
-    expect(i18n).toContain("7-day Team trial with all Team features, no card required");
-    expect(i18n).toContain("paid checkout and trial signup are not available yet");
+    expect(i18n).toContain("full 7-day Team trial with no card");
+    expect(i18n).toContain("will be no automatic charge");
+    expect(i18n).toContain("sharing answers or documents will require approval");
+    expect(i18n).toContain("The Team trial and checkout are not available yet");
   });
   it("keeps the existing Pro and Max prices and download actions", () => {
     expect(html).toContain('$34<i> / mes</i>');
