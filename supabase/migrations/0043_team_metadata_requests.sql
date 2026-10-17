@@ -9,8 +9,6 @@ ALTER TABLE public.team_space_requests
 UPDATE public.team_space_requests SET responded_at=updated_at WHERE status<>'pending' AND responded_at IS NULL;
 ALTER TABLE public.team_space_requests ADD CONSTRAINT team_space_requests_status_time_check CHECK
   ((status='pending' AND responded_at IS NULL) OR (status<>'pending' AND responded_at IS NOT NULL));
-CREATE UNIQUE INDEX team_space_requests_one_pending_idx
-  ON public.team_space_requests(space_id,requester_user_id) WHERE status='pending';
 REVOKE ALL ON public.team_space_requests FROM PUBLIC, anon, authenticated;
 GRANT ALL ON public.team_space_requests TO service_role;
 
@@ -24,7 +22,8 @@ BEGIN
     p_manifest_hash IS NULL OR p_manifest_hash !~ '^[0-9a-f]{64}$' OR p_metadata IS NULL OR jsonb_typeof(p_metadata)<>'object' OR octet_length(p_metadata::text)>2048 OR
     EXISTS(SELECT 1 FROM jsonb_each(p_metadata) e WHERE e.key NOT IN ('label','category','itemCount') OR
       (e.key IN ('label','category') AND (jsonb_typeof(e.value)<>'string' OR char_length(e.value#>>'{}')>120)) OR
-      (e.key='itemCount' AND jsonb_typeof(e.value)<>'number')) THEN
+      (e.key='itemCount' AND (jsonb_typeof(e.value)<>'number' OR (e.value#>>'{}')::numeric<0 OR
+        (e.value#>>'{}')::numeric>1000000 OR trunc((e.value#>>'{}')::numeric)<>(e.value#>>'{}')::numeric))) THEN
    RAISE EXCEPTION 'invalid request metadata';
  END IF;
  IF NOT coalesce((SELECT e.eligible FROM public.get_team_entitlement(p_user_id) e LIMIT 1),false) THEN RAISE EXCEPTION 'team entitlement required'; END IF;
@@ -33,15 +32,21 @@ BEGIN
    RETURN; -- do not disclose unrelated/ineligible space existence
  END IF;
  -- Explicit relationship: requester must have accepted the owner's invitation.
- IF NOT EXISTS(SELECT 1 FROM public.team_space_invitations i WHERE i.space_id=p_space_id AND i.invitee_user_id=p_user_id AND i.status='accepted') THEN RETURN; END IF;
- SELECT r.* INTO existing FROM public.team_space_requests r WHERE r.space_id=p_space_id AND r.requester_user_id=p_user_id;
+ IF NOT EXISTS(SELECT 1 FROM public.team_space_invitations i WHERE i.space_id=p_space_id AND i.inviter_user_id=owner_id AND i.invitee_user_id=p_user_id AND i.status='accepted') THEN RETURN; END IF;
+ INSERT INTO public.team_space_requests(space_id,requester_user_id,status,manifest_hash,request_kind,metadata)
+ VALUES(p_space_id,p_user_id,'pending',p_manifest_hash,p_request_kind,p_metadata)
+ ON CONFLICT (space_id,requester_user_id) DO NOTHING
+ RETURNING * INTO existing;
  IF FOUND THEN
-   IF existing.manifest_hash<>p_manifest_hash OR existing.request_kind<>p_request_kind OR existing.metadata<>p_metadata THEN RAISE EXCEPTION 'request already exists with different metadata'; END IF;
    RETURN QUERY SELECT existing.id,existing.status,existing.request_kind,existing.manifest_hash,existing.metadata,existing.created_at; RETURN;
  END IF;
- RETURN QUERY INSERT INTO public.team_space_requests(space_id,requester_user_id,status,manifest_hash,request_kind,metadata)
- VALUES(p_space_id,p_user_id,'pending',p_manifest_hash,p_request_kind,p_metadata)
- RETURNING team_space_requests.id,team_space_requests.status,team_space_requests.request_kind,team_space_requests.manifest_hash,team_space_requests.metadata,team_space_requests.created_at;
+ -- The unique constraint arbitrates concurrent attempts. Identical retries
+ -- return the canonical row; differing metadata is rejected fail-closed.
+ SELECT r.* INTO existing FROM public.team_space_requests r WHERE r.space_id=p_space_id AND r.requester_user_id=p_user_id FOR UPDATE;
+ IF NOT FOUND OR existing.manifest_hash IS DISTINCT FROM p_manifest_hash OR existing.request_kind IS DISTINCT FROM p_request_kind OR existing.metadata IS DISTINCT FROM p_metadata THEN
+   RAISE EXCEPTION 'request already exists with different metadata';
+ END IF;
+ RETURN QUERY SELECT existing.id,existing.status,existing.request_kind,existing.manifest_hash,existing.metadata,existing.created_at;
 END; $$;
 
 CREATE OR REPLACE FUNCTION public.respond_team_space_request(p_user_id uuid,p_request_id uuid,p_accept boolean)
