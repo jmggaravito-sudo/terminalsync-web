@@ -4,9 +4,9 @@ import { describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { citext } from "@electric-sql/pglite/contrib/citext";
 
-const migration = (n: number) => readFileSync(join(process.cwd(), `supabase/migrations/${String(n).padStart(4, "0")}_${({37:"team_comp_entitlements",38:"team_stripe_billing",39:"team_shared_spaces_metadata",40:"team_universal_trial",41:"team_entitlement_and_alias_reconciliation",42:"team_metadata_invites",43:"team_metadata_requests",44:"team_trial_on_signup",45:"team_paid_roster",46:"team_paid_roster_api",47:"team_invitation_owner_alias_projection",48:"team_request_participant_projection",49:"team_checkout_intents"} as Record<number,string>)[n]}.sql`), "utf8");
+const migration = (n: number) => readFileSync(join(process.cwd(), `supabase/migrations/${String(n).padStart(4, "0")}_${({37:"team_comp_entitlements",38:"team_stripe_billing",39:"team_shared_spaces_metadata",40:"team_universal_trial",41:"team_entitlement_and_alias_reconciliation",42:"team_metadata_invites",43:"team_metadata_requests",44:"team_trial_on_signup",45:"team_paid_roster",46:"team_paid_roster_api",47:"team_invitation_owner_alias_projection",48:"team_request_participant_projection",49:"team_checkout_intents",50:"team_checkout_intent_single_active_guard"} as Record<number,string>)[n]}.sql`), "utf8");
 
-describe("Team migrations 0037-0049 contract", () => {
+describe("Team migrations 0037-0050 contract", () => {
   it("applies the real ordered chain and preserves signup, shared-space, approval, and roster contracts", async () => {
     const db = new PGlite({ extensions: { citext } });
     try {
@@ -208,6 +208,7 @@ describe("Team migrations 0037-0049 contract", () => {
          current_period_start,current_period_end,latest_event_id,latest_event_created_at)
         VALUES ('sub-smaller-later','${newId}','cus-contract','price-team',1,'active',now()-interval '1 day',now()+interval '9 days','evt-later',now())`);
       await db.exec(migration(49));
+      await db.exec(migration(50));
       const canonicalOwner = (await db.query<{seat_limit:number;expires_at:string|null}>(
         `SELECT seat_limit,expires_at FROM public.get_team_entitlement($1::uuid)`, [newId]
       )).rows[0];
