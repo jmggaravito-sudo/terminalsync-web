@@ -5,6 +5,10 @@ const mocks = vi.hoisted(() => ({
   grantPurchasedCredits: vi.fn(),
   allocateVideoFunding: vi.fn(),
   retrieveSession: vi.fn(),
+  teamCandidate: vi.fn(() => false),
+  teamCheckoutCandidate: vi.fn(() => false),
+  parseTeamSubscription: vi.fn(),
+  syncTeamSubscription: vi.fn(),
 }));
 
 vi.mock("@/lib/stripe", () => ({
@@ -32,6 +36,13 @@ vi.mock("@/lib/supabaseAdmin", () => ({
 }));
 vi.mock("@/lib/userLang", () => ({ resolveUserLang: vi.fn() }));
 vi.mock("server-only", () => ({}));
+vi.mock("@/lib/teamStripeLifecycle", () => ({
+  InvalidTeamStripeEventError: class InvalidTeamStripeEventError extends Error {},
+  isTeamCheckoutCandidate: mocks.teamCheckoutCandidate,
+  isTeamSubscriptionCandidate: mocks.teamCandidate,
+  parseTeamStripeSubscription: mocks.parseTeamSubscription,
+  syncTeamStripeSubscription: mocks.syncTeamSubscription,
+}));
 
 vi.mock("@/lib/aiCredits", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/aiCredits")>();
@@ -90,6 +101,10 @@ beforeEach(() => {
       : { data: { allocationId: "allocation-1" }, error: null },
   );
   mocks.retrieveSession.mockImplementation(async (id: string) => ({ ...creditEvent().data.object, id }));
+  mocks.teamCandidate.mockReturnValue(false);
+  mocks.teamCheckoutCandidate.mockReturnValue(false);
+  mocks.parseTeamSubscription.mockReturnValue({ userId: "user-verified", subscriptionId: "sub_team_123" });
+  mocks.syncTeamSubscription.mockResolvedValue(undefined);
 });
 
 afterEach(() => {
@@ -296,5 +311,115 @@ describe("general-credit environment boundary (#411)", () => {
     process.env.STRIPE_TEST_WEBHOOK_SECRET = "only-test-fixture";
     expect((await POST(signedRequest())).status).toBe(400);
     expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+  });
+});
+
+describe("Team Stripe webhook isolation", () => {
+  function teamSubscriptionEvent(livemode = true) {
+    return {
+      id: "evt_team_123",
+      type: "customer.subscription.updated",
+      livemode,
+      data: { object: { id: "sub_team_123", livemode, metadata: { plan: "team" } } },
+    };
+  }
+
+  it("sends recognized live Team subscriptions only through the additive Team adapter", async () => {
+    const event = teamSubscriptionEvent();
+    mocks.constructEvent.mockReturnValue(event);
+    mocks.teamCandidate.mockReturnValue(true);
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(200);
+    expect(mocks.parseTeamSubscription).toHaveBeenCalledWith(event);
+    expect(mocks.syncTeamSubscription).toHaveBeenCalledWith({
+      userId: "user-verified",
+      subscriptionId: "sub_team_123",
+    });
+    const { syncSubscriptionToSupabase, revokeSubscription } = await import("@/lib/subscriptionsSync");
+    expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
+    expect(revokeSubscription).not.toHaveBeenCalled();
+  });
+
+  it("acknowledges a durable reconciliation_required result without granting or revoking access", async () => {
+    const event = teamSubscriptionEvent();
+    mocks.constructEvent.mockReturnValue(event);
+    mocks.teamCandidate.mockReturnValue(true);
+    mocks.syncTeamSubscription.mockResolvedValueOnce("reconciliation_required");
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ received: true });
+    expect(errorSpy).toHaveBeenCalledWith(
+      "[stripe] Team subscription requires reconciliation; access remains fail-closed",
+      { eventId: event.id, subscriptionId: "sub_team_123" },
+    );
+    const { syncSubscriptionToSupabase, revokeSubscription } = await import("@/lib/subscriptionsSync");
+    expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
+    expect(revokeSubscription).not.toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+
+  it("ignores signed test-mode Team events without writing production entitlements", async () => {
+    const event = teamSubscriptionEvent(false);
+    mocks.constructEvent.mockReturnValue(event);
+    mocks.teamCandidate.mockReturnValue(true);
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ ignored: "test_team_event" });
+    expect(mocks.parseTeamSubscription).not.toHaveBeenCalled();
+    expect(mocks.syncTeamSubscription).not.toHaveBeenCalled();
+  });
+
+  it("rejects invalid Team metadata before invoking the service-role adapter", async () => {
+    const event = teamSubscriptionEvent();
+    mocks.constructEvent.mockReturnValue(event);
+    mocks.teamCandidate.mockReturnValue(true);
+    const { InvalidTeamStripeEventError } = await import("@/lib/teamStripeLifecycle");
+    mocks.parseTeamSubscription.mockImplementation(() => {
+      throw new InvalidTeamStripeEventError("Team Stripe metadata contract mismatch");
+    });
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(400);
+    expect(mocks.syncTeamSubscription).not.toHaveBeenCalled();
+    const { syncSubscriptionToSupabase, revokeSubscription } = await import("@/lib/subscriptionsSync");
+    expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
+    expect(revokeSubscription).not.toHaveBeenCalled();
+  });
+
+  it("returns 503 for Team-marked checkout sessions instead of sending a welcome email", async () => {
+    const event = {
+      id: "evt_team_checkout",
+      type: "checkout.session.completed",
+      livemode: true,
+      data: { object: { id: "cs_team", metadata: { plan: "team" } } },
+    };
+    mocks.constructEvent.mockReturnValue(event);
+    mocks.teamCheckoutCandidate.mockReturnValue(true);
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(503);
+    const { sendWelcomeEmail } = await import("@/lib/email");
+    expect(sendWelcomeEmail).not.toHaveBeenCalled();
+    expect(mocks.syncTeamSubscription).not.toHaveBeenCalled();
+  });
+
+  it("asks Stripe to retry if the Team RPC is unavailable", async () => {
+    const event = teamSubscriptionEvent();
+    mocks.constructEvent.mockReturnValue(event);
+    mocks.teamCandidate.mockReturnValue(true);
+    mocks.syncTeamSubscription.mockRejectedValueOnce(new Error("RPC missing"));
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(500);
   });
 });
