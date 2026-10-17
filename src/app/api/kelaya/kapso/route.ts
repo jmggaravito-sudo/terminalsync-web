@@ -186,6 +186,16 @@ function safeEqual(expected: string, incoming: string): boolean {
   return timingSafeEqual(expectedBuffer, incomingBuffer);
 }
 
+// WhatsApp usernames (Meta rollout, live since Apr 2026 / send support
+// since Jul 2026): once a customer adopts a username, Kapso hands back a
+// Business-Scoped User ID (alphanumeric, e.g. "US.13491208655302741918")
+// instead of a phone number. Replying needs `recipient` for a BSUID vs
+// `to` for a real phone. See
+// https://docs.kapso.ai/docs/whatsapp/business-scoped-user-ids
+function isPhoneNumber(value: string): boolean {
+  return /^\+?[0-9]+$/.test(value);
+}
+
 async function sendTextMessage(to: string, body: string): Promise<unknown> {
   if (process.env.KELAYA_DRY_RUN_REPLIES === "true") {
     console.log("[kelaya:kapso:dry-run]", { to, body });
@@ -199,6 +209,8 @@ async function sendTextMessage(to: string, body: string): Promise<unknown> {
     throw new Error("KAPSO_API_KEY and KAPSO_PHONE_NUMBER_ID are required");
   }
 
+  const destination = isPhoneNumber(to) ? { to: to.replace(/^\+/, "") } : { recipient: to };
+
   const response = await fetch(`${KAPSO_BASE_URL}/${phoneNumberId}/messages`, {
     method: "POST",
     headers: {
@@ -208,7 +220,7 @@ async function sendTextMessage(to: string, body: string): Promise<unknown> {
     body: JSON.stringify({
       messaging_product: "whatsapp",
       recipient_type: "individual",
-      to,
+      ...destination,
       type: "text",
       text: { body },
     }),
@@ -436,11 +448,16 @@ function normalizeMessage(message: unknown): IncomingMessage | undefined {
   const record = asRecord(message);
   if (!record) return undefined;
 
+  // `from` is absent once the sender adopted a WhatsApp username — Kapso
+  // sends `from_user_id` (the BSUID) instead. Without this fallback those
+  // messages silently drop (no `from`, no reply, no escalation).
   const from = typeof record.from === "string"
     ? record.from
-    : typeof record.to === "string"
-      ? record.to
-      : undefined;
+    : typeof record.from_user_id === "string"
+      ? record.from_user_id
+      : typeof record.to === "string"
+        ? record.to
+        : undefined;
 
   if (!from) return undefined;
 
