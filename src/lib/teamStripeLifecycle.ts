@@ -17,6 +17,7 @@ export type TeamStripeEventType =
 export type TeamStripeSyncCommand = {
   eventId: string;
   eventType: TeamStripeEventType;
+  eventCreatedAt: string;
   livemode: boolean;
   userId: string;
   customerId: string;
@@ -29,6 +30,12 @@ export type TeamStripeSyncCommand = {
   trialEnd: string | null;
   cancelAtPeriodEnd: boolean;
 };
+
+export type TeamStripeSyncResult =
+  | "applied"
+  | "duplicate"
+  | "stale"
+  | "reconciliation_required";
 
 export class InvalidTeamStripeEventError extends Error {
   constructor(message: string) {
@@ -45,6 +52,16 @@ export class TeamStripeSyncError extends Error {
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const TEAM_BILLING_STATUSES = new Set([
+  "incomplete",
+  "incomplete_expired",
+  "trialing",
+  "active",
+  "past_due",
+  "canceled",
+  "unpaid",
+  "paused",
+]);
 const TEAM_EVENT_TYPES = new Set<string>([
   "customer.subscription.created",
   "customer.subscription.updated",
@@ -156,6 +173,9 @@ export function parseTeamStripeSubscription(
   if (item.quantity !== seatCount) {
     throw new InvalidTeamStripeEventError("Team Stripe price quantity does not match seat metadata");
   }
+  if (!TEAM_BILLING_STATUSES.has(subscription.status)) {
+    throw new InvalidTeamStripeEventError("Team Stripe status is not supported by the billing ledger");
+  }
   if (!Number.isSafeInteger(event.created) || event.created <= 0) {
     throw new InvalidTeamStripeEventError("Team Stripe event timestamp is invalid");
   }
@@ -172,6 +192,7 @@ export function parseTeamStripeSubscription(
   return {
     eventId: event.id,
     eventType: event.type,
+    eventCreatedAt: new Date(event.created * 1000).toISOString(),
     livemode: event.livemode,
     userId,
     customerId,
@@ -187,20 +208,19 @@ export function parseTeamStripeSubscription(
 }
 
 /**
- * Invoke the future, service-role-only atomic DB RPC. It must validate that
- * userId exists, bind Stripe customer/subscription uniquely, serialize
- * duplicate/out-of-order events by eventId, and update only Team membership
- * rows—never `subscriptions.plan`. Missing migration/RPC is an error so the
- * webhook returns 5xx and Stripe retries; it is not acknowledged as success.
+ * Invoke the service-role-only atomic billing RPC defined by migration 0038.
+ * The RPC binds Stripe customers/subscriptions, serializes event delivery, and
+ * writes only the Team billing ledger, never `subscriptions.plan` or
+ * entitlement rows. Missing migration/RPC is an error so the webhook returns
+ * 5xx and Stripe retries; it is not acknowledged as successful fulfillment.
  */
-export async function syncTeamStripeSubscription(command: TeamStripeSyncCommand): Promise<void> {
+export async function syncTeamStripeSubscription(
+  command: TeamStripeSyncCommand,
+): Promise<TeamStripeSyncResult> {
   const sb = getSupabaseAdmin();
   if (!sb) throw new TeamStripeSyncError("Team Stripe service-role database client is unavailable");
 
-  const { data, error } = await sb.rpc("sync_team_subscription_event", {
-    p_event_id: command.eventId,
-    p_event_type: command.eventType,
-    p_livemode: command.livemode,
+  const { data, error } = await sb.rpc("apply_team_stripe_subscription_event", {
     p_user_id: command.userId,
     p_stripe_customer_id: command.customerId,
     p_stripe_subscription_id: command.subscriptionId,
@@ -209,14 +229,27 @@ export async function syncTeamStripeSubscription(command: TeamStripeSyncCommand)
     p_status: command.status,
     p_current_period_start: command.currentPeriodStart,
     p_current_period_end: command.currentPeriodEnd,
-    p_trial_end: command.trialEnd,
     p_cancel_at_period_end: command.cancelAtPeriodEnd,
+    p_event_id: command.eventId,
+    p_event_type: command.eventType,
+    p_event_created_at: command.eventCreatedAt,
+    p_metadata: {
+      billing_version: TEAM_STRIPE_METADATA.billingVersion,
+      source: TEAM_STRIPE_METADATA.source,
+      trial_end: command.trialEnd,
+    },
   });
   if (error) {
-    throw new TeamStripeSyncError(`Team Stripe entitlement sync failed: ${error.message}`);
+    throw new TeamStripeSyncError(`Team Stripe billing sync failed: ${error.message}`);
   }
   const result = typeof data === "string" ? data : (data as { result?: unknown } | null)?.result;
-  if (result !== "ok" && result !== "duplicate") {
+  if (
+    result !== "applied" &&
+    result !== "duplicate" &&
+    result !== "stale" &&
+    result !== "reconciliation_required"
+  ) {
     throw new TeamStripeSyncError("Team Stripe entitlement RPC returned an unknown result");
   }
+  return result;
 }

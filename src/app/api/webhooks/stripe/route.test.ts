@@ -103,7 +103,7 @@ beforeEach(() => {
   mocks.retrieveSession.mockImplementation(async (id: string) => ({ ...creditEvent().data.object, id }));
   mocks.teamCandidate.mockReturnValue(false);
   mocks.teamCheckoutCandidate.mockReturnValue(false);
-  mocks.parseTeamSubscription.mockReturnValue({ userId: "user-verified" });
+  mocks.parseTeamSubscription.mockReturnValue({ userId: "user-verified", subscriptionId: "sub_team_123" });
   mocks.syncTeamSubscription.mockResolvedValue(undefined);
 });
 
@@ -333,10 +333,34 @@ describe("Team Stripe webhook isolation", () => {
 
     expect(response.status).toBe(200);
     expect(mocks.parseTeamSubscription).toHaveBeenCalledWith(event);
-    expect(mocks.syncTeamSubscription).toHaveBeenCalledWith({ userId: "user-verified" });
+    expect(mocks.syncTeamSubscription).toHaveBeenCalledWith({
+      userId: "user-verified",
+      subscriptionId: "sub_team_123",
+    });
     const { syncSubscriptionToSupabase, revokeSubscription } = await import("@/lib/subscriptionsSync");
     expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
     expect(revokeSubscription).not.toHaveBeenCalled();
+  });
+
+  it("acknowledges a durable reconciliation_required result without granting or revoking access", async () => {
+    const event = teamSubscriptionEvent();
+    mocks.constructEvent.mockReturnValue(event);
+    mocks.teamCandidate.mockReturnValue(true);
+    mocks.syncTeamSubscription.mockResolvedValueOnce("reconciliation_required");
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ received: true });
+    expect(errorSpy).toHaveBeenCalledWith(
+      "[stripe] Team subscription requires reconciliation; access remains fail-closed",
+      { eventId: event.id, subscriptionId: "sub_team_123" },
+    );
+    const { syncSubscriptionToSupabase, revokeSubscription } = await import("@/lib/subscriptionsSync");
+    expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
+    expect(revokeSubscription).not.toHaveBeenCalled();
+    errorSpy.mockRestore();
   });
 
   it("ignores signed test-mode Team events without writing production entitlements", async () => {

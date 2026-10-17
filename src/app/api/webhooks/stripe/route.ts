@@ -154,7 +154,18 @@ export async function POST(req: Request) {
     }
     try {
       const command = parseTeamStripeSubscription(event);
-      await syncTeamStripeSubscription(command);
+      const result = await syncTeamStripeSubscription(command);
+      if (result === "reconciliation_required") {
+        // Migration 0038 has durably moved this subscription to an explicit
+        // non-entitled state because Stripe's second-resolution timestamps
+        // cannot safely order conflicting same-second events. Acknowledge it
+        // to stop retries, but raise an operator-visible alert and never grant
+        // an entitlement from this ambiguous state.
+        console.error("[stripe] Team subscription requires reconciliation; access remains fail-closed", {
+          eventId: event.id,
+          subscriptionId: command.subscriptionId,
+        });
+      }
       return NextResponse.json({ received: true });
     } catch (err) {
       if (err instanceof InvalidTeamStripeEventError) {

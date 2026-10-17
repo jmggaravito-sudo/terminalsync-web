@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 const mocks = vi.hoisted(() => ({ rpc: vi.fn(), getAdmin: vi.fn() }));
 vi.mock("@/lib/supabaseAdmin", () => ({ getSupabaseAdmin: mocks.getAdmin }));
@@ -13,6 +15,10 @@ import {
 } from "./teamStripeLifecycle";
 
 const USER_ID = "7ef76c9c-0f81-4aef-9d41-9ed8df241bd7";
+const SQL = readFileSync(
+  resolve(process.cwd(), "supabase/migrations/0038_team_stripe_billing.sql"),
+  "utf8",
+).toLowerCase().replace(/\s+/g, " ");
 
 function subscriptionEvent(overrides: Record<string, unknown> = {}) {
   const subscription = {
@@ -60,7 +66,7 @@ beforeEach(() => {
   process.env.STRIPE_PRICE_TEAM = "price_team_live";
   process.env.STRIPE_PRICE_TEAM_TEST = "price_team_test";
   mocks.getAdmin.mockReturnValue({ rpc: mocks.rpc });
-  mocks.rpc.mockResolvedValue({ data: "ok", error: null });
+  mocks.rpc.mockResolvedValue({ data: "applied", error: null });
 });
 
 afterEach(() => {
@@ -69,6 +75,35 @@ afterEach(() => {
 });
 
 describe("Team Stripe lifecycle parser", () => {
+  it("matches the service-role RPC contract in migration 0038", () => {
+    const declaration = SQL.match(
+      /create or replace function public\.apply_team_stripe_subscription_event\((.*?)\) returns text/,
+    )?.[1];
+    expect(declaration).toBeDefined();
+    expect(declaration).toContain("p_user_id uuid");
+    expect(declaration).toContain("p_stripe_customer_id text");
+    expect(declaration).toContain("p_stripe_subscription_id text");
+    expect(declaration).toContain("p_stripe_price_id text");
+    expect(declaration).toContain("p_seat_count bigint");
+    expect(declaration).toContain("p_status text");
+    expect(declaration).toContain("p_current_period_start timestamptz");
+    expect(declaration).toContain("p_current_period_end timestamptz");
+    expect(declaration).toContain("p_cancel_at_period_end boolean");
+    expect(declaration).toContain("p_event_id text");
+    expect(declaration).toContain("p_event_type text");
+    expect(declaration).toContain("p_event_created_at timestamptz");
+    expect(declaration).toContain("p_metadata jsonb");
+    for (const result of ["applied", "duplicate", "stale", "reconciliation_required"]) {
+      expect(SQL).toContain(`return '${result}'`);
+    }
+    const rpc = SQL.match(/create or replace function public\.apply_team_stripe_subscription_event\([\s\S]*?\$\$;/)?.[0];
+    expect(rpc).toBeDefined();
+    expect(rpc).not.toContain("public.subscriptions");
+    expect(rpc).not.toContain("public.team_memberships");
+    expect(rpc).toContain("status = 'reconciliation_required'");
+    expect(rpc).toContain("stripe_subscription_id = p_stripe_subscription_id");
+  });
+
   it("recognizes Team from explicit metadata or its configured price", () => {
     const event = subscriptionEvent();
     expect(isTeamSubscriptionCandidate(event)).toBe(true);
@@ -82,6 +117,7 @@ describe("Team Stripe lifecycle parser", () => {
     expect(command).toMatchObject({
       eventId: "evt_team_123",
       eventType: "customer.subscription.updated",
+      eventCreatedAt: new Date(1_797_000_000 * 1000).toISOString(),
       livemode: true,
       userId: USER_ID,
       customerId: "cus_team_123",
@@ -136,10 +172,7 @@ describe("Team Stripe service-role adapter", () => {
   it("uses the atomic RPC and requires a recognized idempotent result", async () => {
     const command = parseTeamStripeSubscription(subscriptionEvent());
     await syncTeamStripeSubscription(command);
-    expect(mocks.rpc).toHaveBeenCalledWith("sync_team_subscription_event", {
-      p_event_id: "evt_team_123",
-      p_event_type: "customer.subscription.updated",
-      p_livemode: true,
+    expect(mocks.rpc).toHaveBeenCalledWith("apply_team_stripe_subscription_event", {
       p_user_id: USER_ID,
       p_stripe_customer_id: "cus_team_123",
       p_stripe_subscription_id: "sub_team_123",
@@ -148,12 +181,23 @@ describe("Team Stripe service-role adapter", () => {
       p_status: "active",
       p_current_period_start: new Date(1_797_000_000 * 1000).toISOString(),
       p_current_period_end: new Date(1_799_592_000 * 1000).toISOString(),
-      p_trial_end: null,
       p_cancel_at_period_end: false,
+      p_event_id: "evt_team_123",
+      p_event_type: "customer.subscription.updated",
+      p_event_created_at: new Date(1_797_000_000 * 1000).toISOString(),
+      p_metadata: {
+        billing_version: "1",
+        source: "terminalsync_team",
+        trial_end: null,
+      },
     });
 
     mocks.rpc.mockResolvedValueOnce({ data: "duplicate", error: null });
-    await expect(syncTeamStripeSubscription(command)).resolves.toBeUndefined();
+    await expect(syncTeamStripeSubscription(command)).resolves.toBe("duplicate");
+    mocks.rpc.mockResolvedValueOnce({ data: "stale", error: null });
+    await expect(syncTeamStripeSubscription(command)).resolves.toBe("stale");
+    mocks.rpc.mockResolvedValueOnce({ data: "reconciliation_required", error: null });
+    await expect(syncTeamStripeSubscription(command)).resolves.toBe("reconciliation_required");
     mocks.rpc.mockResolvedValueOnce({ data: "unexpected", error: null });
     await expect(syncTeamStripeSubscription(command)).rejects.toThrow("unknown result");
   });
