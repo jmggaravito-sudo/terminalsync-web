@@ -19,7 +19,7 @@ RETURNS TABLE(eligible boolean, seat_limit bigint, source text, expires_at times
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
   WITH direct_sources AS (
     SELECT m.source, 1::bigint AS seat_limit, m.expires_at FROM public.team_memberships m
-      WHERE m.user_id=p_user_id AND m.status='active' AND m.source='admin_comp'
+      WHERE m.user_id=p_user_id AND m.status='active' AND m.source IN ('admin_comp','paid')
         AND m.starts_at <= pg_catalog.now() AND (m.expires_at IS NULL OR m.expires_at > pg_catalog.now())
     UNION ALL
     SELECT 'paid'::text, b.seat_count, b.current_period_end FROM public.team_billing_subscriptions b

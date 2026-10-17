@@ -54,6 +54,15 @@ describe("paid Team roster migration", () => {
       await db.exec(`UPDATE public.team_billing_subscriptions SET status='active',seat_count=3 WHERE stripe_subscription_id='sub1'`);
       await db.query(`SELECT public.revoke_team_paid_employee($1::uuid,$2::uuid)`, [owner, employee1]);
       expect((await db.query<{ eligible: boolean }>(`SELECT eligible FROM public.get_team_entitlement($1::uuid)`, [employee1])).rows[0].eligible).toBe(false);
+      const legacyPaidUser = "00000000-0000-0000-0000-000000000004";
+      await db.exec(`INSERT INTO public.team_memberships(user_id,status,source,starts_at,expires_at)
+        VALUES ('${legacyPaidUser}','active','paid',now()-interval '1 day',now()+interval '1 day')`);
+      const legacyPaid = await db.query<{ eligible: boolean; source: string }>(
+        `SELECT eligible,source FROM public.get_team_entitlement($1::uuid)`, [legacyPaidUser]);
+      expect(legacyPaid.rows[0]).toEqual({ eligible: true, source: "paid" });
+      await db.exec(`UPDATE public.team_memberships SET expires_at=now()-interval '1 second' WHERE user_id='${legacyPaidUser}'`);
+      expect((await db.query<{ eligible: boolean }>(
+        `SELECT eligible FROM public.get_team_entitlement($1::uuid)`, [legacyPaidUser])).rows[0].eligible).toBe(false);
       expect(migration.toLowerCase()).not.toMatch(/\b(insert|update|delete)\s+into\s+public\.team_memberships\b/);
     } finally { await db.close(); }
   }, 15_000);
