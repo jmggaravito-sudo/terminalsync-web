@@ -129,7 +129,7 @@ export function Pricing({ dict }: { dict: Dict }) {
           currency={currency}
           highlighted={highlighted === "max"}
         />
-        <article className="rounded-2xl border border-[var(--color-accent)]/35 bg-[var(--color-panel)] p-5 flex flex-col">
+        <article id="plan-team" className="rounded-2xl border border-[var(--color-accent)]/35 bg-[var(--color-panel)] p-5 flex flex-col">
           <div className="text-xs font-semibold uppercase tracking-wide text-[var(--color-accent)]">{dict.pricing.plans.team.badge}</div>
           <h3 className="mt-2 text-xl font-semibold text-[var(--color-fg-strong)]">{dict.pricing.plans.team.name}</h3>
           <p className="mt-3 text-3xl font-bold text-[var(--color-fg-strong)]">{dict.pricing.plans.team.price}<span className="ml-1 text-sm font-normal text-[var(--color-fg-muted)]">{dict.pricing.plans.team.priceNote}</span></p>
