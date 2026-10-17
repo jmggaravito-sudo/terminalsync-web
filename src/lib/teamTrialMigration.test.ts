@@ -9,7 +9,8 @@ const sql = migration.toLowerCase().replace(/\s+/g, " ");
 describe("universal Team trial migration", () => {
   it("stores one fixed seven-day claim per account without touching base plans", () => {
     expect(sql).toContain("user_id uuid primary key references auth.users(id)");
-    expect(sql).toContain("check (expires_at = starts_at + interval '7 days')");
+    expect(sql).toContain("check (expires_at = starts_at + interval '168 hours')");
+    expect(sql).toContain("values (p_user_id, started, started + interval '168 hours')");
     expect(sql).toContain("on conflict (user_id) do nothing");
     expect(sql).toContain("clock_timestamp()");
     expect(sql).toContain("create or replace function public.team_shared_spaces_eligible");

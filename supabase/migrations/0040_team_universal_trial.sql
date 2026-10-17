@@ -6,7 +6,7 @@ CREATE TABLE public.team_trial_entitlements (
   starts_at timestamptz NOT NULL,
   expires_at timestamptz NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
-  CHECK (expires_at = starts_at + interval '7 days')
+  CHECK (expires_at = starts_at + interval '168 hours')
 );
 
 ALTER TABLE public.team_trial_entitlements ENABLE ROW LEVEL SECURITY;
@@ -24,10 +24,10 @@ DECLARE existing public.team_trial_entitlements%rowtype;
 BEGIN
   IF p_user_id IS NULL THEN RAISE EXCEPTION 'user required'; END IF;
   INSERT INTO public.team_trial_entitlements(user_id, starts_at, expires_at)
-  VALUES (p_user_id, started, started + interval '7 days')
+  VALUES (p_user_id, started, started + interval '168 hours')
   ON CONFLICT (user_id) DO NOTHING;
   IF FOUND THEN
-    RETURN QUERY SELECT 'started'::text, started, started + interval '7 days';
+    RETURN QUERY SELECT 'started'::text, started, started + interval '168 hours';
     RETURN;
   END IF;
   SELECT t.* INTO existing FROM public.team_trial_entitlements t WHERE t.user_id=p_user_id;
