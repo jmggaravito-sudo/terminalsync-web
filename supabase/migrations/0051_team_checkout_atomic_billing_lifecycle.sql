@@ -31,9 +31,7 @@ BEGIN
     RAISE EXCEPTION 'Team checkout already in flight; reconciliation required';
   END IF;
   IF EXISTS (SELECT 1 FROM public.team_billing_subscriptions b WHERE b.user_id=p_owner_user_id
-    AND b.status IN ('incomplete','active','trialing','past_due','unpaid','paused','reconciliation_required')
-    AND (b.current_period_start IS NULL OR b.current_period_start<=pg_catalog.now())
-    AND (b.current_period_end IS NULL OR b.current_period_end>pg_catalog.now())) THEN
+    AND b.status IN ('incomplete','active','trialing','past_due','unpaid','paused','reconciliation_required')) THEN
     RAISE EXCEPTION 'nonterminal paid Team subscription already exists';
   END IF;
   INSERT INTO public.team_checkout_intents(owner_user_id,request_id,stripe_price_id,seats,mode,idempotency_key)
@@ -129,7 +127,7 @@ DECLARE i public.team_checkout_intents%rowtype; applied text;
 BEGIN
   SELECT * INTO i FROM public.team_checkout_intents WHERE id=p_intent_id FOR UPDATE;
   IF NOT FOUND OR i.state NOT IN ('checkout_created','ambiguous','completed')
-    OR i.stripe_session_id IS DISTINCT FROM p_stripe_session_id
+    OR (i.stripe_session_id IS NOT NULL AND i.stripe_session_id IS DISTINCT FROM p_stripe_session_id)
     OR i.owner_user_id IS DISTINCT FROM p_user_id OR i.stripe_price_id IS DISTINCT FROM p_stripe_price_id
     OR i.seats IS DISTINCT FROM p_seat_count OR i.mode IS DISTINCT FROM 'subscription'
     OR p_metadata->>'team_checkout_intent_id' IS DISTINCT FROM i.id::text
@@ -145,7 +143,7 @@ BEGIN
     RAISE EXCEPTION 'Team checkout billing does not match intent/session metadata';
   END IF;
   IF i.state='completed' THEN
-    IF i.stripe_subscription_id IS DISTINCT FROM p_stripe_subscription_id OR i.billing_sync_status<>'applied' THEN
+    IF i.stripe_session_id IS DISTINCT FROM p_stripe_session_id OR i.stripe_subscription_id IS DISTINCT FROM p_stripe_subscription_id OR i.billing_sync_status<>'applied' THEN
       RAISE EXCEPTION 'completed Team checkout cannot be downgraded or rebound';
     END IF;
     RETURN 'completed';
@@ -173,7 +171,7 @@ BEGIN
         AND b.latest_event_id=p_event_id) THEN
     RAISE EXCEPTION 'Team billing ledger verification failed';
   END IF;
-  UPDATE public.team_checkout_intents SET state='completed',stripe_subscription_id=p_stripe_subscription_id,
+  UPDATE public.team_checkout_intents SET state='completed',stripe_session_id=p_stripe_session_id,stripe_subscription_id=p_stripe_subscription_id,
     billing_sync_status='applied',updated_at=pg_catalog.now() WHERE id=i.id;
   RETURN 'completed';
 END; $$;

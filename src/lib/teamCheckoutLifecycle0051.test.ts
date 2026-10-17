@@ -30,7 +30,7 @@ describe("Team checkout atomic lifecycle migration 0051",()=>{
    const b=await reserve("cccccccc-cccc-4ccc-8ccc-cccccccccccc"); expect(b.state).toBe("reserved");
    for(const status of ["incomplete","past_due","unpaid","paused","reconciliation_required"]){
     await db.exec(`delete from public.team_checkout_intents; delete from public.team_billing_subscriptions;`);
-    await db.query<any>(`insert into public.team_billing_subscriptions(stripe_subscription_id,user_id,stripe_customer_id,stripe_price_id,seat_count,status,latest_event_id,latest_event_created_at) values($1,$2,'cus','price_abc',3,$3,'evt',now())`,[`sub_${status}`,owner,status]);
+    await db.query<any>(`insert into public.team_billing_subscriptions(stripe_subscription_id,user_id,stripe_customer_id,stripe_price_id,seat_count,status,current_period_start,current_period_end,latest_event_id,latest_event_created_at) values($1,$2,'cus','price_abc',3,$3,now()-interval '90 days',now()-interval '30 days','evt',now())`,[`sub_${status}`,owner,status]);
     await expect(reserve(`dddddddd-dddd-4ddd-8ddd-${status==='incomplete'?'dddddddddddd':status==='past_due'?'eeeeeeeeeeee':status==='unpaid'?'ffffffffffff':status==='paused'?'aaaaaaaaaaaa':'bbbbbbbbbbbb'}`)).rejects.toThrow(/nonterminal paid Team subscription/);
    }
   } finally {await db.close();}
@@ -53,6 +53,20 @@ describe("Team checkout atomic lifecycle migration 0051",()=>{
    await db.exec("SET ROLE authenticated");
    await expect(db.query<any>(f,args)).rejects.toThrow(/permission denied/);
    await expect(db.query<any>(`select public.mark_team_checkout_async_failed($1::uuid,'cs_exact')`,[intent.id])).rejects.toThrow(/permission denied/);
+  }finally{await db.close();}
+ },20000);
+ it("binds an exact session atomically when billing precedes the session event for an ambiguous intent",async()=>{
+  const db=await dbFixture(); try{
+   const request="ffffffff-ffff-4fff-8fff-ffffffffffff";
+   const intent=(await db.query<any>(`select * from public.reserve_team_checkout_intent($1::uuid,$2::uuid,'price_abc',3,'subscription')`,[owner,request])).rows[0];
+   await db.query<any>(`select public.mark_team_checkout_intent_ambiguous($1::uuid,$2)`,[intent.id,intent.idempotency_key]);
+   const m={team_checkout_intent_id:intent.id,team_checkout_session_id:"cs_pre_event",team_checkout_owner_user_id:owner,team_checkout_request_id:request,team_checkout_price_id:"price_abc",team_checkout_seats:"3",team_checkout_mode:"subscription",team_checkout_idempotency_key:intent.idempotency_key,team_checkout_customer_id:"cus_pre",team_checkout_subscription_id:"sub_pre"};
+   const f=`select public.apply_team_checkout_billing_and_finalize($1::uuid,$2,$3::uuid,$4,$5,$6,$7,$8,$9::timestamptz,$10::timestamptz,$11,$12,$13,$14::timestamptz,$15::jsonb) as state`;
+   const args=[intent.id,"cs_pre_event",owner,"cus_pre","sub_pre","price_abc",3,"active",null,null,false,"evt_pre","customer.subscription.created","2026-01-01T00:00:00Z",JSON.stringify(m)];
+   expect((await db.query<any>(f,args)).rows[0].state).toBe("completed");
+   expect((await db.query<any>(`select stripe_session_id,state from public.team_checkout_intents where id=$1`,[intent.id])).rows[0]).toEqual({stripe_session_id:"cs_pre_event",state:"completed"});
+   expect((await db.query<any>(`select public.mark_team_checkout_session_pending($1::uuid,'cs_pre_event') as state`,[intent.id])).rows[0].state).toBe("completed");
+   await expect(db.query<any>(`select public.mark_team_checkout_session_pending($1::uuid,'cs_other')`,[intent.id])).rejects.toThrow(/session mismatch/);
   }finally{await db.close();}
  },20000);
 });
