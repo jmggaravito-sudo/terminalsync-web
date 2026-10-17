@@ -1,5 +1,7 @@
 -- Metadata-only Team alias and space invitation API. No shared content is
 -- stored, read, decrypted, imported, or delivered by this protocol.
+CREATE UNIQUE INDEX IF NOT EXISTS team_space_invitations_one_pending_idx
+  ON public.team_space_invitations(space_id,invitee_user_id) WHERE status='pending';
 CREATE OR REPLACE FUNCTION public.claim_team_alias(p_user_id uuid, p_alias text)
 RETURNS TABLE(alias text) LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 DECLARE normalized text := pg_catalog.lower(pg_catalog.btrim(p_alias));
@@ -32,19 +34,28 @@ BEGIN
  IF p_user_id IS NULL OR NOT coalesce((SELECT e.eligible FROM public.get_team_entitlement(p_user_id) e LIMIT 1),false) THEN RAISE EXCEPTION 'team entitlement required'; END IF;
  IF NOT EXISTS(SELECT 1 FROM public.team_shared_spaces s WHERE s.id=p_space_id AND s.owner_user_id=p_user_id) THEN RAISE EXCEPTION 'space unavailable'; END IF;
  SELECT a.user_id INTO target FROM public.team_aliases a WHERE a.alias=pg_catalog.lower(pg_catalog.btrim(p_alias));
- IF target IS NULL OR target=p_user_id OR NOT coalesce((SELECT e.eligible FROM public.get_team_entitlement(target) e LIMIT 1),false) THEN RETURN QUERY SELECT 'unavailable'::text; RETURN; END IF;
- INSERT INTO public.team_space_invitations(space_id,inviter_user_id,invitee_user_id) VALUES(p_space_id,p_user_id,target);
- RETURN QUERY SELECT 'invited'::text;
+ IF target IS NOT NULL AND target<>p_user_id AND coalesce((SELECT e.eligible FROM public.get_team_entitlement(target) e LIMIT 1),false) THEN
+   INSERT INTO public.team_space_invitations(space_id,inviter_user_id,invitee_user_id) VALUES(p_space_id,p_user_id,target)
+   ON CONFLICT DO NOTHING;
+ END IF;
+ -- Deliberately indistinguishable for absent, self, ineligible, and already
+ -- pending aliases. The inviter can never use this result as an alias oracle.
+ RETURN QUERY SELECT 'submitted'::text;
 END; $$;
 
 CREATE OR REPLACE FUNCTION public.respond_team_invitation(p_user_id uuid,p_invitation_id uuid,p_accept boolean)
 RETURNS TABLE(result text) LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 DECLARE inv public.team_space_invitations%rowtype;
+        owner_id uuid;
 BEGIN
  IF p_user_id IS NULL OR NOT coalesce((SELECT e.eligible FROM public.get_team_entitlement(p_user_id) e LIMIT 1),false) THEN RAISE EXCEPTION 'team entitlement required'; END IF;
  SELECT * INTO inv FROM public.team_space_invitations WHERE id=p_invitation_id AND invitee_user_id=p_user_id FOR UPDATE;
  IF NOT FOUND THEN RETURN QUERY SELECT 'unavailable'::text; RETURN; END IF;
  IF inv.status<>'pending' THEN RETURN QUERY SELECT inv.status; RETURN; END IF;
+ SELECT s.owner_user_id INTO owner_id FROM public.team_shared_spaces s WHERE s.id=inv.space_id;
+ IF owner_id IS NULL OR NOT coalesce((SELECT e.eligible FROM public.get_team_entitlement(owner_id) e LIMIT 1),false) THEN
+   RETURN QUERY SELECT 'unavailable'::text; RETURN;
+ END IF;
  UPDATE public.team_space_invitations SET status=CASE WHEN p_accept THEN 'accepted' ELSE 'declined' END,responded_at=pg_catalog.now() WHERE id=inv.id;
  RETURN QUERY SELECT CASE WHEN p_accept THEN 'accepted' ELSE 'declined' END::text;
 END; $$;
@@ -52,7 +63,7 @@ END; $$;
 CREATE OR REPLACE FUNCTION public.list_team_invitations(p_user_id uuid)
 RETURNS TABLE(id uuid,space_id uuid,space_name text,role text,status text,created_at timestamptz,responded_at timestamptz)
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
- SELECT i.id,i.space_id,s.name,CASE WHEN i.invitee_user_id=p_user_id THEN 'invitee' ELSE 'inviter' END,i.status,i.created_at,i.responded_at FROM public.team_space_invitations i JOIN public.team_shared_spaces s ON s.id=i.space_id WHERE p_user_id IS NOT NULL AND coalesce((SELECT e.eligible FROM public.get_team_entitlement(p_user_id) e LIMIT 1),false) AND (i.invitee_user_id=p_user_id OR i.inviter_user_id=p_user_id) ORDER BY i.created_at DESC
+ SELECT i.id,i.space_id,s.name,'invitee'::text,i.status,i.created_at,i.responded_at FROM public.team_space_invitations i JOIN public.team_shared_spaces s ON s.id=i.space_id WHERE p_user_id IS NOT NULL AND coalesce((SELECT e.eligible FROM public.get_team_entitlement(p_user_id) e LIMIT 1),false) AND i.invitee_user_id=p_user_id ORDER BY i.created_at DESC
 $$;
 
 DO $$ DECLARE fn text; BEGIN
