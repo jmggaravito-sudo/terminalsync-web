@@ -88,6 +88,18 @@ describe("Team conversation root API", () => {
     });
   });
 
+  it("fails closed rather than projecting an unsafe shared-space display name", async () => {
+    teamMetadataRpc.mockResolvedValueOnce([{
+      thread_id: threadId,
+      space_id: spaceId,
+      space_name: "/Users/private/shared-space",
+      last_activity_at: "2026-10-18T01:00:00.000Z",
+    }]);
+    const response = await GET(auth());
+    expect(response.status).toBe(503);
+    expect(await response.text()).not.toContain("private");
+  });
+
   it("rejects malformed, duplicated, partial, and unknown cursors before any RPC", async () => {
     for (const url of [
       "https://x.test/api/team/conversations?limit=0",

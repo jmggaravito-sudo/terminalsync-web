@@ -24,5 +24,9 @@ describe("received Team invitations", () => {
 
   it("fails closed for malformed API data", () => {
     expect(parseReceivedInvitations({ error: "unauthorized" })).toEqual([]);
+    expect(parseReceivedInvitations([{
+      id: "unsafe", space_id: "s", space_name: "https://private.example/space", owner_alias: null,
+      role: "invitee", status: "accepted", created_at: "now",
+    }])).toEqual([]);
   });
 });

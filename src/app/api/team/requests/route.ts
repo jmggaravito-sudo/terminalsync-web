@@ -1,5 +1,6 @@
 import { teamJson } from "@/lib/teamApiResponse";
 import { TeamMetadataError, teamMetadataFailure, teamMetadataRpc, verifiedTeamUser } from "@/lib/teamMetadata";
+import { isSafeTeamSpaceDisplayName } from "@/lib/teamSpaceDisplayName";
 
 export const runtime = "nodejs";
 
@@ -7,7 +8,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const REQUEST_STATUSES = new Set(["pending", "accepted", "declined", "withdrawn"]);
 
 type RequestCreationConfirmation = { id: string; status: string };
-type SafeRequestMetadata = Partial<{ label: string; category: string; itemCount: number }>;
+type SafeRequestMetadata = Partial<{ itemCount: number }>;
 type SafeRequest = {
   id: string;
   space_id: string;
@@ -30,15 +31,13 @@ function safeRequestMetadata(value: unknown): SafeRequestMetadata {
     throw new TeamMetadataError("Unexpected Team request metadata");
   }
   const record = value as Record<string, unknown>;
+  if (Object.keys(record).some((key) => key !== "itemCount")) {
+    throw new TeamMetadataError("Unexpected Team request metadata");
+  }
+  if (new TextEncoder().encode(JSON.stringify(record)).length > 64) {
+    throw new TeamMetadataError("Unexpected Team request metadata");
+  }
   const metadata: SafeRequestMetadata = {};
-  if (record.label !== undefined) {
-    if (typeof record.label !== "string" || record.label.length > 120) throw new TeamMetadataError("Unexpected Team request metadata");
-    metadata.label = record.label;
-  }
-  if (record.category !== undefined) {
-    if (typeof record.category !== "string" || record.category.length > 120) throw new TeamMetadataError("Unexpected Team request metadata");
-    metadata.category = record.category;
-  }
   if (record.itemCount !== undefined) {
     if (typeof record.itemCount !== "number" || !Number.isInteger(record.itemCount) || record.itemCount < 0 || record.itemCount > 1_000_000) {
       throw new TeamMetadataError("Unexpected Team request metadata");
@@ -65,7 +64,7 @@ function safeRequestList(value: unknown): SafeRequest[] {
     if (
       typeof id !== "string" || !UUID.test(id) || ids.has(id) ||
       typeof space_id !== "string" || !UUID.test(space_id) ||
-      typeof space_name !== "string" || space_name.length === 0 || space_name.length > 120 ||
+      !isSafeTeamSpaceDisplayName(space_name) ||
       (role !== "owner" && role !== "requester") || typeof can_respond !== "boolean" ||
       typeof status !== "string" || !REQUEST_STATUSES.has(status) ||
       (request_kind !== "document" && request_kind !== "context") ||
@@ -121,24 +120,38 @@ export async function POST(req: Request) {
   try {
     const user = await verifiedTeamUser(req);
     if (!user) return teamJson({ error: "Unauthorized" }, { status: 401 });
-    const body = await req.json();
-    const metadata = body?.metadata ?? {};
+    const body: unknown = await req.json();
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return teamJson({ error: "Invalid request metadata" }, { status: 400 });
+    }
+    const record = body as Record<string, unknown>;
+    // A legacy request remains a consent prompt, never a browser content
+    // channel. Reject rather than silently discard arbitrary body fields.
+    if (Object.keys(record).some((key) => !["spaceId", "kind", "manifestHash", "metadata"].includes(key))) {
+      return teamJson({ error: "Invalid request metadata" }, { status: 400 });
+    }
+    const metadata = record.metadata === undefined ? {} : record.metadata;
     if (
-      !body || typeof body.spaceId !== "string" || !UUID.test(body.spaceId) ||
-      !["document", "context"].includes(body.kind) || typeof body.manifestHash !== "string" || !/^[0-9a-f]{64}$/.test(body.manifestHash) ||
-      !metadata || typeof metadata !== "object" || Array.isArray(metadata) || new TextEncoder().encode(JSON.stringify(metadata)).length > 2048 ||
-      Object.keys(metadata).some((key) => !["label", "category", "itemCount"].includes(key)) ||
-      ["label", "category"].some((key) => metadata[key] !== undefined && (typeof metadata[key] !== "string" || metadata[key].length > 120)) ||
-      (metadata.itemCount !== undefined && (typeof metadata.itemCount !== "number" || !Number.isInteger(metadata.itemCount) || metadata.itemCount < 0 || metadata.itemCount > 1_000_000))
+      typeof record.spaceId !== "string" || !UUID.test(record.spaceId) ||
+      !["document", "context"].includes(record.kind as string) || typeof record.manifestHash !== "string" || !/^[0-9a-f]{64}$/.test(record.manifestHash) ||
+      !metadata || typeof metadata !== "object" || Array.isArray(metadata)
+    ) {
+      return teamJson({ error: "Invalid request metadata" }, { status: 400 });
+    }
+    const safeMetadata = metadata as Record<string, unknown>;
+    if (
+      new TextEncoder().encode(JSON.stringify(safeMetadata)).length > 64 ||
+      Object.keys(safeMetadata).some((key) => key !== "itemCount") ||
+      (safeMetadata.itemCount !== undefined && (typeof safeMetadata.itemCount !== "number" || !Number.isInteger(safeMetadata.itemCount) || safeMetadata.itemCount < 0 || safeMetadata.itemCount > 1_000_000))
     ) {
       return teamJson({ error: "Invalid request metadata" }, { status: 400 });
     }
     const result = await teamMetadataRpc<unknown>("create_team_space_request", {
       p_user_id: user.id,
-      p_space_id: body.spaceId,
-      p_request_kind: body.kind,
-      p_manifest_hash: body.manifestHash,
-      p_metadata: metadata,
+      p_space_id: record.spaceId,
+      p_request_kind: record.kind,
+      p_manifest_hash: record.manifestHash,
+      p_metadata: safeMetadata,
     });
     const confirmation = requestCreationConfirmation(result);
     if (!confirmation) return teamJson({ error: "Request was not created" }, { status: 409 });

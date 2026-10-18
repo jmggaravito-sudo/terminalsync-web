@@ -31,17 +31,18 @@ const teamMigrationNames: Record<number, string> = {
   52: "team_paid_roster_opaque_invitations",
   53: "team_conversation_turns",
   54: "team_conversation_metadata_hardening",
+  55: "team_legacy_approval_hardening",
 };
 
 const teamMigrationNumbers = Object.keys(teamMigrationNames).map(Number);
 const migrationFile = (n: number) => `${String(n).padStart(4, "0")}_${teamMigrationNames[n]}.sql`;
 const migration = (n: number) => readFileSync(join(process.cwd(), "supabase/migrations", migrationFile(n)), "utf8");
 
-describe("Team migrations 0037-0054 compatibility contract", () => {
+describe("Team migrations 0037-0055 compatibility contract", () => {
   it("keeps the shared-space, approval, trial, roster, and billing prerequisites in source order", () => {
     const expectedFiles = teamMigrationNumbers.map(migrationFile);
     const actualFiles = readdirSync(join(process.cwd(), "supabase/migrations"))
-      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-4])_team_.*\.sql$/.test(file))
+      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-5])_team_.*\.sql$/.test(file))
       .sort();
 
     expect(actualFiles).toEqual(expectedFiles);
@@ -68,6 +69,9 @@ describe("Team migrations 0037-0054 compatibility contract", () => {
       [40, 53], // every conversation operation checks the live entitlement
       [42, 53], // accepted invitations prove the two-way conversation pair
       [53, 54], // hardening closes the final v3 metadata taxonomy
+      [43, 55], // legacy requests exist before their count-only hardening
+      [48, 55], // v2 request projection is replaced by the hardened contract
+      [54, 55], // all approval metadata surfaces close in source order
     ]) {
       const prerequisiteIndex = teamMigrationNumbers.indexOf(prerequisite);
       const dependentIndex = teamMigrationNumbers.indexOf(dependent);
@@ -500,6 +504,31 @@ describe("Team migrations 0037-0054 compatibility contract", () => {
       expect(countOnlyTurn.metadata).toEqual({ itemCount: 2 });
       expect((await db.query<{ ok: boolean }>(
         `SELECT has_function_privilege('authenticated','public._team_is_safe_conversation_metadata_v3(jsonb)','EXECUTE') AS ok`,
+      )).rows[0].ok).toBe(false);
+
+      // 0055 closes the older one-request approval surface too. Its existing
+      // free-form label is reduced to a count and subsequent direct/API SQL
+      // writes cannot recreate a recipient-visible text channel.
+      await db.exec(migration(55));
+      expect((await db.query<{ metadata: Record<string, unknown> }>(
+        `SELECT metadata FROM public.team_space_requests WHERE id=$1::uuid`, [request.id],
+      )).rows[0].metadata).toEqual({ itemCount: 1 });
+      expect((await db.query<{ metadata: Record<string, unknown> }>(
+        `SELECT metadata FROM public.list_team_space_requests_v2($1::uuid) WHERE id=$2::uuid`, [newId, request.id],
+      )).rows[0].metadata).toEqual({ itemCount: 1 });
+      await expect(db.query(`
+        INSERT INTO public.team_space_requests(
+          space_id,requester_user_id,status,manifest_hash,request_kind,metadata
+        ) VALUES ($1::uuid,$2::uuid,'pending',$3::text,'document',$4::jsonb)
+      `, [space, oldId, "f".repeat(64), JSON.stringify({ content: "direct legacy write" })])).rejects.toThrow(/team_space_requests_metadata_safe_v3/);
+      await expect(db.query(`
+        SELECT * FROM public.register_team_space($1::uuid,'Espacio de Álex','private description',NULL)
+      `, [newId])).rejects.toThrow(/invalid metadata/);
+      expect((await db.query<{ name: string }>(`
+        SELECT * FROM public.register_team_space($1::uuid,'Espacio de Álex',NULL,NULL)
+      `, [newId])).rows[0].name).toBe("Espacio de Álex");
+      expect((await db.query<{ ok: boolean }>(
+        `SELECT has_function_privilege('authenticated','public._team_is_safe_legacy_request_metadata_v3(jsonb)','EXECUTE') AS ok`,
       )).rows[0].ok).toBe(false);
 
       // A new opaque invitation can reserve and consume a seat without

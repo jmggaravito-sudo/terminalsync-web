@@ -1,4 +1,5 @@
 import { TeamMetadataError } from "@/lib/teamMetadata";
+import { isSafeTeamSpaceDisplayName } from "@/lib/teamSpaceDisplayName";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SHA_256 = /^[0-9a-f]{64}$/;
@@ -267,7 +268,7 @@ function outputUuid(value: unknown, label: string): string {
 }
 
 function outputName(value: unknown, label: string): string {
-  if (typeof value !== "string" || value.length === 0 || value.length > 120) {
+  if (!isSafeTeamSpaceDisplayName(value)) {
     throw new TeamMetadataError(`Unexpected Team conversation ${label}`);
   }
   return value;
