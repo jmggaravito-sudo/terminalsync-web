@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { teamJson } from "@/lib/teamApiResponse";
 import { TeamMetadataError, teamMetadataFailure, teamMetadataRpc, verifiedTeamUser } from "@/lib/teamMetadata";
 
 export const runtime = "nodejs";
@@ -23,14 +23,14 @@ function invitationConfirmation(value: unknown, expected: "accepted" | "declined
 export async function POST(req: Request) {
   try {
     const user = await verifiedTeamUser(req);
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return teamJson({ error: "Unauthorized" }, { status: 401 });
     const body: unknown = await req.json();
     if (!body || typeof body !== "object" || Array.isArray(body)) {
-      return NextResponse.json({ error: "Invalid response metadata" }, { status: 400 });
+      return teamJson({ error: "Invalid response metadata" }, { status: 400 });
     }
     const record = body as Record<string, unknown>;
     if (typeof record.invitationId !== "string" || !UUID.test(record.invitationId) || typeof record.accept !== "boolean") {
-      return NextResponse.json({ error: "Invalid response metadata" }, { status: 400 });
+      return teamJson({ error: "Invalid response metadata" }, { status: 400 });
     }
     const expected = record.accept ? "accepted" : "declined";
     const result = await teamMetadataRpc<unknown>("respond_team_invitation", {
@@ -39,10 +39,10 @@ export async function POST(req: Request) {
       p_accept: record.accept,
     });
     const confirmation = invitationConfirmation(result, expected);
-    if (!confirmation) return NextResponse.json({ error: "Invitation was not updated" }, { status: 409 });
-    return NextResponse.json(confirmation);
+    if (!confirmation) return teamJson({ error: "Invitation was not updated" }, { status: 409 });
+    return teamJson(confirmation);
   } catch (error) {
     const failure = teamMetadataFailure(error, "Could not respond to invitation");
-    return NextResponse.json({ error: failure.status === 503 ? "Could not respond to invitation" : failure.error }, { status: failure.status });
+    return teamJson({ error: failure.status === 503 ? "Could not respond to invitation" : failure.error }, { status: failure.status });
   }
 }

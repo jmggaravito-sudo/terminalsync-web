@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { teamJson } from "@/lib/teamApiResponse";
 import { teamMetadataFailure, teamMetadataRpc, verifiedTeamUser } from "@/lib/teamMetadata";
 export const runtime = "nodejs";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -23,10 +23,10 @@ function requestConfirmation(result: unknown, requestId: string, accept: boolean
 export async function POST(req: Request) {
   try {
     const u = await verifiedTeamUser(req);
-    if (!u) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!u) return teamJson({ error: "Unauthorized" }, { status: 401 });
     const b = await req.json();
     if (!b || typeof b.requestId !== "string" || !UUID.test(b.requestId) || typeof b.accept !== "boolean") {
-      return NextResponse.json({ error: "Invalid response metadata" }, { status: 400 });
+      return teamJson({ error: "Invalid response metadata" }, { status: 400 });
     }
     const result = await teamMetadataRpc<unknown>("respond_team_space_request", {
       p_user_id: u.id,
@@ -34,10 +34,10 @@ export async function POST(req: Request) {
       p_accept: b.accept,
     });
     const confirmation = requestConfirmation(result, b.requestId, b.accept);
-    if (!confirmation) return NextResponse.json({ error: "Request was not updated" }, { status: 409 });
-    return NextResponse.json(confirmation);
+    if (!confirmation) return teamJson({ error: "Request was not updated" }, { status: 409 });
+    return teamJson(confirmation);
   } catch (e) {
     const f = teamMetadataFailure(e, "Could not respond to request");
-    return NextResponse.json({ error: f.status === 503 ? "Could not respond to request" : f.error }, { status: f.status });
+    return teamJson({ error: f.status === 503 ? "Could not respond to request" : f.error }, { status: f.status });
   }
 }

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { teamJson } from "@/lib/teamApiResponse";
 import { TeamMetadataError, teamMetadataFailure, teamMetadataRpc, verifiedTeamUser } from "@/lib/teamMetadata";
 
 export const runtime = "nodejs";
@@ -72,31 +72,31 @@ function submittedInvitationConfirmation(value: unknown): Array<{ result: "submi
 export async function GET(req: Request) {
   try {
     const user = await verifiedTeamUser(req);
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return teamJson({ error: "Unauthorized" }, { status: 401 });
     const result = await teamMetadataRpc<unknown>("list_team_invitations_v2", { p_user_id: user.id });
-    return NextResponse.json(safeInvitations(result));
+    return teamJson(safeInvitations(result));
   } catch (error) {
     const failure = teamMetadataFailure(error, "Could not list invitations");
-    return NextResponse.json({ error: failure.status === 503 ? "Could not list invitations" : failure.error }, { status: failure.status });
+    return teamJson({ error: failure.status === 503 ? "Could not list invitations" : failure.error }, { status: failure.status });
   }
 }
 
 export async function POST(req: Request) {
   try {
     const user = await verifiedTeamUser(req);
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return teamJson({ error: "Unauthorized" }, { status: 401 });
     const body: unknown = await req.json();
     if (!body || typeof body !== "object" || Array.isArray(body)) {
-      return NextResponse.json({ error: "Invalid invitation metadata" }, { status: 400 });
+      return teamJson({ error: "Invalid invitation metadata" }, { status: 400 });
     }
     const record = body as Record<string, unknown>;
     if (typeof record.spaceId !== "string" || !UUID.test(record.spaceId) || typeof record.alias !== "string" || record.alias.length > 64) {
-      return NextResponse.json({ error: "Invalid invitation metadata" }, { status: 400 });
+      return teamJson({ error: "Invalid invitation metadata" }, { status: 400 });
     }
     const result = await teamMetadataRpc<unknown>("invite_team_alias", { p_user_id: user.id, p_space_id: record.spaceId, p_alias: record.alias });
-    return NextResponse.json(submittedInvitationConfirmation(result));
+    return teamJson(submittedInvitationConfirmation(result));
   } catch (error) {
     const failure = teamMetadataFailure(error, "Could not create invitation");
-    return NextResponse.json({ error: failure.status === 503 ? "Could not create invitation" : failure.error }, { status: failure.status });
+    return teamJson({ error: failure.status === 503 ? "Could not create invitation" : failure.error }, { status: failure.status });
   }
 }

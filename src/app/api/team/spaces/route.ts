@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { teamJson } from "@/lib/teamApiResponse";
 import { TeamMetadataError, teamMetadataFailure, teamMetadataRpc, verifiedTeamUser } from "@/lib/teamMetadata";
 
 export const runtime = "nodejs";
@@ -39,26 +39,26 @@ function safeSpaces(value: unknown, expectedCount?: number): SafeTeamSpace[] {
 export async function GET(req: Request) {
   try {
     const user = await verifiedTeamUser(req);
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return teamJson({ error: "Unauthorized" }, { status: 401 });
     const spaces = await teamMetadataRpc<unknown>("list_team_spaces", { p_user_id: user.id });
-    return NextResponse.json(safeSpaces(spaces));
+    return teamJson(safeSpaces(spaces));
   } catch (error) {
     const failure = teamMetadataFailure(error, "Could not list spaces");
-    return NextResponse.json({ error: failure.status === 503 ? "Could not list spaces" : failure.error }, { status: failure.status });
+    return teamJson({ error: failure.status === 503 ? "Could not list spaces" : failure.error }, { status: failure.status });
   }
 }
 
 export async function POST(req: Request) {
   try {
     const user = await verifiedTeamUser(req);
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return teamJson({ error: "Unauthorized" }, { status: 401 });
     const body = await req.json();
     if (
       !body || typeof body.name !== "string" || body.name.length > 120 ||
       (body.description != null && (typeof body.description !== "string" || body.description.length > 500)) ||
       (body.externalRef != null && (typeof body.externalRef !== "string" || body.externalRef.length > 256))
     ) {
-      return NextResponse.json({ error: "Invalid metadata" }, { status: 400 });
+      return teamJson({ error: "Invalid metadata" }, { status: 400 });
     }
     const spaces = await teamMetadataRpc<unknown>("register_team_space", {
       p_user_id: user.id,
@@ -66,9 +66,9 @@ export async function POST(req: Request) {
       p_description: body.description ?? null,
       p_external_ref: body.externalRef ?? null,
     });
-    return NextResponse.json(safeSpaces(spaces, 1), { status: 201 });
+    return teamJson(safeSpaces(spaces, 1), { status: 201 });
   } catch (error) {
     const failure = teamMetadataFailure(error, "Could not register space");
-    return NextResponse.json({ error: failure.status === 503 ? "Could not register space" : failure.error }, { status: failure.status });
+    return teamJson({ error: failure.status === 503 ? "Could not register space" : failure.error }, { status: failure.status });
   }
 }
