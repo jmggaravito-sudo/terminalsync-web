@@ -1,7 +1,7 @@
 /**
  * Registra en el servidor una devolución de créditos que la app ya aplicó
  * localmente (un video que falló o no llegó). Ver
- * supabase/migrations/0056_ai_credit_refunds.sql.
+ * supabase/migrations/0057_ai_credit_refunds.sql.
  *
  * Contrato:
  *   - Autenticado: solo puede devolver gastos de su propia cuenta.
