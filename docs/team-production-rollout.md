@@ -4,9 +4,10 @@
 authorization to change production. The last read-only Supabase Management API
 migration-history check for project `zwyeqqxiwiogmtqwfnby` (2026-10-18) showed
 `0037_team_comp_entitlements` and `0038_team_stripe_billing` present; migrations
-`0039`–`0055` absent. Re-check immediately before any rollout; history may have
-changed since that observation. No migration execution or schema mutation was
-performed for this runbook.
+`0039`–`0055` absent. That snapshot predates `0056` and `0057` and is historical,
+not a current production claim. Re-check immediately before any rollout; history
+may have changed. No migration execution or schema mutation was performed for
+this runbook.
 
 ## Scope and migration set
 
@@ -33,11 +34,36 @@ SQL and confirming the expected preconditions/effects:
 created accounts should receive the same 168-hour, no-card trial automatically.
 Existing accounts retain the explicit authenticated trial-claim flow from
 `0040`. Decide separately whether automatic signup granting is wanted before
-including `0044`; it is not required for those existing accounts.
+including `0044`; it is not required for those existing accounts. **Applying
+`0044` starts the 168-hour clock at account creation immediately**, regardless
+of `TEAM_FEATURE_ENABLED`. If the Team page/API is still unavailable, new
+accounts can consume the trial while unable to use it. Therefore do not apply
+`0044` early during schema staging: complete the read-only preflights and
+restorability checks first, then apply it only inside the approved Team
+availability window when the remaining approved migrations and gate activation
+can proceed promptly. If that window slips or a check blocks progress, stop
+before `0044`; do not let signups consume trials while the feature is
+unavailable. Existing accounts' manual claim remains available only after the
+Team gate is enabled.
 
 Do **not** include paid-roster or paid-checkout migrations in this rollout:
 `0045`, `0046`, `0052`, and `0049`–`0051`. `0037`/`0038` are already recorded as
 present in the last check, but verify before rollout and do not replay them.
+
+`0057_team_seat_ceiling_64.sql` is a separate, forward-only capacity-hardening
+migration, not a prerequisite for the no-card trial. It constrains existing
+Team billing and checkout-intent rows to 1–64 seats without changing their
+values. It requires both `public.team_billing_subscriptions` (from `0038`) and
+`public.team_checkout_intents` (from `0049`); this runbook's trial-only scope
+deliberately excludes `0049`, so **do not apply `0057` in that narrow rollout**.
+If a separately approved Team schema rollout includes `0049`, apply `0057` only
+after its prerequisites and all earlier migrations selected for that rollout
+have been applied and verified, in repository migration order. For the
+contiguous Team chain, that means applying it after `0056`; do not jump from
+`0049` directly to `0057` while omitting intervening migrations. `0057` does not
+enable the Team gate or paid checkout. Its migration itself aborts before adding
+constraints if stored billing or intent quantities are outside 1–64; it does
+not silently repair, delete, or rewrite rows.
 
 ## Hard safety gates
 
@@ -51,6 +77,32 @@ present in the last check, but verify before rollout and do not replay them.
   `0055` sanitizes legacy shared-space names and approval/request metadata.
   Review those data effects and confirm the verified backup remains available
   before applying them.
+- For any approved rollout that includes `0057`, the backup/restorability check
+  and explicit production-change approval are mandatory even though the
+  migration only adds constraints. First verify its prerequisites exist, then
+  run the following **read-only preflight** against the intended database.
+  This query is documentation only; this change did not execute it remotely.
+  A missing relation is a stop condition, not permission to skip prerequisites.
+
+  ```sql
+  SELECT to_regclass('public.team_billing_subscriptions') AS billing_table,
+         to_regclass('public.team_checkout_intents') AS intents_table;
+
+  -- Run only after both relation checks above are non-NULL.
+  SELECT 'team_billing_subscriptions' AS table_name,
+         count(*) FILTER (WHERE seat_count IS NULL OR seat_count NOT BETWEEN 1 AND 64) AS violating_rows
+    FROM public.team_billing_subscriptions
+  UNION ALL
+  SELECT 'team_checkout_intents' AS table_name,
+         count(*) FILTER (WHERE seats IS NULL OR seats NOT BETWEEN 1 AND 64) AS violating_rows
+    FROM public.team_checkout_intents;
+  ```
+
+  Both `violating_rows` counts must be zero before applying `0057`. Review the
+  migration-history order immediately beforehand as well. If a count is
+  nonzero, stop: do not edit/delete data or bypass the migration preflight under
+  this runbook. Reconcile separately with explicit authorization and a fresh
+  recoverable backup, then rerun the read-only check.
 - Re-read remote migration history and inspect the live schema against each
   migration's preconditions. Apply only the specifically reviewed missing SQL,
   one migration at a time, using the approved Supabase change procedure. Verify
