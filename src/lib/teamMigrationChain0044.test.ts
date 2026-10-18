@@ -1,8 +1,16 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { citext } from "@electric-sql/pglite/contrib/citext";
+
+// The database projection necessarily contains member UUIDs so it can resolve
+// entitlements.  This guard exercises the actual server-side projection over
+// the PGlite chain, without ever connecting to Supabase, to make sure 0052
+// cannot reintroduce them into the owner-facing payload.
+const { getSupabaseAdmin } = vi.hoisted(() => ({ getSupabaseAdmin: vi.fn() }));
+vi.mock("@/lib/supabaseAdmin", () => ({ getSupabaseAdmin }));
+import { listPaidTeamRoster } from "./teamPaidRoster";
 
 const teamMigrationNames: Record<number, string> = {
   37: "team_comp_entitlements",
@@ -20,17 +28,18 @@ const teamMigrationNames: Record<number, string> = {
   49: "team_checkout_intents",
   50: "team_checkout_intent_single_active_guard",
   51: "team_checkout_atomic_billing_lifecycle",
+  52: "team_paid_roster_opaque_invitations",
 };
 
 const teamMigrationNumbers = Object.keys(teamMigrationNames).map(Number);
 const migrationFile = (n: number) => `${String(n).padStart(4, "0")}_${teamMigrationNames[n]}.sql`;
 const migration = (n: number) => readFileSync(join(process.cwd(), "supabase/migrations", migrationFile(n)), "utf8");
 
-describe("Team migrations 0037-0051 compatibility contract", () => {
+describe("Team migrations 0037-0052 compatibility contract", () => {
   it("keeps the shared-space, approval, trial, roster, and billing prerequisites in source order", () => {
     const expectedFiles = teamMigrationNumbers.map(migrationFile);
     const actualFiles = readdirSync(join(process.cwd(), "supabase/migrations"))
-      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[01])_team_.*\.sql$/.test(file))
+      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-2])_team_.*\.sql$/.test(file))
       .sort();
 
     expect(actualFiles).toEqual(expectedFiles);
@@ -50,6 +59,9 @@ describe("Team migrations 0037-0051 compatibility contract", () => {
       [38, 51], // atomic finalization writes the billing ledger
       [49, 51], // atomic finalization binds a checkout intent
       [50, 51], // atomic finalization preserves the latest reservation guard
+      [38, 52], // opaque reservations require the paid billing ledger
+      [45, 52], // an accepted opaque invitation writes the roster membership
+      [46, 52], // opaque reservations replace the read-only roster snapshot
     ]) {
       const prerequisiteIndex = teamMigrationNumbers.indexOf(prerequisite);
       const dependentIndex = teamMigrationNumbers.indexOf(dependent);
@@ -326,6 +338,105 @@ describe("Team migrations 0037-0051 compatibility contract", () => {
           `SELECT has_function_privilege('service_role',$1,'EXECUTE') AS ok`, [signature]
         )).rows[0].ok).toBe(true);
       }
+
+      // 0052 has to preserve all earlier Team capabilities while replacing the
+      // paid-roster mutation path with opaque invitations.  Exercise the
+      // browser-safe projection against this real PGlite chain rather than
+      // merely comparing a hand-written JSON fixture.
+      getSupabaseAdmin.mockReturnValue({
+        rpc: async (procedure: string, args: { p_owner_user_id?: string }) => {
+          if (procedure !== "list_team_paid_roster" || typeof args.p_owner_user_id !== "string") {
+            return { data: null, error: { message: "unexpected roster rpc" } };
+          }
+          const result = await db.query<{ snapshot: unknown }>(
+            `SELECT public.list_team_paid_roster($1::uuid) AS snapshot`, [args.p_owner_user_id],
+          );
+          return { data: result.rows[0]?.snapshot ?? null, error: null };
+        },
+      });
+      const beforeOpaqueInvitations = {
+        ownerEntitlement: (await db.query<{seat_limit:number;expires_at:string|null}>(
+          `SELECT seat_limit,expires_at FROM public.get_team_entitlement($1::uuid)`, [newId],
+        )).rows[0],
+        employeeEntitlement: (await db.query<{seat_limit:number;expires_at:string|null}>(
+          `SELECT seat_limit,expires_at FROM public.get_team_entitlement($1::uuid)`, [employeeId],
+        )).rows[0],
+        trial: (await db.query<{user_id:string;starts_at:string;expires_at:string}>(
+          `SELECT user_id,starts_at,expires_at FROM public.team_trial_entitlements ORDER BY user_id`,
+        )).rows,
+        invitations: (await db.query(
+          `SELECT * FROM public.list_team_invitations_v2($1::uuid)`, [employeeId],
+        )).rows,
+        requesterRequests: (await db.query(
+          `SELECT * FROM public.list_team_space_requests_v2($1::uuid)`, [employeeId],
+        )).rows,
+        ownerRequests: (await db.query(
+          `SELECT * FROM public.list_team_space_requests_v2($1::uuid)`, [newId],
+        )).rows,
+        ownerRoster: await listPaidTeamRoster(newId),
+      };
+      const serializedOwnerRosterBefore = JSON.stringify(beforeOpaqueInvitations.ownerRoster);
+      for (const privateValue of [newId, employeeId]) {
+        expect(serializedOwnerRosterBefore).not.toContain(privateValue);
+      }
+
+      await db.exec(migration(52));
+
+      expect((await db.query<{seat_limit:number;expires_at:string|null}>(
+        `SELECT seat_limit,expires_at FROM public.get_team_entitlement($1::uuid)`, [newId],
+      )).rows[0]).toEqual(beforeOpaqueInvitations.ownerEntitlement);
+      expect((await db.query<{seat_limit:number;expires_at:string|null}>(
+        `SELECT seat_limit,expires_at FROM public.get_team_entitlement($1::uuid)`, [employeeId],
+      )).rows[0]).toEqual(beforeOpaqueInvitations.employeeEntitlement);
+      expect((await db.query<{user_id:string;starts_at:string;expires_at:string}>(
+        `SELECT user_id,starts_at,expires_at FROM public.team_trial_entitlements ORDER BY user_id`,
+      )).rows).toEqual(beforeOpaqueInvitations.trial);
+      expect((await db.query(
+        `SELECT * FROM public.list_team_invitations_v2($1::uuid)`, [employeeId],
+      )).rows).toEqual(beforeOpaqueInvitations.invitations);
+      expect((await db.query(
+        `SELECT * FROM public.list_team_space_requests_v2($1::uuid)`, [employeeId],
+      )).rows).toEqual(beforeOpaqueInvitations.requesterRequests);
+      expect((await db.query(
+        `SELECT * FROM public.list_team_space_requests_v2($1::uuid)`, [newId],
+      )).rows).toEqual(beforeOpaqueInvitations.ownerRequests);
+      expect(await listPaidTeamRoster(newId)).toEqual(beforeOpaqueInvitations.ownerRoster);
+
+      // A new opaque invitation can reserve and consume a seat without
+      // exposing either the member UUID or the raw capability in the owner
+      // projection, and legacy direct UUID assignment stays fail-closed.
+      const opaqueOwnerId = "00000000-0000-0000-0000-000000000052";
+      const opaqueEmployeeId = "00000000-0000-0000-0000-000000000053";
+      const opaqueTokenHash = "b".repeat(64);
+      await db.exec(`INSERT INTO auth.users(id,email) VALUES
+        ('${opaqueOwnerId}','opaque-owner@example.test'),
+        ('${opaqueEmployeeId}','opaque-employee@example.test');
+        INSERT INTO public.team_billing_subscriptions
+          (stripe_subscription_id,user_id,stripe_customer_id,stripe_price_id,seat_count,status,
+           latest_event_id,latest_event_created_at)
+        VALUES ('sub-opaque','${opaqueOwnerId}','cus-opaque','price-team',2,'active','evt-opaque',now());`);
+      expect((await db.query<{expires_at:string}>(
+        `SELECT * FROM public.create_team_paid_roster_invitation($1::uuid,$2)`, [opaqueOwnerId, opaqueTokenHash],
+      )).rows[0].expires_at).toBeTruthy();
+      const reservedOwnerRoster = await listPaidTeamRoster(opaqueOwnerId);
+      expect(reservedOwnerRoster).toMatchObject({
+        has_active_team: true, seat_limit: 2, assigned_count: 0, occupied_seats: 2, available_slots: 0, roster: [],
+      });
+      expect(JSON.stringify(reservedOwnerRoster)).not.toContain(opaqueTokenHash);
+      expect(JSON.stringify(reservedOwnerRoster)).not.toContain(opaqueOwnerId);
+      expect(JSON.stringify(reservedOwnerRoster)).not.toContain(opaqueEmployeeId);
+      expect((await db.query<{result:string}>(
+        `SELECT * FROM public.accept_team_paid_roster_invitation($1::uuid,$2)`, [opaqueEmployeeId, opaqueTokenHash],
+      )).rows[0].result).toBe("accepted");
+      const acceptedOwnerRoster = await listPaidTeamRoster(opaqueOwnerId);
+      expect(acceptedOwnerRoster.roster).toHaveLength(1);
+      expect(acceptedOwnerRoster.roster[0]).toMatchObject({ member_number: 1, eligible: true });
+      for (const privateValue of [opaqueOwnerId, opaqueEmployeeId, opaqueTokenHash]) {
+        expect(JSON.stringify(acceptedOwnerRoster)).not.toContain(privateValue);
+      }
+      await expect(db.query(
+        `SELECT public.assign_team_paid_employee($1::uuid,$2::uuid)`, [opaqueOwnerId, employeeId],
+      )).rejects.toThrow(/direct Team roster assignment is disabled/);
     } finally { await db.close(); }
   }, 30_000);
 });
