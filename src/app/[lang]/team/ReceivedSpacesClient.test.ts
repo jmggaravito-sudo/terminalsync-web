@@ -37,4 +37,11 @@ describe("Team trial UI contract", () => {
     expect(source).toContain('authedFetch("/api/team/requests/respond"');
     expect(source).toContain('id="received-heading"');
   });
+
+  it("renders legacy owner approvals with only kind and optional item count", () => {
+    expect(source).toContain("request.itemCount !== null");
+    expect(source).not.toContain("request.label");
+    expect(source).not.toContain("request.category");
+    expect(source).not.toContain("request.metadata");
+  });
 });

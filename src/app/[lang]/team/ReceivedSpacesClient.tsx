@@ -128,8 +128,7 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
       <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "1rem" }}>
       {approvals.filter((item) => item.status === "pending" && item.canRespond).map((request) => <li key={request.id} style={{ border: "1px solid #d5dbea", borderRadius: 12, padding: "1rem" }}>
         <strong>{request.spaceName}</strong>
-        <p>{request.kind === "document" ? (es ? "Documento" : "Document") : (es ? "Contexto" : "Context")} · {request.label ?? (es ? "Solicitud" : "Request")}</p>
-        {request.category ? <p>{es ? "Categoría" : "Category"}: {request.category}</p> : null}
+        <p>{request.kind === "document" ? (es ? "Documento" : "Document") : (es ? "Contexto" : "Context")}</p>
         {request.itemCount !== null ? <p>{es ? "Elementos" : "Items"}: {request.itemCount}</p> : null}
         <div style={{ display: "flex", gap: ".75rem", marginTop: ".85rem" }}>
           <button disabled={busyId === request.id} onClick={() => void respondToRequest(request, true)}>{es ? "Aprobar" : "Approve"}</button>

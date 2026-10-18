@@ -5,7 +5,7 @@ import { join } from "node:path";
 const source = readFileSync(join(process.cwd(), "src/app/[lang]/team/TeamSpaceSetupPanel.tsx"), "utf8");
 
 describe("Team shared-space setup UI contract", () => {
-  it("uses explicit no-store alias, space, and invitation actions without refs or token storage", () => {
+  it("uses explicit no-store alias, safe-name space, and invitation actions without refs or token storage", () => {
     expect(source).toContain('authedFetch("/api/team/alias"');
     expect(source).toContain('authedFetch("/api/team/spaces"');
     expect(source).toContain('authedFetch("/api/team/invitations"');
@@ -17,6 +17,8 @@ describe("Team shared-space setup UI contract", () => {
     expect(source).not.toContain("type=\"file\"");
     expect(source).not.toContain("<textarea");
     expect(source).not.toContain("spaceDescription");
+    expect(source).not.toContain("description:");
+    expect(source).toContain("normalizeTeamDisplayName(spaceName)");
     expect(source).toContain("body: JSON.stringify({ name })");
   });
 

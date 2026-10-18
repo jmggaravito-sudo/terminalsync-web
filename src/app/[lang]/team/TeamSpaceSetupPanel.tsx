@@ -3,6 +3,7 @@
 import { type FormEvent, useId, useState } from "react";
 import { authedFetch } from "@/lib/supabase/browser";
 import type { OwnedTeamSpace } from "./teamSharedSpaces";
+import { normalizeTeamDisplayName } from "./teamDisplayName";
 
 const TEAM_ALIAS = /^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$/;
 
@@ -139,15 +140,15 @@ export function TeamSpaceSetupPanel({ lang, spaces, onChanged, onUnauthorized }:
 
   async function registerSpace(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const name = spaceName.trim();
+    const name = normalizeTeamDisplayName(spaceName);
     setSpaceMessage(null);
-    if (!name || name.length > 120) {
-      setSpaceMessage(es ? "El nombre del espacio es obligatorio (máximo 120 caracteres)." : "A space name is required (120 characters maximum).");
+    if (!name) {
+      setSpaceMessage(es ? "Usa un nombre seguro de 1 a 120 caracteres: letras, números, espacios o guiones." : "Use a safe 1–120 character name: letters, numbers, spaces, or hyphens.");
       return;
     }
     setSpaceBusy(true);
     try {
-      // The intentional space name is the only new, recipient-visible display
+      // The intentional safe display name is the only new recipient-visible
       // metadata. Do not submit descriptions, external refs, document IDs,
       // paths, URLs, or any context/document content.
       const response = await authedFetch("/api/team/spaces", {
@@ -177,8 +178,8 @@ export function TeamSpaceSetupPanel({ lang, spaces, onChanged, onUnauthorized }:
   return <section aria-labelledby="team-owner-spaces-heading">
     <h2 id="team-owner-spaces-heading">{es ? "Espacios que compartes" : "Spaces you share"}</h2>
     <p>{es
-      ? "Configura solo el nombre del espacio. Esta página no sube documentos, contextos, descripciones ni enlaces externos."
-      : "Configure only the space name. This page does not upload documents, context, descriptions, or external links."}</p>
+      ? "Configura solo un nombre visible seguro. Esta página no sube documentos, contextos, descripciones ni enlaces externos."
+      : "Configure only a safe visible name. This page does not upload documents, context, descriptions, or external links."}</p>
 
     <section aria-labelledby="team-alias-heading">
       <h3 id="team-alias-heading">{es ? "Tu alias Team" : "Your Team alias"}</h3>
@@ -195,7 +196,7 @@ export function TeamSpaceSetupPanel({ lang, spaces, onChanged, onUnauthorized }:
 
     <section aria-labelledby="team-register-space-heading" style={{ marginTop: "1.5rem" }}>
       <h3 id="team-register-space-heading">{es ? "Registrar un espacio para compartir" : "Register a space to share"}</h3>
-      <p>{es ? "Escribe solo un nombre breve; no agregues descripción, contenido ni referencias de documentos." : "Enter only a short name; do not add a description, content, or document references."}</p>
+      <p>{es ? "Usa letras, números, espacios o guiones; no agregues URL, rutas, descripción, contenido ni referencias de documentos." : "Use letters, numbers, spaces, or hyphens; do not add URLs, paths, descriptions, content, or document references."}</p>
       <form onSubmit={(event) => void registerSpace(event)}>
         <label htmlFor={spaceNameId}>{es ? "Nombre del espacio" : "Space name"}</label>
         <input id={spaceNameId} value={spaceName} onChange={(event) => setSpaceName(event.target.value)} maxLength={120} autoComplete="off" />
@@ -209,7 +210,6 @@ export function TeamSpaceSetupPanel({ lang, spaces, onChanged, onUnauthorized }:
     {spaces.length > 0 ? <ul aria-label={es ? "Tus espacios compartidos" : "Your shared spaces"} style={{ listStyle: "none", padding: 0, display: "grid", gap: "1rem", marginTop: "1.5rem" }}>
       {spaces.map((space) => <li key={space.id} style={{ border: "1px solid #d5dbea", borderRadius: 12, padding: "1rem" }}>
         <strong>{space.name}</strong>
-        {space.description ? <p>{space.description}</p> : null}
         <SpaceInvitationForm lang={lang} space={space} onUnauthorized={onUnauthorized} />
       </li>)}
     </ul> : <p role="status">{es ? "Aún no has registrado espacios para compartir." : "You have not registered any spaces to share yet."}</p>}

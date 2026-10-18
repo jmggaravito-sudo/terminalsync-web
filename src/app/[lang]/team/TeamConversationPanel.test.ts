@@ -29,20 +29,46 @@ describe("Team conversation UI contract", () => {
     expect(source).toContain('loadError ? <div role="alert">');
   });
 
-  it("keeps both start paths and only renders approval buttons for authoritative inbound pending turns", () => {
+  it("binds prepared payloads to a keyed target/draft epoch and locks all mutable form controls", () => {
+    expect(source).toContain("formEpoch");
+    expect(source).toContain("draftRevisionRef");
+    expect(source).toContain("canCommitPreparedTurn");
+    expect(source).toContain("key={`initial:${initialTarget.formEpoch}`}");
+    expect(source).toContain("key={`followup:${followUpTarget.formEpoch}`}");
+    expect(source).toContain("disabled={busy || interactionLocked}");
+    expect(source).toContain("requestOperationRef");
+    expect(source).toContain("onOperationChange(formEpoch, attempt, false)");
+  });
+
+  it("keeps both start paths, scopes response cleanup to each turn, and confirms the matching thread", () => {
     expect(source).toContain("relationshipId: target.relationshipId");
     expect(source).toContain("relationshipId: null");
     expect(source).toContain('{turn.threadId === openedThread.threadId && turn.direction === "inbound" && turn.status === "pending" && turn.canRespond ? <section');
     expect(source).toContain('turn.direction === "inbound" && turn.status === "pending"');
-    expect(source).toContain("responseOperations");
+    expect(source).toContain("respondingTurns");
+    expect(source).toContain("inFlightResponseAttempts");
+    expect(source).not.toContain("respondingTurnId");
+    expect(source).not.toContain("responseOperations");
+    expect(source).toContain("canClearResponseAttempt");
+    expect(source).toContain("confirmation.threadId !== turn.threadId");
     expect(source).toContain("response.status === 409");
     expect(source).toContain("threadLoadSequence");
     expect(source).toContain("const mayCommit");
-    expect(source).toContain("turn.threadId === openedThread.threadId && turn.direction === \"inbound\"");
+  });
+
+  it("uses explicit safe load-more actions rather than silently truncating opaque cursors", () => {
+    expect(source).toContain("parseConversationThreadPage");
+    expect(source).toContain("parseConversationTurnPage");
+    expect(source).toContain("beforeActivityAt");
+    expect(source).toContain("beforeCreatedAt");
+    expect(source).toContain("Cargar más conversaciones");
+    expect(source).toContain("Cargar más solicitudes");
+    expect(source).toContain("threadNextCursor");
+    expect(source).toContain("turnNextCursor");
   });
 
   it("never offers upload, delivery, body, attachment, or raw identifier UI", () => {
-    expect(source).not.toContain("type=\"file\"");
+    expect(source).not.toContain('type="file"');
     expect(source).not.toContain("<textarea");
     expect(source).not.toContain("Enviar documento");
     expect(source).not.toContain("<code>{turn.id}");
@@ -50,4 +76,3 @@ describe("Team conversation UI contract", () => {
     expect(source).not.toContain("{prepared.manifestHash}");
   });
 });
-

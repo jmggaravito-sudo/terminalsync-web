@@ -1,3 +1,5 @@
+import { safeTeamDisplayName } from "./teamDisplayName";
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SHA_256 = /^[0-9a-f]{64}$/;
 const TEAM_ALIAS = /^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$/;
@@ -30,6 +32,12 @@ export type ConversationThread = {
   lastActivityAt: string;
 };
 
+/** Opaque pagination state. It is used only to make an explicit next-page request. */
+export type ConversationThreadCursor = {
+  beforeActivityAt: string;
+  beforeThreadId: string;
+};
+
 export type ConversationTurn = {
   threadId: string;
   id: string;
@@ -40,6 +48,22 @@ export type ConversationTurn = {
   respondedAt: string | null;
   direction: ConversationDirection;
   canRespond: boolean;
+};
+
+/** Opaque pagination state. It is never rendered, persisted, or put in a link. */
+export type ConversationTurnCursor = {
+  beforeCreatedAt: string;
+  beforeTurnId: string;
+};
+
+export type ConversationThreadPage = {
+  threads: ConversationThread[];
+  nextCursor: ConversationThreadCursor | null;
+};
+
+export type ConversationTurnPage = {
+  turns: ConversationTurn[];
+  nextCursor: ConversationTurnCursor | null;
 };
 
 export type ConversationDraft = {
@@ -64,16 +88,12 @@ function validDate(value: unknown): value is string {
   return typeof value === "string" && Number.isFinite(Date.parse(value));
 }
 
-function safeName(value: unknown): string | null {
-  return typeof value === "string" && value.trim().length > 0 && value.length <= 120
-    ? value.trim()
-    : null;
-}
-
 function safeMetadata(value: unknown): ConversationMetadata | null {
   const source = object(value);
   if (!source || Object.keys(source).some((key) => key !== "itemCount")) return null;
-  if (new TextEncoder().encode(JSON.stringify(source)).length > 2048) return null;
+  // Keep the browser mirror in lock-step with the server's deliberately tiny
+  // metadata envelope. This is a count-only protocol, not a content channel.
+  if (new TextEncoder().encode(JSON.stringify(source)).length > 64) return null;
   const metadata: ConversationMetadata = {};
   if (source.itemCount !== undefined) {
     if (typeof source.itemCount !== "number" || !Number.isInteger(source.itemCount) || source.itemCount < 0 || source.itemCount > 1_000_000) return null;
@@ -129,7 +149,7 @@ export function parseConversationTargets(value: unknown): ConversationTarget[] {
   const rows = root.targets.flatMap((value): ConversationTarget[] => {
     const source = object(value);
     if (!source) return [];
-    const spaceName = safeName(source.space_name);
+    const spaceName = safeTeamDisplayName(source.space_name);
     if (
       typeof source.relationship_id !== "string" || !UUID.test(source.relationship_id) ||
       typeof source.space_id !== "string" || !UUID.test(source.space_id) ||
@@ -151,7 +171,7 @@ export function parseConversationThreads(value: unknown): ConversationThread[] {
   if (!root || !Array.isArray(root.threads)) return [];
   const rows = root.threads.flatMap((value): ConversationThread[] => {
     const source = object(value);
-    const spaceName = source ? safeName(source.space_name) : null;
+    const spaceName = source ? safeTeamDisplayName(source.space_name) : null;
     if (!source || typeof source.thread_id !== "string" || !UUID.test(source.thread_id) ||
       typeof source.space_id !== "string" || !UUID.test(source.space_id) || !spaceName || !validDate(source.last_activity_at)) return [];
     return [{
@@ -171,6 +191,46 @@ export function parseConversationTurns(value: unknown): ConversationTurn[] {
     const turn = safeTurn(row);
     return turn ? [turn] : [];
   }), (turn) => turn.id);
+}
+
+function parseConversationThreadCursor(value: unknown): ConversationThreadCursor | null | undefined {
+  if (value === null) return null;
+  const source = object(value);
+  if (!source || Object.keys(source).length !== 2 ||
+    !validDate(source.beforeActivityAt) ||
+    typeof source.beforeThreadId !== "string" || !UUID.test(source.beforeThreadId)) return undefined;
+  return { beforeActivityAt: source.beforeActivityAt, beforeThreadId: source.beforeThreadId };
+}
+
+function parseConversationTurnCursor(value: unknown): ConversationTurnCursor | null | undefined {
+  if (value === null) return null;
+  const source = object(value);
+  if (!source || Object.keys(source).length !== 2 ||
+    !validDate(source.beforeCreatedAt) ||
+    typeof source.beforeTurnId !== "string" || !UUID.test(source.beforeTurnId)) return undefined;
+  return { beforeCreatedAt: source.beforeCreatedAt, beforeTurnId: source.beforeTurnId };
+}
+
+/**
+ * A page is all-or-nothing: a missing/malformed cursor is surfaced as an
+ * error instead of silently hiding older approval cards. Unknown row fields
+ * are still discarded by the narrow browser projection below.
+ */
+export function parseConversationThreadPage(value: unknown): ConversationThreadPage | null {
+  const root = object(value);
+  if (!root || !Array.isArray(root.threads) || !("nextCursor" in root)) return null;
+  const threads = parseConversationThreads(root);
+  const nextCursor = parseConversationThreadCursor(root.nextCursor);
+  return nextCursor === undefined || threads.length !== root.threads.length ? null : { threads, nextCursor };
+}
+
+/** See parseConversationThreadPage: page parsing must not silently truncate. */
+export function parseConversationTurnPage(value: unknown): ConversationTurnPage | null {
+  const root = object(value);
+  if (!root || !Array.isArray(root.turns) || !("nextCursor" in root)) return null;
+  const turns = parseConversationTurns(root);
+  const nextCursor = parseConversationTurnCursor(root.nextCursor);
+  return nextCursor === undefined || turns.length !== root.turns.length ? null : { turns, nextCursor };
 }
 
 export function parseConversationTurnConfirmation(value: unknown): ConversationTurn | null {
@@ -240,5 +300,23 @@ export function canCommitConversationThreadLoad(
   requestThreadId: string,
 ): boolean {
   return currentSequence === requestSequence && selectedThreadId === requestThreadId;
+}
+
+/**
+ * Prepared idempotency data is usable only for the exact target/form epoch and
+ * exact draft revision that created it. Any edit or target switch fails closed.
+ */
+export function canCommitPreparedTurn(
+  currentFormEpoch: number,
+  currentDraftRevision: number,
+  attemptFormEpoch: number,
+  attemptDraftRevision: number,
+): boolean {
+  return currentFormEpoch === attemptFormEpoch && currentDraftRevision === attemptDraftRevision;
+}
+
+/** A late cleanup may release only the response attempt that still owns a turn. */
+export function canClearResponseAttempt(currentAttempt: number | undefined, attempt: number): boolean {
+  return currentAttempt === attempt;
 }
 
