@@ -13,6 +13,8 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
   const [authenticated, setAuthenticated] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [entitlement, setEntitlement] = useState<Entitlement | null>(null);
+  const [trialMessage, setTrialMessage] = useState<string | null>(null);
+  const [claimingTrial, setClaimingTrial] = useState(false);
   const [invitations, setInvitations] = useState<ReceivedInvitation[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [approvals, setApprovals] = useState<OwnerApproval[]>([]);
@@ -68,6 +70,24 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
     } finally { setBusyId(null); }
   }
 
+  async function claimTrial() {
+    setClaimingTrial(true); setTrialMessage(null); setError(null);
+    try {
+      const response = await authedFetch("/api/team/trial", { method: "POST" });
+      if (response.status === 401) { setAuthenticated(false); return; }
+      const body = await response.json().catch(() => null);
+      if (!response.ok || !body || !["started", "already_claimed"].includes(body.result)) throw new Error("claim");
+      if (body.entitlement && typeof body.entitlement === "object") setEntitlement(body.entitlement);
+      setTrialMessage(body.result === "started"
+        ? (es ? "Prueba Team iniciada por 7 días. No se requiere tarjeta ni se hará un cobro automático." : "Your 7-day Team trial has started. No card is required and there is no automatic charge.")
+        : (body.entitlement?.eligible
+          ? (es ? "Ya tienes acceso Team activo; no se inició otra prueba." : "You already have active Team access; no additional trial was started.")
+          : (es ? "La prueba única ya fue utilizada o venció. No se inició otra prueba." : "The one-time trial was already claimed or has expired. No new trial was started.")));
+    } catch {
+      setError(es ? "No pudimos iniciar la prueba Team. Intenta de nuevo." : "We couldn't start the Team trial. Please try again.");
+    } finally { setClaimingTrial(false); }
+  }
+
   return <section aria-labelledby="team-heading" style={{ maxWidth: 760, margin: "3rem auto", padding: "0 1.25rem", color: "#172033" }}>
     <h1 id="team-heading">{es ? "Espacios compartidos" : "Shared spaces"}</h1>
     {loading ? <p role="status">{es ? "Cargando…" : "Loading…"}</p> : null}
@@ -90,6 +110,13 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
       </ul>
     </section> : null}
     {!loading && authenticated && entitlement && entitlement.eligible === false ? <p>{es ? "Tu cuenta no tiene acceso Team activo en este momento." : "Your account does not currently have active Team access."}</p> : null}
+    {!loading && authenticated && entitlement && entitlement.eligible === false ? <section aria-labelledby="team-trial-heading">
+      <h2 id="team-trial-heading">{es ? "Prueba Team sin tarjeta" : "Team trial, no card required"}</h2>
+      <p>{es ? "Puedes solicitar una única prueba de 7 días (168 horas). No hay cobro automático. El checkout de Team todavía no está disponible; al terminar, no podrás contratar desde este sitio." : "You may claim one 7-day (168-hour) trial. There is no automatic charge. Team checkout is not available yet, so you cannot subscribe from this site when it ends."}</p>
+      <button disabled={claimingTrial} onClick={() => void claimTrial()}>{claimingTrial ? (es ? "Iniciando…" : "Starting…") : (es ? "Iniciar prueba Team" : "Claim Team trial")}</button>
+      {trialMessage ? <p role="status">{trialMessage}</p> : null}
+    </section> : null}
+    {!loading && authenticated && entitlement?.eligible ? <p role="status">{es ? `Acceso Team activo${entitlement.expires_at ? ` hasta ${new Date(entitlement.expires_at).toLocaleDateString("es")}` : ""}. El checkout de Team todavía no está disponible.` : `Team access is active${entitlement.expires_at ? ` until ${new Date(entitlement.expires_at).toLocaleDateString("en")}` : ""}. Team checkout is not available yet.`}</p> : null}
     {!loading && authenticated && !error && collections.pending.length === 0 && collections.received.length === 0 && !approvals.some((item) => item.status === "pending" && item.canRespond) ? <p>{es ? "No tienes invitaciones, solicitudes pendientes ni espacios recibidos." : "You have no invitations, pending requests, or received spaces."}</p> : null}
     {!loading && authenticated && collections.pending.length > 0 ? <section aria-labelledby="pending-heading">
       <h2 id="pending-heading">{es ? "Invitaciones pendientes" : "Pending invitations"}</h2>
