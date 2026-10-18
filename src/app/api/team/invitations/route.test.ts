@@ -56,6 +56,13 @@ describe("Team invitations API", () => {
     expect(await response.text()).not.toContain("42");
   });
 
+  it("fails closed for unsafe recipient-visible space names", async () => {
+    for (const space_name of ["https://private.example/space", "/Users/private/space", "Equipo\nprivado"]) {
+      teamMetadataRpc.mockResolvedValueOnce([{ ...safeInvitation, space_name }]);
+      expect((await GET(request())).status).toBe(503);
+    }
+  });
+
   it("reports admin configuration failure as 503 rather than success or unauthorized", async () => {
     getSupabaseAdmin.mockReturnValueOnce(null);
     const response = await GET(request());
@@ -72,10 +79,16 @@ describe("Team invitations API", () => {
     expect(await failed.text()).not.toContain("secret raw");
   });
 
-  it("uses verified identity and does not pass body-supplied user identifiers", async () => {
-    const response = await POST(request(JSON.stringify({ userId: "attacker", ownerId: "attacker", spaceId, alias: "hidden" })));
-    expect(response.status).toBe(200);
-    expect(teamMetadataRpc).toHaveBeenCalledWith("invite_team_alias", { p_user_id: "verified", p_space_id: spaceId, p_alias: "hidden" });
+  it("rejects body-supplied user IDs and content-like fields instead of silently ignoring them", async () => {
+    for (const body of [
+      { userId: "attacker", spaceId, alias: "hidden" },
+      { ownerId: "attacker", spaceId, alias: "hidden" },
+      { spaceId, alias: "hidden", description: "private" },
+      { spaceId, alias: "hidden", externalRef: "/private/ref" },
+    ]) {
+      expect((await POST(request(JSON.stringify(body)))).status).toBe(400);
+    }
+    expect(teamMetadataRpc).not.toHaveBeenCalled();
   });
 
   it("requires a canonical space UUID before invoking the invitation RPC", async () => {

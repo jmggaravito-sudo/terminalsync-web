@@ -29,7 +29,7 @@ const turn = {
   id: turnId,
   status: "pending",
   request_kind: "context",
-  metadata: { category: "Research" },
+  metadata: { itemCount: 1 },
   created_at: "2026-10-18T00:00:00.000Z",
   responded_at: null,
   direction: "outbound",
@@ -84,7 +84,7 @@ describe("Team conversation turn API", () => {
     const response = await POST(json({
       kind: "context",
       manifestHash: "a".repeat(64),
-      metadata: { category: "Research" },
+      metadata: { itemCount: 1 },
       operationId,
     }), params);
     expect(response.status).toBe(200);
@@ -93,17 +93,22 @@ describe("Team conversation turn API", () => {
       p_thread_id: threadId,
       p_request_kind: "context",
       p_manifest_hash: "a".repeat(64),
-      p_metadata: { category: "Research" },
+      p_metadata: { itemCount: 1 },
       p_client_operation_id: operationId,
     });
     expect(await response.json()).toEqual({ turn });
   });
 
-  it("rejects relationship/user/content fields and a mismatched RPC thread instead of following or leaking them", async () => {
+  it("rejects relationship/user/free-text fields and a mismatched RPC thread instead of following or leaking them", async () => {
     for (const body of [
       { kind: "context", manifestHash: "a".repeat(64), operationId, relationshipId: "00000000-0000-4000-8000-000000000099" },
       { kind: "context", manifestHash: "a".repeat(64), operationId, userId: "attacker" },
       { kind: "context", manifestHash: "a".repeat(64), operationId, content: "private" },
+      { kind: "context", manifestHash: "a".repeat(64), operationId, metadata: { label: "https://private.example/document" } },
+      { kind: "context", manifestHash: "a".repeat(64), operationId, metadata: { category: "/Users/private/document.pdf" } },
+      { kind: "context", manifestHash: "a".repeat(64), operationId, metadata: { url: "https://private.example/document" } },
+      { kind: "context", manifestHash: "a".repeat(64), operationId, metadata: { path: "C:\\private\\document.pdf" } },
+      { kind: "context", manifestHash: "a".repeat(64), operationId, metadata: { content: "private" } },
     ]) {
       expect((await POST(json(body), params)).status).toBe(400);
     }

@@ -78,5 +78,12 @@ describe("Team conversation target API", () => {
       counterparty_alias: "INVALID ALIAS",
     }]);
     expect((await GET(auth())).status).toBe(503);
+    teamMetadataRpc.mockResolvedValueOnce([{
+      relationship_id: relationshipId,
+      space_id: spaceId,
+      space_name: "https://private.example/space",
+      counterparty_alias: "member",
+    }]);
+    expect((await GET(auth())).status).toBe(503);
   });
 });

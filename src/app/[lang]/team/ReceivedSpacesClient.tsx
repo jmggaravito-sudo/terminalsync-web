@@ -7,6 +7,9 @@ import { parseOwnerApprovals, type OwnerApproval } from "./ownerApprovals";
 import { parsePaidRosterOwnerView, type PaidRosterOwnerView } from "./paidRosterOwnerView";
 import { PaidRosterOwnerPanel } from "./PaidRosterOwnerPanel";
 import { PaidRosterInvitationPanel } from "./PaidRosterInvitationPanel";
+import { TeamSpaceSetupPanel } from "./TeamSpaceSetupPanel";
+import { TeamConversationPanel } from "./TeamConversationPanel";
+import { parseOwnedTeamSpaces, type OwnedTeamSpace } from "./teamSharedSpaces";
 
 type Entitlement = { eligible?: boolean; seat_limit?: number; source?: string | null; expires_at?: string | null };
 
@@ -22,20 +25,32 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [approvals, setApprovals] = useState<OwnerApproval[]>([]);
   const [paidRoster, setPaidRoster] = useState<PaidRosterOwnerView | null>(null);
+  const [ownedSpaces, setOwnedSpaces] = useState<OwnedTeamSpace[]>([]);
   const collections = partitionReceivedInvitations(invitations);
+
+  const markUnauthorized = useCallback(() => {
+    setAuthenticated(false);
+    setInvitations([]);
+    setEntitlement(null);
+    setApprovals([]);
+    setPaidRoster(null);
+    setOwnedSpaces([]);
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true); setError(null); setAuthenticated(true);
     try {
       // GET only: never claim/start a trial as a side effect of opening this page.
-      const [entitlementResponse, invitationsResponse, requestResponse, rosterResponse] = await Promise.all([
+      const [entitlementResponse, invitationsResponse, requestResponse, rosterResponse, spacesResponse] = await Promise.all([
         authedFetch("/api/team/trial"),
         authedFetch("/api/team/invitations"),
         authedFetch("/api/team/requests"),
         authedFetch("/api/team/paid-roster").catch(() => null),
+        // Spaces are optional so a rolling deployment cannot hide legacy cards.
+        authedFetch("/api/team/spaces", { cache: "no-store", referrerPolicy: "no-referrer" }).catch(() => null),
       ]);
       if (entitlementResponse.status === 401 || invitationsResponse.status === 401 || requestResponse.status === 401) {
-        setAuthenticated(false); setInvitations([]); setEntitlement(null); setApprovals([]); setPaidRoster(null); return;
+        markUnauthorized(); return;
       }
       if (!entitlementResponse.ok || !invitationsResponse.ok || !requestResponse.ok) throw new Error("load");
       const [entitlementBody, invitationBody, requestBody] = await Promise.all([entitlementResponse.json(), invitationsResponse.json(), requestResponse.json()]);
@@ -48,10 +63,13 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
         const rosterBody = await rosterResponse.json().catch(() => null);
         setPaidRoster(parsePaidRosterOwnerView(rosterBody));
       } else setPaidRoster(null);
+      if (spacesResponse?.ok) {
+        setOwnedSpaces(parseOwnedTeamSpaces(await spacesResponse.json().catch(() => null)));
+      } else setOwnedSpaces([]);
     } catch {
       setError(es ? "No pudimos cargar tus invitaciones. Intenta de nuevo." : "We couldn't load your invitations. Please try again.");
     } finally { setLoading(false); }
-  }, [es]);
+  }, [es, markUnauthorized]);
 
   useEffect(() => { void load(); }, [load]);
 
@@ -59,7 +77,7 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
     setBusyId(invitation.id); setError(null);
     try {
       const response = await authedFetch("/api/team/invitations/respond", { method: "POST", body: JSON.stringify({ invitationId: invitation.id, accept }) });
-      if (response.status === 401) { setAuthenticated(false); return; }
+      if (response.status === 401) { markUnauthorized(); return; }
       if (!response.ok) throw new Error("respond");
       setInvitations((current) => accept
         ? current.map((item) => item.id === invitation.id ? { ...item, status: "accepted" } : item)
@@ -73,7 +91,7 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
     setBusyId(request.id); setError(null);
     try {
       const response = await authedFetch("/api/team/requests/respond", { method: "POST", body: JSON.stringify({ requestId: request.id, accept }) });
-      if (response.status === 401) { setAuthenticated(false); return; }
+      if (response.status === 401) { markUnauthorized(); return; }
       if (!response.ok) throw new Error("respond");
       setApprovals((current) => accept ? current.map((item) => item.id === request.id ? { ...item, status: "accepted", canRespond: false } : item) : current.filter((item) => item.id !== request.id));
     } catch {
@@ -85,7 +103,7 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
     setClaimingTrial(true); setTrialMessage(null); setError(null);
     try {
       const response = await authedFetch("/api/team/trial", { method: "POST" });
-      if (response.status === 401) { setAuthenticated(false); return; }
+      if (response.status === 401) { markUnauthorized(); return; }
       const body = await response.json().catch(() => null);
       if (!response.ok || !body || !["started", "already_claimed"].includes(body.result)) throw new Error("claim");
       if (body.entitlement && typeof body.entitlement === "object") setEntitlement(body.entitlement);
@@ -110,8 +128,7 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
       <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "1rem" }}>
       {approvals.filter((item) => item.status === "pending" && item.canRespond).map((request) => <li key={request.id} style={{ border: "1px solid #d5dbea", borderRadius: 12, padding: "1rem" }}>
         <strong>{request.spaceName}</strong>
-        <p>{request.kind === "document" ? (es ? "Documento" : "Document") : (es ? "Contexto" : "Context")} · {request.label ?? (es ? "Solicitud" : "Request")}</p>
-        {request.category ? <p>{es ? "Categoría" : "Category"}: {request.category}</p> : null}
+        <p>{request.kind === "document" ? (es ? "Documento" : "Document") : (es ? "Contexto" : "Context")}</p>
         {request.itemCount !== null ? <p>{es ? "Elementos" : "Items"}: {request.itemCount}</p> : null}
         <div style={{ display: "flex", gap: ".75rem", marginTop: ".85rem" }}>
           <button disabled={busyId === request.id} onClick={() => void respondToRequest(request, true)}>{es ? "Aprobar" : "Approve"}</button>
@@ -130,7 +147,9 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
     {!loading && authenticated && entitlement?.eligible ? <p role="status">{es ? `Acceso Team activo${entitlement.expires_at ? ` hasta ${new Date(entitlement.expires_at).toLocaleDateString("es")}` : ""}. El checkout de Team todavía no está disponible.` : `Team access is active${entitlement.expires_at ? ` until ${new Date(entitlement.expires_at).toLocaleDateString("en")}` : ""}. Team checkout is not available yet.`}</p> : null}
     {!loading && authenticated && paidRoster ? <PaidRosterOwnerPanel lang={lang} roster={paidRoster} /> : null}
     {!loading && authenticated ? <PaidRosterInvitationPanel lang={lang} roster={paidRoster} /> : null}
-    {!loading && authenticated && !error && collections.pending.length === 0 && collections.received.length === 0 && !approvals.some((item) => item.status === "pending" && item.canRespond) ? <p>{es ? "No tienes invitaciones, solicitudes pendientes ni espacios recibidos." : "You have no invitations, pending requests, or received spaces."}</p> : null}
+    {!loading && authenticated && entitlement?.eligible ? <TeamSpaceSetupPanel lang={lang} spaces={ownedSpaces} onChanged={load} onUnauthorized={markUnauthorized} /> : null}
+    {!loading && authenticated && entitlement?.eligible ? <TeamConversationPanel lang={lang} ownedSpaces={ownedSpaces} receivedSpaces={collections.received} onUnauthorized={markUnauthorized} /> : null}
+    {!loading && authenticated && !error && collections.pending.length === 0 && collections.received.length === 0 && ownedSpaces.length === 0 && !approvals.some((item) => item.status === "pending" && item.canRespond) ? <p>{es ? "No tienes invitaciones, solicitudes pendientes ni espacios recibidos." : "You have no invitations, pending requests, or received spaces."}</p> : null}
     {!loading && authenticated && collections.pending.length > 0 ? <section aria-labelledby="pending-heading">
       <h2 id="pending-heading">{es ? "Invitaciones pendientes" : "Pending invitations"}</h2>
       <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "1rem" }}>

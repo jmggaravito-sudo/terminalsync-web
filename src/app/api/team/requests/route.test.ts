@@ -7,10 +7,16 @@ import { POST as respond } from "./respond/route";
 import { TeamMetadataError } from "@/lib/teamMetadata";
 const auth = (token = "ok") => new Request("https://x.test", { headers: { authorization: `Bearer ${token}` } });
 const requestId = "00000000-0000-0000-0000-000000000002";
+const spaceId = "00000000-0000-0000-0000-000000000001";
 const responseRequest = (accept: boolean) => new Request("https://x.test", {
   method: "POST",
   headers: { authorization: "Bearer ok", "content-type": "application/json" },
   body: JSON.stringify({ requestId, accept, userId: "attacker" }),
+});
+const createRequest = (body: unknown) => new Request("https://x.test", {
+  method: "POST",
+  headers: { authorization: "Bearer ok", "content-type": "application/json" },
+  body: JSON.stringify(body),
 });
 
 describe("Team metadata request routes", () => {
@@ -20,31 +26,52 @@ describe("Team metadata request routes", () => {
     teamMetadataRpc.mockResolvedValue([]);
   });
 
-  it("lists requests through an allowlisted participant-safe v2 projection using verified identity", async () => {
+  it("lists requests through an exact count-only participant-safe v2 projection using verified identity", async () => {
     const safeRow = {
       id: requestId,
-      space_id: "00000000-0000-0000-0000-000000000001",
-      space_name: "Shared",
+      space_id: spaceId,
+      space_name: "Equipo de Álex",
       role: "owner",
       can_respond: true,
       status: "pending",
       request_kind: "document",
-      metadata: { label: "Annual index", category: "finance", itemCount: 2 },
+      metadata: { itemCount: 2 },
       created_at: "2026-10-17T00:00:00Z",
       responded_at: null,
     };
-    teamMetadataRpc.mockResolvedValueOnce([{ ...safeRow, requester_user_id: "PRIVATE", owner_user_id: "PRIVATE", manifest_hash: "SECRET", metadata: { ...safeRow.metadata, arbitrary: "SECRET" } }]);
+    teamMetadataRpc.mockResolvedValueOnce([{ ...safeRow, requester_user_id: "PRIVATE", owner_user_id: "PRIVATE", manifest_hash: "SECRET" }]);
     const response = await GET(auth());
     expect(response.status).toBe(200);
     expect(teamMetadataRpc).toHaveBeenCalledWith("list_team_space_requests_v2", { p_user_id: "verified" });
     expect(await response.json()).toEqual([safeRow]);
   });
 
-  it("fails closed for malformed request-list rows instead of serializing unknown fields", async () => {
-    teamMetadataRpc.mockResolvedValueOnce([{ id: requestId, space_id: "00000000-0000-0000-0000-000000000001", space_name: "Shared", role: "requester", can_respond: true, status: "pending", request_kind: "document", metadata: {}, created_at: "2026-10-17T00:00:00Z", responded_at: null, requester_user_id: "PRIVATE" }]);
-    const response = await GET(auth());
-    expect(response.status).toBe(503);
-    expect(await response.text()).not.toContain("PRIVATE");
+  it("fails closed for free text, URL/path, content, or unsafe display names in the legacy projection", async () => {
+    const base = {
+      id: requestId,
+      space_id: spaceId,
+      space_name: "Equipo de Álex",
+      role: "owner",
+      can_respond: true,
+      status: "pending",
+      request_kind: "document",
+      metadata: {},
+      created_at: "2026-10-17T00:00:00Z",
+      responded_at: null,
+    };
+    for (const row of [
+      { ...base, metadata: { label: "Quarterly report" } },
+      { ...base, metadata: { category: "/Users/private/file" } },
+      { ...base, metadata: { url: "https://private.example" } },
+      { ...base, metadata: { path: "C:\\private\\file" } },
+      { ...base, metadata: { content: "never expose" } },
+      { ...base, space_name: "https://private.example/space" },
+    ]) {
+      teamMetadataRpc.mockResolvedValueOnce([row]);
+      const response = await GET(auth());
+      expect(response.status).toBe(503);
+      expect(await response.text()).not.toContain("private");
+    }
   });
 
   it("requires verified Bearer identity on list/create/approval", async () => {
@@ -54,73 +81,77 @@ describe("Team metadata request routes", () => {
     expect(teamMetadataRpc).not.toHaveBeenCalled();
   });
 
-  it("validates lowercase SHA-256 and bounded object metadata before RPC", async () => {
-    const r = await POST(new Request("https://x.test", { method: "POST", headers: { authorization: "Bearer ok", "content-type": "application/json" }, body: JSON.stringify({ spaceId: "00000000-0000-0000-0000-000000000001", kind: "context", manifestHash: "A".repeat(64), metadata: {} }) }));
-    expect(r.status).toBe(400);
+  it("validates lowercase SHA-256, count-only metadata, and exact top-level input before RPC", async () => {
+    const base = { spaceId, kind: "context", manifestHash: "a".repeat(64), metadata: { itemCount: 1 } };
+    const invalidBodies = [
+      { ...base, manifestHash: "A".repeat(64) },
+      { ...base, metadata: { label: "Annual index" } },
+      { ...base, metadata: { category: "/Users/private/index" } },
+      { ...base, metadata: { url: "https://private.example/index" } },
+      { ...base, metadata: { path: "C:\\private\\index" } },
+      { ...base, metadata: { content: "private" } },
+      { ...base, metadata: { itemCount: -1 } },
+      { ...base, metadata: { itemCount: 1.5 } },
+      { ...base, metadata: { itemCount: 1_000_001 } },
+      { ...base, metadata: null },
+      { ...base, userId: "attacker" },
+      { ...base, content: "private" },
+      { ...base, description: "private" },
+      { ...base, externalRef: "/private/ref" },
+    ];
+    for (const body of invalidBodies) {
+      expect((await POST(createRequest(body))).status).toBe(400);
+    }
     expect(teamMetadataRpc).not.toHaveBeenCalled();
   });
 
   it("rejects malformed UUIDs with 400 before either RPC", async () => {
-    const request = await POST(new Request("https://x.test", { method: "POST", headers: { authorization: "Bearer ok", "content-type": "application/json" }, body: JSON.stringify({ spaceId: "------------------------------------", kind: "document", manifestHash: "a".repeat(64) }) }));
+    const request = await POST(createRequest({ spaceId: "------------------------------------", kind: "document", manifestHash: "a".repeat(64) }));
     const approval = await respond(new Request("https://x.test", { method: "POST", headers: { authorization: "Bearer ok", "content-type": "application/json" }, body: JSON.stringify({ requestId: "------------------------------------", accept: true }) }));
     expect(request.status).toBe(400);
     expect(approval.status).toBe(400);
     expect(teamMetadataRpc).not.toHaveBeenCalled();
   });
 
-  it("rejects itemCount values outside nonnegative integer bounds before RPC", async () => {
-    for (const itemCount of [-1, 1.5, 1000001]) {
-      const r = await POST(new Request("https://x.test", { method: "POST", headers: { authorization: "Bearer ok", "content-type": "application/json" }, body: JSON.stringify({ spaceId: "00000000-0000-0000-0000-000000000001", kind: "context", manifestHash: "a".repeat(64), metadata: { itemCount } }) }));
-      expect(r.status).toBe(400);
-    }
-    expect(teamMetadataRpc).not.toHaveBeenCalled();
-  });
-
-  it("uses only verified identity and no content fields reach RPC", async () => {
+  it("uses only verified identity and forwards only count-only metadata", async () => {
     teamMetadataRpc.mockResolvedValueOnce([{
       id: requestId,
       status: "pending",
       request_kind: "document",
       manifest_hash: "a".repeat(64),
-      metadata: { label: "Q1 report", content: "never return" },
+      metadata: { itemCount: 3 },
       requester_user_id: "00000000-0000-0000-0000-000000000099",
       created_at: "2026-10-18T00:00:00Z",
     }]);
-    const r = await POST(new Request("https://x.test", { method: "POST", headers: { authorization: "Bearer ok", "content-type": "application/json" }, body: JSON.stringify({ spaceId: "00000000-0000-0000-0000-000000000001", kind: "document", manifestHash: "a".repeat(64), metadata: { label: "Q1 report" }, userId: "attacker", content: "secret", ciphertext: "secret" }) }));
+    const r = await POST(createRequest({ spaceId, kind: "document", manifestHash: "a".repeat(64), metadata: { itemCount: 3 } }));
     expect(r.status).toBe(200);
     expect(await r.json()).toEqual({ id: requestId, status: "pending" });
-    expect(teamMetadataRpc).toHaveBeenCalledWith("create_team_space_request", { p_user_id: "verified", p_space_id: "00000000-0000-0000-0000-000000000001", p_request_kind: "document", p_manifest_hash: "a".repeat(64), p_metadata: { label: "Q1 report" } });
+    expect(teamMetadataRpc).toHaveBeenCalledWith("create_team_space_request", {
+      p_user_id: "verified", p_space_id: spaceId, p_request_kind: "document", p_manifest_hash: "a".repeat(64), p_metadata: { itemCount: 3 },
+    });
   });
 
-  it("does not serialize manifest hashes, arbitrary metadata, or requester IDs from the create RPC", async () => {
+  it("does not serialize manifest hashes, metadata, or requester IDs from the create RPC", async () => {
     teamMetadataRpc.mockResolvedValueOnce([{
       id: requestId,
       status: "pending",
       manifest_hash: "b".repeat(64),
-      metadata: { label: "Q1 report", arbitrary: "never expose" },
+      metadata: { label: "legacy private value", arbitrary: "never expose" },
       requester_user_id: "00000000-0000-0000-0000-000000000099",
     }]);
-    const response = await POST(new Request("https://x.test", {
-      method: "POST",
-      headers: { authorization: "Bearer ok", "content-type": "application/json" },
-      body: JSON.stringify({ spaceId: "00000000-0000-0000-0000-000000000001", kind: "context", manifestHash: "b".repeat(64), metadata: {} }),
-    }));
+    const response = await POST(createRequest({ spaceId, kind: "context", manifestHash: "b".repeat(64), metadata: {} }));
     const body = await response.json();
     expect(response.status).toBe(200);
     expect(body).toEqual({ id: requestId, status: "pending" });
     expect(JSON.stringify(body)).not.toContain("requester_user_id");
     expect(JSON.stringify(body)).not.toContain("manifest_hash");
-    expect(JSON.stringify(body)).not.toContain("Q1 report");
+    expect(JSON.stringify(body)).not.toContain("legacy private value");
   });
 
   it("fails closed when create does not return exactly one valid confirmation", async () => {
     for (const result of [[], [{ id: requestId, status: "unexpected", manifest_hash: "private" }], [{ id: requestId, status: "pending" }, { id: requestId, status: "pending" }]]) {
       teamMetadataRpc.mockResolvedValueOnce(result);
-      const response = await POST(new Request("https://x.test", {
-        method: "POST",
-        headers: { authorization: "Bearer ok", "content-type": "application/json" },
-        body: JSON.stringify({ spaceId: "00000000-0000-0000-0000-000000000001", kind: "context", manifestHash: "c".repeat(64), metadata: {} }),
-      }));
+      const response = await POST(createRequest({ spaceId, kind: "context", manifestHash: "c".repeat(64), metadata: {} }));
       expect(response.status).toBe(409);
       expect(await response.json()).toEqual({ error: "Request was not created" });
     }
@@ -135,7 +166,7 @@ describe("Team metadata request routes", () => {
   });
 
   it("returns only an allowlisted terminal confirmation after a matching owner response", async () => {
-    teamMetadataRpc.mockResolvedValueOnce([{ id: requestId, status: "accepted", request_kind: "document", manifest_hash: "secret-manifest", metadata: { label: "Quarterly report", arbitrary: "never expose" }, responded_at: "2026-10-18T00:00:00Z" }]);
+    teamMetadataRpc.mockResolvedValueOnce([{ id: requestId, status: "accepted", request_kind: "document", manifest_hash: "secret-manifest", metadata: { itemCount: 2 }, responded_at: "2026-10-18T00:00:00Z" }]);
     const response = await respond(responseRequest(true));
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ id: requestId, status: "accepted" });
@@ -158,7 +189,7 @@ describe("Team metadata request routes", () => {
   });
 
   it("confirms a matching decline without echoing request metadata", async () => {
-    teamMetadataRpc.mockResolvedValueOnce([{ id: requestId, status: "declined", manifest_hash: "secret-manifest", metadata: { label: "Quarterly report" } }]);
+    teamMetadataRpc.mockResolvedValueOnce([{ id: requestId, status: "declined", manifest_hash: "secret-manifest", metadata: { itemCount: 2 } }]);
     const response = await respond(responseRequest(false));
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ id: requestId, status: "declined" });
