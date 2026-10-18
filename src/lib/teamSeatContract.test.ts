@@ -8,6 +8,7 @@ import {
   revokeTeamRosterEntry,
   validateTeamRoster,
 } from "@/lib/teamSeatContract";
+import { MAX_TEAM_SEATS } from "@/lib/teamSeatLimits";
 
 describe("Team seat contract", () => {
   const roster = (seatCount = 3) => ({
@@ -17,10 +18,11 @@ describe("Team seat contract", () => {
     invitations: [] as { id: string }[],
   });
 
-  it("accepts only positive safe-integer seat counts without an arbitrary cap", () => {
+  it("accepts only positive safe-integer seat counts up to 64", () => {
     expect(isValidTeamSeatCount(1)).toBe(true);
-    expect(isValidTeamSeatCount(Number.MAX_SAFE_INTEGER)).toBe(true);
-    for (const invalid of [0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1, NaN, Infinity, "2", null]) {
+    expect(isValidTeamSeatCount(MAX_TEAM_SEATS)).toBe(true);
+    expect(createTeamSeatContract(MAX_TEAM_SEATS).seatCount).toBe(MAX_TEAM_SEATS);
+    for (const invalid of [0, -1, 1.5, MAX_TEAM_SEATS + 1, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER + 1, NaN, Infinity, "2", null]) {
       expect(isValidTeamSeatCount(invalid)).toBe(false);
       expect(() => createTeamSeatContract(invalid)).toThrow(RangeError);
     }

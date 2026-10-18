@@ -138,6 +138,7 @@ describe("Team Stripe lifecycle parser", () => {
     ["wrong source", { metadata: { plan: "team", source: "other", team_billing_version: "1", supabase_user_id: USER_ID, team_seat_count: "4" } }],
     ["unknown metadata version", { metadata: { plan: "team", source: "terminalsync_team", team_billing_version: "2", supabase_user_id: USER_ID, team_seat_count: "4" } }],
     ["non-canonical seat count", { metadata: { plan: "team", source: "terminalsync_team", team_billing_version: "1", supabase_user_id: USER_ID, team_seat_count: "04" } }],
+    ["seat count above 64", { metadata: { plan: "team", source: "terminalsync_team", team_billing_version: "1", supabase_user_id: USER_ID, team_seat_count: "65" }, items: { data: [{ quantity: 65, price: { id: "price_team_live", currency: "usd", unit_amount: 5900, recurring: { interval: "month", interval_count: 1 } } }] } }],
     ["seat mismatch", { items: { data: [{ quantity: 3, price: { id: "price_team_live", currency: "usd", unit_amount: 5900, recurring: { interval: "month", interval_count: 1 } } }] } }],
     ["wrong price", { items: { data: [{ quantity: 4, price: { id: "price_other", currency: "usd", unit_amount: 5900, recurring: { interval: "month", interval_count: 1 } } }] } }],
     ["non-USD price", { items: { data: [{ quantity: 4, price: { id: "price_team_live", currency: "eur", unit_amount: 5900, recurring: { interval: "month", interval_count: 1 } } }] } }],

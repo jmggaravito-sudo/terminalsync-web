@@ -1,4 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { isValidTeamSeatCount } from "@/lib/teamSeatLimits";
 
 export type TeamEntitlement = {
   eligible: boolean;
@@ -37,7 +38,7 @@ export function projectTeamEntitlement(value: unknown): TeamEntitlement {
   const source = row.source;
   const expiresAt = row.expires_at;
   if (
-    typeof eligible !== "boolean" || typeof seatLimit !== "number" || !Number.isSafeInteger(seatLimit) || seatLimit < 1 ||
+    typeof eligible !== "boolean" || !isValidTeamSeatCount(seatLimit) ||
     (source !== null && source !== "paid" && source !== "admin_comp" && source !== "universal_trial") ||
     (expiresAt !== null && !validDate(expiresAt)) ||
     (eligible && source === null) || (!eligible && source !== null)

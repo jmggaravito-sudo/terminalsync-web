@@ -1,3 +1,6 @@
+import { isValidTeamSeatCount } from "./teamSeatLimits";
+export { isValidTeamSeatCount } from "./teamSeatLimits";
+
 /** Pure Team seat-count and capability contract; this does not grant access. */
 export type TeamSeatCapabilities = {
   send: true;
@@ -23,18 +26,9 @@ const TEAM_SEAT_CAPABILITIES: TeamSeatCapabilities = Object.freeze({
   receive: true,
 });
 
-/** Accept only a positive safe integer. No policy maximum is imposed here. */
-export function isValidTeamSeatCount(seatCount: unknown): seatCount is number {
-  return (
-    typeof seatCount === "number" &&
-    Number.isSafeInteger(seatCount) &&
-    seatCount >= 1
-  );
-}
-
 export function createTeamSeatContract(seatCount: unknown): TeamSeatContract {
   if (!isValidTeamSeatCount(seatCount)) {
-    throw new RangeError("Team seat count must be a positive safe integer");
+    throw new RangeError("Team seat count must be an integer from 1 through 64");
   }
 
   return { seatCount, capabilities: TEAM_SEAT_CAPABILITIES };
@@ -46,7 +40,7 @@ export function updateTeamSeatCount(
   requestedSeatCount: unknown,
 ): TeamSeatContract {
   if (!isValidTeamSeatCount(requestedSeatCount)) {
-    throw new RangeError("Team seat count must be a positive safe integer");
+    throw new RangeError("Team seat count must be an integer from 1 through 64");
   }
 
   return { seatCount: requestedSeatCount, capabilities: TEAM_SEAT_CAPABILITIES };

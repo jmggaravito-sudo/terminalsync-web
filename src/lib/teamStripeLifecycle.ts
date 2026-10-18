@@ -1,6 +1,7 @@
 import type Stripe from "stripe";
 import { envId } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { isValidTeamSeatCount } from "@/lib/teamSeatLimits";
 import { TEAM_STRIPE_METADATA } from "@/lib/teamStripeMetadata";
 export { TEAM_STRIPE_METADATA } from "@/lib/teamStripeMetadata";
 
@@ -139,7 +140,7 @@ export function parseTeamStripeSubscription(
     throw new InvalidTeamStripeEventError("Team Stripe event has invalid seat metadata");
   }
   const seatCount = Number(seatText);
-  if (!Number.isSafeInteger(seatCount) || seatCount < 1) {
+  if (!isValidTeamSeatCount(seatCount)) {
     throw new InvalidTeamStripeEventError("Team Stripe event seat count is out of range");
   }
   const customerId = customerIdOf(subscription);

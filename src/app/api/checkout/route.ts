@@ -107,7 +107,7 @@ export async function POST(req: Request) {
   }
   if (plan === "team" && !isValidTeamSeatCount(body.seats)) {
     return NextResponse.json(
-      { error: "Team seat count must be a positive safe integer." },
+      { error: "Team seat count must be an integer from 1 through 64." },
       { status: 400, headers: cors },
     );
   }
