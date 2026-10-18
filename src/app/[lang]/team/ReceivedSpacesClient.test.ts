@@ -21,4 +21,12 @@ describe("Team trial UI contract", () => {
     expect(source).toContain("one-time trial was already claimed or has expired");
     expect(source).not.toContain("user.id");
   });
+
+  it("loads a paid owner roster as an optional identifier-free read-only panel", () => {
+    expect(source).toContain('authedFetch("/api/team/paid-roster").catch(() => null)');
+    expect(source).toContain("if (rosterResponse?.ok)");
+    expect(source).toContain("<PaidRosterOwnerPanel lang={lang} roster={paidRoster} />");
+    expect(source).toContain("A 403/503/404 roster response must not make the shared-spaces page fail");
+    expect(source).not.toContain("employee_user_id");
+  });
 });
