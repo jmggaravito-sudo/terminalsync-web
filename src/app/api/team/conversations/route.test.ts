@@ -33,7 +33,7 @@ const turn = {
   id: turnId,
   status: "pending",
   request_kind: "document",
-  metadata: { label: "Quarterly packet", itemCount: 2 },
+  metadata: { itemCount: 2 },
   created_at: "2026-10-18T00:00:00.000Z",
   responded_at: null,
   direction: "outbound",
@@ -102,7 +102,7 @@ describe("Team conversation root API", () => {
     expect(teamMetadataRpc).not.toHaveBeenCalled();
   });
 
-  it("uses a single operation UUID and allowlisted metadata for the initial turn, without leaking commitment/private fields", async () => {
+  it("uses a single operation UUID and only an opaque item count for the initial turn, without leaking commitment/private fields", async () => {
     teamMetadataRpc.mockResolvedValueOnce([{
       ...turn,
       manifest_hash: "a".repeat(64),
@@ -115,7 +115,7 @@ describe("Team conversation root API", () => {
       relationshipId,
       kind: "document",
       manifestHash: "a".repeat(64),
-      metadata: { label: "Quarterly packet", itemCount: 2 },
+      metadata: { itemCount: 2 },
       operationId,
     }));
     expect(response.status).toBe(200);
@@ -125,7 +125,7 @@ describe("Team conversation root API", () => {
       p_relationship_id: relationshipId,
       p_request_kind: "document",
       p_manifest_hash: "a".repeat(64),
-      p_metadata: { label: "Quarterly packet", itemCount: 2 },
+      p_metadata: { itemCount: 2 },
       p_client_operation_id: operationId,
     });
     const body = await response.json();
@@ -136,19 +136,25 @@ describe("Team conversation root API", () => {
     }
   });
 
-  it("rejects content, user, unknown fields, missing operation UUID, and invalid metadata before initial-turn RPC", async () => {
+  it("rejects free text, URLs, paths, content, user fields, and invalid metadata before initial-turn RPC", async () => {
     const base = {
       spaceId,
       kind: "context",
       manifestHash: "a".repeat(64),
-      metadata: { category: "Research" },
+      metadata: { itemCount: 1 },
       operationId,
     };
     for (const body of [
       { ...base, content: "never deliver" },
       { ...base, userId: "attacker" },
       { ...base, operationId: undefined },
-      { ...base, metadata: { payload: "never" } },
+      { ...base, metadata: { label: "https://private.example/document" } },
+      { ...base, metadata: { category: "/Users/private/document.pdf" } },
+      { ...base, metadata: { url: "https://private.example/document" } },
+      { ...base, metadata: { path: "C:\\private\\document.pdf" } },
+      { ...base, metadata: { content: "never deliver this text" } },
+      { ...base, metadata: { itemCount: "1" } },
+      { ...base, metadata: { itemCount: 1.5 } },
       { ...base, metadata: null },
       { ...base, manifestHash: "A".repeat(64) },
     ]) {
@@ -158,13 +164,21 @@ describe("Team conversation root API", () => {
     expect(teamMetadataRpc).not.toHaveBeenCalled();
   });
 
-  it("fails closed on empty or malformed create rows instead of claiming an unauthorized/failed turn", async () => {
+  it("fails closed on empty or free-text create rows instead of claiming an unauthorized/failed turn", async () => {
     teamMetadataRpc.mockResolvedValueOnce([]);
     expect((await POST(json({ spaceId, kind: "context", manifestHash: "a".repeat(64), operationId }))).status).toBe(409);
-    teamMetadataRpc.mockResolvedValueOnce([{ ...turn, metadata: { content: "private" } }]);
-    const malformed = await POST(json({ spaceId, kind: "context", manifestHash: "a".repeat(64), operationId }));
-    expect(malformed.status).toBe(503);
-    expect(await malformed.text()).not.toContain("private");
+    for (const metadata of [
+      { label: "https://private.example/document" },
+      { category: "/Users/private/document.pdf" },
+      { url: "https://private.example/document" },
+      { path: "C:\\private\\document.pdf" },
+      { content: "private" },
+    ]) {
+      teamMetadataRpc.mockResolvedValueOnce([{ ...turn, metadata }]);
+      const malformed = await POST(json({ spaceId, kind: "context", manifestHash: "a".repeat(64), operationId }));
+      expect(malformed.status).toBe(503);
+      expect(await malformed.text()).not.toContain("private");
+    }
   });
 
   it("maps database/internal errors to generic responses", async () => {

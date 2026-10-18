@@ -30,17 +30,18 @@ const teamMigrationNames: Record<number, string> = {
   51: "team_checkout_atomic_billing_lifecycle",
   52: "team_paid_roster_opaque_invitations",
   53: "team_conversation_turns",
+  54: "team_conversation_metadata_hardening",
 };
 
 const teamMigrationNumbers = Object.keys(teamMigrationNames).map(Number);
 const migrationFile = (n: number) => `${String(n).padStart(4, "0")}_${teamMigrationNames[n]}.sql`;
 const migration = (n: number) => readFileSync(join(process.cwd(), "supabase/migrations", migrationFile(n)), "utf8");
 
-describe("Team migrations 0037-0053 compatibility contract", () => {
+describe("Team migrations 0037-0054 compatibility contract", () => {
   it("keeps the shared-space, approval, trial, roster, and billing prerequisites in source order", () => {
     const expectedFiles = teamMigrationNumbers.map(migrationFile);
     const actualFiles = readdirSync(join(process.cwd(), "supabase/migrations"))
-      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-3])_team_.*\.sql$/.test(file))
+      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-4])_team_.*\.sql$/.test(file))
       .sort();
 
     expect(actualFiles).toEqual(expectedFiles);
@@ -66,6 +67,7 @@ describe("Team migrations 0037-0053 compatibility contract", () => {
       [39, 53], // conversation threads belong to metadata-only shared spaces
       [40, 53], // every conversation operation checks the live entitlement
       [42, 53], // accepted invitations prove the two-way conversation pair
+      [53, 54], // hardening closes the final v3 metadata taxonomy
     ]) {
       const prerequisiteIndex = teamMigrationNumbers.indexOf(prerequisite);
       const dependentIndex = teamMigrationNumbers.indexOf(dependent);
@@ -449,6 +451,56 @@ describe("Team migrations 0037-0053 compatibility contract", () => {
         id: conversationTurn.id, direction: "inbound", can_respond: true,
         metadata: { label: "follow-up context", itemCount: 1 },
       });
+
+      // 0054 is forward-only: it preserves the old row's count but removes
+      // its free-form metadata before every v3 browser projection.
+      await db.exec(migration(54));
+      const hardenedRecipientTurns = (await db.query<{
+        id: string; direction: string; can_respond: boolean; metadata: Record<string, unknown>;
+      }>(`
+        SELECT * FROM public.list_team_conversation_turns_v3($1::uuid,$2::uuid,50,NULL,NULL)
+      `, [employeeId, conversationTurn.thread_id])).rows;
+      expect(hardenedRecipientTurns).toHaveLength(1);
+      expect(hardenedRecipientTurns[0]).toMatchObject({
+        id: conversationTurn.id, direction: "inbound", can_respond: true,
+        metadata: { itemCount: 1 },
+      });
+      for (const [metadata, operationId] of [
+        [{ label: "https://private.example/document" }, "00000000-0000-4000-8000-000000000054"],
+        [{ category: "/Users/private/document.pdf" }, "00000000-0000-4000-8000-000000000055"],
+        [{ url: "https://private.example/document" }, "00000000-0000-4000-8000-000000000056"],
+        [{ path: "C:\\private\\document.pdf" }, "00000000-0000-4000-8000-000000000057"],
+        [{ content: "private context" }, "00000000-0000-4000-8000-000000000058"],
+      ] as const) {
+        await expect(db.query(`
+          SELECT * FROM public.create_team_conversation_turn_v3(
+            $1::uuid,$2::uuid,'context',$3::text,$4::jsonb,$5::uuid
+          )
+        `, [
+          newId, conversationTurn.thread_id, "d".repeat(64), JSON.stringify(metadata), operationId,
+        ])).rejects.toThrow(/invalid conversation turn metadata/);
+      }
+      await expect(db.query(`
+        INSERT INTO public.team_space_conversation_turns(
+          thread_id,initiator_user_id,recipient_user_id,client_operation_id,request_kind,manifest_hash,metadata
+        ) VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,'context',$5::text,$6::jsonb)
+      `, [
+        conversationTurn.thread_id, newId, employeeId,
+        "00000000-0000-4000-8000-000000000059", "e".repeat(64),
+        JSON.stringify({ content: "direct insert must fail too" }),
+      ])).rejects.toThrow(/team_space_conversation_turns_metadata_safe_v3/);
+      const countOnlyTurn = (await db.query<{ metadata: Record<string, unknown> }>(`
+        SELECT * FROM public.create_team_conversation_turn_v3(
+          $1::uuid,$2::uuid,'context',$3::text,$4::jsonb,$5::uuid
+        )
+      `, [
+        newId, conversationTurn.thread_id, "f".repeat(64), JSON.stringify({ itemCount: 2 }),
+        "00000000-0000-4000-8000-000000000060",
+      ])).rows[0];
+      expect(countOnlyTurn.metadata).toEqual({ itemCount: 2 });
+      expect((await db.query<{ ok: boolean }>(
+        `SELECT has_function_privilege('authenticated','public._team_is_safe_conversation_metadata_v3(jsonb)','EXECUTE') AS ok`,
+      )).rows[0].ok).toBe(false);
 
       // A new opaque invitation can reserve and consume a seat without
       // exposing either the member UUID or the raw capability in the owner

@@ -30,7 +30,7 @@ const responseTurn = {
   id: turnId,
   status: "accepted",
   request_kind: "document",
-  metadata: { label: "Quarterly packet" },
+  metadata: { itemCount: 1 },
   created_at: "2026-10-18T00:00:00.000Z",
   responded_at: "2026-10-18T00:01:00.000Z",
   direction: "inbound",
@@ -92,11 +92,19 @@ describe("Team conversation response API", () => {
     }
   });
 
-  it("fails closed without exposing malformed database metadata", async () => {
-    teamMetadataRpc.mockResolvedValueOnce([{ ...responseTurn, metadata: { content: "private" } }]);
-    const response = await POST(json({ turnId, decision: "accepted", operationId }));
-    expect(response.status).toBe(503);
-    expect(await response.text()).not.toContain("private");
+  it("fails closed without exposing free text, URL, or path metadata from the database", async () => {
+    for (const metadata of [
+      { label: "https://private.example/document" },
+      { category: "/Users/private/document.pdf" },
+      { url: "https://private.example/document" },
+      { path: "C:\\private\\document.pdf" },
+      { content: "private" },
+    ]) {
+      teamMetadataRpc.mockResolvedValueOnce([{ ...responseTurn, metadata }]);
+      const response = await POST(json({ turnId, decision: "accepted", operationId }));
+      expect(response.status).toBe(503);
+      expect(await response.text()).not.toContain("private");
+    }
   });
 
   it("maps database errors generically", async () => {

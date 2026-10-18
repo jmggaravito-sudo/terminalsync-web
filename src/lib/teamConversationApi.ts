@@ -7,11 +7,12 @@ const REQUEST_KINDS = new Set(["document", "context"]);
 const TURN_STATUSES = new Set(["pending", "accepted", "declined"]);
 const DECISIONS = new Set(["accepted", "declined"]);
 const DIRECTIONS = new Set(["inbound", "outbound"]);
-const METADATA_KEYS = new Set(["label", "category", "itemCount"]);
+// Conversation turns are approval prompts, never a content-delivery channel.
+// Keep this deliberately closed: kind describes the request and the only
+// optional metadata is a count of opaque items.
+const METADATA_KEYS = new Set(["itemCount"]);
 
 export type SafeConversationMetadata = Partial<{
-  label: string;
-  category: string;
   itemCount: number;
 }>;
 
@@ -99,17 +100,9 @@ function metadata(value: unknown): SafeConversationMetadata {
   const candidate = record(value);
   onlyKeys(candidate, METADATA_KEYS);
   const serialized = JSON.stringify(candidate);
-  if (new TextEncoder().encode(serialized).length > 2048) inputError();
+  if (new TextEncoder().encode(serialized).length > 64) inputError();
 
   const output: SafeConversationMetadata = {};
-  if (candidate.label !== undefined) {
-    if (typeof candidate.label !== "string" || candidate.label.length > 120) inputError();
-    output.label = candidate.label;
-  }
-  if (candidate.category !== undefined) {
-    if (typeof candidate.category !== "string" || candidate.category.length > 120) inputError();
-    output.category = candidate.category;
-  }
   if (candidate.itemCount !== undefined) {
     if (
       typeof candidate.itemCount !== "number" ||
@@ -247,23 +240,11 @@ function safeOutputMetadata(value: unknown): SafeConversationMetadata {
     throw new TeamMetadataError("Unexpected Team conversation metadata");
   }
   const serialized = JSON.stringify(recordValue);
-  if (new TextEncoder().encode(serialized).length > 2048) {
+  if (new TextEncoder().encode(serialized).length > 64) {
     throw new TeamMetadataError("Unexpected Team conversation metadata");
   }
 
   const output: SafeConversationMetadata = {};
-  if (recordValue.label !== undefined) {
-    if (typeof recordValue.label !== "string" || recordValue.label.length > 120) {
-      throw new TeamMetadataError("Unexpected Team conversation metadata");
-    }
-    output.label = recordValue.label;
-  }
-  if (recordValue.category !== undefined) {
-    if (typeof recordValue.category !== "string" || recordValue.category.length > 120) {
-      throw new TeamMetadataError("Unexpected Team conversation metadata");
-    }
-    output.category = recordValue.category;
-  }
   if (recordValue.itemCount !== undefined) {
     if (
       typeof recordValue.itemCount !== "number" ||
