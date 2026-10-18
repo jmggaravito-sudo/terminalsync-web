@@ -17,6 +17,16 @@ effect of Team access.
   conversation requests, revocation-safe relationship binding, count-only
   pre-approval metadata, and safe recipient-visible space names. They do not
   store, import, decrypt, or deliver document/context payloads.
+  Migration `0056` adds a separate private, recipient-explicit, reviewed-text
+  delivery path only after approval (64 KiB maximum; 24-hour unsent approval
+  window; 7-day recipient access, then plaintext+digest erasure). Payload-free
+  audit metadata remains separately retained without a scheduled cleanup in
+  this slice. The purge endpoint is present, but no Vercel cron schedule is
+  included until `CRON_SECRET` and hourly-cron capability are verified in a
+  later rollout step. It does not add file delivery,
+  automatic AI generation, or UI/notification behavior; the delivery receipt
+  and text read are separate authenticated APIs. The default-off Team gate
+  remains required.
 - **Browser boundary:** Team APIs derive identity from a verified Supabase
   bearer token, fail closed, and use `Cache-Control: no-store`. The UI keeps
   received spaces separate from owned spaces and requires an explicit approval
