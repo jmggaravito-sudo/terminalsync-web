@@ -65,6 +65,21 @@ describe("paid Team roster migration", () => {
       await db.exec(`UPDATE public.team_memberships SET expires_at=now()-interval '1 second' WHERE user_id='${legacyPaidUser}'`);
       expect((await db.query<{ eligible: boolean }>(
         `SELECT eligible FROM public.get_team_entitlement($1::uuid)`, [legacyPaidUser])).rows[0].eligible).toBe(false);
+
+      // A no-card universal trial is a single owner seat, not a paid roster
+      // subscription. It must not authorize assigning employees through the
+      // paid-seat RPC even though the owner remains Team-eligible.
+      await db.exec(`DELETE FROM public.team_billing_subscriptions;
+        INSERT INTO public.team_trial_entitlements(user_id,starts_at,expires_at)
+        VALUES ('${owner}',now()-interval '1 hour',now()+interval '6 days');`);
+      expect((await db.query<{ eligible: boolean; seat_limit: number; source: string }>(
+        `SELECT eligible,seat_limit,source FROM public.get_team_entitlement($1::uuid)`, [owner]
+      )).rows[0]).toEqual({ eligible: true, seat_limit: 1, source: "universal_trial" });
+      await expect(call(owner, employee3)).rejects.toThrow(/active paid Team required/);
+      expect((await db.query<{ eligible: boolean }>(
+        `SELECT eligible FROM public.get_team_entitlement($1::uuid)`, [employee2]
+      )).rows[0].eligible).toBe(false);
+      expect((await db.query(`SELECT * FROM public.team_paid_roster_members`)).rows).toHaveLength(1);
       expect(migration.toLowerCase()).not.toMatch(/\b(insert|update|delete)\s+into\s+public\.team_memberships\b/);
     } finally { await db.close(); }
   }, 15_000);
