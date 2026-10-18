@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
-import { getTeamEntitlement, startTeamUniversalTrial, TeamTrialServiceError } from "@/lib/teamTrial";
+import { getTeamEntitlement, startTeamUniversalTrial, TeamTrialServiceError, type TeamEntitlement } from "@/lib/teamTrial";
 
 export const runtime = "nodejs";
 
@@ -14,6 +14,16 @@ async function authenticatedUser(req: Request) {
   return error || !data.user ? null : data.user;
 }
 
+/** Copy only the four public entitlement fields at the HTTP boundary. */
+function entitlementResponse(value: TeamEntitlement) {
+  return {
+    eligible: value.eligible,
+    seat_limit: value.seat_limit,
+    source: value.source,
+    expires_at: value.expires_at,
+  };
+}
+
 /** Authenticated trial claim. Identity is derived only from the verified
  * Supabase access token; body input is neither read nor trusted. */
 export async function POST(req: Request) {
@@ -21,7 +31,7 @@ export async function POST(req: Request) {
     const user = await authenticatedUser(req);
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const trial = await startTeamUniversalTrial(user.id);
-    const entitlement = await getTeamEntitlement(user.id);
+    const entitlement = entitlementResponse(await getTeamEntitlement(user.id));
     return NextResponse.json({ ...trial, entitlement }, { status: trial.result === "started" ? 201 : 200 });
   } catch (error) {
     console.error("[team-trial] start failed", error);
@@ -34,7 +44,7 @@ export async function GET(req: Request) {
   try {
     const user = await authenticatedUser(req);
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    return NextResponse.json(await getTeamEntitlement(user.id));
+    return NextResponse.json(entitlementResponse(await getTeamEntitlement(user.id)));
   } catch (error) {
     console.error("[team-trial] entitlement lookup failed", error);
     return NextResponse.json({ error: "Could not read Team entitlement" }, { status: 503 });

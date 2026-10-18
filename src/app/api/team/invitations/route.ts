@@ -1,5 +1,102 @@
 import { NextResponse } from "next/server";
-import { teamMetadataFailure, teamMetadataRpc, verifiedTeamUser } from "@/lib/teamMetadata";
+import { TeamMetadataError, teamMetadataFailure, teamMetadataRpc, verifiedTeamUser } from "@/lib/teamMetadata";
+
 export const runtime = "nodejs";
-export async function GET(req: Request) { try { const u=await verifiedTeamUser(req); if(!u)return NextResponse.json({error:"Unauthorized"},{status:401}); return NextResponse.json(await teamMetadataRpc("list_team_invitations_v2",{p_user_id:u.id})); } catch(e) { const f=teamMetadataFailure(e,"Could not list invitations"); return NextResponse.json({error:f.status===503?"Could not list invitations":f.error},{status:f.status}); } }
-export async function POST(req: Request) { try { const u=await verifiedTeamUser(req); if(!u)return NextResponse.json({error:"Unauthorized"},{status:401}); const b=await req.json(); if(!b||typeof b.spaceId!=="string"||typeof b.alias!=="string"||b.alias.length>64)return NextResponse.json({error:"Invalid invitation metadata"},{status:400}); return NextResponse.json(await teamMetadataRpc("invite_team_alias",{p_user_id:u.id,p_space_id:b.spaceId,p_alias:b.alias})); } catch(e) { const f=teamMetadataFailure(e,"Could not create invitation"); return NextResponse.json({error:f.status===503?"Could not create invitation":f.error},{status:f.status}); } }
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const TEAM_ALIAS = /^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$/;
+const INVITATION_STATUSES = new Set(["pending", "accepted", "declined", "revoked"]);
+
+type SafeInvitation = {
+  id: string;
+  space_id: string;
+  space_name: string;
+  owner_alias: string | null;
+  role: "invitee";
+  status: "pending" | "accepted" | "declined" | "revoked";
+  created_at: string;
+  responded_at: string | null;
+};
+
+function validDate(value: unknown): value is string {
+  return typeof value === "string" && Number.isFinite(Date.parse(value));
+}
+
+/**
+ * `list_team_invitations_v2` is already a SQL projection, but the route is the
+ * final browser boundary. Rebuild only its declared public fields so an RPC
+ * drift cannot expose invitation/user metadata.
+ */
+function safeInvitations(value: unknown): SafeInvitation[] {
+  if (!Array.isArray(value)) throw new TeamMetadataError("Unexpected Team invitations result");
+  const ids = new Set<string>();
+  return value.map((row) => {
+    if (!row || typeof row !== "object" || Array.isArray(row)) {
+      throw new TeamMetadataError("Unexpected Team invitation row");
+    }
+    const record = row as Record<string, unknown>;
+    const { id, space_id, space_name, owner_alias, role, status, created_at, responded_at } = record;
+    if (
+      typeof id !== "string" || !UUID.test(id) || ids.has(id) ||
+      typeof space_id !== "string" || !UUID.test(space_id) ||
+      typeof space_name !== "string" || space_name.length === 0 || space_name.length > 120 ||
+      (owner_alias !== null && (typeof owner_alias !== "string" || !TEAM_ALIAS.test(owner_alias) || owner_alias.includes(".."))) ||
+      role !== "invitee" || typeof status !== "string" || !INVITATION_STATUSES.has(status) ||
+      !validDate(created_at) ||
+      (responded_at !== null && !validDate(responded_at)) ||
+      (status === "pending" ? responded_at !== null : responded_at === null)
+    ) {
+      throw new TeamMetadataError("Unexpected Team invitation row");
+    }
+    ids.add(id);
+    return {
+      id,
+      space_id,
+      space_name,
+      owner_alias,
+      role: "invitee",
+      status: status as SafeInvitation["status"],
+      created_at,
+      responded_at,
+    };
+  });
+}
+
+function submittedInvitationConfirmation(value: unknown): Array<{ result: "submitted" }> {
+  if (!Array.isArray(value) || value.length !== 1 || !value[0] || typeof value[0] !== "object" || Array.isArray(value[0]) || (value[0] as Record<string, unknown>).result !== "submitted") {
+    throw new TeamMetadataError("Unexpected Team invitation result");
+  }
+  return [{ result: "submitted" }];
+}
+
+export async function GET(req: Request) {
+  try {
+    const user = await verifiedTeamUser(req);
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const result = await teamMetadataRpc<unknown>("list_team_invitations_v2", { p_user_id: user.id });
+    return NextResponse.json(safeInvitations(result));
+  } catch (error) {
+    const failure = teamMetadataFailure(error, "Could not list invitations");
+    return NextResponse.json({ error: failure.status === 503 ? "Could not list invitations" : failure.error }, { status: failure.status });
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const user = await verifiedTeamUser(req);
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const body: unknown = await req.json();
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return NextResponse.json({ error: "Invalid invitation metadata" }, { status: 400 });
+    }
+    const record = body as Record<string, unknown>;
+    if (typeof record.spaceId !== "string" || !UUID.test(record.spaceId) || typeof record.alias !== "string" || record.alias.length > 64) {
+      return NextResponse.json({ error: "Invalid invitation metadata" }, { status: 400 });
+    }
+    const result = await teamMetadataRpc<unknown>("invite_team_alias", { p_user_id: user.id, p_space_id: record.spaceId, p_alias: record.alias });
+    return NextResponse.json(submittedInvitationConfirmation(result));
+  } catch (error) {
+    const failure = teamMetadataFailure(error, "Could not create invitation");
+    return NextResponse.json({ error: failure.status === 503 ? "Could not create invitation" : failure.error }, { status: failure.status });
+  }
+}

@@ -22,6 +22,33 @@ type PaidRosterSnapshot = {
   roster: PaidRosterMemberRecord[];
 };
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function singleSnapshot(value: unknown): Record<string, unknown> | null {
+  const row = Array.isArray(value) ? value.length === 1 ? value[0] : null : value;
+  return row && typeof row === "object" && !Array.isArray(row) ? row as Record<string, unknown> : null;
+}
+
+function isSnapshot(value: Record<string, unknown> | null): value is PaidRosterSnapshot {
+  if (!value) return false;
+  const hasActiveTeam = value.has_active_team;
+  const seatLimit = value.seat_limit;
+  const assignedCount = value.assigned_count;
+  const occupiedSeats = value.occupied_seats;
+  const availableSlots = value.available_slots;
+  const roster = value.roster;
+  return typeof hasActiveTeam === "boolean" &&
+    typeof seatLimit === "number" && Number.isSafeInteger(seatLimit) && seatLimit >= 0 &&
+    typeof assignedCount === "number" && Number.isSafeInteger(assignedCount) && assignedCount >= 0 &&
+    typeof occupiedSeats === "number" && Number.isSafeInteger(occupiedSeats) && occupiedSeats >= 0 &&
+    typeof availableSlots === "number" && Number.isSafeInteger(availableSlots) && availableSlots >= 0 &&
+    Array.isArray(roster) &&
+    roster.every((row): row is PaidRosterMemberRecord => Boolean(row) && typeof row === "object" && !Array.isArray(row) &&
+      typeof (row as Record<string, unknown>).employee_user_id === "string" && UUID.test((row as Record<string, unknown>).employee_user_id as string) &&
+      typeof (row as Record<string, unknown>).created_at === "string" && Number.isFinite(Date.parse((row as Record<string, unknown>).created_at as string)) &&
+      typeof (row as Record<string, unknown>).eligible === "boolean");
+}
+
 /**
  * Safe owner-facing view. The database needs employee IDs to calculate
  * entitlement, but the browser never needs them until a separately-reviewed
@@ -47,17 +74,8 @@ export async function listPaidTeamRoster(ownerUserId: string): Promise<PaidRoste
   try { result = await service().rpc("list_team_paid_roster", { p_owner_user_id: ownerUserId }); }
   catch { throw new TeamPaidRosterError("unavailable"); }
   if (result.error) throw new TeamPaidRosterError("unavailable");
-  const value = Array.isArray(result.data) ? result.data[0] : result.data;
-  if (!value || typeof value.has_active_team !== "boolean" || !Number.isSafeInteger(value.seat_limit) || value.seat_limit < 0 ||
-    !Number.isSafeInteger(value.assigned_count) || !Number.isSafeInteger(value.occupied_seats) ||
-    !Number.isSafeInteger(value.available_slots) || value.assigned_count < 0 || value.occupied_seats < 0 || value.available_slots < 0 || !Array.isArray(value.roster) ||
-    value.roster.some((row: unknown) => !row || typeof row !== "object" ||
-      typeof (row as Record<string, unknown>).employee_user_id !== "string" ||
-      typeof (row as Record<string, unknown>).created_at !== "string" ||
-      typeof (row as Record<string, unknown>).eligible !== "boolean")) {
-    throw new TeamPaidRosterError("unavailable");
-  }
-  const snapshot = value as PaidRosterSnapshot;
+  const snapshot = singleSnapshot(result.data);
+  if (!isSnapshot(snapshot)) throw new TeamPaidRosterError("unavailable");
   return {
     has_active_team: snapshot.has_active_team,
     seat_limit: snapshot.seat_limit,

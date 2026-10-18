@@ -55,4 +55,16 @@ describe("opaque paid roster invitation helpers", () => {
     rpc.mockResolvedValueOnce({ data: null, error: { message: "nope" } });
     await expect(acceptPaidRosterInvitation("recipient", createOpaqueRosterInvitationToken())).rejects.toEqual(expect.any(TeamPaidRosterInvitationError));
   });
+
+  it("fails closed instead of selecting a first row from an ambiguous invitation RPC result", async () => {
+    const rpc = getSupabaseAdmin().rpc;
+    rpc.mockResolvedValueOnce({ data: [
+      { expires_at: "2026-10-25T00:00:00.000Z" },
+      { expires_at: "2026-10-26T00:00:00.000Z" },
+    ], error: null });
+    await expect(createPaidRosterInvitation("owner")).rejects.toEqual(expect.any(TeamPaidRosterInvitationError));
+
+    rpc.mockResolvedValueOnce({ data: [{ result: "accepted" }, { result: "accepted" }], error: null });
+    await expect(acceptPaidRosterInvitation("recipient", createOpaqueRosterInvitationToken())).rejects.toEqual(expect.any(TeamPaidRosterInvitationError));
+  });
 });

@@ -42,6 +42,16 @@ describe("Team trial API", () => {
     expect(getTeamEntitlement).toHaveBeenCalledWith("verified-user");
   });
 
+  it("projects entitlement output at the HTTP boundary", async () => {
+    getTeamEntitlement.mockResolvedValueOnce({
+      eligible: true, seat_limit: 1, source: "universal_trial", expires_at: "2026-10-24T00:00:00Z",
+      user_id: "PRIVATE", stripe_customer_id: "SECRET", metadata: { arbitrary: "SECRET" },
+    });
+    const response = await GET(new Request("https://example.test/api/team/trial", { headers: { authorization: "Bearer valid" } }));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ eligible: true, seat_limit: 1, source: "universal_trial", expires_at: "2026-10-24T00:00:00Z" });
+  });
+
   it("returns an existing claim without creating a second trial", async () => {
     startTeamUniversalTrial.mockResolvedValue({ result: "already_claimed", startsAt: "2026-10-01T00:00:00Z", expiresAt: "2026-10-08T00:00:00Z" });
     getTeamEntitlement.mockResolvedValue({ eligible: false, seat_limit: 1, source: null, expires_at: null });
