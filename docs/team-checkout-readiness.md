@@ -28,6 +28,11 @@ The source implementation is **not** a production-schema certification.
 Production migration history must be checked separately before authenticated
 Team flows are claimed as live.
 
+`TEAM_FEATURE_ENABLED` is a server-only availability gate and defaults to off.
+Keep it off while the production schema is behind the reviewed Team chain. It
+returns a cache-safe `503` for Team APIs and shows an unavailable state at the
+Team page; it never changes Pro/Max or opens any paid checkout.
+
 Team paid checkout is intentionally disabled in both checkout paths. A request
 for `plan: "team"` returns `503` before a Stripe Checkout Session is created.
 No Team Stripe Product, Price, Customer, subscription, or charge is created by
@@ -54,7 +59,10 @@ button until the paid lifecycle below is approved.
    one-seat limit, invite/accept, separate received-space rendering, both
    directions of a metadata request, accept/decline, and invitation revocation.
    Confirm that no document or context payload is delivered.
-4. Keep paid Team checkout disabled until an explicit business approval covers
+4. Only after the migrations and authenticated smoke pass, explicitly set
+   `TEAM_FEATURE_ENABLED=1` and verify the same smoke against the deployed
+   build. Do not treat this availability gate as a billing switch.
+5. Keep paid Team checkout disabled until an explicit business approval covers
    a real Stripe-only Product/Price, the paid subscription/webhook lifecycle,
    seat reconciliation, and a post-checkout smoke that stops before payment.
 

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { defaultLocale, locales } from "@/content";
 import { LANDING_B } from "@/lib/launchFlags";
 import { REGION_COOKIE, regionFromHeaders } from "@/lib/region";
+import { isTeamFeatureEnabled } from "@/lib/teamFeature";
 
 // Región para el consentimiento de cookies: el banner estricto es solo para
 // visitantes de Europa. Vercel da el país en `x-vercel-ip-country`; aquí se
@@ -29,6 +30,16 @@ export function withRegionCookie(req: NextRequest, res: NextResponse): NextRespo
 // Redirect bare "/" to /es or /en based on Accept-Language.
 // Any other path is either already localized (/es/..., /en/...) or an asset.
 export function middleware(req: NextRequest) {
+  // The Team source is intentionally deployable before its production schema.
+  // Do not let a missing migration degrade authenticated requests into opaque
+  // RPC failures: default to unavailable until the controlled rollout has
+  // completed and a server operator explicitly enables the feature.
+  if (req.nextUrl.pathname.startsWith("/api/team/") && !isTeamFeatureEnabled()) {
+    return NextResponse.json(
+      { error: "Team is temporarily unavailable" },
+      { status: 503, headers: { "Cache-Control": "no-store" } },
+    );
+  }
   return withRegionCookie(req, route(req));
 }
 
@@ -104,7 +115,11 @@ function route(req: NextRequest): NextResponse {
 }
 
 export const config = {
-  // Páginas (incluida la home estática /es y /en). Excluye /api, /_next y
-  // cualquier archivo con extensión (assets).
-  matcher: ["/((?!api(?:/|$)|_next/static|_next/image|favicon.ico|.*\\..*).*)"],
+  // Team APIs must be checked before the general matcher excludes /api.
+  // The other matcher covers pages (including static /es and /en), excluding
+  // all other APIs, _next, and files with an extension.
+  matcher: [
+    "/api/team/:path*",
+    "/((?!api(?:/|$)|_next/static|_next/image|favicon.ico|.*\\..*).*)",
+  ],
 };
