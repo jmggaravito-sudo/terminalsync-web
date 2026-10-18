@@ -1,4 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { MAX_TEAM_SEATS } from "@/lib/teamSeatLimits";
 
 export class TeamPaidRosterError extends Error {
   constructor(readonly code: "unavailable") {
@@ -38,11 +39,11 @@ function isSnapshot(value: Record<string, unknown> | null): value is PaidRosterS
   const availableSlots = value.available_slots;
   const roster = value.roster;
   return typeof hasActiveTeam === "boolean" &&
-    typeof seatLimit === "number" && Number.isSafeInteger(seatLimit) && seatLimit >= 0 &&
-    typeof assignedCount === "number" && Number.isSafeInteger(assignedCount) && assignedCount >= 0 &&
-    typeof occupiedSeats === "number" && Number.isSafeInteger(occupiedSeats) && occupiedSeats >= 0 &&
-    typeof availableSlots === "number" && Number.isSafeInteger(availableSlots) && availableSlots >= 0 &&
-    Array.isArray(roster) &&
+    typeof seatLimit === "number" && Number.isSafeInteger(seatLimit) && seatLimit >= 0 && seatLimit <= MAX_TEAM_SEATS &&
+    typeof assignedCount === "number" && Number.isSafeInteger(assignedCount) && assignedCount >= 0 && assignedCount < MAX_TEAM_SEATS &&
+    typeof occupiedSeats === "number" && Number.isSafeInteger(occupiedSeats) && occupiedSeats >= 0 && occupiedSeats <= MAX_TEAM_SEATS &&
+    typeof availableSlots === "number" && Number.isSafeInteger(availableSlots) && availableSlots >= 0 && availableSlots <= MAX_TEAM_SEATS &&
+    Array.isArray(roster) && roster.length <= MAX_TEAM_SEATS - 1 &&
     roster.every((row): row is PaidRosterMemberRecord => Boolean(row) && typeof row === "object" && !Array.isArray(row) &&
       typeof (row as Record<string, unknown>).employee_user_id === "string" && UUID.test((row as Record<string, unknown>).employee_user_id as string) &&
       typeof (row as Record<string, unknown>).created_at === "string" && Number.isFinite(Date.parse((row as Record<string, unknown>).created_at as string)) &&

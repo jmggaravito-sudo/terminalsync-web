@@ -21,6 +21,7 @@ export default defineConfig({
     // (bilingual render tests); renderToStaticMarkup runs fine in node env.
     include: [
       "src/**/*.test.ts",
+      "src/**/*.test.tsx",
       "scripts/**/*.test.mjs",
       "emails/**/*.test.tsx",
     ],

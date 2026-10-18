@@ -61,6 +61,27 @@ describe("Team checkout fail-closed foundation", () => {
     expect(createSession).not.toHaveBeenCalled();
   });
 
+  it("accepts the 64-seat boundary but still keeps paid Team checkout disabled", async () => {
+    createSession.mockClear();
+    const response = await POST(new Request("https://terminalsync.ai/api/checkout", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ plan: "team", seats: 64 }),
+    }));
+    expect(response.status).toBe(503);
+    expect((await response.json()).error).toContain("No Stripe session was created");
+    expect(createSession).not.toHaveBeenCalled();
+  });
+
+  it("rejects 65 Team seats before the disabled-checkout response", async () => {
+    createSession.mockClear();
+    const response = await POST(new Request("https://terminalsync.ai/api/checkout", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ plan: "team", seats: 65 }),
+    }));
+    expect(response.status).toBe(400);
+    expect(createSession).not.toHaveBeenCalled();
+  });
+
   it("fails closed without STRIPE_PRICE_TEAM", async () => {
     createSession.mockClear();
     teamPrice.value = null;

@@ -32,17 +32,19 @@ const teamMigrationNames: Record<number, string> = {
   53: "team_conversation_turns",
   54: "team_conversation_metadata_hardening",
   55: "team_legacy_approval_hardening",
+  56: "team_text_deliveries",
+  57: "team_seat_ceiling_64",
 };
 
 const teamMigrationNumbers = Object.keys(teamMigrationNames).map(Number);
 const migrationFile = (n: number) => `${String(n).padStart(4, "0")}_${teamMigrationNames[n]}.sql`;
 const migration = (n: number) => readFileSync(join(process.cwd(), "supabase/migrations", migrationFile(n)), "utf8");
 
-describe("Team migrations 0037-0055 compatibility contract", () => {
+describe("Team migrations 0037-0057 compatibility contract", () => {
   it("keeps the shared-space, approval, trial, roster, and billing prerequisites in source order", () => {
     const expectedFiles = teamMigrationNumbers.map(migrationFile);
     const actualFiles = readdirSync(join(process.cwd(), "supabase/migrations"))
-      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-5])_team_.*\.sql$/.test(file))
+      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-7])_team_.*\.sql$/.test(file))
       .sort();
 
     expect(actualFiles).toEqual(expectedFiles);
@@ -72,6 +74,9 @@ describe("Team migrations 0037-0055 compatibility contract", () => {
       [43, 55], // legacy requests exist before their count-only hardening
       [48, 55], // v2 request projection is replaced by the hardened contract
       [54, 55], // all approval metadata surfaces close in source order
+      [53, 56], // private text delivery requires accepted conversation turns
+      [55, 56], // text delivery builds on the hardened approval chain
+      [56, 57], // seat ceiling follows every existing Team schema boundary
     ]) {
       const prerequisiteIndex = teamMigrationNumbers.indexOf(prerequisite);
       const dependentIndex = teamMigrationNumbers.indexOf(dependent);
@@ -536,6 +541,91 @@ describe("Team migrations 0037-0055 compatibility contract", () => {
       expect((await db.query<{ ok: boolean }>(
         `SELECT has_function_privilege('authenticated','public._team_is_safe_legacy_request_metadata_v3(jsonb)','EXECUTE') AS ok`,
       )).rows[0].ok).toBe(false);
+
+      // 0056 must apply to the actual ordered 0037-0055 schema, not merely a
+      // hand-written fixture. Deliver accepted text in both directions, then
+      // prove revocation and expiry close the same private delivery surface.
+      await db.exec(migration(56));
+      for (const role of ["anon", "authenticated", "service_role"]) {
+        expect((await db.query<{ ok: boolean }>(`
+          SELECT NOT has_table_privilege($1,'team_delivery_private.text_deliveries','SELECT')
+             AND NOT has_table_privilege($1,'team_delivery_private.text_delivery_events','SELECT') AS ok
+        `, [role])).rows[0].ok).toBe(true);
+      }
+      expect((await db.query<{ ok: boolean }>(`
+        SELECT has_function_privilege('service_role','public.create_team_text_delivery_v1(uuid,uuid,uuid,uuid,text,text)','EXECUTE')
+           AND NOT has_function_privilege('authenticated','public.create_team_text_delivery_v1(uuid,uuid,uuid,uuid,text,text)','EXECUTE') AS ok
+      `)).rows[0].ok).toBe(true);
+
+      const acceptedOwnerTurnId = conversationTurn.id;
+      expect((await db.query<{ status: string }>(`
+        SELECT status FROM public.respond_team_conversation_turn_v3(
+          $1::uuid,$2::uuid,'accepted',$3::uuid
+        )
+      `, [employeeId, acceptedOwnerTurnId, "00000000-0000-4000-8000-000000000056"])).rows[0].status).toBe("accepted");
+      const ownerTurnDelivery = (await db.query<{ id: string; recipient_user_id: string }>(`
+        SELECT * FROM public.create_team_text_delivery_v1(
+          $1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::text,$6::text
+        )
+      `, [employeeId, conversationTurn.thread_id, acceptedOwnerTurnId,
+        "00000000-0000-4000-8000-000000000061", "Reply from the invited member", "1".repeat(64)])).rows[0];
+      expect(ownerTurnDelivery.recipient_user_id).toBe(newId);
+      expect((await db.query<{ content: string }>(
+        `SELECT content FROM public.read_team_text_delivery_v1($1::uuid,$2::uuid)`, [newId, ownerTurnDelivery.id],
+      )).rows).toEqual([{ content: "Reply from the invited member" }]);
+
+      const memberTurn = (await db.query<{ id: string; status: string }>(`
+        SELECT id,status FROM public.create_team_conversation_turn_v3(
+          $1::uuid,$2::uuid,'context',$3::text,$4::jsonb,$5::uuid
+        )
+      `, [employeeId, conversationTurn.thread_id, "2".repeat(64), JSON.stringify({ itemCount: 1 }),
+        "00000000-0000-4000-8000-000000000062"])).rows[0];
+      expect(memberTurn.status).toBe("pending");
+      expect((await db.query<{ status: string }>(`
+        SELECT status FROM public.respond_team_conversation_turn_v3(
+          $1::uuid,$2::uuid,'accepted',$3::uuid
+        )
+      `, [newId, memberTurn.id, "00000000-0000-4000-8000-000000000063"])).rows[0].status).toBe("accepted");
+      const memberTurnDelivery = (await db.query<{ id: string; recipient_user_id: string }>(`
+        SELECT * FROM public.create_team_text_delivery_v1(
+          $1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::text,$6::text
+        )
+      `, [newId, conversationTurn.thread_id, memberTurn.id,
+        "00000000-0000-4000-8000-000000000064", "Reply from the owner", "3".repeat(64)])).rows[0];
+      expect(memberTurnDelivery.recipient_user_id).toBe(employeeId);
+      expect((await db.query<{ content: string }>(
+        `SELECT content FROM public.read_team_text_delivery_v1($1::uuid,$2::uuid)`, [employeeId, memberTurnDelivery.id],
+      )).rows).toEqual([{ content: "Reply from the owner" }]);
+
+      // 0057 must also compose with the real full chain. Exercise the billing
+      // RPC at the inclusive 64-seat boundary and prove 65 rolls back its
+      // processed-event row instead of leaving partial durable state.
+      await db.exec(migration(57));
+      const applyBilling = (seats: number, suffix: string) => db.query<{ result: string }>(`
+        SELECT public.apply_team_stripe_subscription_event(
+          $1::uuid,$2::text,$3::text,$4::text,$5::bigint,'active',NULL,NULL,false,
+          $6::text,'customer.subscription.updated',pg_catalog.now(),'{}'::jsonb
+        ) AS result
+      `, [newId, `cus-seat-${suffix}`, `sub-seat-${suffix}`, "price-team", seats, `evt-seat-${suffix}`]);
+      expect((await applyBilling(64, "64")).rows[0].result).toBe("applied");
+      await expect(applyBilling(65, "65")).rejects.toThrow(/team_billing_subscriptions_seat_count_64_check/);
+      expect((await db.query<{ count: number }>(`
+        SELECT count(*)::int AS count FROM public.team_billing_processed_events WHERE stripe_event_id='evt-seat-65'
+      `)).rows[0].count).toBe(0);
+
+      await db.query(`UPDATE public.team_space_invitations SET status='revoked' WHERE id=$1::uuid`, [conversationTarget.relationship_id]);
+      expect((await db.query(`SELECT * FROM public.read_team_text_delivery_v1($1::uuid,$2::uuid)`,
+        [employeeId, memberTurnDelivery.id])).rows).toHaveLength(0);
+      expect((await db.query(`SELECT * FROM public.list_team_text_deliveries_v1($1::uuid,$2::uuid,50,NULL,NULL)`,
+        [employeeId, conversationTurn.thread_id])).rows).toHaveLength(0);
+      await db.query(`UPDATE public.team_space_invitations SET status='accepted' WHERE id=$1::uuid`, [conversationTarget.relationship_id]);
+      await db.query(`UPDATE team_delivery_private.text_deliveries SET expires_at=now()-interval '1 second' WHERE id=$1::uuid`,
+        [ownerTurnDelivery.id]);
+      expect((await db.query(`SELECT * FROM public.read_team_text_delivery_v1($1::uuid,$2::uuid)`,
+        [newId, ownerTurnDelivery.id])).rows).toHaveLength(0);
+      expect((await db.query<{ content: string | null; content_sha256: string | null; deleted_at: string | null }>(`
+        SELECT content,content_sha256,deleted_at FROM team_delivery_private.text_deliveries WHERE id=$1::uuid
+      `, [ownerTurnDelivery.id])).rows[0]).toMatchObject({ content: null, content_sha256: null });
 
       // The final hardening must preserve the active v3 conversation's
       // visibility while replacing the old unsafe display value. Targets and

@@ -52,4 +52,11 @@ describe("paid Team roster owner view", () => {
     ] }) });
     await expect(listPaidTeamRoster("00000000-0000-0000-0000-000000000001")).rejects.toEqual(expect.any(TeamPaidRosterError));
   });
+
+  it("fails closed on a database roster snapshot above the 64-seat ceiling", async () => {
+    getSupabaseAdmin.mockReturnValue({ rpc: vi.fn().mockResolvedValue({ error: null, data: {
+      has_active_team: true, seat_limit: 65, assigned_count: 0, occupied_seats: 1, available_slots: 64, roster: [],
+    } }) });
+    await expect(listPaidTeamRoster("00000000-0000-0000-0000-000000000001")).rejects.toEqual(expect.any(TeamPaidRosterError));
+  });
 });

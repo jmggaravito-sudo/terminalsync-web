@@ -1,4 +1,5 @@
 import { TEAM_STRIPE_METADATA } from "@/lib/teamStripeMetadata";
+import { isValidTeamSeatCount } from "@/lib/teamSeatLimits";
 
 /** Trusted projection of a row returned by reserve_team_checkout_intent. */
 export type TeamCheckoutIntentIdentity = {
@@ -38,7 +39,7 @@ function validateIntent(intent: TeamCheckoutIntentIdentity, terms: TeamCheckoutT
   assertUuid(intent.id, "intent ID");
   assertUuid(intent.owner_user_id, "owner ID");
   assertUuid(intent.request_id, "request ID");
-  if (!Number.isSafeInteger(intent.seats) || intent.seats < 1) throw new Error("Invalid Team checkout seat count");
+  if (!isValidTeamSeatCount(intent.seats)) throw new Error("Invalid Team checkout seat count");
   if (terms.mode !== "subscription" || intent.mode !== terms.mode) throw new Error("Invalid Team checkout mode");
   if (!PRICE_ID.test(terms.configuredPriceId) || intent.stripe_price_id !== terms.configuredPriceId) {
     throw new Error("Team checkout price does not match configured mode");

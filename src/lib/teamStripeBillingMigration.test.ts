@@ -8,6 +8,10 @@ const migration = readFileSync(
   "utf8",
 );
 const sql = migration.toLowerCase().replace(/\s+/g, " ");
+const seatCapMigration = readFileSync(
+  join(process.cwd(), "supabase/migrations/0057_team_seat_ceiling_64.sql"),
+  "utf8",
+);
 
 describe("Team Stripe billing migration contract", () => {
   it("stores paid Team billing separately with validated seats and normalized status", () => {
@@ -64,6 +68,7 @@ describe("Team Stripe billing RPC event ordering", () => {
       CREATE ROLE service_role;
       CREATE SCHEMA auth;
       CREATE TABLE auth.users(id uuid PRIMARY KEY);
+      CREATE TABLE public.team_checkout_intents(seats bigint NOT NULL);
       INSERT INTO auth.users VALUES
         ('00000000-0000-0000-0000-000000000001'),
         ('00000000-0000-0000-0000-000000000002');
@@ -104,6 +109,20 @@ describe("Team Stripe billing RPC event ordering", () => {
     );
     return result.rows[0].result;
   }
+
+  it("enforces the 64-seat ceiling at the durable billing RPC boundary", async () => {
+    const db = await database();
+    try {
+      await db.exec(seatCapMigration);
+      expect(await event(db, { eventId: "evt_seat_64", subscriptionId: "sub_64", seats: 64 })).toBe("applied");
+      await expect(event(db, { eventId: "evt_seat_65", subscriptionId: "sub_65", seats: 65 }))
+        .rejects.toThrow(/team_billing_subscriptions_seat_count_64_check/);
+      expect((await db.query<{count:number}>("SELECT count(*)::int AS count FROM public.team_billing_processed_events WHERE stripe_event_id='evt_seat_65'"))
+        .rows[0].count).toBe(0);
+    } finally {
+      await db.close();
+    }
+  }, 15_000);
 
   // This test applies the real migration in PGlite and can exceed Vitest's
   // 5s default while the full suite runs in parallel on constrained hosts.
