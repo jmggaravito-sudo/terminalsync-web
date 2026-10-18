@@ -5,6 +5,7 @@ import { PGlite } from "@electric-sql/pglite";
 
 const migration0049 = readFileSync(join(process.cwd(), "supabase/migrations/0049_team_checkout_intents.sql"), "utf8");
 const migration0050 = readFileSync(join(process.cwd(), "supabase/migrations/0050_team_checkout_intent_single_active_guard.sql"), "utf8");
+const migration0057 = readFileSync(join(process.cwd(), "supabase/migrations/0057_team_seat_ceiling_64.sql"), "utf8");
 const owner = "00000000-0000-0000-0000-000000000001";
 const employee = "00000000-0000-0000-0000-000000000002";
 const request = "10000000-0000-0000-0000-000000000001";
@@ -21,10 +22,30 @@ async function database() {
     CREATE TABLE public.subscriptions(user_id uuid,plan text);`);
   await db.exec(migration0049);
   await db.exec(migration0050);
+  await db.exec(migration0057);
   return db;
 }
 
 describe("Team checkout intent migrations 0049-0050", () => {
+  it("caps checkout intents and paid billing rows at 64 without altering accepted boundary values", async () => {
+    const db = await database();
+    try {
+      const maxRequest = "10000000-0000-0000-0000-000000000020";
+      const accepted = await db.query<any>(
+        `SELECT * FROM public.reserve_team_checkout_intent($1::uuid,$2::uuid,'price_team123',64,'subscription')`,
+        [owner, maxRequest],
+      );
+      expect(accepted.rows[0].seats).toBe(64);
+      await expect(db.query(
+        `SELECT * FROM public.reserve_team_checkout_intent($1::uuid,$2::uuid,'price_team123',65,'subscription')`,
+        [employee, "10000000-0000-0000-0000-000000000021"],
+      )).rejects.toThrow(/team_checkout_intents_seats_64_check/);
+      await db.exec(`INSERT INTO public.team_billing_subscriptions VALUES ('sub_64','${owner}','active',64,now(),now()+interval '1 day')`);
+      await expect(db.exec(`INSERT INTO public.team_billing_subscriptions VALUES ('sub_65','${employee}','active',65,now(),now()+interval '1 day')`))
+        .rejects.toThrow(/team_billing_subscriptions_seat_count_64_check/);
+    } finally { await db.close(); }
+  }, 15_000);
+
   it("keeps intents private and every RPC service-role-only", async () => {
     const db = await database();
     try {

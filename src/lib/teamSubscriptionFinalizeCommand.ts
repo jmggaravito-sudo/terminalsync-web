@@ -1,3 +1,4 @@
+import { isValidTeamSeatCount } from "@/lib/teamSeatLimits";
 import {
   buildTeamCheckoutMetadata,
   buildVerifiedTeamCheckoutLedgerMetadata,
@@ -88,7 +89,7 @@ export function buildTeamSubscriptionFinalizeCommand(
       session.customerId !== sub.customerId || session.subscriptionId !== sub.id ||
       (intent.stripe_subscription_id && intent.stripe_subscription_id !== sub.id)) fail("session/subscription identity mismatch");
   if (sub.priceId !== intent.stripe_price_id || sub.priceId !== terms.configuredPriceId ||
-      !Number.isSafeInteger(sub.quantity) || sub.quantity !== intent.seats) fail("configured price or seat quantity mismatch");
+      !isValidTeamSeatCount(sub.quantity) || sub.quantity !== intent.seats) fail("configured price or seat quantity mismatch");
   if (!STATUSES.has(sub.status) || typeof sub.cancelAtPeriodEnd !== "boolean") fail("invalid subscription status or cancellation flag");
   if (!timestamp(sub.currentPeriodStart) || !timestamp(sub.currentPeriodEnd) || Date.parse(sub.currentPeriodEnd) <= Date.parse(sub.currentPeriodStart)) fail("invalid subscription period timestamps");
 

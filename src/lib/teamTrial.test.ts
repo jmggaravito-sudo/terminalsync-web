@@ -53,6 +53,13 @@ describe("Team trial RPC output contract", () => {
     await expect(getTeamEntitlement("verified-user")).rejects.toEqual(expect.any(TeamTrialServiceError));
   });
 
+  it("rejects an entitlement snapshot above the canonical 64-seat limit", async () => {
+    getSupabaseAdmin().rpc.mockResolvedValueOnce({ error: null, data: [{
+      eligible: true, seat_limit: 65, source: "paid", expires_at: null,
+    }] });
+    await expect(getTeamEntitlement("verified-user")).rejects.toEqual(expect.any(TeamTrialServiceError));
+  });
+
   it("requires a valid 168-hour trial result", async () => {
     const rpc = getSupabaseAdmin().rpc;
     rpc.mockResolvedValueOnce({ error: null, data: [{ result: "started", starts_at: "2026-10-17T00:00:00.000Z", expires_at: "2026-10-24T00:00:00.000Z", user_id: "PRIVATE" }] });

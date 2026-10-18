@@ -1,5 +1,6 @@
 import type { TeamCheckoutIntentIdentity, TeamCheckoutTerms } from "@/lib/teamCheckoutMetadata";
 import { TEAM_STRIPE_METADATA } from "@/lib/teamStripeMetadata";
+import { isValidTeamSeatCount } from "@/lib/teamSeatLimits";
 
 /**
  * A minimal projection that the caller must derive only after successful Stripe
@@ -41,7 +42,7 @@ function validTimestamp(value: string): boolean {
 
 function validateIntent(intent: TeamCheckoutIntentIdentity, terms: TeamCheckoutTerms): void {
   if (!UUID.test(intent.id) || !UUID.test(intent.owner_user_id) || !UUID.test(intent.request_id) ||
-      !Number.isSafeInteger(intent.seats) || intent.seats < 1 || intent.mode !== "subscription" ||
+      !isValidTeamSeatCount(intent.seats) || intent.mode !== "subscription" ||
       terms.mode !== "subscription" || intent.stripe_price_id !== terms.configuredPriceId ||
       !/^price_[A-Za-z0-9]+$/.test(terms.configuredPriceId) ||
       !/^team-checkout:[0-9a-f-]{36}$/i.test(intent.idempotency_key)) fail("trusted intent or configured terms invalid");
