@@ -71,6 +71,51 @@ describe("Team conversation turn API", () => {
     expect(JSON.stringify(body)).not.toContain("manifest_hash");
   });
 
+  it("never projects document or context payload fields from pending or declined RPC rows", async () => {
+    const payloadSentinel = "PRIVATE_CONTEXT_OR_DOCUMENT_PAYLOAD";
+    teamMetadataRpc.mockResolvedValueOnce([
+      {
+        ...turn,
+        id: turnId,
+        status: "pending",
+        responded_at: null,
+        direction: "inbound",
+        can_respond: true,
+        document_payload: payloadSentinel,
+        context_text: payloadSentinel,
+        download_url: "https://private.example/document",
+      },
+      {
+        ...turn,
+        id: "00000000-0000-4000-8000-000000000006",
+        status: "declined",
+        responded_at: "2026-10-18T00:01:00.000Z",
+        direction: "inbound",
+        can_respond: false,
+        document_payload: payloadSentinel,
+        context_text: payloadSentinel,
+        download_url: "https://private.example/document",
+      },
+    ]);
+
+    const response = await GET(auth(), params);
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.turns).toEqual([
+      { ...turn, direction: "inbound", can_respond: true },
+      {
+        ...turn,
+        id: "00000000-0000-4000-8000-000000000006",
+        status: "declined",
+        responded_at: "2026-10-18T00:01:00.000Z",
+        direction: "inbound",
+        can_respond: false,
+      },
+    ]);
+    expect(JSON.stringify(body)).not.toContain(payloadSentinel);
+    expect(JSON.stringify(body)).not.toContain("private.example");
+  });
+
   it("rejects invalid route handle, partial cursor, and unexpected query keys before RPC", async () => {
     const badParams = { params: Promise.resolve({ threadId: "not-a-uuid" }) };
     expect((await GET(auth(), badParams)).status).toBe(400);
