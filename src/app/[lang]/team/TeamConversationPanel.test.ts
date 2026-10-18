@@ -67,10 +67,11 @@ describe("Team conversation UI contract", () => {
     expect(source).toContain("turnNextCursor");
   });
 
-  it("never offers upload, delivery, body, attachment, or raw identifier UI", () => {
+  it("keeps delivery UI in a separate accepted-turn component and never offers uploads", () => {
     expect(source).not.toContain('type="file"');
-    expect(source).not.toContain("<textarea");
     expect(source).not.toContain("Enviar documento");
+    expect(source).toContain("TeamTextDeliveryPanel");
+    expect(source).toContain("<TeamTextDeliveryPanel");
     expect(source).not.toContain("<code>{turn.id}");
     expect(source).not.toContain("<code>{turn.threadId}");
     expect(source).not.toContain("{prepared.manifestHash}");
