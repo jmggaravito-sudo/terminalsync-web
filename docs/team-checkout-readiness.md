@@ -47,24 +47,17 @@ button until the paid lifecycle below is approved.
 
 ## Controlled production rollout (separate approval required)
 
-1. Take a backup and inspect the remote Supabase migration history. This repo
-   has historical duplicate numeric prefixes (`0010`, `0026`, and `0033`), so
-   **never** run `supabase db push --include-all` and never replay the whole
-   folder blindly.
-2. Compare the remote schema to the Team chain and apply only the missing,
-   reviewed forward migrations in dependency order (`0037` through `0055` as
-   applicable). Do not mark a migration applied without verifying its schema
-   effect; do not print service-role keys or other secrets in the process.
-3. With two test accounts, run an authenticated smoke: signup/claim trial,
-   one-seat limit, invite/accept, separate received-space rendering, both
-   directions of a metadata request, accept/decline, and invitation revocation.
-   Confirm that no document or context payload is delivered.
-4. Only after the migrations and authenticated smoke pass, explicitly set
-   `TEAM_FEATURE_ENABLED=1` and verify the same smoke against the deployed
-   build. Do not treat this availability gate as a billing switch.
-5. Keep paid Team checkout disabled until an explicit business approval covers
-   a real Stripe-only Product/Price, the paid subscription/webhook lifecycle,
-   seat reconciliation, and a post-checkout smoke that stops before payment.
+The production migration inventory, precise forward-only migration groups,
+backup/restore gate, two-account smoke matrix, and feature activation order are
+maintained in [`team-production-rollout.md`](team-production-rollout.md). That
+runbook reflects a read-only history check and must be revalidated before any
+change. Do not infer production readiness from this source document or a green
+PR. In particular, do not run `supabase db push --include-all`.
+
+Keep paid Team checkout disabled until a separate explicit business approval
+covers a real Stripe-only Product/Price, paid subscription/webhook lifecycle,
+seat reconciliation, and a dedicated post-checkout verification. That paid
+work is outside the migration runbook.
 
 ## Evidence boundaries
 
