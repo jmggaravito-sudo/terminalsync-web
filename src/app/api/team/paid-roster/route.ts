@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { teamJson } from "@/lib/teamApiResponse";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { listPaidTeamRoster, TeamPaidRosterError } from "@/lib/teamPaidRoster";
 
@@ -22,12 +22,12 @@ async function verifiedOwner(req: Request) {
 }
 
 function failure(error: unknown) {
-  if (!(error instanceof TeamPaidRosterError)) return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  return NextResponse.json({ error: "Team roster is unavailable" }, { status: 503 });
+  if (!(error instanceof TeamPaidRosterError)) return teamJson({ error: "Invalid request" }, { status: 400 });
+  return teamJson({ error: "Team roster is unavailable" }, { status: 503 });
 }
 
 function readOnly() {
-  return NextResponse.json(
+  return teamJson(
     { error: "Team roster changes are unavailable until secure employee selection is ready" },
     { status: 405, headers: { Allow: "GET" } },
   );
@@ -36,10 +36,10 @@ function readOnly() {
 export async function GET(req: Request) {
   try {
     const owner = await verifiedOwner(req);
-    if (!owner) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!owner) return teamJson({ error: "Unauthorized" }, { status: 401 });
     const roster = await listPaidTeamRoster(owner.id);
-    if (!roster.has_active_team) return NextResponse.json({ error: "Active paid Team subscription required" }, { status: 403 });
-    return NextResponse.json(roster);
+    if (!roster.has_active_team) return teamJson({ error: "Active paid Team subscription required" }, { status: 403 });
+    return teamJson(roster);
   } catch (error) { return failure(error); }
 }
 

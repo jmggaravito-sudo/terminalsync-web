@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { teamJson } from "@/lib/teamApiResponse";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { getTeamEntitlement, startTeamUniversalTrial, TeamTrialServiceError, type TeamEntitlement } from "@/lib/teamTrial";
 
@@ -29,13 +29,13 @@ function entitlementResponse(value: TeamEntitlement) {
 export async function POST(req: Request) {
   try {
     const user = await authenticatedUser(req);
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return teamJson({ error: "Unauthorized" }, { status: 401 });
     const trial = await startTeamUniversalTrial(user.id);
     const entitlement = entitlementResponse(await getTeamEntitlement(user.id));
-    return NextResponse.json({ ...trial, entitlement }, { status: trial.result === "started" ? 201 : 200 });
+    return teamJson({ ...trial, entitlement }, { status: trial.result === "started" ? 201 : 200 });
   } catch (error) {
     console.error("[team-trial] start failed", error);
-    return NextResponse.json({ error: "Could not start Team trial" }, { status: 503 });
+    return teamJson({ error: "Could not start Team trial" }, { status: 503 });
   }
 }
 
@@ -43,10 +43,10 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   try {
     const user = await authenticatedUser(req);
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    return NextResponse.json(entitlementResponse(await getTeamEntitlement(user.id)));
+    if (!user) return teamJson({ error: "Unauthorized" }, { status: 401 });
+    return teamJson(entitlementResponse(await getTeamEntitlement(user.id)));
   } catch (error) {
     console.error("[team-trial] entitlement lookup failed", error);
-    return NextResponse.json({ error: "Could not read Team entitlement" }, { status: 503 });
+    return teamJson({ error: "Could not read Team entitlement" }, { status: 503 });
   }
 }

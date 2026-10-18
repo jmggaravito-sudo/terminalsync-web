@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { teamJson } from "@/lib/teamApiResponse";
 import { TeamMetadataError, teamMetadataFailure, teamMetadataRpc, verifiedTeamUser } from "@/lib/teamMetadata";
 
 export const runtime = "nodejs";
@@ -108,19 +108,19 @@ function requestCreationConfirmation(value: unknown): RequestCreationConfirmatio
 export async function GET(req: Request) {
   try {
     const user = await verifiedTeamUser(req);
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return teamJson({ error: "Unauthorized" }, { status: 401 });
     const result = await teamMetadataRpc<unknown>("list_team_space_requests_v2", { p_user_id: user.id });
-    return NextResponse.json(safeRequestList(result));
+    return teamJson(safeRequestList(result));
   } catch (error) {
     const failure = teamMetadataFailure(error, "Could not list requests");
-    return NextResponse.json({ error: failure.status === 503 ? "Could not list requests" : failure.error }, { status: failure.status });
+    return teamJson({ error: failure.status === 503 ? "Could not list requests" : failure.error }, { status: failure.status });
   }
 }
 
 export async function POST(req: Request) {
   try {
     const user = await verifiedTeamUser(req);
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return teamJson({ error: "Unauthorized" }, { status: 401 });
     const body = await req.json();
     const metadata = body?.metadata ?? {};
     if (
@@ -131,7 +131,7 @@ export async function POST(req: Request) {
       ["label", "category"].some((key) => metadata[key] !== undefined && (typeof metadata[key] !== "string" || metadata[key].length > 120)) ||
       (metadata.itemCount !== undefined && (typeof metadata.itemCount !== "number" || !Number.isInteger(metadata.itemCount) || metadata.itemCount < 0 || metadata.itemCount > 1_000_000))
     ) {
-      return NextResponse.json({ error: "Invalid request metadata" }, { status: 400 });
+      return teamJson({ error: "Invalid request metadata" }, { status: 400 });
     }
     const result = await teamMetadataRpc<unknown>("create_team_space_request", {
       p_user_id: user.id,
@@ -141,10 +141,10 @@ export async function POST(req: Request) {
       p_metadata: metadata,
     });
     const confirmation = requestCreationConfirmation(result);
-    if (!confirmation) return NextResponse.json({ error: "Request was not created" }, { status: 409 });
-    return NextResponse.json(confirmation);
+    if (!confirmation) return teamJson({ error: "Request was not created" }, { status: 409 });
+    return teamJson(confirmation);
   } catch (error) {
     const failure = teamMetadataFailure(error, "Could not create request");
-    return NextResponse.json({ error: failure.status === 503 ? "Could not create request" : failure.error }, { status: failure.status });
+    return teamJson({ error: failure.status === 503 ? "Could not create request" : failure.error }, { status: failure.status });
   }
 }
