@@ -41,4 +41,13 @@ describe("Team trial API", () => {
     expect(response.status).toBe(200);
     expect(getTeamEntitlement).toHaveBeenCalledWith("verified-user");
   });
+
+  it("returns an existing claim without creating a second trial", async () => {
+    startTeamUniversalTrial.mockResolvedValue({ result: "already_claimed", startsAt: "2026-10-01T00:00:00Z", expiresAt: "2026-10-08T00:00:00Z" });
+    getTeamEntitlement.mockResolvedValue({ eligible: false, seat_limit: 1, source: null, expires_at: null });
+    const response = await POST(new Request("https://example.test/api/team/trial", { method: "POST", headers: { authorization: "Bearer valid" } }));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ result: "already_claimed", entitlement: { eligible: false } });
+    expect(startTeamUniversalTrial).toHaveBeenCalledTimes(1);
+  });
 });
