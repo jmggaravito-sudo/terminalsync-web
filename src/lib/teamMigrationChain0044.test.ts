@@ -506,9 +506,15 @@ describe("Team migrations 0037-0055 compatibility contract", () => {
         `SELECT has_function_privilege('authenticated','public._team_is_safe_conversation_metadata_v3(jsonb)','EXECUTE') AS ok`,
       )).rows[0].ok).toBe(false);
 
-      // 0055 closes the older one-request approval surface too. Its existing
-      // free-form label is reduced to a count and subsequent direct/API SQL
-      // writes cannot recreate a recipient-visible text channel.
+      // 0055 normalizes the existing shared-space name as well as the older
+      // one-request approval surface. Simulate a pre-hardening legacy value
+      // on a space that already has a v3 conversation thread so the final
+      // migration proves it cannot strand that active conversation.
+      await db.query(`
+        UPDATE public.team_shared_spaces
+        SET name='https://private.example/contract'
+        WHERE id=$1::uuid
+      `, [space]);
       await db.exec(migration(55));
       expect((await db.query<{ metadata: Record<string, unknown> }>(
         `SELECT metadata FROM public.team_space_requests WHERE id=$1::uuid`, [request.id],
@@ -530,6 +536,43 @@ describe("Team migrations 0037-0055 compatibility contract", () => {
       expect((await db.query<{ ok: boolean }>(
         `SELECT has_function_privilege('authenticated','public._team_is_safe_legacy_request_metadata_v3(jsonb)','EXECUTE') AS ok`,
       )).rows[0].ok).toBe(false);
+
+      // The final hardening must preserve the active v3 conversation's
+      // visibility while replacing the old unsafe display value. Targets and
+      // threads both project the same legacy name, so a valid existing
+      // relationship must remain reachable through either v3 entry point.
+      const targetsAfterLegacyHardening = (await db.query<{
+        relationship_id: string; space_id: string; space_name: string;
+      }>(`
+        SELECT * FROM public.list_team_conversation_targets_v3($1::uuid,$2::uuid)
+      `, [newId, space])).rows;
+      expect(targetsAfterLegacyHardening).toHaveLength(1);
+      expect(targetsAfterLegacyHardening[0]).toMatchObject({
+        relationship_id: conversationTarget.relationship_id,
+        space_id: space,
+        space_name: "Espacio compartido",
+      });
+      expect(JSON.stringify(targetsAfterLegacyHardening)).not.toContain("https://private.example/contract");
+      const threadsAfterLegacyHardening = (await db.query<{
+        thread_id: string; space_id: string; space_name: string;
+      }>(`
+        SELECT * FROM public.list_team_conversation_threads_v3($1::uuid,50,NULL,NULL)
+      `, [employeeId])).rows;
+      expect(threadsAfterLegacyHardening).toHaveLength(1);
+      expect(threadsAfterLegacyHardening[0]).toMatchObject({
+        thread_id: conversationTurn.thread_id,
+        space_id: space,
+        space_name: "Espacio compartido",
+      });
+      expect(JSON.stringify(threadsAfterLegacyHardening)).not.toContain("https://private.example/contract");
+      const turnsAfterLegacyHardening = (await db.query<{
+        id: string; metadata: Record<string, unknown>;
+      }>(`
+        SELECT * FROM public.list_team_conversation_turns_v3($1::uuid,$2::uuid,50,NULL,NULL)
+      `, [employeeId, conversationTurn.thread_id])).rows;
+      expect(turnsAfterLegacyHardening).toEqual(expect.arrayContaining([
+        expect.objectContaining({ id: conversationTurn.id, metadata: { itemCount: 1 } }),
+      ]));
 
       // A new opaque invitation can reserve and consume a seat without
       // exposing either the member UUID or the raw capability in the owner
