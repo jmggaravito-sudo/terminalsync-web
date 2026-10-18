@@ -1,5 +1,6 @@
 import { teamJson } from "@/lib/teamApiResponse";
 import { TeamMetadataError, teamMetadataFailure, teamMetadataRpc, verifiedTeamUser } from "@/lib/teamMetadata";
+import { isSafeTeamSpaceDisplayName } from "@/lib/teamSpaceDisplayName";
 
 export const runtime = "nodejs";
 
@@ -39,7 +40,7 @@ function safeInvitations(value: unknown): SafeInvitation[] {
     if (
       typeof id !== "string" || !UUID.test(id) || ids.has(id) ||
       typeof space_id !== "string" || !UUID.test(space_id) ||
-      typeof space_name !== "string" || space_name.length === 0 || space_name.length > 120 ||
+      !isSafeTeamSpaceDisplayName(space_name) ||
       (owner_alias !== null && (typeof owner_alias !== "string" || !TEAM_ALIAS.test(owner_alias) || owner_alias.includes(".."))) ||
       role !== "invitee" || typeof status !== "string" || !INVITATION_STATUSES.has(status) ||
       !validDate(created_at) ||
@@ -90,7 +91,11 @@ export async function POST(req: Request) {
       return teamJson({ error: "Invalid invitation metadata" }, { status: 400 });
     }
     const record = body as Record<string, unknown>;
-    if (typeof record.spaceId !== "string" || !UUID.test(record.spaceId) || typeof record.alias !== "string" || record.alias.length > 64) {
+    if (
+      Object.keys(record).some((key) => key !== "spaceId" && key !== "alias") ||
+      typeof record.spaceId !== "string" || !UUID.test(record.spaceId) ||
+      typeof record.alias !== "string" || record.alias.length > 64
+    ) {
       return teamJson({ error: "Invalid invitation metadata" }, { status: 400 });
     }
     const result = await teamMetadataRpc<unknown>("invite_team_alias", { p_user_id: user.id, p_space_id: record.spaceId, p_alias: record.alias });

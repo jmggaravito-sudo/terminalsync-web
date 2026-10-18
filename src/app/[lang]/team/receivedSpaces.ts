@@ -1,3 +1,5 @@
+import { isSafeTeamSpaceDisplayName } from "@/lib/teamSpaceDisplayName";
+
 export type ReceivedInvitation = {
   id: string;
   space_id: string;
@@ -14,7 +16,7 @@ export function parseReceivedInvitations(value: unknown): ReceivedInvitation[] {
     if (!item || typeof item !== "object") return [];
     const row = item as Record<string, unknown>;
     if (typeof row.id !== "string" || typeof row.space_id !== "string" ||
-      typeof row.space_name !== "string" || row.role !== "invitee" || (row.status !== "pending" && row.status !== "accepted") ||
+      !isSafeTeamSpaceDisplayName(row.space_name) || row.role !== "invitee" || (row.status !== "pending" && row.status !== "accepted") ||
       typeof row.created_at !== "string" || (row.owner_alias !== null && typeof row.owner_alias !== "string")) return [];
     return [{ id: row.id, space_id: row.space_id, space_name: row.space_name,
       owner_alias: row.owner_alias, role: "invitee" as const, status: row.status, created_at: row.created_at }];
