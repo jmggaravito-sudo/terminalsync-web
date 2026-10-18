@@ -1,12 +1,64 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { citext } from "@electric-sql/pglite/contrib/citext";
 
-const migration = (n: number) => readFileSync(join(process.cwd(), `supabase/migrations/${String(n).padStart(4, "0")}_${({37:"team_comp_entitlements",38:"team_stripe_billing",39:"team_shared_spaces_metadata",40:"team_universal_trial",41:"team_entitlement_and_alias_reconciliation",42:"team_metadata_invites",43:"team_metadata_requests",44:"team_trial_on_signup",45:"team_paid_roster",46:"team_paid_roster_api",47:"team_invitation_owner_alias_projection",48:"team_request_participant_projection",49:"team_checkout_intents",50:"team_checkout_intent_single_active_guard"} as Record<number,string>)[n]}.sql`), "utf8");
+const teamMigrationNames: Record<number, string> = {
+  37: "team_comp_entitlements",
+  38: "team_stripe_billing",
+  39: "team_shared_spaces_metadata",
+  40: "team_universal_trial",
+  41: "team_entitlement_and_alias_reconciliation",
+  42: "team_metadata_invites",
+  43: "team_metadata_requests",
+  44: "team_trial_on_signup",
+  45: "team_paid_roster",
+  46: "team_paid_roster_api",
+  47: "team_invitation_owner_alias_projection",
+  48: "team_request_participant_projection",
+  49: "team_checkout_intents",
+  50: "team_checkout_intent_single_active_guard",
+  51: "team_checkout_atomic_billing_lifecycle",
+};
 
-describe("Team migrations 0037-0050 contract", () => {
+const teamMigrationNumbers = Object.keys(teamMigrationNames).map(Number);
+const migrationFile = (n: number) => `${String(n).padStart(4, "0")}_${teamMigrationNames[n]}.sql`;
+const migration = (n: number) => readFileSync(join(process.cwd(), "supabase/migrations", migrationFile(n)), "utf8");
+
+describe("Team migrations 0037-0051 compatibility contract", () => {
+  it("keeps the shared-space, approval, trial, roster, and billing prerequisites in source order", () => {
+    const expectedFiles = teamMigrationNumbers.map(migrationFile);
+    const actualFiles = readdirSync(join(process.cwd(), "supabase/migrations"))
+      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[01])_team_.*\.sql$/.test(file))
+      .sort();
+
+    expect(actualFiles).toEqual(expectedFiles);
+
+    for (const [prerequisite, dependent] of [
+      [37, 39], // membership gate before shared spaces
+      [38, 40], // billing source before the unified entitlement resolver
+      [39, 40], // the trial replaces the shared-space eligibility gate
+      [40, 42], // invite RPCs depend on entitlement resolution
+      [42, 43], // requests require accepted space invitations
+      [40, 44], // signup trial grant requires trial storage
+      [38, 45], // roster seats derive from paid billing
+      [45, 46], // read-only roster projection depends on roster storage
+      [42, 47], // invitation projection depends on invitation RPCs
+      [43, 48], // request projection depends on request RPCs
+      [49, 50], // single-active guard replaces the checkout reservation RPC
+      [38, 51], // atomic finalization writes the billing ledger
+      [49, 51], // atomic finalization binds a checkout intent
+      [50, 51], // atomic finalization preserves the latest reservation guard
+    ]) {
+      const prerequisiteIndex = teamMigrationNumbers.indexOf(prerequisite);
+      const dependentIndex = teamMigrationNumbers.indexOf(dependent);
+      expect(prerequisiteIndex).toBeGreaterThanOrEqual(0);
+      expect(dependentIndex).toBeGreaterThanOrEqual(0);
+      expect(prerequisiteIndex).toBeLessThan(dependentIndex);
+    }
+  });
+
   it("applies the real ordered chain and preserves signup, shared-space, approval, and roster contracts", async () => {
     const db = new PGlite({ extensions: { citext } });
     try {
@@ -222,6 +274,58 @@ describe("Team migrations 0037-0050 contract", () => {
       )).rows[0].snapshot;
       expect(canonicalRoster.seat_limit).toBe(2);
       expect((await db.query(`SELECT * FROM public.team_checkout_intents`)).rows).toEqual([]);
+
+      // 0051 depends on both the checkout-intent chain and the billing ledger.
+      // Applying it must not perturb the metadata-only shared-space and
+      // approval projections, trial entitlement, or paid-roster capacity that
+      // were already established by earlier migrations.
+      const beforeAtomicBilling = {
+        ownerEntitlement: canonicalOwner,
+        employeeEntitlement: canonicalEmployee,
+        roster: canonicalRoster,
+        invitations: aliasProjection,
+        requesterRequests: requesterProjection,
+        ownerRequests: ownerProjection,
+      };
+      await db.exec(migration(51));
+
+      expect((await db.query<{seat_limit:number;expires_at:string|null}>(
+        `SELECT seat_limit,expires_at FROM public.get_team_entitlement($1::uuid)`, [newId]
+      )).rows[0]).toEqual(beforeAtomicBilling.ownerEntitlement);
+      expect((await db.query<{seat_limit:number;expires_at:string|null}>(
+        `SELECT seat_limit,expires_at FROM public.get_team_entitlement($1::uuid)`, [employeeId]
+      )).rows[0]).toEqual(beforeAtomicBilling.employeeEntitlement);
+      expect((await db.query<{snapshot:any}>(
+        `SELECT public.list_team_paid_roster($1::uuid) AS snapshot`, [newId]
+      )).rows[0].snapshot).toEqual(beforeAtomicBilling.roster);
+      expect((await db.query(
+        `SELECT * FROM public.list_team_invitations_v2($1::uuid)`, [employeeId]
+      )).rows).toEqual(beforeAtomicBilling.invitations);
+      expect((await db.query(
+        `SELECT * FROM public.list_team_space_requests_v2($1::uuid)`, [employeeId]
+      )).rows).toEqual(beforeAtomicBilling.requesterRequests);
+      expect((await db.query(
+        `SELECT * FROM public.list_team_space_requests_v2($1::uuid)`, [newId]
+      )).rows).toEqual(beforeAtomicBilling.ownerRequests);
+      expect((await db.query(`SELECT * FROM public.team_checkout_intents`)).rows).toEqual([]);
+
+      expect((await db.query<{column_default:string|null}>(`
+        SELECT column_default FROM information_schema.columns
+        WHERE table_schema='public' AND table_name='team_checkout_intents' AND column_name='billing_sync_status'
+      `)).rows[0].column_default).toContain("pending");
+      for (const signature of [
+        "public.mark_team_checkout_session_pending(uuid,text)",
+        "public.release_team_checkout_expired_session(uuid,text)",
+        "public.mark_team_checkout_async_failed(uuid,text)",
+        "public.apply_team_checkout_billing_and_finalize(uuid,text,uuid,text,text,text,bigint,text,timestamptz,timestamptz,boolean,text,text,timestamptz,jsonb)",
+      ]) {
+        expect((await db.query<{ok:boolean}>(
+          `SELECT has_function_privilege('authenticated',$1,'EXECUTE') AS ok`, [signature]
+        )).rows[0].ok).toBe(false);
+        expect((await db.query<{ok:boolean}>(
+          `SELECT has_function_privilege('service_role',$1,'EXECUTE') AS ok`, [signature]
+        )).rows[0].ok).toBe(true);
+      }
     } finally { await db.close(); }
   }, 30_000);
 });
