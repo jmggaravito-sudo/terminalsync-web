@@ -29,17 +29,18 @@ const teamMigrationNames: Record<number, string> = {
   50: "team_checkout_intent_single_active_guard",
   51: "team_checkout_atomic_billing_lifecycle",
   52: "team_paid_roster_opaque_invitations",
+  53: "team_conversation_turns",
 };
 
 const teamMigrationNumbers = Object.keys(teamMigrationNames).map(Number);
 const migrationFile = (n: number) => `${String(n).padStart(4, "0")}_${teamMigrationNames[n]}.sql`;
 const migration = (n: number) => readFileSync(join(process.cwd(), "supabase/migrations", migrationFile(n)), "utf8");
 
-describe("Team migrations 0037-0052 compatibility contract", () => {
+describe("Team migrations 0037-0053 compatibility contract", () => {
   it("keeps the shared-space, approval, trial, roster, and billing prerequisites in source order", () => {
     const expectedFiles = teamMigrationNumbers.map(migrationFile);
     const actualFiles = readdirSync(join(process.cwd(), "supabase/migrations"))
-      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-2])_team_.*\.sql$/.test(file))
+      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-3])_team_.*\.sql$/.test(file))
       .sort();
 
     expect(actualFiles).toEqual(expectedFiles);
@@ -62,6 +63,9 @@ describe("Team migrations 0037-0052 compatibility contract", () => {
       [38, 52], // opaque reservations require the paid billing ledger
       [45, 52], // an accepted opaque invitation writes the roster membership
       [46, 52], // opaque reservations replace the read-only roster snapshot
+      [39, 53], // conversation threads belong to metadata-only shared spaces
+      [40, 53], // every conversation operation checks the live entitlement
+      [42, 53], // accepted invitations prove the two-way conversation pair
     ]) {
       const prerequisiteIndex = teamMigrationNumbers.indexOf(prerequisite);
       const dependentIndex = teamMigrationNumbers.indexOf(dependent);
@@ -401,6 +405,50 @@ describe("Team migrations 0037-0052 compatibility contract", () => {
         `SELECT * FROM public.list_team_space_requests_v2($1::uuid)`, [newId],
       )).rows).toEqual(beforeOpaqueInvitations.ownerRequests);
       expect(await listPaidTeamRoster(newId)).toEqual(beforeOpaqueInvitations.ownerRoster);
+
+      // 0053 is additive: it cannot replace the legacy request/projection
+      // contracts just because its v3 thread model lifts the old one-request
+      // cardinality. Apply it to the real chain and create an owner-initiated
+      // metadata-only turn through an opaque accepted relationship handle.
+      const legacyRequestV1BeforeConversation = (await db.query<{ definition: string }>(
+        `SELECT pg_get_functiondef('public.list_team_space_requests(uuid)'::regprocedure) AS definition`,
+      )).rows[0].definition;
+      const legacyRequestV2BeforeConversation = (await db.query<{ definition: string }>(
+        `SELECT pg_get_functiondef('public.list_team_space_requests_v2(uuid)'::regprocedure) AS definition`,
+      )).rows[0].definition;
+      await db.exec(migration(53));
+      expect((await db.query<{ definition: string }>(
+        `SELECT pg_get_functiondef('public.list_team_space_requests(uuid)'::regprocedure) AS definition`,
+      )).rows[0].definition).toBe(legacyRequestV1BeforeConversation);
+      expect((await db.query<{ definition: string }>(
+        `SELECT pg_get_functiondef('public.list_team_space_requests_v2(uuid)'::regprocedure) AS definition`,
+      )).rows[0].definition).toBe(legacyRequestV2BeforeConversation);
+      const conversationTarget = (await db.query<{ relationship_id: string }>(
+        `SELECT * FROM public.list_team_conversation_targets_v3($1::uuid,$2::uuid)`, [newId, space],
+      )).rows[0];
+      expect(conversationTarget.relationship_id).toBeTruthy();
+      const conversationTurn = (await db.query<{
+        thread_id: string; id: string; status: string; direction: string; can_respond: boolean;
+      }>(`
+        SELECT * FROM public.create_team_space_conversation_turn_v3(
+          $1::uuid,$2::uuid,$3::uuid,'context',$4::text,$5::jsonb,$6::uuid
+        )
+      `, [
+        newId, space, conversationTarget.relationship_id, "c".repeat(64),
+        JSON.stringify({ label: "follow-up context", itemCount: 1 }),
+        "00000000-0000-4000-8000-000000000053",
+      ])).rows[0];
+      expect(conversationTurn).toMatchObject({ status: "pending", direction: "outbound", can_respond: false });
+      const recipientTurns = (await db.query<{
+        id: string; direction: string; can_respond: boolean; metadata: Record<string, unknown>;
+      }>(`
+        SELECT * FROM public.list_team_conversation_turns_v3($1::uuid,$2::uuid,50,NULL,NULL)
+      `, [employeeId, conversationTurn.thread_id])).rows;
+      expect(recipientTurns).toHaveLength(1);
+      expect(recipientTurns[0]).toMatchObject({
+        id: conversationTurn.id, direction: "inbound", can_respond: true,
+        metadata: { label: "follow-up context", itemCount: 1 },
+      });
 
       // A new opaque invitation can reserve and consume a seat without
       // exposing either the member UUID or the raw capability in the owner
