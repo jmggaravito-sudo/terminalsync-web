@@ -6,6 +6,7 @@ import { parseReceivedInvitations, partitionReceivedInvitations, receivedSpaceLa
 import { parseOwnerApprovals, type OwnerApproval } from "./ownerApprovals";
 import { parsePaidRosterOwnerView, type PaidRosterOwnerView } from "./paidRosterOwnerView";
 import { PaidRosterOwnerPanel } from "./PaidRosterOwnerPanel";
+import { PaidRosterInvitationPanel } from "./PaidRosterInvitationPanel";
 
 type Entitlement = { eligible?: boolean; seat_limit?: number; source?: string | null; expires_at?: string | null };
 
@@ -128,6 +129,7 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
     </section> : null}
     {!loading && authenticated && entitlement?.eligible ? <p role="status">{es ? `Acceso Team activo${entitlement.expires_at ? ` hasta ${new Date(entitlement.expires_at).toLocaleDateString("es")}` : ""}. El checkout de Team todavía no está disponible.` : `Team access is active${entitlement.expires_at ? ` until ${new Date(entitlement.expires_at).toLocaleDateString("en")}` : ""}. Team checkout is not available yet.`}</p> : null}
     {!loading && authenticated && paidRoster ? <PaidRosterOwnerPanel lang={lang} roster={paidRoster} /> : null}
+    {!loading && authenticated ? <PaidRosterInvitationPanel lang={lang} roster={paidRoster} /> : null}
     {!loading && authenticated && !error && collections.pending.length === 0 && collections.received.length === 0 && !approvals.some((item) => item.status === "pending" && item.canRespond) ? <p>{es ? "No tienes invitaciones, solicitudes pendientes ni espacios recibidos." : "You have no invitations, pending requests, or received spaces."}</p> : null}
     {!loading && authenticated && collections.pending.length > 0 ? <section aria-labelledby="pending-heading">
       <h2 id="pending-heading">{es ? "Invitaciones pendientes" : "Pending invitations"}</h2>
