@@ -24,6 +24,7 @@ import {
 } from "./teamConversationClient";
 import type { OwnedTeamSpace } from "./teamSharedSpaces";
 import { receivedSpaceLabel } from "./receivedSpaces";
+import { TeamTextDeliveryPanel } from "./TeamTextDeliveryPanel";
 
 type InitialTarget = {
   spaceId: string;
@@ -731,6 +732,13 @@ export function TeamConversationPanel({ lang, ownedSpaces, receivedSpaces, onUna
               </li>;
             })}
           </ul>}
+          <TeamTextDeliveryPanel
+            key={openedThread.threadId}
+            lang={lang}
+            threadId={openedThread.threadId}
+            turns={turns.filter((turn) => turn.threadId === openedThread.threadId)}
+            onUnauthorized={onUnauthorized}
+          />
           {turnNextCursor ? <div style={{ marginTop: ".75rem" }}>
             <button disabled={turnsLoadingMore || requestBusy} onClick={() => void loadMoreTurns()}>{turnsLoadingMore ? text(es, "Cargando más solicitudes…", "Loading more requests…") : text(es, "Cargar más solicitudes", "Load more requests")}</button>
             {turnPageError ? <p role="alert">{turnPageError} <button onClick={() => void loadMoreTurns()}>{text(es, "Reintentar", "Retry")}</button></p> : null}
