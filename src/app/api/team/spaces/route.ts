@@ -1,5 +1,6 @@
 import { teamJson } from "@/lib/teamApiResponse";
 import { TeamMetadataError, teamMetadataFailure, teamMetadataRpc, verifiedTeamUser } from "@/lib/teamMetadata";
+import { isSafeTeamSpaceDisplayName, normalizeTeamSpaceDisplayName } from "@/lib/teamSpaceDisplayName";
 
 export const runtime = "nodejs";
 
@@ -8,14 +9,13 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 type SafeTeamSpace = {
   id: string;
   name: string;
-  description: string | null;
   created_at: string;
 };
 
 /**
  * `register_team_space` and `list_team_spaces` are legacy table-shaped RPCs.
- * Project their results at the HTTP boundary so service-only owner IDs and
- * external references can never become part of the browser contract.
+ * Project their results at the HTTP boundary so service-only owner IDs, legacy
+ * descriptions, and external references can never become browser metadata.
  */
 function safeSpaces(value: unknown, expectedCount?: number): SafeTeamSpace[] {
   if (!Array.isArray(value)) throw new TeamMetadataError("Unexpected Team spaces result");
@@ -23,16 +23,15 @@ function safeSpaces(value: unknown, expectedCount?: number): SafeTeamSpace[] {
   return value.map((row) => {
     if (!row || typeof row !== "object" || Array.isArray(row)) throw new TeamMetadataError("Unexpected Team space row");
     const record = row as Record<string, unknown>;
-    const { id, name, description, created_at } = record;
+    const { id, name, created_at } = record;
     if (
       typeof id !== "string" || !UUID.test(id) ||
-      typeof name !== "string" || name.length === 0 || name.length > 120 ||
-      (description !== null && (typeof description !== "string" || description.length > 500)) ||
+      !isSafeTeamSpaceDisplayName(name) ||
       typeof created_at !== "string" || !Number.isFinite(Date.parse(created_at))
     ) {
       throw new TeamMetadataError("Unexpected Team space row");
     }
-    return { id, name, description, created_at };
+    return { id, name, created_at };
   });
 }
 
@@ -52,19 +51,24 @@ export async function POST(req: Request) {
   try {
     const user = await verifiedTeamUser(req);
     if (!user) return teamJson({ error: "Unauthorized" }, { status: 401 });
-    const body = await req.json();
-    if (
-      !body || typeof body.name !== "string" || body.name.length > 120 ||
-      (body.description != null && (typeof body.description !== "string" || body.description.length > 500)) ||
-      (body.externalRef != null && (typeof body.externalRef !== "string" || body.externalRef.length > 256))
-    ) {
+    const body: unknown = await req.json();
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
       return teamJson({ error: "Invalid metadata" }, { status: 400 });
     }
+    const record = body as Record<string, unknown>;
+    // Descriptions and external references are legacy private columns, not
+    // browser-writeable shared-space metadata. Reject them even when null so a
+    // client cannot depend on an ignored content channel.
+    if (Object.keys(record).some((key) => key !== "name")) {
+      return teamJson({ error: "Invalid metadata" }, { status: 400 });
+    }
+    const name = normalizeTeamSpaceDisplayName(record.name);
+    if (!name) return teamJson({ error: "Invalid metadata" }, { status: 400 });
     const spaces = await teamMetadataRpc<unknown>("register_team_space", {
       p_user_id: user.id,
-      p_name: body.name,
-      p_description: body.description ?? null,
-      p_external_ref: body.externalRef ?? null,
+      p_name: name,
+      p_description: null,
+      p_external_ref: null,
     });
     return teamJson(safeSpaces(spaces, 1), { status: 201 });
   } catch (error) {
