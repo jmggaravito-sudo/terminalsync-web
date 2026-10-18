@@ -132,15 +132,14 @@ export async function POST(req: Request) {
       { status: 503, headers: cors },
     );
   }
-  // Team is not safe to sell yet: the subscription table/check, Stripe
-  // webhook price mapping, and no-card 7-day entitlement lifecycle are not
-  // implemented together. Do not create a paid subscription that would sync
-  // as `free` or give the impression that the promised trial is active.
+  // Team paid checkout is deliberately closed until a separately approved
+  // Stripe-only paid lifecycle is live in production. The no-card Team trial
+  // is a separate entitlement; do not create a Stripe subscription merely
+  // because that entitlement exists in source.
   if (plan === "team") {
     return NextResponse.json(
       {
-        error:
-          "Team checkout is not available until Team trial entitlements and subscription sync are ready.",
+        error: "Team checkout is not available yet. No Stripe session was created.",
       },
       { status: 503, headers: cors },
     );

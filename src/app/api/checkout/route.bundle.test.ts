@@ -75,7 +75,7 @@ describe("Team checkout fail-closed foundation", () => {
     teamPrice.value = "price_team_monthly";
   });
 
-  it("does not create a Stripe session even with a price until trial/entitlement sync is ready", async () => {
+  it("does not create a Stripe session even with a configured price while Team checkout is disabled", async () => {
     createSession.mockClear();
     teamPrice.value = "price_team_monthly";
     const response = await POST(new Request("https://terminalsync.ai/api/checkout", {
@@ -84,7 +84,7 @@ describe("Team checkout fail-closed foundation", () => {
       body: JSON.stringify({ plan: "team", seats: 3 }),
     }));
     expect(response.status).toBe(503);
-    expect((await response.json()).error).toContain("trial entitlements");
+    expect((await response.json()).error).toContain("No Stripe session was created");
     expect(createSession).not.toHaveBeenCalled();
   });
 });
