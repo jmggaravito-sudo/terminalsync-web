@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { authenticate, isAdmin } from "@/lib/marketplace/auth";
+import { isTeamFeatureEnabled } from "@/lib/teamFeature";
 import {
   grantIncludedAi,
 } from "@/lib/subscriptionState";
@@ -99,6 +100,22 @@ export async function POST(req: Request) {
   const user = await authenticate(req);
   if (!user || !isAdmin(user)) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+  // Check the Team gate before initializing Supabase so an unavailable schema
+  // always produces the same explicit, uncached response, even if the admin
+  // database client is also misconfigured. Clone to preserve Pro/Max parsing.
+  if (!isTeamFeatureEnabled()) {
+    try {
+      const submittedPlan = (await req.clone().json() as { plan?: unknown }).plan;
+      if (submittedPlan === "team") {
+        return NextResponse.json(
+          { error: "Team is temporarily unavailable" },
+          { status: 503, headers: { "Cache-Control": "no-store" } },
+        );
+      }
+    } catch {
+      // Keep the existing validation/configuration behavior for malformed JSON.
+    }
   }
   const sb = getSupabaseAdmin();
   if (!sb) {

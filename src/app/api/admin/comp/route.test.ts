@@ -78,6 +78,7 @@ function request(method: "POST" | "DELETE", body: Record<string, unknown>) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.stubEnv("TEAM_FEATURE_ENABLED", "0");
   mocks.authenticate.mockResolvedValue({ id: "admin-1", email: "admin@terminalsync.ai" });
   mocks.isAdmin.mockReturnValue(true);
   mocks.grantIncludedAi.mockResolvedValue(true);
@@ -87,6 +88,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
 });
 
 describe("admin comp included-AI entitlement", () => {
@@ -110,6 +112,32 @@ describe("admin comp included-AI entitlement", () => {
       expect.objectContaining({ user_id: "user-1", plan: "pro", ai_included: true }),
       { onConflict: "user_id" },
     );
+  });
+
+  it("blocks an existing-user Team comp before profile lookup while the Team gate is off", async () => {
+    mocks.getSupabaseAdmin.mockReturnValue(null);
+
+    const { POST } = await import("./route");
+    const response = await POST(request("POST", { email: "person@example.com", plan: "team" }));
+
+    expect(response.status).toBe(503);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    await expect(response.json()).resolves.toEqual({ error: "Team is temporarily unavailable" });
+    expect(mocks.getSupabaseAdmin).not.toHaveBeenCalled();
+    expect(mocks.rpc).not.toHaveBeenCalled();
+  });
+
+  it("blocks Team pre-grants before any database write while the Team gate is off", async () => {
+    const sb = supabaseFor({});
+    mocks.getSupabaseAdmin.mockReturnValue(sb);
+
+    const { POST } = await import("./route");
+    const response = await POST(request("POST", { email: "new@example.com", plan: "team" }));
+
+    expect(response.status).toBe(503);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(sb.from).not.toHaveBeenCalled();
+    expect(mocks.rpc).not.toHaveBeenCalled();
   });
 
   it("keeps pre-grants pending for the handle_new_user entitlement trigger", async () => {
@@ -137,6 +165,7 @@ describe("admin comp included-AI entitlement", () => {
   });
 
   it("stores a new-user Team grant separately from base-plan comp grants", async () => {
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
     const sb = supabaseFor({
       profiles: { data: null, error: null },
       team_comp_grants: { error: null },
@@ -158,6 +187,7 @@ describe("admin comp included-AI entitlement", () => {
   });
 
   it("returns failure when the Team pre-grant insert fails", async () => {
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
     const sb = supabaseFor({ profiles: { data: null, error: null }, team_comp_grants: { error: { message: "write failed" } } });
     mocks.getSupabaseAdmin.mockReturnValue(sb);
     const { POST } = await import("./route");
@@ -166,6 +196,7 @@ describe("admin comp included-AI entitlement", () => {
   });
 
   it("grants existing users additive Team membership without changing Pro/Max subscription", async () => {
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
     const sb = supabaseFor({
       profiles: { data: { id: "user-1", email: "person@example.com" }, error: null },
     });
@@ -182,6 +213,7 @@ describe("admin comp included-AI entitlement", () => {
   });
 
   it("does not overwrite an existing paid Team membership", async () => {
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
     const sb = supabaseFor({
       profiles: { data: { id: "user-1", email: "person@example.com" }, error: null },
     });
@@ -197,6 +229,7 @@ describe("admin comp included-AI entitlement", () => {
   });
 
   it("fails closed when profile lookup fails instead of creating a pre-grant", async () => {
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
     const sb = supabaseFor({
       profiles: { data: null, error: { message: "database unavailable" } },
     });
