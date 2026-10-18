@@ -10,9 +10,10 @@ performed for this runbook.
 
 ## Scope and migration set
 
-This rollout is only for no-card Team trial and metadata-only shared-space,
-invitation, approval, and conversation behavior. It does not enable paid Team
-checkout or create Stripe objects. Pro/Max remain unchanged.
+This rollout is for no-card Team trial and shared-space, invitation, approval,
+and conversation behavior. The base migration chain stays metadata-only;
+optional `0056` adds only reviewed text delivery after approval. It does not
+enable paid Team checkout or create Stripe objects. Pro/Max remain unchanged.
 
 Apply missing migrations individually, in dependency order, after reviewing the
 SQL and confirming the expected preconditions/effects:
@@ -20,6 +21,13 @@ SQL and confirming the expected preconditions/effects:
 1. Core: `0039 → 0040 → 0041 → 0042 → 0043`.
 2. Current v2 UI projections: `0047 → 0048`.
 3. Approval-first conversation hardening: `0053 → 0054 → 0055`.
+4. Optional post-approval **text-only** delivery: `0056`, after step 3 and
+   after reviewing the private-store RPCs. The source PR adds a purge endpoint
+   but intentionally no Vercel schedule: configure the hourly schedule only
+   as a later explicit rollout step after `CRON_SECRET` and Vercel hourly-cron
+   capability are verified. This adds a separate send path for the accepted
+   turn's recipient/approver in either direction; it does not change the
+   metadata-only turn projection or enable files/AI generation.
 
 `0044_team_trial_on_signup.sql` is **optional** and only needed if newly
 created accounts should receive the same 168-hour, no-card trial automatically.
@@ -69,8 +77,9 @@ migration set is installed, verify these cases with authenticated sessions:
 | Invitation | A invites B; B views and accepts | B sees the received space separately, labeled as the owner's space (for example, “Espacio de A”); it is not listed among B's owned spaces. |
 | Owner-to-member request | A requests context/document information from B | Only bounded request metadata is visible before B's decision; no document, context, path, URL, or payload is transferred. |
 | Member-to-owner request | B initiates the reverse-direction request | Same metadata-only behavior; both parties can initiate, subject to the same approval rule. |
-| Approval/decline | Recipient approves, then separately test decline | Decision is recorded; approval is not itself evidence of payload delivery. Decline leaves no delivery. No payload channel is invoked by either outcome. |
-| Revocation | A revokes the invitation/relationship and both accounts retry relevant views/actions | Access/request actions fail closed; stale relationship cannot be used to communicate. |
+| Approval/decline | Recipient approves, then separately test decline | Approval alone transfers nothing. After applying `0056` in a controlled test environment, the accepted turn's recipient/approver must separately submit exact reviewed text to its initiator, in either direction; decline creates no delivery. |
+| Text delivery | Accepted turn recipient/approver sends reviewed text back to initiator in either direction; initiator reads it | Delivery receipt contains no payload; only the bound recipient can read. Text is bounded to 64 KiB; at 7 days, read is denied and plaintext plus digest are erased on recipient read or purge invocation. The metadata row and payload-free audit (delivery ID, event, actor ID/null, timestamp) remain; this slice schedules no cron, so configure hourly cleanup only after verifying `CRON_SECRET` and Vercel capability. Unsent accepted turns cannot be sent after 24 hours. |
+| Revocation | A revokes the invitation/relationship and both accounts retry relevant views/actions | Access/request actions and delivery reads fail closed; stale relationship cannot be used to communicate. |
 
 Capture sanitized request/status evidence, never tokens or document contents.
 Do not use real employee/customer context during this smoke. These checks do
