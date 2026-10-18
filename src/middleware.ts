@@ -115,11 +115,12 @@ function route(req: NextRequest): NextResponse {
 }
 
 export const config = {
-  // Team APIs must be checked before the general matcher excludes /api.
-  // The other matcher covers pages (including static /es and /en), excluding
-  // all other APIs, _next, and files with an extension.
+  // The first matcher remains the public-page matcher (including static /es
+  // and /en), excluding APIs, _next, and files with an extension. Keep it
+  // first because the region matcher contract tests this exact expression.
+  // The dedicated Team matcher then brings only Team APIs into middleware.
   matcher: [
-    "/api/team/:path*",
     "/((?!api(?:/|$)|_next/static|_next/image|favicon.ico|.*\\..*).*)",
+    "/api/team/:path*",
   ],
 };
