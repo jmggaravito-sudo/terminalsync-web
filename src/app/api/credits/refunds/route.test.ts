@@ -103,3 +103,9 @@ describe("POST /api/credits/refunds", () => {
     expect((await POST(req(OK))).status).toBe(503);
   });
 });
+
+it("unproven failure stays pending, never turns into a successful response",async()=>{
+  mocks.getSupabaseAdmin.mockReturnValue(sbWith({error:{message:"verified video failure required"}}));
+  const r=await POST(req({...OK,metadata:{failed:true,jobStatus:"failed"}}));
+  expect(r.status).toBe(409);expect(await r.json()).toMatchObject({code:"refund_pending_reconciliation"});
+});

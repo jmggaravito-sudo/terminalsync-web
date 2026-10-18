@@ -4,6 +4,7 @@ on:
     paths:
       - 'supabase/migrations/**'
       - 'scripts/test-video-funding-sql.mjs'
+      - 'scripts/test-credit-refunds-sql.py'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/video-funding-sql.yml'
@@ -21,3 +22,11 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run test:video-funding-sql
+
+  refund-sql:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Execute 0057 in a fresh isolated PostgreSQL cluster (including concurrency)
+        run: python3 scripts/test-credit-refunds-sql.py

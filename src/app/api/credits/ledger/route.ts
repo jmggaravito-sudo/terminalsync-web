@@ -18,10 +18,8 @@
  *   - Scoped to the authenticated caller. `authenticate()` resolves the
  *     Supabase user from the Bearer token; every query below is filtered by
  *     that `user_id`, so one account can never see another's ledger.
- *   - `kind = 'top_up'` only. `debit`/`refund`/`adjustment` rows exist in the
- *     same table for the server's own bookkeeping, but the app's local wallet
- *     only needs to learn about money that arrived — it does its own local
- *     debiting and has no use for the server replaying those back to it.
+ *   - Top-ups, debits, and evidence-linked refunds are replayed independently.
+ *     Historical refunds without a trusted evidence link are not auto-credited.
  *
  * `?since=<ISO 8601>` lets the app poll incrementally instead of re-fetching
  * up to 100 rows every time: pass back the `nextSince` from the previous
@@ -119,7 +117,7 @@ export async function GET(req: Request) {
   try {
     let ledgerQuery = sb
       .from("ai_credit_ledger")
-      .select("id, kind, idempotency_key, amount_micros, rail, created_at")
+      .select("id, kind, idempotency_key, verified_video_job_id, amount_micros, rail, created_at")
       .eq("user_id", user.id)
       .in("kind", ["top_up", "debit", "refund"])
       .order("created_at", { ascending: true })
@@ -150,6 +148,7 @@ export async function GET(req: Request) {
     type LedgerRow = {
       id: string;
       kind?: string;
+      verified_video_job_id?: string | null;
       idempotency_key?: string;
       amount_micros: number;
       rail: string | null;
@@ -182,7 +181,7 @@ export async function GET(req: Request) {
     // 'refund:' + la clave del gasto original, así la app encuentra ese gasto
     // en su propio ledger, lo devuelva una o muchas veces.
     const refunds: RefundRow[] = ledgerRows
-      .filter((row) => row.kind === "refund" && row.idempotency_key?.startsWith("refund:"))
+      .filter((row) => row.kind === "refund" && !!row.verified_video_job_id && row.idempotency_key?.startsWith("refund:"))
       .map((row) => ({
         id: row.id,
         originalIdempotencyKey: (row.idempotency_key as string).slice("refund:".length),

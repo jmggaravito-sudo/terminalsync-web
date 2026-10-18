@@ -369,7 +369,7 @@ describe("GET /api/credits/ledger — devoluciones del servidor", () => {
           account: { balance_micros: 200_000_000, currency: "USD", updated_at: "2026-10-18T12:00:00Z" },
           ledgerRows: [
             { id: "d1", kind: "debit", idempotency_key: "design-video:quote-1", amount_micros: -300_000, rail: null, created_at: "2026-10-18T10:00:00Z" },
-            { id: "r1", kind: "refund", idempotency_key: "refund:design-video:quote-1", amount_micros: 300_000, rail: null, created_at: "2026-10-18T10:05:00Z" },
+            { id: "r1", verified_video_job_id: "vj_00000000000000000000000000000001", kind: "refund", idempotency_key: "refund:design-video:quote-1", amount_micros: 300_000, rail: null, created_at: "2026-10-18T10:05:00Z" },
           ] as unknown as LedgerRow[],
         },
         calls,
@@ -388,7 +388,7 @@ describe("GET /api/credits/ledger — devoluciones del servidor", () => {
     expect(body.nextSince).toBe("2026-10-18T10:05:00Z");
   });
 
-  it("ignora una devolución cuya clave no tiene el formato esperado", async () => {
+  it("no publica una devolución histórica sin evidencia verificada", async () => {
     const calls = newCalls();
     mocks.authenticate.mockResolvedValue({ id: "user-verified", email: "x@y.z" });
     mocks.getSupabaseAdmin.mockReturnValue(
@@ -396,7 +396,7 @@ describe("GET /api/credits/ledger — devoluciones del servidor", () => {
         {
           account: null,
           ledgerRows: [
-            { id: "r9", kind: "refund", idempotency_key: "sin-prefijo", amount_micros: 5, rail: null, created_at: "2026-10-18T10:05:00Z" },
+            { id: "r9", kind: "refund", idempotency_key: "refund:design-video:legacy", amount_micros: 5, rail: null, created_at: "2026-10-18T10:05:00Z" },
           ] as unknown as LedgerRow[],
         },
         calls,

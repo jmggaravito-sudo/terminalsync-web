@@ -1,6 +1,6 @@
 /**
- * Registra en el servidor una devolución de créditos que la app ya aplicó
- * localmente (un video que falló o no llegó). Ver
+ * Solicita conciliación; solo evidencia privada de fallo terminal del proveedor
+ * habilita una devolución calculada por el servidor. La app no acredita antes. Ver
  * supabase/migrations/0057_ai_credit_refunds.sql.
  *
  * Contrato:
@@ -102,6 +102,9 @@ export async function POST(req: Request) {
     p_metadata: body.metadata ?? {},
   });
   if (error) {
+    if (/verified video failure required|requires reconciliation/i.test(error.message ?? "")) {
+      return json({ error: "Refund pending verified video evidence.", code: "refund_pending_reconciliation" }, 409);
+    }
     // El gasto original todavía no llegó al servidor: la app reintenta después.
     if (/original debit not found/i.test(error.message ?? "")) {
       return json(
