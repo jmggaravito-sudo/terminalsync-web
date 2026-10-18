@@ -120,8 +120,13 @@ describe("Team conversation browser contract", () => {
 
     // A missing, malformed, or partial cursor becomes an explicit UI error,
     // never an implicit claim that there are no more approval cards.
-    expect(parseConversationThreadPage({ threads: [], nextCursor: { beforeThreadId: UUID_C } })).toBeNull();
+    expect(parseConversationThreadPage({ threads: [], nextCursor: { beforeActivityAt: "2026-10-18T00:00:00Z", beforeThreadId: UUID_C } })).toBeNull();
+    expect(parseConversationThreadPage({
+      threads: [{ thread_id: UUID_C, space_id: UUID_B, space_name: "Espacio", last_activity_at: "2026-10-18T00:00:00Z" }],
+      nextCursor: { beforeActivityAt: "2026-10-17T00:00:00Z", beforeThreadId: UUID_C },
+    })).toBeNull();
     expect(parseConversationTurnPage({ turns: [validTurn()], nextCursor: { beforeCreatedAt: "not-a-date", beforeTurnId: UUID_B } })).toBeNull();
+    expect(parseConversationTurnPage({ turns: [validTurn()], nextCursor: { beforeCreatedAt: "2026-10-18T00:00:00Z", beforeTurnId: UUID_C } })).toBeNull();
     expect(parseConversationThreadPage({ threads: [], nextCursor: null })).toEqual({ threads: [], nextCursor: null });
   });
 });

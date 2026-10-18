@@ -3,7 +3,7 @@
 import { type FormEvent, useId, useState } from "react";
 import { authedFetch } from "@/lib/supabase/browser";
 import type { OwnedTeamSpace } from "./teamSharedSpaces";
-import { normalizeTeamDisplayName } from "./teamDisplayName";
+import { normalizeTeamSpaceDisplayName as normalizeTeamDisplayName } from "@/lib/teamSpaceDisplayName";
 
 const TEAM_ALIAS = /^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$/;
 

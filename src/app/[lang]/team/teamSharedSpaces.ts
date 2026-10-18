@@ -1,4 +1,4 @@
-import { safeTeamDisplayName } from "./teamDisplayName";
+import { isSafeTeamSpaceDisplayName } from "@/lib/teamSpaceDisplayName";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -24,7 +24,7 @@ export function parseOwnedTeamSpaces(value: unknown): OwnedTeamSpace[] {
   return value.flatMap((item): OwnedTeamSpace[] => {
     if (!item || typeof item !== "object" || Array.isArray(item)) return [];
     const row = item as Record<string, unknown>;
-    const name = safeTeamDisplayName(row.name);
+    const name = isSafeTeamSpaceDisplayName(row.name) ? row.name : null;
     if (
       typeof row.id !== "string" || !UUID.test(row.id) || ids.has(row.id) ||
       !name ||

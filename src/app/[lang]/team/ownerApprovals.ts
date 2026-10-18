@@ -1,4 +1,4 @@
-import { safeTeamDisplayName } from "./teamDisplayName";
+import { isSafeTeamSpaceDisplayName } from "@/lib/teamSpaceDisplayName";
 
 export type OwnerApproval = {
   id: string;
@@ -27,7 +27,7 @@ export function parseOwnerApprovals(value: unknown): OwnerApproval[] {
   return value.flatMap((row): OwnerApproval[] => {
     if (!row || typeof row !== "object" || Array.isArray(row)) return [];
     const r = row as Record<string, unknown>;
-    const spaceName = safeTeamDisplayName(r.space_name);
+    const spaceName = isSafeTeamSpaceDisplayName(r.space_name) ? r.space_name : null;
     const itemCount = safeItemCount(r.metadata);
     if (typeof r.id !== "string" || !UUID.test(r.id) || !spaceName || itemCount === undefined ||
       r.role !== "owner" || typeof r.can_respond !== "boolean" ||

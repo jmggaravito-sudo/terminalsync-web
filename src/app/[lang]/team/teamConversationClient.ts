@@ -1,4 +1,4 @@
-import { safeTeamDisplayName } from "./teamDisplayName";
+import { isSafeTeamSpaceDisplayName } from "@/lib/teamSpaceDisplayName";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SHA_256 = /^[0-9a-f]{64}$/;
@@ -149,7 +149,7 @@ export function parseConversationTargets(value: unknown): ConversationTarget[] {
   const rows = root.targets.flatMap((value): ConversationTarget[] => {
     const source = object(value);
     if (!source) return [];
-    const spaceName = safeTeamDisplayName(source.space_name);
+    const spaceName = isSafeTeamSpaceDisplayName(source.space_name) ? source.space_name : null;
     if (
       typeof source.relationship_id !== "string" || !UUID.test(source.relationship_id) ||
       typeof source.space_id !== "string" || !UUID.test(source.space_id) ||
@@ -171,7 +171,7 @@ export function parseConversationThreads(value: unknown): ConversationThread[] {
   if (!root || !Array.isArray(root.threads)) return [];
   const rows = root.threads.flatMap((value): ConversationThread[] => {
     const source = object(value);
-    const spaceName = source ? safeTeamDisplayName(source.space_name) : null;
+    const spaceName = source && isSafeTeamSpaceDisplayName(source.space_name) ? source.space_name : null;
     if (!source || typeof source.thread_id !== "string" || !UUID.test(source.thread_id) ||
       typeof source.space_id !== "string" || !UUID.test(source.space_id) || !spaceName || !validDate(source.last_activity_at)) return [];
     return [{
@@ -221,7 +221,13 @@ export function parseConversationThreadPage(value: unknown): ConversationThreadP
   if (!root || !Array.isArray(root.threads) || !("nextCursor" in root)) return null;
   const threads = parseConversationThreads(root);
   const nextCursor = parseConversationThreadCursor(root.nextCursor);
-  return nextCursor === undefined || threads.length !== root.threads.length ? null : { threads, nextCursor };
+  if (nextCursor === undefined || threads.length !== root.threads.length) return null;
+  if (nextCursor === null) return { threads, nextCursor };
+  const last = threads.at(-1);
+  // The cursor is opaque to the user but must be coupled to the last rendered
+  // row; otherwise a syntactically valid stale cursor could skip or loop cards.
+  if (!last || nextCursor.beforeActivityAt !== last.lastActivityAt || nextCursor.beforeThreadId !== last.threadId) return null;
+  return { threads, nextCursor };
 }
 
 /** See parseConversationThreadPage: page parsing must not silently truncate. */
@@ -230,7 +236,11 @@ export function parseConversationTurnPage(value: unknown): ConversationTurnPage 
   if (!root || !Array.isArray(root.turns) || !("nextCursor" in root)) return null;
   const turns = parseConversationTurns(root);
   const nextCursor = parseConversationTurnCursor(root.nextCursor);
-  return nextCursor === undefined || turns.length !== root.turns.length ? null : { turns, nextCursor };
+  if (nextCursor === undefined || turns.length !== root.turns.length) return null;
+  if (nextCursor === null) return { turns, nextCursor };
+  const last = turns.at(-1);
+  if (!last || nextCursor.beforeCreatedAt !== last.createdAt || nextCursor.beforeTurnId !== last.id) return null;
+  return { turns, nextCursor };
 }
 
 export function parseConversationTurnConfirmation(value: unknown): ConversationTurn | null {
