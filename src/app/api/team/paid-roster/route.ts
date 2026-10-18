@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
-import { changePaidTeamRoster, listPaidTeamRoster, TeamPaidRosterError } from "@/lib/teamPaidRoster";
+import { listPaidTeamRoster, TeamPaidRosterError } from "@/lib/teamPaidRoster";
 
 export const runtime = "nodejs";
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 async function verifiedOwner(req: Request) {
   const header = req.headers.get("authorization") ?? "";
@@ -24,18 +23,15 @@ async function verifiedOwner(req: Request) {
 
 function failure(error: unknown) {
   if (!(error instanceof TeamPaidRosterError)) return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  const responses = {
-    unavailable: ["Team roster is unavailable", 503],
-    inactive: ["Active paid Team subscription required", 403],
-    capacity: ["No paid Team seats available", 409],
-    not_found: ["Employee account not found", 404],
-    invalid: ["Invalid roster member", 400],
-  } as const;
-  const [message, status] = responses[error.code];
-  return NextResponse.json({ error: message }, { status });
+  return NextResponse.json({ error: "Team roster is unavailable" }, { status: 503 });
 }
 
-function invalidJson() { return NextResponse.json({ error: "Invalid request" }, { status: 400 }); }
+function readOnly() {
+  return NextResponse.json(
+    { error: "Team roster changes are unavailable until secure employee selection is ready" },
+    { status: 405, headers: { Allow: "GET" } },
+  );
+}
 
 export async function GET(req: Request) {
   try {
@@ -47,19 +43,9 @@ export async function GET(req: Request) {
   } catch (error) { return failure(error); }
 }
 
-async function mutate(req: Request, action: "assign" | "revoke") {
-  try {
-    const owner = await verifiedOwner(req);
-    if (!owner) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    let body: unknown;
-    try { body = await req.json(); } catch { return invalidJson(); }
-    if (!body || typeof body !== "object" || Array.isArray(body) ||
-      Object.keys(body).length !== 1 || typeof (body as Record<string, unknown>).employeeUserId !== "string" ||
-      !UUID.test((body as Record<string, string>).employeeUserId)) return invalidJson();
-    const result = await changePaidTeamRoster(action, owner.id, (body as { employeeUserId: string }).employeeUserId);
-    return NextResponse.json({ result }, { status: action === "assign" && result === "assigned" ? 201 : 200 });
-  } catch (error) { return failure(error); }
-}
-
-export async function POST(req: Request) { return mutate(req, "assign"); }
-export async function DELETE(req: Request) { return mutate(req, "revoke"); }
+// Assignment and revocation intentionally remain disabled. The previous
+// endpoint accepted arbitrary employee UUIDs, and there is not yet a secure
+// owner-side resolver (for example, an accepted invitation or non-enumerating
+// alias flow) that can safely select a Team member.
+export async function POST(_req: Request) { return readOnly(); }
+export async function DELETE(_req: Request) { return readOnly(); }
