@@ -58,9 +58,61 @@ describe("Team metadata request routes", () => {
   });
 
   it("uses only verified identity and no content fields reach RPC", async () => {
+    teamMetadataRpc.mockResolvedValueOnce([{
+      id: requestId,
+      status: "pending",
+      request_kind: "document",
+      manifest_hash: "a".repeat(64),
+      metadata: { label: "Q1 report", content: "never return" },
+      requester_user_id: "00000000-0000-0000-0000-000000000099",
+      created_at: "2026-10-18T00:00:00Z",
+    }]);
     const r = await POST(new Request("https://x.test", { method: "POST", headers: { authorization: "Bearer ok", "content-type": "application/json" }, body: JSON.stringify({ spaceId: "00000000-0000-0000-0000-000000000001", kind: "document", manifestHash: "a".repeat(64), metadata: { label: "Q1 report" }, userId: "attacker", content: "secret", ciphertext: "secret" }) }));
     expect(r.status).toBe(200);
+    expect(await r.json()).toEqual({ id: requestId, status: "pending" });
     expect(teamMetadataRpc).toHaveBeenCalledWith("create_team_space_request", { p_user_id: "verified", p_space_id: "00000000-0000-0000-0000-000000000001", p_request_kind: "document", p_manifest_hash: "a".repeat(64), p_metadata: { label: "Q1 report" } });
+  });
+
+  it("does not serialize manifest hashes, arbitrary metadata, or requester IDs from the create RPC", async () => {
+    teamMetadataRpc.mockResolvedValueOnce([{
+      id: requestId,
+      status: "pending",
+      manifest_hash: "b".repeat(64),
+      metadata: { label: "Q1 report", arbitrary: "never expose" },
+      requester_user_id: "00000000-0000-0000-0000-000000000099",
+    }]);
+    const response = await POST(new Request("https://x.test", {
+      method: "POST",
+      headers: { authorization: "Bearer ok", "content-type": "application/json" },
+      body: JSON.stringify({ spaceId: "00000000-0000-0000-0000-000000000001", kind: "context", manifestHash: "b".repeat(64), metadata: {} }),
+    }));
+    const body = await response.json();
+    expect(response.status).toBe(200);
+    expect(body).toEqual({ id: requestId, status: "pending" });
+    expect(JSON.stringify(body)).not.toContain("requester_user_id");
+    expect(JSON.stringify(body)).not.toContain("manifest_hash");
+    expect(JSON.stringify(body)).not.toContain("Q1 report");
+  });
+
+  it("fails closed when create does not return exactly one valid confirmation", async () => {
+    for (const result of [[], [{ id: requestId, status: "unexpected", manifest_hash: "private" }], [{ id: requestId, status: "pending" }, { id: requestId, status: "pending" }]]) {
+      teamMetadataRpc.mockResolvedValueOnce(result);
+      const response = await POST(new Request("https://x.test", {
+        method: "POST",
+        headers: { authorization: "Bearer ok", "content-type": "application/json" },
+        body: JSON.stringify({ spaceId: "00000000-0000-0000-0000-000000000001", kind: "context", manifestHash: "c".repeat(64), metadata: {} }),
+      }));
+      expect(response.status).toBe(409);
+      expect(await response.json()).toEqual({ error: "Request was not created" });
+    }
+  });
+
+  it("rejects malformed create/approval JSON before either mutation RPC", async () => {
+    const create = await POST(new Request("https://x.test", { method: "POST", headers: { authorization: "Bearer ok", "content-type": "application/json" }, body: "{" }));
+    const approval = await respond(new Request("https://x.test", { method: "POST", headers: { authorization: "Bearer ok", "content-type": "application/json" }, body: "{" }));
+    expect(create.status).toBe(400);
+    expect(approval.status).toBe(400);
+    expect(teamMetadataRpc).not.toHaveBeenCalled();
   });
 
   it("returns only an allowlisted terminal confirmation after a matching owner response", async () => {
