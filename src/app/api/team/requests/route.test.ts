@@ -20,12 +20,31 @@ describe("Team metadata request routes", () => {
     teamMetadataRpc.mockResolvedValue([]);
   });
 
-  it("lists requests through the participant-safe v2 projection using verified identity", async () => {
-    teamMetadataRpc.mockResolvedValueOnce([{ id: "request", space_id: "space", space_name: "Shared", role: "owner", can_respond: true, status: "pending", request_kind: "document", metadata: { label: "Annual index" }, created_at: "2026-10-17T00:00:00Z", responded_at: null }]);
+  it("lists requests through an allowlisted participant-safe v2 projection using verified identity", async () => {
+    const safeRow = {
+      id: requestId,
+      space_id: "00000000-0000-0000-0000-000000000001",
+      space_name: "Shared",
+      role: "owner",
+      can_respond: true,
+      status: "pending",
+      request_kind: "document",
+      metadata: { label: "Annual index", category: "finance", itemCount: 2 },
+      created_at: "2026-10-17T00:00:00Z",
+      responded_at: null,
+    };
+    teamMetadataRpc.mockResolvedValueOnce([{ ...safeRow, requester_user_id: "PRIVATE", owner_user_id: "PRIVATE", manifest_hash: "SECRET", metadata: { ...safeRow.metadata, arbitrary: "SECRET" } }]);
     const response = await GET(auth());
     expect(response.status).toBe(200);
     expect(teamMetadataRpc).toHaveBeenCalledWith("list_team_space_requests_v2", { p_user_id: "verified" });
-    expect(await response.json()).toMatchObject([{ role: "owner", can_respond: true, status: "pending" }]);
+    expect(await response.json()).toEqual([safeRow]);
+  });
+
+  it("fails closed for malformed request-list rows instead of serializing unknown fields", async () => {
+    teamMetadataRpc.mockResolvedValueOnce([{ id: requestId, space_id: "00000000-0000-0000-0000-000000000001", space_name: "Shared", role: "requester", can_respond: true, status: "pending", request_kind: "document", metadata: {}, created_at: "2026-10-17T00:00:00Z", responded_at: null, requester_user_id: "PRIVATE" }]);
+    const response = await GET(auth());
+    expect(response.status).toBe(503);
+    expect(await response.text()).not.toContain("PRIVATE");
   });
 
   it("requires verified Bearer identity on list/create/approval", async () => {

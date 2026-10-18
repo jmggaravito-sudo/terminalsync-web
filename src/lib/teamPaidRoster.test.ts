@@ -44,4 +44,12 @@ describe("paid Team roster owner view", () => {
     getSupabaseAdmin.mockReturnValue({ rpc: vi.fn().mockResolvedValue({ error: null, data: { has_active_team: true } }) });
     await expect(listPaidTeamRoster("00000000-0000-0000-0000-000000000001")).rejects.toEqual(expect.any(TeamPaidRosterError));
   });
+
+  it("does not pick an arbitrary first snapshot when the RPC returns multiple rows", async () => {
+    getSupabaseAdmin.mockReturnValue({ rpc: vi.fn().mockResolvedValue({ error: null, data: [
+      { has_active_team: true, seat_limit: 1, assigned_count: 0, occupied_seats: 1, available_slots: 0, roster: [] },
+      { has_active_team: true, seat_limit: 99, assigned_count: 0, occupied_seats: 1, available_slots: 98, roster: [] },
+    ] }) });
+    await expect(listPaidTeamRoster("00000000-0000-0000-0000-000000000001")).rejects.toEqual(expect.any(TeamPaidRosterError));
+  });
 });
