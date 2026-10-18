@@ -58,12 +58,20 @@ interface DebitRow {
   createdAt: string;
 }
 
+interface RefundRow {
+  id: string;
+  originalIdempotencyKey: string;
+  amountMicros: number;
+  createdAt: string;
+}
+
 interface LedgerResponse {
   ok: true;
   balanceMicros: number;
   currency: string;
   topUps: TopUpRow[];
   debits: DebitRow[];
+  refunds: RefundRow[];
   nextSince: string | null;
 }
 
@@ -113,7 +121,7 @@ export async function GET(req: Request) {
       .from("ai_credit_ledger")
       .select("id, kind, idempotency_key, amount_micros, rail, created_at")
       .eq("user_id", user.id)
-      .in("kind", ["top_up", "debit"])
+      .in("kind", ["top_up", "debit", "refund"])
       .order("created_at", { ascending: true })
       .limit(100);
     if (since) {
@@ -150,7 +158,7 @@ export async function GET(req: Request) {
     const ledgerRows = (ledgerRes.data ?? []) as LedgerRow[];
 
     const topUps: TopUpRow[] = ledgerRows
-      .filter((row) => row.kind !== "debit")
+      .filter((row) => row.kind !== "debit" && row.kind !== "refund")
       .map((row) => ({
         id: row.id,
         amountMicros: row.amount_micros,
@@ -170,6 +178,18 @@ export async function GET(req: Request) {
         createdAt: row.created_at,
       }));
 
+    // Devoluciones del servidor. La clave de una devolución es
+    // 'refund:' + la clave del gasto original, así la app encuentra ese gasto
+    // en su propio ledger, lo devuelva una o muchas veces.
+    const refunds: RefundRow[] = ledgerRows
+      .filter((row) => row.kind === "refund" && row.idempotency_key?.startsWith("refund:"))
+      .map((row) => ({
+        id: row.id,
+        originalIdempotencyKey: (row.idempotency_key as string).slice("refund:".length),
+        amountMicros: row.amount_micros,
+        createdAt: row.created_at,
+      }));
+
     // El cursor avanza con la última fila de cualquier tipo, en orden de tiempo.
     const lastRow = ledgerRows[ledgerRows.length - 1];
     const nextSince = lastRow ? lastRow.created_at : since;
@@ -180,6 +200,7 @@ export async function GET(req: Request) {
       currency: account?.currency ?? DEFAULT_CURRENCY,
       topUps,
       debits,
+      refunds,
       nextSince,
     };
     return json(body, 200);

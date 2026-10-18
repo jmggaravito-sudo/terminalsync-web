@@ -164,6 +164,7 @@ describe("GET /api/credits/ledger", () => {
       currency: "USD",
       topUps: [],
       debits: [],
+      refunds: [],
       nextSince: null,
     });
   });
@@ -204,6 +205,7 @@ describe("GET /api/credits/ledger", () => {
       balanceMicros: 30_000_000,
       currency: "USD",
       debits: [],
+      refunds: [],
       topUps: [
         {
           id: "ledger-1",
@@ -273,7 +275,7 @@ describe("GET /api/credits/ledger", () => {
 
     expect(calls.accountEq).toContainEqual(["user_id", "user-verified"]);
     expect(calls.ledgerEq).toContainEqual(["user_id", "user-verified"]);
-    expect(calls.ledgerIn).toContainEqual(["kind", ["top_up", "debit"]]);
+    expect(calls.ledgerIn).toContainEqual(["kind", ["top_up", "debit", "refund"]]);
     // Nothing in the recorded filters should reference any other user id —
     // the stub itself is single-user, so this is a defensive re-check that
     // the route filters by the authenticated id rather than, say, a body
@@ -354,5 +356,55 @@ describe("GET /api/credits/ledger — gastos del servidor", () => {
     const body = await res.json();
     expect(body.debits).toEqual([]);
     expect(body.nextSince).toBe("2026-10-16T00:00:00Z");
+  });
+});
+
+describe("GET /api/credits/ledger — devoluciones del servidor", () => {
+  it("devuelve las devoluciones aparte, con la clave del gasto original", async () => {
+    const calls = newCalls();
+    mocks.authenticate.mockResolvedValue({ id: "user-verified", email: "x@y.z" });
+    mocks.getSupabaseAdmin.mockReturnValue(
+      makeSupabaseStub(
+        {
+          account: { balance_micros: 200_000_000, currency: "USD", updated_at: "2026-10-18T12:00:00Z" },
+          ledgerRows: [
+            { id: "d1", kind: "debit", idempotency_key: "design-video:quote-1", amount_micros: -300_000, rail: null, created_at: "2026-10-18T10:00:00Z" },
+            { id: "r1", kind: "refund", idempotency_key: "refund:design-video:quote-1", amount_micros: 300_000, rail: null, created_at: "2026-10-18T10:05:00Z" },
+          ] as unknown as LedgerRow[],
+        },
+        calls,
+      ) as unknown as SupabaseClient,
+    );
+
+    const res = await GET(new Request("https://terminalsync.ai/api/credits/ledger", { headers: { authorization: "Bearer t" } }));
+    const body = await res.json();
+
+    expect(body.refunds).toEqual([
+      { id: "r1", originalIdempotencyKey: "design-video:quote-1", amountMicros: 300_000, createdAt: "2026-10-18T10:05:00Z" },
+    ]);
+    // Una devolución no se cuenta como recarga ni como gasto.
+    expect(body.topUps).toEqual([]);
+    expect(body.debits.map((d: { id: string }) => d.id)).toEqual(["d1"]);
+    expect(body.nextSince).toBe("2026-10-18T10:05:00Z");
+  });
+
+  it("ignora una devolución cuya clave no tiene el formato esperado", async () => {
+    const calls = newCalls();
+    mocks.authenticate.mockResolvedValue({ id: "user-verified", email: "x@y.z" });
+    mocks.getSupabaseAdmin.mockReturnValue(
+      makeSupabaseStub(
+        {
+          account: null,
+          ledgerRows: [
+            { id: "r9", kind: "refund", idempotency_key: "sin-prefijo", amount_micros: 5, rail: null, created_at: "2026-10-18T10:05:00Z" },
+          ] as unknown as LedgerRow[],
+        },
+        calls,
+      ) as unknown as SupabaseClient,
+    );
+    const res = await GET(new Request("https://terminalsync.ai/api/credits/ledger", { headers: { authorization: "Bearer t" } }));
+    const body = await res.json();
+    expect(body.refunds).toEqual([]);
+    expect(body.topUps).toEqual([]);
   });
 });
