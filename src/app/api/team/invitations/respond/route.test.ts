@@ -26,7 +26,7 @@ describe("Team invitation response API", () => {
 
   it("returns only a matching terminal result and never reflects raw RPC columns", async () => {
     teamMetadataRpc.mockResolvedValueOnce([{ result: "accepted", owner_user_id: "PRIVATE", manifest_hash: "SECRET" }]);
-    const response = await respond({ invitationId, accept: true, userId: "attacker" });
+    const response = await respond({ invitationId, accept: true });
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual([{ result: "accepted" }]);
     expect(teamMetadataRpc).toHaveBeenCalledWith("respond_team_invitation", {
@@ -44,6 +44,19 @@ describe("Team invitation response API", () => {
       expect(response.status).toBe(409);
       expect(await response.json()).toEqual({ error: "Invitation was not updated" });
     }
+  });
+
+  it("rejects identity and content-like fields before the invitation approval RPC", async () => {
+    for (const extra of [
+      { userId: "attacker" },
+      { ownerId: "attacker" },
+      { content: "private text" },
+      { document: { name: "private.pdf" } },
+      { manifestHash: "a".repeat(64) },
+    ]) {
+      expect((await respond({ invitationId, accept: true, ...extra })).status).toBe(400);
+    }
+    expect(teamMetadataRpc).not.toHaveBeenCalled();
   });
 
   it("rejects malformed IDs and unexpected RPC cardinality before a false success", async () => {
