@@ -229,4 +229,70 @@ describe("Team no-card trial rollout compatibility", () => {
       await db.close();
     }
   }, 30_000);
+
+  it("expires automatic trials without reopening their one-time Team entitlement", async () => {
+    const db = await productionLikeBase();
+    try {
+      await db.exec(`
+        INSERT INTO auth.users(id,email) VALUES
+          ('${ownerId}','owner@example.test'),
+          ('${inviteeId}','invitee@example.test');
+      `);
+
+      // Keep 0040's fixed-duration CHECK valid while moving the real automatic
+      // signup grants just beyond their 168-hour expiry boundary.
+      await db.exec(`
+        UPDATE public.team_trial_entitlements
+        SET starts_at = pg_catalog.now() - interval '168 hours 1 second',
+            expires_at = pg_catalog.now() - interval '1 second';
+      `);
+      const expiredEntitlements = (await db.query<{
+        user_id: string;
+        starts_at: string;
+        expires_at: string;
+      }>("SELECT user_id,starts_at,expires_at FROM public.team_trial_entitlements ORDER BY user_id")).rows;
+
+      expect(expiredEntitlements.map((row) => row.user_id)).toEqual([ownerId, inviteeId]);
+      for (const expiredEntitlement of expiredEntitlements) {
+        expect(Date.parse(expiredEntitlement.expires_at) - Date.parse(expiredEntitlement.starts_at))
+          .toBe(168 * 60 * 60 * 1000);
+        expect(Date.parse(expiredEntitlement.expires_at)).toBeLessThan(Date.now());
+
+        expect((await db.query<{
+          eligible: boolean;
+          seat_limit: number;
+          source: string | null;
+          expires_at: string | null;
+        }>(
+          "SELECT eligible,seat_limit,source,expires_at FROM public.get_team_entitlement($1::uuid)",
+          [expiredEntitlement.user_id],
+        )).rows[0]).toEqual({
+          eligible: false,
+          seat_limit: 1,
+          source: null,
+          expires_at: null,
+        });
+        expect((await db.query<{ eligible: boolean }>(
+          "SELECT public.team_shared_spaces_eligible($1::uuid) AS eligible",
+          [expiredEntitlement.user_id],
+        )).rows[0].eligible).toBe(false);
+
+        // Retrying after expiry must return the original window, not create a
+        // fresh 168-hour entitlement or reactivate the Team gate.
+        const retry = (await db.query<{ result: string; starts_at: string; expires_at: string }>(
+          "SELECT * FROM public.start_team_universal_trial($1::uuid)",
+          [expiredEntitlement.user_id],
+        )).rows[0];
+        expect(retry.result).toBe("already_claimed");
+        expect(Date.parse(retry.starts_at)).toBe(Date.parse(expiredEntitlement.starts_at));
+        expect(Date.parse(retry.expires_at)).toBe(Date.parse(expiredEntitlement.expires_at));
+        expect((await db.query<{ eligible: boolean }>(
+          "SELECT public.team_shared_spaces_eligible($1::uuid) AS eligible",
+          [expiredEntitlement.user_id],
+        )).rows[0].eligible).toBe(false);
+      }
+    } finally {
+      await db.close();
+    }
+  }, 30_000);
 });
