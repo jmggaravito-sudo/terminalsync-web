@@ -34,6 +34,7 @@ const turn = {
   responded_at: null,
   direction: "outbound",
   can_respond: false,
+  can_deliver: false,
 };
 
 describe("Team conversation turn API", () => {
@@ -51,6 +52,7 @@ describe("Team conversation turn API", () => {
       ...turn,
       direction: "inbound",
       can_respond: true,
+      can_deliver: false,
       manifest_hash: "a".repeat(64),
       initiator_user_id: "private-initiator",
       recipient_user_id: "private-recipient",
@@ -58,7 +60,7 @@ describe("Team conversation turn API", () => {
     }]);
     const response = await GET(auth(`https://x.test/api/team/conversations/${threadId}/turns?limit=1`), params);
     expect(response.status).toBe(200);
-    expect(teamMetadataRpc).toHaveBeenCalledWith("list_team_conversation_turns_v3", {
+    expect(teamMetadataRpc).toHaveBeenCalledWith("list_team_conversation_turns_v4", {
       p_user_id: "verified-user",
       p_thread_id: threadId,
       p_limit: 1,
@@ -84,6 +86,7 @@ describe("Team conversation turn API", () => {
         responded_at: null,
         direction: "inbound",
         can_respond: true,
+        can_deliver: false,
         document_payload: payloadSentinel,
         context_text: payloadSentinel,
         download_url: "https://private.example/document",
@@ -95,6 +98,7 @@ describe("Team conversation turn API", () => {
         responded_at: "2026-10-18T00:01:00.000Z",
         direction: "inbound",
         can_respond: false,
+        can_deliver: false,
         document_payload: payloadSentinel,
         context_text: payloadSentinel,
         download_url: "https://private.example/document",
@@ -136,7 +140,7 @@ describe("Team conversation turn API", () => {
       operationId,
     }), params);
     expect(response.status).toBe(200);
-    expect(teamMetadataRpc).toHaveBeenCalledWith("create_team_conversation_turn_v3", {
+    expect(teamMetadataRpc).toHaveBeenCalledWith("create_team_conversation_turn_v4", {
       p_user_id: "verified-user",
       p_thread_id: threadId,
       p_request_kind: "context",

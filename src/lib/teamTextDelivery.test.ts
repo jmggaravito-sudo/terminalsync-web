@@ -25,7 +25,8 @@ describe("Team text delivery contract", () => {
       { content: "", operationId },
       { content: "contains\u0001control", operationId },
       { content: "é".repeat(MAX_TEAM_TEXT_BYTES / 2 + 1), operationId },
-      { content: "ok", operationId, url: "https://external.example" },
+      ...["document", "attachment", "file", "filename", "mimeType", "url", "path", "sourceId", "storageKey", "providerObjectId"].map((field) => ({ content: "ok", operationId, [field]: "untrusted transport" })),
+      { content: "ok", operationId, artifact: { id: "untrusted" } },
       { content: "ok", operationId: "not-a-uuid" },
     ]) expect(() => parseTeamTextDeliveryRequest(body)).toThrow();
     expect(() => parseTeamDeliveryId("../other-user")).toThrow();

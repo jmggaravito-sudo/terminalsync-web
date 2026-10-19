@@ -17,7 +17,7 @@ const createdAt = "2026-10-18T12:00:00.000Z";
 const expiresAt = "2026-10-25T12:00:00.000Z";
 
 function turn(id: string, direction: "inbound" | "outbound"): ConversationTurn {
-  return { threadId: THREAD, id, kind: "context", status: "accepted", direction, metadata: {}, createdAt, respondedAt: createdAt, canRespond: false };
+  return { threadId: THREAD, id, kind: "context", status: "accepted", direction, metadata: {}, createdAt, respondedAt: createdAt, canRespond: false, canDeliver: direction === "inbound" };
 }
 const turns = [turn(IN_TURN, "inbound"), turn(OUT_TURN, "outbound")];
 const inbox = () => ({ deliveries: [{ id: DELIVERY, turnId: OUT_TURN, createdAt, expiresAt }], nextCursor: null });

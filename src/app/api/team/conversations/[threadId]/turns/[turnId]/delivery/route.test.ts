@@ -71,8 +71,21 @@ describe("Team explicit text delivery create API", () => {
     expect(teamMetadataRpc).not.toHaveBeenCalled();
   });
 
-  it("rejects unexpected destination/content fields and unknown ids without revealing database errors", async () => {
-    expect((await POST(request({ content: "text", operationId, recipientId: userId }), params)).status).toBe(400);
+  it("rejects destinations, documents, artifacts, locators, and unknown ids without revealing database errors", async () => {
+    for (const extra of [
+      { recipientId: userId },
+      { document: "untrusted document" },
+      { attachment: "untrusted attachment" },
+      { file: "untrusted file" },
+      { filename: "secret.pdf" },
+      { mimeType: "application/pdf" },
+      { url: "https://private.example/document" },
+      { path: "/Users/private/document.pdf" },
+      { sourceId: "provider-object" },
+      { storageKey: "private/object" },
+      { artifact: { id: "untrusted" } },
+    ]) expect((await POST(request({ content: "text", operationId, ...extra }), params)).status).toBe(400);
+    expect(teamMetadataRpc).not.toHaveBeenCalled();
     const conflict = new Error("turn already delivered with private content");
     teamMetadataRpc.mockRejectedValueOnce(conflict);
     const response = await POST(request({ content: "text", operationId }), params);

@@ -32,7 +32,7 @@ export async function GET(req: Request, { params }: Params) {
     const { threadId: rawThreadId } = await params;
     const threadId = parseConversationThreadId(rawThreadId);
     const cursor = parseConversationTurnCursor(req);
-    const result = await teamMetadataRpc<unknown>("list_team_conversation_turns_v3", {
+    const result = await teamMetadataRpc<unknown>("list_team_conversation_turns_v4", {
       p_user_id: user.id,
       p_thread_id: threadId,
       p_limit: cursor.limit,
@@ -69,7 +69,7 @@ export async function POST(req: Request, { params }: Params) {
       return teamJson({ error: "Invalid conversation metadata" }, { status: 400 });
     }
     const body = parseFollowUpConversationTurn(raw);
-    const result = await teamMetadataRpc<unknown>("create_team_conversation_turn_v3", {
+    const result = await teamMetadataRpc<unknown>("create_team_conversation_turn_v4", {
       p_user_id: user.id,
       p_thread_id: threadId,
       p_request_kind: body.kind,

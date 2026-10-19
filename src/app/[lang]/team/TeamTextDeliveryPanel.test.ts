@@ -14,6 +14,7 @@ const common = {
   createdAt: "2026-10-18T12:00:00.000Z",
   respondedAt: "2026-10-18T12:01:00.000Z",
   canRespond: false,
+  canDeliver: false,
 };
 
 const renderPanel = (turns: ConversationTurn[]) => renderToStaticMarkup(createElement(TeamTextDeliveryPanel, {
@@ -22,18 +23,24 @@ const renderPanel = (turns: ConversationTurn[]) => renderToStaticMarkup(createEl
 
 describe("Team text delivery controls", () => {
   it("renders no delivery controls until a matching turn is accepted", () => {
-    const pending = renderPanel([{ ...common, status: "pending", respondedAt: null, direction: "inbound", canRespond: true }]);
+    const pending = renderPanel([{ ...common, status: "pending", respondedAt: null, direction: "inbound", canRespond: true, canDeliver: false }]);
     expect(pending).not.toContain("textarea");
     expect(pending).not.toContain("Abrir mensaje");
     expect(pending).not.toContain("Mensajes recibidos");
   });
 
   it("offers only the approver's explicit text composer for an accepted inbound turn", () => {
-    const html = renderPanel([{ ...common, status: "accepted", direction: "inbound" }]);
+    const html = renderPanel([{ ...common, status: "accepted", direction: "inbound", canDeliver: true }]);
     expect(html).toContain("Preparar respuesta de texto");
     expect(html).toContain("Enviar texto revisado");
     expect(html).toContain("no se genera ni se envía contenido automáticamente");
     expect(html).not.toContain("type=\"file\"");
+  });
+
+  it("does not offer a text composer when an accepted inbound turn lacks the server owner-delivery grant", () => {
+    const html = renderPanel([{ ...common, status: "accepted", direction: "inbound", canDeliver: false }]);
+    expect(html).not.toContain("Preparar respuesta de texto");
+    expect(html).not.toContain("textarea");
   });
 
   it("shows an explicit-open metadata inbox for accepted outbound turns", () => {

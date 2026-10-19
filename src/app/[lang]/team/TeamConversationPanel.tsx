@@ -217,7 +217,7 @@ function ConversationRequestForm({
 }
 
 /**
- * A deliberately small v3 client: all mutating calls are tied to an explicit
+ * A deliberately small conversation client: all mutating calls are tied to an explicit
  * form/button. The backend still makes the authorization decision and does
  * not deliver a document or context when a turn is approved.
  */

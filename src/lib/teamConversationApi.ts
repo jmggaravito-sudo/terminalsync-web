@@ -41,6 +41,8 @@ export type SafeConversationTurn = {
   responded_at: string | null;
   direction: "inbound" | "outbound";
   can_respond: boolean;
+  /** Server-derived only: source-space owner may send reviewed plaintext for this accepted inbound turn. */
+  can_deliver: boolean;
 };
 
 export type ConversationCursor = {
@@ -338,6 +340,7 @@ export function safeConversationTurns(value: unknown): SafeConversationTurn[] {
     const responded_at = source.responded_at;
     const direction = source.direction;
     const can_respond = source.can_respond;
+    const can_deliver = source.can_deliver;
     if (
       ids.has(id) ||
       typeof status !== "string" || !TURN_STATUSES.has(status) ||
@@ -346,8 +349,10 @@ export function safeConversationTurns(value: unknown): SafeConversationTurn[] {
       (responded_at !== null && !validDate(responded_at)) ||
       typeof direction !== "string" || !DIRECTIONS.has(direction) ||
       typeof can_respond !== "boolean" ||
+      typeof can_deliver !== "boolean" ||
       (status === "pending" ? responded_at !== null : responded_at === null) ||
-      can_respond !== (direction === "inbound" && status === "pending")
+      can_respond !== (direction === "inbound" && status === "pending") ||
+      (can_deliver && (direction !== "inbound" || status !== "accepted"))
     ) {
       throw new TeamMetadataError("Unexpected Team conversation turn");
     }
@@ -362,13 +367,14 @@ export function safeConversationTurns(value: unknown): SafeConversationTurn[] {
       responded_at,
       direction: direction as SafeConversationTurn["direction"],
       can_respond,
+      can_deliver,
     };
   });
 }
 
 export function createConversationTurnConfirmation(value: unknown): SafeConversationTurn | null {
   const turns = safeConversationTurns(value);
-  if (turns.length !== 1 || turns[0].direction !== "outbound" || turns[0].can_respond) return null;
+  if (turns.length !== 1 || turns[0].direction !== "outbound" || turns[0].can_respond || turns[0].can_deliver) return null;
   return turns[0];
 }
 
