@@ -1,0 +1,22 @@
+import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
+const m=vi.hoisted(()=>({auth:vi.fn(),sb:vi.fn(),rpc:vi.fn()}));
+vi.mock('@/lib/marketplace/auth',()=>({authenticate:m.auth}));
+vi.mock('@/lib/supabaseAdmin',()=>({getSupabaseAdmin:m.sb}));
+import {POST} from './route';
+const account='11111111-1111-4111-8111-111111111111';
+const secret='isolated-test-only-not-a-real-secret-0000';
+const body={event:'reserve',accountId:account,jobId:'vj_'+'a'.repeat(32),originalIdempotencyKey:'design-video:vq_'+'b'.repeat(32)};
+const req=(data:unknown=body,key=secret)=>new Request('https://example.test/api/credits/video-evidence',{method:'POST',headers:{'x-ts-video-evidence':key,Authorization:'Bearer synthetic-user'},body:JSON.stringify(data)});
+beforeEach(()=>{vi.resetAllMocks();vi.stubEnv('VIDEO_REFUND_EVIDENCE_SECRET',secret);m.sb.mockReturnValue({rpc:m.rpc});m.auth.mockResolvedValue({id:account});m.rpc.mockResolvedValue({data:true,error:null});});
+afterEach(()=>vi.unstubAllEnvs());
+describe('private video evidence',()=>{
+ it('no configuration fails closed',async()=>{vi.stubEnv('VIDEO_REFUND_EVIDENCE_SECRET','');expect((await POST(req())).status).toBe(503);expect(m.rpc).not.toHaveBeenCalled();});
+ it('ordinary authenticated client cannot attest',async()=>{expect((await POST(req({...body,event:'terminal',status:'failed',predictionId:'p'},''))).status).toBe(401);expect(m.rpc).not.toHaveBeenCalled();});
+ it('invalid service credential denied',async()=>{expect((await POST(req(body,'x'.repeat(secret.length)))).status).toBe(401);});
+ it('service credential alone cannot bind an owner',async()=>{m.auth.mockResolvedValue(null);expect((await POST(req())).status).toBe(401);expect(m.rpc).not.toHaveBeenCalled();});
+ it('another user cannot bind a quote to account',async()=>{m.auth.mockResolvedValue({id:'22222222-2222-4222-8222-222222222222'});expect((await POST(req())).status).toBe(401);});
+ it('authenticated owner plus service can reserve',async()=>{expect((await POST(req())).status).toBe(200);expect(m.rpc).toHaveBeenCalledWith('record_ai_video_evidence',expect.objectContaining({p_user_id:account,p_event:'reserve',p_prediction_id:null}));});
+ it('confirmed provider terminal accepted only on private channel',async()=>{expect((await POST(req({...body,event:'terminal',status:'failed',predictionId:'p'}))).status).toBe(200);expect(m.auth).not.toHaveBeenCalled();});
+ it.each(['timeout','cancelled','unknown','processing'])('does not treat %s as definitive provider failure',async status=>{expect((await POST(req({...body,event:'terminal',status,predictionId:'p'}))).status).toBe(400);expect(m.rpc).not.toHaveBeenCalled();});
+ it('DB binding conflict fails closed without exposing details',async()=>{m.rpc.mockResolvedValue({error:{message:'private data'},data:null});const r=await POST(req());expect(r.status).toBe(409);expect(await r.text()).not.toContain('private data');});
+});
