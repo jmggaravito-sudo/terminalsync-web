@@ -533,10 +533,11 @@ const en: Dict = {
         name: "Team",
         badge: "Coming soon",
         price: "$59",
-        priceNote: "/employee/mo",
-        tagline: "$59 per employee per month. Pro and Max stay unchanged. At launch, new users will be offered a full 7-day (168-hour) Team trial with no card. After the trial, choose a plan; there will be no automatic charge.",
+        priceNote: "USD/employee/mo",
+        tagline: "$59 USD per employee per month. Pro and Max stay unchanged. At launch, every new account will automatically start a full 7-day (168-hour) Team trial with no card. After the trial, choose a plan; there will be no automatic charge.",
         features: [
           "Coming soon: shared spaces for team collaboration",
+          "For teams of 1–64 people",
           "Each person keeps their own workspace",
           "At launch, sharing answers or documents will require approval before sending",
           "At launch, after the 7-day (168-hour) trial, choose whether to continue; there will be no automatic charge",
