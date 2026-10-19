@@ -4,6 +4,7 @@
  * `reserve` is also the funds gate: it debits (or confirms the app's debit of)
  * the server-side price for the quote's model and duration, atomically, before
  * the orchestrator may call the provider. The amount never comes from the wire.
+ * It is mandatory once VIDEO_RESERVE_REQUIRE_FUNDS=1 (see the rollout phases).
  */
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
@@ -46,11 +47,21 @@ export async function POST(req: Request) {
       typeof body.originalIdempotencyKey !== "string" || !DEBIT.test(body.originalIdempotencyKey)) {
     return reply("invalid_evidence", 400);
   }
+  // Rollout in phases (docs/video-funds-reservation.md). Until the orchestrator
+  // sends the quote's model and duration AND `VIDEO_RESERVE_REQUIRE_FUNDS=1`
+  // is set, a reserve without them keeps the previous evidence-only behavior so
+  // the cutover never interrupts the video flow. With that variable on, every
+  // reserve must go through the funds gate; sending the fields opts in earlier.
+  const requireFunds = process.env.VIDEO_RESERVE_REQUIRE_FUNDS === "1";
+  const fundsReserve = body.event === "reserve" &&
+    (requireFunds || body.modelId !== undefined || body.durationSeconds !== undefined);
   if (body.event === "reserve") {
     // A private writer cannot bind a caller's arbitrary accountId. Require the
     // actual initiating user's verified JWT before permitting provider submit.
     const user = await authenticate(req);
     if (!user || user.id !== body.accountId) return reply("account_binding_required", 401);
+  }
+  if (fundsReserve) {
     // The price is decided here from the quote's model and duration (recorded
     // by the orchestrator), never from an amount supplied in the request.
     const price = videoPriceMicros(body.modelId, body.durationSeconds);
@@ -69,8 +80,9 @@ export async function POST(req: Request) {
     }
     const row = Array.isArray(reserved.data) ? reserved.data[0] : reserved.data;
     return NextResponse.json({ ok: true, applied: true, debited: row?.out_debited === true });
-  } else if (typeof body.predictionId !== "string" || !PREDICTION.test(body.predictionId) ||
-      (body.event === "terminal" && !["failed", "completed"].includes(String(body.status)))) {
+  } else if (body.event !== "reserve" &&
+      (typeof body.predictionId !== "string" || !PREDICTION.test(body.predictionId) ||
+      (body.event === "terminal" && !["failed", "completed"].includes(String(body.status))))) {
     return reply("invalid_evidence", 400);
   }
 

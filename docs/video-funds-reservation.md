@@ -27,8 +27,9 @@ suyo (`record_ai_credit_debit`) lo encuentra y devuelve `applied = false`:
 `overdraft_micros = 0`, así que `record_ai_credit_refund` devuelve el importe
 completo si el proveedor confirma el fallo.
 
-`record_ai_video_evidence('reserve', …)` ya no existe como atajo: lanza
-`video reserve requires funds reservation`. `submitted` y `terminal` no cambian.
+`record_ai_video_evidence('reserve', …)` **sigue existiendo durante el corte**,
+a propósito: el orquestador publicado la usa hasta que se active la fase 3. Su
+retiro es una migración posterior (fase 4). `submitted` y `terminal` no cambian.
 
 ## Precio confiable
 
@@ -41,17 +42,30 @@ La tabla es un espejo de `src-tauri/src/credits/mod.rs` (costo del proveedor x2)
 Si una cambia, cambia la otra en la misma entrega: terminal-sync tiene una
 prueba con los mismos números.
 
-## Orden de despliegue (sin interrupción)
+## Fases de despliegue (cada paso es compatible con el estado anterior)
 
-1. **n8n primero.** Importar el workflow que envía `modelId` y `durationSeconds`
-   en `Evidence: Reserve`. La web actual ignora campos que no conoce, así que
-   esto no rompe nada.
-2. **Aplicar la migración** `20261019220000_ai_video_funds_reservation.sql`.
-3. **Desplegar la web** con esta ruta. Antes del paso 1, una reserva sin
-   `modelId` falla con `video_not_priced` y los videos nuevos no arrancan.
+Ningún paso rompe el flujo de video que está publicado. La prueba del estado
+intermedio está en `scripts/test-credit-refunds-sql.py`: con la migración
+aplicada, la reserva antigua sigue funcionando de punta a punta.
 
-No hay puente para el orquestador viejo, a propósito: un puente sería justo la
-brecha que esto cierra.
+1. **Migración aditiva** `20261019220000_ai_video_funds_reservation.sql`. Solo crea
+   `reserve_ai_video_funds`; no cambia ninguna función existente.
+2. **Publicar esta web.** Una reserva que no trae `modelId` ni `durationSeconds`
+   (el orquestador actual) conserva el comportamiento anterior. Una que los trae
+   ya pasa por la reserva de saldo. Sin `VIDEO_RESERVE_REQUIRE_FUNDS`, **la brecha
+   sigue abierta**: esta fase no la cierra.
+3. **Corte.** Importar el workflow de terminal-sync#2717 (con snapshot y clon),
+   verificar con una reserva real, y recién entonces definir
+   `VIDEO_RESERVE_REQUIRE_FUNDS=1` en Vercel y volver a desplegar. Desde ahí toda
+   reserva exige modelo, duración y saldo; sin ellos, `400 video_not_priced`.
+4. **Retiro de la reserva antigua**, en una migración aparte y posterior, que
+   reemplace `record_ai_video_evidence` para rechazar `reserve`. Se aplica solo
+   cuando la fase 3 lleve un tiempo verificada. Esa migración no forma parte de
+   este PR.
+
+**Reversa de la fase 3:** quitar `VIDEO_RESERVE_REQUIRE_FUNDS` y volver a
+desplegar. El orquestador que envía los campos sigue usando la reserva de saldo
+(es opcional por presencia), y uno antiguo vuelve a funcionar.
 
 ## Límites conocidos (decisión pendiente, no se resuelven aquí)
 
@@ -70,7 +84,7 @@ brecha que esto cierra.
 ## Verificación
 
 - `scripts/test-credit-refunds-sql.py` ejecuta las migraciones exactas en un
-  PostgreSQL desechable, sin red ni acceso a producción: **42/42**, incluidas
+  PostgreSQL desechable, sin red ni acceso a producción: **44/44**, incluidas
   ocho conexiones simultáneas reales (solo 3 de 8 reservas pasan con saldo para
   3; ocho reservas de una misma cotización cobran una vez; una carrera entre el
   débito de la app y la reserva cobra una vez). Quitando el `for update` la

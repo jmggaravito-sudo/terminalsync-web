@@ -9,6 +9,7 @@ const body={event:'reserve',accountId:account,jobId:'vj_'+'a'.repeat(32),origina
 const req=(data:unknown=body,key=secret)=>new Request('https://example.test/api/credits/video-evidence',{method:'POST',headers:{'x-ts-video-evidence':key,Authorization:'Bearer synthetic-user'},body:JSON.stringify(data)});
 beforeEach(()=>{vi.resetAllMocks();vi.stubEnv('VIDEO_REFUND_EVIDENCE_SECRET',secret);m.sb.mockReturnValue({rpc:m.rpc});m.auth.mockResolvedValue({id:account});m.rpc.mockResolvedValue({data:true,error:null});});
 afterEach(()=>vi.unstubAllEnvs());
+const legacyBody={event:'reserve',accountId:account,jobId:body.jobId,originalIdempotencyKey:body.originalIdempotencyKey};
 describe('private video evidence',()=>{
  it('no configuration fails closed',async()=>{vi.stubEnv('VIDEO_REFUND_EVIDENCE_SECRET','');expect((await POST(req())).status).toBe(503);expect(m.rpc).not.toHaveBeenCalled();});
  it('ordinary authenticated client cannot attest',async()=>{expect((await POST(req({...body,event:'terminal',status:'failed',predictionId:'p'},''))).status).toBe(401);expect(m.rpc).not.toHaveBeenCalled();});
@@ -28,7 +29,7 @@ describe('private video evidence',()=>{
   expect(m.rpc).toHaveBeenCalledWith('reserve_ai_video_funds',expect.objectContaining({p_price_micros:600000}));
  });
  it('reserve is never routed through the evidence-only writer',async()=>{await POST(req());expect(m.rpc).not.toHaveBeenCalledWith('record_ai_video_evidence',expect.anything());});
- it.each([['no model',{modelId:undefined}],['no duration',{durationSeconds:undefined}],['unknown model',{modelId:'made-up'}],['unlisted duration',{durationSeconds:7}],['string duration',{durationSeconds:'5'}]])('unpriced job (%s) is refused before any money moves',async(_n,patch)=>{
+ it.each([['no model',{modelId:undefined,durationSeconds:5}],['no duration',{modelId:'wan-2.6-text-to-video',durationSeconds:undefined}],['unknown model',{modelId:'made-up'}],['unlisted duration',{durationSeconds:7}],['string duration',{durationSeconds:'5'}]])('unpriced job (%s) is refused before any money moves',async(_n,patch)=>{
   const r=await POST(req({...body,...patch}));expect(r.status).toBe(400);expect((await r.json()).error).toBe('video_not_priced');expect(m.rpc).not.toHaveBeenCalled();
  });
  it('insufficient server balance answers 402 and does not expose details',async()=>{
@@ -42,6 +43,22 @@ describe('private video evidence',()=>{
  it('replayed reserve fails closed as a conflict',async()=>{
   m.rpc.mockResolvedValue({data:null,error:{message:'video reserve already used'}});
   const r=await POST(req());expect(r.status).toBe(409);expect(await r.json()).toEqual({error:'evidence_conflict'});
+ });
+ it('phase 1: an orchestrator that does not send model/duration keeps the evidence-only reserve (no interruption during cutover)',async()=>{
+  const r=await POST(req(legacyBody));expect(r.status).toBe(200);
+  expect(m.rpc).toHaveBeenCalledTimes(1);
+  expect(m.rpc).toHaveBeenCalledWith('record_ai_video_evidence',expect.objectContaining({p_event:'reserve',p_user_id:account,p_prediction_id:null}));
+  expect(m.rpc).not.toHaveBeenCalledWith('reserve_ai_video_funds',expect.anything());
+ });
+ it('phase 1 still demands the verified owner session',async()=>{m.auth.mockResolvedValue(null);expect((await POST(req(legacyBody))).status).toBe(401);expect(m.rpc).not.toHaveBeenCalled();});
+ it('phase 3: VIDEO_RESERVE_REQUIRE_FUNDS=1 refuses a reserve that carries no model/duration and moves no money',async()=>{
+  vi.stubEnv('VIDEO_RESERVE_REQUIRE_FUNDS','1');
+  const r=await POST(req(legacyBody));expect(r.status).toBe(400);expect((await r.json()).error).toBe('video_not_priced');expect(m.rpc).not.toHaveBeenCalled();
+ });
+ it('phase 3 sends every reserve through the funds gate',async()=>{
+  vi.stubEnv('VIDEO_RESERVE_REQUIRE_FUNDS','1');m.rpc.mockResolvedValue({data:[{out_balance_micros:0,out_debited:true}],error:null});
+  expect((await POST(req())).status).toBe(200);expect(m.rpc).toHaveBeenCalledWith('reserve_ai_video_funds',expect.objectContaining({p_price_micros:1000000}));
+  expect(m.rpc).not.toHaveBeenCalledWith('record_ai_video_evidence',expect.anything());
  });
  it('submitted evidence still uses the evidence writer and needs no price',async()=>{
   expect((await POST(req({event:'submitted',accountId:account,jobId:body.jobId,originalIdempotencyKey:body.originalIdempotencyKey,predictionId:'p'}))).status).toBe(200);

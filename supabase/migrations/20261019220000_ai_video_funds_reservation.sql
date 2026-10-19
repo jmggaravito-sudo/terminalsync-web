@@ -25,6 +25,13 @@
 --
 -- El metadato `overdraft_micros = 0` hace que `record_ai_credit_refund` pueda
 -- devolver el importe completo si el proveedor confirma el fallo.
+--
+-- ESTA MIGRACIÓN ES SOLO ADITIVA. No toca `record_ai_video_evidence`: la
+-- reserva antigua (sin saldo) sigue funcionando, de modo que la web ya
+-- publicada y el workflow de n8n actual no dejan de funcionar al aplicarla.
+-- El retiro de la reserva antigua es una migración aparte, posterior, que se
+-- aplica solo cuando el corte esté activo y verificado
+-- (`docs/video-funds-reservation.md`, fase 4).
 
 create or replace function public.reserve_ai_video_funds(
   p_user_id uuid,
@@ -129,43 +136,3 @@ revoke all on function public.reserve_ai_video_funds(uuid, text, text, bigint)
   from public, anon, authenticated;
 grant execute on function public.reserve_ai_video_funds(uuid, text, text, bigint)
   to service_role;
-
--- `record_ai_video_evidence('reserve', ...)` deja de existir como camino para
--- obtener un permiso sin fondos. Los eventos `submitted` y `terminal` quedan
--- exactamente como en la 0057.
-create or replace function public.record_ai_video_evidence(
-  p_event text, p_user_id uuid, p_key text, p_job_id text,
-  p_prediction_id text default null, p_status text default null
-) returns boolean language plpgsql security definer set search_path = '' as $$
-declare v public.ai_credit_video_evidence%rowtype;
-begin
-  if p_event = 'reserve' then
-    raise exception 'video reserve requires funds reservation';
-  end if;
-  select * into v from public.ai_credit_video_evidence where job_id=p_job_id for update;
-  if not found or v.user_id is distinct from p_user_id or v.original_idempotency_key is distinct from p_key then
-    raise exception 'video evidence binding mismatch';
-  end if;
-  if p_prediction_id is null or p_prediction_id !~ '^[A-Za-z0-9_-]{1,200}$' then
-    raise exception 'invalid provider prediction';
-  end if;
-  if p_event='submitted' then
-    if v.status<>'reserved' then
-      if v.prediction_id=p_prediction_id then return false; end if;
-      raise exception 'video evidence binding mismatch';
-    end if;
-    update public.ai_credit_video_evidence set prediction_id=p_prediction_id,
-      status='submitted',observed_at=now() where job_id=p_job_id;
-    return true;
-  end if;
-  if p_event is null or p_event<>'terminal' or p_status is null or p_status not in ('failed','completed')
-     or v.prediction_id is distinct from p_prediction_id then
-    raise exception 'invalid terminal evidence';
-  end if;
-  if v.status=p_status then return false; end if;
-  if v.status<>'submitted' then raise exception 'terminal evidence conflict'; end if;
-  update public.ai_credit_video_evidence set status=p_status,observed_at=now() where job_id=p_job_id;
-  return true;
-end $$;
-revoke all on function public.record_ai_video_evidence(text,uuid,text,text,text,text) from public,anon,authenticated;
-grant execute on function public.record_ai_video_evidence(text,uuid,text,text,text,text) to service_role;

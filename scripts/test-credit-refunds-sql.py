@@ -27,10 +27,6 @@ with tempfile.TemporaryDirectory(prefix='ts-refund-') as directory:
  def job(n):return 'vj_'+str(n).zfill(32)
  def reserve(n,price=300000,owner=a,jid=None):return q(f"SELECT * FROM reserve_ai_video_funds('{owner}','{key(n)}','{jid or job(n)}',{price})")
  def event(n,e,status=None,owner=a,pred=None):
-  if e=='reserve':return reserve(n,300000,owner)
-  if e=='seed':
-   # A permit issued BEFORE the funds gate existed (legacy overdrawn debits). Only the refund tests need it.
-   return q(f"INSERT INTO ai_credit_video_evidence(job_id,user_id,original_idempotency_key,status) VALUES('{job(n)}','{owner}','{key(n)}','reserved')")
   return q(f"SELECT record_ai_video_evidence('{e}','{owner}','{key(n)}','{job(n)}',{repr(pred or 'prediction_'+str(n)) if e!='reserve' else 'NULL'},{repr(status) if status else 'NULL'})")
  def charge(n,amount=300000,owner=a):return q(f"SELECT * FROM record_ai_credit_debit('{owner}',{amount},'{key(n)}','{{}}')")
  def refund(n,amount=300000,owner=a):return q(f"SELECT out_applied,out_refunded_micros FROM record_ai_credit_refund('{owner}','{key(n)}',{amount},'{{\"reason\":\"client says failed\"}}')")
@@ -59,23 +55,24 @@ with tempfile.TemporaryDirectory(prefix='ts-refund-') as directory:
   test('duplicate with different amount cannot mint again',lambda:eq(refund(4,999999),'f|300000'))
   test('completed evidence cannot become failed',lambda:reject(f"SELECT record_ai_video_evidence('terminal','{a}','{key(1)}','{job(1)}','prediction_1','failed')",'terminal evidence conflict'))
   test('failed evidence cannot become completed',lambda:reject(f"SELECT record_ai_video_evidence('terminal','{a}','{key(4)}','{job(4)}','prediction_4','completed')",'terminal evidence conflict'))
-  test('reserved permit cannot be issued twice',lambda:reject(f"SELECT * FROM reserve_ai_video_funds('{a}','{key(2)}','{job(2)}',300000)",'video reserve already used'))
+  test('reserved permit cannot be issued twice',lambda:reject(f"SELECT record_ai_video_evidence('reserve','{a}','{key(2)}','{job(2)}')",'duplicate key'))
+  test('a legacy permit also blocks the funds reserve for the same quote',lambda:reject(f"SELECT * FROM reserve_ai_video_funds('{a}','{key(2)}','{job(2)}',300000)",'video reserve already used'))
   test('provider binding cannot be replaced',lambda:reject(f"SELECT record_ai_video_evidence('submitted','{a}','{key(2)}','{job(2)}','other_prediction')",'binding mismatch'))
   test('cross-account terminal rejected',lambda:reject(f"SELECT record_ai_video_evidence('terminal','{b}','{key(2)}','{job(2)}','prediction_2','failed')",'binding mismatch'))
   test('client timeout is not terminal evidence',lambda:reject(f"SELECT record_ai_video_evidence('terminal','{a}','{key(2)}','{job(2)}','prediction_2','timeout')",'invalid terminal evidence'))
   charge(5);fail(5)
   test('large client amount capped to actual debit',lambda:eq(refund(5,999999999),'t|300000'))
   q(f"SELECT grant_ai_credits('{b}',100000,'stripe','synthetic-overdraft','synthetic-checkout','top-up','{{}}');");charge(6,300000,b)
-  for e,status in [('seed',None),('submitted',None),('terminal','failed')]:event(6,e,status,b)
+  for e,status in [('reserve',None),('submitted',None),('terminal','failed')]:event(6,e,status,b)
   test('overdraft never credited',lambda:eq(refund(6,999999,b),'t|100000'))
   charge(7,300000,b)
-  for e,status in [('seed',None),('submitted',None),('terminal','failed')]:event(7,e,status,b)
+  for e,status in [('reserve',None),('submitted',None),('terminal','failed')]:event(7,e,status,b)
   eq(refund(7,300000,b),'t|100000') # prior refund supplied only100000 before debit7
   charge(8,300000,b)
-  for e,status in [('seed',None),('submitted',None),('terminal','failed')]:event(8,e,status,b)
+  for e,status in [('reserve',None),('submitted',None),('terminal','failed')]:event(8,e,status,b)
   # prior refund again supplied100000. A fully overdrawn debit is made next.
   charge(9,300000,b)
-  for e,status in [('seed',None),('submitted',None),('terminal','failed')]:event(9,e,status,b)
+  for e,status in [('reserve',None),('submitted',None),('terminal','failed')]:event(9,e,status,b)
   test('entirely overdrawn debit credits zero',lambda:eq(refund(9,300000,b),'f|0'))
   charge(10);fail(10)
   def simultaneous_refunds():
@@ -106,7 +103,11 @@ with tempfile.TemporaryDirectory(prefix='ts-refund-') as directory:
    try:return 'ok:'+fn()
    except RuntimeError as e:return 'err:'+str(e)
   q(f"SELECT grant_ai_credits('{c}',1000000,'stripe','synthetic-c','synthetic-checkout','topup-c','{{}}');")
-  test('legacy reserve event can no longer mint a permit without funds',lambda:reject(f"SELECT record_ai_video_evidence('reserve','{c}','{key(30)}','{job(30)}')",'video reserve requires funds reservation'))
+  def additive_migration_keeps_previous_reserve_working():
+   # Cutover state: the new migration is applied but the published web / n8n still use the evidence-only reserve.
+   charge(30);eq(event(30,'reserve'),'t');event(30,'submitted');event(30,'terminal','failed');eq(refund(30,1),'t|300000')
+   reject(f"SELECT * FROM reserve_ai_video_funds('{a}','{key(30)}','{job(30)}',300000)",'video reserve already used')
+  test('applying the migration does not interrupt the previous reserve path',additive_migration_keeps_previous_reserve_working)
   def poor_user_blocked():
    reject(f"SELECT * FROM reserve_ai_video_funds('{c}','{key(31)}','{job(31)}',1000001)",'insufficient video funds')
    eq(balance(c),1000000);eq(rows(31),0);eq(permits(31),0)
@@ -146,6 +147,7 @@ with tempfile.TemporaryDirectory(prefix='ts-refund-') as directory:
    eq(balance(c),before);eq(rows(33),1);eq(permits(33),1)
   test('replaying a reserve (same or new job id) neither charges nor permits again',replay_cannot_charge_twice)
   test('invalid price or key is rejected',lambda:(reject(f"SELECT * FROM reserve_ai_video_funds('{c}','{key(37)}','{job(37)}',0)",'video price must be positive'),reject(f"SELECT * FROM reserve_ai_video_funds('{c}','design-video:x','{job(37)}',100)",'invalid video debit key')))
+  test('a funds reserve also blocks a later legacy reserve for the same quote',lambda:reject(f"SELECT record_ai_video_evidence('reserve','{c}','{key(33)}','{job(33)}')",'duplicate key'))
   def refund_after_provider_failure():
    q(f"SELECT grant_ai_credits('{c}',5000000,'stripe','synthetic-c2','synthetic-checkout','topup-c2','{{}}');")
    before=balance(c);eq(reserve(38,1000000,c),f'{before-1000000}|t')
