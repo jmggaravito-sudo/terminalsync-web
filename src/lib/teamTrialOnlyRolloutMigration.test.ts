@@ -125,6 +125,32 @@ describe("Team no-card trial rollout compatibility", () => {
         expect(Date.parse(entitlement.expires_at) - Date.parse(entitlement.starts_at)).toBe(168 * 60 * 60 * 1000);
       }
 
+      // Inserting a trial row is not enough: the production entitlement
+      // resolver and the shared-space gate must immediately recognize the
+      // automatic, single-seat trial for each newly-created account.
+      for (const automaticEntitlement of automaticEntitlements) {
+        const resolvedEntitlement = (await db.query<{
+          eligible: boolean;
+          seat_limit: number;
+          source: string | null;
+          expires_at: string | null;
+        }>(
+          "SELECT eligible,seat_limit,source,expires_at FROM public.get_team_entitlement($1::uuid)",
+          [automaticEntitlement.user_id],
+        )).rows[0];
+        expect(resolvedEntitlement).toMatchObject({
+          eligible: true,
+          seat_limit: 1,
+          source: "universal_trial",
+        });
+        expect(resolvedEntitlement.expires_at).not.toBeNull();
+        expect(Date.parse(resolvedEntitlement.expires_at!)).toBe(Date.parse(automaticEntitlement.expires_at));
+        expect((await db.query<{ eligible: boolean }>(
+          "SELECT public.team_shared_spaces_eligible($1::uuid) AS eligible",
+          [automaticEntitlement.user_id],
+        )).rows[0].eligible).toBe(true);
+      }
+
       // A manual retry must preserve the automatic window rather than creating
       // a second trial or moving either expiry.
       const ownerTrial = (await db.query<{ result: string; starts_at: string; expires_at: string }>(
