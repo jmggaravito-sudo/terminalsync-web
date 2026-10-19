@@ -26,11 +26,11 @@ vi.mock("@/lib/planChange", () => ({
 import { POST } from "./route";
 
 describe("Team checkout availability boundary", () => {
-  it("returns the Team-closed response before checking an unavailable Stripe client or Team price", async () => {
+  it.each([1, 64])("accepts the %i-seat boundary before returning the Team-closed response", async (seats) => {
     const response = await POST(new Request("https://terminalsync.ai/api/checkout", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ plan: "team", seats: 1 }),
+      body: JSON.stringify({ plan: "team", seats }),
     }));
 
     expect(response.status).toBe(503);
@@ -39,4 +39,21 @@ describe("Team checkout availability boundary", () => {
     });
     expect(priceIdFor).not.toHaveBeenCalled();
   });
+
+  it.each([undefined, 0, -1, 1.5, 65, "1"])(
+    "rejects an invalid Team seat count before touching Stripe: %p",
+    async (seats) => {
+      const response = await POST(new Request("https://terminalsync.ai/api/checkout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ plan: "team", seats }),
+      }));
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toEqual({
+        error: "Team seat count must be an integer from 1 through 64.",
+      });
+      expect(priceIdFor).not.toHaveBeenCalled();
+    },
+  );
 });
