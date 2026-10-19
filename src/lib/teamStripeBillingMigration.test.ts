@@ -9,7 +9,7 @@ const migration = readFileSync(
 );
 const sql = migration.toLowerCase().replace(/\s+/g, " ");
 const seatCapMigration = readFileSync(
-  join(process.cwd(), "supabase/migrations/0057_team_seat_ceiling_64.sql"),
+  join(process.cwd(), "supabase/migrations/20261019192526_team_seat_ceiling_64.sql"),
   "utf8",
 );
 
