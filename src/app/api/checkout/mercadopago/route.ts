@@ -74,13 +74,6 @@ export async function OPTIONS(req: Request) {
 export async function POST(req: Request) {
   const cors = corsHeaders(req.headers.get("origin"));
 
-  if (!mercadoPagoConfigured) {
-    return NextResponse.json(
-      { error: "Mercado Pago not configured. Set MERCADOPAGO_ACCESS_TOKEN." },
-      { status: 503, headers: cors },
-    );
-  }
-
   let body: Body;
   try {
     body = (await req.json()) as Body;
@@ -97,14 +90,22 @@ export async function POST(req: Request) {
   }
 
   // Team is a separate seat entitlement, not a base subscription plan. Keep
-  // both payment rails closed until its no-card trial and webhook lifecycle
-  // are implemented; mpAmountFor returning null is only a secondary guard.
+  // it on its Stripe-only, no-card-trial path before inspecting Mercado Pago
+  // configuration; mpAmountFor returning null is only a secondary guard.
   if (plan === "team") {
     return NextResponse.json(
       {
         error:
           "Team checkout is not available until Team trial entitlements and subscription sync are ready.",
       },
+      { status: 503, headers: cors },
+    );
+  }
+
+  // Only non-Team plans may inspect or depend on Mercado Pago configuration.
+  if (!mercadoPagoConfigured) {
+    return NextResponse.json(
+      { error: "Mercado Pago not configured. Set MERCADOPAGO_ACCESS_TOKEN." },
       { status: 503, headers: cors },
     );
   }
