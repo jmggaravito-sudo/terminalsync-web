@@ -84,6 +84,16 @@ describe("Team metadata request routes", () => {
     expect(teamMetadataRpc).not.toHaveBeenCalled();
   });
 
+  it("keeps list, create, and approval unavailable before auth or RPC while the Team gate is off", async () => {
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "0");
+    const list = await GET(auth());
+    const create = await POST(createRequest({ spaceId, kind: "document", manifestHash: "a".repeat(64) }));
+    const approval = await respond(responseRequest(true));
+    expect([list.status, create.status, approval.status]).toEqual([503, 503, 503]);
+    expect(getSupabaseAdmin).not.toHaveBeenCalled();
+    expect(teamMetadataRpc).not.toHaveBeenCalled();
+  });
+
   it("validates lowercase SHA-256, count-only metadata, and exact top-level input before RPC", async () => {
     const base = { spaceId, kind: "context", manifestHash: "a".repeat(64), metadata: { itemCount: 1 } };
     const invalidBodies = [
