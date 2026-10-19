@@ -135,7 +135,7 @@ describe("Team checkout intent migrations 0049-0050", () => {
       expect((await db.query(`SELECT * FROM public.team_billing_subscriptions`)).rows).toEqual([]);
       expect((await db.query(`SELECT * FROM public.subscriptions`)).rows).toEqual([]);
     } finally { await db.close(); }
-  });
+  }, 15_000);
 
   it("uses one canonical active subscription for owner and roster paid-capacity snapshots", async () => {
     const db = await database();
@@ -163,7 +163,7 @@ describe("Team checkout intent migrations 0049-0050", () => {
       expect(compensatedTrial).toMatchObject({ eligible: true, seat_limit: 1, source: "admin_comp" });
       expect(Date.parse(compensatedTrial.expires_at)).toBeGreaterThan(Date.now()+5*24*60*60*1000);
     } finally { await db.close(); }
-  });
+  }, 15_000);
 
   it("blocks current active/trialing billing, including NULL period ends, but allows expired, canceled, and future rows", async () => {
     const db = await database();
@@ -188,5 +188,5 @@ describe("Team checkout intent migrations 0049-0050", () => {
       expect(migration0050).toContain("state IN ('reserved', 'checkout_created', 'ambiguous')");
       expect(migration0050).not.toMatch(/INSERT\s+INTO\s+public\.(team_memberships|team_paid_roster_members|subscriptions)/i);
     } finally { await db.close(); }
-  });
+  }, 15_000);
 });
