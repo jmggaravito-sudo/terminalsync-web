@@ -52,9 +52,15 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
       if (entitlementResponse.status === 401 || invitationsResponse.status === 401 || requestResponse.status === 401) {
         markUnauthorized(); return;
       }
-      if (!entitlementResponse.ok || !invitationsResponse.ok || !requestResponse.ok) throw new Error("load");
-      const [entitlementBody, invitationBody, requestBody] = await Promise.all([entitlementResponse.json(), invitationsResponse.json(), requestResponse.json()]);
+      // A healthy entitlement response is enough to keep the no-card claim
+      // visible. Invitation/request reads are auxiliary on first load and can
+      // fail transiently during a rolling deployment; do not make that hide
+      // the recovery path for an account whose Team trial is not active yet.
+      if (!entitlementResponse.ok) throw new Error("load");
+      const entitlementBody = await entitlementResponse.json();
       setEntitlement(entitlementBody && typeof entitlementBody === "object" ? entitlementBody : null);
+      if (!invitationsResponse.ok || !requestResponse.ok) throw new Error("load");
+      const [invitationBody, requestBody] = await Promise.all([invitationsResponse.json(), requestResponse.json()]);
       setInvitations(parseReceivedInvitations(invitationBody));
       setApprovals(parseOwnerApprovals(requestBody));
       // A 403/503/404 roster response must not make the shared-spaces page fail:
