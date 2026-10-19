@@ -6,7 +6,7 @@ const source = readFileSync(join(process.cwd(), "src/app/[lang]/team/ReceivedSpa
 
 describe("Team trial UI contract", () => {
   it("loads status with GET and only claims from the explicit button action", () => {
-    expect(source).toContain('authedFetch("/api/team/trial")');
+    expect(source).toContain('authedFetch("/api/team/trial", { signal: controller.signal })');
     expect(source).toContain('authedFetch("/api/team/trial", { method: "POST" })');
     expect(source).toContain('onClick={() => void claimTrial()}');
     expect(source).toContain("Team checkout is not available yet");
@@ -23,7 +23,7 @@ describe("Team trial UI contract", () => {
   });
 
   it("loads a paid owner roster as an optional identifier-free read-only panel", () => {
-    expect(source).toContain('authedFetch("/api/team/paid-roster").catch(() => null)');
+    expect(source).toContain('authedFetch("/api/team/paid-roster", { signal: controller.signal }).catch(() => null)');
     expect(source).toContain("if (rosterResponse?.ok)");
     expect(source).toContain("<PaidRosterOwnerPanel lang={lang} roster={paidRoster} />");
     expect(source).toContain("A 403/503/404 roster response must not make the shared-spaces page fail");
@@ -31,7 +31,7 @@ describe("Team trial UI contract", () => {
   });
 
   it("adds owner setup and v3 conversations without replacing legacy invitation or approval cards", () => {
-    expect(source).toContain('authedFetch("/api/team/spaces", { cache: "no-store", referrerPolicy: "no-referrer" })');
+    expect(source).toContain('authedFetch("/api/team/spaces", { cache: "no-store", referrerPolicy: "no-referrer", signal: controller.signal })');
     expect(source).toContain('<TeamSpaceSetupPanel lang={lang} spaces={ownedSpaces} onChanged={load} onUnauthorized={markUnauthorized} />');
     expect(source).toContain('<TeamConversationPanel lang={lang} ownedSpaces={ownedSpaces} receivedSpaces={collections.received} onUnauthorized={markUnauthorized} />');
     expect(source).toContain('authedFetch("/api/team/requests/respond"');

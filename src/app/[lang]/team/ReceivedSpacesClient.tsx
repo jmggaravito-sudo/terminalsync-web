@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { authedFetch } from "@/lib/supabase/browser";
 import { parseReceivedInvitations, partitionReceivedInvitations, receivedSpaceLabel, type ReceivedInvitation } from "./receivedSpaces";
 import { parseOwnerApprovals, type OwnerApproval } from "./ownerApprovals";
@@ -26,6 +26,8 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
   const [approvals, setApprovals] = useState<OwnerApproval[]>([]);
   const [paidRoster, setPaidRoster] = useState<PaidRosterOwnerView | null>(null);
   const [ownedSpaces, setOwnedSpaces] = useState<OwnedTeamSpace[]>([]);
+  const activeLoadController = useRef<AbortController | null>(null);
+  const loadSequence = useRef(0);
   const collections = partitionReceivedInvitations(invitations);
 
   const markUnauthorized = useCallback(() => {
@@ -38,19 +40,31 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
   }, []);
 
   const load = useCallback(async () => {
+    // A retry, a child refresh, or a language change supersedes any earlier
+    // read. Abort the network work where possible and keep the sequence guard
+    // for fetch implementations that settle after an abort.
+    activeLoadController.current?.abort();
+    const controller = new AbortController();
+    activeLoadController.current = controller;
+    const sequence = ++loadSequence.current;
+    const isCurrent = () => activeLoadController.current === controller
+      && loadSequence.current === sequence
+      && !controller.signal.aborted;
+
     setLoading(true); setError(null); setAuthenticated(true);
     try {
       // GET only: never claim/start a trial as a side effect of opening this page.
       const [entitlementResponse, invitationsResponse, requestResponse, rosterResponse, spacesResponse] = await Promise.all([
-        authedFetch("/api/team/trial"),
+        authedFetch("/api/team/trial", { signal: controller.signal }),
         // Keep transport failures auxiliary too. Actual 401 responses still
         // reach the explicit auth check below.
-        authedFetch("/api/team/invitations").catch(() => null),
-        authedFetch("/api/team/requests").catch(() => null),
-        authedFetch("/api/team/paid-roster").catch(() => null),
+        authedFetch("/api/team/invitations", { signal: controller.signal }).catch(() => null),
+        authedFetch("/api/team/requests", { signal: controller.signal }).catch(() => null),
+        authedFetch("/api/team/paid-roster", { signal: controller.signal }).catch(() => null),
         // Spaces are optional so a rolling deployment cannot hide legacy cards.
-        authedFetch("/api/team/spaces", { cache: "no-store", referrerPolicy: "no-referrer" }).catch(() => null),
+        authedFetch("/api/team/spaces", { cache: "no-store", referrerPolicy: "no-referrer", signal: controller.signal }).catch(() => null),
       ]);
+      if (!isCurrent()) return;
       if (entitlementResponse.status === 401 || invitationsResponse?.status === 401 || requestResponse?.status === 401) {
         markUnauthorized(); return;
       }
@@ -60,26 +74,39 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
       // the recovery path for an account whose Team trial is not active yet.
       if (!entitlementResponse.ok) throw new Error("load");
       const entitlementBody = await entitlementResponse.json();
+      if (!isCurrent()) return;
       setEntitlement(entitlementBody && typeof entitlementBody === "object" ? entitlementBody : null);
       if (!invitationsResponse?.ok || !requestResponse?.ok) throw new Error("load");
       const [invitationBody, requestBody] = await Promise.all([invitationsResponse.json(), requestResponse.json()]);
+      if (!isCurrent()) return;
       setInvitations(parseReceivedInvitations(invitationBody));
       setApprovals(parseOwnerApprovals(requestBody));
       // A 403/503/404 roster response must not make the shared-spaces page fail:
       // only paid owners can see it and source deployments can precede its SQL.
       if (rosterResponse?.ok) {
         const rosterBody = await rosterResponse.json().catch(() => null);
+        if (!isCurrent()) return;
         setPaidRoster(parsePaidRosterOwnerView(rosterBody));
       } else setPaidRoster(null);
       if (spacesResponse?.ok) {
-        setOwnedSpaces(parseOwnedTeamSpaces(await spacesResponse.json().catch(() => null)));
+        const spacesBody = await spacesResponse.json().catch(() => null);
+        if (!isCurrent()) return;
+        setOwnedSpaces(parseOwnedTeamSpaces(spacesBody));
       } else setOwnedSpaces([]);
     } catch {
-      setError(es ? "No pudimos cargar tus invitaciones. Intenta de nuevo." : "We couldn't load your invitations. Please try again.");
-    } finally { setLoading(false); }
+      if (isCurrent()) setError(es ? "No pudimos cargar tus invitaciones. Intenta de nuevo." : "We couldn't load your invitations. Please try again.");
+    } finally {
+      if (isCurrent()) setLoading(false);
+    }
   }, [es, markUnauthorized]);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    void load();
+    return () => {
+      loadSequence.current += 1;
+      activeLoadController.current?.abort();
+    };
+  }, [load]);
 
   async function respond(invitation: ReceivedInvitation, accept: boolean) {
     setBusyId(invitation.id); setError(null);
