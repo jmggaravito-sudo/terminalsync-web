@@ -42,7 +42,7 @@ Ask *"Show me the orders from the last 7 days"* and the agent pulls them straigh
 - *"Create a WELCOME10 coupon with 10% off for a customer's first purchase."*
 - *"Which promotions are active right now, and which ones offer free shipping?"*
 
-Actions that change your store — creating a coupon, updating stock, publishing products — go through a confirmation step: the AI shows you what it's about to do and waits for your approval before running it.
+Before asking the agent to change your store, review and explicitly approve that specific action. The [official docs](https://nuvemshop.dev/en-US/ai-agents/mcps) describe tool annotations that help agents decide when to ask; this does not establish a server-enforced confirmation screen. Connecting your store is not blanket approval for every write.
 
 ### How you connect
 

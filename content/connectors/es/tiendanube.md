@@ -42,7 +42,7 @@ Le preguntas *"Muéstrame los pedidos de los últimos 7 días"* y el agente los 
 - *"Crea un cupón BIENVENIDA10 con 10% de descuento para la primera compra."*
 - *"¿Cuáles son mis promociones activas y cuáles dan envío gratis?"*
 
-Las acciones que cambian tu tienda — crear un cupón, actualizar stock, publicar productos — van con confirmación: la IA te muestra qué va a hacer y espera tu aprobación antes de ejecutar.
+Antes de pedir al agente que cambie tu tienda, revisa y aprueba expresamente esa acción concreta. La [documentación oficial](https://nuvemshop.dev/en-US/ai-agents/mcps) describe indicaciones para que el agente decida cuándo preguntar; esto no acredita una pantalla de confirmación obligatoria del servidor. Conectar tu tienda no autoriza todas las escrituras.
 
 ### Cómo te conectas
 
