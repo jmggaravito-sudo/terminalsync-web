@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { getSupabaseAdmin, teamMetadataRpc } = vi.hoisted(() => ({
   getSupabaseAdmin: vi.fn(),
@@ -19,8 +19,11 @@ const auth = (url = "https://x.test/api/team/conversations/targets") => new Requ
 });
 
 describe("Team conversation target API", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
     getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async () => ({ data: { user: { id: "verified-user" } }, error: null })) } });
     teamMetadataRpc.mockResolvedValue([]);
   });

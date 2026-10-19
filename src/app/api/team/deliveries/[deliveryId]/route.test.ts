@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { getSupabaseAdmin, teamMetadataRpc } = vi.hoisted(() => ({ getSupabaseAdmin: vi.fn(), teamMetadataRpc: vi.fn() }));
 vi.mock("@/lib/supabaseAdmin", () => ({ getSupabaseAdmin }));
@@ -15,8 +15,11 @@ const request = (url = `https://x.test/api/team/deliveries/${deliveryId}`, authe
 });
 
 describe("Team text delivery read API", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
     getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async () => ({ data: { user: { id: "00000000-0000-4000-8000-000000000002" } }, error: null })) } });
     teamMetadataRpc.mockResolvedValue([{
       id: deliveryId, content: "reviewed text", created_at: "2026-10-18T00:00:00.000Z", expires_at: "2026-10-25T00:00:00.000Z",
