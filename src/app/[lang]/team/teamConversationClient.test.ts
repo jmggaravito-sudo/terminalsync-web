@@ -26,6 +26,7 @@ const validTurn = (overrides: Record<string, unknown> = {}) => ({
   responded_at: null,
   direction: "inbound",
   can_respond: true,
+  can_deliver: false,
   ...overrides,
 });
 
@@ -65,6 +66,8 @@ describe("Team conversation browser contract", () => {
       ...validTurn({ metadata: { itemCount: 2, content: "must drop" } }),
     }, {
       ...validTurn({ id: UUID_C, direction: "outbound", can_respond: true }),
+    }, {
+      ...validTurn({ id: "00000000-0000-0000-0000-000000000004", status: "accepted", responded_at: "2026-10-18T00:01:00Z", direction: "outbound", can_respond: false, can_deliver: true }),
     }] })).toEqual([]);
   });
 

@@ -33,7 +33,8 @@ const excludedFromTrialOnlyRollout = [
   "0051_team_checkout_atomic_billing_lifecycle.sql",
   "0052_team_paid_roster_opaque_invitations.sql",
   "0056_team_text_deliveries.sql",
-  "0057_team_seat_ceiling_64.sql",
+  "0058_team_owner_approved_text_delivery.sql",
+  "20261019192526_team_seat_ceiling_64.sql",
 ] as const;
 
 const ownerId = "00000000-0000-0000-0000-000000000701";
@@ -94,7 +95,8 @@ describe("Team no-card trial rollout compatibility", () => {
     ]);
     expect(excludedFromTrialOnlyRollout).not.toContain("0044_team_trial_on_signup.sql");
     expect(excludedFromTrialOnlyRollout).toContain("0056_team_text_deliveries.sql");
-    expect(excludedFromTrialOnlyRollout).toContain("0057_team_seat_ceiling_64.sql");
+    expect(excludedFromTrialOnlyRollout).toContain("0058_team_owner_approved_text_delivery.sql");
+    expect(excludedFromTrialOnlyRollout).toContain("20261019192526_team_seat_ceiling_64.sql");
     expect(migration("0040_team_universal_trial.sql")).not.toContain("public.subscriptions.plan");
   });
 

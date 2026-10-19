@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       return teamJson({ error: "Invalid conversation metadata" }, { status: 400 });
     }
     const body = parseConversationResponse(raw);
-    const result = await teamMetadataRpc<unknown>("respond_team_conversation_turn_v3", {
+    const result = await teamMetadataRpc<unknown>("respond_team_conversation_turn_v4", {
       p_user_id: user.id,
       p_turn_id: body.turnId,
       p_decision: body.decision,

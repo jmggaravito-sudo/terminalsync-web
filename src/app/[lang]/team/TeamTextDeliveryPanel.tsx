@@ -182,7 +182,9 @@ export function TeamTextDeliveryPanel({ lang, threadId, turns, onUnauthorized }:
 
   if (acceptedTurns.length === 0) return null;
 
-  const acceptedInboundTurns = acceptedTurns.filter((turn) => turn.direction === "inbound");
+  // This is a server-derived authorization affordance, not an ownership guess
+  // from browser state.  A reverse response must use the sender's own shared-space relationship.
+  const acceptedInboundTurns = acceptedTurns.filter((turn) => turn.direction === "inbound" && turn.canDeliver);
   const incomingTurnIds = new Set(acceptedTurns.filter((turn) => turn.direction === "outbound").map((turn) => turn.id));
   const visibleDeliveries = deliveries.filter((delivery) => incomingTurnIds.has(delivery.turnId));
 

@@ -4,7 +4,7 @@
 authorization to change production. The last read-only Supabase Management API
 migration-history check for project `zwyeqqxiwiogmtqwfnby` (2026-10-18) showed
 `0037_team_comp_entitlements` and `0038_team_stripe_billing` present; migrations
-`0039`–`0055` absent. That snapshot predates `0056` and `0057` and is historical,
+`0039`–`0055` absent. That snapshot predates `0056`, `0057`, and `0058` and is historical,
 not a current production claim. Re-check immediately before any rollout; history
 may have changed. No migration execution or schema mutation was performed for
 this runbook.
@@ -13,8 +13,10 @@ this runbook.
 
 This rollout is for no-card Team trial and shared-space, invitation, approval,
 and conversation behavior. The base migration chain stays metadata-only;
-optional `0056` adds only reviewed text delivery after approval. It does not
-enable paid Team checkout or create Stripe objects. Pro/Max remain unchanged.
+optional `0056` plus `0058_team_owner_approved_text_delivery.sql` add only
+reviewed text delivery after approval. `0058` makes the source-space owner the
+only permitted sender for that source relationship. Neither migration enables
+paid Team checkout or creates Stripe objects. Pro/Max remain unchanged.
 
 Apply missing migrations individually, in dependency order, after reviewing the
 SQL and confirming the expected preconditions/effects:
@@ -22,13 +24,16 @@ SQL and confirming the expected preconditions/effects:
 1. Core and automatic trial: `0039 → 0040 → 0041 → 0042 → 0043 → 0044`.
 2. Current v2 UI projections: `0047 → 0048`.
 3. Approval-first conversation hardening: `0053 → 0054 → 0055`.
-4. Optional post-approval **text-only** delivery: `0056`, after step 3 and
-   after reviewing the private-store RPCs. The source PR adds a purge endpoint
+4. Optional post-approval **text-only** delivery: `0056`, then the
+   forward-only `0058_team_owner_approved_text_delivery.sql`, after step 3 and
+   after reviewing the private-store RPCs. `0058` preserves two-way metadata
+   conversation but allows a plaintext leg only when the owner of that exact
+   source space accepts a member-originated turn and then sends to that member.
+   It does not erase legacy rows; public read/list deny old reverse-direction
+   rows that fail this source-owner rule. The source PR adds a purge endpoint
    but intentionally no Vercel schedule: configure the hourly schedule only
    as a later explicit rollout step after `CRON_SECRET` and Vercel hourly-cron
-   capability are verified. This adds a separate send path for the accepted
-   turn's recipient/approver in either direction; it does not change the
-   metadata-only turn projection or enable files/AI generation.
+   capability are verified. It does not enable files/AI generation.
 
 ## Read-only shared-space compatibility preflight (before `0041 → 0042`)
 
@@ -95,20 +100,21 @@ Do **not** include paid-roster or paid-checkout migrations in this rollout:
 `0045`, `0046`, `0052`, and `0049`–`0051`. `0037`/`0038` are already recorded as
 present in the last check, but verify before rollout and do not replay them.
 
-`0057_team_seat_ceiling_64.sql` is a separate, forward-only capacity-hardening
-migration, not a prerequisite for the no-card trial. It constrains existing
-Team billing and checkout-intent rows to 1–64 seats without changing their
-values. It requires both `public.team_billing_subscriptions` (from `0038`) and
-`public.team_checkout_intents` (from `0049`); this runbook's trial-only scope
-deliberately excludes `0049`, so **do not apply `0057` in that narrow rollout**.
-If a separately approved Team schema rollout includes `0049`, apply `0057` only
-after its prerequisites and all earlier migrations selected for that rollout
-have been applied and verified, in repository migration order. For the
-contiguous Team chain, that means applying it after `0056`; do not jump from
-`0049` directly to `0057` while omitting intervening migrations. `0057` does not
-enable the Team gate or paid checkout. Its migration itself aborts before adding
-constraints if stored billing or intent quantities are outside 1–64; it does
-not silently repair, delete, or rewrite rows.
+`20261019192526_team_seat_ceiling_64.sql` is a separate, forward-only
+capacity-hardening migration, not a prerequisite for the no-card trial. It
+constrains existing Team billing and checkout-intent rows to 1–64 seats without
+changing their values. It requires both `public.team_billing_subscriptions`
+(from `0038`) and `public.team_checkout_intents` (from `0049`); this runbook's
+trial-only scope deliberately excludes `0049`, so **do not apply the seat-cap
+migration in that narrow rollout**. If a separately approved Team schema
+rollout includes `0049`, apply the seat-cap migration only after its
+prerequisites and all earlier migrations selected for that rollout have been
+applied and verified, in repository migration order. For the Team delivery
+slice, `0058` remains a distinct hardening step after `0056`; do not skip the
+intervening approved migrations. The seat-cap migration does not enable the
+Team gate or paid checkout. It aborts before adding constraints if stored
+billing or intent quantities are outside 1–64; it does not silently repair,
+delete, or rewrite rows.
 
 ## Hard safety gates
 
@@ -122,7 +128,7 @@ not silently repair, delete, or rewrite rows.
   `0055` sanitizes legacy shared-space names and approval/request metadata.
   Review those data effects and confirm the verified backup remains available
   before applying them.
-- For any approved rollout that includes `0057`, the backup/restorability check
+- For any approved rollout that includes `20261019192526_team_seat_ceiling_64.sql`, the backup/restorability check
   and explicit production-change approval are mandatory even though the
   migration only adds constraints. First verify its prerequisites exist, then
   run the following **read-only preflight** against the intended database.
@@ -143,7 +149,7 @@ not silently repair, delete, or rewrite rows.
     FROM public.team_checkout_intents;
   ```
 
-  Both `violating_rows` counts must be zero before applying `0057`. Review the
+  Both `violating_rows` counts must be zero before applying the seat-cap migration. Review the
   migration-history order immediately beforehand as well. If a count is
   nonzero, stop: do not edit/delete data or bypass the migration preflight under
   this runbook. Reconcile separately with explicit authorization and a fresh
@@ -174,8 +180,9 @@ migration set is installed, verify these cases with authenticated sessions:
 | Invitation | A invites B; B views and accepts | B sees the received space separately, labeled as the owner's space (for example, “Espacio de A”); it is not listed among B's owned spaces. |
 | Owner-to-member request | A requests context/document information from B | Only bounded request metadata is visible before B's decision; no document, context, path, URL, or payload is transferred. |
 | Member-to-owner request | B initiates the reverse-direction request | Same metadata-only behavior; both parties can initiate, subject to the same approval rule. |
-| Approval/decline | Recipient approves, then separately test decline | Approval alone transfers nothing. After applying `0056` in a controlled test environment, the accepted turn's recipient/approver must separately submit exact reviewed text to its initiator, in either direction; decline creates no delivery. |
-| Text delivery | Accepted turn recipient/approver sends reviewed text back to initiator in either direction; initiator reads it | Delivery receipt contains no payload; only the bound recipient can read. Text is bounded to 64 KiB; at 7 days, read is denied and plaintext plus digest are erased on recipient read or purge invocation. The metadata row and payload-free audit (delivery ID, event, actor ID/null, timestamp) remain; this slice schedules no cron, so configure hourly cleanup only after verifying `CRON_SECRET` and Vercel capability. Unsent accepted turns cannot be sent after 24 hours. |
+| Approval/decline | On A's source space, B requests and A accepts; separately test decline | Approval alone transfers nothing. After applying `0056` + `0058` in a controlled test environment, only A may separately submit reviewed text to B; decline creates no delivery. |
+| Reverse isolation | A starts a metadata turn on A's source space; B accepts and tries to send | B can accept metadata but receives no composer/send authority on A's relationship; direct delivery is denied. B must use B's own source space for a B-to-A text leg. |
+| Text delivery in both directions | Repeat the approved request/send flow on A's source (A→B), then B's source (B→A) | Each source-space owner is the approver and only permitted sender for that leg. Delivery receipt contains no payload; only the bound recipient can read. Text is bounded to 64 KiB; at 7 days, read is denied and plaintext plus digest are erased on recipient read or purge invocation. The metadata row and payload-free audit (delivery ID, event, actor ID/null, timestamp) remain; this slice schedules no cron, so configure hourly cleanup only after verifying `CRON_SECRET` and Vercel capability. Unsent accepted turns cannot be sent after 24 hours. |
 | Revocation | A revokes the invitation/relationship and both accounts retry relevant views/actions | Access/request actions and delivery reads fail closed; stale relationship cannot be used to communicate. |
 
 Capture sanitized request/status evidence, never tokens or document contents.

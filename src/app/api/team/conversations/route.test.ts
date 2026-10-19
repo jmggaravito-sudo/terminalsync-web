@@ -38,6 +38,7 @@ const turn = {
   responded_at: null,
   direction: "outbound",
   can_respond: false,
+  can_deliver: false,
 };
 
 describe("Team conversation root API", () => {
@@ -134,7 +135,7 @@ describe("Team conversation root API", () => {
       operationId,
     }));
     expect(response.status).toBe(200);
-    expect(teamMetadataRpc).toHaveBeenCalledWith("create_team_space_conversation_turn_v3", {
+    expect(teamMetadataRpc).toHaveBeenCalledWith("create_team_space_conversation_turn_v4", {
       p_user_id: "verified-user",
       p_space_id: spaceId,
       p_relationship_id: relationshipId,

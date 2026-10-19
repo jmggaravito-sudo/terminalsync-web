@@ -48,6 +48,8 @@ export type ConversationTurn = {
   respondedAt: string | null;
   direction: ConversationDirection;
   canRespond: boolean;
+  /** Server-derived only; fail closed unless the source-space owner may send reviewed text. */
+  canDeliver: boolean;
 };
 
 /** Opaque pagination state. It is never rendered, persisted, or put in a link. */
@@ -115,9 +117,11 @@ function safeTurn(value: unknown): ConversationTurn | null {
     (source.responded_at !== null && !validDate(source.responded_at)) ||
     !["inbound", "outbound"].includes(String(source.direction)) ||
     typeof source.can_respond !== "boolean" ||
+    typeof source.can_deliver !== "boolean" ||
     (source.status === "pending" ? source.responded_at !== null : source.responded_at === null) ||
     !metadata ||
-    source.can_respond !== (source.direction === "inbound" && source.status === "pending")
+    source.can_respond !== (source.direction === "inbound" && source.status === "pending") ||
+    (source.can_deliver && (source.direction !== "inbound" || source.status !== "accepted"))
   ) return null;
   return {
     threadId: source.thread_id,
@@ -129,6 +133,7 @@ function safeTurn(value: unknown): ConversationTurn | null {
     respondedAt: source.responded_at as string | null,
     direction: source.direction as ConversationDirection,
     canRespond: source.can_respond,
+    canDeliver: source.can_deliver,
   };
 }
 

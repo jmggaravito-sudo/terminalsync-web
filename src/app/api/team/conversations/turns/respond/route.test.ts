@@ -35,6 +35,7 @@ const responseTurn = {
   responded_at: "2026-10-18T00:01:00.000Z",
   direction: "inbound",
   can_respond: false,
+  can_deliver: true,
 };
 
 describe("Team conversation response API", () => {
@@ -58,7 +59,7 @@ describe("Team conversation response API", () => {
     const response = await POST(json({ turnId, decision: "accepted", operationId }));
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(teamMetadataRpc).toHaveBeenCalledWith("respond_team_conversation_turn_v3", {
+    expect(teamMetadataRpc).toHaveBeenCalledWith("respond_team_conversation_turn_v4", {
       p_user_id: "verified-user",
       p_turn_id: turnId,
       p_decision: "accepted",
@@ -85,9 +86,9 @@ describe("Team conversation response API", () => {
   it("fails closed when the database does not confirm the exact requested terminal response", async () => {
     for (const row of [
       [],
-      [{ ...responseTurn, status: "declined" }],
+      [{ ...responseTurn, status: "declined", can_deliver: false }],
       [{ ...responseTurn, id: "00000000-0000-4000-8000-000000000099" }],
-      [{ ...responseTurn, direction: "outbound" }],
+      [{ ...responseTurn, direction: "outbound", can_deliver: false }],
     ]) {
       teamMetadataRpc.mockResolvedValueOnce(row);
       const response = await POST(json({ turnId, decision: "accepted", operationId }));

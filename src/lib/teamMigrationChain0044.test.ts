@@ -33,6 +33,8 @@ const teamMigrationNames: Record<number, string> = {
   54: "team_conversation_metadata_hardening",
   55: "team_legacy_approval_hardening",
   56: "team_text_deliveries",
+  // 0057_ai_credit_refunds is unrelated to Team; 0058 is the next Team step.
+  58: "team_owner_approved_text_delivery",
 };
 const timestampedTeamMigrationFile = "20261019192526_team_seat_ceiling_64.sql";
 
@@ -40,15 +42,18 @@ const teamMigrationNumbers = Object.keys(teamMigrationNames).map(Number);
 const migrationFile = (n: number) => `${String(n).padStart(4, "0")}_${teamMigrationNames[n]}.sql`;
 const migration = (n: number) => readFileSync(join(process.cwd(), "supabase/migrations", migrationFile(n)), "utf8");
 
-describe("Team migrations 0037-0057 compatibility contract", () => {
+describe("Team migrations 0037-0058 compatibility contract", () => {
   it("keeps the shared-space, approval, trial, roster, and billing prerequisites in source order", () => {
     const expectedFiles = [...teamMigrationNumbers.map(migrationFile), timestampedTeamMigrationFile];
     const actualFiles = readdirSync(join(process.cwd(), "supabase/migrations"))
-      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-6])_team_.*\.sql$/.test(file) || file === timestampedTeamMigrationFile)
+      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-8])_team_.*\.sql$/.test(file) || file === timestampedTeamMigrationFile)
       .sort();
 
     expect(actualFiles).toEqual(expectedFiles);
     expect(actualFiles.indexOf("0056_team_text_deliveries.sql")).toBeLessThan(
+      actualFiles.indexOf("0058_team_owner_approved_text_delivery.sql"),
+    );
+    expect(actualFiles.indexOf("0058_team_owner_approved_text_delivery.sql")).toBeLessThan(
       actualFiles.indexOf(timestampedTeamMigrationFile),
     );
 
@@ -79,6 +84,7 @@ describe("Team migrations 0037-0057 compatibility contract", () => {
       [54, 55], // all approval metadata surfaces close in source order
       [53, 56], // private text delivery requires accepted conversation turns
       [55, 56], // text delivery builds on the hardened approval chain
+      [56, 58], // source-owner delivery hardening replaces only the public contract
     ]) {
       const prerequisiteIndex = teamMigrationNumbers.indexOf(prerequisite);
       const dependentIndex = teamMigrationNumbers.indexOf(dependent);
@@ -544,10 +550,12 @@ describe("Team migrations 0037-0057 compatibility contract", () => {
         `SELECT has_function_privilege('authenticated','public._team_is_safe_legacy_request_metadata_v3(jsonb)','EXECUTE') AS ok`,
       )).rows[0].ok).toBe(false);
 
-      // 0056 must apply to the actual ordered 0037-0055 schema, not merely a
-      // hand-written fixture. Deliver accepted text in both directions, then
-      // prove revocation and expiry close the same private delivery surface.
+      // 0056 then 0058 must apply to the actual ordered 0037-0055 schema,
+      // not merely a hand-written fixture.  0058 preserves metadata dialogue
+      // in both directions, but plaintext always leaves the source owner's
+      // space only after that owner's approval of a member-originated turn.
       await db.exec(migration(56));
+      await db.exec(migration(58));
       for (const role of ["anon", "authenticated", "service_role"]) {
         expect((await db.query<{ ok: boolean }>(`
           SELECT NOT has_table_privilege($1,'team_delivery_private.text_deliveries','SELECT')
@@ -559,49 +567,59 @@ describe("Team migrations 0037-0057 compatibility contract", () => {
            AND NOT has_function_privilege('authenticated','public.create_team_text_delivery_v1(uuid,uuid,uuid,uuid,text,text)','EXECUTE') AS ok
       `)).rows[0].ok).toBe(true);
 
+      // An owner-started metadata turn can still be accepted by the member,
+      // but that acceptance never promotes the member into a sender for the
+      // owner's source space.
       const acceptedOwnerTurnId = conversationTurn.id;
-      expect((await db.query<{ status: string }>(`
-        SELECT status FROM public.respond_team_conversation_turn_v3(
+      const acceptedOwnerTurn = (await db.query<{
+        status: string; direction: string; can_deliver: boolean;
+      }>(`
+        SELECT * FROM public.respond_team_conversation_turn_v4(
           $1::uuid,$2::uuid,'accepted',$3::uuid
         )
-      `, [employeeId, acceptedOwnerTurnId, "00000000-0000-4000-8000-000000000056"])).rows[0].status).toBe("accepted");
-      const ownerTurnDelivery = (await db.query<{ id: string; recipient_user_id: string }>(`
+      `, [employeeId, acceptedOwnerTurnId, "00000000-0000-4000-8000-000000000056"])).rows[0];
+      expect(acceptedOwnerTurn).toMatchObject({ status: "accepted", direction: "inbound", can_deliver: false });
+      expect((await db.query(`
         SELECT * FROM public.create_team_text_delivery_v1(
           $1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::text,$6::text
         )
       `, [employeeId, conversationTurn.thread_id, acceptedOwnerTurnId,
-        "00000000-0000-4000-8000-000000000061", "Reply from the invited member", "1".repeat(64)])).rows[0];
-      expect(ownerTurnDelivery.recipient_user_id).toBe(newId);
-      expect((await db.query<{ content: string }>(
-        `SELECT content FROM public.read_team_text_delivery_v1($1::uuid,$2::uuid)`, [newId, ownerTurnDelivery.id],
-      )).rows).toEqual([{ content: "Reply from the invited member" }]);
+        "00000000-0000-4000-8000-000000000061", "Blocked reverse reply", "1".repeat(64)])).rows).toHaveLength(0);
 
-      const memberTurn = (await db.query<{ id: string; status: string }>(`
-        SELECT id,status FROM public.create_team_conversation_turn_v3(
+      // On the owner's source space, the member asks, the owner approves, and
+      // only the owner can emit the reviewed text to that exact member.
+      const memberTurn = (await db.query<{
+        id: string; status: string; direction: string; can_deliver: boolean;
+      }>(`
+        SELECT * FROM public.create_team_conversation_turn_v4(
           $1::uuid,$2::uuid,'context',$3::text,$4::jsonb,$5::uuid
         )
       `, [employeeId, conversationTurn.thread_id, "2".repeat(64), JSON.stringify({ itemCount: 1 }),
         "00000000-0000-4000-8000-000000000062"])).rows[0];
-      expect(memberTurn.status).toBe("pending");
-      expect((await db.query<{ status: string }>(`
-        SELECT status FROM public.respond_team_conversation_turn_v3(
+      expect(memberTurn).toMatchObject({ status: "pending", direction: "outbound", can_deliver: false });
+      const acceptedMemberTurn = (await db.query<{
+        status: string; direction: string; can_deliver: boolean;
+      }>(`
+        SELECT * FROM public.respond_team_conversation_turn_v4(
           $1::uuid,$2::uuid,'accepted',$3::uuid
         )
-      `, [newId, memberTurn.id, "00000000-0000-4000-8000-000000000063"])).rows[0].status).toBe("accepted");
-      const memberTurnDelivery = (await db.query<{ id: string; recipient_user_id: string }>(`
+      `, [newId, memberTurn.id, "00000000-0000-4000-8000-000000000063"])).rows[0];
+      expect(acceptedMemberTurn).toMatchObject({ status: "accepted", direction: "inbound", can_deliver: true });
+      const ownerToMemberDelivery = (await db.query<{ id: string; recipient_user_id: string }>(`
         SELECT * FROM public.create_team_text_delivery_v1(
           $1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::text,$6::text
         )
       `, [newId, conversationTurn.thread_id, memberTurn.id,
         "00000000-0000-4000-8000-000000000064", "Reply from the owner", "3".repeat(64)])).rows[0];
-      expect(memberTurnDelivery.recipient_user_id).toBe(employeeId);
+      expect(ownerToMemberDelivery.recipient_user_id).toBe(employeeId);
       expect((await db.query<{ content: string }>(
-        `SELECT content FROM public.read_team_text_delivery_v1($1::uuid,$2::uuid)`, [employeeId, memberTurnDelivery.id],
+        `SELECT content FROM public.read_team_text_delivery_v1($1::uuid,$2::uuid)`, [employeeId, ownerToMemberDelivery.id],
       )).rows).toEqual([{ content: "Reply from the owner" }]);
 
-      // 0057 must also compose with the real full chain. Exercise the billing
-      // RPC at the inclusive 64-seat boundary and prove 65 rolls back its
-      // processed-event row instead of leaving partial durable state.
+      // The timestamped seat-cap migration must also compose with the real
+      // full chain. Exercise the billing RPC at the inclusive 64-seat boundary
+      // and prove 65 rolls back its processed-event row instead of leaving
+      // partial durable state.
       await db.exec(readFileSync(join(process.cwd(), "supabase/migrations", timestampedTeamMigrationFile), "utf8"));
       const applyBilling = (seats: number, suffix: string) => db.query<{ result: string }>(`
         SELECT public.apply_team_stripe_subscription_event(
@@ -617,17 +635,17 @@ describe("Team migrations 0037-0057 compatibility contract", () => {
 
       await db.query(`UPDATE public.team_space_invitations SET status='revoked' WHERE id=$1::uuid`, [conversationTarget.relationship_id]);
       expect((await db.query(`SELECT * FROM public.read_team_text_delivery_v1($1::uuid,$2::uuid)`,
-        [employeeId, memberTurnDelivery.id])).rows).toHaveLength(0);
+        [employeeId, ownerToMemberDelivery.id])).rows).toHaveLength(0);
       expect((await db.query(`SELECT * FROM public.list_team_text_deliveries_v1($1::uuid,$2::uuid,50,NULL,NULL)`,
         [employeeId, conversationTurn.thread_id])).rows).toHaveLength(0);
       await db.query(`UPDATE public.team_space_invitations SET status='accepted' WHERE id=$1::uuid`, [conversationTarget.relationship_id]);
       await db.query(`UPDATE team_delivery_private.text_deliveries SET expires_at=now()-interval '1 second' WHERE id=$1::uuid`,
-        [ownerTurnDelivery.id]);
+        [ownerToMemberDelivery.id]);
       expect((await db.query(`SELECT * FROM public.read_team_text_delivery_v1($1::uuid,$2::uuid)`,
-        [newId, ownerTurnDelivery.id])).rows).toHaveLength(0);
+        [employeeId, ownerToMemberDelivery.id])).rows).toHaveLength(0);
       expect((await db.query<{ content: string | null; content_sha256: string | null; deleted_at: string | null }>(`
         SELECT content,content_sha256,deleted_at FROM team_delivery_private.text_deliveries WHERE id=$1::uuid
-      `, [ownerTurnDelivery.id])).rows[0]).toMatchObject({ content: null, content_sha256: null });
+      `, [ownerToMemberDelivery.id])).rows[0]).toMatchObject({ content: null, content_sha256: null });
 
       // The final hardening must preserve the active v3 conversation's
       // visibility while replacing the old unsafe display value. Targets and
@@ -665,6 +683,50 @@ describe("Team migrations 0037-0057 compatibility contract", () => {
       expect(turnsAfterLegacyHardening).toEqual(expect.arrayContaining([
         expect.objectContaining({ id: conversationTurn.id, metadata: { itemCount: 1 } }),
       ]));
+
+      // Conversation remains two-way only by switching the source boundary:
+      // here the former member owns a separate space, the former owner asks,
+      // that source owner approves, and that source owner emits plaintext.
+      const employeeSourceSpace = (await db.query<{ id: string }>(`
+        SELECT id FROM public.register_team_space($1::uuid,'Employee source',NULL,NULL)
+      `, [employeeId])).rows[0].id;
+      expect((await db.query<{ result: string }>(`
+        SELECT result FROM public.invite_team_alias($1::uuid,$2::uuid,'contract-owner')
+      `, [employeeId, employeeSourceSpace])).rows[0].result).toBe("submitted");
+      const employeeSourceInvitation = (await db.query<{ id: string }>(`
+        SELECT id FROM public.team_space_invitations WHERE space_id=$1::uuid
+      `, [employeeSourceSpace])).rows[0];
+      expect((await db.query<{ result: string }>(`
+        SELECT result FROM public.respond_team_invitation($1::uuid,$2::uuid,true)
+      `, [newId, employeeSourceInvitation.id])).rows[0].result).toBe("accepted");
+      const ownerRequestsEmployeeSource = (await db.query<{
+        thread_id: string; id: string; status: string; direction: string; can_deliver: boolean;
+      }>(`
+        SELECT * FROM public.create_team_space_conversation_turn_v4(
+          $1::uuid,$2::uuid,NULL,'context',$3::text,$4::jsonb,$5::uuid
+        )
+      `, [newId, employeeSourceSpace, "4".repeat(64), JSON.stringify({ itemCount: 1 }),
+        "00000000-0000-4000-8000-000000000065"])).rows[0];
+      expect(ownerRequestsEmployeeSource).toMatchObject({ status: "pending", direction: "outbound", can_deliver: false });
+      const employeeApprovesOwnSource = (await db.query<{
+        status: string; direction: string; can_deliver: boolean;
+      }>(`
+        SELECT * FROM public.respond_team_conversation_turn_v4(
+          $1::uuid,$2::uuid,'accepted',$3::uuid
+        )
+      `, [employeeId, ownerRequestsEmployeeSource.id,
+        "00000000-0000-4000-8000-000000000066"])).rows[0];
+      expect(employeeApprovesOwnSource).toMatchObject({ status: "accepted", direction: "inbound", can_deliver: true });
+      const employeeToOwnerDelivery = (await db.query<{ id: string; recipient_user_id: string }>(`
+        SELECT * FROM public.create_team_text_delivery_v1(
+          $1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::text,$6::text
+        )
+      `, [employeeId, ownerRequestsEmployeeSource.thread_id, ownerRequestsEmployeeSource.id,
+        "00000000-0000-4000-8000-000000000067", "Reply from the employee source", "5".repeat(64)])).rows[0];
+      expect(employeeToOwnerDelivery.recipient_user_id).toBe(newId);
+      expect((await db.query<{ content: string }>(
+        `SELECT content FROM public.read_team_text_delivery_v1($1::uuid,$2::uuid)`, [newId, employeeToOwnerDelivery.id],
+      )).rows).toEqual([{ content: "Reply from the employee source" }]);
 
       // A new opaque invitation can reserve and consume a seat without
       // exposing either the member UUID or the raw capability in the owner
