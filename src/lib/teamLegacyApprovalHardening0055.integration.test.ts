@@ -155,6 +155,24 @@ describe("Team legacy approval hardening migration 0055", () => {
       expect((await db.query<{ metadata: Record<string, unknown> }>(`
         SELECT metadata FROM public.list_team_space_requests($1::uuid) WHERE id = $2::uuid
       `, [owner, requestWithCount])).rows[0].metadata).toEqual({ itemCount: 3 });
+      // 0055 replaces the legacy responder while tightening metadata. A
+      // request created before that migration must still be approvable after
+      // the ordered 0042 -> 0043 -> 0048 -> 0055 upgrade.
+      const approved = await db.query<{ id: string; status: string; metadata: Record<string, unknown> }>(`
+        SELECT id,status,metadata FROM public.respond_team_space_request($1::uuid,$2::uuid,true)
+      `, [owner, requestWithCount]);
+      expect(approved.rows).toEqual([{ id: requestWithCount, status: "accepted", metadata: { itemCount: 3 } }]);
+      expect((await db.query<{ status: string; can_respond: boolean }>(`
+        SELECT status,can_respond FROM public.list_team_space_requests_v2($1::uuid) WHERE id=$2::uuid
+      `, [owner, requestWithCount])).rows).toEqual([{ status: "accepted", can_respond: false }]);
+      // Repeating the same decision remains idempotent; changing a terminal
+      // decision is rejected rather than silently rewriting owner consent.
+      await expect(db.query(`
+        SELECT * FROM public.respond_team_space_request($1::uuid,$2::uuid,true)
+      `, [owner, requestWithCount])).resolves.toMatchObject({ rows: [expect.objectContaining({ status: "accepted" })] });
+      await expect(db.query(`
+        SELECT * FROM public.respond_team_space_request($1::uuid,$2::uuid,false)
+      `, [owner, requestWithCount])).rejects.toThrow(/request is terminal/);
       expect((await db.query<{ ok: boolean }>(`
         SELECT has_function_privilege('authenticated','public._team_is_safe_legacy_request_metadata_v3(jsonb)','EXECUTE') AS ok
       `)).rows[0].ok).toBe(false);
