@@ -376,6 +376,30 @@ describe("Team Stripe webhook isolation", () => {
     expect(mocks.syncTeamSubscription).not.toHaveBeenCalled();
   });
 
+  it("rejects a live Team entitlement event that verifies only with the test webhook secret", async () => {
+    const event = teamSubscriptionEvent(true);
+    mocks.constructEvent.mockImplementation((_raw, _signature, secret) => {
+      if (secret === "whsec_live") throw new Error("wrong secret");
+      return event;
+    });
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec_live";
+    process.env.STRIPE_TEST_WEBHOOK_SECRET = "whsec_test";
+    mocks.teamCandidate.mockReturnValue(true);
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      received: false,
+      error: "Team entitlement requires a live webhook signature",
+    });
+    expect(mocks.parseTeamSubscription).not.toHaveBeenCalled();
+    expect(mocks.syncTeamSubscription).not.toHaveBeenCalled();
+    const { syncSubscriptionToSupabase, revokeSubscription } = await import("@/lib/subscriptionsSync");
+    expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
+    expect(revokeSubscription).not.toHaveBeenCalled();
+  });
+
   it("rejects invalid Team metadata before invoking the service-role adapter", async () => {
     const event = teamSubscriptionEvent();
     mocks.constructEvent.mockReturnValue(event);
