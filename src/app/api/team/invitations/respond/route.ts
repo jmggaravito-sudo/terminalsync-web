@@ -29,7 +29,14 @@ export async function POST(req: Request) {
       return teamJson({ error: "Invalid response metadata" }, { status: 400 });
     }
     const record = body as Record<string, unknown>;
-    if (typeof record.invitationId !== "string" || !UUID.test(record.invitationId) || typeof record.accept !== "boolean") {
+    // An invitation decision is metadata-only. Reject rather than silently
+    // accepting extra fields so this approval route cannot become a content
+    // or identity-injection transport.
+    if (
+      Object.keys(record).some((key) => key !== "invitationId" && key !== "accept") ||
+      typeof record.invitationId !== "string" || !UUID.test(record.invitationId) ||
+      typeof record.accept !== "boolean"
+    ) {
       return teamJson({ error: "Invalid response metadata" }, { status: 400 });
     }
     const expected = record.accept ? "accepted" : "declined";

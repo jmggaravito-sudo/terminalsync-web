@@ -8,10 +8,10 @@ import { TeamMetadataError } from "@/lib/teamMetadata";
 const auth = (token = "ok") => new Request("https://x.test", { headers: { authorization: `Bearer ${token}` } });
 const requestId = "00000000-0000-0000-0000-000000000002";
 const spaceId = "00000000-0000-0000-0000-000000000001";
-const responseRequest = (accept: boolean) => new Request("https://x.test", {
+const responseRequest = (accept: boolean, extra: Record<string, unknown> = {}) => new Request("https://x.test", {
   method: "POST",
   headers: { authorization: "Bearer ok", "content-type": "application/json" },
-  body: JSON.stringify({ requestId, accept, userId: "attacker" }),
+  body: JSON.stringify({ requestId, accept, ...extra }),
 });
 const createRequest = (body: unknown) => new Request("https://x.test", {
   method: "POST",
@@ -114,6 +114,19 @@ describe("Team metadata request routes", () => {
     ];
     for (const body of invalidBodies) {
       expect((await POST(createRequest(body))).status).toBe(400);
+    }
+    expect(teamMetadataRpc).not.toHaveBeenCalled();
+  });
+
+  it("rejects identity and content-like fields before the legacy approval RPC", async () => {
+    for (const extra of [
+      { userId: "attacker" },
+      { requesterId: "attacker" },
+      { content: "private text" },
+      { document: { name: "private.pdf" } },
+      { manifestHash: "a".repeat(64) },
+    ]) {
+      expect((await respond(responseRequest(true, extra))).status).toBe(400);
     }
     expect(teamMetadataRpc).not.toHaveBeenCalled();
   });
