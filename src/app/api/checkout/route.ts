@@ -80,13 +80,6 @@ export async function OPTIONS(req: Request) {
 export async function POST(req: Request) {
   const cors = corsHeaders(req.headers.get("origin"));
 
-  if (!stripe) {
-    return NextResponse.json(
-      { error: "Stripe not configured. Set STRIPE_SECRET_KEY." },
-      { status: 503, headers: cors },
-    );
-  }
-
   let body: Body;
   try {
     body = (await req.json()) as Body;
@@ -111,6 +104,29 @@ export async function POST(req: Request) {
       { status: 400, headers: cors },
     );
   }
+
+  // Team paid checkout is deliberately closed until a separately approved
+  // Stripe-only paid lifecycle is live in production. This check must stay
+  // before any Stripe client, price, or environment inspection so a Team
+  // request cannot leak configuration state or reach a billing dependency.
+  // The no-card Team trial is a separate entitlement; do not create a Stripe
+  // subscription merely because that entitlement exists in source.
+  if (plan === "team") {
+    return NextResponse.json(
+      {
+        error: "Team checkout is not available yet. No Stripe session was created.",
+      },
+      { status: 503, headers: cors },
+    );
+  }
+
+  if (!stripe) {
+    return NextResponse.json(
+      { error: "Stripe not configured. Set STRIPE_SECRET_KEY." },
+      { status: 503, headers: cors },
+    );
+  }
+
   // New Pro/Max purchases always include AI at the combined price. Ignore
   // older clients' add-on flags so they cannot create a two-line invoice or
   // silently buy a base plan without AI.
@@ -118,9 +134,7 @@ export async function POST(req: Request) {
   const price = includedAi ? bundledPriceIdFor(plan) : priceIdFor(plan);
   if (!price) {
     const envVar =
-      plan === "team"
-        ? "STRIPE_PRICE_TEAM"
-        : plan === "max"
+      plan === "max"
         ? "STRIPE_PRICE_MAX_WITH_AI_MONTHLY"
         : plan === "pro"
           ? "STRIPE_PRICE_PRO_WITH_AI_MONTHLY"
@@ -128,18 +142,6 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         error: `Missing Stripe price for plan "${plan}". Set ${envVar} in the environment.`,
-      },
-      { status: 503, headers: cors },
-    );
-  }
-  // Team paid checkout is deliberately closed until a separately approved
-  // Stripe-only paid lifecycle is live in production. The no-card Team trial
-  // is a separate entitlement; do not create a Stripe subscription merely
-  // because that entitlement exists in source.
-  if (plan === "team") {
-    return NextResponse.json(
-      {
-        error: "Team checkout is not available yet. No Stripe session was created.",
       },
       { status: 503, headers: cors },
     );
