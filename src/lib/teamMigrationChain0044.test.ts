@@ -33,8 +33,8 @@ const teamMigrationNames: Record<number, string> = {
   54: "team_conversation_metadata_hardening",
   55: "team_legacy_approval_hardening",
   56: "team_text_deliveries",
-  57: "team_seat_ceiling_64",
 };
+const timestampedTeamMigrationFile = "20261019192526_team_seat_ceiling_64.sql";
 
 const teamMigrationNumbers = Object.keys(teamMigrationNames).map(Number);
 const migrationFile = (n: number) => `${String(n).padStart(4, "0")}_${teamMigrationNames[n]}.sql`;
@@ -42,9 +42,9 @@ const migration = (n: number) => readFileSync(join(process.cwd(), "supabase/migr
 
 describe("Team migrations 0037-0057 compatibility contract", () => {
   it("keeps the shared-space, approval, trial, roster, and billing prerequisites in source order", () => {
-    const expectedFiles = teamMigrationNumbers.map(migrationFile);
+    const expectedFiles = [...teamMigrationNumbers.map(migrationFile), timestampedTeamMigrationFile];
     const actualFiles = readdirSync(join(process.cwd(), "supabase/migrations"))
-      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-7])_team_.*\.sql$/.test(file))
+      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-6])_team_.*\.sql$/.test(file) || file === timestampedTeamMigrationFile)
       .sort();
 
     expect(actualFiles).toEqual(expectedFiles);
@@ -76,7 +76,6 @@ describe("Team migrations 0037-0057 compatibility contract", () => {
       [54, 55], // all approval metadata surfaces close in source order
       [53, 56], // private text delivery requires accepted conversation turns
       [55, 56], // text delivery builds on the hardened approval chain
-      [56, 57], // seat ceiling follows every existing Team schema boundary
     ]) {
       const prerequisiteIndex = teamMigrationNumbers.indexOf(prerequisite);
       const dependentIndex = teamMigrationNumbers.indexOf(dependent);
@@ -600,7 +599,7 @@ describe("Team migrations 0037-0057 compatibility contract", () => {
       // 0057 must also compose with the real full chain. Exercise the billing
       // RPC at the inclusive 64-seat boundary and prove 65 rolls back its
       // processed-event row instead of leaving partial durable state.
-      await db.exec(migration(57));
+      await db.exec(readFileSync(join(process.cwd(), "supabase/migrations", timestampedTeamMigrationFile), "utf8"));
       const applyBilling = (seats: number, suffix: string) => db.query<{ result: string }>(`
         SELECT public.apply_team_stripe_subscription_event(
           $1::uuid,$2::text,$3::text,$4::text,$5::bigint,'active',NULL,NULL,false,
