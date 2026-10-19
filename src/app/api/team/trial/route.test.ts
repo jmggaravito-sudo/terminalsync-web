@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { getSupabaseAdmin, startTeamUniversalTrial, getTeamEntitlement } = vi.hoisted(() => ({
   getSupabaseAdmin: vi.fn(),
@@ -15,13 +15,15 @@ vi.mock("@/lib/teamFeature", () => ({ isTeamFeatureEnabled: vi.fn(() => process.
 describe("Team trial API", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.TEAM_FEATURE_ENABLED = "1";
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
     getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async (token: string) => token === "valid"
       ? { data: { user: { id: "verified-user" } }, error: null }
       : { data: { user: null }, error: new Error("invalid") }) } });
     startTeamUniversalTrial.mockResolvedValue({ result: "started", startsAt: "2026-10-17T00:00:00Z", expiresAt: "2026-10-24T00:00:00Z" });
     getTeamEntitlement.mockResolvedValue({ eligible: true, seat_limit: 1, source: "universal_trial", expires_at: "2026-10-24T00:00:00Z" });
   });
+
+  afterEach(() => vi.unstubAllEnvs());
 
   it("keeps trial claim and entitlement lookup closed unless Team is explicitly enabled", async () => {
     delete process.env.TEAM_FEATURE_ENABLED;
