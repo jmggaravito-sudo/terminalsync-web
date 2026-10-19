@@ -5,7 +5,7 @@ import { PGlite } from "@electric-sql/pglite";
 
 const migration0049 = readFileSync(join(process.cwd(), "supabase/migrations/0049_team_checkout_intents.sql"), "utf8");
 const migration0050 = readFileSync(join(process.cwd(), "supabase/migrations/0050_team_checkout_intent_single_active_guard.sql"), "utf8");
-const migration0057 = readFileSync(join(process.cwd(), "supabase/migrations/0057_team_seat_ceiling_64.sql"), "utf8");
+const migration0057 = readFileSync(join(process.cwd(), "supabase/migrations/20261019192526_team_seat_ceiling_64.sql"), "utf8");
 const owner = "00000000-0000-0000-0000-000000000001";
 const employee = "00000000-0000-0000-0000-000000000002";
 const request = "10000000-0000-0000-0000-000000000001";
