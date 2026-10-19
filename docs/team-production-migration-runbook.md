@@ -6,6 +6,8 @@
 
 The verified remote baseline is migrations **0037** and **0038** only for Team, plus exactly these five public billing/compensation tables: `team_billing_processed_events`, `team_billing_subscriptions`, `team_comp_grants`, `team_memberships`, and `team_stripe_customer_owners`. Do not infer readiness from local files or a dashboard screenshot; capture the remote metadata-only baseline immediately before any proposed apply.
 
+Before the `0039`–`0056` sequence, `team_checkout_intents` and all 0039+ collaboration, roster, and checkout tables are expected to be absent. `team_checkout_intents` is introduced by `0049`; its presence before apply is drift and requires aborting for investigation.
+
 The reviewed source sequence is `0039` through `0056` in order, followed by `20261019192526_team_seat_ceiling_64.sql` (the final Team migration, a timestamped seat-cap migration). There is no remaining numeric `0057` Team migration. Confirm the checked-out commit and exact migration filenames before execution; stop on any version/name/content mismatch.
 
 ## Read-only preflight (metadata only)
