@@ -197,9 +197,13 @@ describe("Team no-card trial rollout compatibility", () => {
   it("applies the automatic no-card trial and bidirectional approval subset to the 0037/0038 base", async () => {
     const db = await productionLikeBase();
     try {
-      // 0044 is deliberately part of the launch subset: every new account
-      // receives the 168-hour Team entitlement without changing its base plan.
+      // New accounts can arrive with a pending base-plan comp. The automatic
+      // Team trigger must coexist with the existing signup trigger: it adds
+      // only the one-time Team entitlement and cannot downgrade or replace the
+      // Pro/Max subscription that handle_new_user claims for the account.
       await db.exec(`
+        INSERT INTO public.comp_grants(email,plan,months,claimed_at,claimed_user_id,updated_at)
+        VALUES ('owner@example.test','max',12,NULL,NULL,pg_catalog.now());
         INSERT INTO auth.users(id,email) VALUES
           ('${ownerId}','owner@example.test'),
           ('${inviteeId}','invitee@example.test');
@@ -207,12 +211,47 @@ describe("Team no-card trial rollout compatibility", () => {
       expect((await db.query<{ count: number }>(
         "SELECT count(*)::int AS count FROM public.team_trial_entitlements",
       )).rows[0].count).toBe(2);
-      expect((await db.query<{ plan: string; status: string }>(
-        "SELECT plan,status FROM public.subscriptions ORDER BY user_id",
-      )).rows).toEqual([
-        { plan: "free", status: "active" },
-        { plan: "free", status: "active" },
+      expect((await db.query<{
+        user_id: string;
+        plan: string;
+        status: string;
+        stripe_customer_id: string | null;
+        stripe_subscription_id: string | null;
+        ai_included: boolean;
+        cancel_at_period_end: boolean;
+      }>(`
+        SELECT user_id,plan,status,stripe_customer_id,stripe_subscription_id,ai_included,cancel_at_period_end
+        FROM public.subscriptions
+        WHERE user_id IN ($1::uuid,$2::uuid)
+        ORDER BY user_id
+      `, [ownerId, inviteeId])).rows).toEqual([
+        {
+          user_id: ownerId,
+          plan: "max",
+          status: "active",
+          stripe_customer_id: "comp",
+          stripe_subscription_id: `comp_${ownerId.slice(0, 8)}`,
+          ai_included: true,
+          cancel_at_period_end: false,
+        },
+        {
+          user_id: inviteeId,
+          plan: "free",
+          status: "active",
+          stripe_customer_id: null,
+          stripe_subscription_id: null,
+          ai_included: false,
+          cancel_at_period_end: false,
+        },
       ]);
+      const claimedBaseComp = (await db.query<{
+        claimed_user_id: string | null;
+        claimed_at: Date | string | null;
+      }>("SELECT claimed_user_id,claimed_at FROM public.comp_grants WHERE email='owner@example.test'"))
+        .rows;
+      expect(claimedBaseComp).toHaveLength(1);
+      expect(claimedBaseComp[0]?.claimed_user_id).toBe(ownerId);
+      expect(claimedBaseComp[0]?.claimed_at).not.toBeNull();
 
       const automaticEntitlements = (await db.query<{ user_id: string; starts_at: string; expires_at: string }>(
         "SELECT user_id,starts_at,expires_at FROM public.team_trial_entitlements ORDER BY user_id",
