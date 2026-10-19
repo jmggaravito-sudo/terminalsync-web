@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { createElement } from "react";
-import { cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { authedFetch } = vi.hoisted(() => ({ authedFetch: vi.fn() }));
@@ -10,6 +10,26 @@ import { ReceivedSpacesClient } from "./ReceivedSpacesClient";
 
 function response(status: number, body: unknown): Response {
   return { status, ok: status >= 200 && status < 300, json: async () => body } as Response;
+}
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((resolvePromise) => {
+    resolve = resolvePromise;
+  });
+  return { promise, resolve };
+}
+
+function expectInitialTrialRead() {
+  const call = authedFetch.mock.calls.find(([input, init]) => input === "/api/team/trial" && (init as RequestInit | undefined)?.method === undefined);
+  expect(call).toBeTruthy();
+  const signal = (call?.[1] as RequestInit | undefined)?.signal;
+  expect(signal).toBeTruthy();
+  return signal!;
+}
+
+function expectNoAutomaticTrialPost() {
+  expect(authedFetch.mock.calls.some(([input, init]) => input === "/api/team/trial" && (init as RequestInit | undefined)?.method === "POST")).toBe(false);
 }
 
 afterEach(cleanup);
@@ -31,8 +51,8 @@ describe("Team trial entry interaction", () => {
     expect(claim).toBeTruthy();
     expect(await screen.findByRole("alert")).toBeTruthy();
     expect(screen.queryByText("private backend detail")).toBeNull();
-    expect(authedFetch).toHaveBeenCalledWith("/api/team/trial");
-    expect(authedFetch).not.toHaveBeenCalledWith("/api/team/trial", { method: "POST" });
+    expectInitialTrialRead();
+    expectNoAutomaticTrialPost();
     expect(authedFetch.mock.calls.slice(0, 5).map(([input]) => input)).toEqual([
       "/api/team/trial",
       "/api/team/invitations",
@@ -57,8 +77,8 @@ describe("Team trial entry interaction", () => {
     expect(claim).toBeTruthy();
     expect(await screen.findByRole("alert")).toBeTruthy();
     expect(screen.queryByText("temporary transport failure")).toBeNull();
-    expect(authedFetch).toHaveBeenCalledWith("/api/team/trial");
-    expect(authedFetch).not.toHaveBeenCalledWith("/api/team/trial", { method: "POST" });
+    expectInitialTrialRead();
+    expectNoAutomaticTrialPost();
     expect(authedFetch.mock.calls.slice(0, 5).map(([input]) => input)).toEqual([
       "/api/team/trial",
       "/api/team/invitations",
@@ -82,8 +102,8 @@ describe("Team trial entry interaction", () => {
     expect(await screen.findByRole("button", { name: "Claim Team trial" })).toBeTruthy();
     expect(await screen.findByRole("alert")).toBeTruthy();
     expect(screen.queryByText("temporary request transport failure")).toBeNull();
-    expect(authedFetch).toHaveBeenCalledWith("/api/team/trial");
-    expect(authedFetch).not.toHaveBeenCalledWith("/api/team/trial", { method: "POST" });
+    expectInitialTrialRead();
+    expectNoAutomaticTrialPost();
   });
 
   it("still treats a resolved auxiliary 401 as unauthorized", async () => {
@@ -99,6 +119,68 @@ describe("Team trial entry interaction", () => {
 
     expect(await screen.findByText("Sign in to view your invitations.")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Claim Team trial" })).toBeNull();
-    expect(authedFetch).not.toHaveBeenCalledWith("/api/team/trial", { method: "POST" });
+    expectNoAutomaticTrialPost();
+  });
+
+  it("aborts the initial GET and ignores a late response after unmount", async () => {
+    const pendingEntitlement = deferred<Response>();
+    const staleJson = vi.fn(async () => ({ eligible: false, seat_limit: 1, source: null, expires_at: null }));
+    const staleResponse = { status: 200, ok: true, json: staleJson } as unknown as Response;
+    authedFetch
+      .mockImplementationOnce(() => pendingEntitlement.promise)
+      .mockResolvedValueOnce(response(200, []))
+      .mockResolvedValueOnce(response(200, []))
+      .mockResolvedValueOnce(response(404, {}))
+      .mockResolvedValueOnce(response(404, {}));
+
+    const { unmount } = render(createElement(ReceivedSpacesClient, { lang: "en" }));
+    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(5));
+    const signal = expectInitialTrialRead();
+    expect(signal.aborted).toBe(false);
+
+    unmount();
+    expect(signal.aborted).toBe(true);
+    await act(async () => {
+      pendingEntitlement.resolve(staleResponse);
+      await Promise.resolve();
+    });
+
+    expect(staleJson).not.toHaveBeenCalled();
+    expectNoAutomaticTrialPost();
+  });
+
+  it("keeps a newer reload when an older request settles after it", async () => {
+    const pendingEntitlement = deferred<Response>();
+    const staleJson = vi.fn(async () => ({ eligible: true, seat_limit: 1, source: "stale", expires_at: null }));
+    const staleResponse = { status: 200, ok: true, json: staleJson } as unknown as Response;
+    authedFetch
+      .mockImplementationOnce(() => pendingEntitlement.promise)
+      .mockResolvedValueOnce(response(200, []))
+      .mockResolvedValueOnce(response(200, []))
+      .mockResolvedValueOnce(response(404, {}))
+      .mockResolvedValueOnce(response(404, {}))
+      .mockResolvedValueOnce(response(200, { eligible: false, seat_limit: 1, source: null, expires_at: null }))
+      .mockResolvedValueOnce(response(200, []))
+      .mockResolvedValueOnce(response(200, []))
+      .mockResolvedValueOnce(response(404, {}))
+      .mockResolvedValueOnce(response(404, {}));
+
+    const { rerender } = render(createElement(ReceivedSpacesClient, { lang: "en" }));
+    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(5));
+    const staleSignal = expectInitialTrialRead();
+
+    rerender(createElement(ReceivedSpacesClient, { lang: "es" }));
+    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(10));
+    expect(staleSignal.aborted).toBe(true);
+    expect(await screen.findByRole("button", { name: "Iniciar prueba Team" })).toBeTruthy();
+
+    await act(async () => {
+      pendingEntitlement.resolve(staleResponse);
+      await Promise.resolve();
+    });
+
+    expect(staleJson).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "Iniciar prueba Team" })).toBeTruthy();
+    expectNoAutomaticTrialPost();
   });
 });
