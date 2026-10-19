@@ -51,7 +51,7 @@ Xero connects through a **Custom Connection** — Xero's way of linking one app 
 
 Both values are stored encrypted in your Keychain and synced across your machines. The connection is tied to your one company, so the AI only ever sees your books — nothing else.
 
-> Heads up: Custom Connections need a paid Xero plan and are the one genuinely fiddly setup step. If you're in Latin America and use **Alegra** or **Siigo** instead of Xero, both have their own connector in the catalog — look for them there. In the meantime, many of the "invoices and budget" questions also work through the **Google Sheets** connector if you track them in a spreadsheet.
+> Heads up: Custom Connections need a paid Xero plan and are the one genuinely fiddly setup step. If you use **Alegra**, connect it through the API in TerminalSync under **Integrations → Explore → Alegra**; its official MCP is not installable yet. **Siigo** has its own catalog listing. Many "invoices and budget" questions also work through **Google Sheets** if you track them in a spreadsheet.
 
 --- dev ---
 
