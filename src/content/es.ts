@@ -533,10 +533,11 @@ const es: Dict = {
         name: "Team",
         badge: "Próximamente",
         price: "$59",
-        priceNote: "/empleado/mes",
-        tagline: "$59 por empleado al mes. Pro y Max no cambian. Al lanzamiento, los nuevos usuarios podrán acceder a una prueba Team completa de 7 días (168 horas), sin tarjeta. Al terminar, eliges un plan; no habrá cobro automático.",
+        priceNote: "USD/empleado/mes",
+        tagline: "$59 USD por empleado al mes. Pro y Max no cambian. Al lanzamiento, toda cuenta nueva iniciará automáticamente una prueba Team completa de 7 días (168 horas), sin tarjeta. Al terminar, eliges un plan; no habrá cobro automático.",
         features: [
           "Próximamente: espacios compartidos para colaborar en equipo",
+          "Para equipos de 1 a 64 personas",
           "Cada persona conserva su propio espacio de trabajo",
           "Al lanzamiento, compartir respuestas o documentos requerirá aprobación antes de enviarlos",
           "Al lanzamiento, al terminar la prueba de 7 días (168 horas), eliges si continúas; no habrá cobro automático",

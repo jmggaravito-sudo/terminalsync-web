@@ -8,9 +8,10 @@
   // Diccionario: clave = texto español EXACTO (trim) → inglés.
   const ES_EN = {
     // Team: public disclosure only; no landing checkout or signup control.
-    "/ empleado / mes": "/ employee / month",
-    "$59 por empleado al mes. Pro y Max no cambian. Al lanzamiento, los nuevos usuarios podrán acceder a una prueba Team completa de 7 días (168 horas), sin tarjeta. Al terminar, eliges un plan; no habrá cobro automático.": "$59 per employee per month. Pro and Max stay unchanged. At launch, new users will be offered a full 7-day (168-hour) Team trial with no card. After the trial, choose a plan; there will be no automatic charge.",
+    "USD / empleado / mes": "USD / employee / month",
+    "$59 USD por empleado al mes. Pro y Max no cambian. Al lanzamiento, toda cuenta nueva iniciará automáticamente una prueba Team completa de 7 días (168 horas), sin tarjeta. Al terminar, eliges un plan; no habrá cobro automático.": "$59 USD per employee per month. Pro and Max stay unchanged. At launch, every new account will automatically start a full 7-day (168-hour) Team trial with no card. After the trial, choose a plan; there will be no automatic charge.",
     "Próximamente: espacios compartidos para colaborar en equipo": "Coming soon: shared spaces for team collaboration",
+    "Para equipos de 1 a 64 personas": "For teams of 1–64 people",
     "Cada persona conserva su propio espacio de trabajo": "Each person keeps their own workspace",
     "Al lanzamiento, compartir respuestas o documentos requerirá aprobación antes de enviarlos": "At launch, sharing answers or documents will require approval before sending",
     "Al lanzamiento, al terminar la prueba de 7 días (168 horas), eliges si continúas; no habrá cobro automático": "At launch, after the 7-day (168-hour) trial, choose whether to continue; there will be no automatic charge",
