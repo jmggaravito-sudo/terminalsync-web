@@ -54,6 +54,9 @@ describe("remote connectors where mcp-remote cannot log in", () => {
     expect(data.manifest.mcpServers.alegra.env).toBeUndefined();
     expect(text).not.toContain("ALEGRA_API_TOKEN_BASE64");
     expect(data.installableForAi).toBe(false);
+    expect(data.status).toBe("soon");
+    expect(text).toMatch(lang === "es" ? /conexión \*\*por API\*\* ya se configura/ : /\*\*API\*\* connection is already configured/);
+    expect(text).toMatch(lang === "es" ? /MCP oficial.*todavía no se puede instalar/ : /Official MCP status.*not installable yet/);
     expect(await verifyFile(file, { verifiedAt: "2026-10-16T00:00:00.000Z" })).toMatchObject({
       slug: "alegra", installableForAi: false, installableForAiReason: "needs-oauth",
     });
@@ -67,6 +70,14 @@ describe("remote connectors where mcp-remote cannot log in", () => {
     const { verifyFile } = await import("./verify-connector.mjs");
     const r = await verifyFile("content/connectors/en/factorial.md", { verifiedAt: "2026-10-16T00:00:00.000Z" });
     expect(r).toMatchObject({ slug: "factorial", installableForAi: false, installableForAiReason: "needs-oauth" });
+  });
+});
+
+describe("Alegra API and MCP catalog copy", () => {
+  it.each(["en", "es"])("does not present Xero's Alegra alternative as an installable MCP in %s", (lang) => {
+    const text = fs.readFileSync(`content/connectors/${lang}/xero.md`, "utf8");
+    expect(text).toMatch(lang === "es" ? /Integraciones → Explorar → Alegra/ : /Integrations → Explore → Alegra/);
+    expect(text).toMatch(lang === "es" ? /MCP oficial todavía no se puede instalar/ : /official MCP is not installable yet/);
   });
 });
 

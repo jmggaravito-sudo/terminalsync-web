@@ -5,7 +5,7 @@ category: automation
 markets: ["CO", "MX", "AR", "PE", "CR", "PA", "DO", "VE", "ES"]
 status: soon
 simpleTitle: "Tu facturación y tu contabilidad, respondidas en lenguaje natural"
-simpleSubtitle: "MCP oficial de solo lectura. La conexión con TerminalSync aún está pendiente."
+simpleSubtitle: "La conexión por API ya está en TerminalSync. El MCP oficial sigue pendiente de autorización."
 devTitle: "Conector MCP de Alegra"
 devSubtitle: "MCP oficial hospedado de Alegra: OAuth, endpoint raíz y consultas de solo lectura; pendiente de smoke en TerminalSync."
 ctaUrl: "https://www.alegra.com/mcp/"
@@ -41,7 +41,9 @@ verifiedPackageVersion: null
 
 Alegra indica que se pega `https://mcp.alegra.com` en un cliente MCP compatible y se autoriza iniciando sesión con la cuenta habitual de Alegra. **No hay que generar ni pegar un token API o una cadena Base64.** La [autenticación Basic del API tradicional](https://developer.alegra.com/reference/autenticaci%C3%B3n) corresponde a otra interfaz, no a este flujo MCP.
 
-**Estado en TerminalSync:** todavía no se puede instalar. Abrir una cuenta Alegra no la conecta automáticamente. El cliente remoto actual de la app no llega a la pantalla de autorización: Alegra rechazó su URI local de retorno (`invalid_redirect_uri`, HTTP 400). No se solicitará acceso a tu cuenta ni se presentará como lista hasta que el flujo OAuth funcione y pase un smoke de lectura con autorización expresa.
+**Dos vías distintas:** la conexión **por API** ya se configura dentro de TerminalSync en **Integraciones → Explorar → Alegra**, con el correo y la clave de conexión de Alegra. La app comprueba la conexión antes de mostrar «Conectado». Las consultas están disponibles; los cambios admitidos requieren aprobación individual. No hay que introducir esa clave en el MCP.
+
+**Estado de este MCP oficial:** todavía no se puede instalar. Abrir una cuenta Alegra no lo conecta automáticamente. El cliente remoto actual de la app no llega a la pantalla de autorización: Alegra rechazó su URI local de retorno (`invalid_redirect_uri`, HTTP 400). El MCP no se presentará como listo hasta que el flujo OAuth funcione y pase un smoke de lectura con autorización expresa.
 
 --- dev ---
 

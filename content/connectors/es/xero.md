@@ -51,7 +51,7 @@ Xero se conecta con una **Custom Connection** — la forma de Xero de enlazar un
 
 Los dos valores quedan guardados cifrados en tu Keychain y sincronizados entre tus máquinas. La conexión está atada a tu única empresa, así que la IA solo ve tus libros — nada más.
 
-> Aviso: las Custom Connections necesitan un plan pago de Xero y son el único paso de configuración realmente engorroso. Si estás en Latinoamérica y usas **Alegra** o **Siigo** en vez de Xero, ambos tienen su propio conector en el catálogo — búscalos ahí. Mientras tanto, muchas de las preguntas de "facturas y presupuesto" también funcionan con el conector de **Google Sheets** si las llevas en una planilla.
+> Aviso: las Custom Connections necesitan un plan pago de Xero y son el único paso de configuración realmente engorroso. Si usas **Alegra**, puedes conectarlo por API en TerminalSync desde **Integraciones → Explorar → Alegra**; su MCP oficial todavía no se puede instalar. **Siigo** tiene su propia ficha en el catálogo. Muchas preguntas de "facturas y presupuesto" también funcionan con **Google Sheets** si las llevas en una planilla.
 
 --- dev ---
 

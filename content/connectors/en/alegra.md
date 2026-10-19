@@ -5,7 +5,7 @@ category: automation
 markets: ["CO", "MX", "AR", "PE", "CR", "PA", "DO", "VE", "ES"]
 status: soon
 simpleTitle: "Your invoicing and your books, answered in plain language"
-simpleSubtitle: "Official read-only MCP. TerminalSync connection is still pending."
+simpleSubtitle: "API connection is already in TerminalSync. Official MCP authorization is still pending."
 devTitle: "Alegra MCP Connector"
 devSubtitle: "Official hosted Alegra MCP: OAuth, root endpoint and read-only queries; TerminalSync smoke pending."
 ctaUrl: "https://www.alegra.com/mcp/"
@@ -41,7 +41,9 @@ verifiedPackageVersion: null
 
 Alegra says to paste `https://mcp.alegra.com` into a compatible MCP client and sign in with the existing Alegra account to authorize access. **Do not create or paste an API token or Base64 string.** [Basic authentication for the traditional API](https://developer.alegra.com/reference/autenticaci%C3%B3n) belongs to a different interface, not this MCP flow.
 
-**TerminalSync status:** not installable yet. Opening an Alegra account does not connect it automatically. The app's current remote client does not reach Alegra's authorization screen: Alegra rejected its local redirect URI (`invalid_redirect_uri`, HTTP 400). We will not request account access or present it as ready until OAuth works and an expressly authorized installed read-only smoke passes.
+**Two separate paths:** the **API** connection is already configured inside TerminalSync under **Integrations → Explore → Alegra**, using your Alegra email and API connection key. The app verifies the connection before showing “Connected”. Queries are available; supported changes require individual approval. Do not enter that key into the MCP.
+
+**Official MCP status:** not installable yet. Opening an Alegra account does not connect it automatically. The app's current remote client does not reach Alegra's authorization screen: Alegra rejected its local redirect URI (`invalid_redirect_uri`, HTTP 400). We will not present the MCP as ready until OAuth works and an expressly authorized installed read-only smoke passes.
 
 --- dev ---
 
