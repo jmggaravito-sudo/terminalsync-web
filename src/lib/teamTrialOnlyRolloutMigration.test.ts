@@ -39,7 +39,7 @@ const excludedFromTrialOnlyRollout = [
 const ownerId = "00000000-0000-0000-0000-000000000701";
 const inviteeId = "00000000-0000-0000-0000-000000000702";
 
-async function productionLikeBase() {
+async function productionLikeBase(beforeTrialOnlyRollout?: (db: PGlite) => Promise<void>) {
   const db = new PGlite({ extensions: { citext } });
   await db.exec(`
     CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role;
@@ -72,6 +72,7 @@ async function productionLikeBase() {
   // trial-only subset after them is what the operator runbook intends.
   await db.exec(migration("0037_team_comp_entitlements.sql"));
   await db.exec(migration("0038_team_stripe_billing.sql"));
+  await beforeTrialOnlyRollout?.(db);
   for (const file of trialOnlyMigrationFiles) await db.exec(migration(file));
   return db;
 }
@@ -96,6 +97,100 @@ describe("Team no-card trial rollout compatibility", () => {
     expect(excludedFromTrialOnlyRollout).toContain("0057_team_seat_ceiling_64.sql");
     expect(migration("0040_team_universal_trial.sql")).not.toContain("public.subscriptions.plan");
   });
+
+  it("starts and retries a 168-hour Team trial without changing existing active Pro or Max subscriptions", async () => {
+    // These accounts predate 0044, so their trial can only begin through the
+    // authenticated/manual 0040 RPC. That is the rollout path for an existing
+    // paid subscriber, not the signup-trigger path for a new account.
+    const proId = "00000000-0000-0000-0000-000000000703";
+    const maxId = "00000000-0000-0000-0000-000000000704";
+    const db = await productionLikeBase(async (base) => {
+      await base.exec(`
+        INSERT INTO auth.users(id,email) VALUES
+          ('${proId}','pro-existing@example.test'),
+          ('${maxId}','max-existing@example.test');
+        UPDATE public.subscriptions
+        SET plan='pro', status='active', stripe_customer_id='cus-pro-existing',
+            stripe_subscription_id='sub-pro-existing', provider_customer_id='cus-pro-existing',
+            provider_subscription_id='sub-pro-existing', ai_included=true,
+            current_period_start='2026-10-01T00:00:00.000Z',
+            current_period_end='2026-11-01T00:00:00.000Z', cancel_at_period_end=false,
+            updated_at='2026-10-01T00:00:00.000Z'
+        WHERE user_id='${proId}';
+        UPDATE public.subscriptions
+        SET plan='max', status='active', stripe_customer_id='cus-max-existing',
+            stripe_subscription_id='sub-max-existing', provider_customer_id='cus-max-existing',
+            provider_subscription_id='sub-max-existing', ai_included=true,
+            current_period_start='2026-10-02T00:00:00.000Z',
+            current_period_end='2026-11-02T00:00:00.000Z', cancel_at_period_end=true,
+            updated_at='2026-10-02T00:00:00.000Z'
+        WHERE user_id='${maxId}';
+      `);
+    });
+    try {
+      // A full serialized row snapshot makes this stronger than checking only
+      // plan/status: provider IDs, periods, AI inclusion, cancellation state,
+      // and updated_at must all remain byte-for-byte unchanged as well.
+      const baseSnapshots = await db.query<{
+        user_id: string;
+        plan: string;
+        status: string;
+        snapshot: string;
+      }>(`
+        SELECT s.user_id,s.plan,s.status,row_to_json(s)::text AS snapshot
+        FROM public.subscriptions s
+        WHERE s.user_id IN ($1::uuid,$2::uuid)
+        ORDER BY s.user_id
+      `, [proId, maxId]);
+      expect(baseSnapshots.rows.map(({ user_id, plan, status }) => ({ user_id, plan, status }))).toEqual([
+        { user_id: proId, plan: "pro", status: "active" },
+        { user_id: maxId, plan: "max", status: "active" },
+      ]);
+
+      const started: Array<{ user_id: string; starts_at: string; expires_at: string }> = [];
+      for (const userId of [proId, maxId]) {
+        const trial = (await db.query<{ result: string; starts_at: string; expires_at: string }>(
+          "SELECT * FROM public.start_team_universal_trial($1::uuid)", [userId],
+        )).rows[0];
+        expect(trial.result).toBe("started");
+        expect(Date.parse(trial.expires_at) - Date.parse(trial.starts_at)).toBe(168 * 60 * 60 * 1000);
+        started.push({ user_id: userId, starts_at: trial.starts_at, expires_at: trial.expires_at });
+      }
+
+      const afterStart = await db.query<{ user_id: string; plan: string; status: string; snapshot: string }>(`
+        SELECT s.user_id,s.plan,s.status,row_to_json(s)::text AS snapshot
+        FROM public.subscriptions s
+        WHERE s.user_id IN ($1::uuid,$2::uuid)
+        ORDER BY s.user_id
+      `, [proId, maxId]);
+      expect(afterStart.rows).toEqual(baseSnapshots.rows);
+
+      for (const firstTrial of started) {
+        const retry = (await db.query<{ result: string; starts_at: string; expires_at: string }>(
+          "SELECT * FROM public.start_team_universal_trial($1::uuid)", [firstTrial.user_id],
+        )).rows[0];
+        expect(retry).toEqual({
+          starts_at: firstTrial.starts_at,
+          expires_at: firstTrial.expires_at,
+          result: "already_claimed",
+        });
+      }
+
+      const afterRetry = await db.query<{ user_id: string; plan: string; status: string; snapshot: string }>(`
+        SELECT s.user_id,s.plan,s.status,row_to_json(s)::text AS snapshot
+        FROM public.subscriptions s
+        WHERE s.user_id IN ($1::uuid,$2::uuid)
+        ORDER BY s.user_id
+      `, [proId, maxId]);
+      expect(afterRetry.rows).toEqual(baseSnapshots.rows);
+      expect((await db.query<{ count: number }>(
+        "SELECT count(*)::int AS count FROM public.team_trial_entitlements WHERE user_id IN ($1::uuid,$2::uuid)",
+        [proId, maxId],
+      )).rows[0].count).toBe(2);
+    } finally {
+      await db.close();
+    }
+  }, 30_000);
 
   it("applies the automatic no-card trial and bidirectional approval subset to the 0037/0038 base", async () => {
     const db = await productionLikeBase();
