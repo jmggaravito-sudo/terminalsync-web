@@ -26,7 +26,7 @@ type RequestProjection = {
   responded_at: string | null;
 };
 
-async function fixture() {
+async function fixtureBeforeRequestMetadata() {
   const db = new PGlite();
   await db.exec(`
     CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role;
@@ -77,12 +77,66 @@ async function fixture() {
     );
   `);
   await db.exec(migration42);
+  return db;
+}
+
+async function fixture() {
+  const db = await fixtureBeforeRequestMetadata();
   await db.exec(migration43);
   await db.exec(migration48);
   return db;
 }
 
 describe("Team legacy approval hardening migration 0055", () => {
+  it("preserves a pre-0043 legacy pending approval through 0043, 0048, and 0055", async () => {
+    const db = await fixtureBeforeRequestMetadata();
+    try {
+      const space = (await db.query<{ id: string }>(`
+        INSERT INTO public.team_shared_spaces(owner_user_id,name)
+        VALUES ($1::uuid,'Legacy request space') RETURNING id
+      `, [owner])).rows[0].id;
+      await db.query(`
+        INSERT INTO public.team_space_invitations(space_id,inviter_user_id,invitee_user_id,status,responded_at)
+        VALUES ($1::uuid,$2::uuid,$3::uuid,'accepted',now())
+      `, [space, owner, member]);
+      // This is the exact 0039-era request shape: no request_kind,
+      // metadata, or responded_at columns exist yet.
+      const legacyRequest = (await db.query<{ id: string }>(`
+        INSERT INTO public.team_space_requests(space_id,requester_user_id,status,manifest_hash)
+        VALUES ($1::uuid,$2::uuid,'pending',$3::text) RETURNING id
+      `, [space, member, hash])).rows[0].id;
+
+      await db.exec(migration43);
+      await db.exec(migration48);
+      await db.exec(migration55);
+
+      const beforeApproval = (await db.query<RequestProjection>(`
+        SELECT * FROM public.list_team_space_requests_v2($1::uuid) WHERE id=$2::uuid
+      `, [owner, legacyRequest])).rows;
+      expect(beforeApproval).toHaveLength(1);
+      expect(beforeApproval[0]).toMatchObject({
+        id: legacyRequest, status: "pending", role: "owner", can_respond: true,
+        request_kind: "document", metadata: {}, responded_at: null,
+      });
+      for (const privateValue of [owner, member, hash]) {
+        expect(JSON.stringify(beforeApproval)).not.toContain(privateValue);
+      }
+
+      const approved = await db.query<{ id: string; status: string; metadata: Record<string, unknown> }>(`
+        SELECT id,status,metadata FROM public.respond_team_space_request($1::uuid,$2::uuid,true)
+      `, [owner, legacyRequest]);
+      expect(approved.rows).toEqual([{ id: legacyRequest, status: "accepted", metadata: {} }]);
+      await expect(db.query(`
+        SELECT * FROM public.respond_team_space_request($1::uuid,$2::uuid,true)
+      `, [owner, legacyRequest])).resolves.toMatchObject({ rows: [expect.objectContaining({ status: "accepted" })] });
+      await expect(db.query(`
+        SELECT * FROM public.respond_team_space_request($1::uuid,$2::uuid,false)
+      `, [owner, legacyRequest])).rejects.toThrow(/request is terminal/);
+    } finally {
+      await db.close();
+    }
+  }, 15_000);
+
   it("sanitizes legacy request rows, constrains direct writes, and projects count-only metadata", async () => {
     const db = await fixture();
     try {
@@ -155,6 +209,24 @@ describe("Team legacy approval hardening migration 0055", () => {
       expect((await db.query<{ metadata: Record<string, unknown> }>(`
         SELECT metadata FROM public.list_team_space_requests($1::uuid) WHERE id = $2::uuid
       `, [owner, requestWithCount])).rows[0].metadata).toEqual({ itemCount: 3 });
+      // 0055 replaces the legacy responder while tightening metadata. A
+      // request created before that migration must still be approvable after
+      // the ordered 0042 -> 0043 -> 0048 -> 0055 upgrade.
+      const approved = await db.query<{ id: string; status: string; metadata: Record<string, unknown> }>(`
+        SELECT id,status,metadata FROM public.respond_team_space_request($1::uuid,$2::uuid,true)
+      `, [owner, requestWithCount]);
+      expect(approved.rows).toEqual([{ id: requestWithCount, status: "accepted", metadata: { itemCount: 3 } }]);
+      expect((await db.query<{ status: string; can_respond: boolean }>(`
+        SELECT status,can_respond FROM public.list_team_space_requests_v2($1::uuid) WHERE id=$2::uuid
+      `, [owner, requestWithCount])).rows).toEqual([{ status: "accepted", can_respond: false }]);
+      // Repeating the same decision remains idempotent; changing a terminal
+      // decision is rejected rather than silently rewriting owner consent.
+      await expect(db.query(`
+        SELECT * FROM public.respond_team_space_request($1::uuid,$2::uuid,true)
+      `, [owner, requestWithCount])).resolves.toMatchObject({ rows: [expect.objectContaining({ status: "accepted" })] });
+      await expect(db.query(`
+        SELECT * FROM public.respond_team_space_request($1::uuid,$2::uuid,false)
+      `, [owner, requestWithCount])).rejects.toThrow(/request is terminal/);
       expect((await db.query<{ ok: boolean }>(`
         SELECT has_function_privilege('authenticated','public._team_is_safe_legacy_request_metadata_v3(jsonb)','EXECUTE') AS ok
       `)).rows[0].ok).toBe(false);
