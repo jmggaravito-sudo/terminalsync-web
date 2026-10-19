@@ -12,7 +12,8 @@
     "verify:connectors": "node scripts/verify-connector.mjs --all --write --json --concurrency 1",
     "test:watch": "vitest",
     "test:video-funding-sql": "node scripts/test-video-funding-sql.mjs && node scripts/test-video-quote-checkout-sql.mjs",
-    "test:video-quote-checkout-sql": "node scripts/test-video-quote-checkout-sql.mjs"
+    "test:video-quote-checkout-sql": "node scripts/test-video-quote-checkout-sql.mjs",
+    "check:supabase-history-manifest": "node scripts/check-supabase-history-manifest.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.117.1",
