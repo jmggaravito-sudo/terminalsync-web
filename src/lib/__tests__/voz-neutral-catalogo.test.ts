@@ -44,7 +44,9 @@ const VOSEO =
  *  trinquete no sirvió para nada.
  *
  *  Salidos de la lista (reescritos a neutral, la lista solo se achica):
- *  - `skills/es/xlsx.md` — 6 oct 2026. */
+ *  - `skills/es/xlsx.md` — 6 oct 2026.
+ *  - `skills/es/brand-guidelines.md`, `skills/es/brand-voice.md` — 19 oct 2026
+ *    (reescritas a neutral al promoverlas, Skills Loop brand run). */
 const DEUDA = new Set([
   "content/blog/es/2026-07-06-que-es-espacio-trabajo-ia.md",
   "content/blog/es/2026-07-07-deja-de-subir-archivos.md",
@@ -54,8 +56,6 @@ const DEUDA = new Set([
   "content/cli-tools/es/vercel-cli.md",
   "content/cli-tools/es/wrangler.md",
   "content/skills/es/1099-w9-organizer.md",
-  "content/skills/es/brand-guidelines.md",
-  "content/skills/es/brand-voice.md",
   "content/skills/es/carrito-abandonado.md",
   "content/skills/es/code-reviewer.md",
   "content/skills/es/contenido-social.md",

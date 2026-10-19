@@ -351,6 +351,10 @@ describe("GET /api/marketplace/catalog", () => {
       "quarterly-tax-estimate-prep",
       "cobros-vencidos",
       "fijacion-de-precios",
+      // Skills Loop 2026-10-19 — brand skills promoted from catalogReady:false
+      // with GLM eval evidence (docs/skills-evals/<slug>.md).
+      "brand-guidelines",
+      "brand-voice",
     ] as const;
     const sorted = [...publicSlugs].sort();
 
@@ -371,9 +375,10 @@ describe("GET /api/marketplace/catalog", () => {
       "learn",
       "deep-research",
       "slack-summarizer",
-      // Pending evaluation (catalogReady: false).
-      "brand-voice",
-      "brand-guidelines",
+      // Pending evaluation (catalogReady: false) — Skills Loop 2026-07-31
+      // deferred (2/5 cases beat baseline).
+      // brand-voice / brand-guidelines graduated 2026-10-19: they are in the
+      // public list above now.
     ] as const;
 
     for (const lang of ["en", "es"] as const) {
