@@ -10,14 +10,26 @@ vi.mock("@/lib/teamTrial", () => ({ startTeamUniversalTrial, getTeamEntitlement,
 
 import { GET, POST } from "./route";
 
+vi.mock("@/lib/teamFeature", () => ({ isTeamFeatureEnabled: vi.fn(() => process.env.TEAM_FEATURE_ENABLED === "1") }));
+
 describe("Team trial API", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    process.env.TEAM_FEATURE_ENABLED = "1";
     getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async (token: string) => token === "valid"
       ? { data: { user: { id: "verified-user" } }, error: null }
       : { data: { user: null }, error: new Error("invalid") }) } });
     startTeamUniversalTrial.mockResolvedValue({ result: "started", startsAt: "2026-10-17T00:00:00Z", expiresAt: "2026-10-24T00:00:00Z" });
     getTeamEntitlement.mockResolvedValue({ eligible: true, seat_limit: 1, source: "universal_trial", expires_at: "2026-10-24T00:00:00Z" });
+  });
+
+  it("keeps trial claim and entitlement lookup closed unless Team is explicitly enabled", async () => {
+    delete process.env.TEAM_FEATURE_ENABLED;
+    const request = new Request("https://example.test/api/team/trial", { method: "POST", headers: { authorization: "Bearer valid" } });
+    expect((await POST(request)).status).toBe(503);
+    expect((await GET(new Request("https://example.test/api/team/trial", { headers: { authorization: "Bearer valid" } }))).status).toBe(503);
+    expect(startTeamUniversalTrial).not.toHaveBeenCalled();
+    expect(getTeamEntitlement).not.toHaveBeenCalled();
   });
 
   it("derives identity from verified bearer auth and ignores attacker-supplied body fields", async () => {
