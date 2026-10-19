@@ -1,18 +1,22 @@
 import { describe, expect, it, vi } from "vitest";
 
-const { createSession, teamPrice } = vi.hoisted(() => ({
-  createSession: vi.fn(async (_params: Record<string, unknown>) => ({
-    url: "https://checkout.stripe.test/session",
-  })),
-  teamPrice: { value: "price_team_monthly" as string | null },
-}));
+const { createSession, teamPrice, priceIdFor } = vi.hoisted(() => {
+  const teamPrice = { value: "price_team_monthly" as string | null };
+  return {
+    createSession: vi.fn(async (_params: Record<string, unknown>) => ({
+      url: "https://checkout.stripe.test/session",
+    })),
+    teamPrice,
+    priceIdFor: vi.fn((plan: string) => plan === "team" ? teamPrice.value : `price_${plan}_legacy`),
+  };
+});
 
 vi.mock("@/lib/stripe", () => ({
   stripe: { checkout: { sessions: { create: createSession } } },
   TRIAL_DAYS: 7,
   normalizePlanId: (plan: string) => plan,
   bundledPriceIdFor: (plan: string) => `price_${plan}_ai`,
-  priceIdFor: (plan: string) => plan === "team" ? teamPrice.value : `price_${plan}_legacy`,
+  priceIdFor,
   siteUrl: () => "https://terminalsync.ai",
 }));
 
@@ -82,8 +86,9 @@ describe("Team checkout fail-closed foundation", () => {
     expect(createSession).not.toHaveBeenCalled();
   });
 
-  it("fails closed without STRIPE_PRICE_TEAM", async () => {
+  it("stays closed before inspecting the Team Stripe price", async () => {
     createSession.mockClear();
+    priceIdFor.mockClear();
     teamPrice.value = null;
     const response = await POST(new Request("https://terminalsync.ai/api/checkout", {
       method: "POST",
@@ -91,7 +96,8 @@ describe("Team checkout fail-closed foundation", () => {
       body: JSON.stringify({ plan: "team", seats: 3 }),
     }));
     expect(response.status).toBe(503);
-    expect((await response.json()).error).toContain("STRIPE_PRICE_TEAM");
+    expect((await response.json()).error).toContain("No Stripe session was created");
+    expect(priceIdFor).not.toHaveBeenCalled();
     expect(createSession).not.toHaveBeenCalled();
     teamPrice.value = "price_team_monthly";
   });
