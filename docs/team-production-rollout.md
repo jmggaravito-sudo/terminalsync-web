@@ -30,6 +30,52 @@ SQL and confirming the expected preconditions/effects:
    turn's recipient/approver in either direction; it does not change the
    metadata-only turn projection or enable files/AI generation.
 
+## Read-only shared-space compatibility preflight (before `0041 → 0042`)
+
+After confirming that `0039` is recorded and its tables exist, run this
+**read-only** preflight against the intended database before applying `0041` or
+`0042`. This query is documentation only; this change did not execute it
+remotely. A missing relation is a stop condition, not permission to skip a
+prerequisite.
+
+```sql
+SELECT to_regclass('public.team_aliases') AS aliases_table,
+       to_regclass('public.team_space_invitations') AS invitations_table;
+
+-- Run the remaining checks only after both relation checks above are non-NULL.
+-- Each query below must return zero rows.
+SELECT user_id, alias
+  FROM public.team_aliases
+ WHERE alias <> lower(btrim(alias))
+    OR alias !~ '^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$'
+    OR alias LIKE '%..%'
+ ORDER BY user_id;
+
+SELECT alias, count(*) AS duplicate_rows
+  FROM public.team_aliases
+ GROUP BY alias
+HAVING count(*) > 1
+ ORDER BY alias;
+
+-- Mirror 0042's partial unique index. NULL invitees do not collide in that
+-- PostgreSQL unique index, so they are intentionally excluded here.
+SELECT space_id, invitee_user_id, count(*) AS duplicate_pending_rows
+  FROM public.team_space_invitations
+ WHERE status = 'pending'
+   AND invitee_user_id IS NOT NULL
+ GROUP BY space_id, invitee_user_id
+HAVING count(*) > 1
+ ORDER BY space_id, invitee_user_id;
+```
+
+If either relation is missing or any check returns a row, **STOP** before
+`0041`/`0042`: do not edit, delete, merge, or otherwise repair live data as
+part of this rollout. Reconcile the drift only under separate explicit
+authorization with a fresh recoverable backup, then rerun this read-only
+preflight. These checks surface the exact blockers that `0041` (alias
+constraint/index) and `0042` (one-pending-invitation index) would otherwise
+encounter during the approved migration sequence.
+
 `0044_team_trial_on_signup.sql` is **required for the Team launch**: every
 newly created account receives the same 168-hour, no-card Team trial
 automatically, while its base Pro/Max/free subscription remains unchanged.
