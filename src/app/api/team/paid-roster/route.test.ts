@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { getSupabaseAdmin, listPaidTeamRoster } = vi.hoisted(() => ({
   getSupabaseAdmin: vi.fn(), listPaidTeamRoster: vi.fn(),
@@ -18,6 +18,8 @@ const req = (token = "valid") => new Request("https://example.test/api/team/paid
 });
 
 describe("paid Team roster API", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");

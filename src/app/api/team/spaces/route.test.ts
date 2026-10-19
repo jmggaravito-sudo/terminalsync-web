@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { getSupabaseAdmin, teamMetadataRpc } = vi.hoisted(() => ({
   getSupabaseAdmin: vi.fn(),
@@ -34,6 +34,8 @@ const authed = (body?: BodyInit) => new Request("https://example.test/api/team/s
 });
 
 describe("Team shared-spaces API boundary", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
