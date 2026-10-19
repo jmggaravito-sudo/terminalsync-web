@@ -43,13 +43,15 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
       // GET only: never claim/start a trial as a side effect of opening this page.
       const [entitlementResponse, invitationsResponse, requestResponse, rosterResponse, spacesResponse] = await Promise.all([
         authedFetch("/api/team/trial"),
-        authedFetch("/api/team/invitations"),
-        authedFetch("/api/team/requests"),
+        // Keep transport failures auxiliary too. Actual 401 responses still
+        // reach the explicit auth check below.
+        authedFetch("/api/team/invitations").catch(() => null),
+        authedFetch("/api/team/requests").catch(() => null),
         authedFetch("/api/team/paid-roster").catch(() => null),
         // Spaces are optional so a rolling deployment cannot hide legacy cards.
         authedFetch("/api/team/spaces", { cache: "no-store", referrerPolicy: "no-referrer" }).catch(() => null),
       ]);
-      if (entitlementResponse.status === 401 || invitationsResponse.status === 401 || requestResponse.status === 401) {
+      if (entitlementResponse.status === 401 || invitationsResponse?.status === 401 || requestResponse?.status === 401) {
         markUnauthorized(); return;
       }
       // A healthy entitlement response is enough to keep the no-card claim
@@ -59,7 +61,7 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
       if (!entitlementResponse.ok) throw new Error("load");
       const entitlementBody = await entitlementResponse.json();
       setEntitlement(entitlementBody && typeof entitlementBody === "object" ? entitlementBody : null);
-      if (!invitationsResponse.ok || !requestResponse.ok) throw new Error("load");
+      if (!invitationsResponse?.ok || !requestResponse?.ok) throw new Error("load");
       const [invitationBody, requestBody] = await Promise.all([invitationsResponse.json(), requestResponse.json()]);
       setInvitations(parseReceivedInvitations(invitationBody));
       setApprovals(parseOwnerApprovals(requestBody));
