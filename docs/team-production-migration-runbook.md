@@ -4,9 +4,9 @@
 
 ## Scope and expected state
 
-The verified remote baseline is migrations **0037** and **0038** only for Team, plus the five public billing/compensation tables: `team_billing_subscriptions`, `team_billing_events`, `team_comp_entitlements`, `team_comp_consumptions`, and `team_comp_refunds`. Do not infer readiness from local files or a dashboard screenshot; capture the remote metadata-only baseline immediately before any proposed apply.
+The verified remote baseline is migrations **0037** and **0038** only for Team, plus exactly these five public billing/compensation tables: `team_billing_processed_events`, `team_billing_subscriptions`, `team_comp_grants`, `team_memberships`, and `team_stripe_customer_owners`. Do not infer readiness from local files or a dashboard screenshot; capture the remote metadata-only baseline immediately before any proposed apply.
 
-The reviewed source sequence is `0039` through `0056` in order, followed by `20261019192526_team_seat_ceiling_64.sql` (timestamped Team seat-cap migration). `0057` is outside this Team sequence. Confirm the checked-out commit and exact migration filenames before execution; stop on any version/name/content mismatch.
+The reviewed source sequence is `0039` through `0056` in order, followed by `20261019192526_team_seat_ceiling_64.sql` (the final Team migration, a timestamped seat-cap migration). There is no remaining numeric `0057` Team migration. Confirm the checked-out commit and exact migration filenames before execution; stop on any version/name/content mismatch.
 
 ## Read-only preflight (metadata only)
 
@@ -18,8 +18,8 @@ Review each migration's guards and expected transformations before scheduling:
 
 - **0041:** aliases must already be normalized and unique; its guard rejects invalid/duplicate aliases.
 - **0043:** request lifecycle fields must be consistent; non-pending rows need `responded_at`, while pending rows must not have it.
-- **0054:** legacy conversation metadata and space display names are normalized/sanitized; review the exact update scope and resulting constraints.
-- **0055:** legacy request metadata is reduced to the allowed count-only shape and space names are sanitized; review affected-row counts and ensure no unexpected data-loss or constraint conflict.
+- **0054:** conversation-turn metadata is sanitized and constrained; review the exact update scope and resulting constraints.
+- **0055:** shared-space display names and legacy request metadata are sanitized/constrained; review affected-row counts and ensure no unexpected data-loss or constraint conflict.
 
 Do not inspect user data to “make it pass.” If constraints/guards fail or expected changes are unclear, stop and request a separately reviewed remediation plan.
 
