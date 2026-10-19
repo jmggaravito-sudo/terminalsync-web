@@ -44,6 +44,15 @@ describe("Team invitations API", () => {
     expect(teamMetadataRpc).not.toHaveBeenCalled();
   });
 
+  it("keeps invitation listing and creation unavailable before auth or RPC while the Team gate is off", async () => {
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "0");
+    const list = await GET(request());
+    const create = await POST(request(JSON.stringify({ spaceId, alias: "alex.team" })));
+    expect([list.status, create.status]).toEqual([503, 503]);
+    expect(getSupabaseAdmin).not.toHaveBeenCalled();
+    expect(teamMetadataRpc).not.toHaveBeenCalled();
+  });
+
   it("uses the invitee-only v2 projection with verified identity", async () => {
     teamMetadataRpc.mockResolvedValueOnce([{ ...safeInvitation, owner_user_id: "PRIVATE", invitee_user_id: "PRIVATE", metadata: { content: "SECRET" } }]);
     const response = await GET(request());
