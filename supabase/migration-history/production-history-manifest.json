@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Source-only guard for remote migration-history rows observed by a read-only preflight. It records metadata, not SQL provenance or SQL equivalence.",
+  "entries": [
+    {
+      "version": "20260907214658",
+      "remoteName": "agency_influencers_profile_url",
+      "status": "unverified",
+      "origin": "remote-migration-history-metadata",
+      "candidate": null,
+      "sqlEquivalence": "not-established"
+    },
+    {
+      "version": "20260921114605",
+      "remoteName": "0019_subscription_ai_entitlement",
+      "status": "unverified",
+      "origin": "remote-migration-history-metadata",
+      "candidate": null,
+      "sqlEquivalence": "not-established"
+    },
+    {
+      "version": "20260921114611",
+      "remoteName": "courtesy_tier_reads_subscription_ai_marker",
+      "status": "unverified",
+      "origin": "remote-migration-history-metadata",
+      "candidate": null,
+      "sqlEquivalence": "not-established"
+    },
+    {
+      "version": "20260921124719",
+      "remoteName": "0032_comp_included_ai",
+      "status": "unverified",
+      "origin": "remote-migration-history-metadata",
+      "candidate": {
+        "path": "supabase/migrations/0032_comp_included_ai.sql",
+        "basis": "name-only candidate; not evidence of SQL equivalence"
+      },
+      "sqlEquivalence": "not-established"
+    },
+    {
+      "version": "20260921183710",
+      "remoteName": "proxy_003_ai_usage",
+      "status": "unverified",
+      "origin": "remote-migration-history-metadata",
+      "candidate": null,
+      "sqlEquivalence": "not-established"
+    },
+    {
+      "version": "20260921183713",
+      "remoteName": "proxy_005_connector_requests",
+      "status": "unverified",
+      "origin": "remote-migration-history-metadata",
+      "candidate": null,
+      "sqlEquivalence": "not-established"
+    },
+    {
+      "version": "20260921183832",
+      "remoteName": "proxy_004_ai_usage_upstream",
+      "status": "unverified",
+      "origin": "remote-migration-history-metadata",
+      "candidate": null,
+      "sqlEquivalence": "not-established"
+    },
+    {
+      "version": "20261006204704",
+      "remoteName": "proxy_006_search_usage",
+      "status": "unverified",
+      "origin": "remote-migration-history-metadata",
+      "candidate": null,
+      "sqlEquivalence": "not-established"
+    },
+    {
+      "version": "20261017190938",
+      "remoteName": "ai_credit_debits",
+      "status": "unverified",
+      "origin": "remote-migration-history-metadata",
+      "candidate": {
+        "path": "supabase/migrations/0033_ai_credit_debits.sql",
+        "basis": "name-only candidate; not evidence of SQL equivalence"
+      },
+      "sqlEquivalence": "not-established"
+    },
+    {
+      "version": "20261018163004",
+      "remoteName": "0057_ai_credit_refunds",
+      "status": "unverified",
+      "origin": "remote-migration-history-metadata",
+      "candidate": {
+        "path": "supabase/migrations/0057_ai_credit_refunds.sql",
+        "basis": "name-only candidate; not evidence of SQL equivalence"
+      },
+      "sqlEquivalence": "not-established"
+    }
+  ]
+}
