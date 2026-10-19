@@ -25,6 +25,7 @@ import {
 import type { OwnedTeamSpace } from "./teamSharedSpaces";
 import { receivedSpaceLabel } from "./receivedSpaces";
 import { TeamTextDeliveryPanel } from "./TeamTextDeliveryPanel";
+import { displayConversationThread, partitionConversationThreads, type ConversationThreadDisplay } from "./teamConversationCollections";
 
 type InitialTarget = {
   spaceId: string;
@@ -50,10 +51,29 @@ type Props = {
   onUnauthorized: () => void;
 };
 
+type ConversationThreadCardsProps = {
+  es: boolean;
+  items: ConversationThreadDisplay[];
+  openedThreadId: string | undefined;
+  requestBusy: boolean;
+  onOpen: (thread: ConversationThread) => void;
+};
+
 const emptyDraft = (): ConversationDraft => ({ kind: "context", itemCount: "" });
 
 function text(es: boolean, spanish: string, english: string): string {
   return es ? spanish : english;
+}
+
+function ConversationThreadCards({ es, items, openedThreadId, requestBusy, onOpen }: ConversationThreadCardsProps) {
+  return <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: ".75rem" }}>
+    {items.map(({ thread, label }) => <li key={thread.threadId} style={{ border: "1px solid #d5dbea", borderRadius: 12, padding: "1rem" }}>
+      <strong>{label}</strong>
+      <div style={{ marginTop: ".75rem" }}>
+        <button disabled={requestBusy} onClick={() => onOpen(thread)}>{openedThreadId === thread.threadId ? text(es, "Actualizar solicitudes", "Refresh requests") : text(es, "Abrir solicitudes", "Open requests")}</button>
+      </div>
+    </li>)}
+  </ul>;
 }
 
 function metadataSummary(turn: ConversationTurn, es: boolean): string {
@@ -613,6 +633,10 @@ export function TeamConversationPanel({ lang, ownedSpaces, receivedSpaces, onUna
   }
 
   const requestBusy = requestOperation !== null;
+  const threadCollections = partitionConversationThreads(threads, ownedSpaces, receivedSpaces, lang);
+  const openedThreadLabel = openedThread
+    ? displayConversationThread(openedThread, ownedSpaces, receivedSpaces, lang).label
+    : null;
 
   return <section aria-labelledby="team-conversations-heading" style={{ marginTop: "2rem" }}>
     <h2 id="team-conversations-heading">{text(es, "Conversaciones entre espacios", "Conversations between spaces")}</h2>
@@ -681,14 +705,16 @@ export function TeamConversationPanel({ lang, ownedSpaces, receivedSpaces, onUna
 
       <section aria-labelledby="team-thread-list-heading" style={{ marginTop: "1.5rem" }}>
         <h3 id="team-thread-list-heading">{text(es, "Solicitudes y aprobaciones", "Requests and approvals")}</h3>
-        {threads.length === 0 ? <p role="status">{text(es, "Todavía no hay conversaciones. Inicia una solicitud desde un espacio aceptado.", "There are no conversations yet. Start a request from an accepted space.")}</p> : <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: ".75rem" }}>
-          {threads.map((thread) => <li key={thread.threadId} style={{ border: "1px solid #d5dbea", borderRadius: 12, padding: "1rem" }}>
-            <strong>{thread.spaceName}</strong>
-            <div style={{ marginTop: ".75rem" }}>
-              <button disabled={requestBusy} onClick={() => void openThread(thread)}>{openedThread?.threadId === thread.threadId ? text(es, "Actualizar solicitudes", "Refresh requests") : text(es, "Abrir solicitudes", "Open requests")}</button>
-            </div>
-          </li>)}
-        </ul>}
+        {threads.length === 0 ? <p role="status">{text(es, "Todavía no hay conversaciones. Inicia una solicitud desde un espacio aceptado.", "There are no conversations yet. Start a request from an accepted space.")}</p> : <>
+          {threadCollections.owned.length > 0 ? <section aria-labelledby="team-owned-thread-list-heading">
+            <h4 id="team-owned-thread-list-heading">{text(es, "Desde tus espacios", "From your spaces")}</h4>
+            <ConversationThreadCards es={es} items={threadCollections.owned} openedThreadId={openedThread?.threadId} requestBusy={requestBusy} onOpen={(thread) => void openThread(thread)} />
+          </section> : null}
+          {threadCollections.received.length > 0 ? <section aria-labelledby="team-received-thread-list-heading" style={{ marginTop: threadCollections.owned.length > 0 ? "1rem" : undefined }}>
+            <h4 id="team-received-thread-list-heading">{text(es, "Desde espacios recibidos", "From received spaces")}</h4>
+            <ConversationThreadCards es={es} items={threadCollections.received} openedThreadId={openedThread?.threadId} requestBusy={requestBusy} onOpen={(thread) => void openThread(thread)} />
+          </section> : null}
+        </>}
         {threadNextCursor ? <div style={{ marginTop: ".75rem" }}>
           <button disabled={threadsLoadingMore || requestBusy} onClick={() => void loadMoreThreads()}>{threadsLoadingMore ? text(es, "Cargando más conversaciones…", "Loading more conversations…") : text(es, "Cargar más conversaciones", "Load more conversations")}</button>
           {threadPageError ? <p role="alert">{threadPageError} <button onClick={() => void loadMoreThreads()}>{text(es, "Reintentar", "Retry")}</button></p> : null}
@@ -696,7 +722,7 @@ export function TeamConversationPanel({ lang, ownedSpaces, receivedSpaces, onUna
       </section>
 
       {openedThread ? <section aria-labelledby="team-thread-heading" style={{ marginTop: "1.5rem" }}>
-        <h3 id="team-thread-heading">{text(es, `Solicitudes: ${openedThread.spaceName}`, `Requests: ${openedThread.spaceName}`)}</h3>
+        <h3 id="team-thread-heading">{text(es, `Solicitudes: ${openedThreadLabel}`, `Requests: ${openedThreadLabel}`)}</h3>
         {turnsLoading ? <p role="status">{text(es, "Cargando solicitudes…", "Loading requests…")}</p> : null}
         {turnsError ? <div role="alert"><p>{turnsError}</p><button disabled={requestBusy} onClick={() => void openThread(openedThread)}>{text(es, "Reintentar", "Retry")}</button></div> : null}
         {!turnsLoading && !turnsError ? <>

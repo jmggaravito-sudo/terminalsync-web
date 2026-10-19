@@ -76,4 +76,11 @@ describe("Team conversation UI contract", () => {
     expect(source).not.toContain("<code>{turn.threadId}");
     expect(source).not.toContain("{prepared.manifestHash}");
   });
+
+  it("keeps conversation threads from received spaces in their own labelled collection", () => {
+    expect(source).toContain("partitionConversationThreads");
+    expect(source).toContain('id="team-owned-thread-list-heading"');
+    expect(source).toContain('id="team-received-thread-list-heading"');
+    expect(source).toContain("displayConversationThread(openedThread, ownedSpaces, receivedSpaces, lang).label");
+  });
 });
