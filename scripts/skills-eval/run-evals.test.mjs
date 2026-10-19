@@ -440,3 +440,36 @@ describe("GLM (Z.ai) as the subject and the judge", () => {
     expect(calls).toEqual(["subject-model", "subject-model", "judge-model"]);
   });
 });
+
+describe('retry boundaries with mocked transport only', () => {
+  afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
+  const oneCase = () => { const f = validateFixture(loadCodeReviewer()); return { ...f, cases: f.cases.slice(0, 1) }; };
+  const opts = { dryRun: false, apiKey: 'offline-test-only', model: 'offline-judge', subjectModel: 'offline-subject', skillPrompt: 'offline prompt' };
+  it.each([400, 401, 403])('does not retry permanent HTTP %i failures', async (status) => {
+    vi.useFakeTimers();
+    const transport = vi.fn(async () => new Response('offline rejected', { status }));
+    vi.stubGlobal('fetch', transport);
+    const pending = runFixture(oneCase(), opts);
+    await vi.runAllTimersAsync();
+    const result = await pending;
+    expect(result[0].error).toContain(`HTTP ${status}`);
+    expect(transport).toHaveBeenCalledTimes(1);
+  });
+  it.each(['503', 'no-text'])('retains bounded recovery for %s', async (failure) => {
+    vi.useFakeTimers(); let calls = 0;
+    const verdict = JSON.stringify({ baselineScore: 4, skillScore: 9, skillMeetsExpected: true, beatsBaseline: true, notes: 'offline' });
+    const transport = vi.fn(async () => {
+      calls++;
+      if (calls === 1) return failure === '503'
+        ? new Response('offline unavailable', { status: 503 })
+        : new Response(JSON.stringify({ content: [{ type: 'thinking', thinking: 'offline' }] }), { status: 200 });
+      return new Response(JSON.stringify({ content: [{ type: 'text', text: calls === 4 ? verdict : 'offline answer' }] }), { status: 200 });
+    });
+    vi.stubGlobal('fetch', transport);
+    const pending = runFixture(oneCase(), opts);
+    await vi.runAllTimersAsync();
+    const result = await pending;
+    expect(result[0].error).toBeUndefined();
+    expect(transport).toHaveBeenCalledTimes(4);
+  });
+});

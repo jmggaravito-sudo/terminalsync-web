@@ -107,6 +107,9 @@ async function withRetry(fn, { attempts = 4, baseMs = 800 } = {}) {
       if (!(r instanceof Response) || r.ok || (r.status < 500 && r.status !== 429)) return r;
       lastErr = new Error(`HTTP ${r.status}`);
     } catch (e) {
+      // callClaude now parses inside this callback. Preserve the original
+      // non-retryable 4xx boundary when it throws an HTTP status error.
+      if (e?.status >= 400 && e.status < 500 && e.status !== 429) throw e;
       lastErr = e;
     }
     if (i < attempts - 1) {

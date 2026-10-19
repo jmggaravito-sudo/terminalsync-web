@@ -5,7 +5,7 @@ category: design
 vendors: ["claude"]
 author: "TerminalSync"
 status: available
-tagline: "Tu marca aplicada a cada documento, deck y post"
+tagline: "Tu marca aplicada a cada documento, presentación y publicación"
 description: "Convierte el material de marca que tengas — una guía, tu sitio web, un puñado de muestras — en una ficha de marca funcional (colores, tipografía, tono, lo que sí y lo que no) y la aplica al documento, presentación, landing o post que pediste. Usa los valores que tú le diste en vez de inventar unos genéricos, señala las líneas exactas donde un borrador se sale de la marca, y dice sin rodeos qué sigue necesitando un diseñador real."
 license: "proprietary"
 marketplaceSource: "terminalsync"
