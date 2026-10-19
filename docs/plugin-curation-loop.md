@@ -61,6 +61,28 @@ Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first,
 
 ## Run log
 
+### 2026-10-19 — automated run, no focus input given
+
+**Shipped 2 Plugins**, each pairing an already-published, `available` connector with an already-evaluated, `available` skill, picked so the connector's verbatim tools feed the skill's actual steps (no invented capability):
+
+- **tiendanube** (`ecommerce`) — Tiendanube connector (official hosted Tiendanube/Nuvemshop MCP, OAuth, one connection per store) + Promos & Coupons. The pairing maps onto the documented surface: the skill designs the discount (goal, margin, hard limits) and closes with a 0–100 verdict, and its own last step — "set up the code in your store" — is exactly what the connector's `create_coupon` (percentage, fixed amount or free shipping, first-purchase restriction) and `create_promotion` (automatic, no code) do, after the connector's confirmation step. Disclosed in the body: the verdict scores the design, not revenue; margin/cost numbers stay with the owner (the connector doesn't audit costs); `delete_coupon`/`delete_promotion` are irreversible and the docs recommend deactivating (`valid=false` / `published=false`), which is this pack's default; Brazilian stores use the separate Nuvemshop endpoint this connector doesn't point to.
+- **paypal** (`operations`) — PayPal connector (official hosted PayPal MCP, OAuth) + Overdue Invoice Chaser. The connector's own doc example is the job — *"Which invoices are still unpaid? Send a reminder to the client who's late."* — and its invoice tools (`list_invoices`, `get_invoice`, `send_invoice`, `send_invoice_reminder`) supply exactly what the skill asks for (client, amount, invoice number, due date, days late). Disclosed in the body: sends are real actions and PayPal's MCP docs declare no per-action confirmation step, so the owner treats "send" as a per-invoice decision; the skill never invents interest/fees/consequences beyond the owner's terms and never promises payment; refunds/dispute claims/subscriptions are connector tools that are not part of this pack's job.
+
+**Deferred / SKIP, documented:**
+
+- **carrito-abandonado on tiendanube** — rejected: the connector's 28 documented tools have no cart-level surface (no abandoned-checkout events), so pairing it would repeat exactly the unsupported claim the 2026-08-02 run rejected for Shopify. `promos-cupones` is the pairing the tools actually support.
+- **mercado-pago + cobros-vencidos** — rejected: the server's documented tools have no invoice object (only payments/orders) and no money-moving tools, so the overdue-invoice record the skill needs doesn't exist there.
+- **qonto + tax-prep-checklist** — rejected: EU business banking against a US/IRS-flavored skill (1099-NEC, W-9, CPA/EA) — the pairing would hand a Qonto owner a checklist built for a tax system they're not in.
+- **holded + cobros-vencidos** — viable on substance (invoice + contacts surface, ES/LatAm) but deferred: the connector's docs publish no flat tool list (a 360-tool reference grouped by area), so the pairing can't be written with the verbatim-tool evidence the PayPal pack has. Left for a run that can enumerate Holded's invoice-reading surface.
+- **typeform, bird** — connectors `available` (shipped 2026-10-19 in #546) but no skill in `content/skills/{en,es}` teaches a survey/form (Typeform) or customer-messaging (Bird) workflow; forcing a generic skill would repeat the asana precedent. Skill Loop candidates.
+- Standing blockers re-verified via frontmatter (unchanged): `meeting-notes`, `brand-guidelines`, `brand-voice`, `lifecycle-email`, `referral-program`, `notebooklm-source-architect` still `catalogReady: false`; `email-drafter` still `soon` + `hidden` → calendly/zoom/canva/klaviyo/intercom remain Skill Loop tasks.
+
+**Logos:** no new debt. `public/plugins/paypal.svg` is a copy of the connector's committed official mark; `public/plugins/tiendanube.svg` embeds the connector's committed official PNG (`public/connectors/tiendanube.png`, 48×48) — same embed pattern used to close the `firecrawl` logo debt. No entry added to "Logos pendientes".
+
+Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` (17/17 pass) + `tsc --noEmit` (clean).
+
+App PR: no aplica — la app consume el catálogo. Both reuse shapes the desktop already renders: `tiendanube` and `paypal` are remote/OAuth connectors bridged with `mcp-remote` (like `siigo`/`ramp`/`gusto`), with plain `connectorSlug` + `skillSlugs` composition the generic plugin renderer handles.
+
 ### 2026-10-12 — automated run, no focus input given
 
 **Shipped 2 Plugins**, each pairing an already-published, `available` connector with an already-evaluated, `available` skill (all-3-vendor `compatibleWith`), picked so the connector's real tools feed the skill's actual input (no invented capability):
