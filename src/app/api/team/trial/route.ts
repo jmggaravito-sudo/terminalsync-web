@@ -1,6 +1,7 @@
 import { teamJson } from "@/lib/teamApiResponse";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { getTeamEntitlement, startTeamUniversalTrial, TeamTrialServiceError, type TeamEntitlement } from "@/lib/teamTrial";
+import { isTeamFeatureEnabled } from "@/lib/teamFeature";
 
 export const runtime = "nodejs";
 
@@ -27,6 +28,7 @@ function entitlementResponse(value: TeamEntitlement) {
 /** Authenticated trial claim. Identity is derived only from the verified
  * Supabase access token; body input is neither read nor trusted. */
 export async function POST(req: Request) {
+  if (!isTeamFeatureEnabled()) return teamJson({ error: "Team is not available yet" }, { status: 503 });
   try {
     const user = await authenticatedUser(req);
     if (!user) return teamJson({ error: "Unauthorized" }, { status: 401 });
@@ -41,6 +43,7 @@ export async function POST(req: Request) {
 
 /** Return current Team entitlement without changing Pro/Max subscription state. */
 export async function GET(req: Request) {
+  if (!isTeamFeatureEnabled()) return teamJson({ error: "Team is not available yet" }, { status: 503 });
   try {
     const user = await authenticatedUser(req);
     if (!user) return teamJson({ error: "Unauthorized" }, { status: 401 });
