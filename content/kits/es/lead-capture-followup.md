@@ -49,7 +49,7 @@ El resultado esperado: la entrada deja de ser "revisar la bandeja y rezar" y se 
 
 1. Instala el kit y conecta Typeform con tu cuenta — un login en el navegador, sin API key. Lo que el agente puede ver o hacer queda acotado por tu cuenta y tu plan de Typeform.
 2. Primera sesión, arma la entrada: *"Crea un formulario de contacto para mi web con campos de nombre, email y mensaje, y publícalo"* — después agrégale los campos que califican tu tipo de trabajo.
-3. Agrégale la reacción: una automatización con un paso de email para que el equipo se entere cuando llega una respuesta nueva, en vez de encontrarla la semana siguiente.
+3. Agrégale la reacción: revisa los destinatarios y el contenido y aprueba expresamente activar una automatización con un paso de email para que el equipo se entere cuando llega una respuesta. Conectar Typeform no autoriza en bloque publicar formularios ni enviar mensajes.
 4. Lectura semanal: *"¿Cuántas respuestas tuvieron mis formularios esta semana y cuál convirtió mejor?"* Elige de esa lista los leads que valen la pena.
 5. Para el mejor lead, pídele a Doc Co-Authoring la propuesta, dándole las respuestas del formulario — alcance, presupuesto, plazo — como brief.
 6. Cierra la semana con Internal Comms: el briefing de leads — qué llegó, qué convirtió, de quién es cada seguimiento — compartido donde tu equipo realmente lee.
@@ -62,7 +62,7 @@ El kit sigue el loop real de la captura de leads, no una pila de herramientas de
 - Doc Co-Authoring produce **el seguimiento que gana el trabajo** — una propuesta construida sobre lo que el lead ya respondió.
 - Internal Comms hace que la entrada **sea visible para el equipo** — un briefing que la gente ejecuta, no una notificación que se pierde en el scroll.
 
-Instaladas por separado, tienes un creador de formularios sin disciplina de seguimiento, propuestas escritas de memoria, y un equipo que se entera de un lead cuando el prospecto escribe preguntando si alguien vio su mensaje. Instaladas juntas, un solo camino cubre el loop: **publicar el formulario → leer qué convirtió → enviar la propuesta → avisar al equipo.**
+Instaladas por separado, tienes un creador de formularios sin disciplina de seguimiento, propuestas escritas de memoria, y un equipo que se entera de un lead cuando el prospecto escribe preguntando si alguien vio su mensaje. Instaladas juntas, un solo camino cubre el loop: **publicar el formulario → leer qué convirtió → redactar la propuesta para tu revisión → avisar al equipo.**
 
 No es el kit de CRM a propósito: `b2b-sales-pipeline` corre los deals dentro de HubSpot — etapas, pipeline, seguimiento por deal — para vendedores que ya manejan un pipeline. Este kit cubre la punta del embudo, antes de que exista un deal: capturar el lead con un formulario y responderlo bien. Y las dos skills reparten el trabajo que la propia automatización de Typeform no cubre: la automatización avisa que llegó una respuesta; Internal Comms escribe el mensaje de criterio — qué significa la entrada de la semana y de quién es cada cosa.
 

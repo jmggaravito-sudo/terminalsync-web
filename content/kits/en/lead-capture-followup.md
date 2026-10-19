@@ -49,7 +49,7 @@ The expected outcome: intake stops being "check the inbox and hope" and becomes 
 
 1. Install the kit and connect Typeform with your account — a browser login, no API key. What the agent can see or do is bounded by your Typeform account and plan.
 2. First session, build the intake: *"Create a contact form for my website with name, email and message fields, and publish it"* — then add the qualifying fields for your type of work.
-3. Add the reaction: an automation with an email step so the team hears when a new response arrives, instead of finding it next week.
+3. Add the reaction: review the recipients and content, then explicitly approve enabling an automation with an email step so the team hears when a new response arrives. Connecting Typeform is not blanket approval to publish forms or send messages.
 4. Weekly read: *"How many responses did my forms get this week, and which one converted best?"* Pick the leads worth pursuing from the top of that list.
 5. For the best lead, ask Doc Co-Authoring for the proposal, feeding it the intake answers — scope, budget, timeline — as the brief.
 6. Close the week with Internal Comms: the lead brief — what came in, what converted, who owns each follow-up — shared where the team actually reads.
@@ -62,7 +62,7 @@ The kit follows the real loop of lead intake, not a pile of sales tools:
 - Doc Co-Authoring produces **the follow-up that wins the job** — a proposal built on the answers the lead already gave.
 - Internal Comms makes the intake **visible to the team** — a brief people act on, not a notification that scrolls away.
 
-Installed separately, you get a form builder with no follow-up discipline, proposals written from memory, and a team that learns about a lead when the prospect follows up asking if anyone got their message. Installed together, one path covers the loop: **publish the form → read what converted → send the proposal → brief the team.**
+Installed separately, you get a form builder with no follow-up discipline, proposals written from memory, and a team that learns about a lead when the prospect follows up asking if anyone got their message. Installed together, one path covers the loop: **publish the form → read what converted → draft the proposal for your review → brief the team.**
 
 It is deliberately not the CRM kit: `b2b-sales-pipeline` runs deals inside HubSpot — stages, pipeline, deal-level follow-up — for sellers who already manage a pipeline. This kit covers the top of the funnel, before there is a deal: capturing the lead through a form and answering it well. And the two skills split the work Typeform's own automation can't do: the automation pings the team that a response arrived; Internal Comms writes the judgment message — what the week's intake means and who owns what.
 
