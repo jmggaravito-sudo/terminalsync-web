@@ -19,7 +19,7 @@ enable paid Team checkout or create Stripe objects. Pro/Max remain unchanged.
 Apply missing migrations individually, in dependency order, after reviewing the
 SQL and confirming the expected preconditions/effects:
 
-1. Core: `0039 → 0040 → 0041 → 0042 → 0043`.
+1. Core and automatic trial: `0039 → 0040 → 0041 → 0042 → 0043 → 0044`.
 2. Current v2 UI projections: `0047 → 0048`.
 3. Approval-first conversation hardening: `0053 → 0054 → 0055`.
 4. Optional post-approval **text-only** delivery: `0056`, after step 3 and
@@ -30,21 +30,20 @@ SQL and confirming the expected preconditions/effects:
    turn's recipient/approver in either direction; it does not change the
    metadata-only turn projection or enable files/AI generation.
 
-`0044_team_trial_on_signup.sql` is **optional** and only needed if newly
-created accounts should receive the same 168-hour, no-card trial automatically.
+`0044_team_trial_on_signup.sql` is **required for the Team launch**: every
+newly created account receives the same 168-hour, no-card Team trial
+automatically, while its base Pro/Max/free subscription remains unchanged.
 Existing accounts retain the explicit authenticated trial-claim flow from
-`0040`. Decide separately whether automatic signup granting is wanted before
-including `0044`; it is not required for those existing accounts. **Applying
-`0044` starts the 168-hour clock at account creation immediately**, regardless
-of `TEAM_FEATURE_ENABLED`. If the Team page/API is still unavailable, new
-accounts can consume the trial while unable to use it. Therefore do not apply
-`0044` early during schema staging: complete the read-only preflights and
-restorability checks first, then apply it only inside the approved Team
-availability window when the remaining approved migrations and gate activation
-can proceed promptly. If that window slips or a check blocks progress, stop
-before `0044`; do not let signups consume trials while the feature is
-unavailable. Existing accounts' manual claim remains available only after the
-Team gate is enabled.
+`0040`. **Applying `0044` starts the 168-hour clock at account creation
+immediately**, regardless of `TEAM_FEATURE_ENABLED`. If the Team page/API is
+still unavailable, new accounts can consume the trial while unable to use it.
+Therefore do not apply `0044` early during schema staging: complete the
+read-only preflights and restorability checks first, then apply it only inside
+the approved Team availability window when the remaining approved migrations
+and gate activation can proceed promptly. If that window slips or a check
+blocks progress, stop before `0044`; do not let signups consume trials while
+the feature is unavailable. Existing accounts' manual claim remains available
+only after the Team gate is enabled.
 
 Do **not** include paid-roster or paid-checkout migrations in this rollout:
 `0045`, `0046`, `0052`, and `0049`–`0051`. `0037`/`0038` are already recorded as

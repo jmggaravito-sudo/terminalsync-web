@@ -17,6 +17,7 @@ const trialOnlyMigrationFiles = [
   "0041_team_entitlement_and_alias_reconciliation.sql",
   "0042_team_metadata_invites.sql",
   "0043_team_metadata_requests.sql",
+  "0044_team_trial_on_signup.sql",
   "0047_team_invitation_owner_alias_projection.sql",
   "0048_team_request_participant_projection.sql",
   "0053_team_conversation_turns.sql",
@@ -25,7 +26,6 @@ const trialOnlyMigrationFiles = [
 ] as const;
 
 const excludedFromTrialOnlyRollout = [
-  "0044_team_trial_on_signup.sql",
   "0045_team_paid_roster.sql",
   "0046_team_paid_roster_api.sql",
   "0049_team_checkout_intents.sql",
@@ -77,30 +77,31 @@ async function productionLikeBase() {
 }
 
 describe("Team no-card trial rollout compatibility", () => {
-  it("keeps automatic signup, paid checkout, roster, delivery, and seat-cap migrations out of the selected rollout", () => {
+  it("keeps paid checkout, roster, delivery, and seat-cap migrations out of the selected rollout", () => {
     expect(trialOnlyMigrationFiles).toEqual([
       "0039_team_shared_spaces_metadata.sql",
       "0040_team_universal_trial.sql",
       "0041_team_entitlement_and_alias_reconciliation.sql",
       "0042_team_metadata_invites.sql",
       "0043_team_metadata_requests.sql",
+      "0044_team_trial_on_signup.sql",
       "0047_team_invitation_owner_alias_projection.sql",
       "0048_team_request_participant_projection.sql",
       "0053_team_conversation_turns.sql",
       "0054_team_conversation_metadata_hardening.sql",
       "0055_team_legacy_approval_hardening.sql",
     ]);
-    expect(excludedFromTrialOnlyRollout).toContain("0044_team_trial_on_signup.sql");
+    expect(excludedFromTrialOnlyRollout).not.toContain("0044_team_trial_on_signup.sql");
     expect(excludedFromTrialOnlyRollout).toContain("0056_team_text_deliveries.sql");
     expect(excludedFromTrialOnlyRollout).toContain("0057_team_seat_ceiling_64.sql");
     expect(migration("0040_team_universal_trial.sql")).not.toContain("public.subscriptions.plan");
   });
 
-  it("applies exactly the manual-claim, bidirectional approval subset to the 0037/0038 base", async () => {
+  it("applies the automatic no-card trial and bidirectional approval subset to the 0037/0038 base", async () => {
     const db = await productionLikeBase();
     try {
-      // 0044 is intentionally absent: a new signup remains free until the
-      // availability window opens and an authenticated/manual claim is allowed.
+      // 0044 is deliberately part of the launch subset: every new account
+      // receives the 168-hour Team entitlement without changing its base plan.
       await db.exec(`
         INSERT INTO auth.users(id,email) VALUES
           ('${ownerId}','owner@example.test'),
@@ -108,7 +109,7 @@ describe("Team no-card trial rollout compatibility", () => {
       `);
       expect((await db.query<{ count: number }>(
         "SELECT count(*)::int AS count FROM public.team_trial_entitlements",
-      )).rows[0].count).toBe(0);
+      )).rows[0].count).toBe(2);
       expect((await db.query<{ plan: string; status: string }>(
         "SELECT plan,status FROM public.subscriptions ORDER BY user_id",
       )).rows).toEqual([
@@ -116,17 +117,31 @@ describe("Team no-card trial rollout compatibility", () => {
         { plan: "free", status: "active" },
       ]);
 
+      const automaticEntitlements = (await db.query<{ user_id: string; starts_at: string; expires_at: string }>(
+        "SELECT user_id,starts_at,expires_at FROM public.team_trial_entitlements ORDER BY user_id",
+      )).rows;
+      expect(automaticEntitlements.map((row) => row.user_id)).toEqual([ownerId, inviteeId]);
+      for (const entitlement of automaticEntitlements) {
+        expect(Date.parse(entitlement.expires_at) - Date.parse(entitlement.starts_at)).toBe(168 * 60 * 60 * 1000);
+      }
+
+      // A manual retry must preserve the automatic window rather than creating
+      // a second trial or moving either expiry.
       const ownerTrial = (await db.query<{ result: string; starts_at: string; expires_at: string }>(
         "SELECT * FROM public.start_team_universal_trial($1::uuid)", [ownerId],
       )).rows[0];
-      expect(ownerTrial.result).toBe("started");
-      expect(Date.parse(ownerTrial.expires_at) - Date.parse(ownerTrial.starts_at)).toBe(168 * 60 * 60 * 1000);
+      expect(ownerTrial.result).toBe("already_claimed");
+      expect(Date.parse(ownerTrial.starts_at)).toBe(Date.parse(automaticEntitlements[0].starts_at));
+      expect(Date.parse(ownerTrial.expires_at)).toBe(Date.parse(automaticEntitlements[0].expires_at));
       expect((await db.query<{ result: string }>(
         "SELECT * FROM public.start_team_universal_trial($1::uuid)", [ownerId],
       )).rows[0].result).toBe("already_claimed");
-      expect((await db.query<{ result: string }>(
+      const inviteeTrial = (await db.query<{ result: string; starts_at: string; expires_at: string }>(
         "SELECT * FROM public.start_team_universal_trial($1::uuid)", [inviteeId],
-      )).rows[0].result).toBe("started");
+      )).rows[0];
+      expect(inviteeTrial.result).toBe("already_claimed");
+      expect(Date.parse(inviteeTrial.starts_at)).toBe(Date.parse(automaticEntitlements[1].starts_at));
+      expect(Date.parse(inviteeTrial.expires_at)).toBe(Date.parse(automaticEntitlements[1].expires_at));
 
       await db.query("SELECT * FROM public.claim_team_alias($1::uuid,'alex')", [ownerId]);
       await db.query("SELECT * FROM public.claim_team_alias($1::uuid,'bea')", [inviteeId]);
