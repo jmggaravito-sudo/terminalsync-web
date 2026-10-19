@@ -8,6 +8,7 @@ vi.mock("@/lib/supabaseAdmin", () => ({ getSupabaseAdmin: mocks.getAdmin }));
 import type Stripe from "stripe";
 import {
   InvalidTeamStripeEventError,
+  isTeamCheckoutCandidate,
   isTeamSubscriptionCandidate,
   parseTeamStripeSubscription,
   syncTeamStripeSubscription,
@@ -59,6 +60,27 @@ function subscriptionEvent(overrides: Record<string, unknown> = {}) {
     livemode: true,
     data: { object: subscription },
   } as unknown as Stripe.Event & { type: TeamStripeEventType; data: { object: Stripe.Subscription } };
+}
+
+function checkoutEvent(
+  type: string,
+  metadata: Record<string, string> | null = {},
+): Stripe.Event {
+  return {
+    id: "evt_team_checkout_123",
+    object: "event",
+    type,
+    created: 1_797_000_000,
+    livemode: true,
+    data: {
+      object: {
+        id: "cs_team_123",
+        object: "checkout.session",
+        livemode: true,
+        metadata,
+      },
+    },
+  } as unknown as Stripe.Event;
 }
 
 beforeEach(() => {
@@ -166,6 +188,27 @@ describe("Team Stripe lifecycle parser", () => {
     delete process.env.STRIPE_PRICE_TEAM;
     const event = subscriptionEvent();
     expect(() => parseTeamStripeSubscription(event)).toThrow("configured mode");
+  });
+});
+
+describe("Team checkout candidate boundaries", () => {
+  it.each([
+    ["plan", { plan: "team" }],
+    ["source", { source: "terminalsync_team" }],
+    ["billing version", { team_billing_version: "1" }],
+  ])("recognizes the %s Team marker on each accepted Checkout success event", (_label, metadata) => {
+    expect(isTeamCheckoutCandidate(checkoutEvent("checkout.session.completed", metadata))).toBe(true);
+    expect(isTeamCheckoutCandidate(checkoutEvent("checkout.session.async_payment_succeeded", metadata))).toBe(true);
+  });
+
+  it.each([
+    ["a Team-marked but unsupported Checkout event", "checkout.session.expired", { plan: "team" }],
+    ["a Team-marked subscription event", "customer.subscription.updated", { plan: "team" }],
+    ["an unrelated Pro session", "checkout.session.completed", { plan: "pro", source: "terminalsync" }],
+    ["an unmarked Checkout success session", "checkout.session.async_payment_succeeded", {}],
+    ["a Checkout session with no metadata", "checkout.session.completed", null],
+  ])("does not classify %s as a Team checkout candidate", (_label, type, metadata) => {
+    expect(isTeamCheckoutCandidate(checkoutEvent(type, metadata))).toBe(false);
   });
 });
 
