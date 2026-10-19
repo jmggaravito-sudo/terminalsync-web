@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { getSupabaseAdmin, listPaidTeamRoster } = vi.hoisted(() => ({
   getSupabaseAdmin: vi.fn(), listPaidTeamRoster: vi.fn(),
 }));
 vi.mock("@/lib/supabaseAdmin", () => ({ getSupabaseAdmin }));
+vi.mock("@/lib/teamFeature", () => ({ isTeamFeatureEnabled: vi.fn(() => process.env.TEAM_FEATURE_ENABLED === "1") }));
 vi.mock("@/lib/teamPaidRoster", () => ({
   listPaidTeamRoster,
   TeamPaidRosterError: class TeamPaidRosterError extends Error {
@@ -17,8 +18,11 @@ const req = (token = "valid") => new Request("https://example.test/api/team/paid
 });
 
 describe("paid Team roster API", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
     getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async (token: string) => token === "valid"
       ? { data: { user: { id: "verified-owner" } }, error: null }
       : { data: { user: null }, error: { status: 401 } }) } });
@@ -30,6 +34,13 @@ describe("paid Team roster API", () => {
       available_slots: 1,
       roster: [{ member_number: 1, assigned_at: "2026-10-18T00:00:00.000Z", eligible: true }],
     });
+  });
+
+  it("does not authenticate or read roster when Team is disabled", async () => {
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "0");
+    expect((await GET(req())).status).toBe(503);
+    expect(getSupabaseAdmin).not.toHaveBeenCalled();
+    expect(listPaidTeamRoster).not.toHaveBeenCalled();
   });
 
   it("returns the authenticated owner's identifier-free paid roster", async () => {

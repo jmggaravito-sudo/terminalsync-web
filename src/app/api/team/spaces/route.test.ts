@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { getSupabaseAdmin, teamMetadataRpc } = vi.hoisted(() => ({
   getSupabaseAdmin: vi.fn(),
@@ -6,6 +6,7 @@ const { getSupabaseAdmin, teamMetadataRpc } = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/supabaseAdmin", () => ({ getSupabaseAdmin }));
+vi.mock("@/lib/teamFeature", () => ({ isTeamFeatureEnabled: vi.fn(() => process.env.TEAM_FEATURE_ENABLED === "1") }));
 vi.mock("@/lib/teamMetadata", async (importOriginal) => ({
   ...await importOriginal<typeof import("@/lib/teamMetadata")>(),
   teamMetadataRpc,
@@ -33,12 +34,23 @@ const authed = (body?: BodyInit) => new Request("https://example.test/api/team/s
 });
 
 describe("Team shared-spaces API boundary", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
     getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async (token: string) => token === "valid"
       ? { data: { user: { id: "verified-user" } }, error: null }
       : { data: { user: null }, error: { status: 401 } }) } });
     teamMetadataRpc.mockResolvedValue([rawSpace]);
+  });
+
+  it("keeps shared-space auth and RPCs closed while Team is off", async () => {
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "0");
+    expect((await GET(authed())).status).toBe(503);
+    expect((await POST(authed(JSON.stringify({ name: "Finanzas" })))).status).toBe(503);
+    expect(getSupabaseAdmin).not.toHaveBeenCalled();
+    expect(teamMetadataRpc).not.toHaveBeenCalled();
   });
 
   it("rejects anonymous list and registration before touching metadata RPCs", async () => {

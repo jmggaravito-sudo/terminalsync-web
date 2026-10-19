@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { getSupabaseAdmin, teamMetadataRpc } = vi.hoisted(() => ({ getSupabaseAdmin: vi.fn(), teamMetadataRpc: vi.fn() }));
 vi.mock("@/lib/supabaseAdmin", () => ({ getSupabaseAdmin }));
@@ -27,8 +27,11 @@ const request = (body: unknown, authenticated = true) => new Request(
 );
 
 describe("Team explicit text delivery create API", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
     getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async () => ({ data: { user: { id: userId } }, error: null })) } });
     teamMetadataRpc.mockResolvedValue([{
       id: "00000000-0000-4000-8000-000000000005",

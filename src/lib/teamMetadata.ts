@@ -1,7 +1,12 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { isTeamFeatureEnabled } from "@/lib/teamFeature";
 
 export class TeamMetadataError extends Error {}
 export async function verifiedTeamUser(req: Request) {
+  // Keep every API that authenticates through this shared helper unavailable
+  // while Team is disabled, before even validating a bearer token or touching
+  // Supabase. Route handlers translate this service error to a fail-closed 503.
+  if (!isTeamFeatureEnabled()) throw new TeamMetadataError("Team is not available yet");
   const h=req.headers.get("authorization")??"";
   const token=h.startsWith("Bearer ")?h.slice(7).trim():"";
   if(!token)return null;

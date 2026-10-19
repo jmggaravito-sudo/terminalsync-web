@@ -1,10 +1,12 @@
 import { teamJson } from "@/lib/teamApiResponse";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { isTeamFeatureEnabled } from "@/lib/teamFeature";
 import { listPaidTeamRoster, TeamPaidRosterError } from "@/lib/teamPaidRoster";
 
 export const runtime = "nodejs";
 
 async function verifiedOwner(req: Request) {
+  if (!isTeamFeatureEnabled()) throw new TeamPaidRosterError("unavailable");
   const header = req.headers.get("authorization") ?? "";
   const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
   if (!token) return null;
