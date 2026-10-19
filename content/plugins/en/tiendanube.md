@@ -20,7 +20,7 @@ skillSlugs: ["promos-cupones"]
 
 Bundles two pieces that reinforce each other, in one install:
 
-- **Tiendanube (the connector)** is the official hosted Tiendanube/Nuvemshop MCP: with your own store login (no API key to paste), the agent reads your products, stock, orders and customers, and works with your coupons and promotions — `create_coupon` (percentage, fixed amount or free shipping, with a first-purchase restriction), `update_coupon`, `create_promotion` (automatic, no code) and more. Actions that change your store go through a confirmation step: the AI shows what it's about to do and waits for your approval.
+- **Tiendanube (the connector)** is the official hosted Tiendanube/Nuvemshop MCP: with your own store login (no API key to paste), the agent reads your products, stock, orders and customers, and works with your coupons and promotions — `create_coupon` (percentage, fixed amount or free shipping, with a first-purchase restriction), `update_coupon`, `create_promotion` (automatic, no code) and more. Before a write, review and explicitly approve the exact change. Do not assume that connecting the store authorizes every later action.
 - **Promos & Coupons (the skill)** designs the discount before it exists: the goal, the margin it has to survive, the hard limits, and who it's for — then closes with a 0–100 verdict on whether it's ready to launch. If the math doesn't work, it says so instead of dressing up a promo that loses money. Its last step — "set up the code in your store" — is exactly what the connector does.
 
 **A real example:** *"Design a 15% coupon for customers who haven't bought in 60 days — never below cost, valid through Friday."* The skill checks it against your goal and your limits and hands you the finished design; you approve, and the coupon is created in your store through the connector — no detour through the admin panel.
@@ -30,7 +30,7 @@ Bundles two pieces that reinforce each other, in one install:
 1. Install the Plugin and connect your Tiendanube store — no API key; you log in with your own account.
 2. Give the skill the goal, your rough margin or cost, and the hard limits (e.g. "nothing below cost", "first purchase only"). It asks for what's missing instead of inventing it.
 3. Read the verdict: 🟢 launch it, 🟡 close the guardrails or the margin first, 🔴 it probably loses money. One change at a time.
-4. Approve, and the coupon or promotion gets created in your store through the connector — after the confirmation step, not before.
+4. Review the exact coupon or promotion and explicitly approve that specific action before asking the agent to create it. Do not assume a separate server prompt will stop an unintended write.
 
 ## Why the bundle works
 
@@ -40,5 +40,5 @@ The skill alone designs a promo you then have to key in by hand; the connector a
 
 - The skill's verdict scores the design, not the outcome — it is not a prediction of how much you'll sell.
 - Your margin and cost numbers come from you. The connector can show what the store sells and who buys, but it doesn't audit your costs, and the skill never invents them.
-- Creating a coupon or promotion requires your approval through the connector's confirmation step. Deleting a coupon or promotion is irreversible — the docs recommend deactivating instead (`valid=false` / `published=false`), which is what this pack does by default.
+- Review and explicitly approve each coupon or promotion before requesting a write. The [official docs](https://nuvemshop.dev/en-US/ai-agents/mcps) describe tool annotations to help agents decide when to ask; this does not establish a server-enforced confirmation screen. Deleting is irreversible: prefer requesting deactivation (`valid=false` / `published=false`) instead. This pack does not add an approval gate to the server.
 - This is a hosted server (`admin-mcp.tiendanube.com`), one connection per store: what the agent can see and do is bounded by your store user's permissions. Brazilian stores use the separate Nuvemshop endpoint, which this connector doesn't point to.
