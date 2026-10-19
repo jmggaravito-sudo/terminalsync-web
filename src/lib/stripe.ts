@@ -73,6 +73,13 @@ export function priceIdFor(plan: PlanId): string | null {
  * composable membership/seat entitlement and must never replace Pro or Max. */
 export type SubscriptionPlanId = Exclude<PlanId, "team">;
 
+/** Runtime boundary for legacy/untyped callers of base-subscription helpers.
+ * Team is intentionally excluded because it is a separate seat membership,
+ * not a replacement for a user's Pro/Max-style subscription. */
+export function isSubscriptionPlanId(input: unknown): input is SubscriptionPlanId {
+  return input === "pro" || input === "max" || input === "agency";
+}
+
 /** Maps a base PlanId to the Supabase `subscriptions.plan` enum value. */
 export function planToSupabase(plan: SubscriptionPlanId): "pro" | "max" | "team" {
   if (plan === "agency") return "team";

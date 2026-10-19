@@ -1,6 +1,13 @@
 import type Stripe from "stripe";
 import { getSupabaseAdmin } from "./supabaseAdmin";
-import { bundledPriceIdFor, includedAiPriceId, priceIdFor, stripe, type PlanId } from "./stripe";
+import {
+  bundledPriceIdFor,
+  includedAiPriceId,
+  isSubscriptionPlanId,
+  priceIdFor,
+  stripe,
+  type SubscriptionPlanId,
+} from "./stripe";
 import { mpAmountFor, updatePreapproval } from "./mercadopago";
 import {
   grantIncludedAi,
@@ -92,6 +99,22 @@ function basePriceIds(): string[] {
   return [priceIdFor("pro"), priceIdFor("max"), bundledPriceIdFor("pro"), bundledPriceIdFor("max")].filter(Boolean) as string[];
 }
 
+/**
+ * Defend the provider mutation boundary even though TypeScript callers receive
+ * a narrow type. Old JavaScript builds or an `any` cast must not turn Team's
+ * additive seat entitlement into a base-plan replacement.
+ */
+function assertBaseSubscriptionPlan(plan: unknown): asserts plan is SubscriptionPlanId {
+  if (plan === "team") {
+    throw new Error(
+      "Team is a separate membership entitlement and cannot replace a base subscription",
+    );
+  }
+  if (!isSubscriptionPlanId(plan)) {
+    throw new Error("Only a base subscription plan can replace a subscription");
+  }
+}
+
 function findIncludedAiItem(
   sub: Stripe.Subscription,
 ): Stripe.SubscriptionItem | undefined {
@@ -103,9 +126,10 @@ function findIncludedAiItem(
 export async function changeStripeSubscription(input: {
   userId: string;
   current: CurrentSubscription;
-  plan: PlanId;
+  plan: SubscriptionPlanId;
   includedAi: boolean;
 }): Promise<Stripe.Subscription> {
+  assertBaseSubscriptionPlan(input.plan);
   if (!stripe) throw new Error("Stripe not configured");
   const subId = stripeSubscriptionId(input.current);
   if (!subId)
@@ -168,9 +192,10 @@ export async function changeStripeSubscription(input: {
 export async function changeMercadoPagoSubscription(input: {
   userId: string;
   current: CurrentSubscription;
-  plan: PlanId;
+  plan: SubscriptionPlanId;
   includedAi: boolean;
 }): Promise<void> {
+  assertBaseSubscriptionPlan(input.plan);
   const preapprovalId = input.current.provider_subscription_id;
   if (!preapprovalId) {
     throw new Error(
