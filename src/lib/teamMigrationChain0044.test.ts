@@ -48,6 +48,9 @@ describe("Team migrations 0037-0057 compatibility contract", () => {
       .sort();
 
     expect(actualFiles).toEqual(expectedFiles);
+    expect(actualFiles.indexOf("0056_team_text_deliveries.sql")).toBeLessThan(
+      actualFiles.indexOf(timestampedTeamMigrationFile),
+    );
 
     for (const [prerequisite, dependent] of [
       [37, 39], // membership gate before shared spaces
