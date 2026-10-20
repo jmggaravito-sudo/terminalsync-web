@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   retrieveSession: vi.fn(),
   teamCandidate: vi.fn(() => false),
   teamCheckoutCandidate: vi.fn(() => false),
+  teamCheckoutSubscriptionCandidate: vi.fn(() => false),
   parseTeamSubscription: vi.fn(),
   syncTeamSubscription: vi.fn(),
 }));
@@ -39,6 +40,7 @@ vi.mock("server-only", () => ({}));
 vi.mock("@/lib/teamStripeLifecycle", () => ({
   InvalidTeamStripeEventError: class InvalidTeamStripeEventError extends Error {},
   isTeamCheckoutCandidate: mocks.teamCheckoutCandidate,
+  isTeamCheckoutSubscriptionCandidate: mocks.teamCheckoutSubscriptionCandidate,
   isTeamSubscriptionCandidate: mocks.teamCandidate,
   parseTeamStripeSubscription: mocks.parseTeamSubscription,
   syncTeamStripeSubscription: mocks.syncTeamSubscription,
@@ -103,6 +105,7 @@ beforeEach(() => {
   mocks.retrieveSession.mockImplementation(async (id: string) => ({ ...creditEvent().data.object, id }));
   mocks.teamCandidate.mockReturnValue(false);
   mocks.teamCheckoutCandidate.mockReturnValue(false);
+  mocks.teamCheckoutSubscriptionCandidate.mockReturnValue(false);
   mocks.parseTeamSubscription.mockReturnValue({ userId: "user-verified", subscriptionId: "sub_team_123" });
   mocks.syncTeamSubscription.mockResolvedValue(undefined);
 });
@@ -320,11 +323,11 @@ describe("Team Stripe webhook isolation", () => {
       id: "evt_team_123",
       type: "customer.subscription.updated",
       livemode,
-      data: { object: { id: "sub_team_123", livemode, metadata: { plan: "team" } } },
+      data: { object: { id: "sub_team_123", livemode, metadata: { plan: "team" } as Record<string, string> } },
     };
   }
 
-  it("sends recognized live Team subscriptions only through the additive Team adapter", async () => {
+  it("sends a legacy Team subscription without checkout markers only through the additive Team adapter", async () => {
     const event = teamSubscriptionEvent();
     mocks.constructEvent.mockReturnValue(event);
     mocks.teamCandidate.mockReturnValue(true);
@@ -337,6 +340,32 @@ describe("Team Stripe webhook isolation", () => {
       userId: "user-verified",
       subscriptionId: "sub_team_123",
     });
+    const { syncSubscriptionToSupabase, revokeSubscription } = await import("@/lib/subscriptionsSync");
+    expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
+    expect(revokeSubscription).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["partial intent", "team_checkout_intent_id", "intent-partial"],
+    ["malformed seats", "team_checkout_seats", "not-a-seat-count"],
+    ["empty idempotency", "team_checkout_idempotency_key", ""],
+    ["undefined owner", "team_checkout_owner_user_id", undefined],
+  ])("returns 503 before legacy Team sync for a %s checkout marker", async (_label, key, value) => {
+    const event = teamSubscriptionEvent();
+    event.data.object.metadata[key] = value as string;
+    mocks.constructEvent.mockReturnValue(event);
+    mocks.teamCheckoutSubscriptionCandidate.mockReturnValue(true);
+    mocks.teamCandidate.mockReturnValue(true);
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({
+      received: false,
+      error: "Team checkout fulfillment is not enabled",
+    });
+    expect(mocks.parseTeamSubscription).not.toHaveBeenCalled();
+    expect(mocks.syncTeamSubscription).not.toHaveBeenCalled();
     const { syncSubscriptionToSupabase, revokeSubscription } = await import("@/lib/subscriptionsSync");
     expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
     expect(revokeSubscription).not.toHaveBeenCalled();
