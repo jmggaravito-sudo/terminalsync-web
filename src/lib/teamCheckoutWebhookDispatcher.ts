@@ -11,7 +11,10 @@ import {
   type TeamSubscriptionLifecycleProjection,
   type VerifiedTeamCheckoutSession,
 } from "@/lib/teamSubscriptionFinalizeCommand";
-import type { TeamCheckoutTerms } from "@/lib/teamCheckoutMetadata";
+import {
+  buildTeamCheckoutMetadata,
+  type TeamCheckoutTerms,
+} from "@/lib/teamCheckoutMetadata";
 import {
   configuredTeamCheckoutTerms,
   parseTeamCheckoutIntent,
@@ -160,10 +163,20 @@ async function teamRpc(name: string, args: Record<string, unknown>, expected: re
   return result;
 }
 
-function parseLoadedIntent(value: unknown, terms: TeamCheckoutTerms): LoadedIntent {
+/**
+ * Validate the durable row against its own immutable terms first. A later
+ * deployment can rotate the current configured Price while a signed event for
+ * an already-created Checkout Session is still in Stripe's retry window. The
+ * caller compares those durable terms with current configuration separately.
+ */
+function parseLoadedIntent(value: unknown): LoadedIntent {
+  const raw = record(value);
+  const durableTerms: TeamCheckoutTerms = {
+    configuredPriceId: typeof raw?.stripe_price_id === "string" ? raw.stripe_price_id : "",
+    mode: "subscription",
+  };
   try {
-    const intent = parseTeamCheckoutIntent(value, terms);
-    const raw = record(value);
+    const intent = parseTeamCheckoutIntent(value, durableTerms);
     const subscriptionId = raw?.stripe_subscription_id;
     const billingStatus = raw?.billing_sync_status;
     if (subscriptionId !== null && subscriptionId !== undefined && typeof subscriptionId !== "string") {
@@ -183,7 +196,20 @@ function parseLoadedIntent(value: unknown, terms: TeamCheckoutTerms): LoadedInte
   }
 }
 
-async function loadIntent(intentId: string, terms: TeamCheckoutTerms): Promise<LoadedIntent> {
+function durableTerms(intent: TeamFinalizeIntent): TeamCheckoutTerms {
+  return { configuredPriceId: intent.stripe_price_id, mode: "subscription" };
+}
+
+function requireCurrentTermsMatchIntent(terms: TeamCheckoutTerms, intent: TeamFinalizeIntent): void {
+  if (terms.configuredPriceId !== intent.stripe_price_id) {
+    // The signed event is for a Checkout Session already bound to the durable
+    // price. Treat a later local price rotation or stale deployment config as
+    // retryable, never as malformed provider data.
+    throw new RetryableTeamCheckoutWebhookError("Configured Team price does not match the durable checkout intent");
+  }
+}
+
+async function loadIntent(intentId: string): Promise<LoadedIntent> {
   let client;
   try {
     client = getSupabaseAdmin();
@@ -204,7 +230,7 @@ async function loadIntent(intentId: string, terms: TeamCheckoutTerms): Promise<L
   }
   if (response.error) throw new RetryableTeamCheckoutWebhookError();
   if (!response.data) invalid("Team checkout intent was not found");
-  return parseLoadedIntent(response.data, terms);
+  return parseLoadedIntent(response.data);
 }
 
 function checkoutSessionProjection(event: Stripe.Event): TeamCheckoutWebhookEventProjection {
@@ -244,16 +270,22 @@ function verifiedSessionProjection(value: unknown): VerifiedTeamCheckoutSession 
   };
 }
 
-function subscriptionProjection(event: Stripe.Event): TeamSubscriptionLifecycleProjection {
+function subscriptionProjection(
+  event: Stripe.Event,
+  expectedPriceId: string,
+): TeamSubscriptionLifecycleProjection {
   if (!SUBSCRIPTION_EVENT_TYPES.has(event.type as TeamStripeEventType)) {
     invalid("Unsupported Team subscription event");
   }
   let parsed;
   try {
+    // For route-bound checkout events, validate against the durable intent
+    // rather than mutable process configuration. This preserves Invalid/400
+    // for a signed event whose actual Price differs from that intent.
     parsed = parseTeamStripeSubscription(event as Stripe.Event & {
       type: TeamStripeEventType;
       data: { object: Stripe.Subscription };
-    });
+    }, { expectedPriceId });
   } catch {
     invalid("Team subscription lifecycle metadata is invalid");
   }
@@ -276,6 +308,31 @@ function subscriptionProjection(event: Stripe.Event): TeamSubscriptionLifecycleP
       metadata: metadataRecord(subscription.metadata),
     },
   };
+}
+
+function subscriptionRouteIntentId(event: Stripe.Event): string {
+  // Keep malformed signed subscription payloads invalid before the durable
+  // lookup. The lifecycle parser previously owned this boundary; extracting
+  // the route intent earlier must not turn a bad payload into a generic 5xx.
+  const data = record(event.data);
+  const subscription = record(data?.object);
+  return routeIntentId(metadataRecord(subscription?.metadata));
+}
+
+function subscriptionMetadataBindsIntent(
+  projection: TeamSubscriptionLifecycleProjection,
+  intent: TeamFinalizeIntent,
+  terms: TeamCheckoutTerms,
+): void {
+  try {
+    const expected = buildTeamCheckoutMetadata(intent, terms);
+    if (!Object.entries(expected).every(([key, value]) => projection.subscription.metadata[key] === value)) {
+      invalid("Team subscription route metadata does not match the durable intent");
+    }
+  } catch (error) {
+    if (error instanceof InvalidTeamCheckoutWebhookEventError) throw error;
+    invalid("Trusted Team checkout intent is invalid");
+  }
 }
 
 function buildSessionCommand(
@@ -309,8 +366,12 @@ function terminalIntent(state: LoadedIntent["state"]): boolean {
 
 async function dispatchCheckoutSession(event: Stripe.Event, terms: TeamCheckoutTerms): Promise<TeamCheckoutWebhookDispatchResult> {
   const projection = checkoutSessionProjection(event);
-  let intent = await loadIntent(routeIntentId(projection.session.metadata), terms);
-  let command = buildSessionCommand(projection, intent, terms);
+  let intent = await loadIntent(routeIntentId(projection.session.metadata));
+  let intentTerms = durableTerms(intent);
+  // Validate the signed event against immutable durable terms before deciding
+  // whether current local configuration is stale.
+  let command = buildSessionCommand(projection, intent, intentTerms);
+  requireCurrentTermsMatchIntent(terms, intent);
 
   if (terminalIntent(intent.state)) return "terminal_noop";
 
@@ -323,8 +384,10 @@ async function dispatchCheckoutSession(event: Stripe.Event, terms: TeamCheckoutT
       p_idempotency_key: intent.idempotency_key,
       p_stripe_session_id: projection.session.id,
     }, ["checkout_created", "ambiguous"]);
-    intent = await loadIntent(intent.id, terms);
-    command = buildSessionCommand(projection, intent, terms);
+    intent = await loadIntent(intent.id);
+    intentTerms = durableTerms(intent);
+    command = buildSessionCommand(projection, intent, intentTerms);
+    requireCurrentTermsMatchIntent(terms, intent);
     if (terminalIntent(intent.state)) return "terminal_noop";
   }
 
@@ -346,9 +409,16 @@ async function dispatchSubscriptionLifecycle(event: Stripe.Event, terms: TeamChe
   // and defeat the ledger's monotonic event-ordering safeguards. We retrieve
   // only the durable Checkout Session because it is absent from subscription
   // events and is needed to prove the route-issued binding.
-  const projection = subscriptionProjection(event);
-  const intentId = routeIntentId(projection.subscription.metadata);
-  const intent = await loadIntent(intentId, terms);
+  // Load the durable route binding before parsing the subscription against a
+  // configured Price. Otherwise a valid delayed event can be rejected as 400
+  // merely because this process has a stale-but-well-formed Team Price ID.
+  const intent = await loadIntent(subscriptionRouteIntentId(event));
+  const intentTerms = durableTerms(intent);
+  const projection = subscriptionProjection(event, intentTerms.configuredPriceId);
+  // Reject signed payload/binding mismatches before reclassifying a local
+  // configuration mismatch as retryable.
+  subscriptionMetadataBindsIntent(projection, intent, intentTerms);
+  requireCurrentTermsMatchIntent(terms, intent);
 
   if (terminalIntent(intent.state) && intent.state !== "completed") return "terminal_noop";
   if ((intent.state === "creating" || intent.state === "ambiguous") && !intent.stripe_session_id) {
@@ -372,7 +442,7 @@ async function dispatchSubscriptionLifecycle(event: Stripe.Event, terms: TeamChe
     projection,
     intent,
     verifiedSessionProjection(retrieved),
-    terms,
+    intentTerms,
   );
   const result = await teamRpc(command.rpc, command.args, ["completed", "pending_reconciliation"]);
   return result as TeamCheckoutWebhookDispatchResult;
