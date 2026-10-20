@@ -14,8 +14,73 @@ const relationship = "00000000-0000-4000-8000-000000000105";
 const thread = "00000000-0000-4000-8000-000000000106";
 const turn = "00000000-0000-4000-8000-000000000107";
 const operation = "00000000-0000-4000-8000-000000000108";
+const roleExecutionOperation = "00000000-0000-4000-8000-000000000109";
 const digest = "a".repeat(64);
 const databases: PGlite[] = [];
+
+type ApiRole = "anon" | "authenticated" | "service_role";
+
+type PublicWrapperCall = {
+  name: string;
+  sql: string;
+  params: unknown[];
+};
+
+// These are the API-visible Team wrappers after 0058. The private authorizer
+// and projector deliberately remain uncallable, including by service_role.
+const publicWrapperCalls: PublicWrapperCall[] = [
+  {
+    name: "create_team_space_conversation_turn_v4",
+    sql: "SELECT * FROM public.create_team_space_conversation_turn_v4($1,$2,$3,'context','manifest','{}'::jsonb,$4)",
+    params: [owner, space, relationship, roleExecutionOperation],
+  },
+  {
+    name: "create_team_conversation_turn_v4",
+    sql: "SELECT * FROM public.create_team_conversation_turn_v4($1,$2,'context','manifest','{}'::jsonb,$3)",
+    params: [owner, thread, roleExecutionOperation],
+  },
+  {
+    name: "respond_team_conversation_turn_v4",
+    sql: "SELECT * FROM public.respond_team_conversation_turn_v4($1,$2,'accept',$3)",
+    params: [owner, turn, roleExecutionOperation],
+  },
+  {
+    name: "list_team_conversation_turns_v4",
+    sql: "SELECT * FROM public.list_team_conversation_turns_v4($1,$2,50,NULL,NULL)",
+    params: [owner, thread],
+  },
+  {
+    name: "create_team_text_delivery_v1",
+    sql: "SELECT * FROM public.create_team_text_delivery_v1($1,$2,$3,$4,$5,$6)",
+    params: [owner, thread, turn, roleExecutionOperation, "service role execution", "b".repeat(64)],
+  },
+  {
+    name: "read_team_text_delivery_v1",
+    sql: "SELECT * FROM public.read_team_text_delivery_v1($1,$2)",
+    params: [member, "00000000-0000-4000-8000-000000000110"],
+  },
+  {
+    name: "list_team_text_deliveries_v1",
+    sql: "SELECT * FROM public.list_team_text_deliveries_v1($1,$2,50,NULL,NULL)",
+    params: [member, thread],
+  },
+  {
+    name: "purge_expired_team_text_deliveries",
+    sql: "SELECT public.purge_expired_team_text_deliveries(1)",
+    params: [],
+  },
+];
+
+async function asApiRole<T>(db: PGlite, role: ApiRole, run: () => Promise<T>): Promise<T> {
+  // Roles are created by the fixture itself and this executes the real SQL
+  // permission checks rather than only inspecting catalog privileges.
+  await db.exec(`SET ROLE ${role}`);
+  try {
+    return await run();
+  } finally {
+    await db.exec("RESET ROLE");
+  }
+}
 
 async function fixture({ legacyReverseDelivery = false }: { legacyReverseDelivery?: boolean } = {}) {
   const db = new PGlite();
@@ -186,6 +251,38 @@ describe("Team source-owner-approved text delivery v4", () => {
     expect((await db.query(
       `SELECT * FROM public.list_team_text_deliveries_v1($1,$2,50,NULL,NULL)`, [member, thread],
     )).rows).toEqual([]);
+  }, 15_000);
+
+  it("executes every public delivery/v4 wrapper as service_role and denies anon/authenticated at execution time", async () => {
+    const { db } = await fixture();
+
+    // Catalog checks alone would not catch a future PUBLIC grant, an inherited
+    // role membership, or a SECURITY DEFINER wrapper that is callable despite
+    // a stale revoke. Exercise each current API-facing wrapper as the actual
+    // Postgres roles created by the fixture.
+    for (const call of publicWrapperCalls) {
+      await expect(asApiRole(db, "service_role", () => db.query(call.sql, call.params))).resolves.toBeDefined();
+    }
+
+    for (const role of ["anon", "authenticated"] as const) {
+      for (const call of publicWrapperCalls) {
+        await expect(asApiRole(db, role, () => db.query(call.sql, call.params)))
+          .rejects.toThrow(/permission denied/i);
+      }
+    }
+
+    // The exposed wrappers compose with the non-public primitives, but no API
+    // role may invoke the primitives directly.
+    for (const role of ["anon", "authenticated", "service_role"] as const) {
+      await expect(asApiRole(db, role, () => db.query(
+        "SELECT * FROM public._team_project_conversation_turn_v4($1,$2,$3)",
+        [owner, thread, turn],
+      ))).rejects.toThrow(/permission denied/i);
+      await expect(asApiRole(db, role, () => db.query(
+        "SELECT team_delivery_private.owner_approved_text_delivery_v2($1,$2,$3)",
+        [owner, thread, turn],
+      ))).rejects.toThrow(/permission denied/i);
+    }
   }, 15_000);
 
   it("keeps delivery text-only and grants only service-role access to the public writer/v4 RPCs", async () => {
