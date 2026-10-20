@@ -122,7 +122,11 @@ function configuredTerms(event: Stripe.Event): TeamCheckoutTerms {
   if (typeof event.livemode !== "boolean") invalid("Team checkout event mode is invalid");
   const terms = configuredTeamCheckoutTerms();
   if (!terms || terms.livemode !== event.livemode) {
-    invalid("Team checkout terms do not match the signed event mode");
+    // These values are local rollout configuration, not provider payload.
+    // A valid signed delivery must remain retryable while an operator restores
+    // its mode-specific Team terms; otherwise Stripe would stop retrying a
+    // fulfillment event that has not reached any side-effect boundary.
+    throw new RetryableTeamCheckoutWebhookError("Team checkout terms are unavailable or mode-mismatched");
   }
   return terms;
 }
