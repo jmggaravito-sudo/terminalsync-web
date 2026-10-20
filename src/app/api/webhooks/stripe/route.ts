@@ -26,6 +26,7 @@ import {
 import {
   InvalidTeamStripeEventError,
   isTeamCheckoutCandidate,
+  isTeamCheckoutSubscriptionCandidate,
   isTeamSubscriptionCandidate,
   parseTeamStripeSubscription,
   syncTeamStripeSubscription,
@@ -137,6 +138,15 @@ export async function POST(req: Request) {
   // subscriptions.plan or run the Pro/Max revocation path. Checkout itself
   // stays disabled until the no-card trial and membership lifecycle ship.
   if (isTeamCheckoutCandidate(event)) {
+    return NextResponse.json(
+      { received: false, error: "Team checkout fulfillment is not enabled" },
+      { status: 503 },
+    );
+  }
+  // Route-issued checkout subscription metadata belongs to the atomic 0051
+  // finalizer. Until that handler is explicitly enabled, fence every partial
+  // or malformed marker rather than letting it reach legacy Team billing.
+  if (isTeamCheckoutSubscriptionCandidate(event)) {
     return NextResponse.json(
       { received: false, error: "Team checkout fulfillment is not enabled" },
       { status: 503 },

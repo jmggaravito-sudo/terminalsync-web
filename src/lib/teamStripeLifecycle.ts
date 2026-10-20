@@ -63,6 +63,18 @@ const TEAM_EVENT_TYPES = new Set<string>([
   "customer.subscription.updated",
   "customer.subscription.deleted",
 ]);
+// These keys bind a subscription to the route-issued checkout intent. They
+// must be finalized by the dedicated 0051 lifecycle, never the legacy 0038
+// Team subscription sync.
+const TEAM_CHECKOUT_ROUTE_ONLY_METADATA_KEYS = [
+  "team_checkout_intent_id",
+  "team_checkout_owner_user_id",
+  "team_checkout_request_id",
+  "team_checkout_price_id",
+  "team_checkout_seats",
+  "team_checkout_mode",
+  "team_checkout_idempotency_key",
+] as const;
 
 function configuredTeamPriceIds(): string[] {
   return [envId("STRIPE_PRICE_TEAM"), envId("STRIPE_PRICE_TEAM_TEST")].filter(
@@ -92,6 +104,21 @@ export function isTeamSubscriptionCandidate(
   if (!TEAM_EVENT_TYPES.has(event.type)) return false;
   const subscription = event.data.object as Stripe.Subscription;
   return hasTeamIntent(subscription.metadata) || hasConfiguredTeamPrice(subscription);
+}
+
+/**
+ * Detect route-issued Team subscriptions before the generic Team subscription
+ * sync. Presence, rather than validity, is intentional: a partial or malformed
+ * checkout binding must not fall through to the legacy billing RPC.
+ */
+export function isTeamCheckoutSubscriptionCandidate(
+  event: Stripe.Event,
+): boolean {
+  if (!TEAM_EVENT_TYPES.has(event.type)) return false;
+  const metadata = (event.data.object as Stripe.Subscription).metadata;
+  return Boolean(metadata) && TEAM_CHECKOUT_ROUTE_ONLY_METADATA_KEYS.some((key) =>
+    Object.prototype.hasOwnProperty.call(metadata, key),
+  );
 }
 
 /** Team-marked Checkout Sessions are rejected until the Team checkout and its

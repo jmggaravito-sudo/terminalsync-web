@@ -9,6 +9,7 @@ import type Stripe from "stripe";
 import {
   InvalidTeamStripeEventError,
   isTeamCheckoutCandidate,
+  isTeamCheckoutSubscriptionCandidate,
   isTeamSubscriptionCandidate,
   parseTeamStripeSubscription,
   syncTeamStripeSubscription,
@@ -209,6 +210,32 @@ describe("Team checkout candidate boundaries", () => {
     ["a Checkout session with no metadata", "checkout.session.completed", null],
   ])("does not classify %s as a Team checkout candidate", (_label, type, metadata) => {
     expect(isTeamCheckoutCandidate(checkoutEvent(type, metadata))).toBe(false);
+  });
+
+  it.each([
+    ["intent", "team_checkout_intent_id", "intent-partial"],
+    ["owner", "team_checkout_owner_user_id", ""],
+    ["undefined owner", "team_checkout_owner_user_id", undefined],
+    ["request", "team_checkout_request_id", "request-malformed"],
+    ["price", "team_checkout_price_id", "price-malformed"],
+    ["seats", "team_checkout_seats", "not-a-seat-count"],
+    ["mode", "team_checkout_mode", "payment"],
+    ["idempotency", "team_checkout_idempotency_key", ""],
+  ])("fences a route-only %s marker even when metadata is partial or malformed", (_label, key, value) => {
+    const event = subscriptionEvent({ metadata: { [key]: value } });
+    expect(isTeamCheckoutSubscriptionCandidate(event)).toBe(true);
+  });
+
+  it("leaves a legacy Team subscription without route-only metadata on its existing path", () => {
+    const event = subscriptionEvent();
+    expect(isTeamCheckoutSubscriptionCandidate(event)).toBe(false);
+    expect(isTeamSubscriptionCandidate(event)).toBe(true);
+  });
+
+  it("does not treat a route-only marker on a non-subscription event as a checkout subscription", () => {
+    expect(isTeamCheckoutSubscriptionCandidate(
+      checkoutEvent("checkout.session.completed", { team_checkout_intent_id: "intent-partial" }),
+    )).toBe(false);
   });
 });
 
