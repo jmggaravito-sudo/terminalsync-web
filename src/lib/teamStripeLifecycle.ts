@@ -63,17 +63,26 @@ const TEAM_EVENT_TYPES = new Set<string>([
   "customer.subscription.updated",
   "customer.subscription.deleted",
 ]);
+const TEAM_CHECKOUT_EVENT_TYPES = new Set<string>([
+  "checkout.session.completed",
+  "checkout.session.async_payment_succeeded",
+  "checkout.session.expired",
+  "checkout.session.async_payment_failed",
+]);
 // These keys bind a subscription to the route-issued checkout intent. They
 // must be finalized by the dedicated 0051 lifecycle, never the legacy 0038
 // Team subscription sync.
 const TEAM_CHECKOUT_ROUTE_ONLY_METADATA_KEYS = [
   "team_checkout_intent_id",
+  "team_checkout_session_id",
   "team_checkout_owner_user_id",
   "team_checkout_request_id",
   "team_checkout_price_id",
   "team_checkout_seats",
   "team_checkout_mode",
   "team_checkout_idempotency_key",
+  "team_checkout_customer_id",
+  "team_checkout_subscription_id",
 ] as const;
 
 function configuredTeamPriceIds(): string[] {
@@ -121,14 +130,21 @@ export function isTeamCheckoutSubscriptionCandidate(
   );
 }
 
-/** Team-marked Checkout Sessions are rejected until the Team checkout and its
- * no-card trial/entitlement lifecycle are enabled together. */
+/**
+ * Detect every routed Team Checkout Session before generic fulfillment. Route
+ * metadata is presence-fenced so a partial/empty crash-recovery marker cannot
+ * reach the welcome-email path while the dedicated dispatcher is default-off.
+ */
 export function isTeamCheckoutCandidate(event: Stripe.Event): boolean {
-  if (event.type !== "checkout.session.completed" && event.type !== "checkout.session.async_payment_succeeded") {
-    return false;
-  }
+  if (!TEAM_CHECKOUT_EVENT_TYPES.has(event.type)) return false;
   const session = event.data.object as Stripe.Checkout.Session;
-  return hasTeamIntent(session.metadata);
+  const metadata = session.metadata;
+  // Session metadata can be partially written or malformed during an
+  // interrupted provider attempt. Presence of any route-only key must keep it
+  // out of the generic welcome-email path just as it does for subscriptions.
+  return hasTeamIntent(metadata) || (Boolean(metadata) && TEAM_CHECKOUT_ROUTE_ONLY_METADATA_KEYS.some((key) =>
+    Object.prototype.hasOwnProperty.call(metadata, key),
+  ));
 }
 
 function customerIdOf(subscription: Stripe.Subscription): string | null {

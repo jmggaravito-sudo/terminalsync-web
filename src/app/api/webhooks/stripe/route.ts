@@ -31,6 +31,12 @@ import {
   parseTeamStripeSubscription,
   syncTeamStripeSubscription,
 } from "@/lib/teamStripeLifecycle";
+import { isTeamPaidCheckoutEnabled } from "@/lib/teamFeature";
+import {
+  dispatchTeamCheckoutWebhook,
+  InvalidTeamCheckoutWebhookEventError,
+  RetryableTeamCheckoutWebhookError,
+} from "@/lib/teamCheckoutWebhookDispatcher";
 
 /** Friendly plan + cycle label from Stripe metadata. Falls back to a
  *  generic name if metadata wasn't propagated (older subs). */
@@ -133,25 +139,67 @@ export async function POST(req: Request) {
     }
   }
 
-  // Team fulfillment is intentionally isolated from the legacy subscription
-  // mapper: Team is an additive entitlement and must never write
-  // subscriptions.plan or run the Pro/Max revocation path. Checkout itself
-  // stays disabled until the no-card trial and membership lifecycle ship.
-  if (isTeamCheckoutCandidate(event)) {
-    return NextResponse.json(
-      { received: false, error: "Team checkout fulfillment is not enabled" },
-      { status: 503 },
-    );
+  // Route-issued Team Checkout metadata is deliberately isolated from both the
+  // legacy Team adapter and Pro/Max handlers. The paid gate remains default
+  // off, so a signed route event cannot touch Stripe or Supabase until an
+  // explicit rollout enables the already-reviewed checkout surface as well.
+  if (isTeamCheckoutCandidate(event) || isTeamCheckoutSubscriptionCandidate(event)) {
+    if (!isTeamPaidCheckoutEnabled()) {
+      return NextResponse.json(
+        { received: false, error: "Team checkout fulfillment is not enabled" },
+        { status: 503 },
+      );
+    }
+    if (typeof event.livemode !== "boolean") {
+      return NextResponse.json(
+        { received: false, error: "Team checkout event mode is invalid" },
+        { status: 400 },
+      );
+    }
+    // A test-mode event is useful to prove signature registration only. It is
+    // never evidence of a paid entitlement and must make no provider/database
+    // calls even when the explicit source gate is on.
+    if (!event.livemode) {
+      return NextResponse.json({ received: true, ignored: "test_team_checkout_event" });
+    }
+    if (!signatureVerifiedWithLiveSecret) {
+      return NextResponse.json(
+        { received: false, error: "Team checkout fulfillment requires a live webhook signature" },
+        { status: 400 },
+      );
+    }
+    try {
+      const result = await dispatchTeamCheckoutWebhook(event);
+      if (result === "pending_reconciliation") {
+        console.error("[stripe] Team checkout lifecycle requires reconciliation; access remains fail-closed", {
+          eventId: event.id,
+        });
+      }
+      return NextResponse.json({ received: true });
+    } catch (err) {
+      if (err instanceof InvalidTeamCheckoutWebhookEventError) {
+        return NextResponse.json(
+          { received: false, error: "Team checkout fulfillment payload is invalid" },
+          { status: 400 },
+        );
+      }
+      if (err instanceof RetryableTeamCheckoutWebhookError) {
+        return NextResponse.json(
+          { received: false, error: "Team checkout fulfillment requires retry" },
+          { status: 500 },
+        );
+      }
+      console.error("[stripe] Team checkout finalization failed", {
+        eventId: event.id,
+        error: err instanceof Error ? err.message : "unknown error",
+      });
+      return NextResponse.json(
+        { received: false, error: "Team checkout fulfillment requires retry" },
+        { status: 500 },
+      );
+    }
   }
-  // Route-issued checkout subscription metadata belongs to the atomic 0051
-  // finalizer. Until that handler is explicitly enabled, fence every partial
-  // or malformed marker rather than letting it reach legacy Team billing.
-  if (isTeamCheckoutSubscriptionCandidate(event)) {
-    return NextResponse.json(
-      { received: false, error: "Team checkout fulfillment is not enabled" },
-      { status: 503 },
-    );
-  }
+
   if (isTeamSubscriptionCandidate(event)) {
     if (!event.livemode) {
       return NextResponse.json({ received: true, ignored: "test_team_event" });

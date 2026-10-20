@@ -84,13 +84,20 @@ must use that same verified evidence; a missing result is not proof that Stripe
 did nothing. This costs manual/audited recovery for a crash before or after the
 provider call, rather than risking a duplicate subscription.
 
-This is **not activation-ready**. The current Stripe webhook still fails closed
-for Team Checkout candidates and does not wire verified Team Checkout completion
-to the `0051` atomic finalizer. This PR does not add webhook fulfillment,
-entitlements, UI, deployment, a Stripe Product/Price/Customer/subscription, or
-a charge. Do not set `TEAM_PAID_CHECKOUT_ENABLED=1` until that signed webhook
-and post-checkout lifecycle have separately been implemented, reviewed, and
-explicitly approved.
+This is **not activation-ready**. Source now contains a dedicated signed Team
+Checkout dispatcher, but it remains behind the same default-off
+`TEAM_FEATURE_ENABLED=1` + `TEAM_PAID_CHECKOUT_ENABLED=1` pair. For a live event
+it requires the proven live signing secret, exact configured mode/price/seat
+terms, a trusted intent, and full route metadata before it can invoke the
+service-role-only atomic finalizer. It routes all four Checkout Session events
+through marker RPCs; an unbound recovery intent may be bound only by its own
+signed Session event, never from a subscription payload. Later route-bound
+subscription updates/deletions re-read the exact durable Session and use the
+atomic finalizer rather than the legacy Team mapper. Test-mode events make no
+writes. This source change does not enable the flags, deploy, apply a migration,
+create a Stripe Product/Price/Customer/subscription, or charge anyone. Do not
+set `TEAM_PAID_CHECKOUT_ENABLED=1` until this dispatcher and its database
+migration have been reviewed and explicitly approved for a separate rollout.
 
 The public Team card therefore remains informational: it may describe the
 future $59 price and no-card trial, but it must not expose a Team checkout
