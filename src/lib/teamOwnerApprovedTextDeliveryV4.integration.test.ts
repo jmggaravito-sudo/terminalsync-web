@@ -31,42 +31,42 @@ type PublicWrapperCall = {
 const publicWrapperCalls: PublicWrapperCall[] = [
   {
     name: "create_team_space_conversation_turn_v4",
-    sql: "SELECT * FROM public.create_team_space_conversation_turn_v4($1,$2,$3,'context','manifest','{}'::jsonb,$4)",
+    sql: "SELECT * FROM public.create_team_space_conversation_turn_v4(p_user_id => $1,p_space_id => $2,p_relationship_id => $3,p_request_kind => 'context',p_manifest_hash => 'manifest',p_metadata => '{}'::jsonb,p_client_operation_id => $4)",
     params: [owner, space, relationship, roleExecutionOperation],
   },
   {
     name: "create_team_conversation_turn_v4",
-    sql: "SELECT * FROM public.create_team_conversation_turn_v4($1,$2,'context','manifest','{}'::jsonb,$3)",
+    sql: "SELECT * FROM public.create_team_conversation_turn_v4(p_user_id => $1,p_thread_id => $2,p_request_kind => 'context',p_manifest_hash => 'manifest',p_metadata => '{}'::jsonb,p_client_operation_id => $3)",
     params: [owner, thread, roleExecutionOperation],
   },
   {
     name: "respond_team_conversation_turn_v4",
-    sql: "SELECT * FROM public.respond_team_conversation_turn_v4($1,$2,'accept',$3)",
+    sql: "SELECT * FROM public.respond_team_conversation_turn_v4(p_user_id => $1,p_turn_id => $2,p_decision => 'accept',p_client_operation_id => $3)",
     params: [owner, turn, roleExecutionOperation],
   },
   {
     name: "list_team_conversation_turns_v4",
-    sql: "SELECT * FROM public.list_team_conversation_turns_v4($1,$2,50,NULL,NULL)",
+    sql: "SELECT * FROM public.list_team_conversation_turns_v4(p_user_id => $1,p_thread_id => $2,p_limit => 50,p_before_created_at => NULL,p_before_turn_id => NULL)",
     params: [owner, thread],
   },
   {
     name: "create_team_text_delivery_v1",
-    sql: "SELECT * FROM public.create_team_text_delivery_v1($1,$2,$3,$4,$5,$6)",
+    sql: "SELECT * FROM public.create_team_text_delivery_v1(p_user_id => $1,p_thread_id => $2,p_turn_id => $3,p_operation_id => $4,p_content => $5,p_content_sha256 => $6)",
     params: [owner, thread, turn, roleExecutionOperation, "service role execution", "b".repeat(64)],
   },
   {
     name: "read_team_text_delivery_v1",
-    sql: "SELECT * FROM public.read_team_text_delivery_v1($1,$2)",
+    sql: "SELECT * FROM public.read_team_text_delivery_v1(p_user_id => $1,p_delivery_id => $2)",
     params: [member, "00000000-0000-4000-8000-000000000110"],
   },
   {
     name: "list_team_text_deliveries_v1",
-    sql: "SELECT * FROM public.list_team_text_deliveries_v1($1,$2,50,NULL,NULL)",
+    sql: "SELECT * FROM public.list_team_text_deliveries_v1(p_user_id => $1,p_thread_id => $2,p_limit => 50,p_before_created_at => NULL,p_before_delivery_id => NULL)",
     params: [member, thread],
   },
   {
     name: "purge_expired_team_text_deliveries",
-    sql: "SELECT public.purge_expired_team_text_deliveries(1)",
+    sql: "SELECT public.purge_expired_team_text_deliveries(p_limit => 1)",
     params: [],
   },
 ];
@@ -176,6 +176,38 @@ function send(db: PGlite, sender: string, content = "Reviewed answer") {
 }
 
 describe("Team source-owner-approved text delivery v4", () => {
+  it("preserves PostgREST named-argument signatures on public wrappers only", async () => {
+    const { db } = await fixture();
+    const expected = [
+      ["create_team_space_conversation_turn_v4", ["p_user_id", "p_space_id", "p_relationship_id", "p_request_kind", "p_manifest_hash", "p_metadata", "p_client_operation_id"]],
+      ["create_team_conversation_turn_v4", ["p_user_id", "p_thread_id", "p_request_kind", "p_manifest_hash", "p_metadata", "p_client_operation_id"]],
+      ["respond_team_conversation_turn_v4", ["p_user_id", "p_turn_id", "p_decision", "p_client_operation_id"]],
+      ["list_team_conversation_turns_v4", ["p_user_id", "p_thread_id", "p_limit", "p_before_created_at", "p_before_turn_id"]],
+      ["create_team_text_delivery_v1", ["p_user_id", "p_thread_id", "p_turn_id", "p_operation_id", "p_content", "p_content_sha256"]],
+      ["read_team_text_delivery_v1", ["p_user_id", "p_delivery_id"]],
+      ["list_team_text_deliveries_v1", ["p_user_id", "p_thread_id", "p_limit", "p_before_created_at", "p_before_delivery_id"]],
+      ["purge_expired_team_text_deliveries", ["p_limit"]],
+    ] as const;
+    const actual = await db.query<{ proname: string; args: string[] }>(`
+      SELECT p.proname, p.proargnames[1:p.pronargs] AS args
+      FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+      WHERE n.nspname='public' AND p.proname = ANY($1::text[])
+      ORDER BY p.proname
+    `, [expected.map(([name]) => name)]);
+    expect(actual.rows).toEqual(expected.map(([proname, args]) => ({ proname, args })).sort((a, b) => a.proname.localeCompare(b.proname)));
+
+    // The projector and payload authorizer are implementation primitives, not
+    // named RPCs available to PostgREST/API roles (including service_role).
+    for (const role of ["anon", "authenticated", "service_role"] as const) {
+      await expect(asApiRole(db, role, () => db.query(
+        "SELECT * FROM public._team_project_conversation_turn_v4($1,$2,$3)", [owner, thread, turn],
+      ))).rejects.toThrow(/permission denied/i);
+      await expect(asApiRole(db, role, () => db.query(
+        "SELECT team_delivery_private.owner_approved_text_delivery_v2($1,$2,$3)", [owner, thread, turn],
+      ))).rejects.toThrow(/permission denied/i);
+    }
+  }, 15_000);
+
   it("requires the owner of the exact source space to have accepted the member-originated turn", async () => {
     const { db } = await fixture();
 
