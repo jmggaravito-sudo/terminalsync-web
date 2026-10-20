@@ -13,7 +13,8 @@
     "test:watch": "vitest",
     "test:video-funding-sql": "node scripts/test-video-funding-sql.mjs && node scripts/test-video-quote-checkout-sql.mjs",
     "test:video-quote-checkout-sql": "node scripts/test-video-quote-checkout-sql.mjs",
-    "check:supabase-history-manifest": "node scripts/check-supabase-history-manifest.mjs"
+    "check:supabase-history-manifest": "node scripts/check-supabase-history-manifest.mjs",
+    "verify:supabase-history-remote": "node scripts/verify-supabase-remote-migration-sources.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.117.1",
