@@ -1,39 +1,46 @@
 # Team production schema rollout (operator runbook)
 
-**Status: blocked / not applied.** This document is a controlled plan, not an
-authorization to change production. The last read-only Supabase Management API
-migration-history check for project `zwyeqqxiwiogmtqwfnby` (2026-10-18) showed
-`0037_team_comp_entitlements` and `0038_team_stripe_billing` present; migrations
-`0039`–`0055` absent. That snapshot predates `0056`, `0057`, and `0058` and is historical,
-not a current production claim. Re-check immediately before any rollout; history
-may have changed. No migration execution or schema mutation was performed for
-this runbook.
+**Status: source history recovered / production not applied.** This document is
+a controlled plan, not an authorization to change production. On 2026-10-20 a
+read-only Supabase Management API check for project `zwyeqqxiwiogmtqwfnby`
+confirmed the current migration-history rows and recovered the original SQL for
+the ten timestamped rows that were previously remote-only. Their exact local
+source files and offline SHA-256 guard are tracked in
+`supabase/migration-history/production-history-manifest.json`; the separately
+reviewable `npm run verify:supabase-history-remote` command must recheck those
+responses via GET immediately before rollout. This is source recovery, not a
+`repair`, replay, or remote mutation. The current history still
+has `0037_team_comp_entitlements` and `0038_team_stripe_billing`, while Team
+migrations `0039`–`0058` are not recorded. Re-check immediately before any
+rollout; history and schema may have changed. No Team migration execution,
+feature-flag activation, Team comp grant, or schema mutation was performed by
+this source recovery.
 
 ## Scope and migration set
 
 This rollout is for no-card Team trial and shared-space, invitation, approval,
-and conversation behavior. The base migration chain stays metadata-only;
-optional `0056` plus `0058_team_owner_approved_text_delivery.sql` add only
-reviewed text delivery after approval. `0058` makes the source-space owner the
-only permitted sender for that source relationship. Neither migration enables
-paid Team checkout or creates Stripe objects. Pro/Max remain unchanged.
+and conversation behavior. The current API/UI uses the v4 conversation RPCs
+from `0058_team_owner_approved_text_delivery.sql` and the delivery table/RPCs
+from `0056_team_text_deliveries.sql`; consequently **both are mandatory** for
+an authenticated Team conversation smoke. `0058` makes the source-space owner
+the only permitted sender for that source relationship. Neither migration
+enables paid Team checkout or creates Stripe objects. Pro/Max remain unchanged.
 
 Apply missing migrations individually, in dependency order, after reviewing the
 SQL and confirming the expected preconditions/effects:
 
 1. Core and automatic trial: `0039 → 0040 → 0041 → 0042 → 0043 → 0044`.
 2. Current v2 UI projections: `0047 → 0048`.
-3. Approval-first conversation hardening: `0053 → 0054 → 0055`.
-4. Optional post-approval **text-only** delivery: `0056`, then the
-   forward-only `0058_team_owner_approved_text_delivery.sql`, after step 3 and
-   after reviewing the private-store RPCs. `0058` preserves two-way metadata
-   conversation but allows a plaintext leg only when the owner of that exact
-   source space accepts a member-originated turn and then sends to that member.
-   It does not erase legacy rows; public read/list deny old reverse-direction
-   rows that fail this source-owner rule. The source PR adds a purge endpoint
-   but intentionally no Vercel schedule: configure the hourly schedule only
-   as a later explicit rollout step after `CRON_SECRET` and Vercel hourly-cron
-   capability are verified. It does not enable files/AI generation.
+3. Approval and text delivery: `0053 → 0054 → 0055 → 0056 → 0058`.
+
+`0058` preserves two-way metadata conversation but allows a plaintext leg only
+when the owner of that exact source space accepts a member-originated turn and
+then sends to that member. It does not erase legacy rows; public read/list deny
+old reverse-direction rows that fail this source-owner rule. The source PR adds
+a purge endpoint but intentionally no Vercel schedule: automatic physical
+cleanup cannot be claimed until a later explicit deployment configures the
+hourly schedule after `CRON_SECRET` and Vercel hourly-cron capability are
+verified. This slice does not enable files/AI generation.
 
 ## Read-only shared-space compatibility preflight (before `0041 → 0042`)
 
@@ -154,8 +161,9 @@ delete, or rewrite rows.
   nonzero, stop: do not edit/delete data or bypass the migration preflight under
   this runbook. Reconcile separately with explicit authorization and a fresh
   recoverable backup, then rerun the read-only check.
-- Re-read remote migration history and inspect the live schema against each
-  migration's preconditions. Apply only the specifically reviewed missing SQL,
+- Run `npm run verify:supabase-history-remote` with a scoped read-only PAT,
+  then re-read remote migration history and inspect the live schema against each
+  migration's preconditions. Record only the sanitized verifier result. Apply only the specifically reviewed missing SQL,
   one migration at a time, using the approved Supabase change procedure. Verify
   resulting schema/RPC behavior after each migration before proceeding.
 - Never run `supabase db push --include-all`, and never replay the migration
@@ -164,38 +172,50 @@ delete, or rewrite rows.
 - Stop on any unexpected migration-history row, schema drift, failed statement,
   or failed post-migration check. Do not mark a migration applied manually to
   bypass verification. Do not echo credentials or secrets into commands/logs.
-- Keep `TEAM_FEATURE_ENABLED` unset/off (`0`) throughout migration and smoke.
-  Do not enable paid Team checkout, run payment tests, or alter Pro/Max.
+- Keep `TEAM_FEATURE_ENABLED` unset/off (`0`) throughout schema migration and
+  read-only preflight. Do not enable paid Team checkout, run payment tests, or
+  alter Pro/Max.
 
-## Authenticated two-account smoke (before enabling the feature)
+## Authenticated two-account smoke (after schema verification, with controlled gate activation)
 
-Use two controlled test accounts, **A (space owner)** and **B (invitee)**. Keep
-the gate off for migration. In a controlled test environment where the current
-migration set is installed, verify these cases with authenticated sessions:
+With `TEAM_FEATURE_ENABLED=0`, middleware and `verifiedTeamUser` intentionally
+return `503` before user RPCs run; that state can validate only schema/preflight,
+not the product flow. After the exact schema sequence above is verified, enable
+`TEAM_FEATURE_ENABLED=1` only for a controlled deployed smoke while keeping
+`TEAM_PAID_CHECKOUT_ENABLED=0`. Use two controlled test accounts, **A (space
+owner)** and **B (invitee)**. Turn the feature flag back off immediately if any
+case fails. Do not call a smoke passed while the gate remains off.
 
 | Case | Action | Required result |
 |---|---|---|
-| Trial | A claims trial; repeat claim | First claim grants one 168-hour Team entitlement, no card; repeat does not grant a second entitlement. Pro/Max base plan is unchanged. |
+| Trial | A claims trial; repeat claim | If A is eligible, first claim grants one 168-hour Team entitlement with no card; repeat does not grant a second entitlement. If the controlled account already consumed the trial, record that state and use another eligible controlled account for the first-grant assertion. Pro/Max base plan is unchanged. |
 | Capacity | A attempts to add another owner/seat during trial | Trial remains limited to one owner seat; no paid roster or checkout is created. |
 | Invitation | A invites B; B views and accepts | B sees the received space separately, labeled as the owner's space (for example, “Espacio de A”); it is not listed among B's owned spaces. |
 | Owner-to-member request | A requests context/document information from B | Only bounded request metadata is visible before B's decision; no document, context, path, URL, or payload is transferred. |
 | Member-to-owner request | B initiates the reverse-direction request | Same metadata-only behavior; both parties can initiate, subject to the same approval rule. |
 | Approval/decline | On A's source space, B requests and A accepts; separately test decline | Approval alone transfers nothing. After applying `0056` + `0058` in a controlled test environment, only A may separately submit reviewed text to B; decline creates no delivery. |
 | Reverse isolation | A starts a metadata turn on A's source space; B accepts and tries to send | B can accept metadata but receives no composer/send authority on A's relationship; direct delivery is denied. B must use B's own source space for a B-to-A text leg. |
-| Text delivery in both directions | Repeat the approved request/send flow on A's source (A→B), then B's source (B→A) | Each source-space owner is the approver and only permitted sender for that leg. Delivery receipt contains no payload; only the bound recipient can read. Text is bounded to 64 KiB; at 7 days, read is denied and plaintext plus digest are erased on recipient read or purge invocation. The metadata row and payload-free audit (delivery ID, event, actor ID/null, timestamp) remain; this slice schedules no cron, so configure hourly cleanup only after verifying `CRON_SECRET` and Vercel capability. Unsent accepted turns cannot be sent after 24 hours. |
-| Revocation | A revokes the invitation/relationship and both accounts retry relevant views/actions | Access/request actions and delivery reads fail closed; stale relationship cannot be used to communicate. |
+| Text delivery in both directions | Repeat the approved request/send flow on A's source (A→B), then B's source (B→A) | Each source-space owner is the approver and only permitted sender for that leg. Delivery receipt contains no payload; only the bound recipient can read. Text is bounded to 64 KiB; at 7 days, reads are denied and plaintext plus digest are erased on recipient read or a purge invocation. The metadata row and payload-free audit (delivery ID, event, actor ID/null, timestamp) remain. **Do not claim automatic physical deletion at 7 days** until an hourly purge schedule plus `CRON_SECRET` are deployed and smoked. Unsent accepted turns cannot be sent after 24 hours. |
+| Revocation | **Not an authenticated product acceptance test yet.** | The current schema can represent `revoked`, but no owner RPC/API/UI exists to revoke an invitation/relationship. Do not simulate this with a direct SQL `UPDATE` or count it as a passing product smoke. A separate forward-only revoke feature and re-smoke are required before claiming this flow. |
 
 Capture sanitized request/status evidence, never tokens or document contents.
 Do not use real employee/customer context during this smoke. These checks do
 not test billing or payment.
 
-## Activation gate (separate from migration)
+## Availability gate (separate from schema migration)
 
-Only after the approved schema rollout is verified **and** every applicable
-two-account smoke case passes, an operator may deliberately set the server-only
-Vercel environment variable `TEAM_FEATURE_ENABLED=1` for the intended
-environment. Then redeploy through the normal reviewed deployment process and
-repeat the authenticated smoke against that deployed build. Keep it off if any
-check fails. Enabling this availability flag does not enable paid checkout or
-certify billing. Record separately: migration/schema evidence, source PR/merge,
-deployment status, and authenticated smoke result.
+Controlled flag activation is required to perform the authenticated smoke above;
+it must remain limited to the test accounts and keep paid checkout off. General
+Team availability may proceed only after the approved schema rollout, applicable
+authenticated smoke, and the following separate product gates are complete:
+
+- the no-card UI does not fetch/render paid-roster controls that require excluded
+  paid migrations (`0052`);
+- an owner-facing revoke RPC/API/UI exists and passes the revocation smoke;
+- if text delivery is marketed as physically purged at seven days, the hourly
+  purge cron and `CRON_SECRET` are deployed and smoked.
+
+Keep `TEAM_FEATURE_ENABLED` off if any check fails. Enabling availability does
+not enable paid checkout or certify billing. Record separately: migration/schema
+evidence, source PR/merge, deployment status, feature-flag state, and
+authenticated smoke result.
