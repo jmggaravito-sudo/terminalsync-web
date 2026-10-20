@@ -609,6 +609,39 @@ describe("Team migrations 0037-0058 compatibility contract", () => {
         )
       `, [newId, memberTurn.id, "00000000-0000-4000-8000-000000000063"])).rows[0];
       expect(acceptedMemberTurn).toMatchObject({ status: "accepted", direction: "inbound", can_deliver: true });
+
+      // v4 must preserve v3's exact-recipient authorization and response
+      // operation idempotency. A third party cannot make either terminal
+      // decision, and a decline retry is valid only for the same operation
+      // and decision; changing either is a conflict.
+      const rejectableTurn = (await db.query<{ id: string }>(`
+        SELECT id FROM public.create_team_conversation_turn_v4(
+          $1::uuid,$2::uuid,'context',$3::text,$4::jsonb,$5::uuid
+        )
+      `, [employeeId, conversationTurn.thread_id, "6".repeat(64), JSON.stringify({ itemCount: 1 }),
+        "00000000-0000-4000-8000-000000000068"])).rows[0];
+      for (const decision of ["accepted", "declined"]) {
+        expect((await db.query(`
+          SELECT * FROM public.respond_team_conversation_turn_v4($1::uuid,$2::uuid,$3::text,$4::uuid)
+        `, [employeeId, rejectableTurn.id, decision, "00000000-0000-4000-8000-000000000069"])).rows).toHaveLength(0);
+      }
+      const rejectOperation = "00000000-0000-4000-8000-000000000070";
+      const declinedTurn = (await db.query<{ id: string; status: string }>(`
+        SELECT * FROM public.respond_team_conversation_turn_v4(
+          $1::uuid,$2::uuid,'declined',$3::uuid
+        )
+      `, [newId, rejectableTurn.id, rejectOperation])).rows[0];
+      expect(declinedTurn).toMatchObject({ id: rejectableTurn.id, status: "declined" });
+      expect((await db.query(`
+        SELECT * FROM public.respond_team_conversation_turn_v4($1::uuid,$2::uuid,'declined',$3::uuid)
+      `, [newId, rejectableTurn.id, rejectOperation])).rows[0]).toMatchObject({ id: rejectableTurn.id, status: "declined" });
+      await expect(db.query(`
+        SELECT * FROM public.respond_team_conversation_turn_v4($1::uuid,$2::uuid,'accepted',$3::uuid)
+      `, [newId, rejectableTurn.id, rejectOperation])).rejects.toThrow();
+      await expect(db.query(`
+        SELECT * FROM public.respond_team_conversation_turn_v4($1::uuid,$2::uuid,'declined',$3::uuid)
+      `, [newId, rejectableTurn.id, "00000000-0000-4000-8000-000000000071"])).rejects.toThrow(/terminal/);
+
       const ownerToMemberDelivery = (await db.query<{ id: string; recipient_user_id: string }>(`
         SELECT * FROM public.create_team_text_delivery_v1(
           $1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::text,$6::text
