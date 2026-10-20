@@ -42,7 +42,6 @@ describe("Team trial entry interaction", () => {
       .mockResolvedValueOnce(response(503, { error: "private backend detail" }))
       .mockResolvedValueOnce(response(200, []))
       .mockResolvedValueOnce(response(404, {}))
-      .mockResolvedValueOnce(response(404, {}))
       .mockResolvedValue(response(404, {}));
 
     render(createElement(ReceivedSpacesClient, { lang: "en" }));
@@ -53,6 +52,35 @@ describe("Team trial entry interaction", () => {
     expect(screen.queryByText("private backend detail")).toBeNull();
     expectInitialTrialRead();
     expectNoAutomaticTrialPost();
+    expect(authedFetch.mock.calls.slice(0, 4).map(([input]) => input)).toEqual([
+      "/api/team/trial",
+      "/api/team/invitations",
+      "/api/team/requests",
+      "/api/team/spaces",
+    ]);
+    expect(authedFetch).not.toHaveBeenCalledWith("/api/team/paid-roster", expect.anything());
+    expect(screen.queryByRole("heading", { name: "Private Team seat invitations" })).toBeNull();
+  });
+
+  it("reads and shows paid-roster controls only after the paid rollout is enabled and confirms an active roster", async () => {
+    authedFetch
+      .mockResolvedValueOnce(response(200, { eligible: false, seat_limit: 1, source: null, expires_at: null }))
+      .mockResolvedValueOnce(response(200, []))
+      .mockResolvedValueOnce(response(200, []))
+      .mockResolvedValueOnce(response(200, {
+        has_active_team: true,
+        seat_limit: 2,
+        assigned_count: 0,
+        occupied_seats: 1,
+        available_slots: 1,
+        roster: [],
+      }))
+      .mockResolvedValueOnce(response(404, {}));
+
+    render(createElement(ReceivedSpacesClient, { lang: "en", paidRosterEnabled: true }));
+
+    expect(await screen.findByRole("heading", { name: "Paid Team seats" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Private Team seat invitations" })).toBeTruthy();
     expect(authedFetch.mock.calls.slice(0, 5).map(([input]) => input)).toEqual([
       "/api/team/trial",
       "/api/team/invitations",
@@ -62,12 +90,26 @@ describe("Team trial entry interaction", () => {
     ]);
   });
 
+  it("keeps paid-roster controls hidden when the paid rollout has no active roster", async () => {
+    authedFetch
+      .mockResolvedValueOnce(response(200, { eligible: false, seat_limit: 1, source: null, expires_at: null }))
+      .mockResolvedValueOnce(response(200, []))
+      .mockResolvedValueOnce(response(200, []))
+      .mockResolvedValueOnce(response(403, {}))
+      .mockResolvedValueOnce(response(404, {}));
+
+    render(createElement(ReceivedSpacesClient, { lang: "en", paidRosterEnabled: true }));
+
+    expect(await screen.findByRole("button", { name: "Claim Team trial" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Paid Team seats" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: "Private Team seat invitations" })).toBeNull();
+  });
+
   it("keeps the no-card trial claim available when an auxiliary list rejects at transport level", async () => {
     authedFetch
       .mockResolvedValueOnce(response(200, { eligible: false, seat_limit: 1, source: null, expires_at: null }))
       .mockRejectedValueOnce(new Error("temporary transport failure"))
       .mockResolvedValueOnce(response(200, []))
-      .mockResolvedValueOnce(response(404, {}))
       .mockResolvedValueOnce(response(404, {}))
       .mockResolvedValue(response(404, {}));
 
@@ -79,11 +121,10 @@ describe("Team trial entry interaction", () => {
     expect(screen.queryByText("temporary transport failure")).toBeNull();
     expectInitialTrialRead();
     expectNoAutomaticTrialPost();
-    expect(authedFetch.mock.calls.slice(0, 5).map(([input]) => input)).toEqual([
+    expect(authedFetch.mock.calls.slice(0, 4).map(([input]) => input)).toEqual([
       "/api/team/trial",
       "/api/team/invitations",
       "/api/team/requests",
-      "/api/team/paid-roster",
       "/api/team/spaces",
     ]);
   });
@@ -93,7 +134,6 @@ describe("Team trial entry interaction", () => {
       .mockResolvedValueOnce(response(200, { eligible: false, seat_limit: 1, source: null, expires_at: null }))
       .mockResolvedValueOnce(response(200, []))
       .mockRejectedValueOnce(new Error("temporary request transport failure"))
-      .mockResolvedValueOnce(response(404, {}))
       .mockResolvedValueOnce(response(404, {}))
       .mockResolvedValue(response(404, {}));
 
@@ -112,7 +152,6 @@ describe("Team trial entry interaction", () => {
       .mockResolvedValueOnce(response(401, {}))
       .mockResolvedValueOnce(response(200, []))
       .mockResolvedValueOnce(response(404, {}))
-      .mockResolvedValueOnce(response(404, {}))
       .mockResolvedValue(response(404, {}));
 
     render(createElement(ReceivedSpacesClient, { lang: "en" }));
@@ -130,11 +169,10 @@ describe("Team trial entry interaction", () => {
       .mockImplementationOnce(() => pendingEntitlement.promise)
       .mockResolvedValueOnce(response(200, []))
       .mockResolvedValueOnce(response(200, []))
-      .mockResolvedValueOnce(response(404, {}))
       .mockResolvedValueOnce(response(404, {}));
 
     const { unmount } = render(createElement(ReceivedSpacesClient, { lang: "en" }));
-    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(5));
+    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(4));
     const signal = expectInitialTrialRead();
     expect(signal.aborted).toBe(false);
 
@@ -158,19 +196,17 @@ describe("Team trial entry interaction", () => {
       .mockResolvedValueOnce(response(200, []))
       .mockResolvedValueOnce(response(200, []))
       .mockResolvedValueOnce(response(404, {}))
-      .mockResolvedValueOnce(response(404, {}))
       .mockResolvedValueOnce(response(200, { eligible: false, seat_limit: 1, source: null, expires_at: null }))
       .mockResolvedValueOnce(response(200, []))
       .mockResolvedValueOnce(response(200, []))
-      .mockResolvedValueOnce(response(404, {}))
       .mockResolvedValueOnce(response(404, {}));
 
     const { rerender } = render(createElement(ReceivedSpacesClient, { lang: "en" }));
-    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(5));
+    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(4));
     const staleSignal = expectInitialTrialRead();
 
     rerender(createElement(ReceivedSpacesClient, { lang: "es" }));
-    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(10));
+    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(8));
     expect(staleSignal.aborted).toBe(true);
     expect(await screen.findByRole("button", { name: "Iniciar prueba Team" })).toBeTruthy();
 

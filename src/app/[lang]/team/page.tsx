@@ -1,5 +1,5 @@
 import { ReceivedSpacesClient } from "./ReceivedSpacesClient";
-import { isTeamFeatureEnabled } from "@/lib/teamFeature";
+import { isTeamFeatureEnabled, isTeamPaidCheckoutEnabled } from "@/lib/teamFeature";
 
 export default async function TeamPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
@@ -12,5 +12,8 @@ export default async function TeamPage({ params }: { params: Promise<{ lang: str
         : "Team is being prepared. Your Pro and Max plans are unchanged."}</p>
     </section>;
   }
-  return <ReceivedSpacesClient lang={lang} />;
+  // The no-card Team rollout deliberately excludes the paid-roster schema and
+  // opaque seat-invitation RPCs. Keep their browser surface off until the
+  // independently gated paid checkout rollout is explicitly enabled.
+  return <ReceivedSpacesClient lang={lang} paidRosterEnabled={isTeamPaidCheckoutEnabled()} />;
 }

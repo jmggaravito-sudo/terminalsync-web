@@ -13,7 +13,7 @@ import { parseOwnedTeamSpaces, type OwnedTeamSpace } from "./teamSharedSpaces";
 
 type Entitlement = { eligible?: boolean; seat_limit?: number; source?: string | null; expires_at?: string | null };
 
-export function ReceivedSpacesClient({ lang }: { lang: string }) {
+export function ReceivedSpacesClient({ lang, paidRosterEnabled = false }: { lang: string; paidRosterEnabled?: boolean }) {
   const es = lang === "es";
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(true);
@@ -60,7 +60,12 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
         // reach the explicit auth check below.
         authedFetch("/api/team/invitations", { signal: controller.signal }).catch(() => null),
         authedFetch("/api/team/requests", { signal: controller.signal }).catch(() => null),
-        authedFetch("/api/team/paid-roster", { signal: controller.signal }).catch(() => null),
+        // Trial-only Team deliberately excludes 0045/0046/0052. Do not probe
+        // their RPC-backed endpoint or expose its seat-invitation UI until the
+        // separately gated paid rollout is enabled.
+        paidRosterEnabled
+          ? authedFetch("/api/team/paid-roster", { signal: controller.signal }).catch(() => null)
+          : Promise.resolve(null),
         // Spaces are optional so a rolling deployment cannot hide legacy cards.
         authedFetch("/api/team/spaces", { cache: "no-store", referrerPolicy: "no-referrer", signal: controller.signal }).catch(() => null),
       ]);
@@ -82,7 +87,7 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
       setInvitations(parseReceivedInvitations(invitationBody));
       setApprovals(parseOwnerApprovals(requestBody));
       // A 403/503/404 roster response must not make the shared-spaces page fail:
-      // only paid owners can see it and source deployments can precede its SQL.
+      // only a paid rollout may read it, and only a real paid owner can see it.
       if (rosterResponse?.ok) {
         const rosterBody = await rosterResponse.json().catch(() => null);
         if (!isCurrent()) return;
@@ -98,7 +103,7 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
     } finally {
       if (isCurrent()) setLoading(false);
     }
-  }, [es, markUnauthorized]);
+  }, [es, markUnauthorized, paidRosterEnabled]);
 
   useEffect(() => {
     void load();
@@ -180,8 +185,8 @@ export function ReceivedSpacesClient({ lang }: { lang: string }) {
       {trialMessage ? <p role="status">{trialMessage}</p> : null}
     </section> : null}
     {!loading && authenticated && entitlement?.eligible ? <p role="status">{es ? `Acceso Team activo${entitlement.expires_at ? ` hasta ${new Date(entitlement.expires_at).toLocaleDateString("es")}` : ""}. El checkout de Team todavía no está disponible.` : `Team access is active${entitlement.expires_at ? ` until ${new Date(entitlement.expires_at).toLocaleDateString("en")}` : ""}. Team checkout is not available yet.`}</p> : null}
-    {!loading && authenticated && paidRoster ? <PaidRosterOwnerPanel lang={lang} roster={paidRoster} /> : null}
-    {!loading && authenticated ? <PaidRosterInvitationPanel lang={lang} roster={paidRoster} /> : null}
+    {!loading && authenticated && paidRosterEnabled && paidRoster?.has_active_team ? <PaidRosterOwnerPanel lang={lang} roster={paidRoster} /> : null}
+    {!loading && authenticated && paidRosterEnabled && paidRoster?.has_active_team ? <PaidRosterInvitationPanel lang={lang} roster={paidRoster} /> : null}
     {!loading && authenticated && entitlement?.eligible ? <TeamSpaceSetupPanel lang={lang} spaces={ownedSpaces} onChanged={load} onUnauthorized={markUnauthorized} /> : null}
     {!loading && authenticated && entitlement?.eligible ? <TeamConversationPanel lang={lang} ownedSpaces={ownedSpaces} receivedSpaces={collections.received} onUnauthorized={markUnauthorized} /> : null}
     {!loading && authenticated && !error && collections.pending.length === 0 && collections.received.length === 0 && ownedSpaces.length === 0 && !approvals.some((item) => item.status === "pending" && item.canRespond) ? <p>{es ? "No tienes invitaciones, solicitudes pendientes ni espacios recibidos." : "You have no invitations, pending requests, or received spaces."}</p> : null}
