@@ -62,10 +62,19 @@ real se requiere, en este orden:
 1. revisión y merge del PR de recuperación;
 2. ejecutar `npm run verify:supabase-history-remote` con una sesión autorizada
    de solo lectura y reconsultar las precondiciones del esquema;
-3. ejecutar el dry-run/replay local aprobado de la cadena Team;
-4. obtener aprobación explícita para aplicar cada migración individual;
-5. realizar el smoke autenticado de dos cuentas con el feature flag aún apagado;
-6. activar el flag, otorgar los comps aditivos y repetir el smoke.
+3. confirmar evidencia fresca de backup del proveedor (ID/hora/retención) y
+   procedimiento/permisos de restore; no ejecutar un restore destructivo solo
+   para este gate;
+4. desde el SHA mergeado y limpio, generar y verificar un stage de un solo
+   target y ejecutar un dry-run que liste exactamente ese target;
+5. obtener aprobación de cambio para ese target, aplicarlo y postverificar
+   ledger/esquema antes de generar el siguiente stage;
+6. con `0058` verificado, hacer smoke de producto solo con
+   `TEAM_FEATURE_ENABLED=1` y `TEAM_PAID_CHECKOUT_ENABLED=0`, y únicamente tras
+   verificar un allowlist server-side o un deployment aislado para las dos
+   cuentas de smoke. Con flag `0` solo se permite preflight/schema smoke.
+   Apagar `TEAM_FEATURE_ENABLED` al terminar cada intento, pase o falle; los
+   comps son una operación separada y no sustituyen la prueba de trial.
 
 ## Prohibiciones que siguen vigentes
 
@@ -73,7 +82,27 @@ No use la recuperación para hacer que el CLI “pase” mediante atajos. Sigue
 prohibido:
 
 - ejecutar `supabase migration repair` para marcar filas aplicadas o revertidas;
-- ejecutar `supabase db push --include-all`;
+- ejecutar `supabase db push --include-all` desde el repositorio raíz o contra
+  un directorio no curado. La única excepción revisada es un staging nuevo,
+  local y de un solo target generado con
+  `npm run prepare:team-migration-stage -- --target <version>`: debe contener
+  exactamente una entrada de staging por versión remota revalidada, el prefijo
+  Team ya aplicado y un único target pendiente; no puede introducir checkout o
+  AI pendiente fuera del slice. Los hashes autoritativos de las fuentes
+  timestamped recuperadas siguen siendo los del manifiesto separado.
+  Inmediatamente antes del dry-run y de nuevo antes del apply, ejecutar
+  `npm run verify:team-migration-stage -- --verify-stage <ruta-absoluta> --require-linked`
+  desde el checkout limpio: debe fijar ref/proyecto, target/prefijo aprobado,
+  hashes de SQL copiada y ausencia de SQL extra/faltante/symlinked. Invocar
+  `supabase --workdir <ruta-absoluta> --profile supabase` para link/dry-run/apply,
+  nunca depender del CWD del checkout ni de un perfil heredado. Antes de cada
+  invocación limpiar `SUPABASE_DB_PASSWORD`, `SUPABASE_DB_POOLER_CONNECTION_STRING`,
+  `SUPABASE_PROJECT_ID`, `PROJECT_ID`, `SUPABASE_PROFILE`, `SUPABASE_DEBUG`,
+  `SUPABASE_ENV`, `SUPABASE_WORKDIR`, `SUPABASE_HOME` y `SUPABASE_YES`; para push, exigir que JM ingrese una
+  contraseña nueva y no vacía dentro de un subshell zsh con `set +x`, y no usar
+  `--debug`. Su dry-run debe listar solo ese archivo antes de un apply autorizado.
+  Nunca usar esta
+  excepción para replay amplio;
 - agregar una migración SQL vacía/no-op para ocupar una versión;
 - renombrar una migración por coincidencia de nombre o timestamp;
 - almacenar tokens, connection strings, `created_by` u otra identidad en el
