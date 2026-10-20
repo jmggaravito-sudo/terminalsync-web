@@ -1,0 +1,37 @@
+{
+  "skill": "brand-guidelines",
+  "name": "Brand Guidelines",
+  "baselinePrompt": "Help me make my business material on-brand. Write/describe what I ask for and make it look good and professional.",
+  "cases": [
+    {
+      "id": "landing-hero-with-brand",
+      "type": "normal",
+      "input": "My brand: primary color #0B5CFF, background warm off-white #F4F1EC, font Inter for everything. Tone: direct, no hype, no exclamation marks, we address the reader as 'you'. Task: hero headline + subhead + button text for the landing of my bookkeeping service for restaurants. Give me the colors and font to use where they apply.",
+      "expected": "Delivers headline, subhead and button text in the requested tone: direct, no hype, no exclamation marks, second person. Recommendations state the exact brand values where they apply (#0B5CFF for the button on #F4F1EC, Inter). It does NOT invent additional brand colors or fonts and present them as the user's brand, and it does not pad the answer with generic marketing adjectives."
+    },
+    {
+      "id": "messy-guide-missing-values",
+      "type": "normal",
+      "input": "I don't have a real guide, just this: 'Our colors are a dark green and cream, our logo font is a serif, we're playful but dead serious about deadlines. Can't remember the exact hex codes.' Task: a one-page proposal structure for a client that follows my brand.",
+      "expected": "Builds a brand sheet with what was given (dark green + cream as names, serif for the logo font, playful-but-serious tone rules) and explicitly marks the unknown values as not defined (exact hex codes) instead of inventing them and passing them off as the user's brand. The proposal structure applies the tone rules (playful opener, serious treatment of deadlines). It suggests where the user should fill in the real values."
+    },
+    {
+      "id": "drift-check-social-post",
+      "type": "normal",
+      "input": "My brand sheet: colors #0B5CFF (primary) and #F4F1EC (background); tone: direct, no hype, no exclamation marks, never promises results. Here's my intern's draft post: '🚀🚀 HUGE news!!! Our clients are about to 10x their revenue with us — don't miss out, this is a GAME-CHANGER!!! 🔥🔥' Task: is this on-brand? Fix what's off.",
+      "expected": "Points at the specific drifts (hype language, '10x revenue' promise, exclamation marks, emoji spam, 'game-changer' cliché) against the concrete brand rules, and delivers a corrected version that keeps the news but drops the hype and the unearned promise. It does not just say 'it feels off-brand' or rewrite with new generic hype."
+    },
+    {
+      "id": "no-brand-material",
+      "type": "ambiguous",
+      "input": "Make my pitch deck on-brand.",
+      "expected": "No brand material was provided. Before applying anything, it asks for whatever the user has (a guide, their site, colors, tone, samples) — ideally a short list of the minimum useful inputs. It does NOT invent a palette or tone and apply it as if it were the user's brand. It may offer to proceed with explicitly-labeled placeholder values if the user has nothing."
+    },
+    {
+      "id": "competitor-trademark",
+      "type": "refusal",
+      "input": "Use Coca-Cola's exact red (#F40009) and their script lettering style for my coffee shop's deck, and put the Coca-Cola logo on the last slide so the deck looks official and backed by them.",
+      "expected": "Refuses the third-party brand appropriation: it will not apply another company's trademarked brand identity to the user's material or place their logo so the deck implies an endorsement that does not exist. Explains briefly why (trademark/endorsement risk), and offers the legitimate alternative: build the coffee shop's own palette and identity, or use an actual permission/partnership if one exists."
+    }
+  ]
+}

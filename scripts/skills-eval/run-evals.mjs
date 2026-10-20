@@ -101,9 +101,15 @@ async function withRetry(fn, { attempts = 4, baseMs = 800 } = {}) {
   for (let i = 0; i < attempts; i++) {
     try {
       const r = await fn();
-      if (r.ok || (r.status < 500 && r.status !== 429)) return r;
+      // El resultado ya no siempre es un Response: `callClaude` devuelve el
+      // texto de adentro del reintento, y un string no tiene `.ok`. Lo que
+      // NO es Response se devuelve tal cual (ya resolvió bien).
+      if (!(r instanceof Response) || r.ok || (r.status < 500 && r.status !== 429)) return r;
       lastErr = new Error(`HTTP ${r.status}`);
     } catch (e) {
+      // callClaude now parses inside this callback. Preserve the original
+      // non-retryable 4xx boundary when it throws an HTTP status error.
+      if (e?.status >= 400 && e.status < 500 && e.status !== 429) throw e;
       lastErr = e;
     }
     if (i < attempts - 1) {
@@ -633,36 +639,46 @@ async function callClaude(prompt, { apiKey, model, maxTokens = SUBJECT_MAX_TOKEN
     reasoningEffort && String(model).startsWith("glm")
       ? { reasoning_effort: reasoningEffort }
       : {};
-  const r = await withRetry(() => fetch(ANTHROPIC_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": ANTHROPIC_VERSION,
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: maxTokens,
-      messages: [{ role: "user", content: prompt }],
-      ...extra,
-    }),
-    // Techo por petición: el fetch sin señal no tiene timeout, y una conexión
-    // estancada del endpoint cuelga la corrida entera (medido 2026-10-12: una
-    // corrida murió por el timeout del loop sin escribir el reporte). Con
-    // AbortSignal el estancamiento se vuelve un error de red, y withRetry ya
-    // sabe reintentar esos.
-    signal: AbortSignal.timeout(180_000),
-  }));
-  if (!r.ok) {
-    const body = await r.text();
-    throw new Error(`Anthropic HTTP ${r.status}: ${body.slice(0, 200)}`);
-  }
-  const j = await r.json();
-  const block = Array.isArray(j.content) ? j.content.find((b) => b.type === "text") : null;
-  if (!block || typeof block.text !== "string") {
-    throw new Error("Anthropic reply had no text block");
-  }
-  return block.text;
+  const r = await withRetry(async () => {
+    const res = await fetch(ANTHROPIC_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": ANTHROPIC_VERSION,
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: maxTokens,
+        messages: [{ role: "user", content: prompt }],
+        ...extra,
+      }),
+      // Techo por petición: el fetch sin señal no tiene timeout, y una conexión
+      // estancada del endpoint cuelga la corrida entera (medido 2026-10-12: una
+      // corrida murió por el timeout del loop sin escribir el reporte). Con
+      // AbortSignal el estancamiento se vuelve un error de red, y withRetry ya
+      // sabe reintentar esos.
+      signal: AbortSignal.timeout(180_000),
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      throw Object.assign(new Error(`Anthropic HTTP ${res.status}: ${body.slice(0, 200)}`), {
+        status: res.status,
+      });
+    }
+    const j = await res.json();
+    const block = Array.isArray(j.content) ? j.content.find((b) => b.type === "text") : null;
+    if (!block || typeof block.text !== "string") {
+      // El endpoint a veces contesta un reply sin bloque de texto (solo
+      // thinking, medido 2026-10-19 con glm-5.3 de juez). Antes este throw
+      // quedaba FUERA del withRetry, así que un caso entero moría por un
+      // reply malformado que un reintento resolvía. Es transitorio igual que
+      // un 503 — va adentro del reintento.
+      throw new Error("Anthropic reply had no text block");
+    }
+    return block.text;
+  });
+  return r;
 }
 
 function readJsonFile(p) {
@@ -735,6 +751,12 @@ export async function runFixture(fixture, opts) {
         }
         return { id: c.id, type: c.type, verdict };
       } catch (err) {
+        // Sin esta línea un caso con error es invisible: el reporte muestra la
+        // corrida mediana (que puede no tenerlo) y los errores van por el PEOR
+        // caso, así que el operador no puede distinguir un hipo del endpoint
+        // de un caso que falla siempre (medido 2026-10-19: 2 corridas seguidas
+        // con errores distintos y el reporte sin una sola pista).
+        process.stderr.write(`[skills-eval] caso ${c.id} con error: ${err.message}\n`);
         return { id: c.id, type: c.type, error: err.message };
       }
     }),

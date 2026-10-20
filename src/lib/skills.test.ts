@@ -141,6 +141,11 @@ describe("skills content mold", () => {
       // category, GLM eval evidence in docs/skills-evals/<slug>.md.
       "cobros-vencidos",
       "fijacion-de-precios",
+      // Skills Loop 2026-10-19 — brand skills promoted from catalogReady:false
+      // (design/marketing, empresario-first) with GLM eval evidence in
+      // docs/skills-evals/<slug>.md.
+      "brand-guidelines",
+      "brand-voice",
     ] as const;
     const sorted = [...publicSlugs].sort();
 
@@ -183,10 +188,8 @@ describe("skills content mold", () => {
     }
   });
 
-  it("parks brand skills as catalogReady:false — pending evaluation, distinct from hidden", async () => {
+  it("parks pending skills as catalogReady:false — pending evaluation, distinct from hidden", async () => {
     const pendingSlugs = [
-      "brand-guidelines",
-      "brand-voice",
       // Skills Loop 2026-07-31 — deferred: only 2/5 cases clearly beat the
       // generic baseline (docs/skills-evals/notebooklm-source-architect.md).
       "notebooklm-source-architect",
