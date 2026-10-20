@@ -94,7 +94,10 @@ through marker RPCs; an unbound recovery intent may be bound only by its own
 signed Session event, never from a subscription payload. Later route-bound
 subscription updates/deletions re-read the exact durable Session and use the
 atomic finalizer rather than the legacy Team mapper. Test-mode events make no
-writes. This source change does not enable the flags, deploy, apply a migration,
+writes. If local mode-specific Team terms are unavailable or mismatch a valid
+live signed event, the dispatcher returns a retryable server error before any
+provider or database action rather than acknowledging that delivery. This source
+change does not enable the flags, deploy, apply a migration,
 create a Stripe Product/Price/Customer/subscription, or charge anyone. Do not
 set `TEAM_PAID_CHECKOUT_ENABLED=1` until this dispatcher and its database
 migration have been reviewed and explicitly approved for a separate rollout.
