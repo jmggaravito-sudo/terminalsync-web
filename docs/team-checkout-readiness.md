@@ -47,13 +47,50 @@ Keep it off while the production schema is behind the reviewed Team chain. It
 returns a cache-safe `503` for Team APIs and shows an unavailable state at the
 Team page; it never changes Pro/Max or opens any paid checkout.
 
-Team paid checkout is intentionally disabled in both checkout paths. A request
-for `plan: "team"` returns `503` before a Stripe Checkout Session is created.
-No Team Stripe Product, Price, Customer, subscription, or charge is created by
-this repository or by the safe smoke process. When paid Team is explicitly
-enabled later, it will be **Stripe-only**; Mercado Pago is not a Team payment
-rail. `STRIPE_PRICE_TEAM` remains a future server-side configuration key, not
-proof that a remote Stripe Price exists.
+The legacy generic `/api/checkout` path intentionally refuses `plan: "team"`
+with `503` before any Stripe call. It remains unsuitable for Team because it
+accepts a caller-provided user ID and uses the generic success flow. A separate,
+authenticated `/api/team/checkout` source scaffold exists, but it is **default
+off**: it requires both `TEAM_FEATURE_ENABLED=1` and the new explicit
+`TEAM_PAID_CHECKOUT_ENABLED=1`; `.env.example` sets both to `0`. While the paid
+gate is off, that handler does not authenticate, query Supabase, inspect a
+Stripe Price, retrieve a Checkout Session, or call Stripe.
+
+The dedicated route derives the owner only from a verified bearer token and
+rejects `userId`/`supabaseUserId` request fields. It accepts only a request UUID,
+locale, and **1–64** seats. Its server configuration selects
+`STRIPE_PRICE_TEAM` only for an `sk_live_` key and `STRIPE_PRICE_TEAM_TEST` only
+for an `sk_test_` key; it validates an active matching **USD 5900/month** Price
+before it can attempt a Checkout Session. It is Stripe-only and does not change
+Pro/Max or create a Stripe trial: the separate 168-hour no-card Team entitlement
+remains independent.
+
+### Durable provider-attempt recovery policy
+
+Before a Team Checkout Session create, the source migration records the intent
+as `creating`. That durable state is the one-shot provider-attempt record:
+`reserved → creating` authorizes one call, but a replay of `creating`,
+`ambiguous`, or any other in-flight state never authorizes another call. A
+network failure, process crash, invalid create response, or failed session bind
+after that transition is quarantined as `creating`/`ambiguous` and returns a
+reconciliation-required result—there is **no timer, automatic retry, or
+best-effort second Stripe create**.
+
+Recovery is deliberately external to this slice: only a separately verified
+exact Stripe Session/subscription result whose stored Team metadata, owner,
+price, seat count, and idempotency key all match may bind, reconcile, or call
+the existing atomic billing finalizer. An operator-reviewed recovery workflow
+must use that same verified evidence; a missing result is not proof that Stripe
+did nothing. This costs manual/audited recovery for a crash before or after the
+provider call, rather than risking a duplicate subscription.
+
+This is **not activation-ready**. The current Stripe webhook still fails closed
+for Team Checkout candidates and does not wire verified Team Checkout completion
+to the `0051` atomic finalizer. This PR does not add webhook fulfillment,
+entitlements, UI, deployment, a Stripe Product/Price/Customer/subscription, or
+a charge. Do not set `TEAM_PAID_CHECKOUT_ENABLED=1` until that signed webhook
+and post-checkout lifecycle have separately been implemented, reviewed, and
+explicitly approved.
 
 The public Team card therefore remains informational: it may describe the
 future $59 price and no-card trial, but it must not expose a Team checkout

@@ -57,10 +57,12 @@ describe("Team subscription finalize command builder", () => {
     expect(JSON.stringify(cmd)).not.toContain("raw");
   });
 
-  it("supports subscription-before-checkout only with verified session and an eligible ambiguous intent", () => {
+  it("recovers an interrupted creating attempt only from a fully verified session and subscription projection", () => {
+    const creating = { ...intent, state: "creating" as const, stripe_session_id: null };
     const ambiguous = { ...intent, state: "ambiguous" as const, stripe_session_id: null };
+    expect(buildTeamSubscriptionFinalizeCommand(event(), creating, session, terms).args.p_stripe_session_id).toBe(session.id);
     expect(buildTeamSubscriptionFinalizeCommand(event(), ambiguous, session, terms).args.p_stripe_session_id).toBe(session.id);
-    expect(() => buildTeamSubscriptionFinalizeCommand(event(), { ...ambiguous, state: "reserved" }, session, terms)).toThrow(/eligible/);
+    expect(() => buildTeamSubscriptionFinalizeCommand(event(), { ...creating, state: "reserved" }, session, terms)).toThrow(/eligible/);
   });
 
   it("is replay stable and permits only exact already-completed bindings", () => {

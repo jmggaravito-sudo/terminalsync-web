@@ -8,7 +8,7 @@ import {
 } from "@/lib/teamCheckoutMetadata";
 
 export type TeamFinalizeIntent = TeamCheckoutIntentIdentity & {
-  state: "reserved" | "checkout_created" | "ambiguous" | "completed" | "expired" | "canceled";
+  state: "reserved" | "creating" | "checkout_created" | "ambiguous" | "completed" | "expired" | "canceled";
   stripe_subscription_id?: string | null;
 };
 
@@ -73,7 +73,7 @@ export function buildTeamSubscriptionFinalizeCommand(
   if (!EVENT_ID.test(event.eventId) || !timestamp(event.eventCreatedAt)) fail("invalid event identity or timestamp");
   if (typeof event.livemode !== "boolean" || event.subscription.livemode !== event.livemode || verifiedSession.livemode !== event.livemode) fail("livemode mismatch");
   if (!new Set(["customer.subscription.created", "customer.subscription.updated", "customer.subscription.deleted"]).has(event.eventType)) fail("unsupported event type");
-  if (!["checkout_created", "ambiguous", "completed"].includes(intent.state)) fail("intent is not eligible for billing finalization");
+  if (!["creating", "checkout_created", "ambiguous", "completed"].includes(intent.state)) fail("intent is not eligible for billing finalization");
 
   const baseMetadata = buildTeamCheckoutMetadata(intent, terms);
   if (!sameMetadata(event.subscription.metadata, baseMetadata) || !sameMetadata(verifiedSession.metadata, baseMetadata)) fail("pre-create Team metadata mismatch");
