@@ -161,6 +161,7 @@ function epochToIso(value: number | null | undefined): string | null {
 /** Parse and validate all billing identity fields before invoking any DB write. */
 export function parseTeamStripeSubscription(
   event: Stripe.Event & { type: TeamStripeEventType; data: { object: Stripe.Subscription } },
+  options: { expectedPriceId?: string } = {},
 ): TeamStripeSyncCommand {
   const subscription = event.data.object;
   const metadata = subscription.metadata;
@@ -195,9 +196,12 @@ export function parseTeamStripeSubscription(
   }
   const item = subscription.items.data[0];
   const price = item.price;
-  const expectedPriceId = event.livemode
+  // Legacy callers derive the allowed Price from environment. The dedicated
+  // route-bound dispatcher supplies the immutable durable intent Price so it
+  // can distinguish a malformed signed event from stale local configuration.
+  const expectedPriceId = options.expectedPriceId ?? (event.livemode
     ? envId("STRIPE_PRICE_TEAM")
-    : envId("STRIPE_PRICE_TEAM_TEST");
+    : envId("STRIPE_PRICE_TEAM_TEST"));
   if (!expectedPriceId || price.id !== expectedPriceId) {
     throw new InvalidTeamStripeEventError("Team Stripe price does not match the configured mode");
   }

@@ -257,6 +257,101 @@ describe("signed Team Checkout dispatcher", () => {
     expect(mocks.rpc).not.toHaveBeenCalled();
   });
 
+  it.each([
+    ["Checkout Session", () => checkoutEvent("checkout.session.completed")],
+    ["subscription", () => subscriptionEvent()],
+  ] as const)("requests retry for a stale configured Team Price after validating the durable %s binding", async (_kind, event) => {
+    process.env.STRIPE_PRICE_TEAM = "price_teamstale";
+
+    await expect(dispatchTeamCheckoutWebhook(event())).rejects.toBeInstanceOf(
+      RetryableTeamCheckoutWebhookError,
+    );
+
+    // A durable read is required to distinguish config drift from bad signed
+    // input, but no marker, ledger, or provider side effect may occur.
+    expect(mocks.maybeSingle).toHaveBeenCalledTimes(1);
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.retrieveSession).not.toHaveBeenCalled();
+    expect(mocks.retrieveSubscription).not.toHaveBeenCalled();
+  });
+
+  it("keeps a signed Checkout Session price-binding mismatch invalid even when local terms are stale", async () => {
+    process.env.STRIPE_PRICE_TEAM = "price_teamstale";
+    const mismatched = checkoutEvent("checkout.session.completed", {
+      metadata: { ...metadata(), team_checkout_price_id: "price_other" },
+    });
+
+    await expect(dispatchTeamCheckoutWebhook(mismatched)).rejects.toBeInstanceOf(
+      InvalidTeamCheckoutWebhookEventError,
+    );
+
+    expect(mocks.maybeSingle).toHaveBeenCalledTimes(1);
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.retrieveSession).not.toHaveBeenCalled();
+  });
+
+  it("keeps a signed subscription Price mismatch invalid even when local terms are stale", async () => {
+    process.env.STRIPE_PRICE_TEAM = "price_teamstale";
+    const mismatched = subscriptionEvent("customer.subscription.updated", {
+      items: {
+        data: [{
+          quantity: 3,
+          current_period_start: 1_792_000_000,
+          current_period_end: 1_794_592_000,
+          price: {
+            id: "price_other",
+            currency: "usd",
+            unit_amount: 5900,
+            recurring: { interval: "month", interval_count: 1 },
+          },
+        }],
+      },
+    });
+
+    await expect(dispatchTeamCheckoutWebhook(mismatched)).rejects.toBeInstanceOf(
+      InvalidTeamCheckoutWebhookEventError,
+    );
+
+    expect(mocks.maybeSingle).toHaveBeenCalledTimes(1);
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.retrieveSession).not.toHaveBeenCalled();
+  });
+
+  it("keeps a malformed signed subscription invalid before the durable lookup", async () => {
+    const malformed = {
+      id: "evt_malformed_subscription",
+      object: "event",
+      type: "customer.subscription.updated",
+      created: 1_792_000_000,
+      livemode: true,
+      data: { object: null },
+    } as any;
+
+    await expect(dispatchTeamCheckoutWebhook(malformed)).rejects.toBeInstanceOf(
+      InvalidTeamCheckoutWebhookEventError,
+    );
+
+    expect(mocks.maybeSingle).not.toHaveBeenCalled();
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.retrieveSession).not.toHaveBeenCalled();
+    expect(mocks.retrieveSubscription).not.toHaveBeenCalled();
+  });
+
+  it("keeps a corrupt durable Team Price invalid instead of treating it as stale configuration", async () => {
+    process.env.STRIPE_PRICE_TEAM = "price_teamstale";
+    mocks.maybeSingle.mockResolvedValueOnce({ data: intent("checkout_created", {
+      stripe_price_id: "not-a-stripe-price",
+    }), error: null });
+
+    await expect(dispatchTeamCheckoutWebhook(checkoutEvent("checkout.session.completed"))).rejects.toBeInstanceOf(
+      InvalidTeamCheckoutWebhookEventError,
+    );
+
+    expect(mocks.maybeSingle).toHaveBeenCalledTimes(1);
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.retrieveSession).not.toHaveBeenCalled();
+  });
+
   it("fails malformed route metadata before a marker or ledger RPC", async () => {
     const malformed = checkoutEvent("checkout.session.completed", {
       metadata: { ...metadata(), team_checkout_owner_user_id: "" },
