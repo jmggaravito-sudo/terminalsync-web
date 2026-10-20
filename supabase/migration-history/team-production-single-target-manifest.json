@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "project_ref": "zwyeqqxiwiogmtqwfnby",
+  "purpose": "Source-locked isolated staging for exactly one reviewed Team migration at a time. This file never connects to production or stores credentials.",
+  "remote_history": [
+    {
+      "version": "0001",
+      "file": "0001_marketplace.sql",
+      "sha256": "0456f28e79ac246026a2fbdf4e703d4a746be15580fd5b1ba54e00f79b9b57a2"
+    },
+    {
+      "version": "0002",
+      "file": "0002_discovery.sql",
+      "sha256": "4679de7ec016f55e6ce8d792ff5a55f95462f4e836ab0977cecbafe860fe5d76"
+    },
+    {
+      "version": "0003",
+      "file": "0003_discovery_category.sql",
+      "sha256": "bdc50c3bd99c1dbeb706db07b4c92984a4a7fea9274525b9ddd03abf79931a9e"
+    },
+    {
+      "version": "0004",
+      "file": "0004_prospects.sql",
+      "sha256": "a44b0dda6c3deae52b7f5a740197fc1b2a2c05164f25075edee63c97c044114f"
+    },
+    {
+      "version": "0005",
+      "file": "0005_bundles.sql",
+      "sha256": "d137a55ca677a64959fb872d040ac2fcb561cce05928223fa5e5ef11287748ff"
+    },
+    {
+      "version": "0006",
+      "file": "0006_trend_signals.sql",
+      "sha256": "9a72e5fef690247e7081d9db89f32eeb1d3e9dbb454e8ef2be24f239f25f9725"
+    },
+    {
+      "version": "0007",
+      "file": "0007_trend_signal_type_education.sql",
+      "sha256": "87b4637310eaa41a72a3c0110b5c4d72f46c4313e7b4d638ac91957e6b176710"
+    },
+    {
+      "version": "0008",
+      "file": "0008_email_templates.sql",
+      "sha256": "0e493ec3acbcd79fca6f5ac386cd0fb238f558be8e29b9213cb5605b7188a8a7"
+    },
+    {
+      "version": "0009",
+      "file": "0009_connector_listings_urls.sql",
+      "sha256": "8c5ffcdb55eb0bbef636c3242e7e63bf3ef6cf5eea6eaf0a3b59d9b545b3cdaa"
+    },
+    {
+      "version": "0010",
+      "file": "0010_discovery_cli.sql",
+      "sha256": "83caa6c63101ac485ac747726f67502fc7fea49287fb42b04e002c1270a8f415"
+    },
+    {
+      "version": "0011",
+      "file": "0011_bundles_mixed_pillars.sql",
+      "sha256": "218d763ef1f0c2980ea05afd658fff76468454c05186dc3100bf56cb73f266f3"
+    },
+    {
+      "version": "0012",
+      "file": "0012_bundle_proposals.sql",
+      "sha256": "1a4225a5cb7e9f44272ddefc35973057ad5dc22a13b5900e09276c2f324737a7"
+    },
+    {
+      "version": "0013",
+      "file": "0013_featured_catalog.sql",
+      "sha256": "dc1fa59f9e737caed11523aee5db5c2c1c139de7e612ce1cb18b9b628207be2f"
+    },
+    {
+      "version": "0014",
+      "file": "0014_profile_soft_delete.sql",
+      "sha256": "a20a34ea92c340bc9b353aa84ffbabbd252fd065931b3bcf609d97f64ec7a0cd"
+    },
+    {
+      "version": "0015",
+      "file": "0015_widen_plan_check_for_max.sql",
+      "sha256": "ee1df5d0bef94fd7340742243965776cd29037c75fc543e626861e4cb2d0d8a3"
+    },
+    {
+      "version": "0016",
+      "file": "0016_me_view_deleted_at_plan_rank.sql",
+      "sha256": "6f9da24d3f56704091ea6bd79bf7707b0d20136dd05c7c192e29645a40670c61"
+    },
+    {
+      "version": "0020",
+      "file": "0020_agency_bio_link.sql",
+      "sha256": "50b02fdfb240ca45b21251495c891d6ac63b56aba58d8b9a8c88a4f48cf46347"
+    },
+    {
+      "version": "0026",
+      "file": "0026_product_feedback.sql",
+      "sha256": "749e82cf78625fcd263af59601a327705ba737e62a3e7446e05122a39bbb0963"
+    },
+    {
+      "version": "0027",
+      "file": "0027_ai_credits.sql",
+      "sha256": "4eb382bd50635ed1614f39b75ac67a4f83175f73d404faa3252357e26eb7de07"
+    },
+    {
+      "version": "0028",
+      "file": "0028_business_leads.sql",
+      "sha256": "864829c13d4b6cd5a6c7de23d55d1e9a1e06cae6ed0212efecc4546b7d34edea"
+    },
+    {
+      "version": "0033",
+      "file": "0033_comp_customer_sentinel_uniqueness.sql",
+      "sha256": "59525248b411732a805d30ed29c44c57743569e515a18031dd8c58810a89268d"
+    },
+    {
+      "version": "0037",
+      "file": "0037_team_comp_entitlements.sql",
+      "sha256": "66864ea49051581d5e88f38c193514c099ab25507bf426d6192e551fcdcd4cb3"
+    },
+    {
+      "version": "0038",
+      "file": "0038_team_stripe_billing.sql",
+      "sha256": "16229eeee804fafa5904b9d06b832adbd62b1ddc2fa6a9d95950104f270b8d6f"
+    },
+    {
+      "version": "20260907214658",
+      "file": "20260907214658_agency_influencers_profile_url.sql",
+      "sha256": "bcb7a77ba0f01b0ae237f2a8d17f1db4a75342d1ccc686384584ac3aae737034"
+    },
+    {
+      "version": "20260921114605",
+      "file": "20260921114605_0019_subscription_ai_entitlement.sql",
+      "sha256": "7a5f382c96b62768028ae5c32c62e1bddd8ecc10429a6045b63304f4b4c1b416"
+    },
+    {
+      "version": "20260921114611",
+      "file": "20260921114611_courtesy_tier_reads_subscription_ai_marker.sql",
+      "sha256": "81cc3f73d6932d33dfabd5cf97009d942393de32626884fe8c76b14b347e6fa0"
+    },
+    {
+      "version": "20260921124719",
+      "file": "20260921124719_0032_comp_included_ai.sql",
+      "sha256": "61cd0e91a613c2f1003fc69540a6680e3722907a2e0446e41ba7d1910de80717"
+    },
+    {
+      "version": "20260921183710",
+      "file": "20260921183710_proxy_003_ai_usage.sql",
+      "sha256": "e2d559164db64fbf50b5962edef00b91633183855944fd29f2c8c1aa38b366b3"
+    },
+    {
+      "version": "20260921183713",
+      "file": "20260921183713_proxy_005_connector_requests.sql",
+      "sha256": "0a7155ccd018a0a7c4926fe852047e811b25f4c9e70e2ed2dd2a183613bc863f"
+    },
+    {
+      "version": "20260921183832",
+      "file": "20260921183832_proxy_004_ai_usage_upstream.sql",
+      "sha256": "2e47859bd2a31845b25b7e91891d31bd4c81b8067aa3b4f6ada62581638bdc18"
+    },
+    {
+      "version": "20261006204704",
+      "file": "20261006204704_proxy_006_search_usage.sql",
+      "sha256": "34fa1cfc5ec056541432a6a030b285d220f8a283c603b7eca69a9974a111dd92"
+    },
+    {
+      "version": "20261017190938",
+      "file": "20261017190938_ai_credit_debits.sql",
+      "sha256": "0ff1c65d934c1608f07a31fbcb32af541c9d1c7cbd00377b7983bf94b675c74b"
+    },
+    {
+      "version": "20261018163004",
+      "file": "20261018163004_0057_ai_credit_refunds.sql",
+      "sha256": "e541d8e4848f1db146d2110cfa10b6cd72f05d2be56847e76532ceee65dfb3b4"
+    },
+    {
+      "version": "20261019220000",
+      "file": "20261019220000_ai_video_funds_reservation.sql",
+      "sha256": "522cf2593fe3a4613ee2277581a93cd5efe4b65e212dd3eeee99f0a9b39d85ec"
+    }
+  ],
+  "target_chain": [
+    {
+      "version": "0039",
+      "file": "0039_team_shared_spaces_metadata.sql",
+      "sha256": "3faa7cf1e02af228adb6ff261bde7330abd87b7d5abb048681c78d4bda1a8840"
+    },
+    {
+      "version": "0040",
+      "file": "0040_team_universal_trial.sql",
+      "sha256": "e93fe94c63292442b687cda6aa875ed9284121fc5b2a40c81bca8d4bf7a4cdc6"
+    },
+    {
+      "version": "0041",
+      "file": "0041_team_entitlement_and_alias_reconciliation.sql",
+      "sha256": "bbef84ff383cc1c93a6e265a9ebdeda77519e000792f3b5b7b22607714a8ad03"
+    },
+    {
+      "version": "0042",
+      "file": "0042_team_metadata_invites.sql",
+      "sha256": "195f61c04cbbf0823a2ff8ce95e263d1a50eb4d81eac1bc8f9e3a90bd8f2a8f3"
+    },
+    {
+      "version": "0043",
+      "file": "0043_team_metadata_requests.sql",
+      "sha256": "1f1617537e975502c695d2ca28ac6cc7139de5bb30f444594eff5371c0073a6e"
+    },
+    {
+      "version": "0044",
+      "file": "0044_team_trial_on_signup.sql",
+      "sha256": "cf9f8e4ad4f61f2cfe8db2d56ace0579086c9c6bb95f0285f65406d8abbd6b8c"
+    },
+    {
+      "version": "0047",
+      "file": "0047_team_invitation_owner_alias_projection.sql",
+      "sha256": "e916a68ff242f021cbb6ec50bb24cd0bcb59d877d4e2c906234baa1c129adecc"
+    },
+    {
+      "version": "0048",
+      "file": "0048_team_request_participant_projection.sql",
+      "sha256": "8ffd6a11ded333f1a5509faa6e6786baddd3b1e66132ad500225e541e4746843"
+    },
+    {
+      "version": "0053",
+      "file": "0053_team_conversation_turns.sql",
+      "sha256": "daa1785eae21c0e6c8327302f6ae8c41e2157cc0de1951c835de6ac9479b3451"
+    },
+    {
+      "version": "0054",
+      "file": "0054_team_conversation_metadata_hardening.sql",
+      "sha256": "5c280f69ea34e659dcea57220682cc37889a97e9c2021cf1bf50b656cb4f8c4a"
+    },
+    {
+      "version": "0055",
+      "file": "0055_team_legacy_approval_hardening.sql",
+      "sha256": "634af0c164dfdd3d5ca551fb3c0fdac8e6a5cf2957cc876c5f0a86dcf432b671"
+    },
+    {
+      "version": "0056",
+      "file": "0056_team_text_deliveries.sql",
+      "sha256": "3b180107fb59978d48c7f3ccee847365930a9763157639fc704ee8ca539a5bae"
+    },
+    {
+      "version": "0058",
+      "file": "0058_team_owner_approved_text_delivery.sql",
+      "sha256": "b885465c507d41e348206db400ed53627a81a8b99c3d69c45970623958b392a1"
+    }
+  ],
+  "excluded_versions": [
+    "0045",
+    "0046",
+    "0049",
+    "0050",
+    "0051",
+    "0052",
+    "0057",
+    "20261019192526",
+    "20261019230000",
+    "20261019235959"
+  ]
+}

@@ -96,16 +96,20 @@ Existing accounts retain the explicit authenticated trial-claim flow from
 immediately**, regardless of `TEAM_FEATURE_ENABLED`. If the Team page/API is
 still unavailable, new accounts can consume the trial while unable to use it.
 Therefore do not apply `0044` early during schema staging: complete the
-read-only preflights and restorability checks first, then apply it only inside
-the approved Team availability window when the remaining approved migrations
-and gate activation can proceed promptly. If that window slips or a check
-blocks progress, stop before `0044`; do not let signups consume trials while
-the feature is unavailable. Existing accounts' manual claim remains available
-only after the Team gate is enabled.
+read-only preflights and recoverability gates first, document a
+signup-monitoring/abort plan, then apply it only inside the approved Team
+availability window when the remaining approved migrations and gate activation
+can proceed promptly. If that window slips or a later target fails, leave the
+flag off, record possible grants made during the window, and stop; do not
+reset/edit entitlements without separately approved remediation. Existing
+accounts' manual claim remains available only after the Team gate is enabled.
 
-Do **not** include paid-roster or paid-checkout migrations in this rollout:
-`0045`, `0046`, `0052`, and `0049`–`0051`. `0037`/`0038` are already recorded as
-present in the last check, but verify before rollout and do not replay them.
+Only the dependency chain above is allowed in this no-card rollout. In
+particular, do **not** include paid-roster, paid-checkout, seat-cap, or excluded
+AI-credit migrations: `0045`, `0046`, `0049`, `0050`, `0051`, `0052`, `0057`,
+`20261019192526`, `20261019230000`, or `20261019235959`. `0037`/`0038` are
+already recorded as present in the last check, but verify before rollout and do
+not replay them.
 
 `20261019192526_team_seat_ceiling_64.sql` is a separate, forward-only
 capacity-hardening migration, not a prerequisite for the no-card trial. It
@@ -127,14 +131,17 @@ delete, or rewrite rows.
 
 - Obtain explicit production change approval and schedule a change window;
   this runbook or JM's prior approval of code/PRs is not database approval.
-- Before beginning **any** production migration in this sequence, take a fresh
-  backup and verify that it is restorable. Record the backup identifier and
-  restore-check evidence in the change record; do not place backup data in this
-  repository. Several migrations mutate existing rows: `0043` backfills
+- Before beginning **each** production target in this sequence, record the
+  provider-reported physical backup identifier, timestamp, retention, and the
+  known recovery procedure/permissions in the change record; do not place
+  backup data in this repository. Do **not** perform a destructive production
+  restore merely to satisfy this gate. If no prior restore drill exists, record
+  that drill as **NOT VERIFIED** and require explicit acceptance in the change
+  record. Several migrations mutate existing rows: `0043` backfills
   `responded_at`, `0054` normalizes existing conversation-turn metadata, and
   `0055` sanitizes legacy shared-space names and approval/request metadata.
-  Review those data effects and confirm the verified backup remains available
-  before applying them.
+  Review those data effects and confirm that the provider still reports the
+  backup available before applying them.
 - For any approved rollout that includes `20261019192526_team_seat_ceiling_64.sql`, the backup/restorability check
   and explicit production-change approval are mandatory even though the
   migration only adds constraints. First verify its prerequisites exist, then
@@ -161,17 +168,54 @@ delete, or rewrite rows.
   nonzero, stop: do not edit/delete data or bypass the migration preflight under
   this runbook. Reconcile separately with explicit authorization and a fresh
   recoverable backup, then rerun the read-only check.
-- Run `npm run verify:supabase-history-remote` with a scoped read-only PAT,
-  then re-read remote migration history and inspect the live schema against each
-  migration's preconditions. Record only the sanitized verifier result. Apply only the specifically reviewed missing SQL,
-  one migration at a time, using the approved Supabase change procedure. Verify
-  resulting schema/RPC behavior after each migration before proceeding.
-- Never run `supabase db push --include-all`, and never replay the migration
-  directory blindly. This repository has duplicate historic numeric prefixes
-  (`0010`, `0026`, `0033`), so broad ordering/replay is unsafe.
-- Stop on any unexpected migration-history row, schema drift, failed statement,
-  or failed post-migration check. Do not mark a migration applied manually to
-  bypass verification. Do not echo credentials or secrets into commands/logs.
+- Immediately before generating each target stage from a clean merged SHA, run
+  `npm run verify:supabase-history-remote` through an authorized scoped,
+  GET-only credential path for exactly `zwyeqqxiwiogmtqwfnby`, then re-read the
+  remote migration ledger and inspect the target's live-schema preconditions.
+  Record only the sanitized verifier result. Any changed remote row, failed
+  source hash, or schema drift is a stop condition; regenerate rather than
+  reusing a stage. Apply only the specifically reviewed missing SQL, one target
+  at a time, and verify resulting schema/RPC behavior after each target before
+  proceeding.
+- Never run `supabase db push --include-all` from this repository root, and
+  never replay the migration directory blindly. This repository has duplicate
+  historic numeric prefixes (`0010`, `0026`, `0033`), so broad ordering/replay
+  is unsafe. The only reviewed exception is a fresh, local-only, single-target
+  stage created with `npm run prepare:team-migration-stage -- --target <version>`.
+  That stage must contain every newly revalidated remote-history **version**
+  exactly once, only the already-applied Team prefix plus one next reviewed
+  target, and no **pending** excluded checkout/AI migration. The recovered
+  timestamped source hashes remain verified by the separate history manifest;
+  older already-applied files (including unrelated historic records) exist only
+  for CLI version alignment and must not run.
+  Immediately before the dry-run **and again immediately before the apply**,
+  run `npm run verify:team-migration-stage -- --verify-stage <absolute-stage-path> --require-linked`
+  from the reviewed source checkout. It must prove the pinned project ref, exact
+  approved target/prefix/history versions, copied SQL hashes, and absence of
+  missing, extra, or symlinked migration files. The dry-run must list exactly
+  that one target before a separately approved apply. Run
+  `supabase --workdir <absolute-stage-path> --profile supabase db push` only
+  with `SUPABASE_DB_PASSWORD` supplied privately in a short `set +x` zsh
+  subshell. Before every link/dry-run/apply invocation, explicitly unset
+  `SUPABASE_DB_PASSWORD`, `SUPABASE_DB_POOLER_CONNECTION_STRING`,
+  `SUPABASE_PROJECT_ID`, `PROJECT_ID`, `SUPABASE_PROFILE`, `SUPABASE_DEBUG`,
+  `SUPABASE_ENV`, `SUPABASE_WORKDIR`, `SUPABASE_HOME`, and `SUPABASE_YES`; then prompt for a newly entered,
+  nonempty password and export it only for that push. Never use `--debug`, run
+  bare `db push --linked`, rely on the checkout CWD or inherited profile, or put
+  the password in argv, an inline environment assignment, `.env`, history, or
+  logs. Do not add
+  `--include-seed` or `--include-roles`; omit `--yes` for the actual apply so
+  the CLI retains its interactive confirmation. Do not batch targets, modify
+  migration history, or reuse a stale stage. This exception was reviewed against
+  Supabase CLI `v2.98.1`; stop and re-review if the installed CLI version
+  changes.
+- Before the non-concurrent index targets `0041`/`0042`, review active long
+  transactions and expected table-size/lock impact for the approved change
+  window; define an abort/escalation path rather than rewriting SQL to a
+  concurrent index. Stop on any unexpected migration-history row, schema drift,
+  failed statement, or failed post-migration check. Do not mark a migration
+  applied manually to bypass verification. Do not echo credentials or secrets
+  into commands/logs.
 - Keep `TEAM_FEATURE_ENABLED` unset/off (`0`) throughout schema migration and
   read-only preflight. Do not enable paid Team checkout, run payment tests, or
   alter Pro/Max.
@@ -180,11 +224,18 @@ delete, or rewrite rows.
 
 With `TEAM_FEATURE_ENABLED=0`, middleware and `verifiedTeamUser` intentionally
 return `503` before user RPCs run; that state can validate only schema/preflight,
-not the product flow. After the exact schema sequence above is verified, enable
-`TEAM_FEATURE_ENABLED=1` only for a controlled deployed smoke while keeping
+not the product flow. `TEAM_FEATURE_ENABLED` is global: before setting it to
+`1`, verify an enforced server-side allowlist that denies every account except
+the two smoke accounts, **or** use an isolated deployment with an equivalent
+DB. Without one of those controls, do not activate the global flag in
+production or describe the smoke as limited to test accounts. After the exact
+schema sequence above is verified and that isolation is evidenced, enable
+`TEAM_FEATURE_ENABLED=1` only for the controlled smoke while keeping
 `TEAM_PAID_CHECKOUT_ENABLED=0`. Use two controlled test accounts, **A (space
-owner)** and **B (invitee)**. Turn the feature flag back off immediately if any
-case fails. Do not call a smoke passed while the gate remains off.
+owner)** and **B (invitee)**. Turn `TEAM_FEATURE_ENABLED` back to `0`
+immediately after **every** smoke attempt, passed or failed, until the separate
+Availability gate and release approval pass. Do not call a smoke passed while
+the gate remains off.
 
 | Case | Action | Required result |
 |---|---|---|
@@ -205,9 +256,11 @@ not test billing or payment.
 ## Availability gate (separate from schema migration)
 
 Controlled flag activation is required to perform the authenticated smoke above;
-it must remain limited to the test accounts and keep paid checkout off. General
-Team availability may proceed only after the approved schema rollout, applicable
-authenticated smoke, and the following separate product gates are complete:
+it may be called limited to the test accounts only when the documented
+server-side allowlist or isolated deployment has been verified, and it must keep
+paid checkout off. General Team availability may proceed only after the
+approved schema rollout, applicable authenticated smoke, and the following
+separate product gates are complete:
 
 - the no-card UI does not fetch/render paid-roster controls that require excluded
   paid migrations (`0052`);

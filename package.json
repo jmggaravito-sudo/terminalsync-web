@@ -14,7 +14,10 @@
     "test:video-funding-sql": "node scripts/test-video-funding-sql.mjs && node scripts/test-video-quote-checkout-sql.mjs",
     "test:video-quote-checkout-sql": "node scripts/test-video-quote-checkout-sql.mjs",
     "check:supabase-history-manifest": "node scripts/check-supabase-history-manifest.mjs",
-    "verify:supabase-history-remote": "node scripts/verify-supabase-remote-migration-sources.mjs"
+    "prepare:team-migration-stage": "node scripts/prepare-team-migration-stage.mjs",
+    "test:prepare-team-migration-stage": "node --test scripts/prepare-team-migration-stage.node.mjs",
+    "verify:supabase-history-remote": "node scripts/verify-supabase-remote-migration-sources.mjs",
+    "verify:team-migration-stage": "node scripts/prepare-team-migration-stage.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.117.1",

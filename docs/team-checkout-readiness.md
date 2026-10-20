@@ -14,9 +14,10 @@ effect of Team access.
   Trial capacity is deliberately one owner seat.
 - **Collaboration:** migrations `0039`, `0042`–`0043`, and `0053`–`0055`
   implement shared-space metadata, invitations, approval prompts, two-way
-  conversation requests, revocation-safe relationship binding, count-only
-  pre-approval metadata, and safe recipient-visible space names. They do not
-  store, import, decrypt, or deliver document/context payloads.
+  conversation requests, relationship binding that can represent `revoked`,
+  count-only pre-approval metadata, and safe recipient-visible space names. The
+  current source does **not** expose an owner-facing revoke RPC/API/UI yet.
+  They do not store, import, decrypt, or deliver document/context payloads.
   Migration `0056` adds the private reviewed-text store, and
   `0058_team_owner_approved_text_delivery.sql` makes its public
   writer source-owner-only: the owner of the exact source space must accept a
@@ -46,6 +47,12 @@ Team flows are claimed as live.
 Keep it off while the production schema is behind the reviewed Team chain. It
 returns a cache-safe `503` for Team APIs and shows an unavailable state at the
 Team page; it never changes Pro/Max or opens any paid checkout.
+
+The `.env.example` defaults are source intent, not production evidence. Before a
+controlled smoke, record sanitized deployed flag evidence: `TEAM_FEATURE_ENABLED=1`
+only for the bounded attempt and `TEAM_PAID_CHECKOUT_ENABLED=0`. Include a
+negative smoke assertion that no paid-roster/checkout UI is exposed, the Team
+checkout handler remains `503`, and no Stripe action is attempted.
 
 The legacy generic `/api/checkout` path intentionally refuses `plan: "team"`
 with `503` before any Stripe call. It remains unsuitable for Team because it
@@ -117,7 +124,11 @@ backup/restore gate, two-account smoke matrix, and feature activation order are
 maintained in [`team-production-rollout.md`](team-production-rollout.md). That
 runbook reflects a read-only history check and must be revalidated before any
 change. Do not infer production readiness from this source document or a green
-PR. In particular, do not run `supabase db push --include-all`.
+PR. In particular, do not run `supabase db push --include-all` from the
+repository root. The narrowly reviewed Team migration exception is documented
+in `team-production-rollout.md`: a fresh, source-locked, one-target staging
+directory with a dry-run that lists exactly one approved migration. It does not
+authorize paid checkout or a broad migration replay.
 
 Keep paid Team checkout disabled until a separate explicit business approval
 covers a real Stripe-only Product/Price, paid subscription/webhook lifecycle,
