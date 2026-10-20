@@ -36,7 +36,11 @@ const teamMigrationNames: Record<number, string> = {
   // 0057_ai_credit_refunds is unrelated to Team; 0058 is the next Team step.
   58: "team_owner_approved_text_delivery",
 };
-const timestampedTeamMigrationFile = "20261019192526_team_seat_ceiling_64.sql";
+const timestampedTeamMigrationFiles = [
+  "20261019192526_team_seat_ceiling_64.sql",
+  "20261019230000_team_checkout_provider_attempt_guard.sql",
+  "20261019235959_team_checkout_completed_lifecycle.sql",
+];
 
 const teamMigrationNumbers = Object.keys(teamMigrationNames).map(Number);
 const migrationFile = (n: number) => `${String(n).padStart(4, "0")}_${teamMigrationNames[n]}.sql`;
@@ -44,18 +48,18 @@ const migration = (n: number) => readFileSync(join(process.cwd(), "supabase/migr
 
 describe("Team migrations 0037-0058 compatibility contract", () => {
   it("keeps the shared-space, approval, trial, roster, and billing prerequisites in source order", () => {
-    const expectedFiles = [...teamMigrationNumbers.map(migrationFile), timestampedTeamMigrationFile];
+    const expectedFiles = [...teamMigrationNumbers.map(migrationFile), ...timestampedTeamMigrationFiles];
     const actualFiles = readdirSync(join(process.cwd(), "supabase/migrations"))
-      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-8])_team_.*\.sql$/.test(file) || file === timestampedTeamMigrationFile)
+      .filter((file) => /^00(?:3[7-9]|4[0-9]|5[0-8])_team_.*\.sql$/.test(file) || timestampedTeamMigrationFiles.includes(file))
       .sort();
 
     expect(actualFiles).toEqual(expectedFiles);
     expect(actualFiles.indexOf("0056_team_text_deliveries.sql")).toBeLessThan(
       actualFiles.indexOf("0058_team_owner_approved_text_delivery.sql"),
     );
-    expect(actualFiles.indexOf("0058_team_owner_approved_text_delivery.sql")).toBeLessThan(
-      actualFiles.indexOf(timestampedTeamMigrationFile),
-    );
+    for (const file of timestampedTeamMigrationFiles) {
+      expect(actualFiles.indexOf("0058_team_owner_approved_text_delivery.sql")).toBeLessThan(actualFiles.indexOf(file));
+    }
 
     for (const [prerequisite, dependent] of [
       [37, 39], // membership gate before shared spaces
@@ -620,7 +624,7 @@ describe("Team migrations 0037-0058 compatibility contract", () => {
       // full chain. Exercise the billing RPC at the inclusive 64-seat boundary
       // and prove 65 rolls back its processed-event row instead of leaving
       // partial durable state.
-      await db.exec(readFileSync(join(process.cwd(), "supabase/migrations", timestampedTeamMigrationFile), "utf8"));
+      await db.exec(readFileSync(join(process.cwd(), "supabase/migrations", timestampedTeamMigrationFiles[0]), "utf8"));
       const applyBilling = (seats: number, suffix: string) => db.query<{ result: string }>(`
         SELECT public.apply_team_stripe_subscription_event(
           $1::uuid,$2::text,$3::text,$4::text,$5::bigint,'active',NULL,NULL,false,
@@ -632,6 +636,13 @@ describe("Team migrations 0037-0058 compatibility contract", () => {
       expect((await db.query<{ count: number }>(`
         SELECT count(*)::int AS count FROM public.team_billing_processed_events WHERE stripe_event_id='evt-seat-65'
       `)).rows[0].count).toBe(0);
+
+      // Timestamped checkout lifecycle hardening must compose after the full
+      // Team chain too. These replacements are intentionally source-only and
+      // leave existing Team entitlement/roster behavior untouched.
+      for (const file of timestampedTeamMigrationFiles.slice(1)) {
+        await db.exec(readFileSync(join(process.cwd(), "supabase/migrations", file), "utf8"));
+      }
 
       await db.query(`UPDATE public.team_space_invitations SET status='revoked' WHERE id=$1::uuid`, [conversationTarget.relationship_id]);
       expect((await db.query(`SELECT * FROM public.read_team_text_delivery_v1($1::uuid,$2::uuid)`,

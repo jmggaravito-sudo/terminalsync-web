@@ -1,16 +1,23 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({
-  constructEvent: vi.fn(),
-  grantPurchasedCredits: vi.fn(),
-  allocateVideoFunding: vi.fn(),
-  retrieveSession: vi.fn(),
-  teamCandidate: vi.fn(() => false),
-  teamCheckoutCandidate: vi.fn(() => false),
-  teamCheckoutSubscriptionCandidate: vi.fn(() => false),
-  parseTeamSubscription: vi.fn(),
-  syncTeamSubscription: vi.fn(),
-}));
+const mocks = vi.hoisted(() => {
+  class InvalidTeamCheckoutWebhookEventError extends Error {}
+  class RetryableTeamCheckoutWebhookError extends Error {}
+  return {
+    constructEvent: vi.fn(),
+    grantPurchasedCredits: vi.fn(),
+    allocateVideoFunding: vi.fn(),
+    retrieveSession: vi.fn(),
+    teamCandidate: vi.fn(() => false),
+    teamCheckoutCandidate: vi.fn(() => false),
+    teamCheckoutSubscriptionCandidate: vi.fn(() => false),
+    parseTeamSubscription: vi.fn(),
+    syncTeamSubscription: vi.fn(),
+    dispatchTeamCheckout: vi.fn(),
+    InvalidTeamCheckoutWebhookEventError,
+    RetryableTeamCheckoutWebhookError,
+  };
+});
 
 vi.mock("@/lib/stripe", () => ({
   stripe: {
@@ -44,6 +51,11 @@ vi.mock("@/lib/teamStripeLifecycle", () => ({
   isTeamSubscriptionCandidate: mocks.teamCandidate,
   parseTeamStripeSubscription: mocks.parseTeamSubscription,
   syncTeamStripeSubscription: mocks.syncTeamSubscription,
+}));
+vi.mock("@/lib/teamCheckoutWebhookDispatcher", () => ({
+  dispatchTeamCheckoutWebhook: mocks.dispatchTeamCheckout,
+  InvalidTeamCheckoutWebhookEventError: mocks.InvalidTeamCheckoutWebhookEventError,
+  RetryableTeamCheckoutWebhookError: mocks.RetryableTeamCheckoutWebhookError,
 }));
 
 vi.mock("@/lib/aiCredits", async (importOriginal) => {
@@ -94,6 +106,8 @@ function signedRequest() {
 beforeEach(() => {
   vi.clearAllMocks();
   delete process.env.VIDEO_EXCLUSIVE_FUNDING_ENABLED;
+  delete process.env.TEAM_FEATURE_ENABLED;
+  delete process.env.TEAM_PAID_CHECKOUT_ENABLED;
   process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
   mocks.constructEvent.mockReturnValue(creditEvent());
   mocks.grantPurchasedCredits.mockResolvedValue(undefined);
@@ -108,11 +122,14 @@ beforeEach(() => {
   mocks.teamCheckoutSubscriptionCandidate.mockReturnValue(false);
   mocks.parseTeamSubscription.mockReturnValue({ userId: "user-verified", subscriptionId: "sub_team_123" });
   mocks.syncTeamSubscription.mockResolvedValue(undefined);
+  mocks.dispatchTeamCheckout.mockResolvedValue("completed");
 });
 
 afterEach(() => {
   delete process.env.STRIPE_WEBHOOK_SECRET;
   delete process.env.STRIPE_TEST_WEBHOOK_SECRET;
+  delete process.env.TEAM_FEATURE_ENABLED;
+  delete process.env.TEAM_PAID_CHECKOUT_ENABLED;
 });
 
 describe("Stripe credit payment webhook", () => {
@@ -366,6 +383,9 @@ describe("Team Stripe webhook isolation", () => {
     });
     expect(mocks.parseTeamSubscription).not.toHaveBeenCalled();
     expect(mocks.syncTeamSubscription).not.toHaveBeenCalled();
+    expect(mocks.dispatchTeamCheckout).not.toHaveBeenCalled();
+    expect(mocks.retrieveSession).not.toHaveBeenCalled();
+    expect(mocks.allocateVideoFunding).not.toHaveBeenCalled();
     const { syncSubscriptionToSupabase, revokeSubscription } = await import("@/lib/subscriptionsSync");
     expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
     expect(revokeSubscription).not.toHaveBeenCalled();
@@ -447,10 +467,15 @@ describe("Team Stripe webhook isolation", () => {
     expect(revokeSubscription).not.toHaveBeenCalled();
   });
 
-  it("returns 503 for Team-marked checkout sessions instead of sending a welcome email", async () => {
+  it.each([
+    "checkout.session.completed",
+    "checkout.session.async_payment_succeeded",
+    "checkout.session.expired",
+    "checkout.session.async_payment_failed",
+  ])("returns 503 before any dispatcher, provider, or database call for gated Team Checkout Session %s", async (type) => {
     const event = {
       id: "evt_team_checkout",
-      type: "checkout.session.completed",
+      type,
       livemode: true,
       data: { object: { id: "cs_team", metadata: { plan: "team" } } },
     };
@@ -460,8 +485,129 @@ describe("Team Stripe webhook isolation", () => {
     const response = await POST(signedRequest());
 
     expect(response.status).toBe(503);
+    expect(mocks.dispatchTeamCheckout).not.toHaveBeenCalled();
+    expect(mocks.retrieveSession).not.toHaveBeenCalled();
+    expect(mocks.allocateVideoFunding).not.toHaveBeenCalled();
     const { sendWelcomeEmail } = await import("@/lib/email");
     expect(sendWelcomeEmail).not.toHaveBeenCalled();
+    expect(mocks.syncTeamSubscription).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    "checkout.session.completed",
+    "checkout.session.async_payment_succeeded",
+    "checkout.session.expired",
+    "checkout.session.async_payment_failed",
+  ])("dispatches the signed Team Checkout Session lifecycle %s without generic fulfillment", async (type) => {
+    process.env.TEAM_FEATURE_ENABLED = "1";
+    process.env.TEAM_PAID_CHECKOUT_ENABLED = "1";
+    const event = {
+      id: `evt_${type.replaceAll(".", "_")}`,
+      type,
+      livemode: true,
+      data: { object: { id: "cs_team", livemode: true, metadata: { plan: "team" } } },
+    };
+    mocks.constructEvent.mockReturnValue(event);
+    mocks.teamCheckoutCandidate.mockReturnValue(true);
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(200);
+    expect(mocks.dispatchTeamCheckout).toHaveBeenCalledWith(event);
+    expect(mocks.parseTeamSubscription).not.toHaveBeenCalled();
+    expect(mocks.syncTeamSubscription).not.toHaveBeenCalled();
+    const { sendWelcomeEmail } = await import("@/lib/email");
+    const { syncSubscriptionToSupabase, revokeSubscription } = await import("@/lib/subscriptionsSync");
+    expect(sendWelcomeEmail).not.toHaveBeenCalled();
+    expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
+    expect(revokeSubscription).not.toHaveBeenCalled();
+  });
+
+  it.each(["customer.subscription.updated", "customer.subscription.deleted"])(
+    "routes later Team Checkout lifecycle %s only through the dedicated finalizer",
+    async (type) => {
+      process.env.TEAM_FEATURE_ENABLED = "1";
+      process.env.TEAM_PAID_CHECKOUT_ENABLED = "1";
+      const event = teamSubscriptionEvent();
+      event.type = type;
+      event.data.object.metadata.team_checkout_intent_id = "intent-route-bound";
+      mocks.constructEvent.mockReturnValue(event);
+      mocks.teamCheckoutSubscriptionCandidate.mockReturnValue(true);
+      mocks.teamCandidate.mockReturnValue(true);
+
+      const response = await POST(signedRequest());
+
+      expect(response.status).toBe(200);
+      expect(mocks.dispatchTeamCheckout).toHaveBeenCalledWith(event);
+      expect(mocks.parseTeamSubscription).not.toHaveBeenCalled();
+      expect(mocks.syncTeamSubscription).not.toHaveBeenCalled();
+      const { syncSubscriptionToSupabase, revokeSubscription } = await import("@/lib/subscriptionsSync");
+      expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
+      expect(revokeSubscription).not.toHaveBeenCalled();
+    },
+  );
+
+  it("rejects malformed route metadata without falling through to Team, Pro, or Max handlers", async () => {
+    process.env.TEAM_FEATURE_ENABLED = "1";
+    process.env.TEAM_PAID_CHECKOUT_ENABLED = "1";
+    const event = teamSubscriptionEvent();
+    event.data.object.metadata.team_checkout_owner_user_id = "";
+    mocks.constructEvent.mockReturnValue(event);
+    mocks.teamCheckoutSubscriptionCandidate.mockReturnValue(true);
+    mocks.teamCandidate.mockReturnValue(true);
+    mocks.dispatchTeamCheckout.mockRejectedValueOnce(
+      new mocks.InvalidTeamCheckoutWebhookEventError("bad route metadata"),
+    );
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      received: false,
+      error: "Team checkout fulfillment payload is invalid",
+    });
+    expect(mocks.parseTeamSubscription).not.toHaveBeenCalled();
+    expect(mocks.syncTeamSubscription).not.toHaveBeenCalled();
+    const { syncSubscriptionToSupabase, revokeSubscription } = await import("@/lib/subscriptionsSync");
+    expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
+    expect(revokeSubscription).not.toHaveBeenCalled();
+  });
+
+  it("does not dispatch signed test-mode route events even when the explicit paid gate is on", async () => {
+    process.env.TEAM_FEATURE_ENABLED = "1";
+    process.env.TEAM_PAID_CHECKOUT_ENABLED = "1";
+    const event = teamSubscriptionEvent(false);
+    event.data.object.metadata.team_checkout_intent_id = "intent-route-bound";
+    mocks.constructEvent.mockReturnValue(event);
+    mocks.teamCheckoutSubscriptionCandidate.mockReturnValue(true);
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ received: true, ignored: "test_team_checkout_event" });
+    expect(mocks.dispatchTeamCheckout).not.toHaveBeenCalled();
+    expect(mocks.parseTeamSubscription).not.toHaveBeenCalled();
+    expect(mocks.syncTeamSubscription).not.toHaveBeenCalled();
+  });
+
+  it("requires a proven live signature before dispatching a live route-bound Team event", async () => {
+    process.env.TEAM_FEATURE_ENABLED = "1";
+    process.env.TEAM_PAID_CHECKOUT_ENABLED = "1";
+    const event = teamSubscriptionEvent(true);
+    event.data.object.metadata.team_checkout_intent_id = "intent-route-bound";
+    mocks.constructEvent.mockImplementation((_raw, _signature, secret) => {
+      if (secret === "whsec_live") throw new Error("wrong secret");
+      return event;
+    });
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec_live";
+    process.env.STRIPE_TEST_WEBHOOK_SECRET = "whsec_test";
+    mocks.teamCheckoutSubscriptionCandidate.mockReturnValue(true);
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(400);
+    expect(mocks.dispatchTeamCheckout).not.toHaveBeenCalled();
+    expect(mocks.parseTeamSubscription).not.toHaveBeenCalled();
     expect(mocks.syncTeamSubscription).not.toHaveBeenCalled();
   });
 

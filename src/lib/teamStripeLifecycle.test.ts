@@ -197,13 +197,19 @@ describe("Team checkout candidate boundaries", () => {
     ["plan", { plan: "team" }],
     ["source", { source: "terminalsync_team" }],
     ["billing version", { team_billing_version: "1" }],
-  ])("recognizes the %s Team marker on each accepted Checkout success event", (_label, metadata) => {
-    expect(isTeamCheckoutCandidate(checkoutEvent("checkout.session.completed", metadata))).toBe(true);
-    expect(isTeamCheckoutCandidate(checkoutEvent("checkout.session.async_payment_succeeded", metadata))).toBe(true);
+  ])("recognizes the %s Team marker on every routed Checkout Session event", (_label, metadata) => {
+    for (const type of [
+      "checkout.session.completed",
+      "checkout.session.async_payment_succeeded",
+      "checkout.session.expired",
+      "checkout.session.async_payment_failed",
+    ]) {
+      expect(isTeamCheckoutCandidate(checkoutEvent(type, metadata))).toBe(true);
+    }
   });
 
   it.each([
-    ["a Team-marked but unsupported Checkout event", "checkout.session.expired", { plan: "team" }],
+    ["a Team-marked but unsupported Checkout event", "checkout.session.opened", { plan: "team" }],
     ["a Team-marked subscription event", "customer.subscription.updated", { plan: "team" }],
     ["an unrelated Pro session", "checkout.session.completed", { plan: "pro", source: "terminalsync" }],
     ["an unmarked Checkout success session", "checkout.session.async_payment_succeeded", {}],
@@ -214,6 +220,15 @@ describe("Team checkout candidate boundaries", () => {
 
   it.each([
     ["intent", "team_checkout_intent_id", "intent-partial"],
+    ["empty owner", "team_checkout_owner_user_id", ""],
+    ["undefined request", "team_checkout_request_id", undefined],
+  ])("fences a partial route-only Checkout Session %s marker", (_label, key, value) => {
+    expect(isTeamCheckoutCandidate(checkoutEvent("checkout.session.expired", { [key]: value } as Record<string, string>))).toBe(true);
+  });
+
+  it.each([
+    ["intent", "team_checkout_intent_id", "intent-partial"],
+    ["session", "team_checkout_session_id", "cs_partial"],
     ["owner", "team_checkout_owner_user_id", ""],
     ["undefined owner", "team_checkout_owner_user_id", undefined],
     ["request", "team_checkout_request_id", "request-malformed"],
@@ -221,6 +236,8 @@ describe("Team checkout candidate boundaries", () => {
     ["seats", "team_checkout_seats", "not-a-seat-count"],
     ["mode", "team_checkout_mode", "payment"],
     ["idempotency", "team_checkout_idempotency_key", ""],
+    ["customer", "team_checkout_customer_id", "cus_partial"],
+    ["subscription", "team_checkout_subscription_id", "sub_partial"],
   ])("fences a route-only %s marker even when metadata is partial or malformed", (_label, key, value) => {
     const event = subscriptionEvent({ metadata: { [key]: value } });
     expect(isTeamCheckoutSubscriptionCandidate(event)).toBe(true);
