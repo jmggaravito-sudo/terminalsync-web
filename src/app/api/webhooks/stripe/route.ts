@@ -240,6 +240,26 @@ export async function POST(req: Request) {
     }
   }
 
+  // Generic subscription, marketplace, and Connect handlers can mutate
+  // production state too. A Stripe test event is useful only as a signature
+  // registration check, and a live event must be proven by the live endpoint
+  // secret before it reaches any of those legacy handlers.
+  if (typeof event.livemode !== "boolean") {
+    return NextResponse.json(
+      { received: false, error: "Stripe event mode is invalid" },
+      { status: 400 },
+    );
+  }
+  if (!event.livemode) {
+    return NextResponse.json({ received: true, ignored: "test_event" });
+  }
+  if (!signatureVerifiedWithLiveSecret) {
+    return NextResponse.json(
+      { received: false, error: "Live Stripe event requires a live webhook signature" },
+      { status: 400 },
+    );
+  }
+
   try {
     await handle(event, signatureVerifiedWithLiveSecret);
   } catch (err) {

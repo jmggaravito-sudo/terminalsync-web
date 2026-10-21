@@ -95,6 +95,21 @@ function creditEvent() {
   };
 }
 
+function genericSubscriptionEvent(livemode = true) {
+  return {
+    id: "evt_subscription_123",
+    type: "customer.subscription.updated",
+    livemode,
+    data: {
+      object: {
+        id: "sub_generic_123",
+        livemode,
+        metadata: {},
+      },
+    },
+  };
+}
+
 function signedRequest() {
   return new Request("https://terminalsync.ai/api/webhooks/stripe", {
     method: "POST",
@@ -331,6 +346,65 @@ describe("general-credit environment boundary (#411)", () => {
     process.env.STRIPE_TEST_WEBHOOK_SECRET = "only-test-fixture";
     expect((await POST(signedRequest())).status).toBe(400);
     expect(mocks.grantPurchasedCredits).not.toHaveBeenCalled();
+  });
+});
+
+describe("generic Stripe webhook environment boundary", () => {
+  it.each([
+    "customer.subscription.created",
+    "customer.subscription.updated",
+    "customer.subscription.deleted",
+  ])("ignores a signed test-mode generic subscription event without changing access: %s", async type => {
+    const event = genericSubscriptionEvent(false);
+    event.type = type;
+    mocks.constructEvent.mockReturnValue(event);
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ received: true, ignored: "test_event" });
+    const { syncSubscriptionToSupabase, revokeSubscription } = await import("@/lib/subscriptionsSync");
+    expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
+    expect(revokeSubscription).not.toHaveBeenCalled();
+  });
+
+  it("rejects a claimed-live generic event signed only with the test secret", async () => {
+    const event = genericSubscriptionEvent(true);
+    mocks.constructEvent.mockImplementation((_raw, _signature, secret) => {
+      if (secret === "whsec_live") throw new Error("wrong secret");
+      return event;
+    });
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec_live";
+    process.env.STRIPE_TEST_WEBHOOK_SECRET = "whsec_test";
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(400);
+    const { syncSubscriptionToSupabase } = await import("@/lib/subscriptionsSync");
+    expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
+  });
+
+  it("continues syncing a live generic subscription verified with the live secret", async () => {
+    const event = genericSubscriptionEvent(true);
+    mocks.constructEvent.mockReturnValue(event);
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(200);
+    const { syncSubscriptionToSupabase } = await import("@/lib/subscriptionsSync");
+    expect(syncSubscriptionToSupabase).toHaveBeenCalledWith(event.data.object);
+  });
+
+  it("rejects a generic event whose livemode is not a boolean", async () => {
+    const event = genericSubscriptionEvent(true);
+    event.livemode = "live" as unknown as boolean;
+    mocks.constructEvent.mockReturnValue(event);
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(400);
+    const { syncSubscriptionToSupabase } = await import("@/lib/subscriptionsSync");
+    expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
   });
 });
 
