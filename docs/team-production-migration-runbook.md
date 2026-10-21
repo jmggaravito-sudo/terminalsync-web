@@ -1,12 +1,23 @@
 # Team production migration runbook (operator reference)
 
-**Status:** Team remains feature-gated. This document is operational guidance only; this PR applies no migration and creates no Stripe objects or charges.
+**Status:** Team remains feature-gated. This document is operational guidance
+only; this PR applies no migration and creates no Stripe objects or charges.
 
 ## Scope and expected state
 
-The verified remote baseline is migrations **0037** and **0038** only for Team, plus exactly these five public Team tables: `team_billing_processed_events`, `team_billing_subscriptions`, `team_comp_grants`, `team_memberships`, and `team_stripe_customer_owners`. Do not infer readiness from local files or a dashboard screenshot; capture the remote metadata-only baseline immediately before any proposed apply.
+The last observed post-apply remote history includes Team migrations **0037**,
+**0038**, and **0039**. `0039_team_shared_spaces_metadata.sql` was applied
+separately under explicit authorization on 2026-10-20 and the immediate CLI
+history verification listed `0039`. This receipt does not prove a deployment,
+feature-flag state, Stripe activity, or authenticated UI smoke. Do not infer
+readiness from local files or a dashboard screenshot; capture the remote
+metadata-only baseline immediately before any proposed apply.
 
-Before the `0039`–`0058` Team sequence, all Team tables introduced by `0039+`—including shared-space, trial, roster, and checkout tables—are expected to be absent. `team_checkout_intents` is introduced by `0049`; its presence before apply is drift and requires aborting for investigation.
+Before continuing with the `0040`–`0058` Team sequence, verify from metadata
+that the `0039` prerequisites are present and that later target objects are
+not already recorded or unexpectedly present. `team_checkout_intents` is
+introduced by `0049`; its presence before that target is drift and requires
+aborting for investigation.
 
 The reviewed source sequence includes numeric Team migrations `0039` through `0056` and the forward-only `0058_team_owner_approved_text_delivery.sql`; the unrelated numeric `0057_ai_credit_refunds.sql` is not a Team rollout step. The timestamped `20261019192526_team_seat_ceiling_64.sql` is separately scoped capacity hardening. `0058` depends on `0056` and hardens text delivery so only the owner of the exact source space can deliver after approving a member-originated turn. It does not rewrite or erase legacy text rows; public read/list fail closed for reverse-direction rows that do not meet the owner-source contract. It does not alter Pro/Max or create payment objects. Confirm the checked-out commit and exact migration filenames before execution; stop on any version/name/content mismatch.
 
