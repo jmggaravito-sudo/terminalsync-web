@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import {
   appendFileSync,
+  chmodSync,
   existsSync,
+  mkdtempSync,
   readFileSync,
   mkdirSync,
   rmSync,
@@ -9,6 +12,7 @@ import {
   unlinkSync,
   writeFileSync,
 } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
@@ -31,6 +35,27 @@ function withStage(target, callback) {
   }
 }
 
+function runGeneratedCliGuard(block, version) {
+  const commandStart = block.indexOf('     "$SUPABASE_CLI_BIN" --workdir');
+  assert.notEqual(commandStart, -1, "generated block must invoke the resolved CLI");
+  const guardOnly = `${block.slice(0, commandStart)}     print -r -- guard-ok\n   )`;
+  const fakeBinDirectory = mkdtempSync(join(tmpdir(), "terminalsync-fake-supabase-"));
+  const fakeCli = join(fakeBinDirectory, "supabase");
+  writeFileSync(
+    fakeCli,
+    `#!/bin/sh\nif [ "$1" = "--version" ]; then\n  printf '%s\\n' '${version}'\n  exit 0\nfi\nexit 42\n`,
+  );
+  chmodSync(fakeCli, 0o755);
+  try {
+    return spawnSync("/bin/zsh", ["-c", guardOnly], {
+      encoding: "utf8",
+      env: { ...process.env, PATH: `${fakeBinDirectory}:${process.env.PATH ?? ""}` },
+    });
+  } finally {
+    rmSync(fakeBinDirectory, { recursive: true, force: true });
+  }
+}
+
 test("prepares and verifies an isolated prefix through exactly one approved Team target", () => {
   withStage("0047", (result) => {
     assert.equal(result.target.version, "0047");
@@ -45,8 +70,34 @@ test("prepares and verifies an isolated prefix through exactly one approved Team
     assert.equal(verifyStageDirectory(result.directory).linked, false);
     const readme = readFileSync(join(result.directory, "README.md"), "utf8");
     assert.match(readme, /--verify-stage/);
-    assert.match(readme, /supabase --workdir "\$\{STAGE\}" --profile supabase db push --linked --include-all --dry-run/);
-    assert.match(readme, /unset SUPABASE_DB_PASSWORD SUPABASE_DB_POOLER_CONNECTION_STRING SUPABASE_PROJECT_ID PROJECT_ID SUPABASE_PROFILE SUPABASE_DEBUG SUPABASE_ENV SUPABASE_WORKDIR SUPABASE_HOME SUPABASE_YES/);
+    const zshBlocks = [...readme.matchAll(/```zsh\n([\s\S]*?)\n\s*```/g)].map((match) => match[1]);
+    assert.equal(zshBlocks.length, 3);
+    for (const block of zshBlocks) {
+      assert.match(block, /SUPABASE_CLI_BIN="\$\(command -v supabase\)"/);
+      assert.match(block, /\[\[ "\$SUPABASE_CLI_BIN" != \/\* \|\| ! -f "\$SUPABASE_CLI_BIN" \|\| ! -x "\$SUPABASE_CLI_BIN" \]\]/);
+      assert.match(block, /if \[\[ "\$actual_version" != '2\.121\.0' \]\]/);
+      assert.match(block, /if ! require_reviewed_supabase_cli; then\n       exit 1\n     fi/);
+    }
+    assert.match(zshBlocks[0], /"\$SUPABASE_CLI_BIN" --workdir "\$\{STAGE\}" --profile supabase link --project-ref zwyeqqxiwiogmtqwfnby/);
+    assert.match(zshBlocks[1], /"\$SUPABASE_CLI_BIN" --workdir "\$\{STAGE\}" --profile supabase db push --linked --include-all --skip-vault --dry-run/);
+    assert.match(zshBlocks[2], /"\$SUPABASE_CLI_BIN" --workdir "\$\{STAGE\}" --profile supabase db push --linked --include-all --skip-vault/);
+    for (const pushBlock of zshBlocks.slice(1)) {
+      const guard = pushBlock.indexOf("if ! require_reviewed_supabase_cli; then");
+      const exportPassword = pushBlock.indexOf("export SUPABASE_DB_PASSWORD");
+      const push = pushBlock.indexOf('"$SUPABASE_CLI_BIN" --workdir');
+      assert.ok(guard >= 0 && guard < exportPassword && exportPassword < push);
+    }
+    const rejectedGuard = runGeneratedCliGuard(zshBlocks[0], "2.98.1");
+    assert.equal(rejectedGuard.status, 1);
+    assert.match(rejectedGuard.stderr, /Expected Supabase CLI 2\.121\.0, got 2\.98\.1; aborting\./);
+    assert.doesNotMatch(rejectedGuard.stdout, /guard-ok/);
+    const acceptedGuard = runGeneratedCliGuard(zshBlocks[0], "2.121.0");
+    assert.equal(acceptedGuard.status, 0);
+    assert.match(acceptedGuard.stdout, /guard-ok/);
+    assert.doesNotMatch(readme, /shasum -a 256/);
+    assert.doesNotMatch(readme, /db push[^\n]*--yes/);
+    assert.match(readme, /outside the stage .*\/private\/tmp/s);
+    assert.match(readme, /unset SUPABASE_DB_PASSWORD SUPABASE_DB_POOLER_CONNECTION_STRING SUPABASE_PROJECT_ID PROJECT_ID SUPABASE_PROFILE SUPABASE_DEBUG SUPABASE_ENV SUPABASE_WORKDIR SUPABASE_HOME SUPABASE_YES SUPABASE_CLI_BIN/);
     assert.match(readme, /Database password required; aborting\./);
   });
 });

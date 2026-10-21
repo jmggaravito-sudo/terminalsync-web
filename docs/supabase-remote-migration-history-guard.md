@@ -94,13 +94,19 @@ prohibido:
   `npm run verify:team-migration-stage -- --verify-stage <ruta-absoluta> --require-linked`
   desde el checkout limpio: debe fijar ref/proyecto, target/prefijo aprobado,
   hashes de SQL copiada y ausencia de SQL extra/faltante/symlinked. Invocar
-  `supabase --workdir <ruta-absoluta> --profile supabase` para link/dry-run/apply,
-  nunca depender del CWD del checkout ni de un perfil heredado. Antes de cada
-  invocación limpiar `SUPABASE_DB_PASSWORD`, `SUPABASE_DB_POOLER_CONNECTION_STRING`,
+  los comandos guardados generados por el stage para link/dry-run/apply, nunca
+  depender del CWD del checkout ni de un perfil heredado. Antes de cada
+  invocación, el guard debe resolver un ejecutable y exigir exactamente
+  Supabase CLI `v2.121.0`; una versión diferente o ilegible aborta. Si hace falta
+  conservar evidencia no secreta de versión/path, guardarla fuera del stage
+  (por ejemplo, en `/private/tmp`), nunca en el stage o repositorio. Limpiar
+  `SUPABASE_DB_PASSWORD`, `SUPABASE_DB_POOLER_CONNECTION_STRING`,
   `SUPABASE_PROJECT_ID`, `PROJECT_ID`, `SUPABASE_PROFILE`, `SUPABASE_DEBUG`,
-  `SUPABASE_ENV`, `SUPABASE_WORKDIR`, `SUPABASE_HOME` y `SUPABASE_YES`; para push, exigir que JM ingrese una
+  `SUPABASE_ENV`, `SUPABASE_WORKDIR`, `SUPABASE_HOME`, `SUPABASE_YES` y
+  `SUPABASE_CLI_BIN`; para push, exigir que JM ingrese una
   contraseña nueva y no vacía dentro de un subshell zsh con `set +x`, y no usar
-  `--debug`. Su dry-run debe listar solo ese archivo antes de un apply autorizado.
+  `--debug`. Incluir `--skip-vault` en cada `db push` de migración-only. Su
+  dry-run debe listar solo ese archivo antes de un apply autorizado.
   Nunca usar esta
   excepción para replay amplio;
 - agregar una migración SQL vacía/no-op para ocupar una versión;

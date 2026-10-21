@@ -30,6 +30,7 @@ const manifestPath = join(
 );
 const scratchRoot = "/private/tmp";
 const expectedProjectRef = "zwyeqqxiwiogmtqwfnby";
+const reviewedSupabaseCliVersion = "2.121.0";
 const stageManifestPath = "supabase/migration-history/team-production-single-target-manifest.json";
 const sha256Pattern = /^[a-f0-9]{64}$/;
 const migrationFilePattern = /^\d+_[a-z0-9][a-z0-9_]*\.sql$/;
@@ -300,6 +301,33 @@ function stageDescriptor({ target, entries }) {
   };
 }
 
+function reviewedCliGuard() {
+  return `     SUPABASE_CLI_BIN=''
+     require_reviewed_supabase_cli() {
+       local actual_version
+       if ! SUPABASE_CLI_BIN="$(command -v supabase)"; then
+         print -u2 'Supabase CLI not found; aborting.'
+         return 1
+       fi
+       if [[ "$SUPABASE_CLI_BIN" != /* || ! -f "$SUPABASE_CLI_BIN" || ! -x "$SUPABASE_CLI_BIN" ]]; then
+         print -u2 'Supabase CLI must resolve to an absolute executable file; aborting.'
+         return 1
+       fi
+       if ! actual_version="$("$SUPABASE_CLI_BIN" --version)"; then
+         print -u2 'Could not read Supabase CLI version; aborting.'
+         return 1
+       fi
+       if [[ "$actual_version" != '${reviewedSupabaseCliVersion}' ]]; then
+         print -u2 "Expected Supabase CLI ${reviewedSupabaseCliVersion}, got $actual_version; aborting."
+         return 1
+       fi
+       print -r -- "Using reviewed Supabase CLI $actual_version at $SUPABASE_CLI_BIN"
+     }
+     if ! require_reviewed_supabase_cli; then
+       exit 1
+     fi`;
+}
+
 function stageReadme({ target, entries, directory }) {
   const teamTargetCount = entries.length - expectedRemoteHistoryVersions.length;
   return `# Controlled one-target Team migration stage
@@ -328,8 +356,12 @@ The normal CLI order check rejects the numeric Team target because verified
 remote history already contains later timestamp versions. In this one-target
 stage, \`--include-all\` makes the official CLI apply and record the exact
 numeric version; it must still be dry-run and reviewed before each apply.
-This procedure was mechanically reviewed with Supabase CLI \`v2.98.1\`; stop
-and re-review if \`supabase --version\` differs at execution time.
+This procedure is reviewed only for exact Supabase CLI
+\`v${reviewedSupabaseCliVersion}\`. Every provider-contacting command below resolves
+an executable and checks that exact version immediately before it runs. A mismatch
+or unreadable binary is a stop condition. Do not write a CLI receipt inside this
+verified stage; if durable operator evidence is required, record only nonsecret
+version/path information outside the stage (for example, under \`/private/tmp\`).
 
 ## Operator sequence — do not skip or batch
 
@@ -357,8 +389,9 @@ an inherited profile, or a bare \`supabase db push\` from the source checkout.
    \`\`\`zsh
    (
      set +x
-     unset SUPABASE_DB_PASSWORD SUPABASE_DB_POOLER_CONNECTION_STRING SUPABASE_PROJECT_ID PROJECT_ID SUPABASE_PROFILE SUPABASE_DEBUG SUPABASE_ENV SUPABASE_WORKDIR SUPABASE_HOME SUPABASE_YES
-     supabase --workdir "\${STAGE}" --profile supabase link --project-ref ${expectedProjectRef}
+     unset SUPABASE_DB_PASSWORD SUPABASE_DB_POOLER_CONNECTION_STRING SUPABASE_PROJECT_ID PROJECT_ID SUPABASE_PROFILE SUPABASE_DEBUG SUPABASE_ENV SUPABASE_WORKDIR SUPABASE_HOME SUPABASE_YES SUPABASE_CLI_BIN
+${reviewedCliGuard()}
+     "$SUPABASE_CLI_BIN" --workdir "\${STAGE}" --profile supabase link --project-ref ${expectedProjectRef}
    )
    \`\`\`
 
@@ -376,13 +409,15 @@ an inherited profile, or a bare \`supabase db push\` from the source checkout.
    creation of a writable \`cli_login_*\` role, including during dry-run, and
    prevents an inherited \`SUPABASE_DEBUG\` setting from logging the database
    protocol. The password remains visible to child processes of that subshell
-   while exported, so keep the terminal private.
+   while exported, so keep the terminal private. The exact-version guard runs
+   before the password export, so its local \`--version\` probe cannot receive
+   that credential.
 5. In a short subshell, run:
 
    \`\`\`zsh
    (
      set +x
-     unset SUPABASE_DB_PASSWORD SUPABASE_DB_POOLER_CONNECTION_STRING SUPABASE_PROJECT_ID PROJECT_ID SUPABASE_PROFILE SUPABASE_DEBUG SUPABASE_ENV SUPABASE_WORKDIR SUPABASE_HOME SUPABASE_YES
+     unset SUPABASE_DB_PASSWORD SUPABASE_DB_POOLER_CONNECTION_STRING SUPABASE_PROJECT_ID PROJECT_ID SUPABASE_PROFILE SUPABASE_DEBUG SUPABASE_ENV SUPABASE_WORKDIR SUPABASE_HOME SUPABASE_YES SUPABASE_CLI_BIN
      if ! read -r -s "SUPABASE_DB_PASSWORD?Database password: "; then
        print -u2 'Password input failed; aborting.'
        exit 1
@@ -392,8 +427,9 @@ an inherited profile, or a bare \`supabase db push\` from the source checkout.
        print -u2 'Database password required; aborting.'
        exit 1
      fi
+${reviewedCliGuard()}
      export SUPABASE_DB_PASSWORD
-     supabase --workdir "\${STAGE}" --profile supabase db push --linked --include-all --dry-run
+     "$SUPABASE_CLI_BIN" --workdir "\${STAGE}" --profile supabase db push --linked --include-all --skip-vault --dry-run
    )
    \`\`\`
 
@@ -408,7 +444,7 @@ an inherited profile, or a bare \`supabase db push\` from the source checkout.
    \`\`\`zsh
    (
      set +x
-     unset SUPABASE_DB_PASSWORD SUPABASE_DB_POOLER_CONNECTION_STRING SUPABASE_PROJECT_ID PROJECT_ID SUPABASE_PROFILE SUPABASE_DEBUG SUPABASE_ENV SUPABASE_WORKDIR SUPABASE_HOME SUPABASE_YES
+     unset SUPABASE_DB_PASSWORD SUPABASE_DB_POOLER_CONNECTION_STRING SUPABASE_PROJECT_ID PROJECT_ID SUPABASE_PROFILE SUPABASE_DEBUG SUPABASE_ENV SUPABASE_WORKDIR SUPABASE_HOME SUPABASE_YES SUPABASE_CLI_BIN
      if ! read -r -s "SUPABASE_DB_PASSWORD?Database password: "; then
        print -u2 'Password input failed; aborting.'
        exit 1
@@ -418,8 +454,9 @@ an inherited profile, or a bare \`supabase db push\` from the source checkout.
        print -u2 'Database password required; aborting.'
        exit 1
      fi
+${reviewedCliGuard()}
      export SUPABASE_DB_PASSWORD
-     supabase --workdir "\${STAGE}" --profile supabase db push --linked --include-all
+     "$SUPABASE_CLI_BIN" --workdir "\${STAGE}" --profile supabase db push --linked --include-all --skip-vault
    )
    \`\`\`
 

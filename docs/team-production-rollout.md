@@ -1,20 +1,26 @@
 # Team production schema rollout (operator runbook)
 
-**Status: source history recovered / production not applied.** This document is
-a controlled plan, not an authorization to change production. On 2026-10-20 a
-read-only Supabase Management API check for project `zwyeqqxiwiogmtqwfnby`
-confirmed the current migration-history rows and recovered the original SQL for
-the ten timestamped rows that were previously remote-only. Their exact local
-source files and offline SHA-256 guard are tracked in
+**Status: source history recovered; `0039` applied separately / Team remains
+feature-gated.** This document is a controlled plan, not an
+authorization to change production. On 2026-10-20 a read-only Supabase
+Management API check for project `zwyeqqxiwiogmtqwfnby` confirmed the current
+migration-history rows and recovered the original SQL for the ten timestamped
+rows that were previously remote-only. Their exact local source files and
+offline SHA-256 guard are tracked in
 `supabase/migration-history/production-history-manifest.json`; the separately
 reviewable `npm run verify:supabase-history-remote` command must recheck those
-responses via GET immediately before rollout. This is source recovery, not a
-`repair`, replay, or remote mutation. The current history still
-has `0037_team_comp_entitlements` and `0038_team_stripe_billing`, while Team
-migrations `0039`–`0058` are not recorded. Re-check immediately before any
-rollout; history and schema may have changed. No Team migration execution,
-feature-flag activation, Team comp grant, or schema mutation was performed by
-this source recovery.
+responses via GET immediately before rollout. This source recovery was not a
+`repair`, replay, or remote mutation.
+
+Separately, under explicit authorization on 2026-10-20,
+`0039_team_shared_spaces_metadata.sql` was applied, and the immediate CLI
+post-apply history verification listed `0039`. At that observed post-apply
+state, Team migrations `0040`–`0058` were not recorded. Re-check history and
+schema immediately before any further rollout; they may have changed. The
+`0039` receipt is migration-history evidence only: it does **not** prove a
+deployment, feature-flag activation, Team comp grant, Stripe activity, or an
+authenticated UI smoke. No Team migration execution, feature-flag activation,
+or schema mutation was performed by the source-recovery operation itself.
 
 ## Scope and migration set
 
@@ -29,7 +35,7 @@ enables paid Team checkout or creates Stripe objects. Pro/Max remain unchanged.
 Apply missing migrations individually, in dependency order, after reviewing the
 SQL and confirming the expected preconditions/effects:
 
-1. Core and automatic trial: `0039 → 0040 → 0041 → 0042 → 0043 → 0044`.
+1. Core and automatic trial: `0040 → 0041 → 0042 → 0043 → 0044`.
 2. Current v2 UI projections: `0047 → 0048`.
 3. Approval and text delivery: `0053 → 0054 → 0055 → 0056 → 0058`.
 
@@ -107,9 +113,9 @@ accounts' manual claim remains available only after the Team gate is enabled.
 Only the dependency chain above is allowed in this no-card rollout. In
 particular, do **not** include paid-roster, paid-checkout, seat-cap, or excluded
 AI-credit migrations: `0045`, `0046`, `0049`, `0050`, `0051`, `0052`, `0057`,
-`20261019192526`, `20261019230000`, or `20261019235959`. `0037`/`0038` are
-already recorded as present in the last check, but verify before rollout and do
-not replay them.
+`20261019192526`, `20261019230000`, or `20261019235959`. `0037`/`0038` and
+`0039` were recorded in the last observed history, but verify before rollout
+and do not replay them.
 
 `20261019192526_team_seat_ceiling_64.sql` is a separate, forward-only
 capacity-hardening migration, not a prerequisite for the no-card trial. It
@@ -194,21 +200,23 @@ delete, or rewrite rows.
   approved target/prefix/history versions, copied SQL hashes, and absence of
   missing, extra, or symlinked migration files. The dry-run must list exactly
   that one target before a separately approved apply. Run
-  `supabase --workdir <absolute-stage-path> --profile supabase db push` only
-  with `SUPABASE_DB_PASSWORD` supplied privately in a short `set +x` zsh
-  subshell. Before every link/dry-run/apply invocation, explicitly unset
+  the generated, guarded CLI command only with `SUPABASE_DB_PASSWORD` supplied
+  privately in a short `set +x` zsh subshell. Before every link/dry-run/apply
+  invocation, it must resolve an executable and require exactly Supabase CLI
+  `v2.121.0`; any different/unreadable version is an abort. Record any durable
+  version/path evidence only outside the verified stage (for example,
+  `/private/tmp`), never in the stage or repository. Explicitly unset
   `SUPABASE_DB_PASSWORD`, `SUPABASE_DB_POOLER_CONNECTION_STRING`,
   `SUPABASE_PROJECT_ID`, `PROJECT_ID`, `SUPABASE_PROFILE`, `SUPABASE_DEBUG`,
-  `SUPABASE_ENV`, `SUPABASE_WORKDIR`, `SUPABASE_HOME`, and `SUPABASE_YES`; then prompt for a newly entered,
+  `SUPABASE_ENV`, `SUPABASE_WORKDIR`, `SUPABASE_HOME`, `SUPABASE_YES`, and
+  `SUPABASE_CLI_BIN`; then prompt for a newly entered,
   nonempty password and export it only for that push. Never use `--debug`, run
   bare `db push --linked`, rely on the checkout CWD or inherited profile, or put
   the password in argv, an inline environment assignment, `.env`, history, or
-  logs. Do not add
+  logs. Include `--skip-vault` in each migration-only `db push`; do not add
   `--include-seed` or `--include-roles`; omit `--yes` for the actual apply so
   the CLI retains its interactive confirmation. Do not batch targets, modify
-  migration history, or reuse a stale stage. This exception was reviewed against
-  Supabase CLI `v2.98.1`; stop and re-review if the installed CLI version
-  changes.
+  migration history, or reuse a stale stage.
 - Before the non-concurrent index targets `0041`/`0042`, review active long
   transactions and expected table-size/lock impact for the approved change
   window; define an abort/escalation path rather than rewriting SQL to a
