@@ -1,10 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const { getSupabaseAdmin, listPaidTeamRoster } = vi.hoisted(() => ({
-  getSupabaseAdmin: vi.fn(), listPaidTeamRoster: vi.fn(),
+const { verifiedTeamUser, listPaidTeamRoster } = vi.hoisted(() => ({
+  verifiedTeamUser: vi.fn(), listPaidTeamRoster: vi.fn(),
 }));
-vi.mock("@/lib/supabaseAdmin", () => ({ getSupabaseAdmin }));
-vi.mock("@/lib/teamFeature", () => ({ isTeamFeatureEnabled: vi.fn(() => process.env.TEAM_FEATURE_ENABLED === "1") }));
+vi.mock("@/lib/teamMetadata", () => ({ verifiedTeamUser }));
 vi.mock("@/lib/teamPaidRoster", () => ({
   listPaidTeamRoster,
   TeamPaidRosterError: class TeamPaidRosterError extends Error {
@@ -12,6 +11,8 @@ vi.mock("@/lib/teamPaidRoster", () => ({
   },
 }));
 import { DELETE, GET, POST } from "./route";
+
+const smokeUser = "00000000-0000-4000-8000-000000000001";
 
 const req = (token = "valid") => new Request("https://example.test/api/team/paid-roster", {
   headers: token ? { authorization: `Bearer ${token}` } : {},
@@ -23,9 +24,9 @@ describe("paid Team roster API", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
-    getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async (token: string) => token === "valid"
-      ? { data: { user: { id: "verified-owner" } }, error: null }
-      : { data: { user: null }, error: { status: 401 } }) } });
+    verifiedTeamUser.mockImplementation(async (request: Request) => request.headers.get("authorization") === "Bearer valid"
+      ? { id: smokeUser }
+      : null);
     listPaidTeamRoster.mockResolvedValue({
       has_active_team: true,
       seat_limit: 3,
@@ -36,10 +37,9 @@ describe("paid Team roster API", () => {
     });
   });
 
-  it("does not authenticate or read roster when Team is disabled", async () => {
-    vi.stubEnv("TEAM_FEATURE_ENABLED", "0");
+  it("does not read the roster when the shared Team gate denies access", async () => {
+    verifiedTeamUser.mockRejectedValue(new Error("Team smoke allowlist is unavailable"));
     expect((await GET(req())).status).toBe(503);
-    expect(getSupabaseAdmin).not.toHaveBeenCalled();
     expect(listPaidTeamRoster).not.toHaveBeenCalled();
   });
 
@@ -47,7 +47,7 @@ describe("paid Team roster API", () => {
     const response = await GET(req());
 
     expect(response.status).toBe(200);
-    expect(listPaidTeamRoster).toHaveBeenCalledWith("verified-owner");
+    expect(listPaidTeamRoster).toHaveBeenCalledWith(smokeUser);
     const body = await response.json();
     expect(body).toEqual(expect.objectContaining({ roster: [{ member_number: 1, assigned_at: "2026-10-18T00:00:00.000Z", eligible: true }] }));
     expect(JSON.stringify(body)).not.toContain("employee_user_id");
@@ -76,7 +76,7 @@ describe("paid Team roster API", () => {
     expect(remove.status).toBe(405);
     expect(post.headers.get("allow")).toBe("GET");
     expect(await post.json()).toEqual({ error: "Team roster changes are unavailable until secure employee selection is ready" });
-    expect(getSupabaseAdmin).not.toHaveBeenCalled();
+    expect(verifiedTeamUser).not.toHaveBeenCalled();
     expect(listPaidTeamRoster).not.toHaveBeenCalled();
   });
 });

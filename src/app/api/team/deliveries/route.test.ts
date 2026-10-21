@@ -8,7 +8,7 @@ vi.mock("@/lib/teamMetadata", async (importOriginal) => ({
 import { GET } from "./route";
 
 const threadId = "00000000-0000-4000-8000-000000000001";
-const userId = "00000000-0000-4000-8000-000000000002";
+const userId = "00000000-0000-4000-8000-000000000001";
 const request = (url = `https://x.test/api/team/deliveries?threadId=${threadId}`, auth = true) => new Request(url, {
   headers: auth ? { authorization: "Bearer good" } : {},
 });
@@ -19,6 +19,7 @@ describe("Team recipient delivery inbox metadata API", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", "00000000-0000-4000-8000-000000000001,00000000-0000-4000-8000-000000000002");
     getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async () => ({ data: { user: { id: userId } }, error: null })) } });
     teamMetadataRpc.mockResolvedValue([{
       id: "00000000-0000-4000-8000-000000000003",

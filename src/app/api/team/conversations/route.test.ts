@@ -47,10 +47,11 @@ describe("Team conversation root API", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", "00000000-0000-4000-8000-000000000001,00000000-0000-4000-8000-000000000002");
     getSupabaseAdmin.mockReturnValue({
       auth: {
         getUser: vi.fn(async (token: string) => token === "ok"
-          ? { data: { user: { id: "verified-user" } }, error: null }
+          ? { data: { user: { id: "00000000-0000-4000-8000-000000000001" } }, error: null }
           : { data: { user: null }, error: Object.assign(new Error(), { status: 401 }) }),
       },
     });
@@ -76,7 +77,7 @@ describe("Team conversation root API", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
     expect(teamMetadataRpc).toHaveBeenCalledWith("list_team_conversation_threads_v3", {
-      p_user_id: "verified-user",
+      p_user_id: "00000000-0000-4000-8000-000000000001",
       p_limit: 1,
       p_before_activity_at: null,
       p_before_thread_id: null,
@@ -136,7 +137,7 @@ describe("Team conversation root API", () => {
     }));
     expect(response.status).toBe(200);
     expect(teamMetadataRpc).toHaveBeenCalledWith("create_team_space_conversation_turn_v4", {
-      p_user_id: "verified-user",
+      p_user_id: "00000000-0000-4000-8000-000000000001",
       p_space_id: spaceId,
       p_relationship_id: relationshipId,
       p_request_kind: "document",

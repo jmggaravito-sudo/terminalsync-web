@@ -1,32 +1,47 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const { getSupabaseAdmin, startTeamUniversalTrial, getTeamEntitlement } = vi.hoisted(() => ({
-  getSupabaseAdmin: vi.fn(),
-  startTeamUniversalTrial: vi.fn(),
-  getTeamEntitlement: vi.fn(),
-}));
-vi.mock("@/lib/supabaseAdmin", () => ({ getSupabaseAdmin }));
+const { TeamMetadataError, verifiedTeamUser, startTeamUniversalTrial, getTeamEntitlement } = vi.hoisted(() => {
+  class TeamMetadataError extends Error {}
+  return {
+    TeamMetadataError,
+    verifiedTeamUser: vi.fn(),
+    startTeamUniversalTrial: vi.fn(),
+    getTeamEntitlement: vi.fn(),
+  };
+});
+vi.mock("@/lib/teamMetadata", () => ({ TeamMetadataError, verifiedTeamUser }));
 vi.mock("@/lib/teamTrial", () => ({ startTeamUniversalTrial, getTeamEntitlement, TeamTrialServiceError: Error }));
+vi.mock("@/lib/teamFeature", () => ({ isTeamFeatureEnabled: vi.fn(() => process.env.TEAM_FEATURE_ENABLED === "1") }));
 
 import { GET, POST } from "./route";
 
-vi.mock("@/lib/teamFeature", () => ({ isTeamFeatureEnabled: vi.fn(() => process.env.TEAM_FEATURE_ENABLED === "1") }));
+const smokeUser = "00000000-0000-4000-8000-000000000001";
 
 describe("Team trial API", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
-    getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async (token: string) => token === "valid"
-      ? { data: { user: { id: "verified-user" } }, error: null }
-      : { data: { user: null }, error: new Error("invalid") }) } });
+    verifiedTeamUser.mockImplementation(async (request: Request) => request.headers.get("authorization") === "Bearer valid"
+      ? { id: smokeUser }
+      : null);
     startTeamUniversalTrial.mockResolvedValue({ result: "started", startsAt: "2026-10-17T00:00:00Z", expiresAt: "2026-10-24T00:00:00Z" });
     getTeamEntitlement.mockResolvedValue({ eligible: true, seat_limit: 1, source: "universal_trial", expires_at: "2026-10-24T00:00:00Z" });
   });
 
   afterEach(() => vi.unstubAllEnvs());
 
-  it("keeps trial claim and entitlement lookup closed unless Team is explicitly enabled", async () => {
-    delete process.env.TEAM_FEATURE_ENABLED;
+  it("keeps the established Team-off behavior before any entitlement read or mutation", async () => {
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "0");
+    const request = new Request("https://example.test/api/team/trial", { method: "POST", headers: { authorization: "Bearer valid" } });
+    expect((await POST(request)).status).toBe(503);
+    expect((await GET(new Request("https://example.test/api/team/trial", { headers: { authorization: "Bearer valid" } }))).status).toBe(503);
+    expect(verifiedTeamUser).not.toHaveBeenCalled();
+    expect(startTeamUniversalTrial).not.toHaveBeenCalled();
+    expect(getTeamEntitlement).not.toHaveBeenCalled();
+  });
+
+  it("keeps trial claim and entitlement lookup closed when the shared Team gate denies access", async () => {
+    verifiedTeamUser.mockRejectedValue(new TeamMetadataError("Team smoke allowlist is unavailable"));
     const request = new Request("https://example.test/api/team/trial", { method: "POST", headers: { authorization: "Bearer valid" } });
     expect((await POST(request)).status).toBe(503);
     expect((await GET(new Request("https://example.test/api/team/trial", { headers: { authorization: "Bearer valid" } }))).status).toBe(503);
@@ -40,8 +55,8 @@ describe("Team trial API", () => {
       body: JSON.stringify({ userId: "attacker", startsAt: "2000-01-01", durationDays: 999, seatCount: 999 }),
     }));
     expect(response.status).toBe(201);
-    expect(startTeamUniversalTrial).toHaveBeenCalledWith("verified-user");
-    expect(getTeamEntitlement).toHaveBeenCalledWith("verified-user");
+    expect(startTeamUniversalTrial).toHaveBeenCalledWith(smokeUser);
+    expect(getTeamEntitlement).toHaveBeenCalledWith(smokeUser);
   });
 
   it("rejects absent or invalid authentication before any entitlement mutation", async () => {
@@ -53,7 +68,7 @@ describe("Team trial API", () => {
   it("returns only the authenticated user's current entitlement", async () => {
     const response = await GET(new Request("https://example.test/api/team/trial", { headers: { authorization: "Bearer valid" } }));
     expect(response.status).toBe(200);
-    expect(getTeamEntitlement).toHaveBeenCalledWith("verified-user");
+    expect(getTeamEntitlement).toHaveBeenCalledWith(smokeUser);
   });
 
   it("projects entitlement output at the HTTP boundary", async () => {

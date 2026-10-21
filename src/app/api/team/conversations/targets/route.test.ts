@@ -24,7 +24,8 @@ describe("Team conversation target API", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
-    getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async () => ({ data: { user: { id: "verified-user" } }, error: null })) } });
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", "00000000-0000-4000-8000-000000000001,00000000-0000-4000-8000-000000000002");
+    getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async () => ({ data: { user: { id: "00000000-0000-4000-8000-000000000001" } }, error: null })) } });
     teamMetadataRpc.mockResolvedValue([]);
   });
 
@@ -41,7 +42,7 @@ describe("Team conversation target API", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
     expect(teamMetadataRpc).toHaveBeenCalledWith("list_team_conversation_targets_v3", {
-      p_user_id: "verified-user",
+      p_user_id: "00000000-0000-4000-8000-000000000001",
       p_space_id: spaceId,
     });
     const body = await response.json();

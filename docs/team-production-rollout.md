@@ -238,7 +238,12 @@ the two smoke accounts, **or** use an isolated deployment with an equivalent
 DB. Without one of those controls, do not activate the global flag in
 production or describe the smoke as limited to test accounts. After the exact
 schema sequence above is verified and that isolation is evidenced, enable
-`TEAM_FEATURE_ENABLED=1` only for the controlled smoke while keeping
+`TEAM_FEATURE_ENABLED=1` only for the controlled smoke while setting the
+server-only `TEAM_SMOKE_ALLOWLIST_USER_IDS` to exactly two distinct verified
+Supabase Auth UUIDs. A missing, duplicate, malformed, or widened list must
+deny Team to every account; do not substitute email addresses or client input.
+Admin Team comps may target only one of those existing UUIDs and must not
+create a Team pre-grant during this smoke. Keep
 `TEAM_PAID_CHECKOUT_ENABLED=0`. Use two controlled test accounts, **A (space
 owner)** and **B (invitee)**. Turn `TEAM_FEATURE_ENABLED` back to `0`
 immediately after **every** smoke attempt, passed or failed, until the separate

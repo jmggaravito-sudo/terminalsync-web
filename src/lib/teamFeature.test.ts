@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { isTeamFeatureEnabled, isTeamPaidCheckoutEnabled } from "./teamFeature";
+import {
+  hasValidTeamSmokeAllowlist,
+  isTeamFeatureEnabled,
+  isTeamPaidCheckoutEnabled,
+  isTeamSmokeUserAllowed,
+} from "./teamFeature";
+
+const smokeUserA = "00000000-0000-4000-8000-000000000001";
+const smokeUserB = "00000000-0000-4000-8000-000000000002";
 
 describe("isTeamFeatureEnabled", () => {
   it("fails closed unless the exact server flag is enabled", () => {
@@ -20,5 +28,26 @@ describe("isTeamPaidCheckoutEnabled", () => {
     expect(isTeamPaidCheckoutEnabled({ TEAM_FEATURE_ENABLED: "1" })).toBe(false);
     expect(isTeamPaidCheckoutEnabled({ TEAM_FEATURE_ENABLED: "1", TEAM_PAID_CHECKOUT_ENABLED: "true" })).toBe(false);
     expect(isTeamPaidCheckoutEnabled({ TEAM_FEATURE_ENABLED: "1", TEAM_PAID_CHECKOUT_ENABLED: "1" })).toBe(true);
+  });
+});
+
+describe("Team controlled-smoke allowlist", () => {
+  it("requires exactly two distinct Supabase Auth UUIDs", () => {
+    expect(hasValidTeamSmokeAllowlist({})).toBe(false);
+    expect(hasValidTeamSmokeAllowlist({ TEAM_SMOKE_ALLOWLIST_USER_IDS: "" })).toBe(false);
+    expect(hasValidTeamSmokeAllowlist({ TEAM_SMOKE_ALLOWLIST_USER_IDS: smokeUserA })).toBe(false);
+    expect(hasValidTeamSmokeAllowlist({ TEAM_SMOKE_ALLOWLIST_USER_IDS: `${smokeUserA},${smokeUserA}` })).toBe(false);
+    expect(hasValidTeamSmokeAllowlist({ TEAM_SMOKE_ALLOWLIST_USER_IDS: `${smokeUserA},not-a-supabase-user-id` })).toBe(false);
+    expect(hasValidTeamSmokeAllowlist({ TEAM_SMOKE_ALLOWLIST_USER_IDS: `${smokeUserA},${smokeUserB},00000000-0000-4000-8000-000000000003` })).toBe(false);
+    expect(hasValidTeamSmokeAllowlist({ TEAM_SMOKE_ALLOWLIST_USER_IDS: ` ${smokeUserA} , ${smokeUserB} ` })).toBe(true);
+  });
+
+  it("allows only an exact verified allowlisted user id", () => {
+    const environment = { TEAM_SMOKE_ALLOWLIST_USER_IDS: `${smokeUserA},${smokeUserB}` };
+    expect(isTeamSmokeUserAllowed(smokeUserA, environment)).toBe(true);
+    expect(isTeamSmokeUserAllowed(smokeUserA.toUpperCase(), environment)).toBe(true);
+    expect(isTeamSmokeUserAllowed("00000000-0000-4000-8000-000000000003", environment)).toBe(false);
+    expect(isTeamSmokeUserAllowed(`${smokeUserA}-suffix`, environment)).toBe(false);
+    expect(isTeamSmokeUserAllowed(smokeUserA, {})).toBe(false);
   });
 });
