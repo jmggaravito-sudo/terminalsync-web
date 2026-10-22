@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { authenticate, isAdmin } from "@/lib/marketplace/auth";
-import { isTeamFeatureEnabled } from "@/lib/teamFeature";
+import { hasValidTeamSmokeAllowlist, isTeamFeatureEnabled, isTeamSmokeUserAllowed } from "@/lib/teamFeature";
 import {
   grantIncludedAi,
 } from "@/lib/subscriptionState";
@@ -24,7 +24,8 @@ import {
  *
  * Endpoints:
  *   POST   { email, plan: "pro"|"max"|"team", months? }
- *          → grant / extend a Pro/Max comp, or pre-grant Team before signup
+ *          → grant / extend a Pro/Max comp, or grant Team only to an existing
+ *            allowlisted smoke account
  *   GET                                            → list active comps
  *   DELETE { email }                               → revoke (back to free)
  */
@@ -36,6 +37,20 @@ export const dynamic = "force-dynamic";
 // subs carry `cus_…` / `sub_…`; comps carry these.
 const COMP_CUSTOMER = "comp";
 const COMP_SUB_PREFIX = "comp_";
+
+function teamUnavailable() {
+  return NextResponse.json(
+    { error: "Team is temporarily unavailable" },
+    { status: 503, headers: { "Cache-Control": "no-store" } },
+  );
+}
+
+function teamSmokeTargetDenied() {
+  return NextResponse.json(
+    { error: "Team smoke access is limited to the configured accounts" },
+    { status: 403, headers: { "Cache-Control": "no-store" } },
+  );
+}
 
 type Plan = "pro" | "max" | "team";
 
@@ -101,21 +116,17 @@ export async function POST(req: Request) {
   if (!user || !isAdmin(user)) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
-  // Check the Team gate before initializing Supabase so an unavailable schema
-  // always produces the same explicit, uncached response, even if the admin
-  // database client is also misconfigured. Clone to preserve Pro/Max parsing.
-  if (!isTeamFeatureEnabled()) {
-    try {
-      const submittedPlan = (await req.clone().json() as { plan?: unknown }).plan;
-      if (submittedPlan === "team") {
-        return NextResponse.json(
-          { error: "Team is temporarily unavailable" },
-          { status: 503, headers: { "Cache-Control": "no-store" } },
-        );
-      }
-    } catch {
-      // Keep the existing validation/configuration behavior for malformed JSON.
+  // Check Team controls before initializing Supabase. A Team comp can create
+  // durable membership state, so the controlled two-account smoke may only
+  // target an existing ID listed in the server-only allowlist. Clone to keep
+  // Pro/Max parsing and validation behavior unchanged below.
+  try {
+    const submittedPlan = (await req.clone().json() as { plan?: unknown }).plan;
+    if (submittedPlan === "team" && (!isTeamFeatureEnabled() || !hasValidTeamSmokeAllowlist())) {
+      return teamUnavailable();
     }
+  } catch {
+    // Keep the existing validation/configuration behavior for malformed JSON.
   }
   const sb = getSupabaseAdmin();
   if (!sb) {
@@ -152,9 +163,10 @@ export async function POST(req: Request) {
   }
   if (lookup.kind === "not_found") {
     if (plan === "team") {
-      const { error } = await sb.from("team_comp_grants").upsert({ email, months, granted_by: user.email, claimed_at: null, claimed_user_id: null, updated_at: new Date().toISOString() }, { onConflict: "email" });
-      if (error) return NextResponse.json({ error: "Team pre-grant failed" }, { status: 500 });
-      return NextResponse.json({ ok: true, pending: true, email, plan, months });
+      // A pre-grant has no verified Auth UUID to compare to the allowlist.
+      // Reject it rather than persisting a deferred entitlement for an account
+      // outside the two controlled smoke users.
+      return teamSmokeTargetDenied();
     }
     // No account yet → PRE-GRANT. Store the intent keyed by email; the
     // `handle_new_user` DB trigger consumes it automatically when this
@@ -189,6 +201,7 @@ export async function POST(req: Request) {
   const target = lookup.target;
 
   if (plan === "team") {
+    if (!isTeamSmokeUserAllowed(target.id)) return teamSmokeTargetDenied();
     const { data, error } = await sb.rpc("admin_grant_team_comp", { p_user_id: target.id, p_starts_at: new Date().toISOString(), p_expires_at: new Date(Date.now() + months * 30 * 86400_000).toISOString(), p_granted_by: user.email });
     if (error) return NextResponse.json({ error: "Team membership grant failed" }, { status: 500 });
     if (data === "paid_membership") return NextResponse.json({ error: "that account already has a paid Team membership" }, { status: 409 });

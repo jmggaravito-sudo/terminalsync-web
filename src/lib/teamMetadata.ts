@@ -1,5 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
-import { isTeamFeatureEnabled } from "@/lib/teamFeature";
+import { hasValidTeamSmokeAllowlist, isTeamFeatureEnabled, isTeamSmokeUserAllowed } from "@/lib/teamFeature";
 
 export class TeamMetadataError extends Error {}
 export async function verifiedTeamUser(req: Request) {
@@ -7,6 +7,10 @@ export async function verifiedTeamUser(req: Request) {
   // while Team is disabled, before even validating a bearer token or touching
   // Supabase. Route handlers translate this service error to a fail-closed 503.
   if (!isTeamFeatureEnabled()) throw new TeamMetadataError("Team is not available yet");
+  // Enabling the global flag is only permitted for the controlled two-account
+  // smoke. Validate the server-only allowlist before consulting Auth so a
+  // missing or malformed rollout config cannot expose Team to any account.
+  if (!hasValidTeamSmokeAllowlist()) throw new TeamMetadataError("Team smoke allowlist is unavailable");
   const h=req.headers.get("authorization")??"";
   const token=h.startsWith("Bearer ")?h.slice(7).trim():"";
   if(!token)return null;
@@ -20,7 +24,12 @@ export async function verifiedTeamUser(req: Request) {
     if(status===400||status===401||status===403)return null;
     throw new TeamMetadataError("Auth service unavailable");
   }
-  return result.data.user??null;
+  const user = result.data.user ?? null;
+  if (!user) return null;
+  // user.id came from Supabase's verified bearer lookup above. Never trust a
+  // caller-supplied identity when deciding whether this smoke may use Team.
+  if (!isTeamSmokeUserAllowed(user.id)) throw new TeamMetadataError("Team smoke access is unavailable");
+  return user;
 }
 export async function teamMetadataRpc<T>(name: string, args: Record<string, unknown>): Promise<T> {
   let sb; try { sb = getSupabaseAdmin(); } catch { throw new TeamMetadataError("Team metadata database unavailable"); }

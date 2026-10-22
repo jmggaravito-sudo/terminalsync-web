@@ -25,6 +25,9 @@ vi.mock("@/lib/subscriptionState", () => ({
 
 type QueryResult = { data?: unknown; error?: { message: string } | null };
 
+const smokeUser = "00000000-0000-4000-8000-000000000001";
+const smokeAllowlist = `${smokeUser},00000000-0000-4000-8000-000000000002`;
+
 /** A small thenable Supabase query double that supports the fluent methods
  * used by the comp route while keeping each test focused on the write. */
 function query(result: QueryResult) {
@@ -164,41 +167,40 @@ describe("admin comp included-AI entitlement", () => {
     expect(migration).toContain("'included_ai'");
   });
 
-  it("stores a new-user Team grant separately from base-plan comp grants", async () => {
+  it("does not create a Team pre-grant because it has no verified allowlisted user id", async () => {
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", smokeAllowlist);
     const sb = supabaseFor({
       profiles: { data: null, error: null },
-      team_comp_grants: { error: null },
     });
     mocks.getSupabaseAdmin.mockReturnValue(sb);
 
     const { POST } = await import("./route");
     const response = await POST(request("POST", { email: "NEW@EXAMPLE.COM", plan: "team" }));
-    const body = await response.json();
 
-    expect(response.status).toBe(200);
-    expect(body).toMatchObject({ ok: true, pending: true, email: "new@example.com", plan: "team" });
-    expect(sb.queries.team_comp_grants[0].upsert).toHaveBeenCalledWith(
-      expect.objectContaining({ email: "new@example.com", months: 12 }),
-      { onConflict: "email" },
-    );
+    expect(response.status).toBe(403);
+    await expect(response.json()).resolves.toEqual({ error: "Team smoke access is limited to the configured accounts" });
+    expect(sb.queries.team_comp_grants).toBeUndefined();
     expect(sb.queries.comp_grants).toBeUndefined();
+    expect(mocks.rpc).not.toHaveBeenCalled();
     expect(mocks.grantIncludedAi).not.toHaveBeenCalled();
   });
 
-  it("returns failure when the Team pre-grant insert fails", async () => {
+  it("fails closed before any database access when the Team smoke allowlist is absent", async () => {
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
-    const sb = supabaseFor({ profiles: { data: null, error: null }, team_comp_grants: { error: { message: "write failed" } } });
-    mocks.getSupabaseAdmin.mockReturnValue(sb);
+    mocks.getSupabaseAdmin.mockReturnValue(null);
     const { POST } = await import("./route");
     const response = await POST(request("POST", { email: "new@example.com", plan: "team" }));
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(503);
+    expect(mocks.getSupabaseAdmin).not.toHaveBeenCalled();
+    expect(mocks.rpc).not.toHaveBeenCalled();
   });
 
   it("grants existing users additive Team membership without changing Pro/Max subscription", async () => {
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", smokeAllowlist);
     const sb = supabaseFor({
-      profiles: { data: { id: "user-1", email: "person@example.com" }, error: null },
+      profiles: { data: { id: smokeUser, email: "person@example.com" }, error: null },
     });
     mocks.getSupabaseAdmin.mockReturnValue(sb);
 
@@ -206,7 +208,7 @@ describe("admin comp included-AI entitlement", () => {
     const response = await POST(request("POST", { email: "person@example.com", plan: "team" }));
 
     expect(response.status).toBe(200);
-    expect(mocks.rpc).toHaveBeenCalledWith("admin_grant_team_comp", expect.objectContaining({ p_user_id: "user-1" }));
+    expect(mocks.rpc).toHaveBeenCalledWith("admin_grant_team_comp", expect.objectContaining({ p_user_id: smokeUser }));
     expect(sb.queries.subscriptions).toBeUndefined();
     expect(sb.queries.comp_grants).toBeUndefined();
     expect(mocks.grantIncludedAi).not.toHaveBeenCalled();
@@ -214,8 +216,9 @@ describe("admin comp included-AI entitlement", () => {
 
   it("does not overwrite an existing paid Team membership", async () => {
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", smokeAllowlist);
     const sb = supabaseFor({
-      profiles: { data: { id: "user-1", email: "person@example.com" }, error: null },
+      profiles: { data: { id: smokeUser, email: "person@example.com" }, error: null },
     });
     mocks.rpc.mockResolvedValueOnce({ data: "paid_membership", error: null });
     mocks.getSupabaseAdmin.mockReturnValue(sb);
@@ -228,8 +231,26 @@ describe("admin comp included-AI entitlement", () => {
     expect(sb.queries.subscriptions).toBeUndefined();
   });
 
+  it("does not grant Team membership to a non-allowlisted existing profile", async () => {
+    vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", smokeAllowlist);
+    const sb = supabaseFor({
+      profiles: { data: { id: "00000000-0000-4000-8000-000000000003", email: "person@example.com" }, error: null },
+    });
+    mocks.getSupabaseAdmin.mockReturnValue(sb);
+
+    const { POST } = await import("./route");
+    const response = await POST(request("POST", { email: "person@example.com", plan: "team" }));
+
+    expect(response.status).toBe(403);
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(sb.queries.team_comp_grants).toBeUndefined();
+    expect(sb.queries.subscriptions).toBeUndefined();
+  });
+
   it("fails closed when profile lookup fails instead of creating a pre-grant", async () => {
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", smokeAllowlist);
     const sb = supabaseFor({
       profiles: { data: null, error: { message: "database unavailable" } },
     });

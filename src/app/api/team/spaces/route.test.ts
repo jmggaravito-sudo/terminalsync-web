@@ -6,7 +6,10 @@ const { getSupabaseAdmin, teamMetadataRpc } = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/supabaseAdmin", () => ({ getSupabaseAdmin }));
-vi.mock("@/lib/teamFeature", () => ({ isTeamFeatureEnabled: vi.fn(() => process.env.TEAM_FEATURE_ENABLED === "1") }));
+vi.mock("@/lib/teamFeature", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@/lib/teamFeature")>(),
+  isTeamFeatureEnabled: vi.fn(() => process.env.TEAM_FEATURE_ENABLED === "1"),
+}));
 vi.mock("@/lib/teamMetadata", async (importOriginal) => ({
   ...await importOriginal<typeof import("@/lib/teamMetadata")>(),
   teamMetadataRpc,
@@ -39,8 +42,9 @@ describe("Team shared-spaces API boundary", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", "00000000-0000-4000-8000-000000000001,00000000-0000-4000-8000-000000000002");
     getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async (token: string) => token === "valid"
-      ? { data: { user: { id: "verified-user" } }, error: null }
+      ? { data: { user: { id: "00000000-0000-4000-8000-000000000001" } }, error: null }
       : { data: { user: null }, error: { status: 401 } }) } });
     teamMetadataRpc.mockResolvedValue([rawSpace]);
   });
@@ -56,6 +60,16 @@ describe("Team shared-spaces API boundary", () => {
   it("rejects anonymous list and registration before touching metadata RPCs", async () => {
     expect((await GET(new Request("https://example.test/api/team/spaces"))).status).toBe(401);
     expect((await POST(new Request("https://example.test/api/team/spaces", { method: "POST", body: "{}" }))).status).toBe(401);
+    expect(teamMetadataRpc).not.toHaveBeenCalled();
+  });
+
+  it("fails closed before metadata RPCs for a verified account outside the two-account smoke allowlist", async () => {
+    getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async () => ({
+      data: { user: { id: "00000000-0000-4000-8000-000000000003" } },
+      error: null,
+    })) } });
+
+    expect((await GET(authed())).status).toBe(503);
     expect(teamMetadataRpc).not.toHaveBeenCalled();
   });
 
@@ -98,7 +112,7 @@ describe("Team shared-spaces API boundary", () => {
       name: "Finanzas de Álex",
       created_at: "2026-10-18T00:00:00.000Z",
     }]);
-    expect(teamMetadataRpc).toHaveBeenCalledWith("list_team_spaces", { p_user_id: "verified-user" });
+    expect(teamMetadataRpc).toHaveBeenCalledWith("list_team_spaces", { p_user_id: "00000000-0000-4000-8000-000000000001" });
 
     const created = await POST(authed(JSON.stringify({ name: "  Finanzas de Álex  " })));
     const body = await created.json();
@@ -112,7 +126,7 @@ describe("Team shared-spaces API boundary", () => {
       expect(JSON.stringify(body)).not.toContain(privateValue);
     }
     expect(teamMetadataRpc).toHaveBeenLastCalledWith("register_team_space", {
-      p_user_id: "verified-user",
+      p_user_id: "00000000-0000-4000-8000-000000000001",
       p_name: "Finanzas de Álex",
       p_description: null,
       p_external_ref: null,

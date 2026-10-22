@@ -12,7 +12,7 @@ import { POST } from "./route";
 const threadId = "00000000-0000-4000-8000-000000000001";
 const turnId = "00000000-0000-4000-8000-000000000002";
 const operationId = "00000000-0000-4000-8000-000000000003";
-const userId = "00000000-0000-4000-8000-000000000004";
+const userId = "00000000-0000-4000-8000-000000000001";
 const params = { params: Promise.resolve({ threadId, turnId }) };
 const request = (body: unknown, authenticated = true) => new Request(
   `https://x.test/api/team/conversations/${threadId}/turns/${turnId}/delivery`,
@@ -32,6 +32,7 @@ describe("Team explicit text delivery create API", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", "00000000-0000-4000-8000-000000000001,00000000-0000-4000-8000-000000000002");
     getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async () => ({ data: { user: { id: userId } }, error: null })) } });
     teamMetadataRpc.mockResolvedValue([{
       id: "00000000-0000-4000-8000-000000000005",

@@ -172,7 +172,10 @@ describe("Team trial entry interaction", () => {
       .mockResolvedValueOnce(response(404, {}));
 
     const { unmount } = render(createElement(ReceivedSpacesClient, { lang: "en" }));
-    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(4));
+    // The entitlement endpoint is the server-verified admission gate. No
+    // invitations, requests, spaces, or roster reads may start before it
+    // completes successfully.
+    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(1));
     const signal = expectInitialTrialRead();
     expect(signal.aborted).toBe(false);
 
@@ -193,20 +196,17 @@ describe("Team trial entry interaction", () => {
     const staleResponse = { status: 200, ok: true, json: staleJson } as unknown as Response;
     authedFetch
       .mockImplementationOnce(() => pendingEntitlement.promise)
-      .mockResolvedValueOnce(response(200, []))
-      .mockResolvedValueOnce(response(200, []))
-      .mockResolvedValueOnce(response(404, {}))
       .mockResolvedValueOnce(response(200, { eligible: false, seat_limit: 1, source: null, expires_at: null }))
       .mockResolvedValueOnce(response(200, []))
       .mockResolvedValueOnce(response(200, []))
       .mockResolvedValueOnce(response(404, {}));
 
     const { rerender } = render(createElement(ReceivedSpacesClient, { lang: "en" }));
-    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(4));
+    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(1));
     const staleSignal = expectInitialTrialRead();
 
     rerender(createElement(ReceivedSpacesClient, { lang: "es" }));
-    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(8));
+    await waitFor(() => expect(authedFetch).toHaveBeenCalledTimes(5));
     expect(staleSignal.aborted).toBe(true);
     expect(await screen.findByRole("button", { name: "Iniciar prueba Team" })).toBeTruthy();
 
@@ -217,6 +217,19 @@ describe("Team trial entry interaction", () => {
 
     expect(staleJson).not.toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "Iniciar prueba Team" })).toBeTruthy();
+    expectNoAutomaticTrialPost();
+  });
+
+  it("does not probe auxiliary Team APIs or render controls when the server denies smoke access", async () => {
+    authedFetch.mockResolvedValueOnce(response(503, { error: "unavailable" }));
+
+    render(createElement(ReceivedSpacesClient, { lang: "en", paidRosterEnabled: true }));
+
+    expect(await screen.findByText("Team is not available to this account during this controlled smoke.")).toBeTruthy();
+    expect(authedFetch).toHaveBeenCalledTimes(1);
+    expect(authedFetch).toHaveBeenCalledWith("/api/team/trial", expect.anything());
+    expect(screen.queryByRole("button", { name: "Claim Team trial" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: "Paid Team seats" })).toBeNull();
     expectNoAutomaticTrialPost();
   });
 });

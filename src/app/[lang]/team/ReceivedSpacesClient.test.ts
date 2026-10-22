@@ -22,6 +22,12 @@ describe("Team trial UI contract", () => {
     expect(source).not.toContain("user.id");
   });
 
+  it("treats the server entitlement read as the controlled-smoke admission gate", () => {
+    expect(source).toContain("if (entitlementResponse.status === 403 || entitlementResponse.status === 503)");
+    expect(source).toContain("Team is not available to this account during this controlled smoke.");
+    expect(source).toContain("Complete this server-side access check before issuing any auxiliary");
+  });
+
   it("keeps paid-roster reads and UI behind the separate paid rollout gate", () => {
     expect(source).toContain("paidRosterEnabled = false");
     expect(source).toContain("paidRosterEnabled\n          ? authedFetch(\"/api/team/paid-roster\"");

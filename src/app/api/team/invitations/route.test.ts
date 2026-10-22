@@ -32,8 +32,9 @@ describe("Team invitations API", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", "00000000-0000-4000-8000-000000000001,00000000-0000-4000-8000-000000000002");
     getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async (token: string) => token === "good"
-      ? { data: { user: { id: "verified" } }, error: null }
+      ? { data: { user: { id: "00000000-0000-4000-8000-000000000001" } }, error: null }
       : { data: { user: null }, error: Object.assign(new Error(), { status: 401 }) }) } });
     teamMetadataRpc.mockResolvedValue([{ result: "submitted" }]);
   });
@@ -57,7 +58,7 @@ describe("Team invitations API", () => {
     teamMetadataRpc.mockResolvedValueOnce([{ ...safeInvitation, owner_user_id: "PRIVATE", invitee_user_id: "PRIVATE", metadata: { content: "SECRET" } }]);
     const response = await GET(request());
     expect(response.status).toBe(200);
-    expect(teamMetadataRpc).toHaveBeenCalledWith("list_team_invitations_v2", { p_user_id: "verified" });
+    expect(teamMetadataRpc).toHaveBeenCalledWith("list_team_invitations_v2", { p_user_id: "00000000-0000-4000-8000-000000000001" });
     expect(await response.json()).toEqual([safeInvitation]);
   });
 

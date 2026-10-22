@@ -18,8 +18,9 @@ describe("Team alias API", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", "00000000-0000-4000-8000-000000000001,00000000-0000-4000-8000-000000000002");
     getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async (token: string) => token === "good"
-      ? { data: { user: { id: "verified" } }, error: null }
+      ? { data: { user: { id: "00000000-0000-4000-8000-000000000001" } }, error: null }
       : { data: { user: null }, error: Object.assign(new Error(), { status: 401 }) }) } });
   });
 
@@ -28,7 +29,7 @@ describe("Team alias API", () => {
     const response = await PUT(request({ alias: "Alex.Team" }));
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual([{ alias: "alex.team" }]);
-    expect(teamMetadataRpc).toHaveBeenCalledWith("claim_team_alias", { p_user_id: "verified", p_alias: "Alex.Team" });
+    expect(teamMetadataRpc).toHaveBeenCalledWith("claim_team_alias", { p_user_id: "00000000-0000-4000-8000-000000000001", p_alias: "Alex.Team" });
   });
 
   it("fails closed on unexpected RPC cardinality", async () => {

@@ -20,7 +20,8 @@ describe("Team text delivery read API", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
-    getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async () => ({ data: { user: { id: "00000000-0000-4000-8000-000000000002" } }, error: null })) } });
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", "00000000-0000-4000-8000-000000000001,00000000-0000-4000-8000-000000000002");
+    getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async () => ({ data: { user: { id: "00000000-0000-4000-8000-000000000001" } }, error: null })) } });
     teamMetadataRpc.mockResolvedValue([{
       id: deliveryId, content: "reviewed text", created_at: "2026-10-18T00:00:00.000Z", expires_at: "2026-10-25T00:00:00.000Z",
       sender_user_id: "private sender",
@@ -33,7 +34,7 @@ describe("Team text delivery read API", () => {
     expect(response.headers.get("cache-control")).toBe("no-store");
     expect(response.headers.get("pragma")).toBe("no-cache");
     expect(teamMetadataRpc).toHaveBeenCalledWith("read_team_text_delivery_v1", {
-      p_user_id: "00000000-0000-4000-8000-000000000002", p_delivery_id: deliveryId,
+      p_user_id: "00000000-0000-4000-8000-000000000001", p_delivery_id: deliveryId,
     });
     const body = await response.text();
     expect(body).toContain("reviewed text");

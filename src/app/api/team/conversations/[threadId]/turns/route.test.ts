@@ -43,7 +43,8 @@ describe("Team conversation turn API", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
-    getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async () => ({ data: { user: { id: "verified-user" } }, error: null })) } });
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", "00000000-0000-4000-8000-000000000001,00000000-0000-4000-8000-000000000002");
+    getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async () => ({ data: { user: { id: "00000000-0000-4000-8000-000000000001" } }, error: null })) } });
     teamMetadataRpc.mockResolvedValue([]);
   });
 
@@ -61,7 +62,7 @@ describe("Team conversation turn API", () => {
     const response = await GET(auth(`https://x.test/api/team/conversations/${threadId}/turns?limit=1`), params);
     expect(response.status).toBe(200);
     expect(teamMetadataRpc).toHaveBeenCalledWith("list_team_conversation_turns_v4", {
-      p_user_id: "verified-user",
+      p_user_id: "00000000-0000-4000-8000-000000000001",
       p_thread_id: threadId,
       p_limit: 1,
       p_before_created_at: null,
@@ -141,7 +142,7 @@ describe("Team conversation turn API", () => {
     }), params);
     expect(response.status).toBe(200);
     expect(teamMetadataRpc).toHaveBeenCalledWith("create_team_conversation_turn_v4", {
-      p_user_id: "verified-user",
+      p_user_id: "00000000-0000-4000-8000-000000000001",
       p_thread_id: threadId,
       p_request_kind: "context",
       p_manifest_hash: "a".repeat(64),

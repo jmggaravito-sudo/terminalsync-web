@@ -25,7 +25,8 @@ describe("Team metadata request routes", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("TEAM_FEATURE_ENABLED", "1");
-    getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async (t: string) => t === "ok" ? { data: { user: { id: "verified" } }, error: null } : { data: { user: null }, error: Object.assign(new Error(), { status: 401 }) }) } });
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", "00000000-0000-4000-8000-000000000001,00000000-0000-4000-8000-000000000002");
+    getSupabaseAdmin.mockReturnValue({ auth: { getUser: vi.fn(async (t: string) => t === "ok" ? { data: { user: { id: "00000000-0000-4000-8000-000000000001" } }, error: null } : { data: { user: null }, error: Object.assign(new Error(), { status: 401 }) }) } });
     teamMetadataRpc.mockResolvedValue([]);
   });
 
@@ -45,7 +46,7 @@ describe("Team metadata request routes", () => {
     teamMetadataRpc.mockResolvedValueOnce([{ ...safeRow, requester_user_id: "PRIVATE", owner_user_id: "PRIVATE", manifest_hash: "SECRET" }]);
     const response = await GET(auth());
     expect(response.status).toBe(200);
-    expect(teamMetadataRpc).toHaveBeenCalledWith("list_team_space_requests_v2", { p_user_id: "verified" });
+    expect(teamMetadataRpc).toHaveBeenCalledWith("list_team_space_requests_v2", { p_user_id: "00000000-0000-4000-8000-000000000001" });
     expect(await response.json()).toEqual([safeRow]);
   });
 
@@ -153,7 +154,7 @@ describe("Team metadata request routes", () => {
     expect(r.status).toBe(200);
     expect(await r.json()).toEqual({ id: requestId, status: "pending" });
     expect(teamMetadataRpc).toHaveBeenCalledWith("create_team_space_request", {
-      p_user_id: "verified", p_space_id: spaceId, p_request_kind: "document", p_manifest_hash: "a".repeat(64), p_metadata: { itemCount: 3 },
+      p_user_id: "00000000-0000-4000-8000-000000000001", p_space_id: spaceId, p_request_kind: "document", p_manifest_hash: "a".repeat(64), p_metadata: { itemCount: 3 },
     });
   });
 
@@ -196,7 +197,7 @@ describe("Team metadata request routes", () => {
     const response = await respond(responseRequest(true));
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ id: requestId, status: "accepted" });
-    expect(teamMetadataRpc).toHaveBeenCalledWith("respond_team_space_request", { p_user_id: "verified", p_request_id: requestId, p_accept: true });
+    expect(teamMetadataRpc).toHaveBeenCalledWith("respond_team_space_request", { p_user_id: "00000000-0000-4000-8000-000000000001", p_request_id: requestId, p_accept: true });
   });
 
   it("fails closed when the approval RPC does not confirm the requested transition", async () => {
@@ -229,6 +230,6 @@ describe("Team metadata request routes", () => {
     teamMetadataRpc.mockResolvedValueOnce([{ id: requestId, status: "accepted", manifest_hash: "private" }]);
     const ok = await respond(responseRequest(true));
     expect(ok.status).toBe(200);
-    expect(teamMetadataRpc).toHaveBeenLastCalledWith("respond_team_space_request", { p_user_id: "verified", p_request_id: requestId, p_accept: true });
+    expect(teamMetadataRpc).toHaveBeenLastCalledWith("respond_team_space_request", { p_user_id: "00000000-0000-4000-8000-000000000001", p_request_id: requestId, p_accept: true });
   });
 });

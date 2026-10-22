@@ -1,26 +1,15 @@
 import { teamJson } from "@/lib/teamApiResponse";
-import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
-import { isTeamFeatureEnabled } from "@/lib/teamFeature";
+import { verifiedTeamUser } from "@/lib/teamMetadata";
 import { listPaidTeamRoster, TeamPaidRosterError } from "@/lib/teamPaidRoster";
 
 export const runtime = "nodejs";
 
 async function verifiedOwner(req: Request) {
-  if (!isTeamFeatureEnabled()) throw new TeamPaidRosterError("unavailable");
-  const header = req.headers.get("authorization") ?? "";
-  const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
-  if (!token) return null;
-  let sb;
-  try { sb = getSupabaseAdmin(); } catch { throw new TeamPaidRosterError("unavailable"); }
-  if (!sb) throw new TeamPaidRosterError("unavailable");
-  let result;
-  try { result = await sb.auth.getUser(token); } catch { throw new TeamPaidRosterError("unavailable"); }
-  if (result.error) {
-    const status = (result.error as { status?: number }).status;
-    if (status === 400 || status === 401 || status === 403) return null;
+  try {
+    return await verifiedTeamUser(req);
+  } catch {
     throw new TeamPaidRosterError("unavailable");
   }
-  return result.data.user ?? null;
 }
 
 function failure(error: unknown) {
