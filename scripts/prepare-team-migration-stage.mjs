@@ -51,6 +51,7 @@ const approvedTargetChain = Object.freeze([
   Object.freeze({ version: "0055", file: "0055_team_legacy_approval_hardening.sql", sha256: "634af0c164dfdd3d5ca551fb3c0fdac8e6a5cf2957cc876c5f0a86dcf432b671" }),
   Object.freeze({ version: "0056", file: "0056_team_text_deliveries.sql", sha256: "3b180107fb59978d48c7f3ccee847365930a9763157639fc704ee8ca539a5bae" }),
   Object.freeze({ version: "0058", file: "0058_team_owner_approved_text_delivery.sql", sha256: "b885465c507d41e348206db400ed53627a81a8b99c3d69c45970623958b392a1" }),
+  Object.freeze({ version: "20261024000000", file: "20261024000000_team_space_owner_revocation.sql", sha256: "42eb8a46e1c6bc3acf8e9fb32d33ccdf8d7a8ed3f11e1661447834232119c22c" }),
 ]);
 
 // A newly recorded remote version requires a fresh review instead of silently

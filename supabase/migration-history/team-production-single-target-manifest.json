@@ -239,6 +239,11 @@
       "version": "0058",
       "file": "0058_team_owner_approved_text_delivery.sql",
       "sha256": "b885465c507d41e348206db400ed53627a81a8b99c3d69c45970623958b392a1"
+    },
+    {
+      "version": "20261024000000",
+      "file": "20261024000000_team_space_owner_revocation.sql",
+      "sha256": "42eb8a46e1c6bc3acf8e9fb32d33ccdf8d7a8ed3f11e1661447834232119c22c"
     }
   ],
   "excluded_versions": [

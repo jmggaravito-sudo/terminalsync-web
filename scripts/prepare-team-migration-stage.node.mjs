@@ -107,11 +107,11 @@ test("permits the first and last reviewed targets only with their exact prefixes
     assert.equal(first.migrationCount, 35);
     assert.equal(first.target.file, "0039_team_shared_spaces_metadata.sql");
   });
-  withStage("0058", (last) => {
+  withStage("20261024000000", (last) => {
     const stage = JSON.parse(readFileSync(join(last.directory, "stage.json"), "utf8"));
-    assert.equal(last.migrationCount, 47);
-    assert.deepEqual(stage.sources.slice(-13).map((entry) => entry.version), [
-      "0039", "0040", "0041", "0042", "0043", "0044", "0047", "0048", "0053", "0054", "0055", "0056", "0058",
+    assert.equal(last.migrationCount, 48);
+    assert.deepEqual(stage.sources.slice(-14).map((entry) => entry.version), [
+      "0039", "0040", "0041", "0042", "0043", "0044", "0047", "0048", "0053", "0054", "0055", "0056", "0058", "20261024000000",
     ]);
     for (const excluded of ["0045", "0046", "0049", "0050", "0051", "0052", "0057"]) {
       assert.equal(stage.sources.some((entry) => entry.version === excluded), false, `must exclude ${excluded}`);
