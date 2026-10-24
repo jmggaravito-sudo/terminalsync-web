@@ -172,6 +172,11 @@
       "version": "20261019220000",
       "file": "20261019220000_ai_video_funds_reservation.sql",
       "sha256": "522cf2593fe3a4613ee2277581a93cd5efe4b65e212dd3eeee99f0a9b39d85ec"
+    },
+    {
+      "version": "20261023204420",
+      "file": "20261023204420_accounting_entity_registry.sql",
+      "sha256": "f5d1ff2da2ffb50d39151c599762b803dafb97201ce0e0006ef9ab783d1feef1"
     }
   ],
   "target_chain": [

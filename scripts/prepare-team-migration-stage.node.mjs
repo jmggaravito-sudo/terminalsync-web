@@ -59,7 +59,7 @@ function runGeneratedCliGuard(block, version) {
 test("prepares and verifies an isolated prefix through exactly one approved Team target", () => {
   withStage("0047", (result) => {
     assert.equal(result.target.version, "0047");
-    assert.equal(result.migrationCount, 41); // 34 remote records + seven Team targets through 0047
+    assert.equal(result.migrationCount, 42); // 35 remote records + seven Team targets through 0047
     const stage = JSON.parse(readFileSync(join(result.directory, "stage.json"), "utf8"));
     assert.equal(stage.project_ref, "zwyeqqxiwiogmtqwfnby");
     assert.deepEqual(stage.sources.slice(-7).map((entry) => entry.version), ["0039", "0040", "0041", "0042", "0043", "0044", "0047"]);
@@ -104,12 +104,12 @@ test("prepares and verifies an isolated prefix through exactly one approved Team
 
 test("permits the first and last reviewed targets only with their exact prefixes", () => {
   withStage("0039", (first) => {
-    assert.equal(first.migrationCount, 35);
+    assert.equal(first.migrationCount, 36);
     assert.equal(first.target.file, "0039_team_shared_spaces_metadata.sql");
   });
   withStage("20261024000000", (last) => {
     const stage = JSON.parse(readFileSync(join(last.directory, "stage.json"), "utf8"));
-    assert.equal(last.migrationCount, 48);
+    assert.equal(last.migrationCount, 49);
     assert.deepEqual(stage.sources.slice(-14).map((entry) => entry.version), [
       "0039", "0040", "0041", "0042", "0043", "0044", "0047", "0048", "0053", "0054", "0055", "0056", "0058", "20261024000000",
     ]);
