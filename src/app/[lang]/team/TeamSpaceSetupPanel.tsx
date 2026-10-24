@@ -3,6 +3,7 @@
 import { type FormEvent, useId, useState } from "react";
 import { authedFetch } from "@/lib/supabase/browser";
 import type { OwnedTeamSpace } from "./teamSharedSpaces";
+import type { OwnedSpaceInvitation } from "./ownedSpaceInvitations";
 import { normalizeTeamSpaceDisplayName as normalizeTeamDisplayName } from "@/lib/teamSpaceDisplayName";
 
 const TEAM_ALIAS = /^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$/;
@@ -10,6 +11,7 @@ const TEAM_ALIAS = /^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$/;
 type Props = {
   lang: string;
   spaces: OwnedTeamSpace[];
+  ownedInvitations?: OwnedSpaceInvitation[];
   onChanged: () => Promise<void>;
   onUnauthorized: () => void;
 };
@@ -94,7 +96,7 @@ function SpaceInvitationForm({ lang, space, onUnauthorized }: {
  * it handles only an alias, owner-created space metadata, and explicit invite
  * actions. It never accepts a document, external reference, or context body.
  */
-export function TeamSpaceSetupPanel({ lang, spaces, onChanged, onUnauthorized }: Props) {
+export function TeamSpaceSetupPanel({ lang, spaces, ownedInvitations = [], onChanged, onUnauthorized }: Props) {
   const es = lang === "es";
   const aliasId = useId();
   const spaceNameId = useId();
@@ -104,6 +106,33 @@ export function TeamSpaceSetupPanel({ lang, spaces, onChanged, onUnauthorized }:
   const [spaceName, setSpaceName] = useState("");
   const [spaceBusy, setSpaceBusy] = useState(false);
   const [spaceMessage, setSpaceMessage] = useState<string | null>(null);
+  const [revokingInvitationId, setRevokingInvitationId] = useState<string | null>(null);
+  const [revocationMessage, setRevocationMessage] = useState<string | null>(null);
+
+  async function revokeInvitation(invitation: OwnedSpaceInvitation) {
+    setRevocationMessage(null);
+    setRevokingInvitationId(invitation.id);
+    try {
+      const response = await authedFetch("/api/team/invitations/owned", {
+        method: "DELETE",
+        body: JSON.stringify({ invitationId: invitation.id }),
+        cache: "no-store",
+        referrerPolicy: "no-referrer",
+      });
+      if (response.status === 401) {
+        onUnauthorized();
+        return;
+      }
+      const body = await response.json().catch(() => null);
+      if (!response.ok || !Array.isArray(body) || body.length !== 1 || body[0]?.result !== "revoked") throw new Error("revoke");
+      setRevocationMessage(es ? "Acceso revocado. No se envió ni eliminó contenido." : "Access revoked. No content was sent or deleted.");
+      await onChanged();
+    } catch {
+      setRevocationMessage(es ? "No pudimos revocar el acceso. Intenta de nuevo." : "We couldn't revoke access. Please try again.");
+    } finally {
+      setRevokingInvitationId(null);
+    }
+  }
 
   async function claimAlias(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -211,8 +240,20 @@ export function TeamSpaceSetupPanel({ lang, spaces, onChanged, onUnauthorized }:
       {spaces.map((space) => <li key={space.id} style={{ border: "1px solid #d5dbea", borderRadius: 12, padding: "1rem" }}>
         <strong>{space.name}</strong>
         <SpaceInvitationForm lang={lang} space={space} onUnauthorized={onUnauthorized} />
+        {ownedInvitations.filter((invitation) => invitation.spaceId === space.id).length > 0 ? <section aria-label={es ? `Accesos de ${space.name}` : `Access for ${space.name}`} style={{ marginTop: "1rem" }}>
+          <h3>{es ? "Accesos activos" : "Active access"}</h3>
+          <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: ".5rem" }}>
+            {ownedInvitations.filter((invitation) => invitation.spaceId === space.id).map((invitation) => <li key={invitation.id}>
+              <span>{invitation.inviteeAlias ?? (es ? "Invitado sin alias" : "Invitee without an alias")} · {invitation.status === "accepted" ? (es ? "aceptado" : "accepted") : (es ? "pendiente" : "pending")}</span>
+              <button type="button" disabled={revokingInvitationId === invitation.id} onClick={() => void revokeInvitation(invitation)} style={{ marginLeft: ".75rem" }}>
+                {revokingInvitationId === invitation.id ? (es ? "Revocando…" : "Revoking…") : (es ? "Revocar acceso" : "Revoke access")}
+              </button>
+            </li>)}
+          </ul>
+        </section> : null}
       </li>)}
     </ul> : <p role="status">{es ? "Aún no has registrado espacios para compartir." : "You have not registered any spaces to share yet."}</p>}
+    {revocationMessage ? <p role="status">{revocationMessage}</p> : null}
   </section>;
 }
 

@@ -40,7 +40,9 @@ describe("Team trial UI contract", () => {
 
   it("adds owner setup and v3 conversations without replacing legacy invitation or approval cards", () => {
     expect(source).toContain('authedFetch("/api/team/spaces", { cache: "no-store", referrerPolicy: "no-referrer", signal: controller.signal })');
-    expect(source).toContain('<TeamSpaceSetupPanel lang={lang} spaces={ownedSpaces} onChanged={load} onUnauthorized={markUnauthorized} />');
+    expect(source).toContain('authedFetch("/api/team/invitations/owned"');
+    expect(source).toContain('Only owners with a shared space need this metadata-only follow-up.');
+    expect(source).toContain('<TeamSpaceSetupPanel lang={lang} spaces={ownedSpaces} ownedInvitations={ownedInvitations} onChanged={load} onUnauthorized={markUnauthorized} />');
     expect(source).toContain('<TeamConversationPanel lang={lang} ownedSpaces={ownedSpaces} receivedSpaces={collections.received} onUnauthorized={markUnauthorized} />');
     expect(source).toContain('authedFetch("/api/team/requests/respond"');
     expect(source).toContain('id="received-heading"');

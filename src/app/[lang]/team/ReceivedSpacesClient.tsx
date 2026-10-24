@@ -10,6 +10,7 @@ import { PaidRosterInvitationPanel } from "./PaidRosterInvitationPanel";
 import { TeamSpaceSetupPanel } from "./TeamSpaceSetupPanel";
 import { TeamConversationPanel } from "./TeamConversationPanel";
 import { parseOwnedTeamSpaces, type OwnedTeamSpace } from "./teamSharedSpaces";
+import { parseOwnedSpaceInvitations, type OwnedSpaceInvitation } from "./ownedSpaceInvitations";
 
 type Entitlement = { eligible?: boolean; seat_limit?: number; source?: string | null; expires_at?: string | null };
 
@@ -27,6 +28,7 @@ export function ReceivedSpacesClient({ lang, paidRosterEnabled = false }: { lang
   const [approvals, setApprovals] = useState<OwnerApproval[]>([]);
   const [paidRoster, setPaidRoster] = useState<PaidRosterOwnerView | null>(null);
   const [ownedSpaces, setOwnedSpaces] = useState<OwnedTeamSpace[]>([]);
+  const [ownedInvitations, setOwnedInvitations] = useState<OwnedSpaceInvitation[]>([]);
   const activeLoadController = useRef<AbortController | null>(null);
   const loadSequence = useRef(0);
   const collections = partitionReceivedInvitations(invitations);
@@ -38,6 +40,7 @@ export function ReceivedSpacesClient({ lang, paidRosterEnabled = false }: { lang
     setApprovals([]);
     setPaidRoster(null);
     setOwnedSpaces([]);
+    setOwnedInvitations([]);
   }, []);
 
   // The first Team read is also the server-verified smoke allowlist check.
@@ -51,6 +54,7 @@ export function ReceivedSpacesClient({ lang, paidRosterEnabled = false }: { lang
     setApprovals([]);
     setPaidRoster(null);
     setOwnedSpaces([]);
+    setOwnedInvitations([]);
   }, []);
 
   const load = useCallback(async () => {
@@ -120,8 +124,27 @@ export function ReceivedSpacesClient({ lang, paidRosterEnabled = false }: { lang
       if (spacesResponse?.ok) {
         const spacesBody = await spacesResponse.json().catch(() => null);
         if (!isCurrent()) return;
-        setOwnedSpaces(parseOwnedTeamSpaces(spacesBody));
-      } else setOwnedSpaces([]);
+        const parsedSpaces = parseOwnedTeamSpaces(spacesBody);
+        setOwnedSpaces(parsedSpaces);
+        // Only owners with a shared space need this metadata-only follow-up.
+        // Avoid probing a new Team route for accounts with no owned spaces.
+        if (parsedSpaces.length > 0) {
+          const ownedInvitationsResponse = await authedFetch("/api/team/invitations/owned", {
+            cache: "no-store",
+            referrerPolicy: "no-referrer",
+            signal: controller.signal,
+          }).catch(() => null);
+          if (!isCurrent()) return;
+          if (ownedInvitationsResponse?.ok) {
+            const ownedInvitationBody = await ownedInvitationsResponse.json().catch(() => null);
+            if (!isCurrent()) return;
+            setOwnedInvitations(parseOwnedSpaceInvitations(ownedInvitationBody));
+          } else setOwnedInvitations([]);
+        } else setOwnedInvitations([]);
+      } else {
+        setOwnedSpaces([]);
+        setOwnedInvitations([]);
+      }
     } catch {
       if (isCurrent()) setError(es ? "No pudimos cargar tus invitaciones. Intenta de nuevo." : "We couldn't load your invitations. Please try again.");
     } finally {
@@ -213,7 +236,7 @@ export function ReceivedSpacesClient({ lang, paidRosterEnabled = false }: { lang
     {!loading && !unavailable && authenticated && entitlement?.eligible ? <p role="status">{es ? `Acceso Team activo${entitlement.expires_at ? ` hasta ${new Date(entitlement.expires_at).toLocaleDateString("es")}` : ""}. El checkout de Team todavía no está disponible.` : `Team access is active${entitlement.expires_at ? ` until ${new Date(entitlement.expires_at).toLocaleDateString("en")}` : ""}. Team checkout is not available yet.`}</p> : null}
     {!loading && !unavailable && authenticated && paidRosterEnabled && paidRoster?.has_active_team ? <PaidRosterOwnerPanel lang={lang} roster={paidRoster} /> : null}
     {!loading && !unavailable && authenticated && paidRosterEnabled && paidRoster?.has_active_team ? <PaidRosterInvitationPanel lang={lang} roster={paidRoster} /> : null}
-    {!loading && !unavailable && authenticated && entitlement?.eligible ? <TeamSpaceSetupPanel lang={lang} spaces={ownedSpaces} onChanged={load} onUnauthorized={markUnauthorized} /> : null}
+    {!loading && !unavailable && authenticated && entitlement?.eligible ? <TeamSpaceSetupPanel lang={lang} spaces={ownedSpaces} ownedInvitations={ownedInvitations} onChanged={load} onUnauthorized={markUnauthorized} /> : null}
     {!loading && !unavailable && authenticated && entitlement?.eligible ? <TeamConversationPanel lang={lang} ownedSpaces={ownedSpaces} receivedSpaces={collections.received} onUnauthorized={markUnauthorized} /> : null}
     {!loading && !unavailable && authenticated && !error && collections.pending.length === 0 && collections.received.length === 0 && ownedSpaces.length === 0 && !approvals.some((item) => item.status === "pending" && item.canRespond) ? <p>{es ? "No tienes invitaciones, solicitudes pendientes ni espacios recibidos." : "You have no invitations, pending requests, or received spaces."}</p> : null}
     {!loading && !unavailable && authenticated && collections.pending.length > 0 ? <section aria-labelledby="pending-heading">
