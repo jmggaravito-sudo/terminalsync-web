@@ -9,6 +9,10 @@ describe("Team shared-space setup UI contract", () => {
     expect(source).toContain('authedFetch("/api/team/alias"');
     expect(source).toContain('authedFetch("/api/team/spaces"');
     expect(source).toContain('authedFetch("/api/team/invitations"');
+    expect(source).toContain('authedFetch("/api/team/invitations/owned"');
+    expect(source).toContain('method: "DELETE"');
+    expect(source).toContain('body: JSON.stringify({ invitationId: invitation.id })');
+    expect(source).toContain("No content was sent or deleted.");
     expect(source).toContain('cache: "no-store"');
     expect(source).toContain('referrerPolicy: "no-referrer"');
     expect(source).not.toContain("externalRef");
