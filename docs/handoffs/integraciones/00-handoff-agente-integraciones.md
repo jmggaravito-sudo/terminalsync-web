@@ -8,6 +8,8 @@ Estado verificado el 2026-10-25 contra `main` del repo web (a2abc02) y `release/
 
 **Decisión vigente (JM, 2026-10-08):** TerminalSync vive **solo con GLM** (Z.ai). "Funciona" significa: **funciona en el chat de GLM de la app**. Ignora Claude, Codex y Gemini en catálogo, pruebas y texto.
 
+**Solo la build estable.** Lab está congelado desde 2026-09-18: no se compila ni se instala nada para Lab. El nombre de la rama `release/v0.2.18-lab` es solo el tronco del que salen las builds estables. En el catálogo no hay ninguna distinción Lab/estable: lo que se mergea llega a los clientes de la estable. Los campos heredados `deliveredTo` / `vendors` / `compatibleWith` (claude, codex, gemini) del catálogo y de las skills no se usan para decidir nada hoy: no inviertas tiempo en ellos.
+
 ---
 
 ## 0. Reglas duras (léelas antes de tocar nada)
