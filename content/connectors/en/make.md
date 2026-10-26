@@ -20,7 +20,7 @@ tagline: "Your Make automations, within reach of the agent"
 originalAuthor: "Make"
 originalAuthorUrl: "https://developers.make.com/mcp-server/make-mcp-server"
 license: "proprietary"
-licenseUrl: "https://www.make.com/en/terms"
+licenseUrl: "https://www.make.com/en/terms-and-conditions"
 marketplaceSource: "official"
 marketplaceCategory: "web"
 installableForAi: true
@@ -71,4 +71,4 @@ Tool surface per the official docs — the server grants MCP clients tools that 
 
 Make also publishes `@makehq/mcp-server` on npm (MIT, repo `integromat/make-mcp-server`), but its own docs mark it **"Make Local MCP Server (legacy)"** and recommend the cloud server — this connector ships the hosted one.
 
-License: proprietary SaaS terms (`www.make.com/en/terms`; the legal pages block non-browser clients in this environment — path not confirmed live). Source: developers.make.com/mcp-server/make-mcp-server.
+License: proprietary SaaS terms (`www.make.com/en/terms-and-conditions`, verified live 2026-10-26 — the page confirms the Master Services Agreement). Source: developers.make.com/mcp-server/make-mcp-server.
