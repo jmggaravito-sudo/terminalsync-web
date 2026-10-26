@@ -1,0 +1,41 @@
+{
+  "id": "wompi-002",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 188,
+  "isNew": true,
+  "connectors": [
+    "wompi"
+  ],
+  "es": {
+    "title": "Link de pago de un solo uso para un cliente (Wompi)",
+    "outcome": "Crea en Wompi un link de pago por el monto exacto, de un solo uso, listo para enviar por WhatsApp.",
+    "prompt": "Crea en Wompi un link de pago para la/cliente [nombre], de $[monto] COP, de UN solo uso, sin datos de envío, que venza el [fecha].\n\nAntes de crearlo muéstrame un resumen (monto, vencimiento, un solo uso) y espérame a confirmar. Devuélveme el link y una frase lista para pegar en WhatsApp.",
+    "recommendedFiles": [
+      "Nombre de la/cliente",
+      "Monto en pesos",
+      "Fecha de vencimiento"
+    ],
+    "expectedResult": [
+      "Link de pago creado",
+      "Resumen confirmado antes de crear",
+      "Mensaje para WhatsApp"
+    ]
+  },
+  "en": {
+    "title": "Single-use payment link for a customer (Wompi)",
+    "outcome": "Creates in Wompi a single-use payment link for the exact amount, ready to send over WhatsApp.",
+    "prompt": "Create a Wompi payment link for [customer name], for $[amount] COP, SINGLE use, no shipping data, expiring on [date].\n\nBefore creating it show me a summary (amount, expiry, single use) and wait for my confirmation. Give me the link and a sentence ready to paste into WhatsApp.",
+    "recommendedFiles": [
+      "Customer name",
+      "Amount in pesos",
+      "Expiry date"
+    ],
+    "expectedResult": [
+      "Payment link created",
+      "Summary confirmed before creating",
+      "WhatsApp-ready message"
+    ]
+  }
+}

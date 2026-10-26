@@ -1,0 +1,37 @@
+{
+  "id": "wompi-001",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 187,
+  "isNew": true,
+  "connectors": [
+    "wompi"
+  ],
+  "es": {
+    "title": "¿Entró el pago de mi cliente? (Wompi)",
+    "outcome": "Consulta en Wompi el estado de una transacción por referencia o id y te dice si está aprobada, pendiente o rechazada, con monto y método.",
+    "prompt": "Consulta en Wompi la transacción de la referencia [referencia, por ejemplo 12345].\n\nDame:\n1. Estado (aprobada, pendiente o rechazada) y fecha.\n2. Monto y método de pago.\n3. Si está pendiente o rechazada, qué le puedo decir a la/cliente.\n\nSolo consulta. No inventes estados ni montos que no aparezcan en la respuesta.",
+    "recommendedFiles": [
+      "Referencia o id de la transacción"
+    ],
+    "expectedResult": [
+      "Estado y monto de la transacción",
+      "Método de pago",
+      "Mensaje sugerido si no está aprobada"
+    ]
+  },
+  "en": {
+    "title": "Did my customer's payment go through? (Wompi)",
+    "outcome": "Looks up a Wompi transaction by reference or id and tells you whether it is approved, pending or declined, with amount and method.",
+    "prompt": "Look up the Wompi transaction for reference [reference, e.g. 12345].\n\nGive me:\n1. Status (approved, pending or declined) and date.\n2. Amount and payment method.\n3. If pending or declined, what I can tell the customer.\n\nLookup only. Don't invent statuses or amounts that aren't in the response.",
+    "recommendedFiles": [
+      "Transaction reference or id"
+    ],
+    "expectedResult": [
+      "Transaction status and amount",
+      "Payment method",
+      "Suggested message if not approved"
+    ]
+  }
+}

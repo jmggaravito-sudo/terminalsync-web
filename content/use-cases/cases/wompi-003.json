@@ -1,0 +1,37 @@
+{
+  "id": "wompi-003",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 189,
+  "isNew": true,
+  "connectors": [
+    "wompi"
+  ],
+  "es": {
+    "title": "Link abierto para cobros variables (Wompi)",
+    "outcome": "Crea un link de pago sin monto fijo para que cada cliente pague lo que corresponda, con vencimiento opcional.",
+    "prompt": "Crea en Wompi un link de pago abierto (sin monto fijo) llamado [nombre], que permita varios pagos (no de un solo uso) y venza el [fecha o sin vencimiento].\n\nConfírmame el detalle antes de crearlo y dame el link al final.",
+    "recommendedFiles": [
+      "Nombre del link",
+      "Fecha de vencimiento (opcional)"
+    ],
+    "expectedResult": [
+      "Link abierto creado",
+      "Vencimiento según lo pedido"
+    ]
+  },
+  "en": {
+    "title": "Open link for variable payments (Wompi)",
+    "outcome": "Creates a payment link with no fixed amount so each customer pays what applies, with optional expiry.",
+    "prompt": "Create an open Wompi payment link (no fixed amount) called [name], allowing multiple payments (not single-use), expiring on [date or none].\n\nConfirm the details with me before creating and give me the link at the end.",
+    "recommendedFiles": [
+      "Link name",
+      "Expiry date (optional)"
+    ],
+    "expectedResult": [
+      "Open link created",
+      "Expiry as requested"
+    ]
+  }
+}

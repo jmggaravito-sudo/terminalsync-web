@@ -1,0 +1,33 @@
+{
+  "id": "wompi-004",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 190,
+  "isNew": true,
+  "connectors": [
+    "wompi"
+  ],
+  "es": {
+    "title": "¿Qué métodos de pago tengo activos en Wompi?",
+    "outcome": "Consulta tu comercio en Wompi y te lista los métodos de pago activos (PSE, Nequi, Bancolombia, tarjetas…) y tu moneda.",
+    "prompt": "Consulta mi comercio en Wompi y dame:\n1. Los métodos de pago activos.\n2. La moneda aceptada.\n3. Si falta alguno que normalmente uso (PSE, Nequi, tarjetas), dímelo para revisarlo en el panel.",
+    "recommendedFiles": [],
+    "expectedResult": [
+      "Lista de métodos activos",
+      "Moneda",
+      "Aviso si falta algún método"
+    ]
+  },
+  "en": {
+    "title": "Which payment methods are enabled in my Wompi account?",
+    "outcome": "Looks up your Wompi merchant and lists the enabled payment methods (PSE, Nequi, Bancolombia, cards…) and your currency.",
+    "prompt": "Look up my Wompi merchant and give me:\n1. The enabled payment methods.\n2. The accepted currency.\n3. If a method I normally use (PSE, Nequi, cards) is missing, flag it so I can review the panel.",
+    "recommendedFiles": [],
+    "expectedResult": [
+      "Active methods list",
+      "Currency",
+      "Heads-up if a method is missing"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "id": "quipu-001",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 195,
+  "isNew": true,
+  "connectors": [
+    "quipu"
+  ],
+  "es": {
+    "title": "¿Cuánto facturé y cómo voy contra el mes pasado? (Quipu)",
+    "outcome": "Suma tus facturas de ingreso de este mes y del anterior en Quipu y te muestra la comparación.",
+    "prompt": "Consulta en Quipu mis facturas de ingreso de [mes actual] y [mes anterior] y dame:\n1. Total facturado y cantidad de facturas de cada mes.\n2. La diferencia entre ambos.\n3. La factura de mayor monto de cada mes.\n\nRevisa la paginación completa antes de sumar. No inventes cifras que no estén en las respuestas.",
+    "recommendedFiles": [],
+    "expectedResult": [
+      "Total y conteo por mes",
+      "Diferencia entre meses",
+      "Facturas de mayor monto"
+    ]
+  },
+  "en": {
+    "title": "How much did I invoice vs last month? (Quipu)",
+    "outcome": "Adds up your Quipu income invoices for this month and last and shows the comparison.",
+    "prompt": "Look up my Quipu income invoices for [current month] and [previous month] and give me:\n1. Total invoiced and invoice count for each month.\n2. The difference between the two.\n3. The largest invoice of each month.\n\nCheck the full pagination before adding up. Don't invent figures that aren't in the responses.",
+    "recommendedFiles": [],
+    "expectedResult": [
+      "Total and count per month",
+      "Month-over-month difference",
+      "Largest invoices"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "quipu-004",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 198,
+  "isNew": true,
+  "connectors": [
+    "quipu"
+  ],
+  "es": {
+    "title": "Factura de ingreso del mes, registrada en Quipu (Quipu)",
+    "outcome": "Crea la factura de ingreso en Quipu con la serie y el contacto correctos, confirmando porque queda registrada bajo Veri*Factu.",
+    "prompt": "Crea una factura de ingreso en Quipu para el contacto [nombre o id], con:\n1. Concepto: [descripción], cantidad [n], precio [monto].\n2. Fecha de operación y de emisión: [fechas].\n3. Forma de pago: [método], pagada el [fecha o pendiente].\n\nMuéstrame el resumen completo y recuerda que al crearla queda registrada en mi libro bajo Veri*Factu; espera mi confirmación aparte antes de crearla.",
+    "recommendedFiles": [
+      "Contacto al que facturar",
+      "Concepto, cantidad y precio",
+      "Fechas y forma de pago"
+    ],
+    "expectedResult": [
+      "Resumen confirmado",
+      "Factura creada con numeración",
+      "Aviso Veri*Factu entendido"
+    ]
+  },
+  "en": {
+    "title": "This month's income invoice, recorded in Quipu (Quipu)",
+    "outcome": "Creates the income invoice in Quipu with the right series and contact, confirming because it is recorded under Veri*Factu rules.",
+    "prompt": "Create a Quipu income invoice for contact [name or id], with:\n1. Item: [description], qty [n], price [amount].\n2. Operation and issue date: [dates].\n3. Payment method: [method], paid on [date or pending].\n\nShow me the full summary and remind me that creating it records it in my book under Veri*Factu; wait for my separate confirmation before creating it.",
+    "recommendedFiles": [
+      "Client to invoice",
+      "Item, qty and price",
+      "Dates and payment method"
+    ],
+    "expectedResult": [
+      "Confirmed summary",
+      "Invoice created with numbering",
+      "Veri*Factu notice acknowledged"
+    ]
+  }
+}

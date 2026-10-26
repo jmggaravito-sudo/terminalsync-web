@@ -1,0 +1,33 @@
+{
+  "id": "facturapi-001",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 191,
+  "isNew": true,
+  "connectors": [
+    "facturapi"
+  ],
+  "es": {
+    "title": "¿Cuánto facturé este mes? (Facturapi)",
+    "outcome": "Suma tus facturas del mes en Facturapi y te da el total, el conteo y las pendientes de pago.",
+    "prompt": "Consulta en Facturapi mis facturas del mes actual y dame:\n1. Total facturado y cantidad de facturas.\n2. Cuáles están pendientes de pago y por cuánto.\n3. La de mayor monto, con cliente y fecha.\n\nSi el listado viene paginado, revisa todas las páginas antes de sumar. No inventes montos que no estén en las respuestas.",
+    "recommendedFiles": [],
+    "expectedResult": [
+      "Total del mes y conteo",
+      "Pendientes de pago",
+      "Factura de mayor monto"
+    ]
+  },
+  "en": {
+    "title": "How much did I invoice this month? (Facturapi)",
+    "outcome": "Adds up your Facturapi invoices for the month and gives you the total, the count and the unpaid ones.",
+    "prompt": "Look up my Facturapi invoices for the current month and give me:\n1. Total invoiced and invoice count.\n2. Which are unpaid and for how much.\n3. The largest one, with customer and date.\n\nIf the list is paginated, check every page before adding up. Don't invent amounts that aren't in the responses.",
+    "recommendedFiles": [],
+    "expectedResult": [
+      "Monthly total and count",
+      "Unpaid invoices",
+      "Largest invoice"
+    ]
+  }
+}

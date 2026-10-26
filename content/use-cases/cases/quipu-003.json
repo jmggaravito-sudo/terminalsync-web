@@ -1,0 +1,35 @@
+{
+  "id": "quipu-003",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 197,
+  "isNew": true,
+  "connectors": [
+    "quipu"
+  ],
+  "es": {
+    "title": "Alta de un cliente nuevo sin teclear (Quipu)",
+    "outcome": "Crea el contacto en Quipu con sus datos fiscales a partir de lo que le dictes, confirmándolos antes.",
+    "prompt": "Crea un contacto en Quipu con estos datos:\n- NIF/CIF: [número]\n- Nombre: [razón social]\n- Dirección: [dirección, población, CP]\n- Email y teléfono: [datos]\n\nMuéstrame el resumen y espérame a confirmar antes de crearlo. Si te falta algún dato, pregúntamelo en vez de inventarlo.",
+    "recommendedFiles": [
+      "Datos fiscales del cliente"
+    ],
+    "expectedResult": [
+      "Resumen confirmado",
+      "Contacto creado con id"
+    ]
+  },
+  "en": {
+    "title": "New client created without typing it all in (Quipu)",
+    "outcome": "Creates the Quipu contact with their tax details from what you dictate, confirming first.",
+    "prompt": "Create a Quipu contact with these details:\n- Tax ID: [number]\n- Name: [legal name]\n- Address: [street, town, zip]\n- Email and phone: [details]\n\nShow me the summary and wait for my confirmation before creating. If a detail is missing, ask me instead of inventing it.",
+    "recommendedFiles": [
+      "Client tax details"
+    ],
+    "expectedResult": [
+      "Confirmed summary",
+      "Contact created with id"
+    ]
+  }
+}
