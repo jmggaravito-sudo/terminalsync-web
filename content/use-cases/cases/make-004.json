@@ -1,0 +1,37 @@
+{
+  "id": "make-004",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 202,
+  "isNew": true,
+  "connectors": [
+    "make"
+  ],
+  "es": {
+    "title": "Almacén de datos nuevo para tus escenarios",
+    "outcome": "Crea en Make un almacén de datos que tus escenarios puedan usar, confirmándolo antes.",
+    "prompt": "Crea en Make un almacén de datos llamado [nombre], con capacidad para [n] registros.\n\nAntes de crearlo muéstrame un resumen y espérame a confirmar, porque esto cambia la configuración de mi cuenta (plan de pago).",
+    "recommendedFiles": [
+      "Nombre del almacén",
+      "Capacidad"
+    ],
+    "expectedResult": [
+      "Resumen confirmado",
+      "Almacén creado"
+    ]
+  },
+  "en": {
+    "title": "New data store for your scenarios",
+    "outcome": "Creates a Make data store your scenarios can use, confirming first.",
+    "prompt": "Create a Make data store named [name] with capacity for [n] records.\n\nShow me a summary and wait for my confirmation before creating — this changes my account setup (paid plan).",
+    "recommendedFiles": [
+      "Store name",
+      "Capacity"
+    ],
+    "expectedResult": [
+      "Confirmed summary",
+      "Data store created"
+    ]
+  }
+}

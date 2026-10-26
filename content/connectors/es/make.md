@@ -5,7 +5,7 @@ category: automation
 markets: ["US"]
 status: available
 simpleTitle: "Ejecuta y gestiona tus automatizaciones de Make desde el chat"
-simpleSubtitle: "MCP oficial de Make: ejecuta escenarios y revisa escenarios, conexiones, webhooks y almacenes de datos por OAuth, sin pegar ninguna API key."
+simpleSubtitle: "MCP oficial de Make: ejecuta tus escenarios y revisa tu configuración de automatizaciones por OAuth, sin pegar ninguna API key."
 devTitle: "Make MCP Connector"
 devSubtitle: "MCP oficial hospedado de Make (mcp.make.com/v2) — ejecución de escenarios y gestión de automatizaciones por OAuth."
 ctaUrl: "https://www.make.com"

@@ -5,7 +5,7 @@ category: automation
 markets: ["US"]
 status: available
 simpleTitle: "Run and manage your Make automations from the chat"
-simpleSubtitle: "Official Make MCP: run scenarios and review scenarios, connections, webhooks and data stores over OAuth — no API key to paste."
+simpleSubtitle: "Official Make MCP: run your scenarios and review your automation setup over OAuth — no API key to paste."
 devTitle: "Make MCP Connector"
 devSubtitle: "Official Make-hosted MCP (mcp.make.com/v2) — scenario runs and automation management over OAuth."
 ctaUrl: "https://www.make.com"
