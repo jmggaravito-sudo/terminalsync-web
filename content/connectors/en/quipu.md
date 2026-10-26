@@ -27,6 +27,12 @@ license: "MIT"
 licenseUrl: "https://github.com/jmggaravito-sudo/terminalsync-mcps/blob/main/packages/quipu/LICENSE"
 marketplaceSource: "ts-curated"
 marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 7
+aiReadOnlyTools: 5
+verifiedAt: "2026-10-26T22:05:15.921Z"
+verifiedPackageVersion: "0.1.0"
 ---
 If you run your invoicing and expenses with **Quipu**, this connector gives your AI the lookups that today force you into the dashboard: how much you invoiced, who that client is, whether an invoice got paid.
 

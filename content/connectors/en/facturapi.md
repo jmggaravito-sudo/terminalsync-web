@@ -25,6 +25,12 @@ license: "MIT"
 licenseUrl: "https://github.com/jmggaravito-sudo/terminalsync-mcps/blob/main/packages/facturapi/LICENSE"
 marketplaceSource: "ts-curated"
 marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 6
+aiReadOnlyTools: 4
+verifiedAt: "2026-10-26T22:07:24.531Z"
+verifiedPackageVersion: "0.1.0"
 ---
 If you invoice in Mexico with **Facturapi**, this connector gives your AI the paperwork: looking up the number you need and drafting the invoice.
 

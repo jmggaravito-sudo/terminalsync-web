@@ -27,6 +27,12 @@ license: "MIT"
 licenseUrl: "https://github.com/jmggaravito-sudo/terminalsync-mcps/blob/main/packages/quipu/LICENSE"
 marketplaceSource: "ts-curated"
 marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 7
+aiReadOnlyTools: 5
+verifiedAt: "2026-10-26T22:05:15.921Z"
+verifiedPackageVersion: "0.1.0"
 ---
 Si llevas tu facturación y tus gastos con **Quipu**, este conector le deja a tu AI las consultas que hoy te obligan a abrir el panel: cuánto facturaste, qué cliente es, si aquella factura está pagada.
 

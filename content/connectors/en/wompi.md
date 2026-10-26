@@ -26,6 +26,12 @@ license: "MIT"
 licenseUrl: "https://github.com/jmggaravito-sudo/terminalsync-mcps/blob/main/packages/wompi/LICENSE"
 marketplaceSource: "ts-curated"
 marketplaceCategory: "web"
+installableForAi: true
+installableForAiReason: "ok"
+aiToolsCount: 4
+aiReadOnlyTools: 3
+verifiedAt: "2026-10-26T22:05:15.921Z"
+verifiedPackageVersion: "0.1.0"
 ---
 If you get paid through **Wompi** (Bancolombia's payment gateway), this connector hands your AI the two things that eat most of your time: checking whether a payment landed, and building the link to charge a customer.
 
