@@ -14,7 +14,7 @@ manifest:
   mcpServers:
     facturapi:
       command: npx
-      args: ["-y", "facturapi-mcp"]
+      args: ["-y", "@terminalsync/facturapi-mcp"]
       env:
         FACTURAPI_SECRET_KEY: "${SECRET:FACTURAPI_SECRET_KEY}"
 affiliate: false
