@@ -333,6 +333,8 @@ Los cuatro candidatos remotos identificados en la corrida 2026-07-23 quedaron ce
 
 **Resultado:** **2 conectores nuevos** (`typeform`, `bird`), **6 SKIP/re-checks documentados**, 0 deudas de logo nuevas.
 
+| **atlassian** | 2026-10-26 (pipeline, focus Atlassian · US) | SKIP con fundamento — re-evaluar solo si cambia el posicionamiento del vendor. El MCP remoto oficial existe y es técnicamente viable (`https://mcp.atlassian.com/v2/mcp`, OAuth 2.1 o API token, DCR que `mcp-remote` completa — smoke OK el 2026-10-26), pero el README del propio vendor lo posiciona verbatim para "developers, content creators, and project teams who work in IDEs or AI tools" y las llamadas consumen **Rovo credits de un pool organizacional**: falla el filtro de persona empresario-first, igual que los SKIP de 2026-08-24 y 2026-09-22. Origen del lead: directorio de conectores de Claude (claude.ai/directory). Reclasificarlo sería decisión de JM. |
+
 ### Corrida 2026-10-25 (re-verificación del backlog, agente de integraciones) — 0 conectores nuevos, 2 bloqueos re-verificados
 
 - **Smoke `--all`:** `node scripts/smoke-remote-login.mjs --all` → **23/23** remotos instalables llegan a la pantalla de autorización, 0 FAIL (`mcp-remote 0.15.2`): asana, bird, brevo, calendly, canva, fintoc, gusto, higgsfield, holded, ideogram, intercom, klaviyo, linear, mercado-pago, monei, paypal, pipedrive, posthog, qonto, ramp, siigo, tiendanube, typeform.
