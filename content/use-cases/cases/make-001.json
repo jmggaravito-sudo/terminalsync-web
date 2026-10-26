@@ -1,0 +1,37 @@
+{
+  "id": "make-001",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 199,
+  "isNew": true,
+  "connectors": [
+    "make"
+  ],
+  "es": {
+    "title": "Ejecuta tu escenario ahora mismo",
+    "outcome": "Lanza en Make el escenario que necesitas y te trae el resultado al chat.",
+    "prompt": "Ejecuta en Make mi escenario [nombre exacto del escenario].\n\nDime si arrancó bien, qué devolvió y cuánto tardó. Si la ejecución quedó corriendo en Make (el conector entrega un id de ejecución), dímelo y explícame cómo se consulta después.",
+    "recommendedFiles": [
+      "Nombre del escenario"
+    ],
+    "expectedResult": [
+      "Escenario ejecutado",
+      "Resultado de la ejecución",
+      "Id de ejecución si sigue corriendo"
+    ]
+  },
+  "en": {
+    "title": "Run your scenario right now",
+    "outcome": "Starts the Make scenario you need and brings its result back to the chat.",
+    "prompt": "Run my Make scenario [exact scenario name].\n\nTell me whether it started fine, what it returned and how long it took. If the run is still going in Make (the connector returns a run id), say so and explain how I check it later.",
+    "recommendedFiles": [
+      "Scenario name"
+    ],
+    "expectedResult": [
+      "Scenario executed",
+      "Run result",
+      "Run id if still running"
+    ]
+  }
+}

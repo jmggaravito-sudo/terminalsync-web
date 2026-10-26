@@ -1,0 +1,31 @@
+{
+  "id": "make-003",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 201,
+  "isNew": true,
+  "connectors": [
+    "make"
+  ],
+  "es": {
+    "title": "Auditoría de conexiones de tus escenarios",
+    "outcome": "Lista las conexiones (cuentas de otras apps) que usan tus escenarios para detectar las riesgosas.",
+    "prompt": "Lístame las conexiones que usan mis escenarios de Make, con la app de cada una.\n\nSeñala: 1) conexiones que parecen de cuentas personales compartidas, 2) apps que aparecen en muchos escenarios (si una falla, se cae todo), 3) las que no reconozco, que las renombro después.",
+    "recommendedFiles": [],
+    "expectedResult": [
+      "Lista de conexiones por app",
+      "Riesgos señalados"
+    ]
+  },
+  "en": {
+    "title": "Audit of your scenarios' connections",
+    "outcome": "Lists the connections (other apps' accounts) your scenarios use to spot risky ones.",
+    "prompt": "List the connections my Make scenarios use, with each one's app.\n\nFlag: 1) connections that look like shared personal accounts, 2) apps appearing in many scenarios (if one breaks, everything breaks), 3) any I don't recognize, which I'll rename later.",
+    "recommendedFiles": [],
+    "expectedResult": [
+      "Connections list by app",
+      "Risks flagged"
+    ]
+  }
+}

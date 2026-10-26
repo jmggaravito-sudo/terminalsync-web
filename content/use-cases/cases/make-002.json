@@ -1,0 +1,31 @@
+{
+  "id": "make-002",
+  "categoryId": "operations",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 200,
+  "isNew": true,
+  "connectors": [
+    "make"
+  ],
+  "es": {
+    "title": "Panorama de tus automatizaciones",
+    "outcome": "Lista todos tus escenarios de Make y cuáles están activos, para que veas el mapa sin abrir Make.",
+    "prompt": "Muéstrame todos mis escenarios de Make en una tabla: nombre, estado (activo o pausado) y qué hace cada uno según su nombre o descripción.\n\nMarca los que llevan nombre poco claro para que los renombre después.",
+    "recommendedFiles": [],
+    "expectedResult": [
+      "Tabla de escenarios con estado",
+      "Nombres poco claros marcados"
+    ]
+  },
+  "en": {
+    "title": "Your automations at a glance",
+    "outcome": "Lists every Make scenario and which are active, so you see the whole map without opening Make.",
+    "prompt": "Show me all my Make scenarios in a table: name, state (active or paused) and what each one does based on its name or description.\n\nFlag the ones with unclear names so I can rename them later.",
+    "recommendedFiles": [],
+    "expectedResult": [
+      "Scenario table with state",
+      "Unclear names flagged"
+    ]
+  }
+}
