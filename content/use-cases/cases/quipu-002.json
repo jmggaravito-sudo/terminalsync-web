@@ -1,0 +1,37 @@
+{
+  "id": "quipu-002",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 196,
+  "isNew": true,
+  "connectors": [
+    "quipu"
+  ],
+  "es": {
+    "title": "¿Le cobré ya a este cliente? (Quipu)",
+    "outcome": "Busca un cliente en Quipu y revisa sus facturas de ingreso y su estado de pago.",
+    "prompt": "Busca en Quipu al contacto [nombre o NIF] y dame:\n1. Sus datos fiscales (nombre, NIF, dirección).\n2. Sus facturas de ingreso del último trimestre con estado (pagada o pendiente) y monto.\n3. El total pendiente de cobro.\n\nSi hay varios contactos parecidos, muéstramelos todos antes de elegir. Solo consulta.",
+    "recommendedFiles": [
+      "Nombre o NIF del cliente"
+    ],
+    "expectedResult": [
+      "Datos del contacto",
+      "Facturas con estado",
+      "Total pendiente"
+    ]
+  },
+  "en": {
+    "title": "Have I invoiced this client yet? (Quipu)",
+    "outcome": "Finds a Quipu client and reviews their income invoices and payment status.",
+    "prompt": "Find the Quipu contact [name or tax ID] and give me:\n1. Their tax details (name, tax ID, address).\n2. Their income invoices from the last quarter with status (paid or pending) and amount.\n3. The outstanding total.\n\nIf several contacts look similar, show me all of them before picking. Lookup only.",
+    "recommendedFiles": [
+      "Client name or tax ID"
+    ],
+    "expectedResult": [
+      "Contact details",
+      "Invoices with status",
+      "Outstanding total"
+    ]
+  }
+}

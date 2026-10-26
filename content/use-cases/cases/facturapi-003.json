@@ -1,0 +1,39 @@
+{
+  "id": "facturapi-003",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 193,
+  "isNew": true,
+  "connectors": [
+    "facturapi"
+  ],
+  "es": {
+    "title": "Borrador de factura listo para revisar (Facturapi)",
+    "outcome": "Crea un borrador de factura CFDI en Facturapi sin timbrar, para que lo revises antes de emitirlo.",
+    "prompt": "Crea en Facturapi un BORRADOR de factura (status draft, sin timbrar) para el cliente [RFC o id], con:\n1. Concepto: [descripción], cantidad [n], precio unitario [monto].\n2. Forma de pago: [código SAT, por ejemplo 03 transferencia].\n\nDime qué campos le faltan al borrador antes de poder timbrarlo. No lo timbres: para eso yo decido después.",
+    "recommendedFiles": [
+      "RFC o id del cliente",
+      "Concepto, cantidad y precio",
+      "Forma de pago"
+    ],
+    "expectedResult": [
+      "Borrador creado sin timbrar",
+      "Lista de campos faltantes"
+    ]
+  },
+  "en": {
+    "title": "Draft invoice ready for review (Facturapi)",
+    "outcome": "Creates an unstamped CFDI draft in Facturapi so you can review it before issuing.",
+    "prompt": "Create a DRAFT invoice in Facturapi (status draft, unstamped) for customer [RFC or id], with:\n1. Item: [description], qty [n], unit price [amount].\n2. Payment form: [SAT code, e.g. 03 bank transfer].\n\nTell me which fields the draft is missing before it could be stamped. Do not stamp it: that's my call later.",
+    "recommendedFiles": [
+      "Customer RFC or id",
+      "Item, qty and price",
+      "Payment form"
+    ],
+    "expectedResult": [
+      "Draft created unstamped",
+      "List of missing fields"
+    ]
+  }
+}

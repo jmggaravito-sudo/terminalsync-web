@@ -1,0 +1,35 @@
+{
+  "id": "facturapi-002",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 192,
+  "isNew": true,
+  "connectors": [
+    "facturapi"
+  ],
+  "es": {
+    "title": "Ficha del cliente antes de facturarle (Facturapi)",
+    "outcome": "Busca un cliente en Facturapi y te muestra su RFC, régimen fiscal, dirección y uso de CFDI para facturar sin errores.",
+    "prompt": "Busca en Facturapi al cliente [nombre o RFC].\n\nDame:\n1. Razón social, RFC y régimen fiscal.\n2. Dirección fiscal (código postal incluido).\n3. Uso de CFDI por defecto y si tiene datos incompletos.\n\nSi hay varios resultados parecidos, muéstrame todos antes de elegir. Solo consulta.",
+    "recommendedFiles": [
+      "Nombre o RFC del cliente"
+    ],
+    "expectedResult": [
+      "Datos fiscales del cliente",
+      "Aviso de datos incompletos"
+    ]
+  },
+  "en": {
+    "title": "Customer record before invoicing them (Facturapi)",
+    "outcome": "Finds a Facturapi customer and shows their RFC, tax regime, address and CFDI use so you invoice without errors.",
+    "prompt": "Search Facturapi for the customer [name or RFC].\n\nGive me:\n1. Legal name, RFC and tax regime.\n2. Fiscal address (including zip).\n3. Default CFDI use and whether their data is incomplete.\n\nIf there are several similar results, show me all of them before picking. Lookup only.",
+    "recommendedFiles": [
+      "Customer name or RFC"
+    ],
+    "expectedResult": [
+      "Customer tax details",
+      "Incomplete-data warning"
+    ]
+  }
+}

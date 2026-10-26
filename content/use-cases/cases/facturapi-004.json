@@ -1,0 +1,41 @@
+{
+  "id": "facturapi-004",
+  "categoryId": "finance",
+  "recommendedAI": "glm",
+  "level": "Básico",
+  "order": 194,
+  "isNew": true,
+  "connectors": [
+    "facturapi"
+  ],
+  "es": {
+    "title": "Factura final a partir de lo acordado (Facturapi)",
+    "outcome": "Crea una factura final en Facturapi después de confirmar contigo cada dato; con llave de producción te pedirá autorizar el timbrado aparte.",
+    "prompt": "Crea una factura en Facturapi para el cliente [RFC o id] con estos conceptos: [lista]. Forma de pago: [código]. Uso CFDI: [código].\n\nMuéstrame el resumen completo (cliente, conceptos, totales, forma y método de pago) y espérame a confirmar. Si mi llave es de producción, avísame que al timbrar se envía al SAT y no se deshace, y pídeme la confirmación aparte que pide el conector.",
+    "recommendedFiles": [
+      "RFC o id del cliente",
+      "Conceptos con precios",
+      "Forma y método de pago"
+    ],
+    "expectedResult": [
+      "Resumen confirmado",
+      "Factura creada o timbrada con autorización",
+      "Id de la factura para descargarla"
+    ]
+  },
+  "en": {
+    "title": "Final invoice from the agreed terms (Facturapi)",
+    "outcome": "Creates a final Facturapi invoice after confirming every detail with you; with a live key it will ask you to authorize stamping separately.",
+    "prompt": "Create a Facturapi invoice for customer [RFC or id] with these items: [list]. Payment form: [code]. CFDI use: [code].\n\nShow me the full summary (customer, items, totals, payment form and method) and wait for my confirmation. If my key is a live one, remind me that stamping sends it to the SAT and cannot be undone, and ask for the separate confirmation the connector requires.",
+    "recommendedFiles": [
+      "Customer RFC or id",
+      "Items with prices",
+      "Payment form and method"
+    ],
+    "expectedResult": [
+      "Confirmed summary",
+      "Invoice created or stamped with authorization",
+      "Invoice id for downloading"
+    ]
+  }
+}

@@ -118,7 +118,7 @@ describe("GET /api/marketplace/catalog", () => {
     const es = await callCatalog("es");
     const en = await callCatalog("en");
     for (const { body } of [es, en]) {
-      expect(body.useCases.cases).toHaveLength(183);
+      expect(body.useCases.cases).toHaveLength(195);
       expect(body.useCases.categories).toHaveLength(14);
       const categoryIds = new Set(body.useCases.categories.map((c) => c.id));
       for (const c of body.useCases.cases) {
