@@ -58,4 +58,4 @@ With your **Quipu API v1 credentials** (Configuración → Integraciones → API
 - **Reads** (no confirmation needed): contacts (filterable by tax ID, kind or country), invoices (free-text search and by period) and book entries.
 - **Writes, with your confirmation**: creates contacts and income invoices. Every invoice requires a separate confirmation because it lands in your book under Veri*Factu. The connector manages its session lifecycle and never retries writes.
 - **Not covered**: simplified invoices, expense entries, paysheets, bank reconciliation or tax filings. It deletes nothing.
-- This is a TerminalSync community project: **not built or endorsed by Quipu/TeamSystem**. Writes have not been tested against a real account yet; the read tools have (against a real trial account).
+- This is a TerminalSync community project: **not built or endorsed by Quipu/TeamSystem**. Writes were verified on 2026-10-27 against a real account: a contact and an income invoice were created and read back (test records, deletable from the Quipu panel).

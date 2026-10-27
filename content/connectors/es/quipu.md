@@ -58,4 +58,4 @@ Con las **credenciales de la API v1 de Quipu** (Configuración → Integraciones
 - **Lee** (sin pedirte permiso cada vez): contactos (con filtros por NIF, tipo o país), facturas (con búsqueda libre y por periodo) y asientos del libro.
 - **Escribe con tu confirmación**: crea contactos y facturas de ingreso. Cada factura exige una confirmación aparte porque queda registrada en tu libro bajo Veri*Factu. El conector gestiona el ciclo de sesión y no reintenta escrituras.
 - **No cubre**: facturas simplificadas, asientos de gastos, nóminas, conciliación bancaria ni impuestos (Modelos). Tampoco borra nada.
-- Es un proyecto de la comunidad de TerminalSync: **no es de Quipu/TeamSystem ni está avalado por ellos**. Las escrituras no se probaron todavía contra una cuenta real; las consultas sí (con una cuenta de pruebas real).
+- Es un proyecto de la comunidad de TerminalSync: **no es de Quipu/TeamSystem ni está avalado por ellos**. Las escrituras se verificaron el 2026-10-27 contra una cuenta real: contacto y factura de ingreso creados y leídos de vuelta (registros de prueba que se pueden borrar desde el panel de Quipu).
