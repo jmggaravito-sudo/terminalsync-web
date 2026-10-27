@@ -1,5 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
-import { hasValidTeamSmokeAllowlist, isTeamFeatureEnabled, isTeamSmokeUserAllowed } from "@/lib/teamFeature";
+import { hasTeamUserAccessGate, isTeamFeatureEnabled, isTeamUserAllowed } from "@/lib/teamFeature";
 
 export class TeamMetadataError extends Error {}
 export async function verifiedTeamUser(req: Request) {
@@ -7,10 +7,10 @@ export async function verifiedTeamUser(req: Request) {
   // while Team is disabled, before even validating a bearer token or touching
   // Supabase. Route handlers translate this service error to a fail-closed 503.
   if (!isTeamFeatureEnabled()) throw new TeamMetadataError("Team is not available yet");
-  // Enabling the global flag is only permitted for the controlled two-account
-  // smoke. Validate the server-only allowlist before consulting Auth so a
-  // missing or malformed rollout config cannot expose Team to any account.
-  if (!hasValidTeamSmokeAllowlist()) throw new TeamMetadataError("Team smoke allowlist is unavailable");
+  // A missing or malformed rollout configuration must deny access before
+  // consulting Auth. General rollout requires its own exact server-only flag;
+  // otherwise only the controlled two-account smoke list is accepted.
+  if (!hasTeamUserAccessGate()) throw new TeamMetadataError("Team access gate is unavailable");
   const h=req.headers.get("authorization")??"";
   const token=h.startsWith("Bearer ")?h.slice(7).trim():"";
   if(!token)return null;
@@ -27,8 +27,8 @@ export async function verifiedTeamUser(req: Request) {
   const user = result.data.user ?? null;
   if (!user) return null;
   // user.id came from Supabase's verified bearer lookup above. Never trust a
-  // caller-supplied identity when deciding whether this smoke may use Team.
-  if (!isTeamSmokeUserAllowed(user.id)) throw new TeamMetadataError("Team smoke access is unavailable");
+  // caller-supplied identity when deciding whether this rollout may use Team.
+  if (!isTeamUserAllowed(user.id)) throw new TeamMetadataError("Team access is unavailable");
   return user;
 }
 export async function teamMetadataRpc<T>(name: string, args: Record<string, unknown>): Promise<T> {
