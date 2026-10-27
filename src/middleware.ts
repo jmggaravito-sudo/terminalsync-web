@@ -4,6 +4,37 @@ import { LANDING_B } from "@/lib/launchFlags";
 import { REGION_COOKIE, regionFromHeaders } from "@/lib/region";
 import { isTeamFeatureEnabled } from "@/lib/teamFeature";
 
+// The desktop app runs in a Tauri WebView. Team requests carry a verified
+// bearer token and need this exact origin to read the no-store responses. Do
+// not widen this to `*`: it would make the private Team response surface
+// readable by arbitrary web origins.
+const TEAM_TAURI_ORIGIN = "tauri://localhost";
+const TEAM_CORS_METHODS = "GET, POST, OPTIONS";
+const TEAM_CORS_HEADERS = "Authorization, Content-Type";
+
+function isTeamApi(req: NextRequest) {
+  return req.nextUrl.pathname.startsWith("/api/team/");
+}
+
+function withTeamTauriCors(req: NextRequest, response: NextResponse): NextResponse {
+  if (!isTeamApi(req) || req.headers.get("origin") !== TEAM_TAURI_ORIGIN) return response;
+  response.headers.set("Access-Control-Allow-Origin", TEAM_TAURI_ORIGIN);
+  response.headers.set("Access-Control-Allow-Methods", TEAM_CORS_METHODS);
+  response.headers.set("Access-Control-Allow-Headers", TEAM_CORS_HEADERS);
+  response.headers.set("Access-Control-Max-Age", "600");
+  response.headers.append("Vary", "Origin");
+  return response;
+}
+
+function teamTauriPreflight(req: NextRequest): NextResponse | null {
+  if (!isTeamApi(req) || req.method !== "OPTIONS" || req.headers.get("origin") !== TEAM_TAURI_ORIGIN) return null;
+  const requested = req.headers.get("access-control-request-method");
+  if (requested !== "GET" && requested !== "POST") {
+    return withTeamTauriCors(req, NextResponse.json({ error: "Method not allowed" }, { status: 405 }));
+  }
+  return withTeamTauriCors(req, new NextResponse(null, { status: 204 }));
+}
+
 // Región para el consentimiento de cookies: el banner estricto es solo para
 // visitantes de Europa. Vercel da el país en `x-vercel-ip-country`; aquí se
 // traduce a la cookie `ts_region` (eu | row). Sin país fiable => `eu` (fail-safe).
@@ -30,17 +61,20 @@ export function withRegionCookie(req: NextRequest, res: NextResponse): NextRespo
 // Redirect bare "/" to /es or /en based on Accept-Language.
 // Any other path is either already localized (/es/..., /en/...) or an asset.
 export function middleware(req: NextRequest) {
+  const preflight = teamTauriPreflight(req);
+  if (preflight) return preflight;
+
   // The Team source is intentionally deployable before its production schema.
   // Do not let a missing migration degrade authenticated requests into opaque
   // RPC failures: default to unavailable until the controlled rollout has
   // completed and a server operator explicitly enables the feature.
-  if (req.nextUrl.pathname.startsWith("/api/team/") && !isTeamFeatureEnabled()) {
-    return NextResponse.json(
+  if (isTeamApi(req) && !isTeamFeatureEnabled()) {
+    return withTeamTauriCors(req, NextResponse.json(
       { error: "Team is temporarily unavailable" },
       { status: 503, headers: { "Cache-Control": "no-store" } },
-    );
+    ));
   }
-  return withRegionCookie(req, route(req));
+  return withTeamTauriCors(req, withRegionCookie(req, route(req)));
 }
 
 function route(req: NextRequest): NextResponse {
