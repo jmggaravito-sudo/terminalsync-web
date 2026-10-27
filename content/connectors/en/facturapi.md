@@ -56,4 +56,4 @@ With your **Facturapi Secret Key** (dashboard → API Keys):
 - **Reads** (no confirmation needed): customers and invoices with their line items.
 - **Writes, with your confirmation**: creates customers (Facturapi validates the RFC against the SAT) and invoices. With a live key, stamping requires a separate confirmation because a stamped CFDI can only be corrected with a credit memo; `status: draft` needs none. Facturapi's idempotency key is supported so retries don't duplicate invoices.
 - **Not covered**: retentions, receipts, payment complements, bulk CFDI downloads or cancellations (Facturapi handles those from its dashboard).
-- This is a TerminalSync community project: **not built or endorsed by Facturapi**. Writes have not been tested against a real account yet; the read tools have.
+- This is a TerminalSync community project: **not built or endorsed by Facturapi**. Writes were verified on 2026-10-27 with a test account: a customer and a stamped test-mode CFDI invoice were created (test invoices never reach the SAT); they remain as test records in that account.
