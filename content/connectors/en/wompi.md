@@ -59,4 +59,4 @@ With your **merchant keys** from the Wompi panel (comercios.wompi.co → Desarro
 - **Reads** (no confirmation needed): your merchant data (name, tax ID, accepted methods) and your transactions with status and payment method.
 - **Writes, with your confirmation**: creates payment links (`name`, amount in cents, `single_use`, expiry and more, per Wompi's documentation). Your AI asks before creating any link.
 - **Not covered**: refunds, payout disbursement, datáphones or creating charges directly (transactions). It never changes your Wompi settings.
-- This is a TerminalSync community project: **not built or endorsed by Wompi**. Link creation has not been verified against a real account yet (it needs the test private key); the read tools have.
+- This is a TerminalSync community project: **not built or endorsed by Wompi**. Link creation was verified on 2026-10-26 by creating a real sandbox link (it sits in your test panel); the read tools were verified too.

@@ -59,4 +59,4 @@ Con las **llaves de tu comercio de Wompi** (panel comercios.wompi.co → Desarro
 - **Lee** (sin pedirte permiso cada vez): datos de tu comercio (nombre, NIT, métodos aceptados) y tus transacciones con su estado y método de pago.
 - **Escribe con tu confirmación**: crea links de pago (`name`, monto en centavos, `single_use`, vencimiento y más, según la documentación de Wompi). Tu AI te pide confirmar antes de crear cualquiera.
 - **No cubre**: reembolsos, dispersión de dinero, datáfonos ni la creación directa de cobros (transacciones). Tampoco modifica tu configuración de Wompi.
-- Es un proyecto de la comunidad de TerminalSync: **no es de Wompi ni está avalado por ellos**. La creación de links no se pudo probar contra una cuenta real todavía (requiere la llave privada de pruebas); las consultas sí.
+- Es un proyecto de la comunidad de TerminalSync: **no es de Wompi ni está avalado por ellos**. La creación de links se verificó el 2026-10-26 creando uno real en el sandbox (quedó en tu panel de pruebas); las consultas también.
