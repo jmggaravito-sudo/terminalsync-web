@@ -33,4 +33,32 @@ describe("Team availability middleware", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("x-middleware-next")).toBe("1");
   });
+
+  it("allows only the desktop Tauri origin to preflight Team bearer requests", async () => {
+    delete process.env.TEAM_FEATURE_ENABLED;
+    const request = new NextRequest("https://terminalsync.ai/api/team/invitations", {
+      method: "OPTIONS",
+      headers: {
+        origin: "tauri://localhost",
+        "access-control-request-method": "GET",
+        "access-control-request-headers": "authorization",
+      },
+    });
+    const response = middleware(request);
+    expect(response.status).toBe(204);
+    expect(response.headers.get("access-control-allow-origin")).toBe("tauri://localhost");
+    expect(response.headers.get("access-control-allow-methods")).toContain("GET");
+    expect(response.headers.get("access-control-allow-headers")).toContain("Authorization");
+    expect(response.headers.get("vary")).toContain("Origin");
+  });
+
+  it("does not add Team CORS headers for an arbitrary web origin", () => {
+    process.env.TEAM_FEATURE_ENABLED = "1";
+    const response = middleware(new NextRequest("https://terminalsync.ai/api/team/invitations", {
+      headers: { origin: "https://attacker.example" },
+    }));
+    expect(response.status).toBe(200);
+    expect(response.headers.get("access-control-allow-origin")).toBeNull();
+  });
+
 });
