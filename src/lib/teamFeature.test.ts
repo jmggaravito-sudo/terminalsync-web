@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  hasTeamUserAccessGate,
   hasValidTeamSmokeAllowlist,
   isTeamFeatureEnabled,
+  isTeamGeneralAvailabilityEnabled,
   isTeamPaidCheckoutEnabled,
   isTeamSmokeUserAllowed,
+  isTeamUserAllowed,
 } from "./teamFeature";
 
 const smokeUserA = "00000000-0000-4000-8000-000000000001";
@@ -49,5 +52,24 @@ describe("Team controlled-smoke allowlist", () => {
     expect(isTeamSmokeUserAllowed("00000000-0000-4000-8000-000000000003", environment)).toBe(false);
     expect(isTeamSmokeUserAllowed(`${smokeUserA}-suffix`, environment)).toBe(false);
     expect(isTeamSmokeUserAllowed(smokeUserA, {})).toBe(false);
+  });
+});
+
+describe("Team general availability", () => {
+  it("requires the feature gate and a distinct exact general-availability flag", () => {
+    expect(isTeamGeneralAvailabilityEnabled({})).toBe(false);
+    expect(isTeamGeneralAvailabilityEnabled({ TEAM_FEATURE_ENABLED: "1" })).toBe(false);
+    expect(isTeamGeneralAvailabilityEnabled({ TEAM_GENERAL_AVAILABILITY_ENABLED: "1" })).toBe(false);
+    expect(isTeamGeneralAvailabilityEnabled({ TEAM_FEATURE_ENABLED: "1", TEAM_GENERAL_AVAILABILITY_ENABLED: "true" })).toBe(false);
+    expect(isTeamGeneralAvailabilityEnabled({ TEAM_FEATURE_ENABLED: "1", TEAM_GENERAL_AVAILABILITY_ENABLED: "1" })).toBe(true);
+  });
+
+  it("keeps access deny-all without either rollout gate and permits all verified users only with the explicit general gate", () => {
+    expect(hasTeamUserAccessGate({ TEAM_FEATURE_ENABLED: "1" })).toBe(false);
+    expect(isTeamUserAllowed(smokeUserA, { TEAM_FEATURE_ENABLED: "1" })).toBe(false);
+    const general = { TEAM_FEATURE_ENABLED: "1", TEAM_GENERAL_AVAILABILITY_ENABLED: "1" };
+    expect(hasTeamUserAccessGate(general)).toBe(true);
+    expect(isTeamUserAllowed(smokeUserA, general)).toBe(true);
+    expect(isTeamUserAllowed("00000000-0000-4000-8000-000000000003", general)).toBe(true);
   });
 });

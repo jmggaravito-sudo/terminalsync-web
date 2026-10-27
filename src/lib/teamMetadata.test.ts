@@ -62,6 +62,17 @@ describe("verifiedTeamUser smoke allowlist", () => {
     expect(getUser).toHaveBeenCalledOnce();
   });
 
+  it("permits a verified user outside the smoke list only with the explicit general rollout gate", async () => {
+    vi.stubEnv("TEAM_SMOKE_ALLOWLIST_USER_IDS", "");
+    vi.stubEnv("TEAM_GENERAL_AVAILABILITY_ENABLED", "1");
+    const generalUser = "00000000-0000-4000-8000-000000000003";
+    const getUser = vi.fn(async () => ({ data: { user: { id: generalUser } }, error: null }));
+    getSupabaseAdmin.mockReturnValue({ auth: { getUser } });
+
+    await expect(verifiedTeamUser(request())).resolves.toMatchObject({ id: generalUser });
+    expect(getUser).toHaveBeenCalledWith("verified-token");
+  });
+
   it("keeps a missing or invalid bearer distinct from a permitted identity", async () => {
     const getUser = vi.fn(async () => ({ data: { user: null }, error: { status: 401 } }));
     getSupabaseAdmin.mockReturnValue({ auth: { getUser } });
