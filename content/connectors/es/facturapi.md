@@ -56,4 +56,4 @@ Con tu **Secret Key de Facturapi** (dashboard → API Keys):
 - **Lee** (sin pedirte permiso cada vez): clientes y facturas con sus ítems.
 - **Escribe con tu confirmación**: crea clientes (Facturapi valida el RFC contra el SAT) y facturas. Con llave de producción, timbrar exige una confirmación aparte porque un CFDI timbrado solo se corrige con una factura de egreso; con `status: draft` no hace falta. Soporta la clave de idempotencia de Facturapi para no duplicar al reintentar.
 - **No cubre**: retenciones, recibos, complementos de pago, descarga masiva ni cancelaciones (facturapi las maneja por su panel).
-- Es un proyecto de la comunidad de TerminalSync: **no es de Facturapi ni está avalado por ellos**. Las escrituras no se probaron todavía contra una cuenta real; las consultas sí.
+- Es un proyecto de la comunidad de TerminalSync: **no es de Facturapi ni está avalado por ellos**. Las escrituras se verificaron el 2026-10-27 con una cuenta de pruebas: se creó un cliente y una factura CFDI timbrada en modo test (no llega al SAT); quedaron como registros de prueba en esa cuenta.
