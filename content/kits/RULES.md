@@ -342,6 +342,30 @@ Until these are present, keep the kit out of the published marketplace catalog.
 
 ## Loop run log
 
+### 2026-10-26 — Inbox Paperwork Kit (business) + MCP Server Builder Kit (dev); factorial joins the blocked queue on a new fact
+
+**Shipped (2 kits, EN/ES parity):**
+
+- `inbox-paperwork` (category: operations, business) — `gmail` + `pdf` + `doc-coauthoring`. Scoped to the document loop of an owner or ops lead who runs paperwork by email: find the thread (Gmail), read the attachment — invoices, contracts, and statements arrive as PDFs — (PDF), record it in a structured running log or a filled draft (Doc Co-authoring), and send the reply (Gmail send, confirmation-gated). `gmail` and `pdf` were unused by every prior kit; no existing kit touches the inbox/documents layer — the finance kits start at the books (Xero/Stripe), this one runs on documents before they reach any system of record. Deliberately distinct from the gmail-anchored *support* kit this file rejected in 2026-08-03: that blocker was the missing customer-facing-reply skill; this kit needs none — the artifact is a log/draft/cover note, not customer service, and its Limits state it is not a support inbox.
+- `mcp-server-builder` (category: dev) — `mcp-builder` + `context7` + `github-cli`. Scoped to the extension loop: scope the tool surface (MCP Builder), build against current version-specific SDK docs (Context7, keyless), land scaffold → test → PR in the repo (GitHub CLI). Puts the one whitelisted skill no kit had ever used (`mcp-builder`) to work on the job the product itself invites: building the connector the catalog doesn't have. Distinct from `dev-code-review` (review loop) and `ship-supabase-app` (ship an app on Supabase). Limits state the kit doesn't publish to the catalog — that stays with the connector loop and human review.
+
+**Verification this run:** kits integrity + catalog route tests pass with both kits in both locales (every declared item resolves); typecheck clean. Installability: `gmail`, `pdf`, `context7` re-verified this run as `status: available` with `manifest:` blocks; `mcp-builder` and `doc-coauthoring` on the 7-skill whitelist; `github-cli` on the allowed-CLI list. Workflow smoke tests are documented per kit as realistic first-session scenarios with expected behavior (negative fit checks live in each kit's Limits: not a support inbox / doesn't bless production-ready). Human review: this evidence does not self-approve publication — JM decides on review of the PR.
+
+**Deferred / SKIP (10, documented for the proper Loop):**
+
+1. **Factorial HR/people-ops kit** — NEW SKIP with a new fact: `factorial` is published with a manifest, but the 2026-10-25 sources re-verification records its remote login smoke failing (DCR cerrado, 403). Per the verification gate ("If any item fails to install, the kit does not publish"), a kit anchored on it cannot ship. Revisit when login works again.
+2. **Klaviyo retention/email kit** — unchanged: every skill that makes it coherent is outside the 7-skill whitelist; the whitelist-drift flag for JM from 2026-09-28 is still open (RULES.md still carries the literal 7).
+3. **Support / Customer Service kit** — unchanged: no whitelisted skill fits customer-facing reply drafting; `intercom` is installable but doesn't make a helpdesk kit without one.
+4. **Gusto payroll/1099 kit** — unchanged: would duplicate the published gusto plugin pack one layer up; `1099-w9-organizer` outside the whitelist anyway.
+5. **Local Marketing kit** — unchanged: `google-business` has no `manifest:` block (absent from the manifest-bearing set re-checked this run).
+6. **Calendly scheduling kit** — unchanged: coherence-dropped (its server already reads the calendar and makes booking links; partners duplicate it or reduce to filler).
+7. **Canva brand-collateral kit** — unchanged: no whitelisted skill serves short-form collateral copy.
+8. **Asana client-delivery kit** — unchanged: reads as a relabel of `team-operations`' purpose (2026-10-05 call stands).
+9. **Webflow marketing-site kit** — unchanged: relabel of `seo-content`'s draft→audit→publish loop.
+10. **Siigo invoicing kit** — unchanged: no whitelisted skill serves daily invoicing/collections comms (2026-10-12 call stands).
+
+**App mirror:** not opened — per `docs/integration-loop-two-pr-policy.md` these kits need no desktop code (standard connector/skill/cli items the app already renders from `/api/marketplace/catalog`); opening a record-only mirror PR is exactly what the policy forbids. Landing body states `App mirror PR: no aplica — la app consume el catálogo`.
+
 ### 2026-10-12 — Spend Review Kit; ramp unblocked after its connector landed; deferred queue re-checked
 
 **Shipped (1 kit, EN/ES parity):**
