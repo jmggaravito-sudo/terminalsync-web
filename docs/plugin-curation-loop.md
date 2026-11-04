@@ -61,6 +61,29 @@ Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first,
 
 ## Run log
 
+### 2026-10-26 — automated run, no focus input given
+
+**Shipped 2 Plugins**, each pairing an already-published, `available` connector with an already-evaluated, `available` skill, picked so the connector's real surface feeds the skill's actual input (no invented capability). Both close pairings the loop had deferred on skill availability — those skills are now published (`catalogReady` flipped by the Skill Loop after the 2026-10-19 run):
+
+- **canva** (`marketing`) — Canva connector (official hosted Canva MCP, OAuth login, no API key) + Brand Guidelines. The connector documents design generation, editing, discovery, asset and brand management, and export; the skill builds the brand sheet (colors with exact values, typography, tone, do/don'ts) from the material the owner provides — never inventing values — and applies it. The pairing: the brand values are decided and corrected *before* the design exists, and the design is made in Canva where the owner's assets already live. Disclosed in the body: the brand sheet is not Canva's Enterprise Brand Kit (plan-gating per Canva's own docs — resizing on Pro+, Brand Kits/autofill on Enterprise); the skill can't see logo files, verify font licensing or produce print specs; the agent's reach is bounded by the owner's own Canva access, each user authenticates individually.
+- **brevo** (`marketing`) — Brevo connector (official hosted Brevo MCP, Brevo MCP token, 27 modules) + Brand Voice. The connector's own documented example requests are the job — *"Create an email campaign for my Black Friday sale"* — and the skill is what makes that campaign read like the owner instead of generic AI: voice profile from 3–5 real samples, drafts in it, flags generic lines, never invents facts/numbers/commitments (offer, price and dates come from the owner). Disclosed in the body: the MCP token has no scopes and grants full read/write with no documented server-side confirmation step (mirroring the connector's own disclosure) — every create/send is an explicit owner decision; the voice profile is built from pasted samples, it does not read the Brevo campaign history by itself; SMS/WhatsApp short-form copy gets a proportionality caveat.
+
+**Deferred / SKIP, documented:**
+
+- **pipedrive + internal-comms** — viable on substance (deals/activities/notes surface, OAuth) but rejected this run for low marginal value: it would be the **sixth** home of `internal-comms` and duplicate the exact job `hubspot` already ships (CRM follow-ups → drafted nudge). Left until a Pipedrive-specific workflow skill exists (Skill Loop candidate: pipeline-review / stale-deal digest).
+- **typeform, bird** — unchanged from 2026-10-19: connectors `available`, no publishable skill teaches a survey/form or customer-messaging workflow. Skill Loop candidates.
+- **holded** — unchanged: the connector's docs publish no flat tool list, so no pairing can be written with verbatim-tool evidence yet (2026-10-19 deferral stands).
+- **calendly / zoom** — `meeting-notes` still carries `catalogReady: false` (re-verified this run via frontmatter). Skill Loop task.
+- **klaviyo / kit** — `lifecycle-email` still `catalogReady: false`; `copywriter` still `soon` + `hidden`. Skill Loop tasks. Note: `brevo` shipped with `brand-voice` instead — the voice profile is the piece that maps onto campaign copy; a future `lifecycle-email` publication would be additive (flows/sequences), not a re-pairing.
+- **whatsapp / alegra / conekta / factorial** — connectors themselves `status: soon`; no Plugin until the Connector Loop/product flips them to `available`.
+- **⚠ Flag for the coordinator (pre-existing drift, not touched this run):** the `shopify` connector now reads `status: soon` while the live `shopify` Plugin (2026-08-02) is published as `available`. Per the rules a Plugin must be `soon` while any referenced piece is `soon` — flipping the production plugin is an owner decision, so it's recorded here instead.
+
+**Logos:** no new debt. `public/plugins/canva.svg` and `public/plugins/brevo.svg` are copies of each connector's committed mark (`public/connectors/<slug>.svg`, same pattern as `airtable`/`paypal`/`ramp`). `canva` keeps using the connector-level TS fallback already recorded in "Logos pendientes" (2026-07-31) — the plugin mirrors the connector asset; no new entry added.
+
+Validation: `npm test -- --run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` + `tsc --noEmit` — see PR.
+
+App PR: no aplica — la app consume el catálogo. Both reuse shapes the desktop already renders: `canva` and `brevo` are remote/OAuth-or-token connectors bridged with `mcp-remote` (like `siigo`/`ramp`/`tiendanube`), with plain `connectorSlug` + `skillSlugs` composition the generic plugin renderer handles.
+
 ### 2026-10-19 — automated run, no focus input given
 
 **Shipped 2 Plugins**, each pairing an already-published, `available` connector with an already-evaluated, `available` skill, picked so the connector's verbatim tools feed the skill's actual steps (no invented capability):
