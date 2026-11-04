@@ -61,6 +61,32 @@ Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first,
 
 ## Run log
 
+### 2026-11-02 — automated run, no focus input given
+
+**Shipped 2 Plugins**, each pairing an already-published, `available` connector with an already-evaluated, `available` skill, picked so the connector's verbatim surface feeds the skill's actual input (no invented capability):
+
+- **quipu** (`operations`) — Quipu connector (TerminalSync community MCP over the Quipu API v1, ES-market invoicing) + Overdue Invoice Chaser. Same shape as the shipped `paypal` pack: the connector's reads (contacts filterable by tax ID/kind/country, invoices by free-text search and by period, book entries) supply exactly what the skill sorts — client, amount, number, due date, days late — and its own doc example is the job (*"Find the client Fisioterapia Ana and tell me if she has unpaid invoices"*). Disclosed in the body: the connector has **no email tool**, so nothing sends automatically — the drafted ladder is the deliverable and the owner sends from their own mail; creating invoices/contacts is a confirmation-gated write under Veri*Factu and is **not** this pack's job; the connector is a community project not built or endorsed by Quipu/TeamSystem (writes verified 2026-10-27 against a real account) and doesn't cover simplified invoices, expense entries, paysheets, bank reconciliation or tax filings; the skill never promises payment and serious debts go to a lawyer/collection agency.
+- **pipedrive** (`sales`) — Pipedrive connector (official hosted MCP `mcp.pipedrive.ai`, OAuth, permissions of the user's own account) + Internal Comms. Mirrors the already-shipped `hubspot` pack (CRM follow-ups): the connector's documented examples are exactly the stale-deal signal the skill drafts from (*"Show me all open deals that haven't been updated in two weeks"*, *"Move the [company] deal to the [stage] stage and schedule a follow-up"*), over deals/contacts/organizations/leads/activities/notes within the user's own permissions, with every action in Pipedrive's change log. Disclosed in the body: the Pipedrive MCP has **no email tool** — the owner sends from their own inbox and the agent only logs notes/activities after approval; Internal Comms is a team-facing comms skill by design (Anthropic) and this pack applies its audience/structure/tone/risk process to deal follow-ups, still flagging sensitive topics (lost client, pricing dispute) for human review; the server is hosted by Pipedrive, in beta, with token limits per plan.
+
+**Deferred / SKIP, documented:**
+
+- **canva, brevo** — the two strongest remaining pairings (both over newly published design/brand skills) **already belong to open draft PR #584** (`loop/plugins-20261026`). This run did not re-ship those slugs: two open PRs adding the same `content/plugins/{en,es}/<slug>.md` is the same-slug collision that hit `xero` on 2026-08-02 and `gusto`/`square`/`meta-social` on 2026-10-05. **Action for the coordinator:** review #584; those two products are done there, not here.
+- **fintoc + cobros-vencidos** — rejected on evidence: the connector's documented operations include Billing *writes* (crear/finalizar/anular invoices) but no documented **list/read invoices** op, and its tools are a generic search/details/read/write set with no flat invoice-list surface — the overdue-invoice record the skill needs can't be enumerated verbatim.
+- **holded + cobros-vencidos** — unchanged from 2026-10-19: the connector's docs publish no flat tool list, so the pairing still can't be written with verbatim-tool evidence. Left for a run that can enumerate Holded's invoice-reading surface.
+- **calendly / zoom** — `meeting-notes` still `catalogReady: false` + claude-only. Skill Loop task (unchanged).
+- **klaviyo / kit** — `lifecycle-email` still `catalogReady: false`. Skill Loop task (unchanged).
+- **intercom** — `email-drafter` still `soon` + `hidden`. Skill Loop task (unchanged).
+- **typeform / bird** — connectors `available`, no skill teaches a survey/form or customer-messaging workflow. Skill Loop candidates (unchanged since 2026-10-19).
+- **qonto / mercadopago / wompi / monei** — banking/payments rails with no invoice object or publishable pairing for the finance skills this run had in hand (tax-prep-checklist is US/IRS-flavored against EU banking; mercado-pago/wompi expose payments/orders, not invoices).
+- Standing blockers re-verified via frontmatter (unchanged): `meeting-notes`, `referral-program`, `lifecycle-email`, `notebooklm-source-architect` still `catalogReady: false`; `email-drafter`, `copywriter`, `slack-summarizer`, `learn`, `deep-research` still `soon` + `hidden`.
+- Standing rejections from prior runs (not re-verified, unchanged): asana/todoist/clickup/monday, twitter/wordpress, dropbox, ahrefs, second analytics/finance skill on airtable/shopify/square/tiendanube.
+
+**Logos:** no new debt. Both `public/plugins/quipu.svg` and `public/plugins/pipedrive.svg` embed their connector's committed official PNG (`public/connectors/quipu.png` 180×180, `public/connectors/pipedrive.png` 152×152) in the 48×48 SVG wrapper — same embed pattern used to close `tiendanube`. No entry added to "Logos pendientes".
+
+Validation: targeted plugin/logo suite + typecheck — see PR body for the exact commands and results.
+
+App PR: no aplica — la app consume el catálogo. Both reuse shapes the desktop already renders: `quipu` is an npx+secrets connector (like `firecrawl` inside `seo-audit` / `square`), `pipedrive` is a remote/OAuth connector bridged with `mcp-remote` (like `siigo`/`ramp`/`gusto`), and both are plain `connectorSlug` + `skillSlugs` composition the generic plugin renderer handles.
+
 ### 2026-10-19 — automated run, no focus input given
 
 **Shipped 2 Plugins**, each pairing an already-published, `available` connector with an already-evaluated, `available` skill, picked so the connector's verbatim tools feed the skill's actual steps (no invented capability):
