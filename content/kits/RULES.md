@@ -342,6 +342,30 @@ Until these are present, keep the kit out of the published marketplace catalog.
 
 ## Loop run log
 
+### 2026-11-02 — Help Center Kit; intercom's manifest unblocks the support domain; deferred queue re-checked
+
+**Shipped (1 kit, EN/ES parity):**
+
+- `help-center` (category: support) — `intercom` + `doc-coauthoring`. Scoped to the self-serve support loop of an owner or support lead who runs customer conversations on Intercom: find which questions repeat in the real inbox (`search_conversations`/`search`), read how the case was actually resolved (`get_conversation`/`fetch`), co-author the article with structure (Doc Co-authoring: brief → outline → section drafts → revision), publish it where customers look (`create_article`/`update_article`), and point the tickets already open at it (`add_internal_note`). **The blocker that killed this domain on 2026-08-03, 2026-09-28 and 2026-10-12 is gone on the connector side:** `intercom` shipped 2026-10-14 with a `manifest:` block (remote/OAuth, molde B) — the 2026-10-12 entry's "intercom remains first-party without a manifest" is stale as of that ship. The skill-side blocker was about **reply drafting**, and this kit deliberately does not claim replies: it claims article authoring, which `doc-coauthoring` explicitly serves ("article series" is in its own When-to-use list) and which is exactly what Intercom's 14 documented tools can write (articles + internal notes; there is no reply tool). The negative fit lives in the kit's Limits, not just the PR: no live triage, no chat coverage, no automatic responses.
+
+**Verification evidence:**
+
+- Installability: both items resolve through the real catalog resolver in both locales (kitsIntegrity gate), and the catalog route serves the kit in ES and EN with the fixed `/logos/ts-kit.svg`, a real `descriptionMd`, and the `/stacks/` href.
+- Workflow smoke test (documented, **not executed live**): user goal "stop answering the same refund question every week"; installed items `intercom` + `doc-coauthoring`; prompt *"Search our conversations from the last 30 days about refunds and summarize what customers actually ask"* → expected: conversation search over the real inbox, then outline-first article co-authoring, then `create_article` + `add_internal_note` on the open tickets. This automated run has no Intercom credentials, so nothing was executed against a live workspace; expected behavior is grounded in the connector's documented 14-tool surface (`content/connectors/en/intercom.md`). Gap flagged for human review: article visibility and write attribution can only be confirmed on a real workspace.
+- Negative fit check: "it cannot answer a customer" — documented in the kit's Limits section.
+- Human review: evals/evidence do not self-approve publication; JM's review decides.
+
+**Deferred queue re-check (facts verified this run, still blocked):**
+
+- **Klaviyo retention/email kit** — unchanged: every skill that makes it coherent is outside the 7-skill whitelist (open flag for JM since 2026-09-28).
+- **Email marketing kit on `brevo`** (shipped 2026-10-16, remote/token, installable, unused by any kit) — same blocker as Klaviyo: no whitelisted skill serves campaign/contact work, and `doc-coauthoring` is the wrong shape for campaign copy. SKIP.
+- **Siigo/Alegra invoicing & collections kit** — unchanged (2026-10-12 SKIP stands): no whitelisted skill serves invoicing/collections ops (`cobros-vencidos` is not on the whitelist).
+- **LatAm store ops kit on `tiendanube` + `mercado-pago`** (both installable and unused by kits) — no whitelisted skill fits store operations; with `doc-coauthoring` it reduces to "connector + weekly report", and the purpose would relabel `ecommerce-storefront` (square-anchored). SKIP.
+- **Local Marketing kit** — `google-business` still has no `manifest:` block.
+- **Onboarding/HR kit** — `factorial` is `status: soon` (not installable); a gusto-anchored version still sits on the ground the published gusto plugin pack already covers and adds little to the onboarding job itself. SKIP.
+
+**App mirror:** not opened — per `docs/integration-loop-two-pr-policy.md` this kit needs no desktop code (standard connector + skill items the app already renders from `/api/marketplace/catalog`; remote/OAuth kits such as `social-ad-creative-studio` already render there). Landing body states `App mirror PR: no aplica — la app consume el catálogo`.
+
 ### 2026-10-12 — Spend Review Kit; ramp unblocked after its connector landed; deferred queue re-checked
 
 **Shipped (1 kit, EN/ES parity):**
