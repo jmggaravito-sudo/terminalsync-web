@@ -150,7 +150,11 @@ export default async function LicensePage({
 
       {/* ---------- Acceptance ---------- */}
       <section className="mt-10 border-t border-zinc-200 pt-8">
-        <LicenseAcceptForm email={email} licenseVersion={LICENSE_VERSION} />
+        <LicenseAcceptForm
+          email={email}
+          licenseVersion={LICENSE_VERSION}
+          token={t ?? ""}
+        />
         <p className="mt-4 text-xs leading-relaxed text-zinc-500">
           By clicking accept, you sign this license electronically and consent
           to its terms. We record your email, the date/time, your IP address
