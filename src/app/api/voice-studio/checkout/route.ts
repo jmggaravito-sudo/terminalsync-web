@@ -68,9 +68,13 @@ export async function POST(req: Request) {
       allow_promotion_codes: true,
       customer_email: body.email?.trim() || undefined,
       ...(def.mode === "subscription"
-        ? { subscription_data: { metadata } }
+        ? {
+            subscription_data: { metadata },
+            // Payment method up front so a pack renews instead of
+            // silently lapsing after the first month.
+            payment_method_collection: "always",
+          }
         : {}),
-      payment_method_collection: "always",
       success_url: successUrl,
       cancel_url: cancelUrl,
       locale: "en",
