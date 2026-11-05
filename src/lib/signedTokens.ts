@@ -17,7 +17,7 @@ interface TokenPayload {
   /** Subject — what this token authorizes. e.g. customer_id, user email. */
   sub: string;
   /** Token kind so a billing token can't be replayed as an unsub token. */
-  kind: "billing" | "unsubscribe";
+  kind: "billing" | "unsubscribe" | "vs-license";
   /** Expiry as unix seconds. */
   exp: number;
 }

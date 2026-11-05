@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { Resend } from "resend";
 import { stripe } from "@/lib/stripe";
 import { voiceStudioPriceId } from "@/lib/voiceStudioStripe";
+import { markDealWonByEmail } from "@/lib/voiceStudioCrm";
 import {
   sendWelcomeEmail,
   sendTrialEndingEmail,
@@ -747,6 +748,11 @@ async function handleVoiceStudioCheckout(session: Stripe.Checkout.Session) {
       `Funnel reminder: setup → approve test clip → first video. Full refund until production starts.`,
     ],
   );
+  // Landing → CRM (allowed direction per the handoff): the deal is Won —
+  // this creator is a paying client. Fail-open.
+  if (session.customer_details?.email) {
+    await markDealWonByEmail(session.customer_details.email);
+  }
 }
 
 async function handleVoiceStudioRenewal(invoice: Stripe.Invoice) {
