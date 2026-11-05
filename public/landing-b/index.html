@@ -110,6 +110,8 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .space-proof-grid{display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr);gap:clamp(30px,5vw,72px);align-items:center}
 .space-proof-copy h2{font-size:clamp(27px,3.1vw,40px);line-height:1.14;font-weight:600}
 .space-proof-copy p{margin-top:16px;font-size:16.5px;line-height:1.62;color:var(--fg-2)}
+.space-proof .head{margin-bottom:clamp(24px,3vw,40px)}
+.space-proof .head h2{margin-top:0}
 .space-proof-label{display:inline-flex;align-items:center;gap:8px;margin-bottom:15px;font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-2)}
 .space-proof-label::before{content:'';width:9px;height:9px;border-radius:50%;background:var(--accent)}
 .space-proof-shot{position:relative;border:0;border-radius:24px;background:transparent;overflow:hidden;box-shadow:none;aspect-ratio:16/9}
@@ -137,10 +139,11 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .sec{padding:clamp(56px,6.5vw,96px) 0;border-top:1px solid var(--line)}
 .sec.alt{background:var(--bg)}
 .sec.first{border-top:none}
-.head{max-width:62ch}
-.head.center{margin-inline:auto;text-align:center}
-.head h2{margin-top:14px;font-size:clamp(27px,3.1vw,40px);line-height:1.14;font-weight:600}
-.head .sub{margin-top:15px;font-size:clamp(15.5px,1.35vw,17.5px);line-height:1.62;color:var(--fg-2)}
+.head{max-width:none}
+.head.center{margin-inline:0;text-align:left}
+.head h2{margin-top:14px;font-size:clamp(22px,2.55vw,38px);line-height:1.14;font-weight:600;text-align:left;white-space:nowrap;text-wrap:nowrap}
+.head .sub{max-width:62ch;margin-top:15px;font-size:clamp(15.5px,1.35vw,17.5px);line-height:1.62;color:var(--fg-2)}
+@media (max-width:760px){.head h2{white-space:normal;text-wrap:pretty}}
 
 /* ── tarjetas-ventana: la ventana manda, el texto es una línea ── */
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,314px),1fr));gap:22px;margin-top:44px}
@@ -291,20 +294,20 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 .faq-more button:hover{text-decoration:underline}
 
 /* ── cierre ── */
-.final{padding:clamp(60px,7vw,104px) 0;text-align:center;background:var(--block);color:#fff;border-top:1px solid var(--line)}
-.final h2{font-size:clamp(28px,3.4vw,44px);line-height:1.12;font-weight:600;max-width:20ch;margin-inline:auto}
-.final p{margin:18px auto 0;max-width:52ch;font-size:16.5px;line-height:1.6;color:#b3bac4}
+.final{padding:clamp(60px,7vw,104px) 0;text-align:left;background:var(--block);color:#fff;border-top:1px solid var(--line)}
+.final h2{font-size:clamp(22px,2.55vw,38px);line-height:1.14;font-weight:600;max-width:none;margin-inline:0;text-align:left;white-space:nowrap;text-wrap:nowrap}
+.final p{margin:18px 0 0;max-width:52ch;font-size:16.5px;line-height:1.6;color:#b3bac4}
 .final .btn-ghost{border-color:rgb(255 255 255/.3);color:#fff}
 .final .btn-ghost:hover{border-color:#fff;color:#fff}
-.final .cta{display:flex;gap:12px;justify-content:center;margin-top:30px;flex-wrap:wrap}
-.final .plat{margin-top:18px;font-size:13.5px;color:#8b929c}
+.final .cta{display:flex;gap:12px;justify-content:flex-start;margin-top:30px;flex-wrap:wrap}
+.final .plat{margin:18px 0 0;font-size:13.5px;color:#8b929c}
+@media (max-width:760px){.final h2{white-space:normal;text-wrap:pretty}}
 
 .foot{padding-block:34px;font-size:13.5px;color:var(--fg-3);display:flex;gap:16px;flex-wrap:wrap;align-items:center}
 .foot .sp{flex:1}
 .foot a{color:var(--fg-2)}
-
 .winw{align-items:center}
-.winw-form{display:flex;gap:10px;flex-wrap:wrap}
+.winw-form{display:flex;gap:10px;flex-wrap:wrap;max-width:680px;margin-top:28px}
 .winw-form input{flex:1;min-width:190px;padding:13px 15px;border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface);color:var(--fg);font-family:inherit;font-size:15px}
 .winw-form input::placeholder{color:var(--fg-3)}
 .winw-form input:focus{outline:none;border-color:var(--accent)}
@@ -381,16 +384,20 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 </section>
 
 <section class="space-proof" id="espacio">
-  <div class="wrap space-proof-grid">
-    <div class="space-proof-copy">
+  <div class="wrap">
+    <div class="head">
       <span class="space-proof-label">Así trabaja un espacio por dentro</span>
       <h2>Un espacio que entiende el trabajo.</h2>
-      <p>Cada espacio reúne sus archivos, reglas, memoria y herramientas para que su agente pueda continuar el trabajo sin empezar de cero.</p>
     </div>
+    <div class="space-proof-grid">
+      <div class="space-proof-copy">
+        <p>Cada espacio reúne sus archivos, reglas, memoria y herramientas para que su agente pueda continuar el trabajo sin empezar de cero.</p>
+      </div>
     <figure class="space-proof-shot">
           <iframe id="spaceProofImage" src="/landing-b/assets/workspace-capture-es.html" title="Espacio Marketing y Publicidad con conversación, trabajo preparado y panel de contexto propio." loading="lazy" tabindex="-1"></iframe>
           <button class="space-proof-open" id="spaceProofOpen" type="button" aria-label="Ampliar captura del espacio"><span aria-hidden="true">⤢</span></button>
     </figure>
+    </div>
   </div>
 </section>
 
@@ -463,7 +470,7 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 <section class="sec alt" id="integraciones">
   <div class="wrap">
     <div class="head center">
-      <h2>Las herramientas que ya usas,<br />ahora con la IA adentro</h2>
+      <h2>Las herramientas que ya usas, ahora con la IA adentro</h2>
       <p>Terminal Sync organiza documentos y correos en espacios de trabajo con IA. Conecta Gmail en modo solo lectura y elige qué mensajes usar como contexto.</p>
     </div>
     <div class="tri">
@@ -611,11 +618,13 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 
 <section class="sec alt" id="archivos">
   <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Tus archivos, donde ya viven</span>
+      <h2>No vuelvas a subir un archivo dos veces.</h2>
+      <p class="sub">Conecta la carpeta de tu proyecto una sola vez. TS entiende tus documentos, recuerda el contexto y trabaja siempre sobre la versión más reciente. No llevas tus archivos a la IA: la IA llega hasta donde ya trabajas.</p>
+    </div>
     <div class="split rev">
       <div class="split-tx">
-        <span class="eyebrow">Tus archivos, donde ya viven</span>
-        <h2>No vuelvas a subir un archivo dos veces.</h2>
-        <p>Conecta la carpeta de tu proyecto una sola vez. TS entiende tus documentos, recuerda el contexto y trabaja siempre sobre la versión más reciente. No llevas tus archivos a la IA: la IA llega hasta donde ya trabajas.</p>
         <ul class="split-list">
           <li><b>Conecta una sola vez.</b> Carpetas del equipo, Google Drive, iCloud o un repositorio.</li>
           <li><b>Siempre la última versión.</b> Si cambias el archivo, la IA ya lo sabe.</li>
@@ -747,24 +756,22 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
       <details><summary>¿Qué hago si algo falla?</summary><div class="a">Primero revisa el aviso de la aplicación y vuelve a intentar solo si la acción lo indica. Si hay riesgo de perder datos, un cobro, un problema de seguridad o un fallo repetido de sincronización, pide ayuda humana y conserva el mensaje de error sin compartir secretos.</div></details>
       </div>
     </div>
-    <p class="faq-more"><button type="button" id="faqMore" aria-expanded="false" aria-controls="faqExtra"><span data-more>Ver más preguntas</span><span data-less hidden>Ver menos</span></button></p>
-  </div>
-</section>
+      <p class="faq-more"><button type="button" id="faqMore" aria-expanded="false" aria-controls="faqExtra"><span data-more>Ver más preguntas</span><span data-less hidden>Ver menos</span></button></p>
+    </div>
+  </section>
 
-<section class="sec alt" id="windows">
-  <div class="wrap">
-    <div class="split winw">
-      <div class="split-tx">
-        <span class="eyebrow">Windows</span>
-        <h2>Todavía no, pero va en camino.</h2>
-        <p>Hoy TS es una app para Mac — Apple Silicon e Intel, desde macOS 13. Déjanos tu correo y te escribimos el día que salga la de Windows. Nada más: no mandamos boletines.</p>
-      </div>
+  <section class="sec alt" id="windows">
+    <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Windows</span>
+      <h2>Todavía no, pero va en camino.</h2>
+      <p class="sub">Hoy TS es una app para Mac — Apple Silicon e Intel, desde macOS 13. Déjanos tu correo y te escribimos el día que salga la de Windows. Nada más: no mandamos boletines.</p>
+    </div>
       <form class="winw-form" id="winForm" data-cta="windows-early-access">
         <input type="email" placeholder="tu@correo.com" aria-label="Tu correo" required />
         <button class="btn btn-primary" type="submit">Avísenme</button>
       </form>
     </div>
-  </div>
 </section>
 
 <section class="sec final">
