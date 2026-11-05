@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { defaultLocale } from "@/content";
 import { RewardfulLoader } from "@/components/RewardfulLoader";
+import { HideOnStandalone } from "@/components/consent/HideOnStandalone";
 import { ConsentGate } from "@/components/consent/ConsentGate";
 import { CookieBanner } from "@/components/consent/CookieBanner";
 import "./globals.css";
@@ -98,10 +99,15 @@ export default function RootLayout({
       </head>
       <body>
         {children}
-        <RewardfulLoader />
-        {/* Analítica, medición de clics y Sentry: solo tras consentimiento. */}
-        <ConsentGate />
-        <CookieBanner />
+        {/* Standalone business landings (/voice-studio) render without the
+            app's consent/analytics layer — they set no cookies and carry no
+            links back to the app. */}
+        <HideOnStandalone>
+          <RewardfulLoader />
+          {/* Analítica, medición de clics y Sentry: solo tras consentimiento. */}
+          <ConsentGate />
+          <CookieBanner />
+        </HideOnStandalone>
       </body>
     </html>
   );
