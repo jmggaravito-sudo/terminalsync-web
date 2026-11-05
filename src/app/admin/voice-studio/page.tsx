@@ -7,6 +7,9 @@ import { CopyLicenseLink } from "@/components/voice-studio/CopyLicenseLink";
 // stays the system of record, this page only displays. No auth, consistent
 // with /admin/* posture (noindex, read-only, server-held credentials).
 export const metadata = { title: "Voice Studio — Ops" };
+// Always fresh: this is a live ops dashboard over the CRM, never a
+// build-time snapshot.
+export const dynamic = "force-dynamic";
 
 const STAGES = ["Nuevo", "Contactado", "Calificado", "Ganado", "Perdido"];
 
