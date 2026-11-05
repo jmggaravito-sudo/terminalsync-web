@@ -121,6 +121,7 @@ function route(req: NextRequest): NextResponse {
     pathname.startsWith("/auth/callback") || // Supabase magic-link landing
     pathname === "/privacy" || // Google OAuth verification requires this exact URL
     pathname === "/download" || // top-level redirect to /api/download
+    pathname === "/voice-studio" || // standalone dubbing-business landing (EN, language-agnostic)
     pathname.includes(".") ||
     locales.some((l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`))
   ) {
