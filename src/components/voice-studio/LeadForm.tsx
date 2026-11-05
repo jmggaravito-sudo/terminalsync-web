@@ -2,13 +2,18 @@
 
 import { useState } from "react";
 
-// Lead capture for the free 60-second dubbed sample. Posts to
+// Lead capture for the free 60-second dubbed sample. The basic questions
+// (subscribers, niche, brand names) replace the old onboarding call —
+// tone/sponsor details get refined per production, not upfront. Posts to
 // /api/voice-studio/lead, which emails the team via Resend. Kept separate
 // from the TerminalSync early-access flow so the two funnels stay unlinkable.
 export function LeadForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [channel, setChannel] = useState("");
+  const [subscribers, setSubscribers] = useState("");
+  const [niche, setNiche] = useState("");
+  const [names, setNames] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">(
     "idle",
   );
@@ -22,7 +27,14 @@ export function LeadForm() {
       const res = await fetch("/api/voice-studio/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, channel }),
+        body: JSON.stringify({
+          name,
+          email,
+          channel,
+          subscribers,
+          niche,
+          names,
+        }),
       });
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as {
@@ -44,9 +56,10 @@ export function LeadForm() {
           Request received — check your inbox.
         </p>
         <p className="mt-2 text-sm leading-relaxed text-zinc-300">
-          We&apos;ll reply within 2 business days with the voice license and
-          next steps. Once you sign it, your 60-second sample arrives in about
-          5 days.
+          We&apos;ll email you the one-page voice license to sign digitally.
+          As soon as it&apos;s back, your 60-second sample goes into
+          production. No call, no commitment — and no cost until you decide
+          to produce full videos.
         </p>
       </div>
     );
@@ -54,6 +67,8 @@ export function LeadForm() {
 
   const inputClass =
     "w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-white placeholder-zinc-500 outline-none transition-colors focus:border-amber-400";
+  const selectClass =
+    inputClass + " appearance-none " + (subscribers || niche ? "" : "text-zinc-500");
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
@@ -84,6 +99,45 @@ export function LeadForm() {
         placeholder="YouTube channel URL (e.g. youtube.com/@yourchannel)"
         value={channel}
         onChange={(e) => setChannel(e.target.value)}
+        className={inputClass}
+      />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <select
+          required
+          value={subscribers}
+          onChange={(e) => setSubscribers(e.target.value)}
+          className={selectClass}
+        >
+          <option value="" disabled>
+            Subscribers
+          </option>
+          <option value="under-10k">Under 10,000</option>
+          <option value="10k-50k">10,000 – 50,000</option>
+          <option value="50k-100k">50,000 – 100,000</option>
+          <option value="100k-250k">100,000 – 250,000</option>
+          <option value="250k-plus">250,000+</option>
+        </select>
+        <select
+          required
+          value={niche}
+          onChange={(e) => setNiche(e.target.value)}
+          className={selectClass}
+        >
+          <option value="" disabled>
+            Your niche
+          </option>
+          <option value="business">Business</option>
+          <option value="finance">Finance</option>
+          <option value="fitness">Fitness</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <input
+        type="text"
+        maxLength={300}
+        placeholder="Any names we should pronounce carefully? (brand, your name — optional)"
+        value={names}
+        onChange={(e) => setNames(e.target.value)}
         className={inputClass}
       />
       {status === "error" && (

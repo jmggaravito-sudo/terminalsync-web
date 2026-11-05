@@ -8,7 +8,22 @@ interface Body {
   email: string;
   /** YouTube channel URL or @handle the lead wants dubbed. */
   channel: string;
+  /** Rough subscriber band — self-reported, from the signup form. */
+  subscribers?: string;
+  /** Self-reported niche: business | finance | fitness | other. */
+  niche?: string;
+  /** Optional brand/personal names the clone must pronounce carefully. */
+  names?: string;
 }
+
+const MAX_BANDS = new Set([
+  "under-10k",
+  "10k-50k",
+  "50k-100k",
+  "100k-250k",
+  "250k-plus",
+]);
+const NICHES = new Set(["business", "finance", "fitness", "other"]);
 
 // Public lead-capture endpoint for the Voice Studio landing
 // (/voice-studio). Mirrors the early-access route: no auth, no Supabase,
@@ -25,6 +40,13 @@ export async function POST(req: Request) {
   const name = body.name?.trim().slice(0, 120);
   const email = body.email?.trim().toLowerCase();
   const channel = body.channel?.trim().slice(0, 200);
+  const subscribers =
+    body.subscribers && MAX_BANDS.has(body.subscribers)
+      ? body.subscribers
+      : "unknown";
+  const niche =
+    body.niche && NICHES.has(body.niche) ? body.niche : "unknown";
+  const names = body.names?.trim().slice(0, 300) || "—";
 
   if (!name) {
     return NextResponse.json({ error: "Name is required" }, { status: 400 });
@@ -54,16 +76,20 @@ export async function POST(req: Request) {
         from: "Voice Studio <hola@terminalsync.ai>",
         to: "hola@terminalsync.ai",
         replyTo: email,
-        subject: `🎬 Voice Studio sample request — ${name}`,
+        subject: `🎬 Voice Studio sample request — ${name} (${subscribers}, ${niche})`,
         text: [
           `Name: ${name}`,
           `Email: ${email}`,
           `Channel: ${channel}`,
+          `Subscribers: ${subscribers}`,
+          `Niche: ${niche}`,
+          `Names to pronounce: ${names}`,
           `IP: ${ip}`,
           `Country: ${country}`,
           `User-Agent: ${ua}`,
           "",
-          `Next step: reply with the voice license (one-pager) and a Calendly-style link.`,
+          `Next step: email the voice license (one-pager, digital signature).`,
+          `Pricing funnel: free 60s sample → $300 setup → $99 trial video → $129/video or packs (4=$399, 8=$699).`,
         ].join("\n"),
       });
     } catch (err) {
@@ -78,6 +104,9 @@ export async function POST(req: Request) {
       name,
       email,
       channel,
+      subscribers,
+      niche,
+      names,
       ip,
       country,
     });
