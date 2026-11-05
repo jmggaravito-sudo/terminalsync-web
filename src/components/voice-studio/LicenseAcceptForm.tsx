@@ -9,14 +9,14 @@ import { useState } from "react";
 export function LicenseAcceptForm({
   email,
   licenseVersion,
+  token,
 }: {
   email: string;
   licenseVersion: string;
+  /** Raw ?t= token, passed from the server page (never read from window —
+   *  SSR would crash on window.location). */
+  token: string;
 }) {
-  const [token] = useState(
-    () =>
-      new URLSearchParams(window.location.search).get("t") ?? "",
-  );
   const [channel, setChannel] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">(
     "idle",
