@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
+import { Resend } from "resend";
 import { stripe } from "@/lib/stripe";
+import { voiceStudioPriceId } from "@/lib/voiceStudioStripe";
 import {
   sendWelcomeEmail,
   sendTrialEndingEmail,
@@ -313,6 +315,16 @@ async function handle(event: Stripe.Event, signatureVerifiedWithLiveSecret: bool
         break;
       }
 
+      // Voice Studio (standalone dubbing business) — setup/trial/video/
+      // pack purchases. There is no product to provision and no Supabase
+      // account involved: fulfillment is human, so the only automation is
+      // the Resend notification inside the handler. Must break before the
+      // TerminalSync subscription welcome flow below.
+      if (session.metadata?.business === "voice-studio") {
+        await handleVoiceStudioCheckout(session);
+        break;
+      }
+
       const plan = session.metadata?.plan;
       const cycle = session.metadata?.cycle;
       const email = session.customer_details?.email;
@@ -481,11 +493,36 @@ async function handle(event: Stripe.Event, signatureVerifiedWithLiveSecret: bool
         amount: invoice.amount_paid,
         customer: invoice.customer,
       });
+      // Voice Studio pack renewal — a new delivery cycle starts. Notify
+      // JM; no TerminalSync logic applies.
+      if (isVoiceStudioInvoice(invoice)) {
+        await handleVoiceStudioRenewal(invoice);
+        break;
+      }
       break;
     }
 
     case "invoice.payment_failed": {
       const invoice = event.data.object as Stripe.Invoice;
+      // Voice Studio renewal failed: no TerminalSync-branded email should
+      // reach this customer. At Voice Studio volume JM handles collection
+      // manually from the Stripe dashboard.
+      if (isVoiceStudioInvoice(invoice)) {
+        console.warn("[stripe] voice-studio invoice.payment_failed", {
+          id: invoice.id,
+          customer: invoice.customer,
+        });
+        await notifyVoiceStudioPayment(
+          "⚠️ Voice Studio — pack renewal payment failed",
+          [
+            `Invoice: ${invoice.id ?? "unknown"}`,
+            `Customer: ${typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id ?? "unknown"}`,
+            "",
+            "Stripe will retry the card. Handle collection from the Stripe dashboard.",
+          ],
+        );
+        break;
+      }
       console.warn("[stripe] invoice.payment_failed", {
         id: invoice.id,
         customer: invoice.customer,
@@ -643,6 +680,97 @@ async function handle(event: Stripe.Event, signatureVerifiedWithLiveSecret: bool
       // Other events (e.g. payment_intent.*) are expected and non-fatal.
       break;
   }
+}
+
+// ─── Voice Studio (standalone dubbing business) ──────────────────────────
+// Sessions/invoices carrying metadata.business = "voice-studio" (set by
+// /api/voice-studio/checkout). There is no product backend to provision and
+// no Supabase account involved — fulfillment is human, so the only
+// automation is a Resend notification to hola@ so JM starts onboarding
+// (voice license → intake) the same day.
+
+async function notifyVoiceStudioPayment(subject: string, lines: string[]) {
+  console.log("[stripe] voice-studio notification", { subject });
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return;
+  const resend = new Resend(key);
+  try {
+    await resend.emails.send({
+      from: "Voice Studio <hola@terminalsync.ai>",
+      to: "hola@terminalsync.ai",
+      subject,
+      text: lines.join("\n"),
+    });
+  } catch (err) {
+    // A failed notification must never fail the webhook itself —
+    // payments are still recorded by Stripe.
+    console.error("[stripe] voice-studio notification failed", err);
+  }
+}
+
+function vsAmount(amount: number | null | undefined, currency: string | null) {
+  return `$${((amount ?? 0) / 100).toFixed(2)} ${(currency ?? "usd").toUpperCase()}`;
+}
+
+// Voice Studio renewals are identified by their price IDs — the runtime
+// source of truth created by scripts/voice-studio-stripe-setup.mjs (this
+// repo's Stripe SDK version doesn't expose subscription_details metadata
+// on Invoice). Invoice lines are expanded in webhook payloads by default.
+function isVoiceStudioInvoice(invoice: Stripe.Invoice): boolean {
+  const vsPrices = [
+    voiceStudioPriceId("pack4"),
+    voiceStudioPriceId("pack8"),
+  ].filter((p): p is string => Boolean(p));
+  if (vsPrices.length === 0) return false;
+  return (
+    invoice.lines?.data?.some((line) => {
+      const price = line.pricing?.price_details?.price;
+      const id = typeof price === "string" ? price : price?.id;
+      return id ? vsPrices.includes(id) : false;
+    }) ?? false
+  );
+}
+
+async function handleVoiceStudioCheckout(session: Stripe.Checkout.Session) {
+  const sku = session.metadata?.sku ?? "unknown";
+  const email = session.customer_details?.email ?? "—";
+  const name = session.customer_details?.name ?? "—";
+  await notifyVoiceStudioPayment(
+    `💰 Voice Studio payment — ${sku} (${vsAmount(session.amount_total, session.currency)})`,
+    [
+      `SKU: ${sku}`,
+      `Amount: ${vsAmount(session.amount_total, session.currency)}`,
+      `Customer: ${name} <${email}>`,
+      `Session: ${session.id}`,
+      "",
+      `Reply to the customer to start onboarding: signed voice license + intake (channel, glossary, sponsors).`,
+      `Funnel reminder: setup → approve test clip → first video. Full refund until production starts.`,
+    ],
+  );
+}
+
+async function handleVoiceStudioRenewal(invoice: Stripe.Invoice) {
+  const customerId =
+    typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id;
+  let email = invoice.customer_email ?? "—";
+  try {
+    if (customerId) {
+      const profile = await fetchCustomerProfile(customerId);
+      if (profile?.email) email = profile.email;
+    }
+  } catch {
+    // Email lookup is best-effort; the invoice id is enough to act.
+  }
+  await notifyVoiceStudioPayment(
+    `🔁 Voice Studio — pack renewal paid (${vsAmount(invoice.amount_paid, invoice.currency)})`,
+    [
+      `Invoice: ${invoice.id ?? "unknown"}`,
+      `Amount: ${vsAmount(invoice.amount_paid, invoice.currency)}`,
+      `Customer: ${email}`,
+      "",
+      `Start the new monthly delivery cycle for this client.`,
+    ],
+  );
 }
 
 async function handleMarketplaceCheckout(session: Stripe.Checkout.Session) {

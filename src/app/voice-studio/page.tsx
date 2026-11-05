@@ -11,6 +11,7 @@ import {
   Video,
 } from "lucide-react";
 import { LeadForm } from "@/components/voice-studio/LeadForm";
+import { CheckoutButton } from "@/components/voice-studio/CheckoutButton";
 
 // Standalone sales page for the dubbing service. No links to the TerminalSync
 // app anywhere on purpose — this is a separate business until it isn't.
@@ -213,6 +214,11 @@ export default function VoiceStudioPage() {
                   </li>
                 ))}
               </ul>
+              <CheckoutButton
+                sku="setup"
+                label="Get the voice setup — $300"
+                primary
+              />
             </div>
           </div>
           <div className="mt-6 rounded-2xl border border-zinc-200 bg-white p-8">
@@ -221,17 +227,21 @@ export default function VoiceStudioPage() {
             </p>
             <div className="mt-6 grid gap-6 sm:grid-cols-4">
               {[
-                ["First video", "$99", "your trial — one full video"],
-                ["Single video", "$129", "no commitment"],
-                ["4-video pack", "$399", "$100 per video, monthly"],
-                ["8-video pack", "$699", "$87 per video, monthly"],
-              ].map(([name, price, note]) => (
+                ["First video", "$99", "your trial — one full video", "trial"],
+                ["Single video", "$129", "no commitment", "single"],
+                ["4-video pack", "$399", "$100 per video, monthly", "pack4"],
+                ["8-video pack", "$699", "$87 per video, monthly", "pack8"],
+              ].map(([name, price, note, sku]) => (
                 <div key={name}>
                   <p className="text-sm font-semibold text-zinc-500">{name}</p>
                   <p className="mt-1 text-2xl font-semibold">{price}</p>
                   <p className="mt-1 text-xs leading-relaxed text-zinc-500">
                     {note}
                   </p>
+                  <CheckoutButton
+                    sku={sku}
+                    label={`Get ${name.toLowerCase()}`}
+                  />
                 </div>
               ))}
             </div>
@@ -240,7 +250,8 @@ export default function VoiceStudioPage() {
               translation, subtitles, translated metadata and publication to
               your channel. For comparison: dubbing agencies charge $70–150
               per finished minute — a single 15-minute video would run
-              $1,050–2,250.
+              $1,050–2,250. All purchases are fully refundable until your
+              first video enters production.
             </p>
           </div>
         </div>
