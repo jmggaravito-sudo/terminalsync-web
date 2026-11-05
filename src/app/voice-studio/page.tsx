@@ -93,19 +93,19 @@ export default function VoiceStudioPage() {
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {[
               {
-                icon: FileText,
-                title: "You sign, we set up",
-                body: "A one-page voice license and a Manager invite to your new Spanish channel. Fifteen minutes of your time — we never need your password.",
+                icon: Mic,
+                title: "Free 60-second sample",
+                body: "Sign up (2 minutes) and we email you a one-page voice license to sign digitally. Once it's back, we dub 60 seconds of your best video with your own voice — free. Five sample slots open each week.",
               },
               {
-                icon: Languages,
-                title: "We produce",
-                body: "We transcribe your video, adapt the script to neutral Latin American Spanish, dub it with a clone of your voice over your original music and SFX, and add subtitles and translated metadata.",
+                icon: ShieldCheck,
+                title: "$300 voice setup",
+                body: "We certify your voice clone and you approve a test clip before any production. We also set up your Spanish channel and map the search opportunities in your niche. If the test clip doesn't sound like you, the setup is refunded.",
               },
               {
                 icon: Youtube,
-                title: "You grow",
-                body: "Videos publish to your Spanish channel with proper AI disclosure. You get a monthly report: views, subscribers, and what's next.",
+                title: "Pick your pace",
+                body: "Your first full video is $99. After that, pay per video ($129) or save with monthly packs — 4 videos for $399 or 8 for $699. Every video is subtitled, translated and published to your channel with AI disclosure.",
               },
             ].map((s, i) => (
               <div
@@ -132,12 +132,12 @@ export default function VoiceStudioPage() {
       <section className="bg-white">
         <div className="mx-auto max-w-6xl px-6 py-20">
           <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            What you get every month
+            What you get with every video
           </h2>
           <div className="mt-10 grid gap-x-8 gap-y-5 sm:grid-cols-2">
             {(
               [
-                [Video, "Up to 8 videos per month dubbed in your voice (up to 20 min each)"],
+                [Video, "Full dubbing in your cloned voice (videos up to 20 min)"],
                 [Languages, "Human-reviewed translation in neutral Latin American Spanish"],
                 [FileText, "Subtitles (.srt) plus translated title, description and tags"],
                 [Music, "Your original music and sound effects preserved in the mix"],
@@ -161,23 +161,27 @@ export default function VoiceStudioPage() {
           <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
             Pricing
           </h2>
+          <p className="mt-3 max-w-2xl leading-relaxed text-zinc-600">
+            Start free. Pay for production only when you&apos;ve heard your own
+            voice in Spanish and liked it.
+          </p>
           <div className="mt-10 grid gap-6 md:grid-cols-2">
-            <div className="rounded-2xl border border-zinc-200 bg-white p-8">
-              <p className="font-mono text-xs tracking-wide text-zinc-400">
-                ONE-TIME SETUP
+            <div className="rounded-2xl border border-emerald-600/40 bg-white p-8">
+              <p className="font-mono text-xs tracking-wide text-emerald-600">
+                STEP 1 · FREE
               </p>
               <p className="mt-3 text-4xl font-semibold">
-                $1,000
+                $0
                 <span className="text-base font-normal text-zinc-400">
                   {" "}
-                  once
+                  60-second sample
                 </span>
               </p>
               <ul className="mt-6 space-y-3 text-sm text-zinc-700">
                 {[
-                  "Voice clone certification — you approve a test clip before we produce anything",
-                  "First 2 videos delivered within 10 days",
-                  "Spanish channel setup and SEO baseline",
+                  "60 seconds of your best video, dubbed in your own voice",
+                  "One-page voice license signed digitally first",
+                  "5 sample slots open every week",
                 ].map((t) => (
                   <li key={t} className="flex items-start gap-2">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
@@ -188,20 +192,20 @@ export default function VoiceStudioPage() {
             </div>
             <div className="rounded-2xl border-2 border-zinc-950 bg-white p-8">
               <p className="font-mono text-xs tracking-wide text-zinc-400">
-                MONTHLY SERVICE
+                STEP 2 · ONE-TIME SETUP
               </p>
               <p className="mt-3 text-4xl font-semibold">
-                $750
+                $300
                 <span className="text-base font-normal text-zinc-400">
                   {" "}
-                  / month
+                  voice setup
                 </span>
               </p>
               <ul className="mt-6 space-y-3 text-sm text-zinc-700">
                 {[
-                  "Up to 8 videos per month",
-                  "5-business-day turnaround per batch",
-                  "Cancel anytime — every render stays yours",
+                  "Voice clone certification — you approve a test clip first",
+                  "Spanish channel setup and SEO opportunity map",
+                  "If the test clip doesn't sound like you, full refund",
                 ].map((t) => (
                   <li key={t} className="flex items-start gap-2">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
@@ -211,11 +215,34 @@ export default function VoiceStudioPage() {
               </ul>
             </div>
           </div>
-          <p className="mt-8 max-w-3xl text-sm leading-relaxed text-zinc-500">
-            For comparison: traditional dubbing studios charge $50–150 per
-            finished minute. A single 15-minute video would run $750–2,250 —
-            the whole month costs less than one video at agency rates.
-          </p>
+          <div className="mt-6 rounded-2xl border border-zinc-200 bg-white p-8">
+            <p className="font-mono text-xs tracking-wide text-zinc-400">
+              STEP 3 · PRODUCTION — PAY PER VIDEO, OR SAVE WITH PACKS
+            </p>
+            <div className="mt-6 grid gap-6 sm:grid-cols-4">
+              {[
+                ["First video", "$99", "your trial — one full video"],
+                ["Single video", "$129", "no commitment"],
+                ["4-video pack", "$399", "$100 per video, monthly"],
+                ["8-video pack", "$699", "$87 per video, monthly"],
+              ].map(([name, price, note]) => (
+                <div key={name}>
+                  <p className="text-sm font-semibold text-zinc-500">{name}</p>
+                  <p className="mt-1 text-2xl font-semibold">{price}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-zinc-500">
+                    {note}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-6 text-sm leading-relaxed text-zinc-500">
+              Every video includes dubbing in your voice, human-reviewed
+              translation, subtitles, translated metadata and publication to
+              your channel. For comparison: dubbing agencies charge $70–150
+              per finished minute — a single 15-minute video would run
+              $1,050–2,250.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -267,8 +294,12 @@ export default function VoiceStudioPage() {
           <div className="mt-8 divide-y divide-zinc-200 rounded-2xl border border-zinc-200 bg-white">
             {[
               [
+                "Doesn't YouTube already dub videos for free?",
+                "YouTube's auto-dubbing exists, but it gives you no control: a generic voice approximation instead of your actual voice, no human quality review, and no search strategy for the new audience. We clone your real voice, review every video by hand, and build the Spanish channel's titles, description and tags around what people actually search for.",
+              ],
+              [
                 "Will it really sound like me?",
-                "We clone from a clean sample of your voice, and you approve a test clip before any production starts. If it doesn't pass your ear, we don't publish — simple as that.",
+                "We clone from a clean sample of your voice, and you approve a test clip before any production starts. If it doesn't pass your ear, we don't publish — and the $300 setup is refunded.",
               ],
               [
                 "Which Spanish do you use?",
@@ -287,8 +318,8 @@ export default function VoiceStudioPage() {
                 "They're adapted, not just translated — prices, links and offers get localized in the script. Send us the details and we'll handle them.",
               ],
               [
-                "Can I cancel?",
-                "The monthly service cancels anytime with 30 days' notice. Every video delivered so far stays on your channel, yours forever.",
+                "Can I pause or cancel?",
+                "Packs are month-to-month — pause or cancel before the next cycle. There's no minimum term, and every video delivered so far stays on your channel, yours forever.",
               ],
             ].map(([q, a]) => (
               <details key={q} className="group px-6 py-5">
@@ -319,7 +350,7 @@ export default function VoiceStudioPage() {
           <p className="mt-4 leading-relaxed text-zinc-300">
             Send us your channel. We&apos;ll pick your best-performing video
             and send back a 60-second dubbed sample — free, after you sign a
-            one-page voice license.
+            one-page voice license. Five sample slots open each week.
           </p>
           <div className="mt-8">
             <LeadForm />
