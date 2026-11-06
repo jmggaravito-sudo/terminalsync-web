@@ -247,9 +247,11 @@ export default function VoiceStudioPage() {
               ))}
             </div>
             <p className="mt-6 text-sm leading-relaxed text-zinc-500">
-              Every video includes dubbing in your voice, human-reviewed
+              Every video includes dubbing in your cloned voice, human-reviewed
               translation, subtitles, translated metadata and publication to
-              your channel. For comparison: dubbing agencies charge $70–150
+              your channel. Videos up to 20 minutes = 1 video from your pack.
+              Longer content counts as multiple: 20–45 min = 2, 45+ min = 3 —
+              no surprises. For comparison: dubbing agencies charge $70–150
               per finished minute — a single 15-minute video would run
               $1,050–2,250. All purchases are fully refundable until your
               first video enters production.
@@ -332,6 +334,10 @@ export default function VoiceStudioPage() {
               [
                 "Can I pause or cancel?",
                 "Packs are month-to-month — pause or cancel before the next cycle. There's no minimum term, and every video delivered so far stays on your channel, yours forever.",
+              ],
+              [
+                "What about long videos or podcasts?",
+                "Pack videos cover content up to 20 minutes. Longer videos count as multiple videos from your pack: 20–45 minutes = 2, 45–90 minutes = 3. Running a 2-hour podcast? We quote seasons separately — reply with your episode length and cadence and we'll build a flat monthly rate.",
               ],
             ].map(([q, a]) => (
               <details key={q} className="group px-6 py-5">
