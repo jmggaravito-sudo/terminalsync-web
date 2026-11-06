@@ -63,6 +63,146 @@ async function findLeadByEmail(
   return search.data?.[0] ?? null;
 }
 
+async function findDealByLead(
+  crm: FrappeEnv,
+  leadName: string,
+): Promise<{ name: string; status: string } | null> {
+  const filters = encodeURIComponent(
+    JSON.stringify([["lead", "=", leadName]]),
+  );
+  const deals = await frappeFetch<{ data: { name: string; status: string }[] }>(
+    crm,
+    `/api/resource/CRM%20Deal?filters=${filters}&limit_page_length=1&fields=${encodeURIComponent(JSON.stringify(["name", "status"]))}`,
+  );
+  return deals.data?.[0] ?? null;
+}
+
+/** Lead + deal (creating both if missing) for a paying client email. */
+export async function ensureLeadAndDeal(email: string, name?: string): Promise<{
+  leadName: string;
+  dealName: string;
+} | null> {
+  const crm = frappeEnv();
+  if (!crm) return null;
+  try {
+    let lead = await findLeadByEmail(crm, email);
+    if (!lead) {
+      const created = await frappeFetch<{ data: { name: string } }>(
+        crm,
+        "/api/resource/CRM%20Lead",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            first_name: name || email,
+            email,
+            source: "Landing",
+            campana: VS_CAMPANA,
+            landing_url: VS_LANDING_URL,
+          }),
+        },
+      );
+      lead = { name: created.data.name, status: "Nuevo" };
+    }
+    let deal = await findDealByLead(crm, lead.name);
+    if (!deal) {
+      const created = await frappeFetch<{ data: { name: string } }>(
+        crm,
+        "/api/resource/CRM%20Deal",
+        {
+          method: "POST",
+          body: JSON.stringify({ lead: lead.name }),
+        },
+      );
+      deal = { name: created.data.name, status: "Nuevo" };
+    }
+    return { leadName: lead.name, dealName: deal.name };
+  } catch (err) {
+    console.error("[voice-studio-crm] ensureLeadAndDeal failed", err);
+    return null;
+  }
+}
+
+// ── Production orders: one ToDo per video, linked to the client's deal ──
+// The Frappe ToDo doctype is writable by the api-voice user (Comment is
+// not — verified 2026-11-06). Status: Open = queued, Closed = delivered.
+// Description prefix "ORDER | " filters orders from any other ToDos.
+const ORDER_PREFIX = "ORDER | ";
+
+export async function createOrderToDos(
+  email: string,
+  links: string[],
+  notes: string,
+): Promise<{ created: number } | null> {
+  const ref = await ensureLeadAndDeal(email);
+  if (!ref) return null;
+  const crm = frappeEnv();
+  if (!crm) return null;
+  try {
+    for (const link of links) {
+      await frappeFetch(crm, "/api/resource/ToDo", {
+        method: "POST",
+        body: JSON.stringify({
+          description: `${ORDER_PREFIX}${link}${notes ? `\nNOTAS: ${notes}` : ""}`,
+          reference_type: "CRM Deal",
+          reference_name: ref.dealName,
+          priority: "Medium",
+          status: "Open",
+        }),
+      });
+    }
+    return { created: links.length };
+  } catch (err) {
+    console.error("[voice-studio-crm] createOrderToDos failed", err);
+    return null;
+  }
+}
+
+export type ClientOrder = {
+  name: string;
+  url: string;
+  notes: string;
+  status: string;
+  created: string;
+};
+
+export async function listClientOrders(
+  email: string,
+): Promise<ClientOrder[] | null> {
+  const crm = frappeEnv();
+  if (!crm) return null;
+  try {
+    const ref = await ensureLeadAndDeal(email);
+    if (!ref) return null;
+    const filters = encodeURIComponent(
+      JSON.stringify([
+        ["reference_type", "=", "CRM Deal"],
+        ["reference_name", "=", ref.dealName],
+        ["description", "like", ORDER_PREFIX.trim() + "%"],
+      ]),
+    );
+    const todos = await frappeFetch<{
+      data: { name: string; description: string; status: string; creation: string }[];
+    }>(
+      crm,
+      `/api/resource/ToDo?filters=${filters}&limit_page_length=0&fields=${encodeURIComponent(JSON.stringify(["name", "description", "status", "creation"]))}&order_by=creation%20desc`,
+    );
+    return (todos.data ?? []).map((t) => {
+      const body = t.description.replace(ORDER_PREFIX, "");
+      const [url, ...rest] = body.split("\nNOTAS: ");
+      return {
+        name: t.name,
+        url: url.trim(),
+        notes: rest.join(" ").trim(),
+        status: t.status,
+        created: t.creation,
+      };
+    });
+  } catch (err) {
+    console.error("[voice-studio-crm] listClientOrders failed", err);
+    return null;
+  }
+}
+
 /** Create the lead + ensure one deal. Never touches existing docs. */
 export async function upsertVoiceStudioLead(lead: {
   name: string;
@@ -132,20 +272,25 @@ export async function markLeadLicensed(
         body: JSON.stringify({ status: "Calificado" }),
       });
     }
-    // Best-effort audit trail on the lead (permission may not include
-    // Comment — the acceptance email to hola@ is the durable record).
+    // Best-effort audit trail on the deal (Comment is not writable by the
+    // api user — ToDo is, verified 2026-11-06). The acceptance email to
+    // hola@ remains the durable legal record.
     try {
-      await frappeFetch(crm, "/api/resource/Comment", {
-        method: "POST",
-        body: JSON.stringify({
-          comment_type: "Comment",
-          reference_doctype: "CRM Lead",
-          reference_name: lead.name,
-          content: `Voice license ${licenseVersion} accepted (digital signature).`,
-        }),
-      });
+      const deal = await findDealByLead(crm, lead.name);
+      if (deal) {
+        await frappeFetch(crm, "/api/resource/ToDo", {
+          method: "POST",
+          body: JSON.stringify({
+            description: `LICENSE ACCEPTED | ${licenseVersion} (firma digital)`,
+            reference_type: "CRM Deal",
+            reference_name: deal.name,
+            priority: "Low",
+            status: "Closed",
+          }),
+        });
+      }
     } catch (err) {
-      console.error("[voice-studio-crm] comment failed", err);
+      console.error("[voice-studio-crm] license audit trail failed", err);
     }
     return "existing";
   } catch (err) {

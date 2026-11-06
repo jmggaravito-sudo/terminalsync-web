@@ -51,9 +51,11 @@ export async function POST(req: Request) {
     );
   }
 
-  // Back on the standalone landing only — never the app site.
+  // Back on the standalone landing only — never the app site. The success
+  // page verifies the payment server-side and hands over the client's
+  // personal dashboard + license links.
   const base = siteUrl();
-  const successUrl = `${base}/voice-studio?checkout=success`;
+  const successUrl = `${base}/voice-studio/success?session_id={CHECKOUT_SESSION_ID}`;
   const cancelUrl = `${base}/voice-studio#pricing`;
   const metadata: Record<string, string> = {
     business: "voice-studio",
