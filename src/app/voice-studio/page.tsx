@@ -144,6 +144,7 @@ export default function VoiceStudioPage() {
                 [Music, "Your original music and sound effects preserved in the mix"],
                 [Youtube, "Published or scheduled to your own Spanish channel"],
                 [BarChart3, "Monthly growth report on the Spanish audience"],
+                [Video, "Founding-client bonus: 1 vertical Short in Spanish cut from every video"],
               ] as [typeof Video, string][]
             ).map(([Icon, text]) => (
               <div key={text} className="flex items-start gap-3">
@@ -229,8 +230,8 @@ export default function VoiceStudioPage() {
               {[
                 ["First video", "$99", "your trial — one full video", "trial"],
                 ["Single video", "$129", "no commitment", "single"],
-                ["4-video pack", "$399", "$100 per video, monthly", "pack4"],
-                ["8-video pack", "$699", "$87 per video, monthly", "pack8"],
+                ["4-video pack", "$399", "$100 per video + 4 Spanish Shorts, monthly", "pack4"],
+                ["8-video pack", "$699", "$87 per video + 8 Spanish Shorts, monthly", "pack8"],
               ].map(([name, price, note, sku]) => (
                 <div key={name}>
                   <p className="text-sm font-semibold text-zinc-500">{name}</p>
