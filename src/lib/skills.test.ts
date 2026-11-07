@@ -146,6 +146,13 @@ describe("skills content mold", () => {
       // docs/skills-evals/<slug>.md.
       "brand-guidelines",
       "brand-voice",
+      // Skills Loop 2026-11-02 — business-memory skill (productivity,
+      // empresario-first) with GLM eval evidence in
+      // docs/skills-evals/<slug>.md.
+      "memoria-negocio",
+      // Skills Loop 2026-11-02 — hiring skill (productivity, empresario-first)
+      // with GLM eval evidence in docs/skills-evals/<slug>.md.
+      "contratar-personal",
     ] as const;
     const sorted = [...publicSlugs].sort();
 
