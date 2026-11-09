@@ -28,6 +28,7 @@ export function HeroToggleVideo({
   const esRef = useRef<HTMLVideoElement>(null);
   const [lang, setLang] = useState<Lang>("en");
   const [interacted, setInteracted] = useState(false);
+  const [paused, setPaused] = useState(false);
   const [shouldPreloadEs, setShouldPreloadEs] = useState(false);
 
   // The ES render ships as preload="metadata"; when the visitor shows intent
@@ -80,6 +81,14 @@ export function HeroToggleVideo({
     [interacted, onFirstPlay, restart],
   );
 
+  // Click on the video itself pauses/resumes the active render.
+  const togglePlay = useCallback(() => {
+    const v = lang === "en" ? enRef.current : esRef.current;
+    if (!v) return;
+    if (v.paused) void v.play().catch(() => {});
+    else v.pause();
+  }, [lang]);
+
   return (
     <div className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 shadow-2xl">
       <div className="relative aspect-video">
@@ -91,6 +100,8 @@ export function HeroToggleVideo({
           playsInline
           loop
           preload="auto"
+          onPlay={() => setPaused(false)}
+          onPause={() => setPaused(true)}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out ${
             lang === "en" ? "opacity-100" : "opacity-0"
           }`}
@@ -102,11 +113,34 @@ export function HeroToggleVideo({
           playsInline
           loop
           preload="metadata"
+          onPlay={() => setPaused(false)}
+          onPause={() => setPaused(true)}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out ${
             lang === "es" ? "opacity-100" : "opacity-0"
           }`}
         />
 
+        {/* click-to-pause overlay over the video surface */}
+        <button
+          type="button"
+          onClick={togglePlay}
+          aria-label={paused ? "Play video" : "Pause video"}
+          className="absolute inset-0 z-0 outline-none"
+        />
+        {paused && (
+          <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-950/55 ring-2 ring-white/80 shadow-xl">
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="ml-1 h-8 w-8 text-white"
+                aria-hidden="true"
+              >
+                <path d="M8 5.14v13.72c0 .8.87 1.3 1.56.88l10.8-6.86a1.05 1.05 0 0 0 0-1.76L9.56 4.26A1.04 1.04 0 0 0 8 5.14Z" />
+              </svg>
+            </span>
+          </span>
+        )}
       </div>
 
       {/* ONE glossy button BELOW the video (never on top of it): it always
