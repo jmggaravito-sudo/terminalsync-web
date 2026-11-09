@@ -61,6 +61,29 @@ Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first,
 
 ## Run log
 
+### 2026-11-09 — automated run, no focus input given
+
+**Shipped 2 Plugins**, each pairing an already-published, `available` connector with an already-evaluated, `available` skill, picked so the connector's documented surface feeds the skill's actual input (no invented capability):
+
+- **canva** (`marketing`) — Canva connector (official hosted `mcp.canva.com` MCP, OAuth, molde B) + Brand Guidelines. The pairing maps onto the documented surface: the skill builds the brand sheet from whatever material the owner hands it (colors with values, typography, tone, do/don't) and the connector's documented tool categories — design generation, editing, discovery, **asset and brand management**, export (PDF/PNG/JPG/PPTX/MP4) — are where the design actually gets made and exported. The skill's own boundary is closed by the connector where it can be: the skill "does not see your logo files", and the connector's asset/brand tools are how the brand assets in the owner's Canva account enter the job. Disclosed in the body: brand kits and autofill templates are Enterprise-gated (resizing is Pro+), so on free plans the agent works with what the account allows; the skill never invents a brand value — anything not provided stays marked undefined; logos, packaging and print production files stay outside both pieces (and font licensing is unverifiable).
+- **pipedrive** (`sales`) — Pipedrive connector (official hosted `mcp.pipedrive.ai/mcp` MCP, OAuth, beta) + Internal Comms. The connector's own setup-guide example is the job — *"Show me all open deals that haven't been updated in two weeks"* — and its `get*/add*/update*/search*` surface over deals, contacts, activities and notes supplies the state and the logging; Internal Comms drafts the per-deal follow-up and flags sensitive situations for human review. Same pattern as the shipped `hubspot`/`stripe`/`xero` packs, with the honest difference disclosed: this pack has **no email-sending step** — the connector drafts, logs and schedules, the owner sends from their own email; every action lands in Pipedrive's change log and is scoped to the connecting user's permissions; beta + per-plan token limits.
+
+**Deferred / SKIP, documented:**
+
+- **quipu + cobros-vencidos** — rejected on surface: the connector's read surface is contacts, invoices (free-text search and by period) and book entries — it documents paid/unpaid status ("tell me if she has unpaid invoices") but **no due-date field**, and the reminder ladder the skill needs is built on días de atraso. Same reason the 2026-10-19 run deferred `holded`.
+- **quipu + fijacion-de-precios** — deferred: the skill needs per-service/per-unit cost data; the connector's expense surface is book-entry categories, not unit costs. The gap is the skill's own "ask for what's missing" trigger, which for a pricing decision means most of the input stays with the owner.
+- **facturapi + cobros-vencidos** — rejected on the same surface gap: the connector's documented reads are invoice counts/totals, customers and line items, with drafts/stamping as writes — no due-date or unpaid-aging surface to drive the reminder ladder.
+- **wompi / monei + cobros-vencidos** — rejected: both are payment-rail connectors (Wompi: transactions + payment links, 4 tools; MONEI: payments, KPIs, subscriptions, payment links) with **no invoice object** — pairing either would repeat exactly the unsupported claim the 2026-10-19 run rejected for `mercado-pago` (payments ≠ invoices).
+- **alegra + cobros-vencidos** — blocked upstream: the connector is `status: soon` (retired from installable in #419), and the plugin rule forces the pack to `soon` with it. Revisit if the Connector Loop restores it.
+- **typeform, bird** — unchanged from 2026-10-19: connectors `available`, no publishable skill teaches a survey/form or customer-messaging workflow. Skill Loop candidates.
+- Standing blockers re-verified via frontmatter (unchanged): `calendly` → `meeting-notes` still `catalogReady: false`; `intercom` → `email-drafter` still `soon` + `hidden`; `klaviyo` → `lifecycle-email` still `catalogReady: false`; `holded` + `cobros-vencidos` still deferred (no flat tool list in the connector's docs); `higgsfield-video-director` addition to the live `higgsfield` plugin still an owner decision.
+
+**Logos:** no new debt. `public/plugins/canva.svg` is a copy of the connector's committed mark (the TS fallback — Canva's real mark isn't in simple-icons, so the connector already ships the vendorized fallback tile); `public/plugins/pipedrive.svg` embeds the connector's committed official PNG (`public/connectors/pipedrive.png`, apple-touch-icon of the official CDN) — same embed pattern used for `tiendanube`. No entry added to "Logos pendientes".
+
+Validation: `npm test -- --run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` + `npm run typecheck` — see PR for the result.
+
+App PR: no aplica — la app consume el catálogo. Both reuse shapes the desktop already renders: `canva` and `pipedrive` are remote/OAuth connectors bridged with `mcp-remote` (like `siigo`/`ramp`/`tiendanube`), with plain `connectorSlug` + `skillSlugs` composition the generic plugin renderer handles.
+
 ### 2026-10-19 — automated run, no focus input given
 
 **Shipped 2 Plugins**, each pairing an already-published, `available` connector with an already-evaluated, `available` skill, picked so the connector's verbatim tools feed the skill's actual steps (no invented capability):
