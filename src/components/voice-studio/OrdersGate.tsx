@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
-import { licenseUrl } from "@/lib/voiceStudioLicense";
 import { OrdersForm } from "@/components/voice-studio/OrdersForm";
 import { VsLoginButtons } from "@/components/voice-studio/VsLoginButtons";
 
@@ -25,6 +24,7 @@ export function OrdersGate() {
   >("loading");
   const [email, setEmail] = useState<string | null>(null);
   const [orders, setOrders] = useState<ClientOrder[] | null>(null);
+  const [licenseHref, setLicenseHref] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
@@ -45,12 +45,14 @@ export function OrdersGate() {
       const json = (await res.json().catch(() => null)) as {
         ok?: boolean;
         orders?: ClientOrder[];
+        licenseUrl?: string;
         error?: string;
       } | null;
       if (!res.ok || !json?.ok) {
         throw new Error(json?.error ?? "Could not load your orders.");
       }
       setOrders(json.orders ?? []);
+      setLicenseHref(json.licenseUrl ?? null);
       setState("ready");
     } catch (err) {
       setLoadError(err instanceof Error ? err.message : "Network error.");
@@ -216,11 +218,16 @@ export function OrdersGate() {
 
       <section className="mt-12 border-t border-zinc-200 pt-8 text-sm text-zinc-500">
         <p>
-          Haven&apos;t signed your voice license yet?{" "}
-          <a href={licenseUrl(email ?? "")} className="underline">
-            Sign it here
-          </a>
-          .
+          Haven&apos;t signed your voice license yet?
+          {licenseHref && (
+            <>
+              {" "}
+              <a href={licenseHref} className="underline">
+                Sign it here
+              </a>
+              .
+            </>
+          )}
         </p>
       </section>
     </main>

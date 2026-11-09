@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { emailFromClientRequest } from "@/lib/voiceStudioAuth";
+import { licenseUrl } from "@/lib/voiceStudioLicense";
 import { createOrderToDos, listClientOrders } from "@/lib/voiceStudioCrm";
 
 export const runtime = "nodejs";
@@ -31,7 +32,9 @@ export async function GET(req: Request) {
   if (!orders) {
     return NextResponse.json({ error: "CRM unreachable" }, { status: 503 });
   }
-  return NextResponse.json({ ok: true, email, orders });
+  // The license link carries a signed HMAC token — minted HERE (server-side
+  // secret); the browser can never sign one itself.
+  return NextResponse.json({ ok: true, email, orders, licenseUrl: licenseUrl(email) });
 }
 
 export async function POST(req: Request) {
