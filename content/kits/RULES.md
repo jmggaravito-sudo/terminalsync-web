@@ -342,6 +342,27 @@ Until these are present, keep the kit out of the published marketplace catalog.
 
 ## Loop run log
 
+### 2026-11-09 — Support Docs Kit; the Support candidate ships its honest slice; queue re-checked
+
+**Shipped (1 kit, EN/ES parity):**
+
+- `support-docs` (category: support) — `intercom` + `doc-coauthoring` + `internal-comms`. Scoped to the **documentation slice** of the Support/Customer Service kit deferred since 2026-08-02: the repeat-question loop of an owner or support lead whose support runs on Intercom — search real conversations for the questions that keep showing up, check what the help center already covers (search/read articles), write or refresh the missing article (create/update articles), and close the loop inside the team (internal note on the conversation that still needs a human + a brief on when to link the article). The scope is deliberately honest to Intercom's documented MCP surface: **it has no tool to reply to customers**, so the kit never promises reply drafting or auto-answering — the agent documents and equips the team, and replies stay human/Intercom-side. The connector blocker that deferred this kit for three runs is gone: `intercom` shipped 2026-10-14 as a published, installable remote/OAuth connector with a `manifest:` block, and no prior kit used it. The **reply-drafting blocker stays open** (no tool for it, and no whitelisted skill fits customer-facing replies — `internal-comms` is used here strictly for its declared internal/team audience: the note and the team brief). Distinct from `docs-and-team-comms` (doc-coauthoring + internal-comms shared, but that loop starts from internal docs with no customer evidence at the front): this kit starts from customer conversations and its deliverable is help-center content.
+
+**Verification evidence (PR body carries the full set):** `kitsIntegrity.test.ts` + `catalog/route.test.ts` pass (29 tests — every item of every available kit resolves in both locales through the same loader the catalog uses); `npm run typecheck` clean. Positive workflow smoke test and negative fit check are prompt-level against the connector's documented tool surface (documented in the PR); no live OAuth login was completed in this container.
+
+**New evaluations this run (6 SKIP, coherence/scope — no rule change needed):**
+
+- **PayPal / Siigo collections kit** — both connectors are published and unused, but the invoice-collections loop reduces to "connector + report drafting": the reminder actions live in the connector (`send_invoice_reminder`, `send_invoice_reminder`-equivalents), and the only whitelisted skill fit (`doc-coauthoring` for a receivables memo) reproduces `small-business-finance`'s artifact shape — the exact reason the 2026-10-12 run rejected the Siigo kit. Unchanged conclusion.
+- **Brevo email-marketing kit** — `brevo` shipped 2026-10-16 with a manifest, but the same blocker as the Klaviyo candidate applies verbatim: no whitelisted skill serves email/SMS campaign copy (`meta-ads-creator` scopes itself to Meta ad creative; `doc-coauthoring` is long-document co-authoring). Shipping a Brevo kit while Klaviyo stays deferred for the same reason would be incoherent. The whitelist-drift flag for JM from 2026-09-28 is still open.
+- **Pipedrive CRM kit** — `pipedrive` is installable, but the workflow shape (read deals → write update) is `b2b-sales-pipeline`'s purpose with a different vendor — a relabel under the duplicate-purpose prohibition, same call as Webflow in 2026-10-05 and Asana in 2026-10-05.
+- **Tiendanube promo/coupon kit** — `tiendanube` shipped 2026-10-15 with coupon/promotion tools, but the combo would need `meta-ads-creator` stretched past its declared scope (Meta ad creative, not store-promo copy) to promise "launch a promo", and it overlaps `ecommerce-storefront`'s category and loop. Deferred until a whitelisted skill serves promo copy or the pack layer covers it.
+- **Local Marketing kit** — unchanged: `google-business` still first-party without a `manifest:` block.
+- **Calendly scheduling kit** — unchanged, coherence-dropped per 2026-09-28 (its server already reads the calendar and makes booking links, so partners duplicate it or reduce to filler).
+
+**Carry-over re-checks (2, still blocked):** Gusto payroll/1099 kit (the gusto plugin pack already bundles that combo one layer down; `1099-w9-organizer` outside the whitelist) and Klaviyo retention kit (every skill that makes it coherent is outside the 7-skill whitelist).
+
+**App mirror:** not opened — per `docs/integration-loop-two-pr-policy.md` this kit needs no desktop code (standard connector + skill items the app already renders from `/api/marketplace/catalog`); opening a record-only mirror PR is exactly what the policy forbids. Landing body states `App PR: no aplica — la app consume el catálogo` and `App mirror PR: no aplica — la app consume el catálogo`.
+
 ### 2026-10-12 — Spend Review Kit; ramp unblocked after its connector landed; deferred queue re-checked
 
 **Shipped (1 kit, EN/ES parity):**
