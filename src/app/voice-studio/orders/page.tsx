@@ -4,10 +4,13 @@ import {
 } from "@/lib/voiceStudioLicense";
 import { listClientOrders } from "@/lib/voiceStudioCrm";
 import { OrdersForm } from "@/components/voice-studio/OrdersForm";
+import { OrdersGate } from "@/components/voice-studio/OrdersGate";
 
 // Client production dashboard: past orders (delivered) and future orders
-// (queued) plus the submission form. Reached via the tokenized link minted
-// after checkout / sent by the team — token authorizes exactly one email.
+// (queued) plus the submission form. Two doors: (1) the tokenized link
+// minted after checkout / sent by the team — server-rendered below, token
+// authorizes exactly one email; (2) the Supabase login (Google or magic
+// link) — rendered client-side by OrdersGate when there's no valid token.
 export const metadata = { title: "Voice Studio — Your dashboard" };
 
 export default async function OrdersPage({
@@ -19,17 +22,9 @@ export default async function OrdersPage({
   const email = emailFromOrdersToken(t);
 
   if (!email) {
-    return (
-      <main className="mx-auto max-w-2xl px-6 py-20">
-        <h1 className="text-2xl font-semibold text-zinc-900">
-          Invalid or expired link
-        </h1>
-        <p className="mt-3 text-zinc-600">
-          This dashboard link is invalid or expired (they last 30 days).
-          Reply to any Voice Studio email and we&apos;ll send a fresh one.
-        </p>
-      </main>
-    );
+    // No (or expired) link token → the login door: Google / magic link,
+    // resolved to an email server-side before any CRM data moves.
+    return <OrdersGate />;
   }
 
   const orders = (await listClientOrders(email)) ?? [];

@@ -2,10 +2,22 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
-// Submit production orders (YouTube links) for a tokenized client. Posts
-// to /api/voice-studio/orders and refreshes the server-rendered dashboard.
-export function OrdersForm({ token }: { token: string }) {
+// Submit production orders (YouTube links) for a client. Two auth modes:
+//   - token:    the HMAC link minted after checkout; posts `token` in the
+//               body and refreshes the server-rendered dashboard.
+//   - session:  the Supabase login (Google / magic link); posts with the
+//               session's access token as Bearer and re-fetches via callback.
+export function OrdersForm({
+  token,
+  useSession = false,
+  onSubmitted,
+}: {
+  token?: string;
+  useSession?: boolean;
+  onSubmitted?: () => void;
+}) {
   const router = useRouter();
   const [links, setLinks] = useState("");
   const [notes, setNotes] = useState("");
@@ -19,10 +31,23 @@ export function OrdersForm({ token }: { token: string }) {
     setStatus("sending");
     setErrorMsg("");
     try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      let payload: Record<string, unknown> = { links, notes };
+      if (useSession) {
+        const sb = getSupabaseBrowser();
+        const { data } = (await sb?.auth.getSession()) ?? {};
+        const jwt = data?.session?.access_token;
+        if (!jwt) throw new Error("Your session expired — sign in again.");
+        headers.Authorization = `Bearer ${jwt}`;
+      } else {
+        payload.token = token ?? "";
+      }
       const res = await fetch("/api/voice-studio/orders", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, links, notes }),
+        headers,
+        body: JSON.stringify(payload),
       });
       const data = (await res.json().catch(() => null)) as {
         ok?: boolean;
@@ -35,7 +60,8 @@ export function OrdersForm({ token }: { token: string }) {
       setStatus("ok");
       setLinks("");
       setNotes("");
-      router.refresh();
+      if (useSession) onSubmitted?.();
+      else router.refresh();
       setTimeout(() => setStatus("idle"), 4000);
     } catch (err) {
       setStatus("error");

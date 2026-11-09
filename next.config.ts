@@ -81,6 +81,13 @@ const securityHeaders = [
 const config: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Pin the Turbopack workspace root: a stray ~/package-lock.json makes the
+  // dev server infer /Users/jm as the root, which silently skips this
+  // project's .env.local (NEXT_PUBLIC_SUPABASE_* never reach the browser,
+  // so the VS client login renders as "not configured"). JM 2026-11-09.
+  turbopack: {
+    root: process.cwd(),
+  },
   experimental: {
     // keep room for future RSC tweaks
   },
