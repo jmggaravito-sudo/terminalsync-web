@@ -57,6 +57,15 @@ export default function VoiceStudioPage() {
               Every voice clone requires your written permission. No
               exceptions.
             </p>
+            <p className="mt-3 text-sm text-zinc-500">
+              Already a client?{" "}
+              <a
+                href="/voice-studio/login"
+                className="text-zinc-300 underline hover:text-white"
+              >
+                Sign in to your dashboard
+              </a>
+            </p>
           </div>
           <HeroToggleVideo
             videoEn="/videos/voice-studio/hero-en.mp4"

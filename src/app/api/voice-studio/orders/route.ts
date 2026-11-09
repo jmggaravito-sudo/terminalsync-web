@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { emailFromOrdersToken } from "@/lib/voiceStudioLicense";
+import { emailFromClientRequest } from "@/lib/voiceStudioAuth";
 import { createOrderToDos, listClientOrders } from "@/lib/voiceStudioCrm";
 
 export const runtime = "nodejs";
@@ -20,7 +20,7 @@ const URL_RE = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/\S+$/i;
 // allowed direction). Token = HMAC vs-orders, minted for one email.
 export async function GET(req: Request) {
   const token = new URL(req.url).searchParams.get("t") ?? "";
-  const email = emailFromOrdersToken(token);
+  const email = await emailFromClientRequest(req, token);
   if (!email) {
     return NextResponse.json(
       { error: "Invalid or expired link." },
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const email = emailFromOrdersToken(body.token);
+  const email = await emailFromClientRequest(req, body.token);
   if (!email) {
     return NextResponse.json(
       { error: "Invalid or expired link." },
