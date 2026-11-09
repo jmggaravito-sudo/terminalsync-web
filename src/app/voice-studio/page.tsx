@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { LeadForm } from "@/components/voice-studio/LeadForm";
 import { CheckoutButton } from "@/components/voice-studio/CheckoutButton";
+import { HeroToggleVideo } from "@/components/voice-studio/HeroToggleVideo";
 
 // Standalone sales page for the dubbing service. No links to the TerminalSync
 // app anywhere on purpose — this is a separate business until it isn't.
@@ -20,40 +21,47 @@ export default function VoiceStudioPage() {
     <main>
       {/* ---------- Hero ---------- */}
       <section className="bg-zinc-950 text-white">
-        <div className="mx-auto max-w-6xl px-6 pt-20 pb-24">
-          <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-4 py-1.5 font-mono text-xs tracking-wide text-zinc-300">
-            <Mic className="h-3.5 w-3.5 text-amber-400" />
-            VOICE STUDIO · DONE-FOR-YOU YOUTUBE DUBBING
-          </p>
-          <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight sm:text-6xl">
-            Your channel. In Spanish.{" "}
-            <span className="text-amber-400">Still your voice.</span>
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-300">
-            We turn the videos you&apos;ve already made into a Spanish-language
-            channel — dubbed with a clone of your own voice, subtitled, and
-            published to a channel you own. A whole new audience, zero extra
-            filming.
-          </p>
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <a
-              href="#sample"
-              className="inline-flex items-center gap-2 rounded-full bg-amber-400 px-6 py-3 font-semibold text-zinc-950 transition-colors hover:bg-amber-300"
-            >
-              Get a free 60-second sample
-              <ArrowRight className="h-4 w-4" />
-            </a>
-            <a
-              href="#how"
-              className="inline-flex items-center gap-2 rounded-full border border-zinc-700 px-6 py-3 font-semibold text-zinc-200 transition-colors hover:border-zinc-500"
-            >
-              See how it works
-            </a>
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 pt-20 pb-24 lg:grid-cols-[1.05fr_1fr]">
+          <div>
+            <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-4 py-1.5 font-mono text-xs tracking-wide text-zinc-300">
+              <Mic className="h-3.5 w-3.5 text-amber-400" />
+              VOICE STUDIO · DONE-FOR-YOU YOUTUBE DUBBING
+            </p>
+            <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+              Your channel. In Spanish.{" "}
+              <span className="text-amber-400">Still your voice.</span>
+            </h1>
+            <p className="mt-6 text-lg leading-relaxed text-zinc-300">
+              We turn the videos you&apos;ve already made into a
+              Spanish-language channel — dubbed with a clone of your own
+              voice, subtitled, and published to a channel you own. A whole
+              new audience, zero extra filming.
+            </p>
+            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <a
+                href="#sample"
+                className="inline-flex items-center gap-2 rounded-full bg-amber-400 px-6 py-3 font-semibold text-zinc-950 transition-colors hover:bg-amber-300"
+              >
+                Get a free 60-second sample
+                <ArrowRight className="h-4 w-4" />
+              </a>
+              <a
+                href="#how"
+                className="inline-flex items-center gap-2 rounded-full border border-zinc-700 px-6 py-3 font-semibold text-zinc-200 transition-colors hover:border-zinc-500"
+              >
+                See how it works
+              </a>
+            </div>
+            <p className="mt-6 flex items-center gap-2 text-sm text-zinc-400">
+              <ShieldCheck className="h-4 w-4 text-emerald-400" />
+              Every voice clone requires your written permission. No
+              exceptions.
+            </p>
           </div>
-          <p className="mt-6 flex items-center gap-2 text-sm text-zinc-400">
-            <ShieldCheck className="h-4 w-4 text-emerald-400" />
-            Every voice clone requires your written permission. No exceptions.
-          </p>
+          <HeroToggleVideo
+            videoEn="/videos/voice-studio/hero-en.mp4"
+            videoEs="/videos/voice-studio/hero-es.mp4"
+          />
         </div>
       </section>
 

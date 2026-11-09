@@ -3,162 +3,190 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface HeroToggleVideoProps {
-  /** Video track (identical for both languages — dubbing v0 has no lip-sync). */
-  videoSrc: string;
-  /** Original-language audio (English). */
-  enAudioSrc: string;
-  /** Dubbed audio (Spanish) — AI voice. */
-  esAudioSrc: string;
-  /** Hook/title shown while the video is playing muted before first click. */
-  hookTitle?: string;
+  /** English render (AI avatar, own soundtrack). */
+  videoEn: string;
+  /** Spanish render (same avatar dubbed, own soundtrack). */
+  videoEs: string;
   /** Called when the visitor first unlocks sound (useful for analytics later). */
   onFirstPlay?: () => void;
 }
 
 type Lang = "en" | "es";
 
-const DRIFT_TOLERANCE = 0.25;
-
-// HERO "Turn on Spanish": one video track, two audio tracks. The button is
-// the product demo — English AI voice ↔ Spanish dub — and the first click
-// doubles as the user gesture that unlocks autoplay-with-sound.
+// HERO "Turn on Spanish": two full renders of the same AI avatar — one per
+// language (each with lip-sync, so the whole video swaps, not just the audio).
+// English starts as a muted ambient loop (browsers forbid autoplay with
+// sound); the big round button unlocks audio and every activation restarts
+// its own video from the top so the pitch always begins on a sentence
+// boundary.
 export function HeroToggleVideo({
-  videoSrc,
-  enAudioSrc,
-  esAudioSrc,
-  hookTitle = "",
+  videoEn,
+  videoEs,
   onFirstPlay,
 }: HeroToggleVideoProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const audioRef = useRef<Record<Lang, HTMLAudioElement | null>>({
-    en: null,
-    es: null,
-  });
+  const enRef = useRef<HTMLVideoElement>(null);
+  const esRef = useRef<HTMLVideoElement>(null);
   const [lang, setLang] = useState<Lang>("en");
-  const [playing, setPlaying] = useState(false);
+  const [interacted, setInteracted] = useState(false);
+  const [shouldPreloadEs, setShouldPreloadEs] = useState(false);
 
-  const resync = useCallback((langNow: Lang) => {
-    const v = videoRef.current;
-    const a = audioRef.current[langNow];
-    if (v && a && Math.abs(a.currentTime - v.currentTime) > DRIFT_TOLERANCE) {
-      a.currentTime = v.currentTime;
+  // The ES render ships as preload="metadata"; when the visitor shows intent
+  // (hover/focus on the toggle) we promote it to full preload so the
+  // crossfade starts without a loading gap.
+  useEffect(() => {
+    if (shouldPreloadEs) {
+      const el = esRef.current;
+      if (el) el.preload = "auto";
+    }
+  }, [shouldPreloadEs]);
+
+  const restart = useCallback((v: HTMLVideoElement | null) => {
+    if (!v) return;
+    if (v.readyState >= HTMLMediaElement.HAVE_METADATA) {
+      try {
+        v.currentTime = 0;
+      } catch {
+        // seek raced metadata; the loop restarts it anyway
+      }
+    } else {
+      v.addEventListener(
+        "loadedmetadata",
+        () => {
+          try {
+            v.currentTime = 0;
+          } catch {
+            /* ignore */
+          }
+        },
+        { once: true },
+      );
     }
   }, []);
 
-  // keep the active audio glued to the video clock
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    const onSync = () => resync(lang);
-    const onPlay = () => {
-      const a = audioRef.current[lang];
-      if (a) void a.play().catch(() => {});
-    };
-    const onPause = () => {
-      const a = audioRef.current[lang];
-      a?.pause();
-    };
-    v.addEventListener("timeupdate", onSync);
-    v.addEventListener("seeked", onSync);
-    v.addEventListener("play", onPlay);
-    v.addEventListener("pause", onPause);
-    v.addEventListener("ended", onPause);
-    return () => {
-      v.removeEventListener("timeupdate", onSync);
-      v.removeEventListener("seeked", onSync);
-      v.removeEventListener("play", onPlay);
-      v.removeEventListener("pause", onPause);
-      v.removeEventListener("ended", onPause);
-    };
-  }, [lang, resync]);
-
-  function toggle(next: Lang) {
-    const v = videoRef.current;
-    if (!v) return;
-    const prevAudio = audioRef.current[lang];
-    const nextAudio = audioRef.current[next];
-    if (!prevAudio || !nextAudio) return;
-    // crossfade: duck previous, bring next up at the video clock
-    prevAudio.pause();
-    nextAudio.currentTime = v.currentTime;
-    nextAudio.volume = 0;
-    void nextAudio.play().then(() => {
-      const fade = nextAudio.volume === 0 ? 0 : nextAudio.volume;
-      const steps = 8;
-      let i = 0;
-      const timer = setInterval(() => {
-        i += 1;
-        nextAudio.volume = Math.min(1, fade + i / steps);
-        if (i >= steps) clearInterval(timer);
-      }, 50);
-    }).catch(() => {});
-    if (!playing) {
-      void v.play().catch(() => {});
-      setPlaying(true);
-      onFirstPlay?.();
-    }
-    setLang(next);
-  }
+  const activate = useCallback(
+    (next: Lang) => {
+      const active = next === "en" ? enRef.current : esRef.current;
+      const inactive = next === "en" ? esRef.current : enRef.current;
+      if (!active) return;
+      inactive?.pause();
+      restart(active);
+      void active.play().catch(() => {});
+      if (!interacted) {
+        setInteracted(true);
+        onFirstPlay?.();
+      }
+      setLang(next);
+    },
+    [interacted, onFirstPlay, restart],
+  );
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 shadow-2xl">
-      <video
-        ref={videoRef}
-        src={videoSrc}
-        muted
-        autoPlay
-        playsInline
-        loop
-        className="aspect-video w-full"
-        onClick={() => (playing ? (lang === "es" ? toggle("en") : toggle("es")) : toggle("es"))}
-      />
-      {/* pistas de audio: nunca autopian solas — las maneja el toggle */}
-      <audio ref={(el) => { audioRef.current.en = el; }} src={enAudioSrc} preload="auto" />
-      <audio ref={(el) => { audioRef.current.es = el; }} src={esAudioSrc} preload="auto" />
-
-      {/* hook/title before first interaction */}
-      {!playing && hookTitle && (
-        <div className="absolute inset-x-0 top-8 flex justify-center">
-          <span className="rounded-lg bg-amber-400 px-4 py-2 text-sm font-bold text-zinc-950">
-            {hookTitle}
-          </span>
-        </div>
-      )}
-
-      {/* ES captions + AI tag while dubbed mode is on */}
-      {playing && lang === "es" && (
-        <div className="absolute inset-x-0 bottom-16 flex justify-center px-8">
-          <span className="rounded-md bg-zinc-950/80 px-3 py-1.5 text-sm font-semibold text-white">
-            Subtítulos en español · voz AI
-          </span>
-        </div>
-      )}
-
-      {/* language toggle */}
-      <div className="absolute inset-x-0 bottom-5 flex justify-center gap-3">
-        <button
-          type="button"
-          onClick={() => toggle("en")}
-          className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
-            playing && lang === "en"
-              ? "bg-zinc-100 text-zinc-950"
-              : "bg-zinc-800/90 text-zinc-200 hover:bg-zinc-700"
+    <div className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 shadow-2xl">
+      <div className="relative aspect-video">
+        <video
+          ref={enRef}
+          src={videoEn}
+          muted={!(interacted && lang === "en")}
+          autoPlay
+          playsInline
+          loop
+          preload="auto"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out ${
+            lang === "en" ? "opacity-100" : "opacity-0"
           }`}
-        >
-          English
-        </button>
-        <button
-          type="button"
-          onClick={() => toggle("es")}
-          className={`rounded-full px-5 py-2.5 text-sm font-bold transition-colors ${
-            playing && lang === "es"
-              ? "bg-amber-400 text-zinc-950"
-              : "bg-amber-500/90 text-zinc-950 hover:bg-amber-400"
+        />
+        <video
+          ref={esRef}
+          src={videoEs}
+          muted={lang !== "es"}
+          playsInline
+          loop
+          preload="metadata"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out ${
+            lang === "es" ? "opacity-100" : "opacity-0"
           }`}
-        >
-          ▶ Turn on Spanish
-        </button>
+        />
+
+        {/* mode pill while dubbing is engaged */}
+        {interacted && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center px-8">
+            <span
+              className={`rounded-full px-3 py-1.5 text-sm font-semibold shadow ${
+                lang === "es"
+                  ? "bg-zinc-950/80 text-white"
+                  : "bg-white/85 text-zinc-900"
+              }`}
+            >
+              {lang === "es"
+                ? "Español · misma persona, voz AI"
+                : "English · AI-dubbed voice"}
+            </span>
+          </div>
+        )}
+
+        {/* big glossy unlock button — floats over the video bottom */}
+        {!interacted && (
+          <button
+            type="button"
+            onClick={() => activate("es")}
+            onMouseEnter={() => setShouldPreloadEs(true)}
+            onFocus={() => setShouldPreloadEs(true)}
+            aria-label="Click to Spanish"
+            className="group absolute inset-x-0 bottom-4 z-10 flex justify-center outline-none"
+          >
+            <img
+              src="/images/voice-studio/btn-click-to-spanish.png"
+              alt=""
+              draggable={false}
+              className="h-28 w-28 animate-bounce drop-shadow-2xl transition-transform duration-200 group-hover:scale-110 group-active:scale-95"
+            />
+          </button>
+        )}
       </div>
+
+      {/* language switcher once sound is unlocked */}
+      {interacted && (
+        <div className="flex items-center justify-center gap-8 py-4">
+          <button
+            type="button"
+            onClick={() => activate("en")}
+            aria-label="Click to English"
+            className={`transition-all duration-200 ${
+              lang === "en"
+                ? "scale-110 opacity-100"
+                : "scale-90 opacity-50 hover:opacity-90"
+            }`}
+          >
+            <img
+              src="/images/voice-studio/btn-click-to-english.png"
+              alt=""
+              draggable={false}
+              className="h-20 w-20"
+            />
+          </button>
+          <button
+            type="button"
+            onClick={() => activate("es")}
+            aria-label="Click to Spanish"
+            className={`transition-all duration-200 ${
+              lang === "es"
+                ? "scale-110 opacity-100"
+                : "scale-90 opacity-50 hover:opacity-90"
+            }`}
+          >
+            <img
+              src="/images/voice-studio/btn-click-to-spanish.png"
+              alt=""
+              draggable={false}
+              className="h-20 w-20"
+            />
+          </button>
+        </div>
+      )}
+
+      <span className="sr-only" aria-live="polite">
+        {lang === "es" ? "Spanish dubbing on" : "English audio on"}
+      </span>
     </div>
   );
 }
