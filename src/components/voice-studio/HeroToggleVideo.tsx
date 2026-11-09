@@ -107,82 +107,34 @@ export function HeroToggleVideo({
           }`}
         />
 
-        {/* mode pill while dubbing is engaged */}
-        {interacted && (
-          <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center px-8">
-            <span
-              className={`rounded-full px-3 py-1.5 text-sm font-semibold shadow ${
-                lang === "es"
-                  ? "bg-zinc-950/80 text-white"
-                  : "bg-white/85 text-zinc-900"
-              }`}
-            >
-              {lang === "es"
-                ? "Español · misma persona, voz AI"
-                : "English · AI-dubbed voice"}
-            </span>
-          </div>
-        )}
-
-        {/* big glossy unlock button — floats over the video bottom */}
-        {!interacted && (
-          <button
-            type="button"
-            onClick={() => activate("es")}
-            onMouseEnter={() => setShouldPreloadEs(true)}
-            onFocus={() => setShouldPreloadEs(true)}
-            aria-label="Click to Spanish"
-            className="group absolute inset-x-0 bottom-4 z-10 flex justify-center outline-none"
-          >
-            <img
-              src="/images/voice-studio/btn-click-to-spanish.png"
-              alt=""
-              draggable={false}
-              className="h-28 w-28 animate-bounce drop-shadow-2xl transition-transform duration-200 group-hover:scale-110 group-active:scale-95"
-            />
-          </button>
-        )}
       </div>
 
-      {/* language switcher once sound is unlocked */}
-      {interacted && (
-        <div className="flex items-center justify-center gap-8 py-4">
-          <button
-            type="button"
-            onClick={() => activate("en")}
-            aria-label="Click to English"
-            className={`transition-all duration-200 ${
-              lang === "en"
-                ? "scale-110 opacity-100"
-                : "scale-90 opacity-50 hover:opacity-90"
-            }`}
-          >
-            <img
-              src="/images/voice-studio/btn-click-to-english.png"
-              alt=""
-              draggable={false}
-              className="h-20 w-20"
-            />
-          </button>
-          <button
-            type="button"
-            onClick={() => activate("es")}
-            aria-label="Click to Spanish"
-            className={`transition-all duration-200 ${
+      {/* ONE glossy button BELOW the video (never on top of it): it always
+          invites the language you're NOT hearing — "Click to Spanish" first,
+          then it flips to "Click to English" and back with every click. */}
+      <div className="flex justify-center bg-zinc-100 py-2">
+        <button
+          type="button"
+          onClick={() => (lang === "es" ? activate("en") : activate("es"))}
+          onMouseEnter={() => setShouldPreloadEs(true)}
+          onFocus={() => setShouldPreloadEs(true)}
+          aria-label={lang === "es" ? "Click to English" : "Click to Spanish"}
+          className="group flex outline-none"
+        >
+          <img
+            src={
               lang === "es"
-                ? "scale-110 opacity-100"
-                : "scale-90 opacity-50 hover:opacity-90"
+                ? "/images/voice-studio/btn-click-to-english.png"
+                : "/images/voice-studio/btn-click-to-spanish.png"
+            }
+            alt=""
+            draggable={false}
+            className={`h-36 w-36 drop-shadow-2xl transition-transform duration-200 group-hover:scale-110 group-active:scale-95 ${
+              interacted ? "" : "animate-bounce"
             }`}
-          >
-            <img
-              src="/images/voice-studio/btn-click-to-spanish.png"
-              alt=""
-              draggable={false}
-              className="h-20 w-20"
-            />
-          </button>
-        </div>
-      )}
+          />
+        </button>
+      </div>
 
       <span className="sr-only" aria-live="polite">
         {lang === "es" ? "Spanish dubbing on" : "English audio on"}
