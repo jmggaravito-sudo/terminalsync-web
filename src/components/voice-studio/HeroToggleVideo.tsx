@@ -120,11 +120,15 @@ export function HeroToggleVideo({
           }`}
         />
 
-        {/* click-to-pause overlay over the video surface */}
+        {/* click overlay: before the first interaction ANY click on the video
+            unlocks audio (browsers mute autoplay; the gesture is required) —
+            afterwards it toggles pause/resume of the active render */}
         <button
           type="button"
-          onClick={togglePlay}
-          aria-label={paused ? "Play video" : "Pause video"}
+          onClick={() => (interacted ? togglePlay() : activate(lang))}
+          onMouseEnter={() => setShouldPreloadEs(true)}
+          onFocus={() => setShouldPreloadEs(true)}
+          aria-label={interacted ? (paused ? "Play video" : "Pause video") : "Turn on sound"}
           className="absolute inset-0 z-0 outline-none"
         />
         {paused && (
@@ -139,6 +143,11 @@ export function HeroToggleVideo({
                 <path d="M8 5.14v13.72c0 .8.87 1.3 1.56.88l10.8-6.86a1.05 1.05 0 0 0 0-1.76L9.56 4.26A1.04 1.04 0 0 0 8 5.14Z" />
               </svg>
             </span>
+          </span>
+        )}
+        {!interacted && (
+          <span className="pointer-events-none absolute right-3 top-3 z-10 rounded-full bg-zinc-950/70 px-3 py-1 text-xs font-semibold text-white/90">
+            🔊 Click for sound
           </span>
         )}
       </div>
