@@ -25,7 +25,7 @@ export default function VoiceStudioPage() {
           <div>
             <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-4 py-1.5 font-mono text-xs tracking-wide text-zinc-300">
               <Mic className="h-3.5 w-3.5 text-amber-400" />
-              VOICE STUDIO · DONE-FOR-YOU YOUTUBE DUBBING
+              VOICE STUDIO · DONE-FOR-YOU SOCIAL MEDIA DUBBING
             </p>
             <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
               Your channel. In Spanish.{" "}
