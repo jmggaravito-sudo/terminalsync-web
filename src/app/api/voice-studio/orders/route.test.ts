@@ -1,9 +1,10 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mock = vi.hoisted(() => ({
-  email: vi.fn(), legacy: vi.fn(), send: vi.fn(),
+  email: vi.fn(), license: vi.fn(), legacy: vi.fn(), send: vi.fn(),
   read: vi.fn(), submit: vi.fn(),
 }));
+vi.mock("@/lib/voiceStudioConsent", () => ({ voiceLicenseStatus: mock.license }));
 vi.mock("@/lib/voiceStudioAuth", () => ({ emailFromClientRequest: mock.email }));
 vi.mock("@/lib/voiceStudioLicense", () => ({ licenseUrl: () => "/voice-studio/license?t=test" }));
 vi.mock("@/lib/voiceStudioCrm", () => ({ listClientOrders: mock.legacy }));
@@ -21,6 +22,7 @@ const request = (orders: unknown) => new Request("https://example.test/api/voice
 });
 const source = { source_url: "https://youtu.be/abcdefghijk?si=tracking", notes: " voice note ", short_mode: "timestamp", short_timestamp: "1:20" };
 
+beforeEach(() => { mock.license.mockResolvedValue("signed"); });
 afterEach(() => { vi.resetAllMocks(); vi.unstubAllEnvs(); });
 
 describe("client production orders", () => {
@@ -59,6 +61,13 @@ describe("client production orders", () => {
     mock.email.mockResolvedValue("buyer@example.test");
     expect((await POST(request([source, { ...source, source_url: "https://www.youtube.com/watch?v=abcdefghijk" }]))).status).toBe(400);
     expect((await POST(request([{ ...source, short_timestamp: "1:75" }]))).status).toBe(400);
+    expect(mock.submit).not.toHaveBeenCalled();
+  });
+
+  it.each(["pending", "revoked"])("blocks %s license before touching credits", async (state) => {
+    mock.email.mockResolvedValue("buyer@example.test");
+    mock.license.mockResolvedValue(state);
+    expect((await POST(request([source]))).status).toBe(403);
     expect(mock.submit).not.toHaveBeenCalled();
   });
 

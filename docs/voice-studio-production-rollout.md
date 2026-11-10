@@ -61,3 +61,18 @@ Use a separate test database and mocked Stripe events, not a live charge.
 If disabling the feature, roll back the web deployment first. Do not drop the
 tables or delete accepted orders; reconcile any work accepted by either version
 during the rollback.
+
+## Voice license gate rollout
+
+Apply `20261110195000_voice_studio_voice_license_acceptance.sql` before deploying
+the gate. Review any historical accepted-license records before switching
+intake: backfill only verified, unrevoked acceptances of the current version
+from the original record (email, channel, version, timestamp); never infer
+consent from purchase, a CRM status, or a dashboard login. The CRM/email
+notifications are not the authority for new acceptances.
+
+Acceptance is once per account and license version, not once per order.
+The dashboard remains readable without signing, but both the form and
+the order API are blocked until acceptance. Do not allow fresh production
+on revoked consent; update the private record on a verified revocation,
+and have staff pause any existing queued or active work for that account.

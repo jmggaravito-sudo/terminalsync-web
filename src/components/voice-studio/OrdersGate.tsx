@@ -39,6 +39,7 @@ type ProductionOrder = {
 type DashboardData = {
   email: string;
   licenseUrl?: string | null;
+  licenseStatus: "pending" | "signed" | "revoked";
   entitlements: Entitlement[];
   orders: ProductionOrder[];
   legacyOrders: ClientOrder[];
@@ -303,7 +304,7 @@ export function OrdersGate({ token }: { token?: string }) {
   }
 
   if (state.kind !== "ready") return null;
-  const { email, licenseUrl, entitlements, orders, legacyOrders, legacyOrdersAvailable } = state.data;
+  const { email, licenseUrl, licenseStatus, entitlements, orders, legacyOrders, legacyOrdersAvailable } = state.data;
   const plans = activePlans(entitlements, Date.now()).map(availableOption);
   const eligible = plans.filter((plan) => plan.availableVideos > 0 &&
     (!plan.includesShort || plan.availableShorts > 0));
@@ -317,6 +318,21 @@ export function OrdersGate({ token }: { token?: string }) {
       <p className="font-mono text-xs tracking-wide text-zinc-500">VOICE STUDIO · PRODUCTION DASHBOARD</p>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">Your Spanish channel</h1>
       <p className="mt-2 break-words text-zinc-600">Signed in as <strong>{email}</strong></p>
+      <section aria-labelledby="voice-license-heading" className={`mt-6 rounded-2xl border p-5 ${licenseStatus === "signed" ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
+        <h2 id="voice-license-heading" className="font-semibold text-zinc-900">
+          Voice license · {licenseStatus === "signed" ? "Signed" : licenseStatus === "revoked" ? "Revoked" : "Signature required"}
+        </h2>
+        {licenseStatus === "signed" ? (
+          <p className="mt-1 text-sm text-zinc-700">You don&apos;t need to sign again for each video.</p>
+        ) : licenseStatus === "revoked" ? (
+          <p className="mt-1 text-sm text-zinc-700">Contact Voice Studio before submitting more videos.</p>
+        ) : (
+          <>
+            <p className="mt-1 text-sm text-zinc-700">Sign once before sending your first video. Your queue and previous deliveries remain available.</p>
+            {licenseUrl && <a href={licenseUrl} className="mt-3 inline-flex rounded-full bg-zinc-950 px-4 py-2 text-sm font-semibold text-white">Review and sign voice license</a>}
+          </>
+        )}
+      </section>
       <nav aria-label="Dashboard sections" className="mt-6 flex flex-wrap gap-2">
         {SECTIONS.map((section) => (
           <a key={section.id} href={`#${section.id}`} className="rounded-full border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:border-amber-500">
@@ -351,8 +367,12 @@ export function OrdersGate({ token }: { token?: string }) {
 
       <section id="submit" aria-labelledby="submit-heading" className="mt-6 scroll-mt-4 rounded-2xl border border-zinc-200 bg-white p-5 sm:p-6">
         <h2 id="submit-heading" className="text-lg font-semibold text-zinc-900">Send us videos to dub</h2>
-        <p className="mt-1 text-sm text-zinc-600">Add a YouTube link and any production instructions for each video.</p>
-        <OrdersForm key={email} token={token} plans={eligible} onSubmitted={() => void refresh()} />
+        {licenseStatus === "signed" ? (
+          <>
+            <p className="mt-1 text-sm text-zinc-600">Add a YouTube link and any production instructions for each video.</p>
+            <OrdersForm key={email} token={token} plans={eligible} onSubmitted={() => void refresh()} />
+          </>
+        ) : <p className="mt-1 text-sm text-zinc-600">Video submission is locked until you have an active signed voice license.</p>}
       </section>
 
       {legacyOrdersAvailable === false && (
@@ -371,12 +391,6 @@ export function OrdersGate({ token }: { token?: string }) {
         <QueueList orders={delivered} legacy={legacyDelivered} delivered />
       </section>
 
-      {licenseUrl && (
-        <section className="mt-10 border-t border-zinc-200 pt-6 text-sm text-zinc-600">
-          Haven&apos;t signed your voice license yet?{" "}
-          <a href={licenseUrl} className="font-medium underline">Sign it here</a>.
-        </section>
-      )}
     </main>
   );
 }
