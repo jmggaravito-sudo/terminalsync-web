@@ -74,6 +74,62 @@ export default function VoiceStudioPage() {
         </div>
       </section>
 
+      {/* ---------- Shorts & Reels ---------- */}
+      <section
+        id="shorts"
+        aria-labelledby="shorts-heading"
+        className="border-b border-zinc-800 bg-zinc-900 text-white"
+      >
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 py-16 lg:grid-cols-[1fr_1.15fr]">
+          <div>
+            <p className="mb-4 font-mono text-xs tracking-wide text-amber-400">
+              PRODUCT 02 · SPANISH SHORTS &amp; REELS
+            </p>
+            <h2 id="shorts-heading" className="text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+              Get Shorts &amp; Reels with your Spanish videos.
+            </h2>
+            <p className="mt-5 max-w-lg leading-relaxed text-zinc-300">
+              For every full-length video we dub in your monthly pack, we cut
+              one vertical Spanish clip with on-screen captions, ready for
+              YouTube Shorts and Instagram Reels. No extra filming.
+            </p>
+            <p className="mt-4 text-sm font-medium text-zinc-200">
+              4 videos + 4 shorts or 8 videos + 8 shorts.
+            </p>
+            <a
+              href="#production-packs"
+              className="mt-7 inline-flex items-center gap-2 rounded-full bg-amber-400 px-6 py-3 font-semibold text-zinc-950 transition-colors hover:bg-amber-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400"
+            >
+              See video + shorts packs
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+          </div>
+          <div className="mx-auto grid w-full max-w-lg gap-4 sm:grid-cols-2">
+            {[
+              { file: "short-es-demo", title: "How Voice Studio works" },
+              { file: "short-es-offer", title: "Reach a Spanish-speaking audience" },
+            ].map(({ file, title }) => (
+              <figure key={file} className="mx-auto w-full max-w-60">
+                <video
+                  src={`/videos/voice-studio/${file}.mp4`}
+                  poster={`/images/voice-studio/${file}.jpg`}
+                  aria-label={`${title} — Spanish demo with on-screen captions`}
+                  controls
+                  playsInline
+                  preload="none"
+                  width={1080}
+                  height={1920}
+                  className="aspect-[9/16] w-full rounded-2xl border border-zinc-700 bg-zinc-950 object-contain"
+                />
+                <figcaption className="mt-2 text-sm text-zinc-300">
+                  {title}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ---------- Market stats ---------- */}
       <section className="border-b border-zinc-200 bg-white">
         <div className="mx-auto grid max-w-6xl gap-8 px-6 py-14 sm:grid-cols-3">
@@ -239,7 +295,7 @@ export default function VoiceStudioPage() {
               />
             </div>
           </div>
-          <div className="mt-6 rounded-2xl border border-zinc-200 bg-white p-8">
+          <div id="production-packs" className="mt-6 scroll-mt-6 rounded-2xl border border-zinc-200 bg-white p-8">
             <p className="font-mono text-xs tracking-wide text-zinc-400">
               STEP 3 · PRODUCTION — PAY PER VIDEO, OR SAVE WITH PACKS
             </p>
@@ -247,8 +303,8 @@ export default function VoiceStudioPage() {
               {[
                 ["First video", "$99", "your trial — one full video", "trial"],
                 ["Single video", "$129", "no commitment", "single"],
-                ["4-video pack", "$399", "$100 per video + 4 Spanish Shorts, monthly", "pack4"],
-                ["8-video pack", "$699", "$87 per video + 8 Spanish Shorts, monthly", "pack8"],
+                ["4-video pack", "$399", "4 full videos + 4 Spanish Shorts/Reels, monthly ($100 per video)", "pack4"],
+                ["8-video pack", "$699", "8 full videos + 8 Spanish Shorts/Reels, monthly ($87 per video)", "pack8"],
               ].map(([name, price, note, sku]) => (
                 <div key={name}>
                   <p className="text-sm font-semibold text-zinc-500">{name}</p>
