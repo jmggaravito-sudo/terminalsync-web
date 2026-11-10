@@ -1,109 +1,268 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useId, useRef, useState, type FormEvent } from "react";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
-// Submit production orders (YouTube links) for a client. Two auth modes:
-//   - token:    the HMAC link minted after checkout; posts `token` in the
-//               body and refreshes the server-rendered dashboard.
-//   - session:  the Supabase login (Google / magic link); posts with the
-//               session's access token as Bearer and re-fetches via callback.
+const MAX_ROWS = 8;
+const SHORT_TIMESTAMP = /^(?:\d{1,2}:[0-5]\d:[0-5]\d|[0-5]?\d:[0-5]\d)$/;
+
+type Draft = {
+  key: number;
+  sourceUrl: string;
+  notes: string;
+  shortMode: "best_moment" | "timestamp";
+  timestamp: string;
+};
+
+function newDraft(key: number): Draft {
+  return { key, sourceUrl: "", notes: "", shortMode: "best_moment", timestamp: "" };
+}
+
+export interface OrderPlanOption {
+  id: string;
+  label: string;
+  includesShort: boolean;
+  availableVideos: number;
+  availableShorts: number;
+}
+
+const inputClass =
+  "mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-zinc-900 outline-none focus-visible:ring-2 focus-visible:ring-amber-500 disabled:bg-zinc-100";
+
 export function OrdersForm({
   token,
-  useSession = false,
+  plans,
   onSubmitted,
 }: {
   token?: string;
-  useSession?: boolean;
-  onSubmitted?: () => void;
+  plans: OrderPlanOption[];
+  onSubmitted: () => void;
 }) {
-  const router = useRouter();
-  const [links, setLinks] = useState("");
-  const [notes, setNotes] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">(
-    "idle",
-  );
-  const [errorMsg, setErrorMsg] = useState("");
+  const formId = useId();
+  const [selected, setSelected] = useState("");
+  const [drafts, setDrafts] = useState<Draft[]>(() => [newDraft(1)]);
+  const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
+  const [message, setMessage] = useState("");
+  const nextKey = useRef(2);
+  const inFlight = useRef(false);
+  const retry = useRef<{ fingerprint: string; requestId: string } | null>(null);
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
+  const plan = plans.find((option) => option.id === selected) ?? plans[0];
+  const limit = plan
+    ? Math.min(MAX_ROWS, plan.availableVideos, plan.includesShort ? plan.availableShorts : MAX_ROWS)
+    : 0;
+
+  function edit(key: number, patch: Partial<Omit<Draft, "key">>) {
+    setDrafts((current) => current.map((row) => row.key === key ? { ...row, ...patch } : row));
+    if (status !== "idle") setStatus("idle");
+  }
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (inFlight.current) return;
+    if (!plan || drafts.length > limit) {
+      setStatus("error");
+      setMessage("This plan does not have enough available credits for these videos.");
+      return;
+    }
+    const orders = drafts.map((row) => ({
+      source_url: row.sourceUrl.trim(),
+      notes: row.notes.trim(),
+      short_mode: plan.includesShort ? row.shortMode : "none",
+      short_timestamp:
+        plan.includesShort && row.shortMode === "timestamp" ? row.timestamp.trim() : null,
+    }));
+    if (orders.some((order) => !order.source_url ||
+        (order.short_mode === "timestamp" && !SHORT_TIMESTAMP.test(order.short_timestamp ?? "")))) {
+      setStatus("error");
+      setMessage("Enter a video link on each row and use MM:SS or H:MM:SS for any short timestamp.");
+      return;
+    }
+
+    inFlight.current = true;
     setStatus("sending");
-    setErrorMsg("");
+    setMessage("");
     try {
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-      let payload: Record<string, unknown> = { links, notes };
-      if (useSession) {
+      const fingerprint = JSON.stringify({ entitlementId: plan.id, orders });
+      if (retry.current?.fingerprint !== fingerprint) {
+        retry.current = { fingerprint, requestId: crypto.randomUUID() };
+      }
+      const requestId = retry.current.requestId;
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (!token) {
         const sb = getSupabaseBrowser();
         const { data } = (await sb?.auth.getSession()) ?? {};
         const jwt = data?.session?.access_token;
         if (!jwt) throw new Error("Your session expired — sign in again.");
         headers.Authorization = `Bearer ${jwt}`;
-      } else {
-        payload.token = token ?? "";
       }
-      const res = await fetch("/api/voice-studio/orders", {
+      const response = await fetch("/api/voice-studio/orders", {
         method: "POST",
         headers,
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          token,
+          entitlementId: plan.id,
+          requestId,
+          orders,
+        }),
       });
-      const data = (await res.json().catch(() => null)) as {
+      const body = (await response.json().catch(() => null)) as {
         ok?: boolean;
         error?: string;
-        created?: number;
       } | null;
-      if (!res.ok || !data?.ok) {
-        throw new Error(data?.error ?? "Something went wrong. Try again.");
+      if (!response.ok || !body?.ok) {
+        throw new Error(body?.error ?? "Could not confirm the request. Try again without changing your entries.");
       }
+
+      setDrafts([newDraft(nextKey.current++)]);
+      retry.current = null;
       setStatus("ok");
-      setLinks("");
-      setNotes("");
-      if (useSession) onSubmitted?.();
-      else router.refresh();
-      setTimeout(() => setStatus("idle"), 4000);
+      setMessage(orders.length === 1 ? "Video added to your queue." : `${orders.length} videos added to your queue.`);
+      onSubmitted();
     } catch (err) {
       setStatus("error");
-      setErrorMsg(err instanceof Error ? err.message : "Something went wrong.");
+      setMessage(err instanceof Error ? err.message : "Something went wrong. Try again.");
+    } finally {
+      inFlight.current = false;
     }
   }
 
-  const inputClass =
-    "w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 placeholder-zinc-400 outline-none transition-colors focus:border-amber-400";
+  if (!plan && status !== "ok") {
+    return (
+      <p className="mt-4 rounded-lg bg-zinc-100 px-4 py-3 text-sm text-zinc-600">
+        You don&apos;t have a plan with available production credits. If you recently paid,
+        check back shortly or reply to your Voice Studio email for help.
+      </p>
+    );
+  }
 
   return (
-    <form onSubmit={submit} className="space-y-4">
-      <textarea
-        required
-        rows={5}
-        maxLength={2000}
-        placeholder={"Paste your YouTube video links — one per line\nhttps://youtube.com/watch?v=...\nhttps://youtu.be/..."}
-        value={links}
-        onChange={(e) => setLinks(e.target.value)}
-        className={inputClass + " font-mono text-sm"}
-      />
-      <textarea
-        rows={3}
-        maxLength={2000}
-        placeholder="Notes for the team (optional): how to pronounce your name/brand, sponsors to mention, tone preferences…"
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        className={inputClass + " text-sm"}
-      />
-      {status === "error" && <p className="text-sm text-red-500">{errorMsg}</p>}
-      {status === "ok" && (
-        <p className="text-sm font-medium text-emerald-700">
-          Received ✓ — added to your queue below.
-        </p>
+    <form onSubmit={submit} className="mt-4 space-y-4">
+      {plan && (
+        <fieldset disabled={status === "sending"} className="min-w-0 space-y-4">
+          {plans.length > 1 && (
+            <label className="block text-sm font-medium text-zinc-800">
+              Use credits from
+              <select
+                className={inputClass}
+                value={plan.id}
+                onChange={(event) => { setSelected(event.target.value); setStatus("idle"); }}
+              >
+                {plans.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.label} · {option.availableVideos} video credits left
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+
+          {drafts.map((row, index) => {
+            const id = `${formId}-video-${row.key}`;
+            return (
+              <fieldset key={row.key} className="min-w-0 space-y-3 rounded-xl border border-zinc-200 p-4">
+                <legend className="px-1 text-sm font-semibold text-zinc-800">Video {index + 1}</legend>
+                <div>
+                  <label htmlFor={`${id}-url`} className="block text-sm font-medium text-zinc-800">YouTube link</label>
+                  <input
+                    id={`${id}-url`}
+                    required
+                    inputMode="url"
+                    maxLength={2000}
+                    className={inputClass}
+                    value={row.sourceUrl}
+                    onChange={(event) => edit(row.key, { sourceUrl: event.target.value })}
+                    placeholder="https://www.youtube.com/watch?v=…"
+                  />
+                </div>
+                <div>
+                  <label htmlFor={`${id}-notes`} className="block text-sm font-medium text-zinc-800">Production notes (optional)</label>
+                  <textarea
+                    id={`${id}-notes`}
+                    rows={2}
+                    maxLength={2000}
+                    className={inputClass}
+                    value={row.notes}
+                    onChange={(event) => edit(row.key, { notes: event.target.value })}
+                    placeholder="Pronunciation, tone, or anything to keep in the edit"
+                  />
+                </div>
+                {plan.includesShort && (
+                  <div className="rounded-lg bg-amber-50 p-3">
+                    <label htmlFor={`${id}-short`} className="block text-sm font-medium text-zinc-800">Spanish Short/Reel included</label>
+                    <select
+                      id={`${id}-short`}
+                      className={inputClass}
+                      value={row.shortMode}
+                      onChange={(event) => edit(row.key, {
+                        shortMode: event.target.value === "timestamp" ? "timestamp" : "best_moment",
+                      })}
+                    >
+                      <option value="best_moment">Choose the best moment for me</option>
+                      <option value="timestamp">Use my starting timestamp</option>
+                    </select>
+                    {row.shortMode === "timestamp" && (
+                      <div className="mt-3">
+                        <label htmlFor={`${id}-timestamp`} className="block text-sm font-medium text-zinc-800">
+                          Starting timestamp (MM:SS or H:MM:SS)
+                        </label>
+                        <input
+                          id={`${id}-timestamp`}
+                          required
+                          maxLength={8}
+                          placeholder="03:45"
+                          className={inputClass}
+                          value={row.timestamp}
+                          onChange={(event) => edit(row.key, { timestamp: event.target.value })}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+                {drafts.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => { setDrafts((current) => current.filter((other) => other.key !== row.key)); setStatus("idle"); }}
+                    className="text-sm font-medium text-zinc-600 underline underline-offset-4 hover:text-zinc-950"
+                    aria-label={`Remove video ${index + 1}`}
+                  >
+                    Remove video
+                  </button>
+                )}
+              </fieldset>
+            );
+          })}
+
+          <p className="text-xs leading-relaxed text-zinc-600">
+            We reserve one video credit per submission. For videos over 20 minutes, the team
+            checks whether additional video credits are needed before production.
+          </p>
+          {drafts.length > limit && (
+            <p role="alert" className="text-sm text-red-700">
+              Remove videos or select another plan. You have room for {limit} with this plan.
+            </p>
+          )}
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              disabled={drafts.length >= limit}
+              onClick={() => { const row = newDraft(nextKey.current++); setDrafts((current) => [...current, row]); setStatus("idle"); }}
+              className="rounded-full border border-zinc-300 px-4 py-2 text-sm font-semibold text-zinc-700 disabled:opacity-40"
+            >
+              + Add another video
+            </button>
+            <button
+              type="submit"
+              disabled={drafts.length > limit}
+              className="rounded-full bg-zinc-950 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-zinc-700 disabled:opacity-60"
+            >
+              {status === "sending" ? "Sending…" : "Submit videos for dubbing"}
+            </button>
+          </div>
+        </fieldset>
       )}
-      <button
-        type="submit"
-        disabled={status === "sending"}
-        className="w-full rounded-full bg-zinc-950 px-6 py-3 font-semibold text-white transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-      >
-        {status === "sending" ? "Sending…" : "Submit videos for dubbing"}
-      </button>
+      {status === "error" && <p role="alert" className="text-sm text-red-700">{message}</p>}
+      {status === "ok" && <p role="status" className="text-sm font-medium text-emerald-800">{message}</p>}
     </form>
   );
 }
