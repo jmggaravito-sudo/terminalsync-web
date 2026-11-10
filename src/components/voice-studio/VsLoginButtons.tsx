@@ -9,7 +9,9 @@ import { getSupabaseBrowser } from "@/lib/supabase/browser";
 // the dashboard via `next`. Kept as a shared component because it renders
 // both on the standalone /voice-studio/login page and inline in the
 // dashboard gate.
-export function VsLoginButtons() {
+export function VsLoginButtons({
+  destination = "/voice-studio/orders",
+}: { destination?: "/voice-studio/orders" | "/admin/voice-studio/production" } = {}) {
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
   const [email, setEmail] = useState("");
   const [linkSent, setLinkSent] = useState(false);
@@ -19,7 +21,7 @@ export function VsLoginButtons() {
   function callbackUrl(): string | undefined {
     if (typeof window === "undefined") return undefined;
     return `${window.location.origin}/auth/callback?next=${encodeURIComponent(
-      "/voice-studio/orders",
+      destination,
     )}`;
   }
 

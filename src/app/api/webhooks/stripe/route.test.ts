@@ -8,6 +8,11 @@ const mocks = vi.hoisted(() => {
     grantPurchasedCredits: vi.fn(),
     allocateVideoFunding: vi.fn(),
     retrieveSession: vi.fn(),
+    retrieveCustomer: vi.fn(),
+    listInvoiceLines: vi.fn(),
+    from: vi.fn(),
+    upsertEntitlement: vi.fn(),
+    markVoiceStudioWon: vi.fn(),
     teamCandidate: vi.fn(() => false),
     teamCheckoutCandidate: vi.fn(() => false),
     teamCheckoutSubscriptionCandidate: vi.fn(() => false),
@@ -22,9 +27,11 @@ const mocks = vi.hoisted(() => {
 vi.mock("@/lib/stripe", () => ({
   stripe: {
     webhooks: { constructEvent: mocks.constructEvent },
-    customers: { retrieve: vi.fn() },
+    customers: { retrieve: mocks.retrieveCustomer },
+    invoices: { listLineItems: mocks.listInvoiceLines },
     checkout: { sessions: { retrieve: mocks.retrieveSession } },
   },
+  envId: (...names: string[]) => names.map((name) => process.env[name]?.trim()).find(Boolean) ?? null,
 }));
 
 vi.mock("@/lib/email", () => ({
@@ -40,8 +47,9 @@ vi.mock("@/lib/subscriptionsSync", () => ({
 }));
 
 vi.mock("@/lib/supabaseAdmin", () => ({
-  getSupabaseAdmin: vi.fn(() => ({ rpc: mocks.allocateVideoFunding })),
+  getSupabaseAdmin: vi.fn(() => ({ rpc: mocks.allocateVideoFunding, from: mocks.from })),
 }));
+vi.mock("@/lib/voiceStudioCrm", () => ({ markDealWonByEmail: mocks.markVoiceStudioWon }));
 vi.mock("@/lib/userLang", () => ({ resolveUserLang: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/teamStripeLifecycle", () => ({
@@ -67,6 +75,7 @@ vi.mock("@/lib/aiCredits", async (importOriginal) => {
 });
 
 import { POST } from "./route";
+import { revokeSubscription, syncSubscriptionToSupabase } from "@/lib/subscriptionsSync";
 
 function creditEvent() {
   return {
@@ -132,6 +141,9 @@ beforeEach(() => {
       : { data: { allocationId: "allocation-1" }, error: null },
   );
   mocks.retrieveSession.mockImplementation(async (id: string) => ({ ...creditEvent().data.object, id }));
+  mocks.from.mockReturnValue({ upsert: mocks.upsertEntitlement });
+  mocks.upsertEntitlement.mockResolvedValue({ error: null });
+  mocks.markVoiceStudioWon.mockResolvedValue("existing");
   mocks.teamCandidate.mockReturnValue(false);
   mocks.teamCheckoutCandidate.mockReturnValue(false);
   mocks.teamCheckoutSubscriptionCandidate.mockReturnValue(false);
@@ -694,5 +706,181 @@ describe("Team Stripe webhook isolation", () => {
     const response = await POST(signedRequest());
 
     expect(response.status).toBe(500);
+  });
+});
+
+describe("Voice Studio paid entitlements", () => {
+  const starts = 1_800_000_000;
+  const ends = starts + 31 * 86400;
+
+  function checkout(
+    sku = "single",
+    type = "checkout.session.completed",
+    overrides: Record<string, unknown> = {},
+  ) {
+    return {
+      id: "evt_voice_checkout",
+      type,
+      livemode: true,
+      created: starts,
+      data: {
+        object: {
+          id: "cs_voice_123",
+          livemode: true,
+          mode: "payment",
+          payment_status: "paid",
+          amount_total: 12900,
+          customer_details: { email: " Client@Example.com " },
+          metadata: { business: "voice-studio", sku },
+          ...overrides,
+        },
+      },
+    };
+  }
+
+  function invoice(
+    sku: "pack4" | "pack8" = "pack4",
+    overrides: Record<string, unknown> = {},
+  ) {
+    return {
+      id: "evt_voice_invoice",
+      type: "invoice.paid",
+      livemode: true,
+      created: starts,
+      data: {
+        object: {
+          id: "in_voice_123",
+          livemode: true,
+          status: "paid",
+          amount_paid: 39900,
+          billing_reason: "subscription_cycle",
+          customer: "cus_voice_123",
+          customer_email: "client@example.com",
+          parent: { subscription_details: { metadata: { business: "voice-studio", sku } } },
+          lines: {
+            has_more: false,
+            data: [{
+              amount: 39900,
+              quantity: 1,
+              pricing: { price_details: { price: `price_${sku}` } },
+              parent: {
+                type: "subscription_item_details",
+                subscription_item_details: { proration: false },
+              },
+              period: { start: starts, end: ends },
+            }],
+          },
+          ...overrides,
+        },
+      },
+    };
+  }
+
+  beforeEach(() => {
+    vi.stubEnv("VS_PRICE_PACK4_MONTHLY", "price_pack4");
+    vi.stubEnv("VS_PRICE_PACK8_MONTHLY", "price_pack8");
+    vi.stubEnv("RESEND_API_KEY", "");
+  });
+
+  afterEach(() => vi.unstubAllEnvs());
+
+  it.each(["trial", "single"])("writes one paid %s video without a Short and uses the checkout as replay key", async (sku) => {
+    mocks.constructEvent.mockReturnValue(checkout(sku));
+    expect((await POST(signedRequest())).status).toBe(200);
+    expect((await POST(signedRequest())).status).toBe(200);
+    expect(mocks.from).toHaveBeenCalledWith("voice_studio_entitlements");
+    expect(mocks.upsertEntitlement).toHaveBeenCalledTimes(2);
+    expect(mocks.upsertEntitlement).toHaveBeenLastCalledWith({
+      email: "client@example.com",
+      source_id: "cs_voice_123",
+      sku,
+      starts_at: new Date(starts * 1000).toISOString(),
+      ends_at: null,
+      video_total: 1,
+      short_total: 0,
+    }, { onConflict: "source_id", ignoreDuplicates: true });
+    expect(mocks.markVoiceStudioWon).toHaveBeenCalled();
+  });
+
+  it("waits for delayed payment and skips checkout grants for setup and packs", async () => {
+    mocks.constructEvent.mockReturnValue(checkout("single", undefined, { payment_status: "unpaid" }));
+    expect((await POST(signedRequest())).status).toBe(200);
+    mocks.constructEvent.mockReturnValue(checkout("setup"));
+    expect((await POST(signedRequest())).status).toBe(200);
+    mocks.constructEvent.mockReturnValue(checkout("pack4", undefined, { mode: "subscription" }));
+    expect((await POST(signedRequest())).status).toBe(200);
+    expect(mocks.upsertEntitlement).not.toHaveBeenCalled();
+
+    mocks.constructEvent.mockReturnValue(checkout("single", "checkout.session.async_payment_succeeded"));
+    expect((await POST(signedRequest())).status).toBe(200);
+    expect(mocks.upsertEntitlement).toHaveBeenCalledOnce();
+  });
+
+  it.each([
+    ["pack4", "subscription_create", 4],
+    ["pack8", "subscription_cycle", 8],
+  ] as const)("writes paid %s %s allowance for the invoice line billing period", async (sku, reason, total) => {
+    mocks.constructEvent.mockReturnValue(invoice(sku, { billing_reason: reason }));
+    expect((await POST(signedRequest())).status).toBe(200);
+    expect(mocks.upsertEntitlement).toHaveBeenCalledExactlyOnceWith({
+      email: "client@example.com",
+      source_id: "in_voice_123",
+      sku,
+      starts_at: new Date(starts * 1000).toISOString(),
+      ends_at: new Date(ends * 1000).toISOString(),
+      video_total: total,
+      short_total: total,
+    }, { onConflict: "source_id", ignoreDuplicates: true });
+  });
+
+  it("uses provider paging for recognized invoices with partial lines", async () => {
+    const event = invoice();
+    event.data.object.lines.has_more = true;
+    mocks.listInvoiceLines.mockReturnValue({
+      autoPagingToArray: async () => event.data.object.lines.data,
+    });
+    mocks.constructEvent.mockReturnValue(event);
+    expect((await POST(signedRequest())).status).toBe(200);
+    expect(mocks.listInvoiceLines).toHaveBeenCalledWith("in_voice_123", { limit: 100 });
+    expect(mocks.upsertEntitlement).toHaveBeenCalledOnce();
+  });
+
+  it("does not grant zero-dollar, proration, or provider test events", async () => {
+    mocks.constructEvent.mockReturnValue(invoice("pack4", { amount_paid: 0 }));
+    expect((await POST(signedRequest())).status).toBe(200);
+    mocks.constructEvent.mockReturnValue(invoice("pack4", { billing_reason: "subscription_update" }));
+    expect((await POST(signedRequest())).status).toBe(200);
+    mocks.constructEvent.mockReturnValue({ ...checkout(), livemode: false });
+    expect((await POST(signedRequest())).status).toBe(200);
+    expect(mocks.upsertEntitlement).not.toHaveBeenCalled();
+  });
+
+  it("returns a retryable 500 when the paid allowance could not be persisted", async () => {
+    mocks.constructEvent.mockReturnValue(invoice());
+    mocks.upsertEntitlement.mockResolvedValue({ error: { code: "42P01" } });
+    const res = await POST(signedRequest());
+    expect(res.status).toBe(500);
+    expect((await res.json()).error).toContain("retry required");
+  });
+
+  it("fails closed on a malformed Voice Studio invoice instead of acknowledging a lost paid pack", async () => {
+    mocks.constructEvent.mockReturnValue(invoice("pack4", { lines: { has_more: false, data: [] } }));
+    expect((await POST(signedRequest())).status).toBe(500);
+    expect(mocks.upsertEntitlement).not.toHaveBeenCalled();
+  });
+
+  it("isolates Voice Studio subscriptions from TerminalSync plan changes and revocations", async () => {
+    for (const action of ["created", "updated", "deleted"]) {
+      const event = genericSubscriptionEvent();
+      mocks.constructEvent.mockReturnValue({
+        ...event,
+        type: `customer.subscription.${action}`,
+        data: { object: { ...event.data.object, metadata: { business: "voice-studio" } } },
+      });
+      expect((await POST(signedRequest())).status).toBe(200);
+    }
+    expect(syncSubscriptionToSupabase).not.toHaveBeenCalled();
+    expect(revokeSubscription).not.toHaveBeenCalled();
+    expect(mocks.upsertEntitlement).not.toHaveBeenCalled();
   });
 });
