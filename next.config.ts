@@ -81,6 +81,12 @@ const securityHeaders = [
 const config: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Connector sharing images read connector metadata, not Voice Studio videos.
+  // Keep those MP4s out of this function bundle; /videos still serves them
+  // directly from public/ as static assets.
+  outputFileTracingExcludes: {
+    "/*/connectors/*/opengraph-image*": ["./public/videos/voice-studio/**/*"],
+  },
   // Pin the Turbopack workspace root: a stray ~/package-lock.json makes the
   // dev server infer /Users/jm as the root, which silently skips this
   // project's .env.local (NEXT_PUBLIC_SUPABASE_* never reach the browser,
