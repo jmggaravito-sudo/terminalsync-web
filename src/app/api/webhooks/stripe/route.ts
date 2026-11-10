@@ -2,8 +2,14 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { Resend } from "resend";
 import { stripe } from "@/lib/stripe";
-import { voiceStudioPriceId } from "@/lib/voiceStudioStripe";
 import { markDealWonByEmail } from "@/lib/voiceStudioCrm";
+import {
+  isVoiceStudioInvoice,
+  isVoiceStudioSubscription,
+  provisionVoiceStudioCheckout,
+  provisionVoiceStudioInvoice,
+  RetryableVoiceStudioEntitlementError,
+} from "@/lib/voiceStudioEntitlementPayments";
 import {
   sendWelcomeEmail,
   sendTrialEndingEmail,
@@ -266,6 +272,16 @@ export async function POST(req: Request) {
   try {
     await handle(event, signatureVerifiedWithLiveSecret);
   } catch (err) {
+    if (err instanceof RetryableVoiceStudioEntitlementError) {
+      console.error("[stripe] Voice Studio entitlement requires retry", {
+        eventId: event.id,
+        error: err.message,
+      });
+      return NextResponse.json(
+        { received: false, error: "Voice Studio entitlement sync failed; retry required" },
+        { status: 500 },
+      );
+    }
     console.error("[stripe] handler error", err);
     // Credit grants are money. A transient DB/migration failure must make
     // Stripe retry the signed event instead of acknowledging a paid checkout
@@ -283,6 +299,13 @@ export async function POST(req: Request) {
 }
 
 async function handle(event: Stripe.Event, signatureVerifiedWithLiveSecret: boolean) {
+  // A Voice Studio pack is not a desktop plan. Its customer may also own a
+  // TerminalSync subscription under the same billing email.
+  if (
+    event.type.startsWith("customer.subscription.") &&
+    isVoiceStudioSubscription(event.data.object as Stripe.Subscription)
+  ) return;
+
   switch (event.type) {
     case "checkout.session.completed": {
       // User just finished checkout. For Pro this happens even before the
@@ -316,12 +339,11 @@ async function handle(event: Stripe.Event, signatureVerifiedWithLiveSecret: bool
         break;
       }
 
-      // Voice Studio (standalone dubbing business) — setup/trial/video/
-      // pack purchases. There is no product to provision and no Supabase
-      // account involved: fulfillment is human, so the only automation is
-      // the Resend notification inside the handler. Must break before the
-      // TerminalSync subscription welcome flow below.
+      // Voice Studio checkout is isolated from TerminalSync subscriptions.
+      // Only paid one-time production SKUs provision here; the recurring
+      // packs are granted by their own paid invoices.
       if (session.metadata?.business === "voice-studio") {
+        await provisionVoiceStudioCheckout(session, event.created);
         await handleVoiceStudioCheckout(session);
         break;
       }
@@ -375,6 +397,10 @@ async function handle(event: Stripe.Event, signatureVerifiedWithLiveSecret: bool
       const session = event.data.object as Stripe.Checkout.Session;
       if (session.metadata?.source === CREDIT_CHECKOUT_SOURCE) {
         await handleCreditCheckout(session, event, signatureVerifiedWithLiveSecret);
+      } else if (session.metadata?.business === "voice-studio") {
+        // The completed event already handles the legacy notification.
+        // Delayed payment only makes the one-time grant eligible now.
+        await provisionVoiceStudioCheckout(session, event.created);
       }
       break;
     }
@@ -494,9 +520,17 @@ async function handle(event: Stripe.Event, signatureVerifiedWithLiveSecret: bool
         amount: invoice.amount_paid,
         customer: invoice.customer,
       });
-      // Voice Studio pack renewal — a new delivery cycle starts. Notify
-      // JM; no TerminalSync logic applies.
+      // Voice Studio pack purchase/renewal — reserve one period per paid
+      // invoice; no TerminalSync subscription logic applies.
       if (isVoiceStudioInvoice(invoice)) {
+        await provisionVoiceStudioInvoice(
+          invoice,
+          async (id) => (await fetchCustomerProfile(id)).email,
+          async (id) => {
+            if (!stripe) throw new Error("Stripe not configured");
+            return stripe.invoices.listLineItems(id, { limit: 100 }).autoPagingToArray({ limit: 1000 });
+          },
+        );
         await handleVoiceStudioRenewal(invoice);
         break;
       }
@@ -684,11 +718,8 @@ async function handle(event: Stripe.Event, signatureVerifiedWithLiveSecret: bool
 }
 
 // ─── Voice Studio (standalone dubbing business) ──────────────────────────
-// Sessions/invoices carrying metadata.business = "voice-studio" (set by
-// /api/voice-studio/checkout). There is no product backend to provision and
-// no Supabase account involved — fulfillment is human, so the only
-// automation is a Resend notification to hola@ so JM starts onboarding
-// (voice license → intake) the same day.
+// Fulfillment is human. Keep the payment notifications to the production
+// team in addition to the paid credits that now drive the client dashboard.
 
 async function notifyVoiceStudioPayment(subject: string, lines: string[]) {
   console.log("[stripe] voice-studio notification", { subject });
@@ -711,25 +742,6 @@ async function notifyVoiceStudioPayment(subject: string, lines: string[]) {
 
 function vsAmount(amount: number | null | undefined, currency: string | null) {
   return `$${((amount ?? 0) / 100).toFixed(2)} ${(currency ?? "usd").toUpperCase()}`;
-}
-
-// Voice Studio renewals are identified by their price IDs — the runtime
-// source of truth created by scripts/voice-studio-stripe-setup.mjs (this
-// repo's Stripe SDK version doesn't expose subscription_details metadata
-// on Invoice). Invoice lines are expanded in webhook payloads by default.
-function isVoiceStudioInvoice(invoice: Stripe.Invoice): boolean {
-  const vsPrices = [
-    voiceStudioPriceId("pack4"),
-    voiceStudioPriceId("pack8"),
-  ].filter((p): p is string => Boolean(p));
-  if (vsPrices.length === 0) return false;
-  return (
-    invoice.lines?.data?.some((line) => {
-      const price = line.pricing?.price_details?.price;
-      const id = typeof price === "string" ? price : price?.id;
-      return id ? vsPrices.includes(id) : false;
-    }) ?? false
-  );
 }
 
 async function handleVoiceStudioCheckout(session: Stripe.Checkout.Session) {

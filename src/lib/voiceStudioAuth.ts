@@ -16,10 +16,12 @@ export async function emailFromClientRequest(
   const auth = req.headers.get("authorization");
   if (auth?.startsWith("Bearer ")) {
     const admin = getSupabaseAdmin();
-    if (!admin) return null; // fail closed: no admin client, no session trust
-    const { data, error } = await admin.auth.getUser(auth.slice(7).trim());
-    if (error || !data?.user?.email) return null;
-    return data.user.email.toLowerCase();
+    if (admin) {
+      const { data, error } = await admin.auth.getUser(auth.slice(7).trim());
+      if (!error && data.user?.email && data.user.email_confirmed_at) {
+        return data.user.email.toLowerCase();
+      }
+    }
   }
   return emailFromOrdersToken(token);
 }
