@@ -55,14 +55,39 @@ export function CartPreview() {
                 </div>
                 <fieldset className="mt-5">
                   <legend className="text-sm font-semibold">Choose your dubbing option</legend>
-                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                    {(["DUB", "LIP"] as const).map((service: DubbingService) => (
-                      <label key={service} className="flex items-start gap-2 rounded-lg border border-zinc-200 p-3 text-sm">
-                        <input type="radio" name={`service-${video.id}`} value={service} checked={video.service === service}
-                          onChange={() => setVideos((previous) => previous.map((item) => item.id === video.id ? { ...item, service } : item))} />
-                        <span><strong>{service}</strong> · {service === "DUB" ? "Spanish dubbing" : "Spanish dubbing with lip-sync"}</span>
-                      </label>
-                    ))}
+                  <p className="mt-1 text-xs text-zinc-600">
+                    Compare the same 10 seconds with the same Spanish voice.
+                  </p>
+                  <div className="mt-2 grid gap-3 sm:grid-cols-2">
+                    {(["DUB", "LIP"] as const).map((service: DubbingService) => {
+                      const file = service === "DUB" ? "dub-preview" : "lip-preview";
+                      return (
+                        <div key={service} className="min-w-0 rounded-lg border border-zinc-200 p-3">
+                          <label className="flex items-start gap-2 text-sm">
+                            <input type="radio" name={`service-${video.id}`} value={service} checked={video.service === service}
+                              onChange={() => setVideos((previous) => previous.map((item) => item.id === video.id ? { ...item, service } : item))} />
+                            <span><strong>{service}</strong> · {service === "DUB" ? "Spanish dubbing" : "Spanish dubbing with lip-sync"}</span>
+                          </label>
+                          <video
+                            src={`/videos/voice-studio/${file}.mp4`}
+                            poster={`/images/voice-studio/${file}.jpg`}
+                            aria-label={`${service} 10-second comparison video`}
+                            data-cart-comparison
+                            controls
+                            playsInline
+                            preload="none"
+                            width={1280}
+                            height={720}
+                            onPlay={(event) => {
+                              const player = event.currentTarget;
+                              player.ownerDocument.querySelectorAll<HTMLVideoElement>("video[data-cart-comparison]")
+                                .forEach((other) => { if (other !== player) other.pause(); });
+                            }}
+                            className="mt-3 aspect-video w-full rounded-md bg-zinc-950"
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 </fieldset>
                 {video.service && <fieldset className="mt-5 border-t border-zinc-100 pt-4">
