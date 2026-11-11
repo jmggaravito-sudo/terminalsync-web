@@ -25,15 +25,18 @@ describe("Voice Studio cart preview links", () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 
-  it("reads YouTube duration from the fixed API endpoint when configured", async () => {
+  it("reads full duration from the fixed API endpoint, ignoring a playback timestamp", async () => {
     const fetcher = vi.fn().mockResolvedValue(Response.json({ items: [{
-      contentDetails: { duration: "PT1M30S" },
+      contentDetails: { duration: "PT15M" },
       snippet: { title: "Example video", liveBroadcastContent: "none" },
     }] }));
     vi.stubGlobal("fetch", fetcher);
     vi.stubEnv("VOICE_STUDIO_PREVIEW_YOUTUBE_API_KEY", "test-key");
-    const response = await POST(request("https://youtu.be/dQw4w9WgXcQ"));
-    expect(await response.json()).toMatchObject({ id: "youtube-dQw4w9WgXcQ", seconds: 90 });
-    expect(fetcher.mock.calls[0][0].origin).toBe("https://www.googleapis.com");
+    const response = await POST(request("https://www.youtube.com/watch?v=MGaM162-OH8&t=822s"));
+    expect(await response.json()).toMatchObject({ id: "youtube-MGaM162-OH8", seconds: 900 });
+    const endpoint = fetcher.mock.calls[0][0] as URL;
+    expect(endpoint.origin).toBe("https://www.googleapis.com");
+    expect(endpoint.searchParams.get("id")).toBe("MGaM162-OH8");
+    expect(endpoint.searchParams.has("t")).toBe(false);
   });
 });

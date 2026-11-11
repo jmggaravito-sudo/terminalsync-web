@@ -40,8 +40,8 @@ export function CartPreview() {
       <div className="mx-auto max-w-5xl">
         <a href="/voice-studio" className="text-sm font-semibold underline">← Voice Studio</a>
         <p className="mt-8 font-mono text-xs font-semibold tracking-wide text-zinc-500">VOICE STUDIO · PREVIEW</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">Let’s quote your videos</h1>
-        <p className="mt-3 text-zinc-600">Paste a video link to check its length and see your estimated price.</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">Let’s quote your videos in Spanish</h1>
+        <p className="mt-3 text-zinc-600">Paste a YouTube video link to check its length and estimate your Spanish dubbing.</p>
         <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="space-y-4">
             {videos.map((video) => (
