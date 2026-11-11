@@ -55,57 +55,65 @@ export function CartPreview() {
                 </div>
                 <fieldset className="mt-5">
                   <legend className="text-sm font-semibold">Choose your dubbing option</legend>
-                  <p className="mt-1 text-xs text-zinc-600">
-                    Watch a Voice Studio dub and a separate Spanish take made in Claw.
-                  </p>
                   <div className="mt-2 grid gap-3 sm:grid-cols-2">
-                    {(["DUB", "LIP"] as const).map((service: DubbingService) => {
-                      const file = service === "DUB" ? "presenter-dub" : "presenter-lip-claw";
-                      return (
-                        <div key={service} className="min-w-0 rounded-lg border border-zinc-200 p-3">
-                          <label className="flex items-start gap-2 text-sm">
-                            <input type="radio" name={`service-${video.id}`} value={service} checked={video.service === service}
-                              onChange={() => setVideos((previous) => previous.map((item) => item.id === video.id ? { ...item, service } : item))} />
-                            <span><strong>{service}</strong> · {service === "DUB" ? "Spanish dubbing" : "Spanish dubbing with lip-sync"}</span>
-                          </label>
-                          <video
-                            src={`/videos/voice-studio/${file}.mp4`}
-                            poster={`/images/voice-studio/${file}.jpg`}
-                            aria-label={`${service} sample video`}
-                            data-cart-comparison
-                            controls
-                            playsInline
-                            preload="none"
-                            width={720}
-                            height={1280}
-                            onPlay={(event) => {
-                              const player = event.currentTarget;
-                              player.ownerDocument.querySelectorAll<HTMLVideoElement>("video[data-cart-comparison]")
-                                .forEach((other) => { if (other !== player) other.pause(); });
-                            }}
-                            className="mx-auto mt-3 aspect-[9/16] w-full max-w-44 rounded-md bg-zinc-950"
-                          />
-                          {service === "LIP" && <p className="mt-2 text-xs text-zinc-600">Separate Claw-generated Spanish take, not a re-sync of the original.</p>}
-                        </div>
-                      );
-                    })}
+                    {(["DUB", "LIP"] as const).map((service: DubbingService) => (
+                      <label key={service} className="flex items-start gap-2 rounded-lg border border-zinc-200 p-3 text-sm">
+                        <input type="radio" name={`service-${video.id}`} value={service} checked={video.service === service}
+                          onChange={() => setVideos((previous) => previous.map((item) => item.id === video.id ? { ...item, service } : item))} />
+                        <span><strong>{service}</strong> · {service === "DUB" ? "Spanish dubbing" : "Spanish dubbing with lip-sync"}</span>
+                      </label>
+                    ))}
                   </div>
                 </fieldset>
-                {video.service && <fieldset className="mt-5 border-t border-zinc-100 pt-4">
+                {video.service && <fieldset className="mt-5 border-t border-zinc-200 pt-4">
                   <legend className="text-sm font-semibold">Add Shorts / Reels</legend>
-                  <p className="mb-2 text-xs text-zinc-600">Optional · each checked box adds one clip from this video.</p>
-                  {SHORTS.map((short) => (
-                    <label key={short.seconds} className="flex items-center gap-2 py-1.5 text-sm has-disabled:text-zinc-500">
-                      <input type="checkbox" disabled={short.seconds > video.seconds} checked={video.shorts.includes(short.seconds)}
-                        onChange={(event) => {
-                          const checked = event.target.checked;
-                          setVideos((previous) => previous.map((item) => item.id === video.id
-                            ? { ...item, shorts: checked ? [...item.shorts, short.seconds] : item.shorts.filter((seconds) => seconds !== short.seconds) }
-                            : item));
-                        }} />
-                      <span>{short.seconds}s · {USD.format(short.cents / 100)}{short.seconds > video.seconds ? " · longer than source" : ""}</span>
-                    </label>
-                  ))}
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { title: "DUB Sample", file: "presenter-dub" },
+                      { title: "LIP Sample", file: "presenter-lip-claw" },
+                    ].map(({ title, file }) => (
+                      <figure key={file} className="min-w-0 rounded-lg border border-zinc-200 p-2 text-center sm:p-3">
+                        <figcaption className="mb-2 text-sm font-semibold">{title}</figcaption>
+                        <video
+                          src={`/videos/voice-studio/${file}.mp4`}
+                          poster={`/images/voice-studio/${file}.jpg`}
+                          aria-label={title}
+                          data-cart-comparison
+                          controls
+                          playsInline
+                          preload="none"
+                          width={720}
+                          height={1280}
+                          onPlay={(event) => {
+                            const player = event.currentTarget;
+                            player.ownerDocument.querySelectorAll<HTMLVideoElement>("video[data-cart-comparison]")
+                              .forEach((other) => { if (other !== player) other.pause(); });
+                          }}
+                          className="mx-auto aspect-[9/16] w-full max-w-40 rounded-md bg-zinc-950"
+                        />
+                        {file === "presenter-lip-claw" && <p className="mt-2 text-xs text-zinc-600">Separate Spanish take made in Claw.</p>}
+                      </figure>
+                    ))}
+                  </div>
+                  <p className="mt-4 text-xs text-zinc-600">Optional · each checked box adds one clip from this video.</p>
+                  <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                    {SHORTS.map((short) => (
+                      <label key={short.seconds} className="flex items-start gap-2 rounded-lg border border-zinc-200 p-3 text-sm has-checked:border-amber-500 has-checked:bg-amber-50 has-disabled:text-zinc-500">
+                        <input type="checkbox" disabled={short.seconds > video.seconds} checked={video.shorts.includes(short.seconds)}
+                          onChange={(event) => {
+                            const checked = event.target.checked;
+                            setVideos((previous) => previous.map((item) => item.id === video.id
+                              ? { ...item, shorts: checked ? [...item.shorts, short.seconds] : item.shorts.filter((seconds) => seconds !== short.seconds) }
+                              : item));
+                          }} />
+                        <span>
+                          <strong className="block">{short.seconds} seconds</strong>
+                          {USD.format(short.cents / 100)}
+                          {short.seconds > video.seconds && <span className="block text-xs">Longer than source</span>}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </fieldset>}
               </article>
             ))}
