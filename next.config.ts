@@ -81,6 +81,11 @@ const securityHeaders = [
 const config: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Voice Studio players load MP4s over HTTP from public/. No server
+  // function needs a second copy of those static files in its bundle.
+  outputFileTracingExcludes: {
+    "/*": ["./public/videos/voice-studio/**/*.mp4"],
+  },
   // Pin the Turbopack workspace root: a stray ~/package-lock.json makes the
   // dev server infer /Users/jm as the root, which silently skips this
   // project's .env.local (NEXT_PUBLIC_SUPABASE_* never reach the browser,

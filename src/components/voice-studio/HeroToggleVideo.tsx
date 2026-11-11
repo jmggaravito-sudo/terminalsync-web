@@ -26,6 +26,7 @@ export function HeroToggleVideo({
 }: HeroToggleVideoProps) {
   const enRef = useRef<HTMLVideoElement>(null);
   const esRef = useRef<HTMLVideoElement>(null);
+  const switching = useRef(false);
   const [lang, setLang] = useState<Lang>("en");
   const [interacted, setInteracted] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -65,18 +66,32 @@ export function HeroToggleVideo({
   }, []);
 
   const activate = useCallback(
-    (next: Lang) => {
+    async (next: Lang) => {
       const active = next === "en" ? enRef.current : esRef.current;
       const inactive = next === "en" ? esRef.current : enRef.current;
-      if (!active) return;
-      inactive?.pause();
-      restart(active);
-      void active.play().catch(() => {});
-      if (!interacted) {
-        setInteracted(true);
-        onFirstPlay?.();
+      if (!active || switching.current) return;
+      switching.current = true;
+      const inactiveWasMuted = inactive?.muted ?? true;
+      try {
+        if (inactive) inactive.muted = true;
+        restart(active);
+        // Unmute within the click gesture, before awaiting play. This is
+        // required by browsers that block unmuting outside a user gesture.
+        active.muted = false;
+        await active.play();
+        inactive?.pause();
+        setPaused(false);
+        setLang(next);
+        if (!interacted) {
+          setInteracted(true);
+          onFirstPlay?.();
+        }
+      } catch {
+        active.muted = true;
+        if (inactive) inactive.muted = inactiveWasMuted;
+      } finally {
+        switching.current = false;
       }
-      setLang(next);
     },
     [interacted, onFirstPlay, restart],
   );
@@ -120,18 +135,16 @@ export function HeroToggleVideo({
           }`}
         />
 
-        {/* click overlay: before the first interaction ANY click on the video
-            unlocks audio (browsers mute autoplay; the gesture is required) —
-            afterwards it toggles pause/resume of the active render */}
-        <button
-          type="button"
-          onClick={() => (interacted ? togglePlay() : activate(lang))}
-          onMouseEnter={() => setShouldPreloadEs(true)}
-          onFocus={() => setShouldPreloadEs(true)}
-          aria-label={interacted ? (paused ? "Play video" : "Pause video") : "Turn on sound"}
-          className="absolute inset-0 z-0 outline-none"
-        />
-        {paused && (
+        {/* After sound is on, clicking the video still pauses or resumes it. */}
+        {interacted && (
+          <button
+            type="button"
+            onClick={togglePlay}
+            aria-label={paused ? "Play video" : "Pause video"}
+            className="absolute inset-0 z-0 focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-amber-400"
+          />
+        )}
+        {interacted && paused && (
           <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
             <span className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-950/55 ring-2 ring-white/80 shadow-xl">
               <svg
@@ -145,42 +158,44 @@ export function HeroToggleVideo({
             </span>
           </span>
         )}
-        {!interacted && (
-          <span className="pointer-events-none absolute right-3 top-3 z-10 rounded-full bg-zinc-950/70 px-3 py-1 text-xs font-semibold text-white/90">
-            🔊 Click for sound
-          </span>
-        )}
       </div>
 
-      {/* ONE glossy button BELOW the video (never on top of it): it always
-          invites the language you're NOT hearing — "Click to Spanish" first,
-          then it flips to "Click to English" and back with every click. */}
+      {/* The same button unlocks English sound, then switches languages. */}
       <div className="flex justify-center bg-zinc-100 py-2">
         <button
           type="button"
-          onClick={() => (lang === "es" ? activate("en") : activate("es"))}
+          onClick={() => void activate(!interacted || lang === "es" ? "en" : "es")}
           onMouseEnter={() => setShouldPreloadEs(true)}
           onFocus={() => setShouldPreloadEs(true)}
-          aria-label={lang === "es" ? "Click to English" : "Click to Spanish"}
-          className="group flex outline-none"
+          aria-label={!interacted ? "Click for sound" : lang === "es" ? "Click to English" : "Click to Spanish"}
+          className="group flex h-36 w-36 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600"
         >
-          <img
-            src={
-              lang === "es"
-                ? "/images/voice-studio/btn-click-to-english.png"
-                : "/images/voice-studio/btn-click-to-spanish.png"
-            }
-            alt=""
-            draggable={false}
-            className={`h-36 w-36 drop-shadow-2xl transition-transform duration-200 group-hover:scale-110 group-active:scale-95 ${
-              interacted ? "" : "animate-bounce"
-            }`}
-          />
+          {!interacted ? (
+            <span
+              aria-hidden="true"
+              className="grid h-28 w-28 place-items-center rounded-full border border-zinc-500 bg-[linear-gradient(145deg,#fafafa_5%,#71717a_36%,#e4e4e7_54%,#52525b_80%,#d4d4d8)] p-2 shadow-lg transition-transform duration-200 group-hover:scale-110 group-active:scale-95"
+            >
+              <span className="grid h-full w-full place-content-center rounded-full border-2 border-zinc-800 bg-[radial-gradient(ellipse_at_40%_20%,#fdba74_0%,#ea580c_53%,#9a3412_100%)] text-center text-sm font-extrabold uppercase leading-tight text-white shadow-inner [text-shadow:0_1px_2px_#7c2d12]">
+                Click for<br />sound
+              </span>
+            </span>
+          ) : (
+            <img
+              src={
+                lang === "es"
+                  ? "/images/voice-studio/btn-click-to-english.png"
+                  : "/images/voice-studio/btn-click-to-spanish.png"
+              }
+              alt=""
+              draggable={false}
+              className="h-36 w-36 drop-shadow-2xl transition-transform duration-200 group-hover:scale-110 group-active:scale-95"
+            />
+          )}
         </button>
       </div>
 
       <span className="sr-only" aria-live="polite">
-        {lang === "es" ? "Spanish dubbing on" : "English audio on"}
+        {interacted ? (lang === "es" ? "Spanish dubbing on" : "English audio on") : ""}
       </span>
     </div>
   );

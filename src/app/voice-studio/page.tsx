@@ -11,7 +11,7 @@ import {
   Video,
 } from "lucide-react";
 import { LeadForm } from "@/components/voice-studio/LeadForm";
-import { CheckoutButton } from "@/components/voice-studio/CheckoutButton";
+import { DubbingComparison } from "@/components/voice-studio/DubbingComparison";
 import { HeroToggleVideo } from "@/components/voice-studio/HeroToggleVideo";
 
 // Standalone sales page for the dubbing service. No links to the TerminalSync
@@ -25,17 +25,16 @@ export default function VoiceStudioPage() {
           <div>
             <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-4 py-1.5 font-mono text-xs tracking-wide text-zinc-300">
               <Mic className="h-3.5 w-3.5 text-amber-400" />
-              VOICE STUDIO · DONE-FOR-YOU YOUTUBE DUBBING
+              VOICE STUDIO · DONE-FOR-YOU SOCIAL MEDIA DUBBING
             </p>
             <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
               Your channel. In Spanish.{" "}
-              <span className="text-amber-400">Still your voice.</span>
+              <span className="text-amber-400">No extra filming.</span>
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-zinc-300">
               We turn the videos you&apos;ve already made into a
-              Spanish-language channel — dubbed with a clone of your own
-              voice, subtitled, and published to a channel you own. A whole
-              new audience, zero extra filming.
+              Spanish-language channel — dubbed, subtitled, and published to a
+              channel you own. Reach a new audience with the footage you already have.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <a
@@ -73,6 +72,57 @@ export default function VoiceStudioPage() {
           />
         </div>
       </section>
+
+      {/* ---------- Shorts & Reels ---------- */}
+      <section
+        id="shorts"
+        aria-labelledby="shorts-heading"
+        className="border-b border-zinc-800 bg-zinc-900 text-white"
+      >
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 py-16 lg:grid-cols-[1fr_1.15fr]">
+          <div>
+            <p className="mb-4 font-mono text-xs tracking-wide text-amber-400">
+              SHORTS · SPANISH SHORTS &amp; REELS
+            </p>
+            <h2 id="shorts-heading" className="text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+              Turn your Spanish videos into Shorts &amp; Reels.
+            </h2>
+            <p className="mt-5 max-w-lg leading-relaxed text-zinc-300">
+              We turn highlights from your Spanish video into vertical clips
+              with on-screen captions, ready for Shorts and Reels.
+            </p>
+            <p className="mt-5 text-xl font-semibold text-white">From $15 USD per clip</p>
+            <p className="mt-2 text-sm text-zinc-300">
+              $20 per finished minute, with a $15 minimum per clip. Sold separately from dubbing.
+            </p>
+          </div>
+          <div className="mx-auto grid w-full max-w-lg gap-4 sm:grid-cols-2">
+            {[
+              { file: "short-es-demo", title: "How Voice Studio works" },
+              { file: "short-es-offer", title: "Reach a Spanish-speaking audience" },
+            ].map(({ file, title }) => (
+              <figure key={file} className="mx-auto w-full max-w-60">
+                <video
+                  src={`/videos/voice-studio/${file}.mp4`}
+                  poster={`/images/voice-studio/${file}.jpg`}
+                  aria-label={`${title} — Spanish demo with on-screen captions`}
+                  controls
+                  playsInline
+                  preload="none"
+                  width={1080}
+                  height={1920}
+                  className="aspect-[9/16] w-full rounded-2xl border border-zinc-700 bg-zinc-950 object-contain"
+                />
+                <figcaption className="mt-2 text-sm text-zinc-300">
+                  {title}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <DubbingComparison />
 
       {/* ---------- Market stats ---------- */}
       <section className="border-b border-zinc-200 bg-white">
@@ -122,8 +172,8 @@ export default function VoiceStudioPage() {
               },
               {
                 icon: Youtube,
-                title: "Pick your pace",
-                body: "Your first full video is $99. After that, pay per video ($129) or save with monthly packs — 4 videos for $399 or 8 for $699. Every video is subtitled, translated and published to your channel with AI disclosure.",
+                title: "Estimate by video length",
+                body: "Use the calculator to compare DUB and LIP. It is an estimate only and does not place an order.",
               },
             ].map((s, i) => (
               <div
@@ -155,13 +205,12 @@ export default function VoiceStudioPage() {
           <div className="mt-10 grid gap-x-8 gap-y-5 sm:grid-cols-2">
             {(
               [
-                [Video, "Full dubbing in your cloned voice (videos up to 20 min)"],
+                [Video, "Full-video dubbing into Spanish"],
                 [Languages, "Human-reviewed translation in neutral Latin American Spanish"],
                 [FileText, "Subtitles (.srt) plus translated title, description and tags"],
                 [Music, "Your original music and sound effects preserved in the mix"],
                 [Youtube, "Published or scheduled to your own Spanish channel"],
                 [BarChart3, "Monthly growth report on the Spanish audience"],
-                [Video, "Founding-client bonus: 1 vertical Short in Spanish cut from every video"],
               ] as [typeof Video, string][]
             ).map(([Icon, text]) => (
               <div key={text} className="flex items-start gap-3">
@@ -170,109 +219,6 @@ export default function VoiceStudioPage() {
                 <Icon className="ml-auto h-4 w-4 shrink-0 text-zinc-300" />
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ---------- Pricing ---------- */}
-      <section className="bg-zinc-50">
-        <div className="mx-auto max-w-6xl px-6 py-20">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Pricing
-          </h2>
-          <p className="mt-3 max-w-2xl leading-relaxed text-zinc-600">
-            Start free. Pay for production only when you&apos;ve heard your own
-            voice in Spanish and liked it.
-          </p>
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            <div className="rounded-2xl border border-emerald-600/40 bg-white p-8">
-              <p className="font-mono text-xs tracking-wide text-emerald-600">
-                STEP 1 · FREE
-              </p>
-              <p className="mt-3 text-4xl font-semibold">
-                $0
-                <span className="text-base font-normal text-zinc-400">
-                  {" "}
-                  60-second sample
-                </span>
-              </p>
-              <ul className="mt-6 space-y-3 text-sm text-zinc-700">
-                {[
-                  "60 seconds of your best video, dubbed in your own voice",
-                  "One-page voice license signed digitally first",
-                  "5 sample slots open every week",
-                ].map((t) => (
-                  <li key={t} className="flex items-start gap-2">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="rounded-2xl border-2 border-zinc-950 bg-white p-8">
-              <p className="font-mono text-xs tracking-wide text-zinc-400">
-                STEP 2 · ONE-TIME SETUP
-              </p>
-              <p className="mt-3 text-4xl font-semibold">
-                $300
-                <span className="text-base font-normal text-zinc-400">
-                  {" "}
-                  voice setup
-                </span>
-              </p>
-              <ul className="mt-6 space-y-3 text-sm text-zinc-700">
-                {[
-                  "Voice clone certification — you approve a test clip first",
-                  "Spanish channel setup and SEO opportunity map",
-                  "If the test clip doesn't sound like you, full refund",
-                ].map((t) => (
-                  <li key={t} className="flex items-start gap-2">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-                    {t}
-                  </li>
-                ))}
-              </ul>
-              <CheckoutButton
-                sku="setup"
-                label="Get the voice setup — $300"
-                primary
-              />
-            </div>
-          </div>
-          <div className="mt-6 rounded-2xl border border-zinc-200 bg-white p-8">
-            <p className="font-mono text-xs tracking-wide text-zinc-400">
-              STEP 3 · PRODUCTION — PAY PER VIDEO, OR SAVE WITH PACKS
-            </p>
-            <div className="mt-6 grid gap-6 sm:grid-cols-4">
-              {[
-                ["First video", "$99", "your trial — one full video", "trial"],
-                ["Single video", "$129", "no commitment", "single"],
-                ["4-video pack", "$399", "$100 per video + 4 Spanish Shorts, monthly", "pack4"],
-                ["8-video pack", "$699", "$87 per video + 8 Spanish Shorts, monthly", "pack8"],
-              ].map(([name, price, note, sku]) => (
-                <div key={name}>
-                  <p className="text-sm font-semibold text-zinc-500">{name}</p>
-                  <p className="mt-1 text-2xl font-semibold">{price}</p>
-                  <p className="mt-1 text-xs leading-relaxed text-zinc-500">
-                    {note}
-                  </p>
-                  <CheckoutButton
-                    sku={sku}
-                    label={`Get ${name.toLowerCase()}`}
-                  />
-                </div>
-              ))}
-            </div>
-            <p className="mt-6 text-sm leading-relaxed text-zinc-500">
-              Every video includes dubbing in your cloned voice, human-reviewed
-              translation, subtitles, translated metadata and publication to
-              your channel. Videos up to 20 minutes = 1 video from your pack.
-              Longer content counts as multiple: 20–45 min = 2, 45+ min = 3 —
-              no surprises. For comparison: dubbing agencies charge $70–150
-              per finished minute — a single 15-minute video would run
-              $1,050–2,250. All purchases are fully refundable until your
-              first video enters production.
-            </p>
           </div>
         </div>
       </section>
@@ -349,12 +295,12 @@ export default function VoiceStudioPage() {
                 "They're adapted, not just translated — prices, links and offers get localized in the script. Send us the details and we'll handle them.",
               ],
               [
-                "Can I pause or cancel?",
-                "Packs are month-to-month — pause or cancel before the next cycle. There's no minimum term, and every video delivered so far stays on your channel, yours forever.",
+                "Does the calculator place an order?",
+                "No. It only shows an estimate. Existing clients can sign in to manage their orders.",
               ],
               [
                 "What about long videos or podcasts?",
-                "Pack videos cover content up to 20 minutes. Longer videos count as multiple videos from your pack: 20–45 minutes = 2, 45–90 minutes = 3. Running a 2-hour podcast? We quote seasons separately — reply with your episode length and cadence and we'll build a flat monthly rate.",
+                "Use the full duration of the video when estimating. Shorts are priced separately by finished clip length.",
               ],
             ].map(([q, a]) => (
               <details key={q} className="group px-6 py-5">
