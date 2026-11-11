@@ -98,10 +98,11 @@ export default function VoiceStudioPage() {
           <div className="mt-8 grid w-full gap-6 sm:grid-cols-3">
             {[
               { file: "presenter-en", title: "Original · English", note: "Original English take." },
-              { file: "presenter-dub", title: "DUB · Voice Studio", note: "Same English footage with a Spanish catalog voice." },
-              { file: "presenter-lip-claw", title: "LIP · Claw", note: "Separate Spanish take generated in Claw, with captions. Not a re-sync of the original." },
+              { file: "presenter-dub", title: "DUB Sample", note: "Same English footage with a Spanish catalog voice from Voice Studio." },
+              { file: "presenter-lip-claw", title: "LIP Sample", note: "Separate Spanish take generated in Claw, not a re-sync of the original." },
             ].map(({ file, title, note }) => (
               <figure key={file} className="mx-auto w-full max-w-72">
+                <figcaption className="mb-2 text-sm font-semibold text-white">{title}</figcaption>
                 <video
                   src={`/videos/voice-studio/${file}.mp4`}
                   poster={`/images/voice-studio/${file}.jpg`}
@@ -113,10 +114,7 @@ export default function VoiceStudioPage() {
                   height={1920}
                   className="aspect-[9/16] w-full rounded-2xl border border-zinc-700 bg-zinc-950 object-contain"
                 />
-                <figcaption className="mt-3 text-sm text-zinc-300">
-                  <span className="block font-semibold text-white">{title}</span>
-                  <span className="mt-1 block text-xs leading-relaxed">{note}</span>
-                </figcaption>
+                <p className="mt-2 text-xs leading-relaxed text-zinc-300">{note}</p>
               </figure>
             ))}
           </div>
