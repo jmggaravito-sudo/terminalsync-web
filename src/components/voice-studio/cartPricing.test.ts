@@ -6,14 +6,18 @@ const video = (seconds: number, extras: Partial<CartVideo> = {}): CartVideo => (
 });
 
 describe("Voice Studio cart estimates", () => {
-  it("applies the same progressive discount to one video or several", () => {
+  it("prices one video or several by their combined duration", () => {
     expect(estimateCart([video(1440)])).toEqual(estimateCart([video(480), video(480), video(480)]));
-    expect(estimateCart([video(1440)]).total).toBe(15220);
+    expect(estimateCart([video(1440)]).total).toBe(9480);
   });
 
   it("charges lip-sync only for LIP videos and shorts separately", () => {
     expect(estimateCart([video(90, { service: "LIP", shorts: [30, 60] }), video(45)]))
-      .toMatchObject({ seconds: 135, lip: 272, shorts: 3500 });
+      .toMatchObject({ seconds: 135, lip: 892, shorts: 3500 });
+  });
+
+  it("prices a 90-second LIP at $14.85 without rounding twice", () => {
+    expect(estimateCart([video(90, { service: "LIP" })]).total).toBe(1485);
   });
 
   it("doesn't count unselected services or clips longer than the source", () => {

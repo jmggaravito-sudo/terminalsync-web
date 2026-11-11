@@ -2,25 +2,20 @@
 
 import { useState } from "react";
 
-const usd = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
+import { DUB_CENTS_PER_MINUTE, LIP_CENTS_PER_MINUTE, USD as usd } from "./cartPricing";
 
 const options = [
   {
     name: "DUB",
-    file: "dub-preview",
     title: "Your video dubbed into Spanish.",
     description: "A Spanish voice track on your original footage. No changes to the mouth movements.",
-    centsPerMinute: 645,
+    centsPerMinute: DUB_CENTS_PER_MINUTE,
   },
   {
     name: "LIP",
-    file: "lip-preview",
     title: "Your video dubbed into Spanish with lip-sync.",
-    description: "The same Spanish voice track, with mouth movements adjusted to match the audio.",
-    centsPerMinute: 826,
+    description: "Premium Spanish dubbing with lip-sync processed in Claw. Subject to footage review and availability.",
+    centsPerMinute: LIP_CENTS_PER_MINUTE,
   },
 ] as const;
 
@@ -34,10 +29,10 @@ export function DubbingComparison() {
       <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
         <p className="mb-3 font-mono text-xs tracking-wide text-zinc-500">DUB VS. LIP</p>
         <h2 id="dub-lip-heading" className="text-3xl font-semibold tracking-tight sm:text-4xl">
-          Same video. Same voice. See the difference.
+          Estimate your Spanish dubbing.
         </h2>
         <p className="mt-3 max-w-2xl text-zinc-600">
-          Play the same 10-second clip with and without lip-sync. Then enter your video length for a price estimate.
+          Enter your video length to compare DUB and premium LIP. Shorts are priced separately.
         </p>
         <div className="mt-6">
           <label htmlFor="dub-estimate-minutes" className="block text-sm font-semibold text-zinc-800">
@@ -64,19 +59,8 @@ export function DubbingComparison() {
         <div className="mt-8 grid gap-6 md:grid-cols-2">
           {options.map((option) => (
             <article key={option.name} className="flex flex-col rounded-2xl border border-zinc-200 bg-white p-5 sm:p-6">
-              <p className="font-mono text-xs font-semibold tracking-wide text-zinc-500">{option.name}{option.name === "LIP" ? " · PILOT DEMO" : ""}</p>
+              <p className="font-mono text-xs font-semibold tracking-wide text-zinc-500">{option.name}{option.name === "LIP" ? " · PREMIUM" : ""}</p>
               <h3 className="mt-2 text-xl font-semibold">{option.title}</h3>
-              <video
-                src={`/videos/voice-studio/${option.file}.mp4`}
-                poster={`/images/voice-studio/${option.file}.jpg`}
-                aria-label={option.title}
-                controls
-                playsInline
-                preload="none"
-                width={1280}
-                height={720}
-                className="mt-4 aspect-video w-full rounded-xl bg-zinc-950"
-              />
               <p className="mt-4 flex-1 text-sm leading-relaxed text-zinc-600">{option.description}</p>
               <p className="mt-4 border-t border-zinc-200 pt-4 text-sm text-zinc-600">
                 {usd.format(option.centsPerMinute / 100)} per minute · estimate only

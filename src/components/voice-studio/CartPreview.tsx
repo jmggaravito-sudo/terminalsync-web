@@ -56,11 +56,11 @@ export function CartPreview() {
                 <fieldset className="mt-5">
                   <legend className="text-sm font-semibold">Choose your dubbing option</legend>
                   <p className="mt-1 text-xs text-zinc-600">
-                    Compare the same 10 seconds with the same Spanish voice.
+                    Watch a Voice Studio dub and a separate Spanish take made in Claw.
                   </p>
                   <div className="mt-2 grid gap-3 sm:grid-cols-2">
                     {(["DUB", "LIP"] as const).map((service: DubbingService) => {
-                      const file = service === "DUB" ? "dub-preview" : "lip-preview";
+                      const file = service === "DUB" ? "presenter-dub" : "presenter-lip-claw";
                       return (
                         <div key={service} className="min-w-0 rounded-lg border border-zinc-200 p-3">
                           <label className="flex items-start gap-2 text-sm">
@@ -71,20 +71,21 @@ export function CartPreview() {
                           <video
                             src={`/videos/voice-studio/${file}.mp4`}
                             poster={`/images/voice-studio/${file}.jpg`}
-                            aria-label={`${service} 10-second comparison video`}
+                            aria-label={`${service} sample video`}
                             data-cart-comparison
                             controls
                             playsInline
                             preload="none"
-                            width={1280}
-                            height={720}
+                            width={720}
+                            height={1280}
                             onPlay={(event) => {
                               const player = event.currentTarget;
                               player.ownerDocument.querySelectorAll<HTMLVideoElement>("video[data-cart-comparison]")
                                 .forEach((other) => { if (other !== player) other.pause(); });
                             }}
-                            className="mt-3 aspect-video w-full rounded-md bg-zinc-950"
+                            className="mx-auto mt-3 aspect-[9/16] w-full max-w-44 rounded-md bg-zinc-950"
                           />
+                          {service === "LIP" && <p className="mt-2 text-xs text-zinc-600">Separate Claw-generated Spanish take, not a re-sync of the original.</p>}
                         </div>
                       );
                     })}
@@ -145,7 +146,6 @@ export function CartPreview() {
               ))}
               <dl className="space-y-2 text-sm">
                 <div className="flex justify-between"><dt>Dubbing · {formatDuration(summary.seconds)}</dt><dd>{USD.format(summary.dubbing / 100)}</dd></div>
-                {summary.discount > 0 && <div className="flex justify-between text-emerald-700"><dt>Volume discount included</dt><dd>−{USD.format(summary.discount / 100)}</dd></div>}
                 <div className="flex justify-between"><dt>Lip-sync</dt><dd>{USD.format(summary.lip / 100)}</dd></div>
                 <div className="flex justify-between"><dt>Shorts / Reels</dt><dd>{USD.format(summary.shorts / 100)}</dd></div>
                 <div className="flex justify-between border-t border-zinc-200 pt-3 text-base font-semibold"><dt>Estimated total</dt><dd>{USD.format(summary.total / 100)}</dd></div>
