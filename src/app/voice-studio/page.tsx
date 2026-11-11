@@ -52,19 +52,22 @@ export default function VoiceStudioPage() {
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <a
-                href="#sample"
+                href="/voice-studio/cart-preview"
                 className="inline-flex items-center gap-2 rounded-full bg-amber-400 px-6 py-3 font-semibold text-zinc-950 transition-colors hover:bg-amber-300"
               >
-                Get a free 60-second sample
-                <ArrowRight className="h-4 w-4" />
+                Quote a video link
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </a>
               <a
-                href="#how"
+                href="#sample"
                 className="inline-flex items-center gap-2 rounded-full border border-zinc-700 px-6 py-3 font-semibold text-zinc-200 transition-colors hover:border-zinc-500"
               >
-                See how it works
+                Get a free 60-second sample
               </a>
             </div>
+            <p className="mt-3 text-xs text-zinc-400">
+              Link quote preview. No payment is taken.
+            </p>
             <p className="mt-6 flex items-center gap-2 text-sm text-zinc-400">
               <ShieldCheck className="h-4 w-4 text-emerald-400" />
               DUB uses a Spanish catalog voice. No voice cloning required.
@@ -292,7 +295,7 @@ export default function VoiceStudioPage() {
               ],
               [
                 "How do I start an order?",
-                "An order starts with your video link, not the estimate. We confirm the video length and total before payment. Existing clients can open their dashboard using Login at the top of this page.",
+                "Use Quote a video link at the top of the page. It opens the cart preview, where you start by pasting your link. The calculator does not send anything to the cart, and the preview does not take payment. Existing clients can sign in through Login.",
               ],
               [
                 "Are Shorts and Reels included?",
