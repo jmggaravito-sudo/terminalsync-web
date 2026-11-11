@@ -5,9 +5,9 @@ import type { Metadata } from "next";
 // or from the TerminalSync app site. Kept out of search until the brand
 // launches publicly: flip robots.index to true when ready.
 export const metadata: Metadata = {
-  title: "Voice Studio — Your YouTube channel in Spanish, in your own voice",
+  title: "Voice Studio — Dub your videos into Spanish",
   description:
-    "Done-for-you dubbing: we turn the videos you already have into a Spanish channel — dubbed with a clone of your own voice, subtitled, and published to a channel you own.",
+    "Spanish dubbing for your existing videos, with a catalog voice, optional premium lip-sync, and captioned Shorts and Reels.",
   robots: { index: false, follow: false },
 };
 

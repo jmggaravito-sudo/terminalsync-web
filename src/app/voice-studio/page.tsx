@@ -1,5 +1,6 @@
 import {
   Mic,
+  LogIn,
   Languages,
   Youtube,
   ShieldCheck,
@@ -19,9 +20,22 @@ import { HeroToggleVideo } from "@/components/voice-studio/HeroToggleVideo";
 export default function VoiceStudioPage() {
   return (
     <main>
+      <header className="border-b border-zinc-800 bg-zinc-950 text-white">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
+          <a href="/voice-studio" className="font-semibold tracking-tight">Voice Studio</a>
+          <a
+            href="/voice-studio/login"
+            className="inline-flex items-center gap-2 rounded-full border border-zinc-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:border-amber-400 hover:text-amber-400 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400"
+          >
+            <LogIn className="h-4 w-4" aria-hidden="true" />
+            Login
+          </a>
+        </div>
+      </header>
+
       {/* ---------- Hero ---------- */}
       <section className="bg-zinc-950 text-white">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 pt-20 pb-24 lg:grid-cols-[1.05fr_1fr]">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 pt-14 pb-24 lg:grid-cols-[1.05fr_1fr]">
           <div>
             <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-4 py-1.5 font-mono text-xs tracking-wide text-zinc-300">
               <Mic className="h-3.5 w-3.5 text-amber-400" />
@@ -54,15 +68,6 @@ export default function VoiceStudioPage() {
             <p className="mt-6 flex items-center gap-2 text-sm text-zinc-400">
               <ShieldCheck className="h-4 w-4 text-emerald-400" />
               DUB uses a Spanish catalog voice. No voice cloning required.
-            </p>
-            <p className="mt-3 text-sm text-zinc-500">
-              Already a client?{" "}
-              <a
-                href="/voice-studio/login"
-                className="text-zinc-300 underline hover:text-white"
-              >
-                Sign in to your dashboard
-              </a>
             </p>
           </div>
           <HeroToggleVideo
@@ -262,44 +267,44 @@ export default function VoiceStudioPage() {
       </section>
 
       {/* ---------- FAQ ---------- */}
-      <section className="border-y border-zinc-200 bg-zinc-50">
+      <section id="faq" aria-labelledby="faq-heading" className="border-y border-zinc-200 bg-zinc-50">
         <div className="mx-auto max-w-3xl px-6 py-20">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h2 id="faq-heading" className="text-3xl font-semibold tracking-tight sm:text-4xl">
             Frequently asked
           </h2>
           <div className="mt-8 divide-y divide-zinc-200 rounded-2xl border border-zinc-200 bg-white">
             {[
               [
-                "Doesn't YouTube already dub videos for free?",
-                "Voice Studio delivers a separate Spanish version you can review and use beyond YouTube. DUB keeps your footage, while LIP adds a lip-sync pass.",
+                "What’s the difference between DUB and LIP?",
+                "DUB replaces the audio with a Spanish voice and keeps the original picture. LIP is the premium option that also adjusts mouth movements; availability depends on the footage.",
               ],
               [
                 "Will the Spanish voice sound like me?",
-                "We use a catalog voice in Spanish. The initial offer does not include voice cloning.",
+                "We use a Spanish catalog voice. The initial offer does not include voice cloning.",
               ],
               [
                 "Which Spanish do you use?",
-                "Neutral Latin American Spanish, understood from Mexico to Argentina. Castilian (Spain) Spanish is available on request.",
+                "We use Latin American Spanish.",
               ],
               [
-                "Do you need access to my Google account?",
-                "No. You invite us as Manager or Editor to the new Spanish channel only. We never need your password, and we never touch your main channel.",
+                "How is the price estimated?",
+                "DUB and LIP are estimated from the length of your video, not from a fixed pack. The calculator is separate from ordering and does not take payment.",
               ],
               [
-                "Who owns the videos and the revenue?",
-                "You do. Everything publishes to channels you own. We never touch AdSense, sponsorships or memberships.",
+                "How do I start an order?",
+                "An order starts with your video link, not the estimate. We confirm the video length and total before payment. Existing clients can open their dashboard using Login at the top of this page.",
               ],
               [
-                "What about sponsors and calls-to-action?",
-                "They're adapted, not just translated — prices, links and offers get localized in the script. Send us the details and we'll handle them.",
+                "Are Shorts and Reels included?",
+                "No. Shorts and Reels are optional, captioned vertical clips priced separately by finished length. A 30-second clip is $15, 60 seconds is $20, and 90 seconds is $30.",
               ],
               [
-                "Does the calculator place an order?",
-                "No. It only shows an estimate. Existing clients can sign in to manage their orders.",
+                "Do you need my Google password?",
+                "No. Never send us your password. Start with a link to a video you own or have permission to dub.",
               ],
               [
-                "What about long videos or podcasts?",
-                "Use the full duration of the video when estimating. Shorts are priced separately by finished clip length.",
+                "Can I try DUB before ordering?",
+                "Yes. Use the form below to request a free 60-second sample with a Spanish catalog voice.",
               ],
             ].map(([q, a]) => (
               <details key={q} className="group px-6 py-5">
