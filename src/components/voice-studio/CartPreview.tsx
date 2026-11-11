@@ -43,8 +43,8 @@ export function CartPreview() {
       <div className="mx-auto max-w-5xl">
         <a href="/voice-studio" className="text-sm font-semibold underline">← Voice Studio</a>
         <p className="mt-8 font-mono text-xs font-semibold tracking-wide text-zinc-500">VOICE STUDIO · PREVIEW</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">Build your dubbing order</h1>
-        <p className="mt-3 text-zinc-600">Start with a video link. This preview does not charge you or create an order.</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">Let’s quote your videos</h1>
+        <p className="mt-3 text-zinc-600">Paste a video link to check its length and see your estimated price.</p>
         <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="space-y-4">
             <form onSubmit={addVideo} className="rounded-2xl border border-zinc-200 bg-white p-5">
@@ -56,10 +56,14 @@ export function CartPreview() {
                   {pending ? "Checking…" : "Check link"}
                 </button>
               </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {examples.map((example) => <button key={example.link} type="button" disabled={pending} onClick={() => { setLink(example.link); setMessage(""); }}
-                  className="rounded-full border border-zinc-200 px-3 py-1 text-xs hover:bg-zinc-100">{example.label}</button>)}
-              </div>
+              <details className="mt-3 text-xs text-zinc-600">
+                <summary className="w-fit cursor-pointer underline underline-offset-2">Try a demo link</summary>
+                <p className="mt-2">These sample links are only for testing the preview.</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {examples.map((example) => <button key={example.link} type="button" disabled={pending} onClick={() => { setLink(example.link); setMessage(""); }}
+                    className="rounded-full border border-zinc-200 px-3 py-1 hover:bg-zinc-100">{example.label}</button>)}
+                </div>
+              </details>
               {message && <p role="alert" className="mt-3 text-sm text-red-700">{message}</p>}
               {videos.length >= CART_LIMIT && <p className="mt-2 text-sm text-zinc-600">Preview limit: {CART_LIMIT} videos.</p>}
             </form>
