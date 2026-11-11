@@ -11,7 +11,6 @@ export type CartVideo = {
   id: string;
   title: string;
   seconds: number;
-  demo: boolean;
   service: DubbingService | null;
   shorts: ShortLength[];
 };

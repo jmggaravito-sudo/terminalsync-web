@@ -11,9 +11,9 @@ afterEach(() => {
 });
 
 describe("Voice Studio cart preview links", () => {
-  it("marks fixture durations as examples", async () => {
+  it("rejects old demo links", async () => {
     const response = await POST(request("https://voice-studio.example/45-seconds"));
-    expect(await response.json()).toMatchObject({ seconds: 45, demo: true });
+    expect(response.status).toBe(400);
   });
 
   it("does not fetch a user-supplied host or invent a duration", async () => {
@@ -33,7 +33,7 @@ describe("Voice Studio cart preview links", () => {
     vi.stubGlobal("fetch", fetcher);
     vi.stubEnv("VOICE_STUDIO_PREVIEW_YOUTUBE_API_KEY", "test-key");
     const response = await POST(request("https://youtu.be/dQw4w9WgXcQ"));
-    expect(await response.json()).toMatchObject({ id: "youtube-dQw4w9WgXcQ", seconds: 90, demo: false });
+    expect(await response.json()).toMatchObject({ id: "youtube-dQw4w9WgXcQ", seconds: 90 });
     expect(fetcher.mock.calls[0][0].origin).toBe("https://www.googleapis.com");
   });
 });

@@ -1,11 +1,5 @@
 import { NextResponse } from "next/server";
 
-const samples = new Map([
-  ["/45-seconds", { id: "demo-45", title: "Example · 45 seconds", seconds: 45 }],
-  ["/90-seconds", { id: "demo-90", title: "Example · 90 seconds", seconds: 90 }],
-  ["/24-minutes", { id: "demo-24", title: "Example · 24 minutes", seconds: 1440 }],
-]);
-
 function error(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
 }
@@ -32,14 +26,11 @@ export async function POST(request: Request) {
   try { url = new URL(body.link.trim()); } catch { return error("Enter a valid video link.", 400); }
   if (url.protocol !== "https:" || url.username || url.password || url.port) return error("Use an HTTPS video link.", 400);
 
-  const sample = url.hostname === "voice-studio.example" ? samples.get(url.pathname) : undefined;
-  if (sample) return NextResponse.json({ ...sample, demo: true });
-
   const id = youtubeId(url);
-  if (!id || !/^[A-Za-z0-9_-]{11}$/.test(id)) return error("Use a supported YouTube video link or one of the preview links.", 400);
+  if (!id || !/^[A-Za-z0-9_-]{11}$/.test(id)) return error("Use a supported YouTube video link.", 400);
 
   const key = process.env.VOICE_STUDIO_PREVIEW_YOUTUBE_API_KEY;
-  if (!key) return error("Live verification is not enabled in this preview. Try one of the example links.", 503);
+  if (!key) return error("Video verification is not enabled in this preview.", 503);
 
   // Only call the fixed Google endpoint; never fetch a user-supplied URL.
   const endpoint = new URL("https://www.googleapis.com/youtube/v3/videos");
@@ -54,7 +45,7 @@ export async function POST(request: Request) {
     if (!Number.isSafeInteger(seconds) || seconds <= 0 || video?.snippet?.liveBroadcastContent !== "none") {
       return error("We couldn't verify a finished video at this link.", 422);
     }
-    return NextResponse.json({ id: `youtube-${id}`, seconds, title: String(video.snippet.title || "YouTube video"), demo: false });
+    return NextResponse.json({ id: `youtube-${id}`, seconds, title: String(video.snippet.title || "YouTube video") });
   } catch {
     return error("We couldn't verify this video right now.", 502);
   }

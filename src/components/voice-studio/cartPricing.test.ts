@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { eligibleShorts, estimateCart, type CartVideo } from "./cartPricing";
 
 const video = (seconds: number, extras: Partial<CartVideo> = {}): CartVideo => ({
-  id: "example", title: "Example", seconds, service: "DUB", demo: true, shorts: [], ...extras,
+  id: "example", title: "Example", seconds, service: "DUB", shorts: [], ...extras,
 });
 
 describe("Voice Studio cart estimates", () => {

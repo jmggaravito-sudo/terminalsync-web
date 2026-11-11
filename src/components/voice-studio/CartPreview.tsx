@@ -3,12 +3,6 @@
 import { useState, type FormEvent } from "react";
 import { CART_LIMIT, SHORTS, USD, estimateCart, formatDuration, type CartVideo, type DubbingService } from "./cartPricing";
 
-const examples = [
-  { label: "45-second example", link: "https://voice-studio.example/45-seconds" },
-  { label: "90-second example", link: "https://voice-studio.example/90-seconds" },
-  { label: "24-minute example", link: "https://voice-studio.example/24-minutes" },
-];
-
 export function CartPreview() {
   const [videos, setVideos] = useState<CartVideo[]>([]);
   const [link, setLink] = useState("");
@@ -56,14 +50,6 @@ export function CartPreview() {
                   {pending ? "Checking…" : "Check link"}
                 </button>
               </div>
-              <details className="mt-3 text-xs text-zinc-600">
-                <summary className="w-fit cursor-pointer underline underline-offset-2">Try a demo link</summary>
-                <p className="mt-2">These sample links are only for testing the preview.</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {examples.map((example) => <button key={example.link} type="button" disabled={pending} onClick={() => { setLink(example.link); setMessage(""); }}
-                    className="rounded-full border border-zinc-200 px-3 py-1 hover:bg-zinc-100">{example.label}</button>)}
-                </div>
-              </details>
               {message && <p role="alert" className="mt-3 text-sm text-red-700">{message}</p>}
               {videos.length >= CART_LIMIT && <p className="mt-2 text-sm text-zinc-600">Preview limit: {CART_LIMIT} videos.</p>}
             </form>
@@ -72,7 +58,7 @@ export function CartPreview() {
                 <div className="flex justify-between gap-4">
                   <div>
                     <h2 className="break-words font-semibold">{video.title}</h2>
-                    <p className="mt-1 text-sm text-zinc-600">{formatDuration(video.seconds)} · {video.demo ? "Example duration" : "Verified duration"}</p>
+                    <p className="mt-1 text-sm text-zinc-600">{formatDuration(video.seconds)} · Verified duration</p>
                   </div>
                   <button type="button" disabled={pending} aria-label={`Remove ${video.title}`} onClick={() => setVideos((previous) => previous.filter((item) => item.id !== video.id))} className="self-start text-sm underline">Remove</button>
                 </div>
@@ -127,7 +113,7 @@ export function CartPreview() {
                 <div className="flex justify-between border-t border-zinc-200 pt-3 text-base font-semibold"><dt>Estimated total</dt><dd>{USD.format(summary.total / 100)}</dd></div>
               </dl>
             </div>
-            <p className="mt-4 text-xs text-zinc-600">Dubbing rates and discount are examples. Checkout is not enabled.</p>
+            <p className="mt-4 text-xs text-zinc-600">Estimate only. Checkout is not enabled.</p>
           </aside>
         </div>
       </div>
