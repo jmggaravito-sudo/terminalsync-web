@@ -8,6 +8,8 @@ export function CartPreview() {
   const [link, setLink] = useState("");
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
+  const [addingLink, setAddingLink] = useState(false);
+  const showLinkForm = videos.length === 0 || addingLink;
   const summary = estimateCart(videos);
 
   async function addVideo(event: FormEvent<HTMLFormElement>) {
@@ -25,6 +27,7 @@ export function CartPreview() {
       if (videos.some((video) => video.id === data.id)) { setMessage("That video is already in your cart."); return; }
       setVideos((previous) => [...previous, { ...data, service: null, shorts: [] }]);
       setLink("");
+      setAddingLink(false);
     } catch {
       setMessage("We couldn't check this link. Please try again.");
     } finally {
@@ -41,18 +44,6 @@ export function CartPreview() {
         <p className="mt-3 text-zinc-600">Paste a video link to check its length and see your estimated price.</p>
         <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="space-y-4">
-            <form onSubmit={addVideo} className="rounded-2xl border border-zinc-200 bg-white p-5">
-              <label htmlFor="cart-video-link" className="font-semibold">Paste your video link</label>
-              <div className="mt-2 flex flex-wrap gap-2">
-                <input id="cart-video-link" type="url" required maxLength={2048} value={link} onChange={(event) => setLink(event.target.value)}
-                  placeholder="https://www.youtube.com/watch?v=…" className="min-w-0 flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm" />
-                <button disabled={pending || !link.trim() || videos.length >= CART_LIMIT} className="rounded-lg bg-zinc-950 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
-                  {pending ? "Checking…" : "Check link"}
-                </button>
-              </div>
-              {message && <p role="alert" className="mt-3 text-sm text-red-700">{message}</p>}
-              {videos.length >= CART_LIMIT && <p className="mt-2 text-sm text-zinc-600">Preview limit: {CART_LIMIT} videos.</p>}
-            </form>
             {videos.map((video) => (
               <article key={video.id} className="rounded-2xl border border-zinc-200 bg-white p-5">
                 <div className="flex justify-between gap-4">
@@ -92,6 +83,28 @@ export function CartPreview() {
                 </fieldset>}
               </article>
             ))}
+            {showLinkForm && <form onSubmit={addVideo} className="rounded-2xl border border-zinc-200 bg-white p-5">
+              <label htmlFor="cart-video-link" className="font-semibold">Paste your video link</label>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <input id="cart-video-link" type="url" required maxLength={2048} value={link} onChange={(event) => setLink(event.target.value)}
+                  placeholder="https://www.youtube.com/watch?v=…" className="min-w-0 flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm" />
+                <button disabled={pending || !link.trim() || videos.length >= CART_LIMIT} className="rounded-lg bg-zinc-950 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
+                  {pending ? "Checking…" : "Check link"}
+                </button>
+              </div>
+              {message && <p role="alert" className="mt-3 text-sm text-red-700">{message}</p>}
+              {videos.length > 0 && (
+                <button type="button" disabled={pending} onClick={() => { setAddingLink(false); setLink(""); setMessage(""); }}
+                  className="mt-3 text-sm underline underline-offset-2">Cancel</button>
+              )}
+            </form>}
+            {videos.length > 0 && !showLinkForm && videos.length < CART_LIMIT && (
+              <button type="button" onClick={() => setAddingLink(true)}
+                className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-zinc-100">
+                + Add another link
+              </button>
+            )}
+            {videos.length >= CART_LIMIT && <p className="text-sm text-zinc-600">Preview limit: {CART_LIMIT} videos.</p>}
           </div>
           <aside aria-label="Cart summary" className="rounded-2xl border border-zinc-200 bg-white p-5">
             <h2 className="text-lg font-semibold">Cart summary</h2>
