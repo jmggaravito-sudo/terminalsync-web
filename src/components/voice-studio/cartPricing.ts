@@ -1,5 +1,8 @@
 export type DubbingService = "DUB" | "LIP";
 
+export const DUB_CENTS_PER_MINUTE = 495;
+export const LIP_CENTS_PER_MINUTE = 990;
+
 export const SHORTS = [
   { seconds: 30, cents: 1500 },
   { seconds: 60, cents: 2000 },
@@ -22,21 +25,22 @@ export function eligibleShorts(duration: number) {
   return SHORTS.filter((short) => short.seconds <= duration);
 }
 
-// Draft preview rates, not a payable quote. Volume discount applies to base dubbing only.
+// Preview rates only. Volume tiers are not applied until their rates are set.
 export function estimateCart(videos: CartVideo[]) {
   const selected = videos.filter((video) => video.service);
   const seconds = selected.reduce((total, video) => total + video.seconds, 0);
   const lipSeconds = selected.reduce((total, video) => total + (video.service === "LIP" ? video.seconds : 0), 0);
-  const tierOne = Math.min(seconds, 20 * 60);
-  const dubbing = Math.round((tierOne * 645 + (seconds - tierOne) * 580) / 60);
-  const discount = Math.round(seconds * 645 / 60) - dubbing;
-  const lip = Math.round(lipSeconds * 181 / 60);
+  const baseAmount = seconds * DUB_CENTS_PER_MINUTE;
+  const lipAmount = lipSeconds * (LIP_CENTS_PER_MINUTE - DUB_CENTS_PER_MINUTE);
+  const dubbing = Math.round(baseAmount / 60);
+  // Round the full amount once, so a LIP-only quote matches the landing.
+  const lip = Math.round((baseAmount + lipAmount) / 60) - dubbing;
   const shorts = selected.reduce((total, video) => {
     return total + eligibleShorts(video.seconds)
       .filter((short) => video.shorts.includes(short.seconds))
       .reduce((subtotal, short) => subtotal + short.cents, 0);
   }, 0);
-  return { seconds, dubbing, discount, lip, shorts, total: dubbing + lip + shorts };
+  return { seconds, dubbing, lip, shorts, total: dubbing + lip + shorts };
 }
 
 export function formatDuration(seconds: number) {
