@@ -1,6 +1,6 @@
 export type DubbingService = "DUB" | "LIP";
 
-export const DUB_CENTS_PER_MINUTE = 495;
+export const DUB_CENTS_PER_MINUTE = 395;
 export const LIP_CENTS_PER_MINUTE = 990;
 
 export const SHORTS = [
