@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { quoteAccount } from "@/lib/voiceStudioQuoteIntake";
 import { testCartStripe } from "@/lib/voiceStudioCartCheckout";
-import { GET, POST } from "./route";
+import { PATCH, POST } from "./route";
 
 vi.mock("@/lib/voiceStudioQuoteIntake", async (getOriginal) => ({
   ...await getOriginal<typeof import("@/lib/voiceStudioQuoteIntake")>(), quoteAccount: vi.fn(),
@@ -24,6 +24,8 @@ const session = {
 const create = vi.fn();
 const retrieve = vi.fn();
 const acceptance = vi.fn();
+const saveOrder = vi.fn();
+const readOrder = vi.fn();
 const quote = vi.fn();
 const filters = vi.fn();
 const createdAt = "2026-11-12T22:00:00.000Z";
@@ -34,7 +36,7 @@ const defaultQuote = {
 };
 const post = (body: Record<string, unknown> = { quoteId }, requestOrigin = origin) =>
   POST(new Request(path, { method: "POST", headers: { origin: requestOrigin }, body: JSON.stringify(body) }));
-const get = (sessionId = id) => GET(new Request(`${path}?session_id=${sessionId}`));
+const finalize = (sessionId = id) => PATCH(new Request(path, { method: "PATCH", body: JSON.stringify({ sessionId }) }));
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -55,6 +57,7 @@ beforeEach(() => {
   vi.mocked(quoteAccount).mockResolvedValue({
     id: accountId, email: "buyer@example.test", db: {
       from: (table: string) => {
+        if (table === "voice_studio_sandbox_orders") return { upsert: saveOrder, select: () => ({ eq: () => ({ single: readOrder }) }) };
         const query = { eq: (col: string, val: string) => { filters(table, col, val); return query; },
           maybeSingle: table === "voice_studio_quote_requests" ? quote : acceptance };
         return { select: () => query };
@@ -66,6 +69,8 @@ beforeEach(() => {
   acceptance.mockResolvedValue({ data: { agreement_url: terms } });
   create.mockResolvedValue(session);
   retrieve.mockResolvedValue(session);
+  saveOrder.mockResolvedValue({ error: null });
+  readOrder.mockResolvedValue({ data: { stripe_session_id: id }, error: null });
 });
 
 afterEach(() => {
@@ -87,7 +92,7 @@ describe("Voice Studio Stripe test checkout", () => {
   ])("fails closed with %s=%s", async (key, value) => {
     vi.stubEnv(key, value);
     expect((await post()).status).toBe(503);
-    expect((await get()).status).toBe(503);
+    expect((await finalize()).status).toBe(503);
     expect(testCartStripe).not.toHaveBeenCalled();
   });
 
@@ -177,12 +182,20 @@ describe("Voice Studio Stripe test checkout", () => {
   });
 
   it("verifies the payment from Stripe, not from a return URL, and rejects other accounts' sessions", async () => {
-    expect((await get("cs_live_example")).status).toBe(400);
+    expect((await finalize("cs_live_example")).status).toBe(400);
     expect(retrieve).not.toHaveBeenCalled();
-    expect(await (await get()).json()).toEqual({ paid: false, total: 21006 });
+    expect(await (await finalize()).json()).toEqual({ paid: false, total: 21006 });
+    expect(saveOrder).not.toHaveBeenCalled();
     retrieve.mockResolvedValue({ ...session, payment_status: "paid", status: "complete" });
-    expect(await (await get()).json()).toEqual({ paid: true, total: 21006 });
+    expect(await (await finalize()).json()).toEqual({ paid: true, total: 21006, orderId: quoteId });
+    expect(saveOrder).toHaveBeenCalledWith(expect.objectContaining({
+      quote_id: quoteId, stripe_session_id: id, total_cents: 21006,
+      client_email_preview: expect.objectContaining({ to: "buyer@example.test", text: expect.stringContaining("Spanish Short / Reel: 30 seconds") }),
+      team_email_preview: expect.objectContaining({ text: expect.stringContaining("do not start production") }),
+    }), { onConflict: "quote_id", ignoreDuplicates: true });
+    expect((await finalize()).status).toBe(200);
+    expect(saveOrder.mock.calls[1]).toEqual(saveOrder.mock.calls[0]);
     quote.mockResolvedValueOnce({ data: null });
-    expect((await get()).status).toBe(404);
+    expect((await finalize()).status).toBe(404);
   });
 });

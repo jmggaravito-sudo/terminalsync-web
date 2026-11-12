@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   matchesCartSession, quoteLifetimeSeconds, quotePricing, testCartCheckoutConfig, testCartStripe, testCheckoutParams,
 } from "@/lib/voiceStudioCartCheckout";
+import { voiceStudioTestOrderEmails } from "@/lib/voiceStudioOrderEmails";
 import { quoteAccount, voiceStudioAgreement } from "@/lib/voiceStudioQuoteIntake";
 
 export const runtime = "nodejs";
@@ -62,21 +63,37 @@ export async function POST(req: Request) {
   } catch { return fail("Test checkout is temporarily unavailable. Please retry.", 503); }
 }
 
-export async function GET(req: Request) {
+export async function PATCH(req: Request) {
   const config = testCartCheckoutConfig();
   if (!config || !voiceStudioAgreement()) return fail("Test checkout is not available.", 503);
+  if (!originMatches(req, config.origin)) return fail("Open test checkout from its configured preview URL.", 403);
   try {
     const account = await quoteAccount(req);
     if (!account) return fail("Sign in to verify the test payment.", 401);
     if (!config.testers.includes(account.email)) return fail("This account cannot use test checkout.", 403);
-    const sessionId = new URL(req.url).searchParams.get("session_id") ?? "";
-    if (!sessionIdPattern.test(sessionId)) return fail("Invalid test session reference.", 400);
+    const { sessionId } = await req.json().catch(() => ({})) ?? {};
+    if (typeof sessionId !== "string" || !sessionIdPattern.test(sessionId)) return fail("Invalid test session reference.", 400);
     const session = await testCartStripe(config.key).checkout.sessions.retrieve(sessionId);
     const quoteId = session.client_reference_id;
     if (typeof quoteId !== "string" || !uuid.test(quoteId)) return fail("Test payment not found.", 404);
     const quote = await ownedQuote(account, quoteId);
     if (!quote || !matchesCartSession(session, quoteId, quote.estimated_cents)) return fail("Test payment not found.", 404);
     const paid = session.status === "complete" && session.payment_status === "paid";
-    return NextResponse.json({ paid, total: quote.estimated_cents }, { headers });
+    if (!paid) return NextResponse.json({ paid: false, total: quote.estimated_cents }, { headers });
+    const previews = voiceStudioTestOrderEmails({
+      id: quoteId, email: account.email, total: quote.estimated_cents, items: quote.items,
+      opsUrl: `${config.origin}/admin/voice-studio/quotes`,
+    });
+    // Order and both previews are committed together. No email delivery or
+    // live fulfillment occurs. Repeat Stripe returns cannot duplicate orders.
+    const saved = await account.db.from("voice_studio_sandbox_orders").upsert({
+      quote_id: quoteId, stripe_session_id: session.id, total_cents: quote.estimated_cents,
+      currency: "usd", client_email_preview: previews.client, team_email_preview: previews.team,
+    }, { onConflict: "quote_id", ignoreDuplicates: true });
+    if (saved.error) throw saved.error;
+    const order = await account.db.from("voice_studio_sandbox_orders").select("stripe_session_id")
+      .eq("quote_id", quoteId).single();
+    if (order.error || order.data?.stripe_session_id !== session.id) return fail("Test order could not be reconciled.", 409);
+    return NextResponse.json({ paid: true, total: quote.estimated_cents, orderId: quoteId }, { headers });
   } catch { return fail("The test payment could not be verified.", 503); }
 }

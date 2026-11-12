@@ -79,7 +79,8 @@ never uses the site's shared Stripe key. It does not trigger production,
 reconcile payments into the legacy order system, or enable live payments.
 
 1. Use an **isolated Supabase test project** and apply the quote-intake migration.
-   Point both server and browser Supabase settings to that project, and set
+   Apply the sandbox-orders migration there too. Point both server and browser
+   Supabase settings to that project, and set
    `VOICE_STUDIO_CART_TEST_SUPABASE_URL` to its origin. Do not use inherited
    production database variables. Add only confirmed test accounts and the
    isolated OAuth redirect URL.
@@ -94,7 +95,10 @@ reconcile payments into the legacy order system, or enable live payments.
    no separate DUB line. Add a 30-second Short and check USD 210.06. Repeat with
    DUB and with mixed videos to verify category totals and rounding. Cancel
    and return to the same cart. Use a [Stripe test card](https://docs.stripe.com/testing)
-   to complete checkout, and verify the result on the return page.
+   to complete checkout, and verify the result on the return page. A confirmed
+   return saves one sandbox order with the customer and team email previews;
+   reloading the return page must not create another order. These previews
+   are not sent to either recipient.
 4. Confirm failed/unpaid sessions are never presented as paid and that
    non-testers, other accounts' quotes, tampered totals and unaccepted terms
    cannot reach Checkout. No sandbox transaction should enqueue production.
@@ -102,3 +106,5 @@ reconcile payments into the legacy order system, or enable live payments.
    publish and version the approved agreement, deploy the product samples,
    decide taxes and refund handling, and implement durable paid-order
    reconciliation via a signed Stripe webhook with idempotent fulfillment.
+   Send the customer confirmation and team alert through an idempotent
+   delivery mechanism only after the paid order is recorded.
