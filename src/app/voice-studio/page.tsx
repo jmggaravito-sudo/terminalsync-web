@@ -15,21 +15,36 @@ import { LeadForm } from "@/components/voice-studio/LeadForm";
 import { DubbingComparison } from "@/components/voice-studio/DubbingComparison";
 import { HeroToggleVideo } from "@/components/voice-studio/HeroToggleVideo";
 
+function QuoteVideoLink({ compact = false }: { compact?: boolean }) {
+  return (
+    <a
+      href="/voice-studio/cart-preview"
+      className={`inline-flex items-center justify-center gap-2 rounded-full bg-amber-400 font-semibold text-zinc-950 transition-colors hover:bg-amber-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-500 ${compact ? "px-3 py-2 text-sm sm:px-4" : "px-6 py-3"}`}
+    >
+      Quote a video link
+      <ArrowRight className={compact ? "hidden h-4 w-4 sm:block" : "h-4 w-4"} aria-hidden="true" />
+    </a>
+  );
+}
+
 // Standalone sales page for the dubbing service. No links to the TerminalSync
 // app anywhere on purpose — this is a separate business until it isn't.
 export default function VoiceStudioPage() {
   return (
     <main>
       <header className="border-b border-zinc-800 bg-zinc-950 text-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <a href="/voice-studio" className="font-semibold tracking-tight">Voice Studio</a>
-          <a
-            href="/voice-studio/login"
-            className="inline-flex items-center gap-2 rounded-full border border-zinc-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:border-amber-400 hover:text-amber-400 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400"
-          >
-            <LogIn className="h-4 w-4" aria-hidden="true" />
-            Login
-          </a>
+          <nav aria-label="Voice Studio actions" className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <QuoteVideoLink compact />
+            <a
+              href="/voice-studio/login"
+              className="inline-flex items-center gap-2 rounded-full border border-zinc-600 px-3 py-2 text-sm font-semibold text-white transition-colors hover:border-amber-400 hover:text-amber-400 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400 sm:px-4"
+            >
+              <LogIn className="h-4 w-4" aria-hidden="true" />
+              Login
+            </a>
+          </nav>
         </div>
       </header>
 
@@ -51,13 +66,7 @@ export default function VoiceStudioPage() {
               LIP is the premium option for projects that need the mouth movements to match.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
-              <a
-                href="/voice-studio/cart-preview"
-                className="inline-flex items-center gap-2 rounded-full bg-amber-400 px-6 py-3 font-semibold text-zinc-950 transition-colors hover:bg-amber-300"
-              >
-                Quote a video link
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </a>
+              <QuoteVideoLink />
               <a
                 href="#sample"
                 className="inline-flex items-center gap-2 rounded-full border border-zinc-700 px-6 py-3 font-semibold text-zinc-200 transition-colors hover:border-zinc-500"
@@ -125,6 +134,9 @@ export default function VoiceStudioPage() {
                 <p className="mt-2 text-xs leading-relaxed text-zinc-300">{note}</p>
               </figure>
             ))}
+          </div>
+          <div className="mt-8 text-center">
+            <QuoteVideoLink />
           </div>
         </div>
       </section>
@@ -325,6 +337,9 @@ export default function VoiceStudioPage() {
                 </p>
               </details>
             ))}
+          </div>
+          <div className="mt-8 text-center">
+            <QuoteVideoLink />
           </div>
         </div>
       </section>

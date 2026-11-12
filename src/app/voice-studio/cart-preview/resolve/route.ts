@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   if (!id || !/^[A-Za-z0-9_-]{11}$/.test(id)) return error("Use a supported YouTube video link.", 400);
 
   const key = process.env.VOICE_STUDIO_PREVIEW_YOUTUBE_API_KEY;
-  if (!key) return error("Video verification is not enabled in this preview.", 503);
+  if (!key) return error("YouTube duration verification is temporarily unavailable. Please try again later.", 503);
 
   // Only call the fixed Google endpoint; never fetch a user-supplied URL.
   const endpoint = new URL("https://www.googleapis.com/youtube/v3/videos");

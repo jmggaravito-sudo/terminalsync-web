@@ -1,7 +1,49 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { CART_LIMIT, SHORTS, USD, estimateCart, formatDuration, type CartVideo, type DubbingService } from "./cartPricing";
+import { CART_LIMIT, SHORTS, USD, estimateCart, formatDuration, type CartVideo, type DubbingService, type ShortLength } from "./cartPricing";
+
+function ShortsUpsell({ sourceSeconds, committed, onApply }: {
+  sourceSeconds: number;
+  committed: ShortLength[];
+  onApply: (shorts: ShortLength[]) => void;
+}) {
+  const [selected, setSelected] = useState<ShortLength[]>(committed);
+  const changed = selected.length !== committed.length || selected.some((length) => !committed.includes(length));
+
+  return (
+    <fieldset className="mt-5 border-t border-zinc-200 pt-4">
+      <legend className="text-sm font-semibold">Add a Short in Spanish</legend>
+      <div className="mt-2 grid gap-2 sm:grid-cols-3">
+        {SHORTS.map((short) => (
+          <label key={short.seconds} className="flex items-start gap-2 rounded-lg border border-zinc-200 p-3 text-sm has-checked:border-amber-500 has-checked:bg-amber-50 has-disabled:text-zinc-500">
+            <input type="checkbox" disabled={short.seconds > sourceSeconds} checked={selected.includes(short.seconds)}
+              onChange={(event) => {
+                const checked = event.target.checked;
+                setSelected((previous) => checked
+                  ? [...previous, short.seconds]
+                  : previous.filter((seconds) => seconds !== short.seconds));
+              }} />
+            <span>
+              <strong className="block">{short.seconds} seconds</strong>
+              {USD.format(short.cents / 100)}
+              {short.seconds > sourceSeconds && <span className="block text-xs">Longer than source</span>}
+            </span>
+          </label>
+        ))}
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        <button type="button" disabled={!changed} onClick={() => onApply(selected)}
+          className="rounded-lg bg-zinc-950 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
+          {committed.length ? "Update cart" : "Add to cart"}
+        </button>
+        <span aria-live="polite" className="text-xs text-zinc-600">
+          {committed.length > 0 ? `${committed.length} ${committed.length === 1 ? "short" : "shorts"} in cart` : ""}
+        </span>
+      </div>
+    </fieldset>
+  );
+}
 
 export function CartPreview() {
   const [videos, setVideos] = useState<CartVideo[]>([]);
@@ -40,8 +82,8 @@ export function CartPreview() {
       <div className="mx-auto max-w-5xl">
         <a href="/voice-studio" className="text-sm font-semibold underline">← Voice Studio</a>
         <p className="mt-8 font-mono text-xs font-semibold tracking-wide text-zinc-500">VOICE STUDIO · PREVIEW</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">Let’s quote your videos</h1>
-        <p className="mt-3 text-zinc-600">Paste a video link to check its length and see your estimated price.</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">Let’s quote your videos in Spanish</h1>
+        <p className="mt-3 text-zinc-600">Paste a YouTube video link to check its length and estimate your Spanish dubbing.</p>
         <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="space-y-4">
             {videos.map((video) => (
@@ -55,58 +97,27 @@ export function CartPreview() {
                 </div>
                 <fieldset className="mt-5">
                   <legend className="text-sm font-semibold">Choose your dubbing option</legend>
-                  <p className="mt-1 text-xs text-zinc-600">
-                    Watch a Voice Studio dub and a separate Spanish take made in Claw.
-                  </p>
+                  <p className="mt-1 text-xs text-zinc-600">Choose one. LIP already includes Spanish dubbing.</p>
                   <div className="mt-2 grid gap-3 sm:grid-cols-2">
-                    {(["DUB", "LIP"] as const).map((service: DubbingService) => {
-                      const file = service === "DUB" ? "presenter-dub" : "presenter-lip-claw";
-                      return (
-                        <div key={service} className="min-w-0 rounded-lg border border-zinc-200 p-3">
-                          <label className="flex items-start gap-2 text-sm">
-                            <input type="radio" name={`service-${video.id}`} value={service} checked={video.service === service}
-                              onChange={() => setVideos((previous) => previous.map((item) => item.id === video.id ? { ...item, service } : item))} />
-                            <span><strong>{service}</strong> · {service === "DUB" ? "Spanish dubbing" : "Spanish dubbing with lip-sync"}</span>
-                          </label>
-                          <video
-                            src={`/videos/voice-studio/${file}.mp4`}
-                            poster={`/images/voice-studio/${file}.jpg`}
-                            aria-label={`${service} sample video`}
-                            data-cart-comparison
-                            controls
-                            playsInline
-                            preload="none"
-                            width={720}
-                            height={1280}
-                            onPlay={(event) => {
-                              const player = event.currentTarget;
-                              player.ownerDocument.querySelectorAll<HTMLVideoElement>("video[data-cart-comparison]")
-                                .forEach((other) => { if (other !== player) other.pause(); });
-                            }}
-                            className="mx-auto mt-3 aspect-[9/16] w-full max-w-44 rounded-md bg-zinc-950"
-                          />
-                          {service === "LIP" && <p className="mt-2 text-xs text-zinc-600">Separate Claw-generated Spanish take, not a re-sync of the original.</p>}
-                        </div>
-                      );
-                    })}
+                    {(["DUB", "LIP"] as const).map((service: DubbingService) => (
+                      <label key={service} className="flex items-start gap-2 rounded-lg border border-zinc-200 p-3 text-sm">
+                        <input type="radio" name={`service-${video.id}`} value={service} checked={video.service === service}
+                          onChange={() => setVideos((previous) => previous.map((item) => item.id === video.id ? { ...item, service } : item))} />
+                        <span><strong>{service}</strong> · {service === "DUB" ? "Spanish dubbing" : "Spanish dubbing with lip-sync"}</span>
+                      </label>
+                    ))}
                   </div>
+                  <p className="mt-2 text-xs text-zinc-600">
+                    Full-length videos include a separate subtitle file (.srt). Shorts have on-screen captions.
+                  </p>
                 </fieldset>
-                {video.service && <fieldset className="mt-5 border-t border-zinc-100 pt-4">
-                  <legend className="text-sm font-semibold">Add Shorts / Reels</legend>
-                  <p className="mb-2 text-xs text-zinc-600">Optional · each checked box adds one clip from this video.</p>
-                  {SHORTS.map((short) => (
-                    <label key={short.seconds} className="flex items-center gap-2 py-1.5 text-sm has-disabled:text-zinc-500">
-                      <input type="checkbox" disabled={short.seconds > video.seconds} checked={video.shorts.includes(short.seconds)}
-                        onChange={(event) => {
-                          const checked = event.target.checked;
-                          setVideos((previous) => previous.map((item) => item.id === video.id
-                            ? { ...item, shorts: checked ? [...item.shorts, short.seconds] : item.shorts.filter((seconds) => seconds !== short.seconds) }
-                            : item));
-                        }} />
-                      <span>{short.seconds}s · {USD.format(short.cents / 100)}{short.seconds > video.seconds ? " · longer than source" : ""}</span>
-                    </label>
-                  ))}
-                </fieldset>}
+                {video.service && (
+                  <ShortsUpsell
+                    sourceSeconds={video.seconds}
+                    committed={video.shorts}
+                    onApply={(shorts) => setVideos((previous) => previous.map((item) => item.id === video.id ? { ...item, shorts } : item))}
+                  />
+                )}
               </article>
             ))}
             {showLinkForm && <form onSubmit={addVideo} className="rounded-2xl border border-zinc-200 bg-white p-5">
@@ -145,8 +156,21 @@ export function CartPreview() {
                 </div>
               ))}
               <dl className="space-y-2 text-sm">
-                <div className="flex justify-between"><dt>Dubbing · {formatDuration(summary.seconds)}</dt><dd>{USD.format(summary.dubbing / 100)}</dd></div>
-                <div className="flex justify-between"><dt>Lip-sync</dt><dd>{USD.format(summary.lip / 100)}</dd></div>
+                {summary.dubSeconds > 0 && (
+                  <div className="flex justify-between gap-3">
+                    <dt>DUB · {formatDuration(summary.dubSeconds)}</dt>
+                    <dd>{USD.format(summary.dubbing / 100)}</dd>
+                  </div>
+                )}
+                {summary.lipSeconds > 0 && (
+                  <div className="flex justify-between gap-3">
+                    <dt>
+                      LIP · {formatDuration(summary.lipSeconds)}
+                      <span className="block text-xs text-zinc-600">Spanish dubbing included</span>
+                    </dt>
+                    <dd>{USD.format(summary.lip / 100)}</dd>
+                  </div>
+                )}
                 <div className="flex justify-between"><dt>Shorts / Reels</dt><dd>{USD.format(summary.shorts / 100)}</dd></div>
                 <div className="flex justify-between border-t border-zinc-200 pt-3 text-base font-semibold"><dt>Estimated total</dt><dd>{USD.format(summary.total / 100)}</dd></div>
               </dl>

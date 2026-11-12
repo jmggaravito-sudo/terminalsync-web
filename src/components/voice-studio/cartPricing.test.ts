@@ -11,18 +11,29 @@ describe("Voice Studio cart estimates", () => {
     expect(estimateCart([video(1440)]).total).toBe(9480);
   });
 
-  it("charges lip-sync only for LIP videos and shorts separately", () => {
+  it("prices DUB and LIP as exclusive services and Shorts separately", () => {
     expect(estimateCart([video(90, { service: "LIP", shorts: [30, 60] }), video(45)]))
-      .toMatchObject({ seconds: 135, lip: 892, shorts: 3500 });
+      .toMatchObject({ dubSeconds: 45, lipSeconds: 90, dubbing: 296, lip: 1223, shorts: 3500, total: 5019 });
   });
 
-  it("prices a 90-second LIP at $14.85 without rounding twice", () => {
-    expect(estimateCart([video(90, { service: "LIP" })]).total).toBe(1485);
+  it("charges $8.15 for one minute of LIP with no extra DUB charge", () => {
+    expect(estimateCart([video(60, { service: "LIP" })]))
+      .toMatchObject({ dubbing: 0, lip: 815, total: 815 });
+  });
+
+  it("shows one LIP charge for the 23:56 video, with no DUB charge", () => {
+    expect(estimateCart([video(1436, { service: "LIP" })]))
+      .toEqual({ dubSeconds: 0, lipSeconds: 1436, dubbing: 0, lip: 19506, shorts: 0, total: 19506 });
+  });
+
+  it("shows one DUB charge when LIP is not selected", () => {
+    expect(estimateCart([video(1436)]))
+      .toEqual({ dubSeconds: 1436, lipSeconds: 0, dubbing: 9454, lip: 0, shorts: 0, total: 9454 });
   });
 
   it("doesn't count unselected services or clips longer than the source", () => {
     expect(eligibleShorts(45).map((short) => short.seconds)).toEqual([30]);
     expect(estimateCart([video(45, { shorts: [30, 30, 60] }), video(90, { service: null, shorts: [90] })]))
-      .toMatchObject({ seconds: 45, shorts: 1500 });
+      .toMatchObject({ dubSeconds: 45, lipSeconds: 0, shorts: 1500 });
   });
 });
