@@ -97,6 +97,7 @@ export function CartPreview() {
                 </div>
                 <fieldset className="mt-5">
                   <legend className="text-sm font-semibold">Choose your dubbing option</legend>
+                  <p className="mt-1 text-xs text-zinc-600">Choose one. LIP already includes Spanish dubbing.</p>
                   <div className="mt-2 grid gap-3 sm:grid-cols-2">
                     {(["DUB", "LIP"] as const).map((service: DubbingService) => (
                       <label key={service} className="flex items-start gap-2 rounded-lg border border-zinc-200 p-3 text-sm">
@@ -106,6 +107,9 @@ export function CartPreview() {
                       </label>
                     ))}
                   </div>
+                  <p className="mt-2 text-xs text-zinc-600">
+                    Full-length videos include a separate subtitle file (.srt). Shorts have on-screen captions.
+                  </p>
                 </fieldset>
                 {video.service && (
                   <ShortsUpsell
@@ -152,8 +156,21 @@ export function CartPreview() {
                 </div>
               ))}
               <dl className="space-y-2 text-sm">
-                <div className="flex justify-between"><dt>Dubbing · {formatDuration(summary.seconds)}</dt><dd>{USD.format(summary.dubbing / 100)}</dd></div>
-                <div className="flex justify-between"><dt>Lip-sync</dt><dd>{USD.format(summary.lip / 100)}</dd></div>
+                {summary.dubSeconds > 0 && (
+                  <div className="flex justify-between gap-3">
+                    <dt>DUB · {formatDuration(summary.dubSeconds)}</dt>
+                    <dd>{USD.format(summary.dubbing / 100)}</dd>
+                  </div>
+                )}
+                {summary.lipSeconds > 0 && (
+                  <div className="flex justify-between gap-3">
+                    <dt>
+                      LIP · {formatDuration(summary.lipSeconds)}
+                      <span className="block text-xs text-zinc-600">Spanish dubbing included</span>
+                    </dt>
+                    <dd>{USD.format(summary.lip / 100)}</dd>
+                  </div>
+                )}
                 <div className="flex justify-between"><dt>Shorts / Reels</dt><dd>{USD.format(summary.shorts / 100)}</dd></div>
                 <div className="flex justify-between border-t border-zinc-200 pt-3 text-base font-semibold"><dt>Estimated total</dt><dd>{USD.format(summary.total / 100)}</dd></div>
               </dl>

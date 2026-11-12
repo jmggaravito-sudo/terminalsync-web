@@ -28,19 +28,17 @@ export function eligibleShorts(duration: number) {
 // Preview rates only. Volume tiers are not applied until their rates are set.
 export function estimateCart(videos: CartVideo[]) {
   const selected = videos.filter((video) => video.service);
-  const seconds = selected.reduce((total, video) => total + video.seconds, 0);
+  const dubSeconds = selected.reduce((total, video) => total + (video.service === "DUB" ? video.seconds : 0), 0);
   const lipSeconds = selected.reduce((total, video) => total + (video.service === "LIP" ? video.seconds : 0), 0);
-  const baseAmount = seconds * DUB_CENTS_PER_MINUTE;
-  const lipAmount = lipSeconds * (LIP_CENTS_PER_MINUTE - DUB_CENTS_PER_MINUTE);
-  const dubbing = Math.round(baseAmount / 60);
-  // Round the full amount once, so a LIP-only quote matches the landing.
-  const lip = Math.round((baseAmount + lipAmount) / 60) - dubbing;
+  const dubbing = Math.round(dubSeconds * DUB_CENTS_PER_MINUTE / 60);
+  // LIP is a standalone price that already includes Spanish dubbing.
+  const lip = Math.round(lipSeconds * LIP_CENTS_PER_MINUTE / 60);
   const shorts = selected.reduce((total, video) => {
     return total + eligibleShorts(video.seconds)
       .filter((short) => video.shorts.includes(short.seconds))
       .reduce((subtotal, short) => subtotal + short.cents, 0);
   }, 0);
-  return { seconds, dubbing, lip, shorts, total: dubbing + lip + shorts };
+  return { dubSeconds, lipSeconds, dubbing, lip, shorts, total: dubbing + lip + shorts };
 }
 
 export function formatDuration(seconds: number) {
