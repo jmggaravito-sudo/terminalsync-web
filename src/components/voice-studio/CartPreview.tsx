@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { CART_LIMIT, SHORTS, USD, estimateCart, formatDuration, type CartVideo, type DubbingService, type ShortLength } from "./cartPricing";
+
+import { QuoteIntake } from "./QuoteIntake";
 
 function ShortsUpsell({ sourceSeconds, committed, onApply }: {
   sourceSeconds: number;
@@ -45,12 +47,31 @@ function ShortsUpsell({ sourceSeconds, committed, onApply }: {
   );
 }
 
-export function CartPreview() {
+export function CartPreview({ intakeEnabled = false }: { intakeEnabled?: boolean }) {
   const [videos, setVideos] = useState<CartVideo[]>([]);
   const [link, setLink] = useState("");
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
   const [addingLink, setAddingLink] = useState(false);
+  const [restored, setRestored] = useState(false);
+  useEffect(() => {
+    if (intakeEnabled) {
+      try {
+        const data: unknown = JSON.parse(sessionStorage.getItem("voice-studio-quote-cart") ?? "null");
+        if (Array.isArray(data)) setVideos(data.slice(0, CART_LIMIT).filter((item) =>
+          item && typeof item.id === "string" && /^youtube-[A-Za-z0-9_-]{11}$/.test(item.id) &&
+          Number.isSafeInteger(item.seconds) && item.seconds > 0 && typeof item.title === "string" &&
+          (item.service === null || item.service === "DUB" || item.service === "LIP") &&
+          Array.isArray(item.shorts) && item.shorts.every((seconds: unknown) => SHORTS.some((short) => short.seconds === seconds))));
+      } catch {}
+    }
+    setRestored(true);
+  }, [intakeEnabled]);
+  useEffect(() => {
+    if (intakeEnabled && restored) {
+      try { sessionStorage.setItem("voice-studio-quote-cart", JSON.stringify(videos)); } catch {}
+    }
+  }, [intakeEnabled, restored, videos]);
   const showLinkForm = videos.length === 0 || addingLink;
   const summary = estimateCart(videos);
 
@@ -81,7 +102,7 @@ export function CartPreview() {
     <main className="min-h-screen bg-zinc-50 px-5 py-12 text-zinc-950 sm:px-8">
       <div className="mx-auto max-w-5xl">
         <a href="/voice-studio" className="text-sm font-semibold underline">← Voice Studio</a>
-        <p className="mt-8 font-mono text-xs font-semibold tracking-wide text-zinc-500">VOICE STUDIO · PREVIEW</p>
+        <p className="mt-8 font-mono text-xs font-semibold tracking-wide text-zinc-500">VOICE STUDIO · {intakeEnabled ? "QUOTE" : "PREVIEW"}</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">Let’s quote your videos in Spanish</h1>
         <p className="mt-3 text-zinc-600">Paste a YouTube video link to check its length and estimate your Spanish dubbing.</p>
         <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
@@ -175,7 +196,9 @@ export function CartPreview() {
                 <div className="flex justify-between border-t border-zinc-200 pt-3 text-base font-semibold"><dt>Estimated total</dt><dd>{USD.format(summary.total / 100)}</dd></div>
               </dl>
             </div>
-            <p className="mt-4 text-xs text-zinc-600">Estimate only. Checkout is not enabled.</p>
+            {intakeEnabled
+              ? videos.length > 0 && <QuoteIntake key={JSON.stringify(videos.map(({ id, service, shorts }) => [id, service, shorts]))} videos={videos} total={summary.total} />
+              : <p className="mt-4 text-xs text-zinc-600">Estimate only. Checkout is not enabled.</p>}
           </aside>
         </div>
       </div>

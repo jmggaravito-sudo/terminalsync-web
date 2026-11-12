@@ -67,6 +67,7 @@ export function ProductionQueue() {
       <p className="text-sm font-semibold text-zinc-600">Voice Studio · Team only</p>
       <h1 className="mt-2 text-3xl font-bold">Production queue</h1>
       <p className="mt-2 text-zinc-600">Review incoming orders, confirm video credits and add delivery links.</p>
+      <a href="/admin/voice-studio/quotes" className="mt-3 inline-block text-sm underline">Per-minute quote requests →</a>
       {token === undefined ? <p className="mt-6">Checking access…</p> : !token ? (
         <div className="mt-6"><VsLoginButtons destination="/admin/voice-studio/production" /></div>
       ) : (
