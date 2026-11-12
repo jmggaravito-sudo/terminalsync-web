@@ -13,12 +13,17 @@ describe("Voice Studio cart estimates", () => {
 
   it("prices DUB and LIP as exclusive services and Shorts separately", () => {
     expect(estimateCart([video(90, { service: "LIP", shorts: [30, 60] }), video(45)]))
-      .toMatchObject({ dubSeconds: 45, lipSeconds: 90, dubbing: 296, lip: 1485, shorts: 3500, total: 5281 });
+      .toMatchObject({ dubSeconds: 45, lipSeconds: 90, dubbing: 296, lip: 1223, shorts: 3500, total: 5019 });
+  });
+
+  it("charges $8.15 for one minute of LIP with no extra DUB charge", () => {
+    expect(estimateCart([video(60, { service: "LIP" })]))
+      .toMatchObject({ dubbing: 0, lip: 815, total: 815 });
   });
 
   it("shows one LIP charge for the 23:56 video, with no DUB charge", () => {
     expect(estimateCart([video(1436, { service: "LIP" })]))
-      .toEqual({ dubSeconds: 0, lipSeconds: 1436, dubbing: 0, lip: 23694, shorts: 0, total: 23694 });
+      .toEqual({ dubSeconds: 0, lipSeconds: 1436, dubbing: 0, lip: 19506, shorts: 0, total: 19506 });
   });
 
   it("shows one DUB charge when LIP is not selected", () => {
