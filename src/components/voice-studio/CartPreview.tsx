@@ -47,7 +47,7 @@ function ShortsUpsell({ sourceSeconds, committed, onApply }: {
   );
 }
 
-export function CartPreview({ intakeEnabled = false }: { intakeEnabled?: boolean }) {
+export function CartPreview({ intakeEnabled = false, testCheckout = false }: { intakeEnabled?: boolean; testCheckout?: boolean }) {
   const [videos, setVideos] = useState<CartVideo[]>([]);
   const [link, setLink] = useState("");
   const [message, setMessage] = useState("");
@@ -197,7 +197,7 @@ export function CartPreview({ intakeEnabled = false }: { intakeEnabled?: boolean
               </dl>
             </div>
             {intakeEnabled
-              ? videos.length > 0 && <QuoteIntake key={JSON.stringify(videos.map(({ id, service, shorts }) => [id, service, shorts]))} videos={videos} total={summary.total} />
+              ? videos.length > 0 && <QuoteIntake key={JSON.stringify(videos.map(({ id, service, shorts }) => [id, service, shorts]))} videos={videos} total={summary.total} testCheckout={testCheckout} />
               : <p className="mt-4 text-xs text-zinc-600">Estimate only. Checkout is not enabled.</p>}
           </aside>
         </div>

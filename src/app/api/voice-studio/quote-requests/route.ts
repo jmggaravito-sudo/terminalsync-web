@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { estimateCart } from "@/components/voice-studio/cartPricing";
 import { quoteAccount, parseQuoteItems, voiceStudioAgreement } from "@/lib/voiceStudioQuoteIntake";
+import { testCartCheckoutConfig, testCartCheckoutRequested } from "@/lib/voiceStudioCartCheckout";
 import { verifyVoiceStudioQuoteVideo } from "@/lib/voiceStudioQuoteVideo";
 
 export const runtime = "nodejs";
@@ -11,10 +12,12 @@ const requestUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-
 
 export async function GET(req: Request) {
   const agreement = voiceStudioAgreement();
-  if (!agreement) return fail("Requests are not open yet.", 503);
+  const checkout = testCartCheckoutConfig();
+  if (!agreement || (testCartCheckoutRequested() && !checkout)) return fail("Requests are not open yet.", 503);
   try {
     const account = await quoteAccount(req);
     if (!account) return fail("Sign in to continue.", 401);
+    if (checkout && !checkout.testers.includes(account.email)) return fail("This account cannot use test checkout.", 403);
     const saved = await account.db.from("voice_studio_service_acceptances").select("agreement_url")
       .eq("account_id", account.id).eq("agreement_version", agreement.version).maybeSingle();
     if (saved.error || (saved.data && saved.data.agreement_url !== agreement.url)) {
@@ -26,10 +29,12 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   const agreement = voiceStudioAgreement();
-  if (!agreement) return fail("Requests are not open yet.", 503);
+  const checkout = testCartCheckoutConfig();
+  if (!agreement || (testCartCheckoutRequested() && !checkout)) return fail("Requests are not open yet.", 503);
   try {
     const account = await quoteAccount(req);
     if (!account) return fail("Sign in to continue.", 401);
+    if (checkout && !checkout.testers.includes(account.email)) return fail("This account cannot use test checkout.", 403);
     const body = await req.json().catch(() => null);
     const items = parseQuoteItems(body?.items);
     const requestId = body?.requestId;

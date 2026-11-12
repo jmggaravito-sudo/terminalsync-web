@@ -70,4 +70,35 @@ This path starts unpaid and does not activate the legacy Stripe SKUs. It is off 
 2. In an isolated database, validate the new migration with `node scripts/test-voice-studio-quote-intake-sql.mjs`. Verify authenticated and anonymous browser roles cannot read or write either table.
 3. Before enabling, apply the new migration using the project's normal deployment procedure; configure `VOICE_STUDIO_SERVICE_AGREEMENT_VERSION`, `VOICE_STUDIO_SERVICE_AGREEMENT_URL`, then `VOICE_STUDIO_QUOTE_INTAKE_ENABLED=true` on the server. Set `VOICE_STUDIO_OPS_EMAILS` to the approved staff list. Keep the flag off if the agreement, deployment or operating procedure is not approved.
 4. Verify sign-in returns to the cart, unsigned accounts cannot submit without accepting, the current agreement is accepted once per account, each submission confirms footage rights, a replay does not create a second request, and staff see the request under `/admin/voice-studio/quotes`. Perform no live charge in the smoke.
-5. Review every request before offering payment. Automatic per-minute checkout is **not implemented**; the existing legacy payment and credit flow is unchanged. Disable the intake flag to pause new submissions without deleting any evidence or requests.
+5. Review every request before offering payment. Live per-minute checkout is **not enabled**; the existing legacy payment and credit flow is unchanged. Disable the intake flag to pause new submissions without deleting any evidence or requests.
+
+## Per-minute Stripe sandbox checkout
+
+The pilot is disabled by default, is hard-disabled in Vercel production and
+never uses the site's shared Stripe key. It does not trigger production,
+reconcile payments into the legacy order system, or enable live payments.
+
+1. Use an **isolated Supabase test project** and apply the quote-intake migration.
+   Point both server and browser Supabase settings to that project, and set
+   `VOICE_STUDIO_CART_TEST_SUPABASE_URL` to its origin. Do not use inherited
+   production database variables. Add only confirmed test accounts and the
+   isolated OAuth redirect URL.
+2. Configure the quote intake as above, with a clearly labeled **test-only**
+   agreement in the isolated environment. Set
+   `VOICE_STUDIO_CART_TEST_CHECKOUT_ENABLED=true`,
+   `VOICE_STUDIO_CART_TESTER_EMAILS` to a comma-separated tester allowlist, and
+   `VOICE_STUDIO_CART_STRIPE_TEST_KEY` to a dedicated `sk_test_` or `rk_test_`
+   Stripe sandbox key. In Vercel use the unique preview deployment URL; locally
+   set `VOICE_STUDIO_CART_TEST_ORIGIN` to the app's HTTP loopback URL.
+3. Verify the cart using a 23:56 LIP source. Stripe should show USD 195.06 and
+   no separate DUB line. Add a 30-second Short and check USD 210.06. Repeat with
+   DUB and with mixed videos to verify category totals and rounding. Cancel
+   and return to the same cart. Use a [Stripe test card](https://docs.stripe.com/testing)
+   to complete checkout, and verify the result on the return page.
+4. Confirm failed/unpaid sessions are never presented as paid and that
+   non-testers, other accounts' quotes, tampered totals and unaccepted terms
+   cannot reach Checkout. No sandbox transaction should enqueue production.
+5. Do not enable live checkout based on this pilot. Before any live rollout,
+   publish and version the approved agreement, deploy the product samples,
+   decide taxes and refund handling, and implement durable paid-order
+   reconciliation via a signed Stripe webhook with idempotent fulfillment.
