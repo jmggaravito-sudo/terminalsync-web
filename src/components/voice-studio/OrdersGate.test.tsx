@@ -38,7 +38,8 @@ const single = {
 const dashboard = {
   ok: true,
   email: "client@example.test",
-  licenseUrl: "/voice-studio/license?t=test",
+  licenseStatus: "signed",
+  licenseUrl: null,
   entitlements: [pack, single],
   orders: [],
   legacyOrders: [],
@@ -51,6 +52,18 @@ afterEach(() => {
 });
 
 describe("Voice Studio customer dashboard", () => {
+  it("puts the license at the top and hides the submission form when pending", async () => {
+    const fetch = vi.fn().mockResolvedValue(response({
+      ...dashboard, licenseStatus: "pending", licenseUrl: "/voice-studio/license?t=test",
+    }));
+    vi.stubGlobal("fetch", fetch);
+    render(<OrdersGate token="signed+link" />);
+    expect(await screen.findByRole("link", { name: "Review and sign voice license" })).toBeTruthy();
+    expect(screen.queryByRole("textbox", { name: "YouTube link" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Submit videos for dubbing" })).toBeNull();
+    expect(screen.getByRole("heading", { name: "Deliveries (0)" })).toBeTruthy();
+  });
+
   it("loads a signed-link customer's balances, queue, legacy orders and delivered files", async () => {
     const baseOrder = {
       notes: "",

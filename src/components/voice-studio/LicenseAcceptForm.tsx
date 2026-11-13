@@ -61,6 +61,9 @@ export function LicenseAcceptForm({
           Registramos tu aceptación. Tu muestra de 60 segundos entra en
           producción — llega en ~5 días hábiles.
         </p>
+        <a href="/voice-studio/orders" className="mt-4 inline-flex rounded-full bg-zinc-950 px-4 py-2 text-sm font-semibold text-white">
+          Back to your dashboard / Volver al dashboard
+        </a>
       </div>
     );
   }

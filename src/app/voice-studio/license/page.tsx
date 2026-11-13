@@ -1,4 +1,5 @@
 import { emailFromLicenseToken, LICENSE_VERSION } from "@/lib/voiceStudioLicense";
+import { voiceLicenseStatus } from "@/lib/voiceStudioConsent";
 import { LicenseAcceptForm } from "@/components/voice-studio/LicenseAcceptForm";
 
 // Bilingual voice-license signing page (EN + ES). Reached via a tokenized
@@ -33,6 +34,8 @@ export default async function LicensePage({
       </main>
     );
   }
+
+  const status = await voiceLicenseStatus(email.trim().toLowerCase()).catch(() => "unavailable" as const);
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
@@ -150,19 +153,24 @@ export default async function LicensePage({
 
       {/* ---------- Acceptance ---------- */}
       <section className="mt-10 border-t border-zinc-200 pt-8">
-        <LicenseAcceptForm
-          email={email}
-          licenseVersion={LICENSE_VERSION}
-          token={t ?? ""}
-        />
-        <p className="mt-4 text-xs leading-relaxed text-zinc-500">
+        {status === "pending" ? (
+          <LicenseAcceptForm email={email} licenseVersion={LICENSE_VERSION} token={t ?? ""} />
+        ) : (
+          <div className="rounded-xl border border-zinc-200 p-4 text-sm text-zinc-700">
+            <p role="status">{status === "signed" ? "This license is already signed. / Esta licencia ya está firmada."
+              : status === "revoked" ? "This license was revoked. / Esta licencia fue revocada."
+              : "Could not check the license. Please reload. / No pudimos consultar la licencia. Recarga la página."}</p>
+            <a href="/voice-studio/orders" className="mt-2 inline-block font-semibold underline">Back to your dashboard / Volver al dashboard</a>
+          </div>
+        )}
+        {status === "pending" && <p className="mt-4 text-xs leading-relaxed text-zinc-500">
           By clicking accept, you sign this license electronically and consent
           to its terms. We record your email, the date/time, your IP address
           and browser, and the license version ({LICENSE_VERSION}). Al hacer
           clic en aceptar, firma esta licencia electrónicamente y acepta sus
           términos. Registramos su email, fecha/hora, dirección IP, navegador y
           la versión de la licencia.
-        </p>
+        </p>}
       </section>
     </main>
   );

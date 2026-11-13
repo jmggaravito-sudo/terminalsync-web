@@ -4,6 +4,7 @@ import {
   emailFromLicenseToken,
   LICENSE_VERSION,
 } from "@/lib/voiceStudioLicense";
+import { recordVoiceLicense } from "@/lib/voiceStudioConsent";
 import { markLeadLicensed } from "@/lib/voiceStudioCrm";
 
 export const runtime = "nodejs";
@@ -15,26 +16,25 @@ interface Body {
 }
 
 // Electronic acceptance of the Voice Studio voice license. Verifies the
-// HMAC token, records the acceptance (identity/time/IP/UA/version) via a
-// Resend email to hola@ (durable record), and best-effort updates the CRM
-// (lead → Calificado + comment). This acceptance is the hard gate before
-// any voice clone is produced — no signed record, no sample.
+// HMAC token and durably records acceptance before returning success.
+// CRM and email remain supplementary notifications, not consent checks.
 export async function POST(req: Request) {
   let body: Body;
   try {
     body = (await req.json()) as Body;
+    if (!body || typeof body !== "object") throw new Error("Invalid body");
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const email = emailFromLicenseToken(body.token);
+  const email = (typeof body.token === "string" ? emailFromLicenseToken(body.token) : null)?.trim().toLowerCase();
   if (!email) {
     return NextResponse.json(
       { error: "Invalid or expired license link." },
       { status: 400 },
     );
   }
-  const channel = body.channel?.trim().slice(0, 200);
+  const channel = typeof body.channel === "string" ? body.channel.trim().slice(0, 200) : "";
   if (!channel) {
     return NextResponse.json(
       { error: "Channel URL is required." },
@@ -49,15 +49,19 @@ export async function POST(req: Request) {
   const ua = req.headers.get("user-agent") ?? "unknown";
   const acceptedAt = new Date().toISOString();
 
+  try {
+    const outcome = await recordVoiceLicense({
+      email, channel, accepted_at: acceptedAt, ip: ip.slice(0, 64), user_agent: ua.slice(0, 512),
+    });
+    if (outcome === "revoked") {
+      return NextResponse.json({ error: "This license was revoked. Contact Voice Studio for help." }, { status: 409 });
+    }
+    if (outcome === "already_signed") return NextResponse.json({ ok: true, alreadySigned: true });
+  } catch {
+    return NextResponse.json({ error: "Could not record the license. Please try again." }, { status: 503 });
+  }
+
   const crmResult = await markLeadLicensed(email, LICENSE_VERSION);
-  console.log("[voice-studio-license] accepted", {
-    email,
-    channel,
-    licenseVersion: LICENSE_VERSION,
-    acceptedAt,
-    ip,
-    crm: crmResult,
-  });
 
   const key = process.env.RESEND_API_KEY;
   if (key) {

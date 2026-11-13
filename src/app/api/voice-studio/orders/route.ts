@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { emailFromClientRequest } from "@/lib/voiceStudioAuth";
 import { licenseUrl } from "@/lib/voiceStudioLicense";
+import { voiceLicenseStatus } from "@/lib/voiceStudioConsent";
 import { listClientOrders } from "@/lib/voiceStudioCrm";
 import {
   parseOrder, productionError, readProduction, submitProduction, uuidPattern,
@@ -41,10 +42,13 @@ export async function GET(req: Request) {
   if (!email) return failure("Sign in or use a valid dashboard link.", 401);
 
   try {
-    const [production, legacyOrders] = await Promise.all([readProduction(email), listClientOrders(email)]);
+    const [production, legacyOrders, licenseStatus] = await Promise.all([
+      readProduction(email), listClientOrders(email), voiceLicenseStatus(email),
+    ]);
     return NextResponse.json({
       ok: true, email, ...production, legacyOrders: legacyOrders ?? [],
-      legacyOrdersAvailable: legacyOrders !== null, licenseUrl: licenseUrl(email),
+      legacyOrdersAvailable: legacyOrders !== null,
+      licenseStatus, licenseUrl: licenseStatus === "pending" ? licenseUrl(email) : null,
     }, { headers });
   } catch {
     return failure("Voice Studio is temporarily unavailable. Please try again.", 503);
@@ -76,6 +80,9 @@ export async function POST(req: Request) {
     return failure("Submit each YouTube video only once in this request.", 400);
   }
   try {
+    if (await voiceLicenseStatus(email) !== "signed") {
+      return failure("Sign the voice license before submitting videos.", 403);
+    }
     const saved = await submitProduction(email, entitlementId, requestId, orders.filter((order) => order !== null));
     // The order is durable before email. Resend deduplicates immediate retries;
     // the ops queue remains authoritative if notification is unavailable.
