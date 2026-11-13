@@ -82,10 +82,13 @@ export default function VoiceStudioPage() {
               DUB uses a Spanish catalog voice. No voice cloning required.
             </p>
           </div>
-          <HeroToggleVideo
-            videoEn="/videos/voice-studio/hero-en.mp4"
-            videoEs="/videos/voice-studio/hero-es.mp4"
-          />
+          <figure>
+            <HeroToggleVideo
+              videoEn="/videos/voice-studio/hero-en.mp4"
+              videoEs="/videos/voice-studio/hero-es.mp4"
+            />
+            <figcaption className="mt-2 text-center text-xs text-zinc-400">Illustrative presentation demo</figcaption>
+          </figure>
         </div>
       </section>
 
@@ -116,7 +119,7 @@ export default function VoiceStudioPage() {
             {[
               { file: "presenter-en", title: "Original · English", note: "Original English take." },
               { file: "presenter-dub", title: "DUB Sample", note: "Same English footage with a Spanish catalog voice from Voice Studio." },
-              { file: "presenter-lip-claw", title: "LIP Sample", note: "Separate Spanish take generated in Claw, not a re-sync of the original." },
+              { file: "presenter-lip-claw", title: "Illustrative Spanish Short", note: "Separate Spanish take generated in Claw, not a lip-sync of the original. See the LIP sample below for a comparison on the same footage." },
             ].map(({ file, title, note }) => (
               <figure key={file} className="mx-auto w-full max-w-72">
                 <figcaption className="mb-2 text-sm font-semibold text-white">{title}</figcaption>
