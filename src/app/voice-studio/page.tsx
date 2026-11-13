@@ -323,6 +323,10 @@ export default function VoiceStudioPage() {
               [
                 "Can I try DUB before ordering?",
                 "Yes. Use the form below to request a free 60-second sample with a Spanish catalog voice.",
+              ],,
+              [
+                "How fast is the turnaround?",
+                "Your first video lands within 5 business days of entering production, and each monthly batch ships on the same cadence. Every order shows its status — queued, in production, delivered — on your dashboard in real time.",
               ],
             ].map(([q, a]) => (
               <details key={q} className="group px-6 py-5">

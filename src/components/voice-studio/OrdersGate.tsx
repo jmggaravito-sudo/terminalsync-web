@@ -111,7 +111,7 @@ function QueueList({ orders, legacy, delivered }: {
   if (orders.length + legacy.length === 0) {
     return (
       <p className="mt-3 text-sm text-zinc-500">
-        {delivered ? "Your first delivery will show up here." : "Nothing in the queue yet."}
+        {delivered ? "Your first delivery will show up here." : "Nothing in the queue yet — first videos land within 5 business days of entering production."}
       </p>
     );
   }
