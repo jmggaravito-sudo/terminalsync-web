@@ -11,7 +11,7 @@ import { getSupabaseBrowser } from "@/lib/supabase/browser";
 // dashboard gate.
 export function VsLoginButtons({
   destination = "/voice-studio/orders",
-}: { destination?: "/voice-studio/orders" | "/admin/voice-studio/production" } = {}) {
+}: { destination?: "/voice-studio/orders" | "/voice-studio/cart-preview" | "/admin/voice-studio/production" | "/admin/voice-studio/quotes" } = {}) {
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
   const [email, setEmail] = useState("");
   const [linkSent, setLinkSent] = useState(false);
@@ -69,7 +69,7 @@ export function VsLoginButtons({
       <div className="rounded-xl border border-emerald-500/40 bg-emerald-50 px-5 py-4 text-sm text-emerald-800">
         Check your inbox — we sent a sign-in link to{" "}
         <strong>{email}</strong>. Open it on this device and you&apos;ll land
-        straight on your dashboard.
+        back where you left off.
       </div>
     );
   }
