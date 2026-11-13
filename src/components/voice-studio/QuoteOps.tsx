@@ -16,6 +16,8 @@ export function QuoteOps() {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [working, setWorking] = useState(false);
+  const [payAmount, setPayAmount] = useState<Record<string, string>>({});
+  const [payLink, setPayLink] = useState<Record<string, string>>({});
   const load = useCallback(async (signal?: AbortSignal) => {
     setError(""); setRows([]); setWorking(true); setHasMore(false);
     try {
@@ -40,6 +42,21 @@ export function QuoteOps() {
       if (!res.ok) throw new Error((await res.json()).error);
       await load();
     } catch (e) { setError(e instanceof Error ? e.message : "Unable to save review."); setWorking(false); }
+  }
+  async function createPaymentLink(id: string, email: string) {
+    setWorking(true); setError("");
+    try {
+      const dollars = parseFloat(payAmount[id] ?? "");
+      const res = await authedFetch("/api/voice-studio/quote-ops", {
+        method: "POST",
+        body: JSON.stringify({ id, amount_cents: Math.round(dollars * 100) }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setPayLink((prev) => ({ ...prev, [id]: data.url }));
+      await load();
+    } catch (e) { setError(e instanceof Error ? e.message : "Unable to create payment link."); }
+    finally { setWorking(false); }
   }
   return <main className="mx-auto max-w-4xl px-6 py-12">
     <a href="/admin/voice-studio/production" className="text-sm underline">← Production queue</a>
@@ -66,6 +83,26 @@ export function QuoteOps() {
         {status === "submitted" && <div className="flex gap-4 text-sm">
           <button className="underline" disabled={working} onClick={() => void review(row.id, "reviewed")}>Mark reviewed</button>
           <button className="underline" disabled={working} onClick={() => void review(row.id, "declined")}>Decline</button>
+        </div>}
+        {status === "reviewed" && <div className="mt-3 border-t pt-3 text-sm">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-zinc-600">Final amount $</span>
+            <input
+              type="number" min={10} step={1} placeholder={String((row.estimated_cents / 100).toFixed(0))}
+              value={payAmount[row.id] ?? ""}
+              onChange={(e) => setPayAmount((prev) => ({ ...prev, [row.id]: e.target.value }))}
+              className="w-28 rounded-lg border border-zinc-300 px-2 py-1" aria-label={`Final amount for ${row.email}`}
+            />
+            <button className="rounded-lg bg-zinc-900 px-3 py-1.5 font-semibold text-white disabled:opacity-50"
+              disabled={working || !payAmount[row.id]}
+              onClick={() => void createPaymentLink(row.id, row.email)}>
+              Create payment link
+            </button>
+          </div>
+          {payLink[row.id] && <p className="mt-2 break-all">
+            Payment link sent to the client:{" "}
+            <a className="underline font-mono" href={payLink[row.id]} target="_blank" rel="noopener noreferrer">{payLink[row.id]}</a>
+          </p>}
         </div>}
       </article>)}
       <div className="flex gap-4 text-sm">

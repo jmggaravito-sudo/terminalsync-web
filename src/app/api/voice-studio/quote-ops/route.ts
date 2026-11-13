@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { Resend } from "resend";
+import { stripe } from "@/lib/stripe";
 import { quoteAccount, quoteOpsAllowed } from "@/lib/voiceStudioQuoteIntake";
 import { uuidPattern } from "@/lib/voiceStudioProduction";
 
@@ -37,4 +39,67 @@ export async function PATCH(req: Request) {
     if (!saved.data) return fail("That request is no longer awaiting review.", 409);
     return NextResponse.json({ ok: true }, { headers });
   } catch { return fail("Could not save the review.", 503); }
+}
+
+// Creates a Stripe Payment Link for a reviewed quote's final amount and
+// emails it to the customer. Payment-link metadata (business=voice-studio)
+// flows into the checkout session, so the existing webhook handles the
+// payment end-to-end: notification + CRM deal → Won.
+export async function POST(req: Request) {
+  try {
+    const account = await quoteAccount(req);
+    if (!account) return fail("Sign in to continue.", 401);
+    if (!quoteOpsAllowed(account.email)) return fail("You do not have production access.", 403);
+    if (!stripe) return fail("Stripe not configured.", 503);
+    const body = await req.json().catch(() => null);
+    const id = typeof body?.id === "string" && uuidPattern.test(body.id) ? body.id : null;
+    const amount = Number(body?.amount_cents);
+    if (!id || !Number.isSafeInteger(amount) || amount < 1000 || amount > 10_000_000) {
+      return fail("Invalid request or amount (minimum $10).", 400);
+    }
+    const rows = await account.db.from("voice_studio_quote_requests")
+      .select("email,items,estimated_cents").eq("id", id).limit(1);
+    if (rows.error) throw rows.error;
+    const quote = rows.data?.[0];
+    if (!quote) return fail("Quote request not found.", 404);
+
+    const link = await stripe.paymentLinks.create({
+      line_items: [{
+        quantity: 1,
+        price_data: {
+          currency: "usd",
+          unit_amount: amount,
+          product_data: { name: "Voice Studio — Spanish dubbing (final quote)" },
+        },
+      }],
+      metadata: { business: "voice-studio", quote_request_id: id, quote_email: quote.email },
+    });
+
+    const key = process.env.RESEND_API_KEY;
+    if (key) {
+      const resend = new Resend(key);
+      try {
+        await resend.emails.send({
+          from: "Voice Studio <hola@terminalsync.ai>",
+          to: quote.email,
+          subject: "Voice Studio — your final quote is ready",
+          text: [
+            "Your dubbing quote has been reviewed. Pay securely here:",
+            link.url,
+            "",
+            `Amount: $${(amount / 100).toFixed(2)}`,
+            `Reference: ${id}`,
+            "",
+            "Production starts as soon as the payment clears.",
+          ].join("\n"),
+        });
+      } catch (err) {
+        console.error("[quote-ops] payment link email failed", err);
+      }
+    }
+    return NextResponse.json({ ok: true, url: link.url }, { headers });
+  } catch (err) {
+    console.error("[quote-ops] payment link failed", err);
+    return fail("Could not create the payment link.", 503);
+  }
 }
