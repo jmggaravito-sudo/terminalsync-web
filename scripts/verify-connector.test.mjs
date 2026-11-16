@@ -71,6 +71,11 @@ describe("remote connectors where mcp-remote cannot log in", () => {
     const r = await verifyFile("content/connectors/en/factorial.md", { verifiedAt: "2026-10-16T00:00:00.000Z" });
     expect(r).toMatchObject({ slug: "factorial", installableForAi: false, installableForAiReason: "needs-oauth" });
   });
+  it("keeps sumup blocked: its OAuth issuer metadata disagrees by a trailing slash and mcp-remote rejects the mismatch", async () => {
+    const { verifyFile } = await import("./verify-connector.mjs");
+    const r = await verifyFile("content/connectors/en/sumup.md", { verifiedAt: "2026-11-16T00:00:00.000Z" });
+    expect(r).toMatchObject({ slug: "sumup", installableForAi: false, installableForAiReason: "needs-oauth" });
+  });
 });
 
 describe("Alegra API and MCP catalog copy", () => {

@@ -46,7 +46,10 @@ export const OAUTH_CONNECTORS = new Set(["gmail", "google-calendar", "google-she
 // factorial: blocked 2026-10-16 — its OAuth metadata (served at mcp.factorialhr.com) declares issuer
 // https://api.factorialhr.com/, and mcp-remote@latest enforces RFC 8414 §3.3 (issuer must match the
 // origin it was fetched from), aborting with IssuerMismatchError before the browser login (smoke 2026-10-16).
-const REMOTE_WITHOUT_DCR = new Set(["zoom", "alegra", "factorial"]);
+// sumup: blocked 2026-11-16 — its two OAuth metadata documents declare the same issuer differently
+// (https://auth.sumup.com vs https://auth.sumup.com/), and mcp-remote@latest enforces RFC 8414 §3.3,
+// aborting with IssuerMismatchError before the browser login (smoke 2026-11-16).
+const REMOTE_WITHOUT_DCR = new Set(["zoom", "alegra", "factorial", "sumup"]);
 const KEY_REQUIRED_CONNECTORS = new Set(["postgres", "neon", "mongodb", "stripe", "todoist", "elasticsearch", "pipedream", "monday"]);
 
 function parseArgs(argv) {
