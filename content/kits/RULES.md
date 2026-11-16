@@ -254,12 +254,16 @@ Business-relevant installable connectors a business-owner kit will reach for
 Do not include **card-only** connectors (no `manifest:` — they render a card but
 can't be installed) or `hidden` connectors. Card-only today:
 
-- `gmail`
 - `gdrive`
 - `kit`
 - `sqlite`
 - `vercel`
 - `whatsapp`
+
+(`gmail` was removed from this list on 2026-11-16: it has carried a
+`manifest:` block since it shipped 2026-07-20 and is installable — the
+2026-09-28 run note flagged the drift. The remaining five entries were
+re-verified as manifest-less the same day.)
 
 Hidden connectors are also banned even if they have a manifest.
 
@@ -341,6 +345,28 @@ A kit PR must include:
 Until these are present, keep the kit out of the published marketplace catalog.
 
 ## Loop run log
+
+### 2026-11-16 — Support Knowledge Base Kit (the intercom unblock) + Client Proposals Kit; deferred queue re-checked
+
+**Shipped (2 kits, EN/ES parity):**
+
+- `support-knowledge-base` (category: support) — `intercom` + `doc-coauthoring` + `internal-comms`. Scoped to the knowledge loop of the person who owns customer questions at a business running on Intercom: mine the week's real conversations for the questions that repeat, co-author the help-center article that answers one properly, publish it into the Intercom help center (`create_article`/`update_article`), and brief the team when the question points at a policy/process gap (internal note on the conversation + Internal Comms update). **This closes the support-kit deferral every run since 2026-08-02 carried.** The blocker had two legs, and the first one moved: `intercom` shipped 2026-10-14 as an official hosted MCP **with a manifest** (OAuth, no token) — it is no longer first-party-without-manifest. The second leg (no whitelisted skill fits customer-facing **reply drafting**) is respected, not dodged: this kit does **documentation**, not replies — help-center articles are long documents (Doc Co-authoring's declared shape), internal notes and team updates are Internal Comms' declared internal-only audience, and the kit's Limits + negative fit state verbatim that Intercom's connector has no tool to reply to a customer and the kit does not try. First kit in category `support`; `intercom` was used by zero prior kits.
+- `client-proposals` (category: sales) — `doc-coauthoring` + `canva` + `gmail`. Scoped to the proposal-artifact loop of a service-business owner (freelancer, consultant, agency) who sends quotes/proposals weekly: co-author the content from the call notes, design the branded proposal document in Canva and export the PDF, and deliver it by email with a cover message (Gmail, confirmation-gated). Distinct from the kits it could be confused with, stated in its own body: `business-owner` tracks leads and cash around the proposal and has no design or delivery piece (its "send proposals" is a manual attach-and-email step); `b2b-sales-pipeline` runs the pipeline in a CRM; this kit is the artifact production-and-delivery loop itself. It is the first kit that can produce a designed, actually-sent client document. `canva` and `gmail` were used by zero prior kits.
+
+**SKIP/deferred (6 candidates, facts verified this run):**
+
+- **Brevo email-marketing kit** — `brevo` shipped 2026-10-16 (available, manifest, remote/token, 27 modules: email/SMS/WhatsApp campaigns, contacts, CRM deals) and is unused by any kit, but the kit dies on the same skill gap the 2026-09-28 run documented for `klaviyo`: the workflow's core artifact is campaign/email copy, and no whitelisted skill serves it (`doc-coauthoring` is a long-document process — the same stretch the klaviyo entry rejected; `meta-ads-creator` is paid-social creative; `internal-comms` is internal-only). Same verdict as klaviyo, not a new call.
+- **PayPal / Mercado Pago / Facturapi / Wompi / Monei / Fintoc collections kits** — all installable and unused, but each reduces to "invoicing/collections connector + report drafting", the exact artifact-shape overlap with `small-business-finance` the 2026-10-12 run rejected for Siigo. No whitelisted skill serves chasing receivables or invoicing comms.
+- **Tiendanube store-ops kit** — `tiendanube` shipped 2026-10-15 (available, manifest, OAuth, 28 tools) and is unused, but the workflow (read store data → update stock/prices → memo → comms) is `ecommerce-storefront`'s purpose with a different vendor — the relabel pattern the 2026-10-05 run rejected for Webflow.
+- **Gusto hiring/onboarding kit** — re-checked: the gusto plugin pack (gusto + `1099-w9-organizer`) is still published, and `gusto`'s MCP is read-only, so the kit could verify a new hire is in payroll but not do anything about it. Unchanged verdict from 2026-09-28.
+- **Asana / Monday client-delivery kits** — task-manager relabels of `team-operations` (2026-10-05 precedent). Not re-evaluated further.
+- **Calendly scheduling kit** — unchanged coherence drop (2026-09-28: its server already reads the calendar and makes booking links, so partners duplicate it or reduce to filler).
+
+**Rulebook fix shipped in this PR (not a rule change):** the "Card-only today" list in this file still contained `gmail`, which has carried a `manifest:` block since it shipped 2026-07-20 — the list is defined as "no `manifest:`", so the entry was factually wrong (the 2026-09-28 and 2026-10-05 runs flagged the drift and chose to flag rather than edit). `gmail`'s installability was re-verified this run (`manifest:` block + `status: available`) and the list was corrected: `gmail` removed, the other five (`gdrive`, `kit`, `sqlite`, `vercel`, `whatsapp`) re-verified as manifest-less on `main` the same day.
+
+**Verification:** `npm test -- --run src/lib/marketplace/kitsIntegrity.test.ts src/app/api/marketplace/catalog/route.test.ts` — 2 files, 29 tests, all passed (both new kits resolve through the same `resolveBundleItems` the loader uses, both locales). `npm run typecheck` — passed.
+
+**App mirror:** not opened — per `docs/integration-loop-two-pr-policy.md` both kits need no desktop code (standard connector/skill items the app already renders from `/api/marketplace/catalog`); opening a record-only mirror PR is exactly what the policy forbids. Landing body states `App mirror PR: no aplica — la app consume el catálogo`.
 
 ### 2026-10-12 — Spend Review Kit; ramp unblocked after its connector landed; deferred queue re-checked
 
