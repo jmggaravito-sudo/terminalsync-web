@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
+import { Resend } from "resend";
 import { estimateCart } from "@/components/voice-studio/cartPricing";
 import { quoteAccount, parseQuoteItems, voiceStudioAgreement } from "@/lib/voiceStudioQuoteIntake";
 import { verifyVoiceStudioQuoteVideo } from "@/lib/voiceStudioQuoteVideo";
@@ -87,6 +88,26 @@ export async function POST(req: Request) {
         : fail("This request was already used for a different cart.", 409);
     }
     if (saved.error) throw saved.error;
+    // Notificación best-effort al equipo (el panel de ops es el inbox real).
+    const key = process.env.RESEND_API_KEY;
+    if (key) {
+      try {
+        const resend = new Resend(key);
+        await resend.emails.send({
+          from: "Voice Studio <hola@terminalsync.ai>",
+          to: "hola@terminalsync.ai",
+          replyTo: email,
+          subject: `📝 Voice Studio quote request — ${email}`,
+          text: [
+            `Request: ${saved.data.id}`,
+            `Estimated: $${(expectedTotal / 100).toFixed(2)} (${items.length} video${items.length > 1 ? "s" : ""})`,
+            `Review and send the payment link from /admin/voice-studio/quotes.`,
+          ].join("\n"),
+        });
+      } catch (notifyError) {
+        console.error("[quote-requests] notification failed", notifyError);
+      }
+    }
     return NextResponse.json({ id: saved.data.id }, { status: 201, headers });
   } catch { return fail("Your request could not be saved. Please try again.", 503); }
 }
