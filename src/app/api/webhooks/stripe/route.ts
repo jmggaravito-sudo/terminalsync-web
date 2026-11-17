@@ -731,7 +731,11 @@ async function notifyVoiceStudioPayment(subject: string, lines: string[]) {
       from: "Voice Studio <hola@terminalsync.ai>",
       to: "hola@terminalsync.ai",
       subject,
-      text: lines.join("\n"),
+      text: [
+        ...lines,
+        "",
+        "Open the production queue: https://terminalsync.ai/admin/voice-studio/production",
+      ].join("\n"),
     });
   } catch (err) {
     // A failed notification must never fail the webhook itself —
