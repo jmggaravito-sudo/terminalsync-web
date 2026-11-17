@@ -1,5 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
-import { CART_LIMIT, SHORTS, type DubbingService, type ShortLength } from "@/components/voice-studio/cartPricing";
+import { CART_LIMIT, SHORTS, isLanguageCode, type DubbingService, type LanguageCode, type ShortLength } from "@/components/voice-studio/cartPricing";
 
 export function voiceStudioAgreement() {
   if (process.env.VOICE_STUDIO_QUOTE_INTAKE_ENABLED !== "true") return null;
@@ -27,7 +27,7 @@ export function quoteOpsAllowed(email: string) {
     .split(",").map((value) => value.trim().toLowerCase()).includes(email);
 }
 
-type RequestItem = { id: string; service: DubbingService; shorts: ShortLength[] };
+type RequestItem = { id: string; service: DubbingService; shorts: ShortLength[]; language?: LanguageCode };
 
 export function parseQuoteItems(input: unknown): RequestItem[] | null {
   if (!Array.isArray(input) || input.length < 1 || input.length > CART_LIMIT) return null;
@@ -37,9 +37,15 @@ export function parseQuoteItems(input: unknown): RequestItem[] | null {
     if (!item || typeof item.id !== "string" || !/^youtube-[A-Za-z0-9_-]{11}$/.test(item.id) || ids.has(item.id) ||
         (item.service !== "DUB" && item.service !== "LIP") || !Array.isArray(item.shorts) ||
         item.shorts.length > SHORTS.length || item.shorts.some((length: unknown) => !SHORTS.some((short) => short.seconds === length)) ||
-        new Set(item.shorts).size !== item.shorts.length) return null;
+        new Set(item.shorts).size !== item.shorts.length ||
+        // Language is optional only so pre-picker carts keep replaying; when
+        // present it must be one of the offered codes.
+        (item.language !== undefined && !isLanguageCode(item.language))) return null;
     ids.add(item.id);
-    result.push({ id: item.id, service: item.service, shorts: [...item.shorts].sort((a, b) => a - b) });
+    result.push({
+      id: item.id, service: item.service, shorts: [...item.shorts].sort((a, b) => a - b),
+      ...(isLanguageCode(item.language) ? { language: item.language } : {}),
+    });
   }
   return result;
 }

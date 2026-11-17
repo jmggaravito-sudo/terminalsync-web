@@ -10,12 +10,36 @@ export const SHORTS = [
 ] as const;
 export type ShortLength = (typeof SHORTS)[number]["seconds"];
 
+// Target dubbing languages offered in the cart picker. All are verified in the
+// OmniVoice catalog with 2,000+ training hours; Spanish stays the default.
+export const LANGUAGES = [
+  { code: "es", label: "Spanish (Latin America)" },
+  { code: "pt-BR", label: "Portuguese (Brazil)" },
+  { code: "fr", label: "French" },
+  { code: "de", label: "German" },
+  { code: "it", label: "Italian" },
+  { code: "ja", label: "Japanese" },
+  { code: "zh", label: "Mandarin Chinese" },
+  { code: "ko", label: "Korean" },
+] as const;
+export type LanguageCode = (typeof LANGUAGES)[number]["code"];
+export const DEFAULT_LANGUAGE: LanguageCode = "es";
+
+export function languageLabel(code: string | undefined): string {
+  return LANGUAGES.find((language) => language.code === code)?.label ?? LANGUAGES[0].label;
+}
+
+export function isLanguageCode(value: unknown): value is LanguageCode {
+  return typeof value === "string" && LANGUAGES.some((language) => language.code === value);
+}
+
 export type CartVideo = {
   id: string;
   title: string;
   seconds: number;
   service: DubbingService | null;
   shorts: ShortLength[];
+  language?: LanguageCode;
 };
 
 export const CART_LIMIT = 10;

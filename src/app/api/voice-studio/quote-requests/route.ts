@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { estimateCart } from "@/components/voice-studio/cartPricing";
+import { estimateCart, languageLabel } from "@/components/voice-studio/cartPricing";
 import { quoteAccount, parseQuoteItems, voiceStudioAgreement } from "@/lib/voiceStudioQuoteIntake";
 import { verifyVoiceStudioQuoteVideo } from "@/lib/voiceStudioQuoteVideo";
 
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
       if ("error" in verified || verified.id !== item.id || item.shorts.some((seconds) => seconds > verified.seconds)) {
         return null;
       }
-      return { ...verified, service: item.service, shorts: item.shorts };
+      return { ...verified, service: item.service, shorts: item.shorts, ...(item.language ? { language: item.language } : {}) };
     }));
     if (videos.some((video) => video === null)) return fail("A video could not be reverified. Please check the links and Shorts.", 422);
     const verified = videos.filter((video) => video !== null);
@@ -91,6 +91,7 @@ export async function POST(req: Request) {
     // Notificación best-effort al equipo (el panel de ops es el inbox real).
     const key = process.env.RESEND_API_KEY;
     if (key) {
+      const languages = [...new Set(items.map((item) => languageLabel(item.language)))].join(", ");
       try {
         const resend = new Resend(key);
         await resend.emails.send({
@@ -101,6 +102,7 @@ export async function POST(req: Request) {
           text: [
             `Request: ${saved.data.id}`,
             `Estimated: $${(expectedTotal / 100).toFixed(2)} (${items.length} video${items.length > 1 ? "s" : ""})`,
+            `Language(s): ${languages}`,
             `Review and send the payment link from /admin/voice-studio/quotes.`,
           ].join("\n"),
         });

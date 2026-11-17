@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { authedFetch } from "@/lib/supabase/browser";
 import { VsLoginButtons } from "./VsLoginButtons";
-import { formatDuration, USD, type CartVideo } from "./cartPricing";
+import { formatDuration, languageLabel, USD, type CartVideo } from "./cartPricing";
 
 type Quote = { id: string; email: string; items: CartVideo[]; estimated_cents: number; agreement_version: string };
 const statuses = ["submitted", "reviewed", "declined"] as const;
@@ -77,7 +77,7 @@ export function QuoteOps() {
         <ul className="my-2 space-y-1 text-sm">
           {row.items.map((item) => <li key={item.id}>
             <a className="underline" href={`https://www.youtube.com/watch?v=${item.id.slice(8)}`} target="_blank" rel="noopener noreferrer">{item.title}</a>
-            {" · "}{item.service} · {formatDuration(item.seconds)}{item.shorts.length > 0 && ` · Shorts: ${item.shorts.join(", ")}s`}
+            {" · "}{item.service} · {languageLabel(item.language)} · {formatDuration(item.seconds)}{item.shorts.length > 0 && ` · Shorts: ${item.shorts.join(", ")}s`}
           </li>)}
         </ul>
         {status === "submitted" && <div className="flex gap-4 text-sm">
