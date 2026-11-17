@@ -16,7 +16,7 @@ export function QuoteIntake({ videos, total }: { videos: CartVideo[]; total: num
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState<string | null>(null);
   const complete = videos.length > 0 && videos.every((video) => video.service);
-  const items = videos.map(({ id, service, shorts }) => ({ id, service, shorts }));
+  const items = videos.map(({ id, service, shorts, language }) => language ? { id, service, shorts, language } : { id, service, shorts });
   const cartKey = JSON.stringify({ items, total });
 
   useEffect(() => {

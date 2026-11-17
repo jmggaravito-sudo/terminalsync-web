@@ -97,4 +97,16 @@ describe("Voice Studio quote intake", () => {
     expect((await POST(req({ items: [{ ...item, shorts: [90] }] }))).status).toBe(422);
     expect(insert).not.toHaveBeenCalled();
   });
+  it("stores the chosen dubbing language with the request", async () => {
+    agreement.mockResolvedValueOnce({ data: null, error: null })
+      .mockResolvedValueOnce({ data: { agreement_url: url }, error: null });
+    expect((await POST(req({ items: [{ ...item, language: "ja" }] }))).status).toBe(201);
+    expect(insert).toHaveBeenCalledWith(expect.objectContaining({
+      items: [expect.objectContaining({ id: item.id, service: "LIP", language: "ja" })],
+    }));
+  });
+  it("rejects an unknown language code without saving", async () => {
+    expect((await POST(req({ items: [{ ...item, language: "klingon" }] }))).status).toBe(400);
+    expect(insert).not.toHaveBeenCalled();
+  });
 });

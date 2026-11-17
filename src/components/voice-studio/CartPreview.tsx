@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { CART_LIMIT, SHORTS, USD, estimateCart, formatDuration, type CartVideo, type DubbingService, type ShortLength } from "./cartPricing";
+import { CART_LIMIT, DEFAULT_LANGUAGE, LANGUAGES, SHORTS, USD, estimateCart, formatDuration, isLanguageCode, languageLabel, type CartVideo, type DubbingService, type ShortLength } from "./cartPricing";
 
 import { QuoteIntake } from "./QuoteIntake";
 
-function ShortsUpsell({ sourceSeconds, committed, onApply }: {
+function ShortsUpsell({ sourceSeconds, language, committed, onApply }: {
   sourceSeconds: number;
+  language: string;
   committed: ShortLength[];
   onApply: (shorts: ShortLength[]) => void;
 }) {
@@ -15,7 +16,7 @@ function ShortsUpsell({ sourceSeconds, committed, onApply }: {
 
   return (
     <fieldset className="mt-5 border-t border-zinc-200 pt-4">
-      <legend className="text-sm font-semibold">Add a Short in Spanish</legend>
+      <legend className="text-sm font-semibold">Add a Short in {languageLabel(language)}</legend>
       <div className="mt-2 grid gap-2 sm:grid-cols-3">
         {SHORTS.map((short) => (
           <label key={short.seconds} className="flex items-start gap-2 rounded-lg border border-zinc-200 p-3 text-sm has-checked:border-amber-500 has-checked:bg-amber-50 has-disabled:text-zinc-500">
@@ -62,7 +63,8 @@ export function CartPreview({ intakeEnabled = false }: { intakeEnabled?: boolean
           item && typeof item.id === "string" && /^youtube-[A-Za-z0-9_-]{11}$/.test(item.id) &&
           Number.isSafeInteger(item.seconds) && item.seconds > 0 && typeof item.title === "string" &&
           (item.service === null || item.service === "DUB" || item.service === "LIP") &&
-          Array.isArray(item.shorts) && item.shorts.every((seconds: unknown) => SHORTS.some((short) => short.seconds === seconds))));
+          Array.isArray(item.shorts) && item.shorts.every((seconds: unknown) => SHORTS.some((short) => short.seconds === seconds)))
+          .map((item) => ({ ...item, language: isLanguageCode(item.language) ? item.language : DEFAULT_LANGUAGE })));
       } catch {}
     }
     setRestored(true);
@@ -88,7 +90,7 @@ export function CartPreview({ intakeEnabled = false }: { intakeEnabled?: boolean
       const data = await response.json();
       if (!response.ok) { setMessage(data.error ?? "We couldn't check this link."); return; }
       if (videos.some((video) => video.id === data.id)) { setMessage("That video is already in your cart."); return; }
-      setVideos((previous) => [...previous, { ...data, service: null, shorts: [] }]);
+      setVideos((previous) => [...previous, { ...data, service: null, shorts: [], language: DEFAULT_LANGUAGE }]);
       setLink("");
       setAddingLink(false);
     } catch {
@@ -103,8 +105,8 @@ export function CartPreview({ intakeEnabled = false }: { intakeEnabled?: boolean
       <div className="mx-auto max-w-5xl">
         <a href="/voice-studio" className="text-sm font-semibold underline">← Voice Studio</a>
         <p className="mt-8 font-mono text-xs font-semibold tracking-wide text-zinc-500">VOICE STUDIO · {intakeEnabled ? "QUOTE" : "PREVIEW"}</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">Let’s quote your videos in Spanish</h1>
-        <p className="mt-3 text-zinc-600">Paste a YouTube video link to check its length and estimate your dubbing. Estimates are for Spanish — Portuguese (Brazil), French, German, Italian, Japanese, Mandarin and 15+ more languages are quoted on request.</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">Let’s quote your videos</h1>
+        <p className="mt-3 text-zinc-600">Paste a YouTube video link, pick the dubbing language for each video — Spanish is the default — and get your estimate.</p>
         <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="space-y-4">
             {videos.map((video) => (
@@ -117,24 +119,39 @@ export function CartPreview({ intakeEnabled = false }: { intakeEnabled?: boolean
                   <button type="button" disabled={pending} aria-label={`Remove ${video.title}`} onClick={() => setVideos((previous) => previous.filter((item) => item.id !== video.id))} className="self-start text-sm underline">Remove</button>
                 </div>
                 <fieldset className="mt-5">
+                  <legend className="text-sm font-semibold">Dubbing language</legend>
+                  <p className="mt-1 text-xs text-zinc-600">Spanish is the default. Same pipeline, same review, same pricing in every language.</p>
+                  <select
+                    value={video.language ?? DEFAULT_LANGUAGE}
+                    onChange={(event) => setVideos((previous) => previous.map((item) => item.id === video.id ? { ...item, language: event.target.value as typeof item.language } : item))}
+                    className="mt-2 w-full max-w-xs rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm"
+                    aria-label={`Dubbing language for ${video.title}`}
+                  >
+                    {LANGUAGES.map((language) => (
+                      <option key={language.code} value={language.code}>{language.label}</option>
+                    ))}
+                  </select>
+                </fieldset>
+                <fieldset className="mt-5">
                   <legend className="text-sm font-semibold">Choose your dubbing option</legend>
-                  <p className="mt-1 text-xs text-zinc-600">Choose one. LIP already includes Spanish dubbing.</p>
+                  <p className="mt-1 text-xs text-zinc-600">Choose one. LIP already includes the dubbing in your chosen language.</p>
                   <div className="mt-2 grid gap-3 sm:grid-cols-2">
                     {(["DUB", "LIP"] as const).map((service: DubbingService) => (
                       <label key={service} className="flex items-start gap-2 rounded-lg border border-zinc-200 p-3 text-sm">
                         <input type="radio" name={`service-${video.id}`} value={service} checked={video.service === service}
                           onChange={() => setVideos((previous) => previous.map((item) => item.id === video.id ? { ...item, service } : item))} />
-                        <span><strong>{service}</strong> · {service === "DUB" ? "Spanish dubbing" : "Spanish dubbing with lip-sync"}</span>
+                        <span><strong>{service}</strong> · {service === "DUB" ? `${languageLabel(video.language)} dubbing` : `${languageLabel(video.language)} dubbing with lip-sync`}</span>
                       </label>
                     ))}
                   </div>
                   <p className="mt-2 text-xs text-zinc-600">
-                    Full-length videos include a separate subtitle file (.srt). Shorts have on-screen captions. Prices cover Spanish — for another language, submit as usual and tell us which one; we’ll confirm the quote.
+                    Full-length videos include a separate subtitle file (.srt). Shorts have on-screen captions.
                   </p>
                 </fieldset>
                 {video.service && (
                   <ShortsUpsell
                     sourceSeconds={video.seconds}
+                    language={video.language ?? DEFAULT_LANGUAGE}
                     committed={video.shorts}
                     onApply={(shorts) => setVideos((previous) => previous.map((item) => item.id === video.id ? { ...item, shorts } : item))}
                   />
@@ -169,7 +186,7 @@ export function CartPreview({ intakeEnabled = false }: { intakeEnabled?: boolean
             <div aria-live="polite" className="mt-4">
               {videos.filter((video) => video.service).map((video) => (
                 <div key={video.id} className="mb-3 border-b border-zinc-100 pb-3 text-sm">
-                  <p className="break-words font-medium">{video.title} · {video.service}</p>
+                  <p className="break-words font-medium">{video.title} · {video.service} · {languageLabel(video.language)}</p>
                   <p className="text-zinc-600">{formatDuration(video.seconds)}</p>
                   {SHORTS.filter((short) => video.shorts.includes(short.seconds)).map((short) => (
                     <p key={short.seconds} className="text-zinc-600">↳ {short.seconds}s Short · {USD.format(short.cents / 100)}</p>
@@ -187,7 +204,7 @@ export function CartPreview({ intakeEnabled = false }: { intakeEnabled?: boolean
                   <div className="flex justify-between gap-3">
                     <dt>
                       LIP · {formatDuration(summary.lipSeconds)}
-                      <span className="block text-xs text-zinc-600">Spanish dubbing included</span>
+                      <span className="block text-xs text-zinc-600">{languageLabel(videos.find((video) => video.service === "LIP")?.language)} dubbing included</span>
                     </dt>
                     <dd>{USD.format(summary.lip / 100)}</dd>
                   </div>
