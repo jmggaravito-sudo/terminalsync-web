@@ -81,6 +81,14 @@ export default function VoiceStudioPage() {
               <ShieldCheck className="h-4 w-4 text-emerald-400" />
               DUB uses a Spanish catalog voice. No voice cloning required.
             </p>
+            <p className="mt-3 flex items-start gap-2 text-sm text-zinc-400">
+              <Languages className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
+              <span>
+                Spanish today — the same pipeline also dubs into Portuguese
+                (Brazil), French, German, Italian, Japanese, Mandarin and 15+
+                more languages.
+              </span>
+            </p>
           </div>
           <figure>
             <HeroToggleVideo
@@ -171,6 +179,11 @@ export default function VoiceStudioPage() {
             searching for it every day and finding almost nothing. Your back
             catalog is the supply that market is missing.
           </p>
+          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-zinc-500">
+            Not Spanish? The same pipeline, human review and pricing dub into
+            Portuguese (Brazil), French, German, Italian, Japanese, Mandarin
+            and 15+ more languages — just ask when you request your quote.
+          </p>
         </div>
       </section>
 
@@ -227,7 +240,7 @@ export default function VoiceStudioPage() {
           <div className="mt-10 grid gap-x-8 gap-y-5 sm:grid-cols-2">
             {(
               [
-                [Video, "Full-video dubbing into Spanish"],
+                [Video, "Full-video dubbing into Spanish — or 15+ other languages on request"],
                 [Languages, "Human-reviewed translation in neutral Latin American Spanish"],
                 [FileText, "Subtitles (.srt) plus translated title, description and tags"],
                 [Music, "Your original music and sound effects preserved in the mix"],
@@ -363,7 +376,9 @@ export default function VoiceStudioPage() {
           </h2>
           <p className="mt-4 leading-relaxed text-zinc-300">
             Send us your channel to request a free 60-second sample dubbed
-            with a Spanish catalog voice.
+            with a Spanish catalog voice. Prefer Portuguese, French, German,
+            Japanese, Mandarin or another language? Say so in the notes field
+            below — the same pipeline dubs 15+ languages.
           </p>
           <div className="mt-8">
             <LeadForm />

@@ -67,6 +67,7 @@ export function QuoteIntake({ videos, total }: { videos: CartVideo[]; total: num
   if (!complete) return <p className="mt-4 text-sm text-zinc-600">Choose DUB or LIP for each video to continue.</p>;
   return <div className="mt-4 space-y-3 border-t border-zinc-200 pt-4 text-sm">
     <p>No payment now. We review your footage and confirm the price before payment.</p>
+    <p className="text-zinc-600">Spanish is the default. Portuguese (Brazil), French, German, Italian, Japanese, Mandarin and 15+ more languages are available on request — reply to our confirmation email and we’ll quote yours.</p>
     {login ? <VsLoginButtons destination="/voice-studio/cart-preview" /> : agreement && <>
       {!agreement.accepted && <label className="flex items-start gap-2">
         <input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} />
