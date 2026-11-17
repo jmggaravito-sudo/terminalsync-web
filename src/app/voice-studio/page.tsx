@@ -323,7 +323,11 @@ export default function VoiceStudioPage() {
               [
                 "Can I try DUB before ordering?",
                 "Yes. Use the form below to request a free 60-second sample with a Spanish catalog voice.",
-              ],,
+              ],
+              [
+                "What if my audience speaks another language?",
+                "Today: Latin American Spanish — the fastest-growing creator market. The same pipeline also dubs into Portuguese (Brazil), French, German, Italian, Japanese, Mandarin and 15+ more languages. Ask us and we'll quote your next language.",
+              ],
               [
                 "How fast is the turnaround?",
                 "Your first video lands within 5 business days of entering production, and each monthly batch ships on the same cadence. Every order shows its status — queued, in production, delivered — on your dashboard in real time.",
