@@ -80,6 +80,8 @@ export async function POST(req: Request) {
           `CRM: ${crmResult}`,
           ``,
           `Gate satisfied: the 60-second sample with this creator's cloned voice may now be produced.`,
+          ``,
+          `Open the production queue: https://terminalsync.ai/admin/voice-studio/production`,
         ].join("\n"),
       });
     } catch (err) {

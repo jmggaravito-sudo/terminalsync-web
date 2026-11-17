@@ -92,6 +92,7 @@ export async function POST(req: Request) {
     const key = process.env.RESEND_API_KEY;
     if (key) {
       const languages = [...new Set(items.map((item) => languageLabel(item.language)))].join(", ");
+      const panelUrl = "https://terminalsync.ai/admin/voice-studio/quotes";
       try {
         const resend = new Resend(key);
         await resend.emails.send({
@@ -103,8 +104,14 @@ export async function POST(req: Request) {
             `Request: ${saved.data.id}`,
             `Estimated: $${(expectedTotal / 100).toFixed(2)} (${items.length} video${items.length > 1 ? "s" : ""})`,
             `Language(s): ${languages}`,
-            `Review and send the payment link from /admin/voice-studio/quotes.`,
+            `Open the ops panel: ${panelUrl}`,
           ].join("\n"),
+          html: [
+            `<p>Request: ${saved.data.id}</p>`,
+            `<p>Estimated: <strong>$${(expectedTotal / 100).toFixed(2)}</strong> (${items.length} video${items.length > 1 ? "s" : ""})</p>`,
+            `<p>Language(s): ${languages}</p>`,
+            `<p><a href="${panelUrl}" style="display:inline-block;background:#18181b;color:#ffffff;font-weight:600;padding:10px 18px;border-radius:9999px;text-decoration:none">Open quote requests →</a></p>`,
+          ].join(""),
         });
       } catch (notifyError) {
         console.error("[quote-requests] notification failed", notifyError);
