@@ -135,7 +135,7 @@ export function LeadForm() {
       <input
         type="text"
         maxLength={300}
-        placeholder="Any names we should pronounce carefully? (brand, your name — optional)"
+        placeholder="Optional: brand/personal names to pronounce carefully — or request another language (Portuguese, French, German, Japanese, Mandarin, 15+; Spanish is the default)"
         value={names}
         onChange={(e) => setNames(e.target.value)}
         className={inputClass}

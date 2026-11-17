@@ -104,7 +104,7 @@ export function CartPreview({ intakeEnabled = false }: { intakeEnabled?: boolean
         <a href="/voice-studio" className="text-sm font-semibold underline">← Voice Studio</a>
         <p className="mt-8 font-mono text-xs font-semibold tracking-wide text-zinc-500">VOICE STUDIO · {intakeEnabled ? "QUOTE" : "PREVIEW"}</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">Let’s quote your videos in Spanish</h1>
-        <p className="mt-3 text-zinc-600">Paste a YouTube video link to check its length and estimate your Spanish dubbing.</p>
+        <p className="mt-3 text-zinc-600">Paste a YouTube video link to check its length and estimate your dubbing. Estimates are for Spanish — Portuguese (Brazil), French, German, Italian, Japanese, Mandarin and 15+ more languages are quoted on request.</p>
         <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="space-y-4">
             {videos.map((video) => (
@@ -129,7 +129,7 @@ export function CartPreview({ intakeEnabled = false }: { intakeEnabled?: boolean
                     ))}
                   </div>
                   <p className="mt-2 text-xs text-zinc-600">
-                    Full-length videos include a separate subtitle file (.srt). Shorts have on-screen captions.
+                    Full-length videos include a separate subtitle file (.srt). Shorts have on-screen captions. Prices cover Spanish — for another language, submit as usual and tell us which one; we’ll confirm the quote.
                   </p>
                 </fieldset>
                 {video.service && (

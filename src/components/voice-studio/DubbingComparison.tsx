@@ -39,6 +39,9 @@ export function DubbingComparison() {
         <p className="mt-3 max-w-2xl text-zinc-600">
           Compare the same 19-second clip and Spanish voice with and without lip-sync. Enter your video length for an estimate. Shorts are priced separately.
         </p>
+        <p className="mt-2 max-w-2xl text-sm text-zinc-500">
+          Estimates are for Spanish. Portuguese (Brazil), French, German, Italian, Japanese, Mandarin and 15+ more languages are quoted on request with the same pipeline.
+        </p>
         <div className="mt-6">
           <label htmlFor="dub-estimate-minutes" className="block text-sm font-semibold text-zinc-800">
             How long is your video?
