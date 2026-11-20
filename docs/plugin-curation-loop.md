@@ -61,6 +61,26 @@ Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first,
 
 ## Run log
 
+### 2026-11-16 — automated run, no focus input given
+
+**Shipped 2 Plugins**, each pairing an already-published, `available` connector with an already-evaluated, `available` skill, picked so the connector's real surface feeds the skill's actual steps (no invented capability):
+
+- **holded** (`operations`) — Holded connector (official hosted Holded MCP, OAuth; 360 documented tools in a static reference grouped by area) + Overdue Invoice Chaser. **Closes the deferral the 2026-10-19 run left** ("the pairing can't be written with the verbatim-tool evidence the PayPal pack has"): the connector now ships with its invoice-reading surface documented, and its own doc example is this job — *"Show me this month's unpaid invoices and what the total adds up to."* Disclosed in the body: invoices are read-only under Holded's recommended permission profiles (the preselected Analytical profile is enough for this job), so the pack reads the overdue list and the drafted ladder goes out from the owner's own email — no send-invoice tool is claimed; API access needs a paid plan (not Free); accounting, payroll and Team/HR are not part of the job.
+- **facturapi** (`sales`) — Facturapi connector (TerminalSync community MCP over the Facturapi v2 API: customers + CFDI 4.0 invoices; live-key stamping gated behind a separate `confirm_stamp_sat` confirmation) + Quotes & Estimates. Same honest shape as the shipped `siigo` pack: the quote is a document the owner sends (Facturapi doesn't issue cotizaciones) — what lands in Facturapi is the CFDI the owner confirms after acceptance, as draft → stamp. Disclosed in the body: this connector's tools cover customers and invoices with no product/price catalog, so prices come from the owner — which the skill already demands ("never invents a price you didn't give it"); stamping is irreversible (corrected only via credit memo); test keys never reach the SAT; the verdict scores the document, not the sale; the MCP is community-built and not endorsed by Facturapi (the connector's own card says so).
+
+**Deferred / SKIP, documented:**
+
+- Slug collisions with open PRs avoided: `canva` + `pipedrive` belong to #616, `quipu` + `pipedrive` to #599, `canva` + `brevo` to #584 — none re-shipped here (same same-slug collision that hit `xero` on 2026-08-02).
+- **mercado-pago / wompi / monei** — payments rails; the 2026-10-19 rejection of mercado-pago + cobros-vencidos stands (their documented tools have no invoice object, only payments/orders).
+- **fintoc** — its Billing group does create/finalize/void invoices, but the server's generic tool set (`fintoc_tool_search`/`_read`/`_write`) has no documented invoice-listing operation verbatim, so the pairing can't be written with the tool-level evidence the PayPal pack has. Left for a run that can enumerate the invoice-reading operation.
+- Standing blockers re-verified via frontmatter (unchanged): `meeting-notes`, `notebooklm-source-architect`, `lifecycle-email`, `referral-program` still `catalogReady: false`; `email-drafter`, `copywriter`, `deep-research`, `learn`, `slack-summarizer` still `soon` + `hidden` → calendly/zoom/klaviyo/intercom/kit remain Skill Loop tasks. **New this run:** `brand-guidelines`, `brand-voice`, `fijacion-de-precios`, `code-reviewer`, `mcp-builder`, `skill-creator` now read `status: available` with no `catalogReady: false` — pairings to consider next run (canva + brand-guidelines is claimed by #616; a `fijacion-de-precios` pairing needs a connector that exposes cost/margin data, which none of the unclaimed finance connectors document).
+
+**Logos:** no new debt. `public/plugins/holded.svg` and `public/plugins/facturapi.svg` embed the connectors' committed official PNGs (`public/connectors/holded.png` 256×256, `public/connectors/facturapi.png` 48×48) — same embed pattern as `tiendanube`. No entry added to "Logos pendientes".
+
+Validation: `vitest run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` (17/17 pass) + `tsc --noEmit` — the only error is pre-existing on `main` (`src/app/voice-studio/page.tsx:331`, unrelated voice-studio work) and documented in the PR body.
+
+App PR: no aplica — la app consume el catálogo. Both reuse shapes the desktop already renders: `holded` is a remote/OAuth connector bridged with `mcp-remote` (like `siigo`/`ramp`/`gusto`) and `facturapi` is an npx+secret connector (like `square`/`firecrawl`), with plain `connectorSlug` + `skillSlugs` composition the generic plugin renderer handles.
+
 ### 2026-10-19 — automated run, no focus input given
 
 **Shipped 2 Plugins**, each pairing an already-published, `available` connector with an already-evaluated, `available` skill, picked so the connector's verbatim tools feed the skill's actual steps (no invented capability):
