@@ -111,6 +111,16 @@ function route(req: NextRequest): NextResponse {
     }
   }
 
+  // Standalone video-editing landing ("TerminalSync Video Editing"), EN and
+  // language-agnostic like /voice-studio. The Muse-exported document is
+  // byte-exact in public/videoedit.html; rewriting (not redirecting) keeps
+  // the canonical /videoedit URL and skips all site chrome and globals.
+  if (pathname === "/videoedit") {
+    const url = req.nextUrl.clone();
+    url.pathname = "/videoedit.html";
+    return NextResponse.rewrite(url);
+  }
+
   // Skip assets, API, and already-localized paths.
   if (
     pathname.startsWith("/_next") ||
