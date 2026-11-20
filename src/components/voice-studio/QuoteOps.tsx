@@ -6,10 +6,18 @@ import { VsLoginButtons } from "./VsLoginButtons";
 import { formatDuration, languageLabel, USD, type CartVideo } from "./cartPricing";
 
 type Quote = { id: string; email: string; items: CartVideo[]; estimated_cents: number; agreement_version: string };
+type Stats = {
+  linksTotal: number;
+  linksWeek: number;
+  quotesTotal: number;
+  quotesWeek: number;
+  languages: { label: string; count: number }[];
+};
 const statuses = ["submitted", "reviewed", "declined"] as const;
 
 export function QuoteOps() {
   const [rows, setRows] = useState<Quote[]>([]);
+  const [stats, setStats] = useState<Stats | null>(null);
   const [error, setError] = useState("");
   const [login, setLogin] = useState(false);
   const [status, setStatus] = useState<(typeof statuses)[number]>("submitted");
@@ -26,7 +34,7 @@ export function QuoteOps() {
       if (response.status === 401) { setLogin(true); return; }
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
-      setRows(data.requests); setHasMore(data.hasMore);
+      setRows(data.requests); setHasMore(data.hasMore); setStats(data.stats ?? null);
     } catch (e) { if (!signal?.aborted) setError(e instanceof Error ? e.message : "Unable to load quotes."); }
     finally { if (!signal?.aborted) setWorking(false); }
   }, [status, page]);
@@ -61,6 +69,16 @@ export function QuoteOps() {
   return <main className="mx-auto max-w-4xl px-6 py-12">
     <a href="/admin/voice-studio/production" className="text-sm underline">← Production queue</a>
     <h1 className="mt-3 text-3xl font-bold">Voice Studio quote requests</h1>
+    {stats && (
+      <p className="my-3 rounded-lg bg-zinc-100 px-3 py-2 text-sm text-zinc-700">
+        <strong>{stats.linksTotal}</strong> link{stats.linksTotal === 1 ? "" : "s"} added to carts
+        ({stats.linksWeek} in 7 days) · <strong>{stats.quotesTotal}</strong> quote{stats.quotesTotal === 1 ? "" : "s"} submitted
+        ({stats.quotesWeek} in 7 days)
+        {stats.languages.length > 0 && (
+          <> · 7-day languages: {stats.languages.map((entry) => `${entry.label} ×${entry.count}`).join(", ")}</>
+        )}
+      </p>
+    )}
     <p className="my-3 text-sm">These are unpaid requests. Review the footage and follow up directly with the customer.</p>
     {login ? <VsLoginButtons destination="/admin/voice-studio/quotes" /> : <>
       <div className="flex gap-4">
