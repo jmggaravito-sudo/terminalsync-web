@@ -65,7 +65,7 @@ export async function GET(req: Request) {
     if (!statuses.includes(status) || !Number.isInteger(page) || page < 0 || page > 1000) return fail("Invalid filters.", 400);
     const [list, stats] = await Promise.all([
       account.db.from("voice_studio_quote_requests")
-        .select("id,email,items,estimated_cents,status,created_at,agreement_version")
+        .select("id,email,items,estimated_cents,status,created_at,agreement_version,channel_creation")
         .eq("status", status).order("created_at", { ascending: true }).order("id").range(page * 25, page * 25 + 25)
         .then((r) => { if (r.error) throw r.error; return r; }),
       loadStats(account.db),

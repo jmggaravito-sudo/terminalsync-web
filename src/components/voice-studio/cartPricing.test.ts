@@ -23,12 +23,12 @@ describe("Voice Studio cart estimates", () => {
 
   it("shows one LIP charge for the 23:56 video, with no DUB charge", () => {
     expect(estimateCart([video(1436, { service: "LIP" })]))
-      .toEqual({ dubSeconds: 0, lipSeconds: 1436, dubbing: 0, lip: 19506, shorts: 0, total: 19506 });
+      .toEqual({ dubSeconds: 0, lipSeconds: 1436, dubbing: 0, lip: 19506, interviews: [], shorts: 0, total: 19506 });
   });
 
   it("shows one DUB charge when LIP is not selected", () => {
     expect(estimateCart([video(1436)]))
-      .toEqual({ dubSeconds: 1436, lipSeconds: 0, dubbing: 9454, lip: 0, shorts: 0, total: 9454 });
+      .toEqual({ dubSeconds: 1436, lipSeconds: 0, dubbing: 9454, lip: 0, interviews: [], shorts: 0, total: 9454 });
   });
 
   it("doesn't count unselected services or clips longer than the source", () => {

@@ -5,7 +5,7 @@ import { authedFetch } from "@/lib/supabase/browser";
 import { VsLoginButtons } from "./VsLoginButtons";
 import { formatDuration, languageLabel, USD, type CartVideo } from "./cartPricing";
 
-type Quote = { id: string; email: string; items: CartVideo[]; estimated_cents: number; agreement_version: string };
+type Quote = { id: string; email: string; items: CartVideo[]; estimated_cents: number; agreement_version: string; channel_creation?: boolean };
 type Stats = {
   linksTotal: number;
   linksWeek: number;
@@ -90,12 +90,17 @@ export function QuoteOps() {
       {working && <p role="status" className="mt-3">Loading…</p>}
       {!working && !error && rows.length === 0 && <p className="mt-3">No requests in this view.</p>}
       {rows.map((row) => <article key={row.id} className="my-4 rounded-xl border p-4">
-        <h2 className="font-semibold">{row.email} · {USD.format(row.estimated_cents / 100)}</h2>
+        <h2 className="font-semibold">
+          {row.email} · {USD.format(row.estimated_cents / 100)}
+          {row.channel_creation && <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900">channel creation requested</span>}
+        </h2>
         <p className="text-sm">Ref. {row.id} · Agreement {row.agreement_version}</p>
         <ul className="my-2 space-y-1 text-sm">
           {row.items.map((item) => <li key={item.id}>
             <a className="underline" href={`https://www.youtube.com/watch?v=${item.id.slice(8)}`} target="_blank" rel="noopener noreferrer">{item.title}</a>
-            {" · "}{item.service} · {languageLabel(item.language)} · {formatDuration(item.seconds)}{item.shorts.length > 0 && ` · Shorts: ${item.shorts.join(", ")}s`}
+            {" · "}{item.package ?? item.service}
+            {(item.speakers ?? 1) > 1 && ` · ${item.speakers} speakers`}
+            {" · "}{languageLabel(item.language)} · {formatDuration(item.seconds)}{item.shorts.length > 0 && ` · Shorts: ${item.shorts.join(", ")}s`}
           </li>)}
         </ul>
         {status === "submitted" && <div className="flex gap-4 text-sm">

@@ -84,7 +84,7 @@ describe("Voice Studio quote intake", () => {
   });
   it("returns the original request for a replay and rejects changes under the same id", async () => {
     const request_fingerprint = createHash("sha256")
-      .update(JSON.stringify({ items: [item], expectedTotal: 815 })).digest("hex");
+      .update(JSON.stringify({ items: [item], expectedTotal: 815, channelCreation: false })).digest("hex");
     existing.mockResolvedValue({ data: { id, request_fingerprint }, error: null });
     const replay = await POST(req());
     expect(replay.status).toBe(200);
@@ -108,5 +108,26 @@ describe("Voice Studio quote intake", () => {
   it("rejects an unknown language code without saving", async () => {
     expect((await POST(req({ items: [{ ...item, language: "klingon" }] }))).status).toBe(400);
     expect(insert).not.toHaveBeenCalled();
+  });
+  it("stores a multi-speaker interview package with the request", async () => {
+    agreement.mockResolvedValueOnce({ data: null, error: null })
+      .mockResolvedValueOnce({ data: { agreement_url: url }, error: null });
+    const interview = { id: "youtube-abcdefghijk", service: null, shorts: [], speakers: 2, package: "host_lip_guest_subs" };
+    expect((await POST(req({ items: [interview], expectedTotal: 965 }))).status).toBe(201);
+    expect(insert).toHaveBeenCalledWith(expect.objectContaining({
+      channel_creation: false,
+      items: [expect.objectContaining({ id: interview.id, speakers: 2, package: "host_lip_guest_subs" })],
+    }));
+  });
+  it("rejects interview items priced as single-speaker services", async () => {
+    expect((await POST(req({ items: [{ id: "youtube-abcdefghijk", service: "LIP", shorts: [], speakers: 2 }] }))).status).toBe(400);
+    expect((await POST(req({ items: [{ id: "youtube-abcdefghijk", service: null, shorts: [], speakers: 2, package: "klingon_lip" }] }))).status).toBe(400);
+    expect(insert).not.toHaveBeenCalled();
+  });
+  it("records the channel-creation upsell", async () => {
+    agreement.mockResolvedValueOnce({ data: null, error: null })
+      .mockResolvedValueOnce({ data: { agreement_url: url }, error: null });
+    expect((await POST(req({ channelCreation: true }))).status).toBe(201);
+    expect(insert).toHaveBeenCalledWith(expect.objectContaining({ channel_creation: true }));
   });
 });

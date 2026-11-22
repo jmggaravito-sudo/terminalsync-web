@@ -7,7 +7,7 @@ import type { CartVideo } from "./cartPricing";
 
 type Agreement = { url: string; version: string; accepted: boolean };
 
-export function QuoteIntake({ videos, total }: { videos: CartVideo[]; total: number }) {
+export function QuoteIntake({ videos, total, channel = false }: { videos: CartVideo[]; total: number; channel?: boolean }) {
   const [agreement, setAgreement] = useState<Agreement | null>(null);
   const [login, setLogin] = useState(false);
   const [terms, setTerms] = useState(false);
@@ -15,9 +15,14 @@ export function QuoteIntake({ videos, total }: { videos: CartVideo[]; total: num
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState<string | null>(null);
-  const complete = videos.length > 0 && videos.every((video) => video.service);
-  const items = videos.map(({ id, service, shorts, language }) => language ? { id, service, shorts, language } : { id, service, shorts });
-  const cartKey = JSON.stringify({ items, total });
+  const complete = videos.length > 0 && videos.every((video) => video.service || video.package);
+  const items = videos.map(({ id, service, package: pkg, shorts, language, speakers }) => ({
+    id, service, shorts,
+    ...(pkg ? { package: pkg } : {}),
+    ...(language ? { language } : {}),
+    ...(speakers && speakers > 1 ? { speakers } : {}),
+  }));
+  const cartKey = JSON.stringify({ items, total, channel });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -46,7 +51,7 @@ export function QuoteIntake({ videos, total }: { videos: CartVideo[]; total: num
       sessionStorage.setItem(storageKey, JSON.stringify({ cartKey, id: requestId }));
       const response = await authedFetch("/api/voice-studio/quote-requests", {
         method: "POST",
-        body: JSON.stringify({ items, expectedTotal: total, requestId, rightsConfirmed: rights,
+        body: JSON.stringify({ items, expectedTotal: total, requestId, rightsConfirmed: rights, channelCreation: channel,
           acceptedVersion: terms ? agreement.version : null }),
       });
       const data = await response.json();

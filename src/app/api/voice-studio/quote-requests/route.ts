@@ -35,12 +35,13 @@ export async function POST(req: Request) {
     const items = parseQuoteItems(body?.items);
     const requestId = body?.requestId;
     const expectedTotal = body?.expectedTotal;
+    const channelCreation = body?.channelCreation === true;
     if (!items || typeof requestId !== "string" || !requestUuid.test(requestId) ||
         !Number.isSafeInteger(expectedTotal) || expectedTotal <= 0 || body.rightsConfirmed !== true) {
       return fail("Check your videos and confirm you have permission to process them.", 400);
     }
     const { db, id, email } = account;
-    const fingerprint = createHash("sha256").update(JSON.stringify({ items, expectedTotal })).digest("hex");
+    const fingerprint = createHash("sha256").update(JSON.stringify({ items, expectedTotal, channelCreation })).digest("hex");
     const existing = await db.from("voice_studio_quote_requests").select("id,request_fingerprint")
       .eq("account_id", id).eq("request_id", requestId).maybeSingle();
     if (existing.error) throw existing.error;
@@ -60,7 +61,12 @@ export async function POST(req: Request) {
       if ("error" in verified || verified.id !== item.id || item.shorts.some((seconds) => seconds > verified.seconds)) {
         return null;
       }
-      return { ...verified, service: item.service, shorts: item.shorts, ...(item.language ? { language: item.language } : {}) };
+      return {
+        ...verified, service: item.service ?? null, shorts: item.shorts,
+        ...(item.language ? { language: item.language } : {}),
+        ...(item.speakers ? { speakers: item.speakers } : {}),
+        ...(item.package ? { package: item.package } : {}),
+      };
     }));
     if (videos.some((video) => video === null)) return fail("A video could not be reverified. Please check the links and Shorts.", 422);
     const verified = videos.filter((video) => video !== null);
@@ -78,6 +84,7 @@ export async function POST(req: Request) {
     const saved = await db.from("voice_studio_quote_requests").insert({
       account_id: id, email, request_id: requestId, request_fingerprint: fingerprint,
       agreement_version: agreement.version, rights_confirmed: true, items: verified, estimated_cents: expectedTotal,
+      channel_creation: channelCreation,
     }).select("id").single();
     if (saved.error?.code === "23505") {
       const retry = await db.from("voice_studio_quote_requests").select("id,request_fingerprint")
@@ -92,7 +99,18 @@ export async function POST(req: Request) {
     const key = process.env.RESEND_API_KEY;
     if (key) {
       const languages = [...new Set(items.map((item) => languageLabel(item.language)))].join(", ");
+      const speakersLine = items
+        .filter((item) => (item.speakers ?? 1) > 1)
+        .map((item) => `${item.speakers} speakers · ${item.package}`);
       const panelUrl = "https://terminalsync.ai/admin/voice-studio/quotes";
+      const detailLines = [
+        `Request: ${saved.data.id}`,
+        `Estimated: $${(expectedTotal / 100).toFixed(2)} (${items.length} video${items.length > 1 ? "s" : ""})`,
+        `Language(s): ${languages}`,
+        ...(speakersLine.length > 0 ? speakersLine.map((line) => `Interview: ${line}`) : []),
+        `Channel creation: ${channelCreation ? "requested" : "no"}`,
+        `Open the ops panel: ${panelUrl}`,
+      ];
       try {
         const resend = new Resend(key);
         await resend.emails.send({
@@ -100,16 +118,9 @@ export async function POST(req: Request) {
           to: "hola@terminalsync.ai",
           replyTo: email,
           subject: `📝 Voice Studio quote request — ${email}`,
-          text: [
-            `Request: ${saved.data.id}`,
-            `Estimated: $${(expectedTotal / 100).toFixed(2)} (${items.length} video${items.length > 1 ? "s" : ""})`,
-            `Language(s): ${languages}`,
-            `Open the ops panel: ${panelUrl}`,
-          ].join("\n"),
+          text: detailLines.join("\n"),
           html: [
-            `<p>Request: ${saved.data.id}</p>`,
-            `<p>Estimated: <strong>$${(expectedTotal / 100).toFixed(2)}</strong> (${items.length} video${items.length > 1 ? "s" : ""})</p>`,
-            `<p>Language(s): ${languages}</p>`,
+            `<p>${detailLines.slice(0, -1).map((line) => line.replace(/</g, "&lt;")).join("<br>")}</p>`,
             `<p><a href="${panelUrl}" style="display:inline-block;background:#18181b;color:#ffffff;font-weight:600;padding:10px 18px;border-radius:9999px;text-decoration:none">Open quote requests →</a></p>`,
           ].join(""),
         });
