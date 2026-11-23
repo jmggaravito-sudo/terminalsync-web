@@ -1,4 +1,5 @@
 import Script from "next/script";
+import { PICKER_HANDOFF_KEY } from "@/lib/pickerLaunch";
 
 const pickerClientId =
   process.env.NEXT_PUBLIC_GOOGLE_PICKER_CLIENT_ID ||
@@ -136,17 +137,63 @@ export function GoogleDrivePickerShell({ lang = "en" }: { lang?: "en" | "es" }) 
 
           let pendingReturnToTerminalSync = null;
 
+          // The Google access token arrives one of two ways:
+          //   - New desktop apps: POST /picker/launch left it in this tab's
+          //     sessionStorage, bound to this picker's state. Read once, then
+          //     deleted — it never appears in a URL or in browser history.
+          //   - Older desktop apps: #access_token=… in the fragment. Still
+          //     accepted, but the fragment is wiped from the address bar right
+          //     away so it does not stay visible or get copied.
+          // Kept in memory so "Open picker again" keeps working.
+          const HANDOFF_KEY = ${JSON.stringify(PICKER_HANDOFF_KEY)};
+          const HANDOFF_MAX_AGE_MS = 10 * 60 * 1000;
+          let cachedAccessToken = null;
+
+          function takeAccessToken(state) {
+            if (cachedAccessToken !== null) return cachedAccessToken;
+            let token = '';
+            try {
+              const raw = window.sessionStorage.getItem(HANDOFF_KEY);
+              if (raw) {
+                window.sessionStorage.removeItem(HANDOFF_KEY);
+                const handoff = JSON.parse(raw);
+                if (
+                  handoff &&
+                  handoff.state === state &&
+                  typeof handoff.accessToken === 'string' &&
+                  typeof handoff.at === 'number' &&
+                  Date.now() - handoff.at < HANDOFF_MAX_AGE_MS
+                ) {
+                  token = handoff.accessToken;
+                }
+              }
+            } catch (_) {
+              // Storage unavailable or malformed: fall through to the fragment.
+            }
+            if (!token) {
+              const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+              token = hash.get('access_token') || '';
+            }
+            if (window.location.hash) {
+              try {
+                window.history.replaceState(null, '', window.location.pathname + window.location.search);
+              } catch (_) {}
+            }
+            cachedAccessToken = token;
+            return token;
+          }
+
           function params() {
             const search = new URLSearchParams(window.location.search);
-            const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+            const state = search.get('state') || '';
             return {
               redirect: search.get('redirect') || '',
               cancel: search.get('cancel') || '',
-              state: search.get('state') || '',
+              state: state,
               clientId: search.get('clientId') || CLIENT_ID,
               appId: search.get('appId') || (CLIENT_ID.split('-')[0] || ''),
               developerKey: search.get('developerKey') || DEVELOPER_KEY,
-              accessToken: hash.get('access_token') || '',
+              accessToken: takeAccessToken(state),
               // ?mode=files → multi-file picker (Plan B for Drive Flow 3);
               // anything else (default) → single-folder picker (legacy).
               // The Tauri side passes mode=files when the user clicks
