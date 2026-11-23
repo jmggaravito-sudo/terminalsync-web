@@ -342,6 +342,25 @@ Until these are present, keep the kit out of the published marketplace catalog.
 
 ## Loop run log
 
+### 2026-11-23 — Help Center Kit; the blocked support role ships in its buildable half; six business connectors evaluated and skipped
+
+**Shipped (1 kit, EN/ES parity):**
+
+- `help-center` (category: support — the first kit in this category) — `intercom` + `doc-coauthoring`. Scoped to the help-center maintenance loop for an owner or support lead who runs customer service on Intercom: see which questions repeat across real conversations and which ones no article covers (search conversations vs. article list), draft the missing article through the structured pass (brief → outline → draft → revision), publish it (`create_article`/`update_article`), and close the loop with a team-facing `add_internal_note` so teammates link instead of retype. `intercom` was shipped 2026-10-14 and was used by zero prior kits. **This is the reframe that unblocks the support role after four deferrals (2026-08-02 → 2026-10-12):** every prior run rejected a support kit because no whitelisted skill fits *customer-facing reply drafting* — and that blocker still stands, unchanged. What this run noticed is that the role has a second, buildable half: **articles are long documents**, which is exactly `doc-coauthoring`'s declared shape (the 2026-08-03 rejection was about stretching it onto short *replies*). The kit states the negative fit in its Limits: no item touches a customer-facing reply (no tool exists for one), and the reply-kit half stays deferred until a reply-drafting skill passes the mold or a real reply path ships. Deliberately two items: adding `internal-comms` to "announce articles to the team" is the filler the coherence rule bans.
+
+**New evaluations this run (6 SKIP, all coherence/scope — no rule change needed):**
+
+- **Qonto finance kit** — `qonto` is installable (official hosted MCP, OAuth molde B, `markets: ["ES","FR"]`) and unused by kits, and its surface (client invoices, payment links, transactions, cards) is empresario-first. Skipped on the skill side, same reasoning as the 2026-10-12 Siigo skip: no whitelisted skill serves invoicing/collections operations; the only fit reduces the kit to "connector + report drafting" overlapping `small-business-finance`'s artifact shape.
+- **Brevo campaign kit** — `brevo` (2026-10-16, 27 modules) is installable and unused, but every skill that makes an email/SMS campaign kit coherent is outside the 7-skill whitelist; leaning on `doc-coauthoring` for campaign copy is the stretch the 2026-08-03 entry rejected for support replies (same blocker as the Klaviyo kit).
+- **Tiendanube store-ops kit** — `tiendanube` (2026-10-15, 28 tools) is installable and unused, but orders → stock → coupons → promotions is `ecommerce-storefront`'s purpose with a different vendor — relabel under the duplicate-purpose prohibition.
+- **Pipedrive pipeline kit** — `pipedrive` (2026-10-12) is installable and unused, but `b2b-sales-pipeline` already covers the CRM sales loop with the same skill pair — relabel.
+- **PayPal invoicing kit** — same skill-side blocker as Siigo/Qonto (no whitelisted skill serves invoicing/collections comms).
+- **Alegra / Siigo / Quipu / Wompi (LatAm invoicing & payments)** — same blocker; `wompi` additionally is a community-published MCP (`wompi-mcp`), not vendor-published.
+
+**Carry-over queue unchanged:** Klaviyo retention kit (skill whitelist), support-*reply* kit (skill side), Gusto payroll kit (plugin-pack duplication), Local Marketing kit (`google-business` no manifest), Calendly kit (coherence drop). The 2026-09-28 whitelist-drift flag for JM is still open and still blocks the first three families.
+
+**App mirror:** not opened — per `docs/integration-loop-two-pr-policy.md` this kit needs no desktop code (standard connector + skill items the app already renders from `/api/marketplace/catalog`). Landing body states `App PR: no aplica — la app consume el catálogo` and `App mirror PR: no aplica — la app consume el catálogo`. Note: the PR was opened **Ready for review**, not draft — `AGENTS.md` requires agent PRs to be ready before handoff (drafts only if JM asks).
+
 ### 2026-10-12 — Spend Review Kit; ramp unblocked after its connector landed; deferred queue re-checked
 
 **Shipped (1 kit, EN/ES parity):**
