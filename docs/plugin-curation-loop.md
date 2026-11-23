@@ -61,6 +61,35 @@ Plugin runs follow `docs/integration-loop-two-pr-policy.md`: **landing PR first,
 
 ## Run log
 
+### 2026-11-23 — automated run, no focus input given
+
+**Shipped 2 Plugins**, both closing overdue-collections pairings the 2026-10-19 run had to leave open, each an already-published, `available` connector paired with the already-evaluated, `available` `cobros-vencidos` skill (same reuse precedent as the 2026-07-31 run shipping `meta-ads-creator` on both `higgsfield` and `ideogram`), picked so the connector's own documented examples state the job verbatim:
+
+- **holded** (`operations`) — Holded connector (official hosted Holded MCP, OAuth, 360 documented tools) + Overdue Invoice Chaser / Cobros Vencidos. The connector's own example is the job — *"Show me this month's unpaid invoices and what the total adds up to."* — and this run resolves that run's deferral blocker: the deferral said Holded's docs "publish no flat tool list", but the connector now cites the static reference (`holded.com/developers/mcp/tools`, 360 tools, 151 read-only), so the pairing is written with evidence. Holded's own line for its MCP — *"The AI drafts and organizes; you issue and collect"* — is the pack's division of labor: under Holded's permission profiles invoices and tax documents are read-only for the AI, so the pack reads the unpaid list and drafts the reminder → firm follow-up → final notice ladder, and the reminder leaves from the owner's own email (disclosed; same read-then-owner-sends shape as `square` + Ask for Reviews). Requirement disclosed: Holded's API is on paid plans, not Free.
+- **quipu** (`operations`) — Quipu connector (TerminalSync community MCP over the Quipu API: contacts, invoices, book entries) + Overdue Invoice Chaser. The connector's own example is the skill's question verbatim: *"Find the client Fisioterapia Ana and tell me if she has unpaid invoices."* — invoices searchable by text and period, contacts filterable by tax ID/kind/country, book entries showing whether the money came in. Disclosed in the body: the connector is a TerminalSync community project not endorsed by Quipu/TeamSystem (its body's own disclosure, writes verified against a real account 2026-10-27); this pack uses only the read side; expenses/paysheets/bank reconciliation/tax filings are outside the connector's surface.
+
+**Deferred / SKIP, documented:**
+
+- **facturapi + cotizaciones** — deferred on evidence: the connector's documented read surface lists customers and invoices with line items, but the products-with-prices tool the `cotizaciones` pairing needs (its "never invents a price" input) is not verifiable from official sources this run — the npm registry README for `@terminalsync/facturapi-mcp@0.1.0` comes back empty and the repo README was not reachable. Without that, the siigo-shaped pairing can't be written with verbatim-tool evidence. Left for a run that can enumerate Facturapi's product surface.
+- **alegra + cobros-vencidos** — the connector is now `status: soon` (retired since its 2026-10-10 ship), and RULES.md forbids shipping a Plugin while a referenced piece is `soon`. New finding this run.
+- **pipedrive + cotizaciones** — viable on substance (products carry prices, `get*`/`add*` tools) but the second half has no invoice object: the skill's "when accepted, register it" step would land as a CRM deal, not a document — weaker than the siigo precedent, deferred.
+- **fintoc** — its documented toolset is generic (`fintoc_tool_search`/`_details`/`_read`/`_write`) rather than per-object invoice tools; weaker verbatim evidence than the two shipped. Deferred.
+- **make** — automation hub like Zapier; no skill in `content/skills/{en,es}` teaches a specific Make scenario. Skill Loop candidate.
+- **mercado-pago + cobros-vencidos** — standing rejection unchanged from 2026-10-19: the server's documented tools have no invoice object.
+- **brevo + lifecycle-email** — `lifecycle-email` still `catalogReady: false` (re-verified this run). Skill Loop task.
+- **intercom + email-drafter** — `email-drafter` still `soon` + `hidden: true` (re-verified). Skill Loop task.
+- **typeform, bird** — standing (no publishable skill teaches a survey or customer-messaging workflow). Skill Loop candidates.
+- **qonto + tax-prep-checklist** — standing rejection: EU/ES banking against a US/IRS-flavored skill.
+- **monei, wompi** — payment rails without the customer/invoice read surface these skills need.
+- **linear** — dev persona; no business skill pairing.
+- Standing blockers re-verified via frontmatter (unchanged): `meeting-notes`, `brand-guidelines`, `brand-voice`, `lifecycle-email`, `referral-program`, `notebooklm-source-architect` still `catalogReady: false` (the first three also claude-only); `email-drafter` still `soon` + `hidden` → calendly/zoom/canva/klaviyo/intercom remain Skill Loop tasks.
+
+**Logos:** no new debt. Both `public/plugins/holded.svg` and `public/plugins/quipu.svg` embed their connector's committed official PNG (`public/connectors/holded.png` 256×256, `public/connectors/quipu.png` 180×180) at 48×48 — the same embed pattern as `tiendanube.svg`. No entry added to "Logos pendientes".
+
+Validation: `npm test -- --run src/lib/plugins.integrity.test.ts src/lib/plugins.test.ts src/lib/logoAssets.test.ts` (17/17 pass) + `npm run typecheck` (`tsc --noEmit`, clean).
+
+App PR: no aplica — la app consume el catálogo. Both reuse shapes the desktop already renders: plain `connectorSlug` + `skillSlugs` composition the generic plugin renderer handles (`holded` is a remote/OAuth connector bridged with `mcp-remote` like `siigo`/`ramp`/`gusto`; `quipu` is an npx+secret connector like `firecrawl` in `seo-audit`).
+
 ### 2026-10-19 — automated run, no focus input given
 
 **Shipped 2 Plugins**, each pairing an already-published, `available` connector with an already-evaluated, `available` skill, picked so the connector's verbatim tools feed the skill's actual steps (no invented capability):
