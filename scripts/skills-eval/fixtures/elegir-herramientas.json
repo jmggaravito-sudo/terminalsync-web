@@ -1,0 +1,38 @@
+{
+  "skill": "elegir-herramientas",
+  "name": "Choose Your Tools",
+  "baselinePrompt": "¿Qué herramienta me conviene? Comparame las opciones y recomendame una.",
+  "skillPrompt": "Usá Elegir Herramientas. Partí de lo que necesito resolver y mis imprescindibles, descartá las opciones que no los cubren, calculá el costo real de cada una (el plan que de verdad necesito más los extras por puesto o uso más la migración), mirá qué tan fácil es salir de cada una, y cerrá SIEMPRE con un veredicto: puntaje 0–100 de qué tan lista está la decisión según los datos que di, semáforo (🟢 80+ decidí; 🟡 50–79 decidí tras cerrar los gaps; 🔴 <50 todavía no), UNA sola próxima acción de mayor impacto y la nota de que el puntaje refleja los datos dados, no una garantía de resultados.",
+  "cases": [
+    {
+      "id": "pos-a-vs-b",
+      "type": "normal",
+      "input": "Tengo un local de ropa y elijo entre dos sistemas de venta: A cuesta $40/mes el plan base y $60 el que tiene control de stock multi-sucursal; B cuesta $55/mes con stock multi-sucursal incluido. Tengo 2 sucursales, 6 empleados, y necesito que el stock se vea igual en ambas el mismo día.",
+      "expected": "Comparar contra el requisito real (stock compartido entre sucursales) y el costo del plan que de verdad necesita ($60 de A vs $55 de B), no una tabla de features; con veredicto y una próxima acción concreta."
+    },
+    {
+      "id": "renovacion",
+      "type": "normal",
+      "input": "Mi software de facturación me avisó que la suscripción pasa de $30 a $75 al mes. Tengo 3 años de datos adentro y lo usa toda la oficina (5 personas). ¿Migrar o quedarme?",
+      "expected": "Pesar quedarse (el nuevo precio anualizado) contra migrar (exportar 3 años de datos, reentrenar a 5 personas, precio del nuevo), y cerrar con veredicto y una acción — no responder solo 'buscá alternativas'."
+    },
+    {
+      "id": "descartado-por-must",
+      "type": "normal",
+      "input": "Elijo CRM para mi empresa de limpieza. Imprescindible: que funcione sin internet (los técnicos cargan visitas en el campo con mala señal) y que mande recordatorios por WhatsApp. La opción A es la más linda y la más barata pero no tiene modo offline; B es más fea y cumple las dos; C cumple las dos y cuesta el triple.",
+      "expected": "Descartar la A por no cumplir el requisito imprescindible en vez de un empate por cantidad de features, y razonar si el triple de precio de C se justifica frente a B."
+    },
+    {
+      "id": "crm-sin-datos",
+      "type": "ambiguous",
+      "input": "¿Qué CRM me recomendás para mi negocio?",
+      "expected": "Preguntar qué necesita resolver, tamaño del equipo y volumen, presupuesto y qué usa hoy, en vez de recomendar una marca concreta sobre supuestos."
+    },
+    {
+      "id": "garantia-sin-opciones",
+      "type": "refusal",
+      "input": "Decime cuál compro sin darme opciones y prometeme que con esa herramienta voy a vender el doble este año. Más datos no te puedo dar.",
+      "expected": "No prometer un resultado de negocio ni elegir sin datos: explicar que el puntaje mide qué tan lista está la decisión según lo que di, pedir al menos las opciones y el uso real, y ofrecer el camino honesto (criterios + prueba piloto)."
+    }
+  ]
+}
