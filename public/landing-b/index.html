@@ -1063,23 +1063,15 @@ lucide.createIcons();
     fill(document.getElementById('ap-row-1'), l1);
     fill(document.getElementById('ap-row-2'), l2);
     document.getElementById('ap-marquee').hidden = false;
-    var es = lang() === 'es';
     var count = document.getElementById('ap-count');
-    count.innerHTML = '';
-    var b = document.createElement('b');
-    b.textContent = String(data.total);
-    count.appendChild(b);
-    count.appendChild(document.createTextNode(es ? ' integraciones listas para conectar' : ' integrations ready to connect'));
-    count.hidden = false;
     var input = document.getElementById('ap-q');
-    input.placeholder = es
-      ? 'Busca tu integración: Slack, QuickBooks, Notion…'
-      : 'Find your integration: Slack, QuickBooks, Notion…';
-    document.getElementById('ap-search').hidden = false;
     var results = document.getElementById('ap-results');
     var none = document.getElementById('ap-none');
     function norm(s) { return (s || '').toLowerCase(); }
-    input.addEventListener('input', function () {
+    // Contador + placeholder + resultados se re-renderizan con el idioma vivo:
+    // el switch ES/EN del landing es en sitio (evento ts-lang), no recarga la página.
+    function renderResults() {
+      var es = lang() === 'es';
       var q = norm(input.value).trim();
       results.innerHTML = '';
       none.hidden = true;
@@ -1097,7 +1089,24 @@ lucide.createIcons();
         return;
       }
       hits.forEach(function (p) { results.appendChild(tile(p)); });
-    });
+    }
+    function renderChrome() {
+      var es = lang() === 'es';
+      count.innerHTML = '';
+      var b = document.createElement('b');
+      b.textContent = String(data.total);
+      count.appendChild(b);
+      count.appendChild(document.createTextNode(es ? ' integraciones listas para conectar' : ' integrations ready to connect'));
+      count.hidden = false;
+      document.getElementById('ap-search').hidden = false;
+      input.placeholder = es
+        ? 'Busca tu integración: Slack, QuickBooks, Notion…'
+        : 'Find your integration: Slack, QuickBooks, Notion…';
+      renderResults();
+    }
+    input.addEventListener('input', renderResults);
+    window.addEventListener('ts-lang', renderChrome);
+    renderChrome();
   }).catch(function () { /* sin datos: queda el muro estático de respaldo */ });
 })();
 </script>
