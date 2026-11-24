@@ -32,7 +32,7 @@ const BANKING_CLAIMS: Record<"es" | "en", string[]> = {
     "Transactions",
     "Auth",
     "/item/remove",
-    "Marca E-commerce LLC",
+    "Marca E-Commerce LLC",
     "plaid.com/legal",
   ],
   en: [
@@ -48,7 +48,7 @@ const BANKING_CLAIMS: Record<"es" | "en", string[]> = {
     "Transactions",
     "Auth",
     "/item/remove",
-    "Marca E-commerce LLC",
+    "Marca E-Commerce LLC",
     "plaid.com/legal",
   ],
 };

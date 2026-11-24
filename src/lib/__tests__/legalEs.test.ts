@@ -64,7 +64,7 @@ describe("modo borrador", () => {
     const out = await html(AvisoLegalPage as Page, "es");
     expect(out).toContain("BORRADOR pendiente de validación por abogado");
     expect(out).toContain("[PENDIENTE:");
-    expect(out).toContain("Marca E-commerce LLC");
+    expect(out).toContain("Marca E-Commerce LLC");
     expect(out).toContain("8614 W State Rd 84, Davie, FL 33324");
     expect(out).toContain("legal@terminalsync.ai");
   });

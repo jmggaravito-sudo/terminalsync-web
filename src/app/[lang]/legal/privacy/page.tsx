@@ -71,7 +71,7 @@ export default async function PrivacyPage({ params }: Props) {
           (secciones 2 y 3).
         </p>
         <p>
-          Operada por <strong>Marca E-commerce LLC</strong>, que opera bajo la
+          Operada por <strong>Marca E-Commerce LLC</strong>, que opera bajo la
           marca <strong>TerminalSync</strong>, con dirección de contacto legal
           en <a href="mailto:legal@terminalsync.ai">legal@terminalsync.ai</a>.
         </p>
@@ -348,7 +348,7 @@ export default async function PrivacyPage({ params }: Props) {
         connect their bank accounts via open banking (sections 2 and 3).
       </p>
       <p>
-        Operated by <strong>Marca E-commerce LLC</strong>, doing business as{" "}
+        Operated by <strong>Marca E-Commerce LLC</strong>, doing business as{" "}
         <strong>TerminalSync</strong>. Legal contact:{" "}
         <a href="mailto:legal@terminalsync.ai">legal@terminalsync.ai</a>.
       </p>
