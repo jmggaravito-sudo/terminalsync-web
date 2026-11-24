@@ -24,6 +24,11 @@ function isMarketplaceContext(pathname: string | null): boolean {
   return /^\/(es|en)\/(marketplace|admin|publishers|connectors|skills|cli-tools)(\/|$)/.test(pathname);
 }
 
+function isLandingBContentRoute(pathname: string | null): boolean {
+  if (!pathname) return false;
+  return /^\/(es|en)\/(casos-de-uso|connectors(?:\/.*)?|legal\/(privacy|terms|cookies))\/?$/.test(pathname);
+}
+
 type NavItem = { href: string; label: string; external?: boolean; strong?: boolean };
 
 export function Nav({ dict, lang }: Props) {
@@ -31,12 +36,12 @@ export function Nav({ dict, lang }: Props) {
   const marketplace = isMarketplaceContext(pathname);
   const [open, setOpen] = useState(false);
 
-  // Landing B brings its own header (HeaderB). Hide the shared Nav only on
-  // the homepage so all internal pages keep their navigation.
+  // Landing B owns the public chrome on its homepage and its linked content
+  // pages. Keep the older navigation for unrelated application/marketplace routes.
   const isHome =
     pathname === `/${lang}` || pathname === `/${lang}/`;
   if (LANDING_B && isHome) return null;
-  if (LANDING_B && pathname === `/${lang}/casos-de-uso`) {
+  if (LANDING_B && isLandingBContentRoute(pathname)) {
     return <HeaderB dict={dict} lang={lang} standalone />;
   }
 

@@ -44,6 +44,24 @@ export function HeaderB({ dict, lang, standalone = false }: Props & { standalone
           </span>
         </Link>
 
+        <nav
+          aria-label={lang === "es" ? "Navegación principal" : "Main navigation"}
+          className="ml-8 mr-auto hidden items-center gap-5 text-[13px] font-medium text-[var(--color-fg-muted)] lg:flex"
+        >
+          <Link className="transition-colors hover:text-[var(--color-accent)]" href={`/${lang}#capacidades`}>
+            {lang === "es" ? "Explora los demos" : "Explore demos"}
+          </Link>
+          <Link className="transition-colors hover:text-[var(--color-accent)]" href={`/${lang}#meta`}>
+            Meta Ads
+          </Link>
+          <Link className="transition-colors hover:text-[var(--color-accent)]" href={`/${lang}/casos-de-uso`}>
+            {lang === "es" ? "Casos de uso" : "Use cases"}
+          </Link>
+          <Link className="transition-colors hover:text-[var(--color-accent)]" href={`/${lang}#precios`}>
+            {lang === "es" ? "Precios" : "Pricing"}
+          </Link>
+        </nav>
+
         <div className="flex items-center gap-3 ml-auto">
           {!standalone && <ThemeToggle labels={dict.theme} />}
           <LanguageSwitcher current={lang} />
@@ -56,7 +74,7 @@ export function HeaderB({ dict, lang, standalone = false }: Props & { standalone
           <a
             href="/api/download"
             data-cta="header-b-download"
-            className="inline-flex items-center h-8 px-3.5 rounded-full bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-[12.5px] font-semibold transition-all shadow-[0_6px_20px_-8px_rgba(124,58,237,0.45)]"
+            className="inline-flex items-center h-8 px-3.5 rounded-full bg-[#6a48e8] hover:bg-[#5a37d6] text-white text-[12.5px] font-semibold transition-all shadow-[0_6px_20px_-8px_rgba(106,72,232,0.35)]"
           >
             {c?.download ?? "Descargar"}
           </a>

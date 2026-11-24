@@ -44,3 +44,66 @@
     letter-spacing: .07em;
   }
 }
+
+.ts-demo-home-link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.ts-demo-home-link:hover {
+  color: #6a48e8;
+}
+.ts-demo-home-link:focus-visible,
+.ts-demo-back:focus-visible {
+  outline: 2px solid #6a48e8;
+  outline-offset: 3px;
+}
+.ts-demo-home-inline {
+  font-weight: 700;
+}
+.ts-demo-back {
+  position: fixed;
+  z-index: 10000;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 7px 11px;
+  border: 1px solid rgba(106, 72, 232, .24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 8px 24px -14px rgba(42, 31, 91, .42);
+  color: #5a37d6;
+  font: 600 11.5px/1 'Geist', system-ui, sans-serif;
+  text-decoration: none;
+  backdrop-filter: blur(12px);
+  transition: background .16s ease, transform .16s ease, border-color .16s ease;
+}
+.ts-demo-back:hover {
+  border-color: rgba(106, 72, 232, .48);
+  background: #fff;
+  transform: translateY(-1px);
+}
+.ts-demo-back--top-left {
+  top: 12px;
+  left: 12px;
+}
+.ts-demo-back--below-note {
+  top: 42px;
+  left: 12px;
+}
+.ts-demo-back--bottom-left {
+  bottom: 14px;
+  left: 14px;
+}
+@media (max-width: 600px) {
+  .ts-demo-back {
+    min-height: 30px;
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+  .ts-demo-back--bottom-left {
+    bottom: 12px;
+    left: 12px;
+  }
+}

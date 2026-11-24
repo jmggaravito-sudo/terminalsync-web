@@ -31,6 +31,7 @@ export function WhatsAppFloatingButton({ lang }: { lang: string }) {
 
   if (!digits) return null;
   if (pathname.includes("/admin")) return null;
+  if (/^\/(es|en)\/legal\//.test(pathname)) return null;
 
   const text = encodeURIComponent(GREETING[lang] ?? GREETING.es);
   const href = `https://wa.me/${digits}?text=${text}`;
@@ -45,17 +46,17 @@ export function WhatsAppFloatingButton({ lang }: { lang: string }) {
       title={label}
       style={{
         position: "fixed",
-        right: "20px",
-        bottom: "20px",
+        right: "16px",
+        bottom: "16px",
         zIndex: 40,
-        width: "56px",
-        height: "56px",
+        width: "52px",
+        height: "52px",
         borderRadius: "9999px",
-        background: "#25d366",
+        background: "#6a48e8",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        boxShadow: "0 6px 20px rgba(0,0,0,0.25)",
+        boxShadow: "0 8px 24px rgba(106,72,232,0.32)",
       }}
     >
       <svg viewBox="0 0 32 32" width="30" height="30" fill="#fff" aria-hidden="true">
