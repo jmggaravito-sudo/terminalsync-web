@@ -253,6 +253,34 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .tile:hover{transform:translateY(-3px);border-color:var(--fg-3)}
 .tile.edge{opacity:.38}
 @media (max-width:720px){.tile.edge{display:none}.tile{width:52px;height:52px;border-radius:13px}.tile img{width:23px;height:23px}.tiles-row{flex-wrap:wrap}}
+/* ── Integraciones AP: marquee con nombres + búsqueda del catálogo (public/data/ap-catalog.json) ── */
+.ap-marquee{max-width:1080px;margin:34px auto 0;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.ap-row{display:flex;gap:14px;width:max-content;padding:2px 0}
+.ap-row+.ap-row{margin-top:14px}
+.ap-row--l{animation:ap-left 58s linear infinite}
+.ap-row--r{animation:ap-right 58s linear infinite}
+@keyframes ap-left{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes ap-right{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.ap-marquee:hover .ap-row{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.ap-row--l,.ap-row--r{animation:none}}
+.ap-tile{width:112px;padding:13px 8px 10px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:8px;flex:none;transition:border-color .18s ease,transform .18s ease}
+.ap-tile:hover{transform:translateY(-3px);border-color:var(--fg-3)}
+.ap-tile img{width:30px;height:30px;border-radius:7px;background:#fff;padding:3px;box-sizing:content-box}
+.ap-tile .nm{font-size:11.5px;font-weight:600;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:96px}
+.ap-tile .soon{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-3);border:1px solid var(--line);border-radius:999px;padding:2px 8px}
+@media (max-width:720px){.ap-tile{width:92px}.ap-tile .nm{max-width:76px;font-size:10.5px}}
+.ap-count{max-width:760px;margin:26px auto 0;text-align:center;font-size:13px;color:var(--fg-2)}
+.ap-count b{color:var(--fg)}
+.ap-search{max-width:520px;margin:18px auto 0}
+.ap-search input{width:100%;padding:12px 18px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-size:14px;outline:none;transition:border-color .18s ease}
+.ap-search input:focus{border-color:var(--accent)}
+.ap-results{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:900px;margin:16px auto 0}
+.ap-results .ap-tile{width:96px;padding:11px 6px 9px}
+.ap-results .ap-tile img{width:26px;height:26px}
+.ap-results .ap-tile .nm{font-size:10.5px;max-width:84px}
+.ap-none{text-align:center;margin:10px auto 0;font-size:12.5px;color:var(--fg-3)}
 /* búsqueda en vivo: fila propia, no son integraciones (lista en src/lib/liveSearchSources.ts).
    Reusa los cuadros de integraciones (.tiles-rows/.tiles-row/.tile); acá solo el título, el
    espacio, el gate del lote 3 (hidden) y el fondo claro de logos oscuros en tema oscuro. */
@@ -490,7 +518,7 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
         <p>Cada integración pide permiso por separado, y toda acción que publique, envíe o gaste <a href="#meta">espera tu aprobación</a>.</p>
       </div>
     </div>
-    <div class="tiles-rows">
+    <div class="tiles-rows" id="ap-fallback">
       <div class="tiles-row">
         <span class="tile"><img src="https://cdn.simpleicons.org/meta" alt="Meta" /></span>
         <span class="tile"><img src="https://cdn.simpleicons.org/facebook" alt="Facebook" /></span>
@@ -514,6 +542,20 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
         <span class="tile edge"><img src="https://cdn.simpleicons.org/brave" alt="Brave Search" /></span>
       </div>
     </div>
+    <!-- Integraciones AP: marquee con nombres + búsqueda sobre el catálogo real de Activepieces
+         (public/data/ap-catalog.json, snapshot bilingüe es/en del panel ts-platform). El muro
+         estático de arriba queda como respaldo sin JS; si el fetch funciona, se oculta y entra
+         el marquee con nombres y el buscador sobre las 778. -->
+    <div class="ap-marquee" id="ap-marquee" hidden>
+      <div class="ap-row ap-row--l" id="ap-row-1"></div>
+      <div class="ap-row ap-row--r" id="ap-row-2"></div>
+    </div>
+    <p class="ap-count" id="ap-count" hidden></p>
+    <div class="ap-search" id="ap-search" hidden>
+      <input id="ap-q" type="search" placeholder="Busca tu integración: Slack, QuickBooks, Notion…" autocomplete="off" aria-label="Buscar integración" />
+    </div>
+    <div class="ap-results" id="ap-results" role="list" aria-label="Resultados de búsqueda de integraciones"></div>
+    <p class="ap-none" id="ap-none" hidden></p>
     <p style="text-align:center;margin-top:30px"><a class="btn btn-ghost btn-sm" href="/es/connectors" data-lhref="/connectors">Ver todas las integraciones</a></p>
     <!-- Búsqueda en vivo: debe coincidir con LIVE_SEARCH_SOURCES (src/lib/liveSearchSources.ts); lo verifica liveSearchSources.test.ts.
          Mismos cuadros que las integraciones de arriba: solo el logo, nombre en alt y title (JM 2026-10-13; ver docs/live-search-sources.md).
@@ -963,6 +1005,102 @@ lucide.createIcons();
 </script>
 <!-- Gestor de consentimiento. Vercel Web Analytics NO se carga aquí: lo inyecta
      consent.js solo si la persona acepta la categoría de analítica. -->
+<script>
+/* Catálogo Activepieces (778): marquee con nombres bonitos + búsqueda en vivo.
+   Datos: public/data/ap-catalog.json — snapshot bilingüe (es/en) del panel ts-platform;
+   regenerarlo cuando cambien versiones de piezas. Si el fetch falla, queda el muro estático. */
+(function () {
+  var HERO_R1 = ['slack','whatsapp','gmail','google-sheets','google-drive','notion','stripe','hubspot','airtable','calendly','zoom','trello'];
+  var HERO_R2 = ['shopify','quickbooks','meta-ads','mailchimp','google-calendar','discord','intercom','clickup','monday','salesforce','typeform','openai'];
+  function lang() {
+    try { return (localStorage.getItem('ts_lang') === 'en') ? 'en' : 'es'; } catch (e) { return 'es'; }
+  }
+  function tile(p) {
+    var d = document.createElement('div');
+    d.className = 'ap-tile';
+    d.setAttribute('role', 'listitem');
+    d.title = p.name;
+    var img = document.createElement('img');
+    img.src = p.logo;
+    img.alt = p.name;
+    img.loading = 'lazy';
+    img.width = 30;
+    img.height = 30;
+    var nm = document.createElement('span');
+    nm.className = 'nm';
+    nm.textContent = p.name;
+    d.appendChild(img);
+    d.appendChild(nm);
+    if (p.soon) {
+      var s = document.createElement('span');
+      s.className = 'soon';
+      s.textContent = lang() === 'es' ? 'Pronto' : 'Soon';
+      d.appendChild(s);
+    }
+    return d;
+  }
+  function fill(row, list, langAttr) {
+    // Duplicado x2: la animación desplaza -50% del ancho, exactamente una copia.
+    list.concat(list).forEach(function (p, i) {
+      var t = tile(p);
+      if (i >= list.length) t.setAttribute('aria-hidden', 'true');
+      row.appendChild(t);
+    });
+  }
+  fetch('/data/ap-catalog.json').then(function (r) {
+    if (!r.ok) throw new Error(r.status);
+    return r.json();
+  }).then(function (data) {
+    var bySlug = {};
+    data.pieces.forEach(function (p) {
+      bySlug[p.pkg.replace('@activepieces/piece-', '').replace(/^ts\//, '')] = p;
+    });
+    var l1 = HERO_R1.map(function (s) { return bySlug[s]; }).filter(Boolean);
+    var l2 = HERO_R2.map(function (s) { return bySlug[s]; }).filter(Boolean);
+    if (!l1.length || !l2.length) return;
+    var fb = document.getElementById('ap-fallback');
+    if (fb) fb.style.display = 'none';
+    fill(document.getElementById('ap-row-1'), l1);
+    fill(document.getElementById('ap-row-2'), l2);
+    document.getElementById('ap-marquee').hidden = false;
+    var es = lang() === 'es';
+    var count = document.getElementById('ap-count');
+    count.innerHTML = '';
+    var b = document.createElement('b');
+    b.textContent = String(data.total);
+    count.appendChild(b);
+    count.appendChild(document.createTextNode(es ? ' integraciones listas para conectar' : ' integrations ready to connect'));
+    count.hidden = false;
+    var input = document.getElementById('ap-q');
+    input.placeholder = es
+      ? 'Busca tu integración: Slack, QuickBooks, Notion…'
+      : 'Find your integration: Slack, QuickBooks, Notion…';
+    document.getElementById('ap-search').hidden = false;
+    var results = document.getElementById('ap-results');
+    var none = document.getElementById('ap-none');
+    function norm(s) { return (s || '').toLowerCase(); }
+    input.addEventListener('input', function () {
+      var q = norm(input.value).trim();
+      results.innerHTML = '';
+      none.hidden = true;
+      if (!q) return;
+      var hits = data.pieces.filter(function (p) {
+        return norm(p.name).indexOf(q) !== -1
+          || norm(p.description.es).indexOf(q) !== -1
+          || norm(p.description.en).indexOf(q) !== -1;
+      }).slice(0, 12);
+      if (!hits.length) {
+        none.textContent = es
+          ? 'No está en el catálogo hoy — cuéntanos cuál necesitas y la evaluamos.'
+          : 'Not in the catalog today — tell us which one you need and we\u2019ll evaluate it.';
+        none.hidden = false;
+        return;
+      }
+      hits.forEach(function (p) { results.appendChild(tile(p)); });
+    });
+  }).catch(function () { /* sin datos: queda el muro estático de respaldo */ });
+})();
+</script>
 <script src="/consent.js"></script>
 </body>
 </html>
