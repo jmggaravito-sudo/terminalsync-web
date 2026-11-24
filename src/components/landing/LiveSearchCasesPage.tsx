@@ -2,8 +2,10 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronDown, Download, Search } from "lucide-react";
 import type { Locale } from "@/content";
+import { LandingBFooter } from "@/components/landing-b/LandingBFooter";
 
 export interface LandingCase {
   id: string;
@@ -50,24 +52,41 @@ export function LiveSearchCasesPage({ lang, data }: { lang: Locale; data: Landin
   }
 
   return (
-    <div className="min-h-[calc(100vh-56px)] bg-white text-[#16181d]">
+    <div className="landing-b-theme min-h-screen">
       <div className="mx-auto max-w-6xl px-5 pb-20 pt-10 md:px-8 md:pt-14">
         <Link href={`/${lang}`} className="inline-flex items-center gap-2 text-sm font-semibold text-[#5a37d6] hover:text-[#3d17b8]">
           <span aria-hidden="true">←</span>{isEs ? "Volver al inicio" : "Back to home"}
         </Link>
 
-        <header className="mx-auto mb-8 mt-8 max-w-3xl text-center md:mb-10 md:mt-10">
-          <span className="inline-flex rounded-full border border-[#ded7fb] bg-[#efeafd] px-3 py-1 text-xs font-semibold text-[#4c31b6]">
-            {data.cases.length} {isEs ? "casos" : "use cases"} · {data.categories.length} {isEs ? "categorías" : "categories"}
-          </span>
-          <h1 className="mt-5 text-balance text-3xl font-semibold leading-tight tracking-[-0.035em] md:text-5xl">
-            {isEs ? "Ideas prácticas para hacer crecer tu negocio" : "Practical ideas to move your business forward"}
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-pretty text-base leading-7 text-[#565b64] md:text-lg">
-            {isEs
-              ? `Explora los ${data.cases.length} casos del catálogo de TerminalSync en ${data.categories.length} categorías de negocio. Abre un ejemplo y descarga TS para ponerlo en práctica.`
-              : `Explore ${data.cases.length} TerminalSync use cases across ${data.categories.length} business categories. Open an example and download TS to put it to work.`}
-          </p>
+        <header className="mb-8 mt-8 grid items-center gap-7 md:mb-10 md:mt-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)] lg:gap-10">
+          <div>
+            <span className="inline-flex rounded-full border border-[#ded7fb] bg-[#efeafd] px-3 py-1 text-xs font-semibold text-[#4c31b6]">
+              {data.cases.length} {isEs ? "casos" : "use cases"} · {data.categories.length} {isEs ? "categorías" : "categories"}
+            </span>
+            <h1 className="mt-5 max-w-[17ch] text-balance text-left text-3xl font-semibold leading-[1.08] tracking-[-0.04em] md:text-5xl">
+              {isEs ? "Ideas prácticas para hacer crecer tu negocio" : "Practical ideas to move your business forward"}
+            </h1>
+            <p className="mt-4 max-w-2xl text-left text-base leading-7 text-[#565b64] md:text-lg">
+              {isEs
+                ? `Explora los ${data.cases.length} casos del catálogo de TerminalSync en ${data.categories.length} categorías de negocio. Abre un ejemplo y descarga TS para ponerlo en práctica.`
+                : `Explore ${data.cases.length} TerminalSync use cases across ${data.categories.length} business categories. Open an example and download TS to put it to work.`}
+            </p>
+          </div>
+          <div className="overflow-hidden rounded-[26px] border border-[#e2e4e9] bg-white p-1.5 shadow-[0_24px_60px_-36px_rgba(34,24,78,0.34)]">
+            <Image
+              src={isEs
+                ? "/landing-b/assets/dashboard-workspaces-video-poster-es.png"
+                : "/landing-b/assets/dashboard-workspaces-video-poster-en.png"}
+              alt={isEs
+                ? "Panel de TerminalSync con espacios de trabajo separados por cliente, proyecto y departamento."
+                : "TerminalSync dashboard with workspaces separated by client, project and department."}
+              width={1600}
+              height={1273}
+              priority
+              sizes="(max-width: 1024px) 100vw, 44vw"
+              className="aspect-[1.25] w-full rounded-[20px] object-cover"
+            />
+          </div>
         </header>
 
         <div className="mb-6 flex justify-center" role="tablist" aria-label={isEs ? "Tipo de contenido" : "Content type"}>
@@ -146,11 +165,12 @@ export function LiveSearchCasesPage({ lang, data }: { lang: Locale; data: Landin
           </section> : <EmptyState lang={lang} />
         )}
 
-        <footer className="mt-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-[#e2e4e9] bg-white p-6 text-center shadow-[0_8px_24px_-20px_rgba(22,24,29,.35)] sm:flex-row sm:text-left">
+        <section aria-label={isEs ? "Descargar TerminalSync" : "Download TerminalSync"} className="mt-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-[#ded7fb] bg-white p-6 text-center shadow-[0_8px_24px_-20px_rgba(22,24,29,.35)] sm:flex-row sm:text-left">
           <div><p className="font-semibold">{isEs ? "Llévalo a tu espacio de trabajo" : "Use it in your workspace"}</p><p className="mt-1 text-sm text-[#565b64]">{isEs ? "Descarga TS para organizar tus proyectos." : "Download TS to organize your projects."}</p></div>
           <Link href="/api/download" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#6a48e8] px-5 text-sm font-semibold text-white hover:bg-[#5a37d6]"><Download size={16} />{isEs ? "Descargar TS" : "Download TS"}</Link>
-        </footer>
+        </section>
       </div>
+      <LandingBFooter lang={lang} />
     </div>
   );
 }

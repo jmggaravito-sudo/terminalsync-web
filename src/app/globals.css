@@ -191,6 +191,24 @@ body {
   animation: sync-spin 1.4s linear infinite;
 }
 
+/* Landing B palette, scoped to the public pages linked from the current landing. */
+.landing-b-theme {
+  --color-bg: #f5f6f8;
+  --color-panel: #ffffff;
+  --color-panel-2: #f8f7fc;
+  --color-border: #e2e4e9;
+  --color-border-strong: #d1d5de;
+  --color-fg: #16181d;
+  --color-fg-strong: #16181d;
+  --color-fg-muted: #565b64;
+  --color-fg-dim: #858b96;
+  --color-accent: #6a48e8;
+  --color-accent-soft: #5a37d6;
+  --color-accent-glow: rgba(106, 72, 232, 0.16);
+  background: var(--color-bg);
+  color: var(--color-fg);
+}
+
 /* Demo animations for the "Wow moments" section ─────────────────────── */
 @keyframes demo-context-drift {
   0%, 20% { opacity: 1; transform: translateX(0); }
@@ -289,6 +307,33 @@ body {
 .prose-legal strong {
   color: var(--color-fg-strong);
   font-weight: 600;
+}
+.landing-b-theme .prose-legal table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  border-spacing: 0;
+  background: var(--color-panel);
+  font-size: 13px;
+}
+.landing-b-theme .prose-legal th,
+.landing-b-theme .prose-legal td {
+  min-width: 112px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+.landing-b-theme .prose-legal th {
+  color: var(--color-fg-strong);
+  background: var(--color-panel-2);
+  font-weight: 600;
+}
+.landing-b-theme .prose-legal tr:last-child td {
+  border-bottom: 0;
 }
 
 /* §01 Hero — acento en titulares rotativos */
