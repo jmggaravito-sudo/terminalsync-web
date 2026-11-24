@@ -269,6 +269,7 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .ap-tile:hover{transform:translateY(-3px);border-color:var(--fg-3)}
 .ap-tile img{width:30px;height:30px;border-radius:7px;background:#fff;padding:3px;box-sizing:content-box}
 .ap-tile .nm{font-size:11.5px;font-weight:600;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:96px}
+.ap-tile .soon{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-3);border:1px solid var(--line);border-radius:999px;padding:2px 8px}
 @media (max-width:720px){.ap-tile{width:92px}.ap-tile .nm{max-width:76px;font-size:10.5px}}
 .ap-count{max-width:760px;margin:26px auto 0;text-align:center;font-size:13px;color:var(--fg-2)}
 .ap-count b{color:var(--fg)}
@@ -1010,7 +1011,7 @@ lucide.createIcons();
    regenerarlo cuando cambien versiones de piezas. Si el fetch falla, queda el muro estático. */
 (function () {
   var HERO_R1 = ['slack','whatsapp','gmail','google-sheets','google-drive','notion','stripe','hubspot','airtable','calendly','zoom','trello'];
-  var HERO_R2 = ['shopify','quickbooks','mailchimp','google-calendar','discord','intercom','clickup','monday','salesforce','typeform','openai'];
+  var HERO_R2 = ['shopify','quickbooks','meta-ads','mailchimp','google-calendar','discord','intercom','clickup','monday','salesforce','typeform','openai'];
   function lang() {
     try { return (localStorage.getItem('ts_lang') === 'en') ? 'en' : 'es'; } catch (e) { return 'es'; }
   }
@@ -1030,6 +1031,12 @@ lucide.createIcons();
     nm.textContent = p.name;
     d.appendChild(img);
     d.appendChild(nm);
+    if (p.soon) {
+      var s = document.createElement('span');
+      s.className = 'soon';
+      s.textContent = lang() === 'es' ? 'Pronto' : 'Soon';
+      d.appendChild(s);
+    }
     return d;
   }
   function fill(row, list, langAttr) {
@@ -1045,7 +1052,9 @@ lucide.createIcons();
     return r.json();
   }).then(function (data) {
     var bySlug = {};
-    data.pieces.forEach(function (p) { bySlug[p.pkg.replace('@activepieces/piece-', '')] = p; });
+    data.pieces.forEach(function (p) {
+      bySlug[p.pkg.replace('@activepieces/piece-', '').replace(/^ts\//, '')] = p;
+    });
     var l1 = HERO_R1.map(function (s) { return bySlug[s]; }).filter(Boolean);
     var l2 = HERO_R2.map(function (s) { return bySlug[s]; }).filter(Boolean);
     if (!l1.length || !l2.length) return;
