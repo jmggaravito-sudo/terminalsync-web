@@ -72,11 +72,9 @@ export default async function PrivacyPage({ params }: Props) {
         </p>
         <p>
           Operada por <strong>Marca E-Commerce LLC</strong>, que opera bajo la
-          marca <strong>TerminalSync</strong>, con dirección de contacto legal
-          en <a href="mailto:legal@terminalsync.ai">legal@terminalsync.ai</a>.
-        </p>
-        <p>
-          <Pending>domicilio registrado del responsable del tratamiento</Pending>
+          marca <strong>TerminalSync</strong>, con domicilio en 8614 W State
+          Rd 84, Davie, FL 33324-4558, Estados Unidos, y dirección de contacto
+          legal en <a href="mailto:legal@terminalsync.ai">legal@terminalsync.ai</a>.
         </p>
 
         <h2>2. Los datos de tu negocio</h2>
@@ -349,11 +347,9 @@ export default async function PrivacyPage({ params }: Props) {
       </p>
       <p>
         Operated by <strong>Marca E-Commerce LLC</strong>, doing business as{" "}
-        <strong>TerminalSync</strong>. Legal contact:{" "}
+        <strong>TerminalSync</strong>, at 8614 W State Rd 84, Davie, FL
+        33324-4558, United States. Legal contact:{" "}
         <a href="mailto:legal@terminalsync.ai">legal@terminalsync.ai</a>.
-      </p>
-      <p>
-        <Pending>registered address of the data controller</Pending>
       </p>
 
       <h2>2. Your business data</h2>

@@ -88,7 +88,15 @@ describe("la política de privacidad pública", () => {
     if (LEGAL_ES_PUBLIC) return; // publicado: no debe quedar ningún pendiente
     const out = await html("es");
     expect(out).toContain("[PENDIENTE:");
-    expect(out).toContain("domicilio registrado del responsable del tratamiento");
+  });
+
+  it("declara la razón social y el domicilio confirmados por JM en los dos idiomas", async () => {
+    for (const lang of ["es", "en"] as const) {
+      const out = await html(lang);
+      expect(out, lang).toContain("Marca E-Commerce LLC");
+      expect(out, lang).toContain("8614 W State Rd 84, Davie, FL 33324-4558");
+      expect(out, lang).toContain("legal@terminalsync.ai");
+    }
   });
 
   it("el bloque nuevo en español no usa voseo", async () => {
