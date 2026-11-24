@@ -71,11 +71,12 @@ export default async function PrivacyPage({ params }: Props) {
           (secciones 2 y 3).
         </p>
         <p>
-          Operada por <strong>TerminalSync</strong>, con dirección de contacto
-          legal en <a href="mailto:legal@terminalsync.ai">legal@terminalsync.ai</a>.
+          Operada por <strong>Marca E-commerce LLC</strong>, que opera bajo la
+          marca <strong>TerminalSync</strong>, con dirección de contacto legal
+          en <a href="mailto:legal@terminalsync.ai">legal@terminalsync.ai</a>.
         </p>
         <p>
-          <Pending>razón social y domicilio del responsable del tratamiento</Pending>
+          <Pending>domicilio registrado del responsable del tratamiento</Pending>
         </p>
 
         <h2>2. Los datos de tu negocio</h2>
@@ -104,10 +105,16 @@ export default async function PrivacyPage({ params }: Props) {
           <strong>TerminalSync nunca guarda tus credenciales bancarias.</strong>{" "}
           Tu usuario y tu contraseña del banco se los entregas directamente al
           proveedor de open banking, dentro de su propio flujo seguro;
-          TerminalSync no los ve ni los almacena. De esa conexión solo
-          recibimos y conservamos un <em>token</em> de acceso,{" "}
+          TerminalSync no los ve ni los almacena. Con tu autorización, el
+          proveedor comparte únicamente datos de lectura a través de los
+          productos estándar <strong>Transactions</strong> y <strong>Auth</strong>:
+          nombres y tipos de cuenta, saldos e historial de movimientos (fecha,
+          monto, comercio o descripción), y el número de cuenta y de ruta solo
+          cuando se verifica la titularidad de la cuenta (Auth). De esa conexión
+          solo recibimos y conservamos un <em>token</em> de acceso,{" "}
           <strong>cifrado en reposo con AES-256-GCM</strong> y atado a tu
-          organización.
+          organización, guardado únicamente en el equipo donde corre la
+          aplicación: nunca en servidores nuestros.
         </p>
         <p>
           <strong>Toda la comunicación viaja cifrada con TLS 1.2 o superior.</strong>{" "}
@@ -117,8 +124,15 @@ export default async function PrivacyPage({ params }: Props) {
         <p>
           <strong>La conexión se revoca cuando tú la desconectas.</strong> Al
           desconectar un banco desde TerminalSync, se revoca el acceso del lado
-          del proveedor de open banking: a partir de ese momento esa cuenta
-          deja de sincronizarse.
+          del proveedor de open banking — con Plaid, llamamos de inmediato a su
+          endpoint <code>/item/remove</code> — y el token de acceso se elimina
+          del equipo: a partir de ese momento esa cuenta deja de sincronizarse.
+        </p>
+        <p>
+          El tratamiento que Plaid hace de tus datos se rige por su propia{" "}
+          <a href="https://plaid.com/legal/" rel="noopener noreferrer">
+            política de privacidad
+          </a>.
         </p>
 
         <h2>4. Datos que recolectamos</h2>
@@ -334,11 +348,12 @@ export default async function PrivacyPage({ params }: Props) {
         connect their bank accounts via open banking (sections 2 and 3).
       </p>
       <p>
-        Operated by <strong>TerminalSync</strong>. Legal contact:{" "}
+        Operated by <strong>Marca E-commerce LLC</strong>, doing business as{" "}
+        <strong>TerminalSync</strong>. Legal contact:{" "}
         <a href="mailto:legal@terminalsync.ai">legal@terminalsync.ai</a>.
       </p>
       <p>
-        <Pending>legal entity name and address of the data controller</Pending>
+        <Pending>registered address of the data controller</Pending>
       </p>
 
       <h2>2. Your business data</h2>
@@ -367,9 +382,15 @@ export default async function PrivacyPage({ params }: Props) {
         <strong>TerminalSync never stores your bank credentials.</strong> You
         hand your online banking username and password directly to the open
         banking provider, inside its own secure flow; TerminalSync never sees
-        or stores them. From that connection we only receive and keep an
-        access <em>token</em>, <strong>encrypted at rest with AES-256-GCM</strong>{" "}
-        and bound to your organization.
+        or stores them. With your permission, the provider shares read-only
+        data only, through the standard <strong>Transactions</strong> and{" "}
+        <strong>Auth</strong> products: account names and types, balances, and
+        transaction history (date, amount, merchant/description), plus account
+        and routing numbers solely where account ownership is verified (Auth).
+        From that connection we only receive and keep an access <em>token</em>,{" "}
+        <strong>encrypted at rest with AES-256-GCM</strong> and bound to your
+        organization, stored only on the computer where the application runs:
+        never on our servers.
       </p>
       <p>
         <strong>All communication travels encrypted with TLS 1.2 or higher.</strong>{" "}
@@ -379,8 +400,16 @@ export default async function PrivacyPage({ params }: Props) {
       <p>
         <strong>The connection is revoked when you disconnect it.</strong>{" "}
         When you disconnect a bank from TerminalSync, the open banking
-        provider's access is revoked on their side: from that moment, that
+        provider's access is revoked on their side — with Plaid, we
+        immediately call their <code>/item/remove</code> endpoint — and the
+        access token is deleted from your computer: from that moment, that
         account stops syncing.
+      </p>
+      <p>
+        Plaid's own handling of your data is governed by its{" "}
+        <a href="https://plaid.com/legal/" rel="noopener noreferrer">
+          privacy policy
+        </a>.
       </p>
 
       <h2>4. Data we collect</h2>
