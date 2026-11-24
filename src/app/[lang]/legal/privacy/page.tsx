@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/content";
 import { LegalShell } from "@/components/landing/LegalShell";
+import { Pending } from "@/components/legal/Pending";
 
 interface Props {
   params: Promise<{ lang: string }>;
@@ -16,8 +17,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : "Privacy Policy — TerminalSync";
   const description =
     lang === "es"
-      ? "Cómo TerminalSync trata tus datos: secretos y conversaciones cifrados con AES-256, archivos en tu propia nube, sin pasar por nuestros servidores."
-      : "How TerminalSync handles your data: secrets and conversations encrypted with AES-256, files in your own cloud, never passing through our servers.";
+      ? "Cómo TerminalSync trata tus datos: secretos y conversaciones cifrados con AES-256, archivos en tu propia nube, contabilidad y bancos conectados vía open banking sin guardar credenciales."
+      : "How TerminalSync handles your data: secrets and conversations encrypted with AES-256, files in your own cloud, and banks connected via open banking without storing your credentials.";
   return {
     title,
     description,
@@ -44,8 +45,8 @@ export default async function PrivacyPage({ params }: Props) {
       <LegalShell
         lang="es"
         title="Política de Privacidad"
-        subtitle="Esta política describe qué datos recolectamos, por qué, cómo los protegemos y cómo podés ejercer tus derechos sobre ellos."
-        lastUpdated="Última actualización: 7 de octubre de 2026"
+        subtitle="Esta política describe qué datos tratamos —de tu cuenta, de tu negocio y de tus bancos—, por qué, cómo los protegemos y cómo ejercer tus derechos sobre ellos."
+        lastUpdated="Última actualización: 24 de noviembre de 2026"
       >
         <h2>Gmail: acceso opcional de solo lectura</h2>
         <p>Terminal Sync (TerminalSync o TS) solicita <code>gmail.readonly</code>
@@ -65,14 +66,62 @@ export default async function PrivacyPage({ params }: Props) {
           TerminalSync es una aplicación de escritorio que sincroniza el estado
           de tus terminales, archivos de configuración de IA y secretos entre
           tus computadoras a través del proveedor de almacenamiento que elijas
-          (Google Drive, iCloud, Dropbox).
+          (Google Drive, iCloud, Dropbox). También ayuda a empresas a organizar
+          su contabilidad y a conectar sus cuentas bancarias vía open banking
+          (secciones 2 y 3).
         </p>
         <p>
           Operada por <strong>TerminalSync</strong>, con dirección de contacto
           legal en <a href="mailto:legal@terminalsync.ai">legal@terminalsync.ai</a>.
         </p>
+        <p>
+          <Pending>razón social y domicilio del responsable del tratamiento</Pending>
+        </p>
 
-        <h2>2. Datos que recolectamos</h2>
+        <h2>2. Los datos de tu negocio</h2>
+        <p>
+          Cuando una empresa usa TerminalSync para su contabilidad, manejamos
+          los datos que la propia empresa incorpora o conecta: asientos
+          contables, facturas, contactos (clientes y proveedores) y los
+          movimientos y saldos de las cuentas bancarias que conecta.
+        </p>
+        <p>
+          <strong>Los datos de cada organización están aislados.</strong> Cada
+          empresa cliente solo ve sus propios datos: no hay cruce entre
+          organizaciones y ninguna empresa puede acceder a los datos de otra.
+        </p>
+
+        <h2>3. Conexión de cuentas bancarias (open banking)</h2>
+        <p>
+          La conexión bancaria se hace vía <strong>open banking</strong>: a
+          través de un proveedor autorizado, no con scraping ni pidiéndole a
+          nadie la clave de la banca en línea. El proveedor depende del país de
+          la empresa: <strong>Plaid</strong> (EE. UU.) o los proveedores de
+          open banking locales <strong>Prometeo</strong> y <strong>Cobre</strong>{" "}
+          (Colombia y resto de LATAM).
+        </p>
+        <p>
+          <strong>TerminalSync nunca guarda tus credenciales bancarias.</strong>{" "}
+          Tu usuario y tu contraseña del banco se los entregas directamente al
+          proveedor de open banking, dentro de su propio flujo seguro;
+          TerminalSync no los ve ni los almacena. De esa conexión solo
+          recibimos y conservamos un <em>token</em> de acceso,{" "}
+          <strong>cifrado en reposo con AES-256-GCM</strong> y atado a tu
+          organización.
+        </p>
+        <p>
+          <strong>Toda la comunicación viaja cifrada con TLS 1.2 o superior.</strong>{" "}
+          Los datos bancarios sincronizados (movimientos y saldos) se almacenan
+          cifrados y aislados por organización, como se describe en la sección 2.
+        </p>
+        <p>
+          <strong>La conexión se revoca cuando tú la desconectas.</strong> Al
+          desconectar un banco desde TerminalSync, se revoca el acceso del lado
+          del proveedor de open banking: a partir de ese momento esa cuenta
+          deja de sincronizarse.
+        </p>
+
+        <h2>4. Datos que recolectamos</h2>
         <p>Recolectamos únicamente los datos mínimos necesarios para operar el servicio:</p>
         <ul>
           <li>
@@ -95,7 +144,7 @@ export default async function PrivacyPage({ params }: Props) {
           </li>
         </ul>
 
-        <h2>3. Datos que NO recolectamos</h2>
+        <h2>5. Datos que NO recolectamos</h2>
         <p>
           <strong>El contenido de tus terminales, tus archivos y tus secretos
           NUNCA toca nuestros servidores.</strong> Va directo de tu computadora
@@ -113,7 +162,7 @@ export default async function PrivacyPage({ params }: Props) {
           ese espacio— sale de tu computadora hacia un proveedor de IA externo.
           Eso vale para la IA incluida en los planes Pro y Max, que pasa por un
           servidor nuestro camino al proveedor. Los detalles están en la
-          sección 5.
+          sección 7.
         </p>
         <p>
           Si en cambio usás tu propia cuenta de IA con tu clave, esos mensajes{" "}
@@ -132,7 +181,7 @@ export default async function PrivacyPage({ params }: Props) {
           nuestra: nosotros no podemos acceder a ellos.
         </p>
 
-        <h2>4. Para qué usamos tus datos</h2>
+        <h2>6. Para qué usamos tus datos</h2>
         <ul>
           <li>Autenticarte y mantener tu sesión activa.</li>
           <li>Procesar pagos y emitir facturas (vía Stripe).</li>
@@ -140,7 +189,7 @@ export default async function PrivacyPage({ params }: Props) {
           <li>Mejorar el rendimiento del sitio (datos de Speed Insights agregados, no rastrean usuarios individuales).</li>
         </ul>
 
-        <h2>5. Con quién compartimos tus datos</h2>
+        <h2>7. Con quién compartimos tus datos</h2>
         <p>Compartimos datos con los siguientes proveedores estrictamente para operar el servicio:</p>
         <ul>
           <li><strong>Supabase</strong>: hosting de la base de datos de cuentas (UE/US).</li>
@@ -151,6 +200,12 @@ export default async function PrivacyPage({ params }: Props) {
           <li><strong>n8n (automatización, servidor gestionado por nosotros)</strong>: procesa
             los mensajes que escribís al chat de soporte, tu email cuando pedís que te
             contactemos, y el contenido de las notificaciones que elegís recibir.</li>
+          <li><strong>Proveedores de open banking</strong>: <strong>Plaid</strong> (EE. UU.),{" "}
+            <strong>Prometeo</strong> (Uruguay) y <strong>Cobre</strong> (Colombia).
+            Gestionan la conexión directa con tu banco y la verificación de tus
+            credenciales bancarias, que nunca pasan por TerminalSync. Solo
+            intercambiamos con ellos lo necesario para crear, mantener y revocar la
+            conexión de tu organización.</li>
         </ul>
         <p>
           Y, si usás la <strong>IA de TerminalSync</strong>, lo que le
@@ -185,7 +240,7 @@ export default async function PrivacyPage({ params }: Props) {
           No vendemos tus datos a terceros. Nunca hemos. Nunca vamos a hacerlo.
         </p>
 
-        <h2>6. Tus derechos</h2>
+        <h2>8. Tus derechos</h2>
         <p>
           Bajo GDPR (UE), CCPA (California) y leyes equivalentes, tenés derecho a:
         </p>
@@ -193,8 +248,13 @@ export default async function PrivacyPage({ params }: Props) {
           <li><strong>Acceso</strong>: pedir una copia de tus datos personales.</li>
           <li><strong>Rectificación</strong>: corregir datos inexactos.</li>
           <li><strong>Supresión</strong>: pedir que borremos tu cuenta y datos asociados.</li>
-          <li><strong>Portabilidad</strong>: exportar tus datos en formato JSON.</li>
+          <li><strong>Portabilidad</strong>: exportar tus datos en formato JSON,
+            incluida la información de tu organización (asientos, facturas,
+            contactos y movimientos bancarios sincronizados).</li>
           <li><strong>Oposición</strong>: cancelar emails de marketing en cualquier momento.</li>
+          <li><strong>Desconectar tus bancos</strong>: desde la aplicación, en
+            cualquier momento. Al desconectar, se revoca el acceso del lado del
+            proveedor de open banking y esa cuenta deja de sincronizarse.</li>
         </ul>
         <p>
           Para ejercer cualquiera de estos derechos escribinos a{" "}
@@ -202,7 +262,7 @@ export default async function PrivacyPage({ params }: Props) {
           Respondemos dentro de 30 días calendario.
         </p>
 
-        <h2>7. Retención</h2>
+        <h2>9. Retención</h2>
         <p>
           Mantenemos tus datos de cuenta mientras tu cuenta esté activa. Si
           cancelás, borramos tus datos personales dentro de 30 días, salvo
@@ -210,11 +270,18 @@ export default async function PrivacyPage({ params }: Props) {
           fiscales: 7 años).
         </p>
         <p>
+          Los datos bancarios sincronizados (movimientos y saldos) se
+          conservan mientras la conexión de esa cuenta esté activa. Al
+          desconectarla, el acceso se revoca del lado del proveedor de open
+          banking y los datos ya sincronizados se eliminan dentro del{" "}
+          <Pending>plazo de eliminación de los datos bancarios tras la desconexión</Pending>.
+        </p>
+        <p>
           Las conversaciones que tienes con el asistente de soporte se
           almacenan hasta 90 días para control de calidad.
         </p>
 
-        <h2>8. Cookies</h2>
+        <h2>10. Cookies</h2>
         <p>
           Usamos cookies estrictamente necesarias para autenticación y
           preferencias (idioma, tema). Si llegaste vía un link de afiliado,
@@ -222,7 +289,7 @@ export default async function PrivacyPage({ params }: Props) {
           usamos cookies de publicidad ni de tracking cross-site.
         </p>
 
-        <h2>9. Cambios a esta política</h2>
+        <h2>11. Cambios a esta política</h2>
         <p>
           Si modificamos materialmente esta política, te avisamos por email al
           menos 30 días antes de que aplique el cambio. Para cambios menores
@@ -230,7 +297,7 @@ export default async function PrivacyPage({ params }: Props) {
           de "última actualización" arriba.
         </p>
 
-        <h2>10. Contacto</h2>
+        <h2>12. Contacto</h2>
         <p>
           ¿Preguntas, dudas o solicitudes? Escribinos a{" "}
           <a href="mailto:privacy@terminalsync.ai">privacy@terminalsync.ai</a>.
@@ -243,8 +310,8 @@ export default async function PrivacyPage({ params }: Props) {
     <LegalShell
       lang="en"
       title="Privacy Policy"
-      subtitle="This policy describes what data we collect, why, how we protect it, and how you can exercise your rights over it."
-      lastUpdated="Last updated: October 7, 2026"
+      subtitle="This policy describes what data we handle — from your account, your business, and your banks — why, how we protect it, and how you can exercise your rights over it."
+      lastUpdated="Last updated: November 24, 2026"
     >
       <h2>Gmail: optional read-only access</h2>
       <p>Terminal Sync (TerminalSync or TS) requests <code>gmail.readonly</code>
@@ -263,14 +330,60 @@ export default async function PrivacyPage({ params }: Props) {
         TerminalSync is a desktop application that syncs the state of your
         terminals, AI configuration files, and secrets across your computers
         through the storage provider of your choice (Google Drive, iCloud,
-        Dropbox).
+        Dropbox). It also helps businesses organize their accounting and
+        connect their bank accounts via open banking (sections 2 and 3).
       </p>
       <p>
         Operated by <strong>TerminalSync</strong>. Legal contact:{" "}
         <a href="mailto:legal@terminalsync.ai">legal@terminalsync.ai</a>.
       </p>
+      <p>
+        <Pending>legal entity name and address of the data controller</Pending>
+      </p>
 
-      <h2>2. Data we collect</h2>
+      <h2>2. Your business data</h2>
+      <p>
+        When a business uses TerminalSync for its accounting, we handle the
+        data the business itself enters or connects: accounting entries,
+        invoices, contacts (customers and suppliers), and the transactions and
+        balances of the bank accounts it connects.
+      </p>
+      <p>
+        <strong>Each organization's data is isolated.</strong> Each customer
+        business only sees its own data: there is no mixing between
+        organizations, and no business can reach another's data.
+      </p>
+
+      <h2>3. Bank account connections (open banking)</h2>
+      <p>
+        Bank connections run over <strong>open banking</strong>: through an
+        authorized provider, not through screen scraping and not by asking
+        anyone for an online banking password. The provider depends on the
+        business's country: <strong>Plaid</strong> (US) or the local open
+        banking providers <strong>Prometeo</strong> and <strong>Cobre</strong>{" "}
+        (Colombia and the rest of LATAM).
+      </p>
+      <p>
+        <strong>TerminalSync never stores your bank credentials.</strong> You
+        hand your online banking username and password directly to the open
+        banking provider, inside its own secure flow; TerminalSync never sees
+        or stores them. From that connection we only receive and keep an
+        access <em>token</em>, <strong>encrypted at rest with AES-256-GCM</strong>{" "}
+        and bound to your organization.
+      </p>
+      <p>
+        <strong>All communication travels encrypted with TLS 1.2 or higher.</strong>{" "}
+        Synced banking data (transactions and balances) is stored encrypted
+        and isolated per organization, as described in section 2.
+      </p>
+      <p>
+        <strong>The connection is revoked when you disconnect it.</strong>{" "}
+        When you disconnect a bank from TerminalSync, the open banking
+        provider's access is revoked on their side: from that moment, that
+        account stops syncing.
+      </p>
+
+      <h2>4. Data we collect</h2>
       <p>We collect only the minimum data necessary to operate the service:</p>
       <ul>
         <li>
@@ -293,7 +406,7 @@ export default async function PrivacyPage({ params }: Props) {
         </li>
       </ul>
 
-      <h2>3. Data we DO NOT collect</h2>
+      <h2>5. Data we DO NOT collect</h2>
       <p>
         <strong>The content of your terminals, your files and your secrets
         NEVER touches our servers.</strong> It goes straight from your computer
@@ -311,7 +424,7 @@ export default async function PrivacyPage({ params }: Props) {
         workspace — leaves your computer and goes to an external AI provider.
         That applies to the AI included in the Pro and Max plans, which travels
         through a server of ours on its way to the provider. Details in
-        section 5.
+        section 7.
       </p>
       <p>
         If instead you use your own AI account with your own key, those
@@ -330,7 +443,7 @@ export default async function PrivacyPage({ params }: Props) {
         access them.
       </p>
 
-      <h2>4. What we use your data for</h2>
+      <h2>6. What we use your data for</h2>
       <ul>
         <li>Authenticating you and keeping your session active.</li>
         <li>Processing payments and issuing invoices (via Stripe).</li>
@@ -338,7 +451,7 @@ export default async function PrivacyPage({ params }: Props) {
         <li>Improving site performance (aggregated Speed Insights data, not individual user tracking).</li>
       </ul>
 
-      <h2>5. Who we share your data with</h2>
+      <h2>7. Who we share your data with</h2>
       <p>We share data with the following providers strictly to operate the service:</p>
       <ul>
         <li><strong>Supabase</strong>: account database hosting (EU/US).</li>
@@ -349,6 +462,12 @@ export default async function PrivacyPage({ params }: Props) {
         <li><strong>n8n (automation, on a server we manage)</strong>: processes the
           messages you type into the support chat, your email when you ask to be
           contacted, and the content of notifications you opt into.</li>
+        <li><strong>Open banking providers</strong>: <strong>Plaid</strong> (US),{" "}
+          <strong>Prometeo</strong> (Uruguay) and <strong>Cobre</strong> (Colombia).
+          They handle the direct connection to your bank and the verification of
+          your bank credentials, which never pass through TerminalSync. We only
+          exchange with them what is needed to create, maintain, and revoke your
+          organization's connection.</li>
       </ul>
       <p>
         And, if you use <strong>TerminalSync's AI</strong>, what you
@@ -381,14 +500,19 @@ export default async function PrivacyPage({ params }: Props) {
       </ul>
       <p>We don't sell your data. We never have. We never will.</p>
 
-      <h2>6. Your rights</h2>
+      <h2>8. Your rights</h2>
       <p>Under GDPR (EU), CCPA (California), and equivalent laws, you have the right to:</p>
       <ul>
         <li><strong>Access</strong>: request a copy of your personal data.</li>
         <li><strong>Rectification</strong>: correct inaccurate data.</li>
         <li><strong>Erasure</strong>: ask us to delete your account and associated data.</li>
-        <li><strong>Portability</strong>: export your data in JSON format.</li>
+        <li><strong>Portability</strong>: export your data in JSON format,
+          including your organization's information (accounting entries,
+          invoices, contacts, and synced bank transactions).</li>
         <li><strong>Objection</strong>: opt out of marketing emails at any time.</li>
+        <li><strong>Disconnect your banks</strong>: from the application, at any
+          time. Disconnecting revokes the open banking provider's access on
+          their side, and that account stops syncing.</li>
       </ul>
       <p>
         To exercise any of these rights, email{" "}
@@ -396,18 +520,25 @@ export default async function PrivacyPage({ params }: Props) {
         We respond within 30 calendar days.
       </p>
 
-      <h2>7. Retention</h2>
+      <h2>9. Retention</h2>
       <p>
         We keep your account data while your account is active. If you cancel,
         we delete your personal data within 30 days, except for data we are
         legally required to retain (tax records: 7 years).
       </p>
       <p>
+        Synced banking data (transactions and balances) is kept while that
+        account's connection is active. When you disconnect it, the open
+        banking provider's access is revoked on their side and the
+        already-synced data is deleted within the{" "}
+        <Pending>banking data deletion period after disconnection</Pending>.
+      </p>
+      <p>
         Conversations you have with the support assistant are stored for up
         to 90 days for quality control.
       </p>
 
-      <h2>8. Cookies</h2>
+      <h2>10. Cookies</h2>
       <p>
         We use cookies strictly necessary for authentication and preferences
         (language, theme). If you arrived via an affiliate link, a Rewardful
@@ -415,7 +546,7 @@ export default async function PrivacyPage({ params }: Props) {
         cross-site tracking.
       </p>
 
-      <h2>9. Changes to this policy</h2>
+      <h2>11. Changes to this policy</h2>
       <p>
         If we materially modify this policy, we notify you by email at least
         30 days before the change takes effect. For minor changes
@@ -423,7 +554,7 @@ export default async function PrivacyPage({ params }: Props) {
         updated" date above.
       </p>
 
-      <h2>10. Contact</h2>
+      <h2>12. Contact</h2>
       <p>
         Questions, concerns, or requests? Email{" "}
         <a href="mailto:privacy@terminalsync.ai">privacy@terminalsync.ai</a>.
