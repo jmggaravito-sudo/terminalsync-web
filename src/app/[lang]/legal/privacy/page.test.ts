@@ -29,6 +29,11 @@ const BANKING_CLAIMS: Record<"es" | "en", string[]> = {
     "TLS 1.2 o superior",
     "aislados por organización",
     "se revoca el acceso del lado",
+    "Transactions",
+    "Auth",
+    "/item/remove",
+    "Marca E-commerce LLC",
+    "plaid.com/legal",
   ],
   en: [
     "open banking",
@@ -40,6 +45,11 @@ const BANKING_CLAIMS: Record<"es" | "en", string[]> = {
     "TLS 1.2 or higher",
     "isolated per organization",
     "revoked on their side",
+    "Transactions",
+    "Auth",
+    "/item/remove",
+    "Marca E-commerce LLC",
+    "plaid.com/legal",
   ],
 };
 
@@ -78,7 +88,7 @@ describe("la política de privacidad pública", () => {
     if (LEGAL_ES_PUBLIC) return; // publicado: no debe quedar ningún pendiente
     const out = await html("es");
     expect(out).toContain("[PENDIENTE:");
-    expect(out).toContain("razón social y domicilio");
+    expect(out).toContain("domicilio registrado del responsable del tratamiento");
   });
 
   it("el bloque nuevo en español no usa voseo", async () => {
