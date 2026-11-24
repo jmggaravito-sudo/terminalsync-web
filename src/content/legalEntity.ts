@@ -27,8 +27,8 @@ export const PROVIDER_FIELDS: LegalField[] = [
     label: { es: "Denominación social", en: "Company name" },
     value: "Marca E-Commerce LLC",
     pending: {
-      es: "JM confirmó la denominación («Marca E-Commerce LLC», 24-nov-2026); queda por confirmar si además interviene «AM Importaciones SAS LLC» y su relación con la anterior",
-      en: "JM confirmed the company name (“Marca E-Commerce LLC”, Nov 24 2026); still to confirm whether “AM Importaciones SAS LLC” is also involved and how it relates to the former",
+      es: "JM confirmó la denominación y aclaró (24-nov-2026): «AM es la empresa en Colombia». AM Importaciones SAS LLC por ahora no interviene en la operación de TerminalSync; el abogado confirma si algún documento debe declararla",
+      en: "JM confirmed the company name and clarified (Nov 24 2026): “AM is the Colombian company”. AM Importaciones SAS LLC plays no part in operating TerminalSync for now; the lawyer confirms whether any document must ever disclose it",
     },
   },
   {
@@ -42,11 +42,7 @@ export const PROVIDER_FIELDS: LegalField[] = [
   {
     key: "address",
     label: { es: "Domicilio", en: "Address" },
-    value: "8614 W State Rd 84, Davie, FL 33324, Estados Unidos",
-    pending: {
-      es: "confirmar con JM que este es el domicilio a publicar (los Términos actuales dicen solo «sede en Miami, Florida»)",
-      en: "confirm with JM that this is the address to publish (the current Terms only say “based in Miami, Florida”)",
-    },
+    value: "8614 W State Rd 84, Davie, FL 33324-4558, Estados Unidos",
   },
   {
     key: "email",
