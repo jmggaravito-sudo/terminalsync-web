@@ -3,6 +3,7 @@ import { CategoryBar, DragStrip } from "@/components/landing/CatalogChrome";
 import { Sparkles } from "lucide-react";
 import { listAllConnectors } from "@/lib/connectors";
 import { ConnectorsExplorer } from "./Explorer";
+import { ApCatalogExplorer } from "./ApCatalogExplorer";
 
 export const revalidate = 3600; // hourly — edits to .md files picked up on next deploy
 
@@ -81,6 +82,8 @@ export default async function ConnectorsIndex({ params }: Props) {
           soon: isEs ? "Pronto" : "Soon",
         }}
       />
+
+      <ApCatalogExplorer lang={lang} />
 
       <DragStrip lang={lang} />
     </main>
