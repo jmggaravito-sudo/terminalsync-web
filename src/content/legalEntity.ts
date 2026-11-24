@@ -25,10 +25,10 @@ export const PROVIDER_FIELDS: LegalField[] = [
   {
     key: "name",
     label: { es: "Denominación social", en: "Company name" },
-    value: "Marca E-commerce LLC",
+    value: "Marca E-Commerce LLC",
     pending: {
-      es: "confirmar si la denominación que presta el servicio es solo «Marca E-commerce LLC» o también «AM Importaciones SAS LLC», y si una es nombre comercial de la otra",
-      en: "confirm whether the contracting entity is only “Marca E-commerce LLC” or also “AM Importaciones SAS LLC”, and whether one is a trade name of the other",
+      es: "JM confirmó la denominación («Marca E-Commerce LLC», 24-nov-2026); queda por confirmar si además interviene «AM Importaciones SAS LLC» y su relación con la anterior",
+      en: "JM confirmed the company name (“Marca E-Commerce LLC”, Nov 24 2026); still to confirm whether “AM Importaciones SAS LLC” is also involved and how it relates to the former",
     },
   },
   {
