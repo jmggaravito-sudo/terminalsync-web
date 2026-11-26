@@ -7,17 +7,17 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ORIGIN = "https://terminalsync.ai";
 const LOCALES = {
   es: {
-    title: "TerminalSync — una IA para operar toda tu empresa",
+    title: "TS — tu suite empresarial con IA",
     description:
-      "Una sola IA incluida, más de 800 conectores y memoria por proyecto. Prospección, navegador privado, estudio creativo, Meta Ads y contabilidad con aprobación humana.",
+      "Una suite empresarial con IA, +800 conectores y memoria por proyecto para tu equipo, con aprobación humana.",
     ogLocale: "es_ES",
     alternateLocale: "en_US",
     image: "/landing-b/assets/ts-corporate-poster-es.jpg",
   },
   en: {
-    title: "TerminalSync — one AI workspace for your business",
+    title: "TS — your AI business suite",
     description:
-      "One built-in AI, 800+ connectors, and memory per project. Prospecting, a private browser, a creative studio, Meta Ads, and accounting with human approval.",
+      "An AI business suite with 800+ connectors and memory per project for your team, with human approval.",
     ogLocale: "en_US",
     alternateLocale: "es_ES",
     image: "/landing-b/assets/ts-corporate-poster-en.jpg",
@@ -145,7 +145,7 @@ export function renderLandingLocale(sourceHtml, i18nSource, locale) {
   }
 
   setMeta(document, "property", "og:type", "website");
-  setMeta(document, "property", "og:site_name", "TerminalSync");
+  setMeta(document, "property", "og:site_name", "TS");
   setMeta(document, "property", "og:title", copy.title);
   setMeta(document, "property", "og:description", copy.description);
   setMeta(document, "property", "og:url", canonical);

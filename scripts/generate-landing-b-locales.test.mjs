@@ -34,12 +34,20 @@ describe("localized static Landing B artifacts", () => {
   it("pre-renders /en content, document language and SEO metadata in English", () => {
     const document = documentFor("en");
     expect(document.documentElement.lang).toBe("en");
-    expect(document.title).toBe("TerminalSync — one AI workspace for your business");
-    expect(document.querySelector('meta[name="description"]')?.content).toContain("One built-in AI, 800+ connectors");
-    expect(document.querySelector("#heroHeadlineLead")?.textContent).toBe("Find leads across 100+ live sources");
-    expect(document.querySelector("#heroHeadlineAccent")?.textContent).toBe("and reach them before your competition.");
-    expect(document.querySelector("#heroSubtitle")?.textContent).toContain("nothing is published, sent, or spent without your approval.");
-    expect(document.querySelector(".hero-copy .eyebrow")?.textContent).toBe("TerminalSync for Business · macOS");
+    expect(document.title).toBe("TS — your AI business suite");
+    expect(document.querySelector('meta[name="description"]')?.content).toContain("An AI business suite with 800+ connectors");
+    expect(document.querySelector("#heroHeadlineLead")?.textContent).toBe("Your AI business suite");
+    expect(document.querySelector("#heroHeadlineAccent")?.textContent).toBe("in one place.");
+    expect(document.querySelector("#heroSubtitle")?.textContent).toContain("with built-in AI under your approval.");
+    expect(document.querySelector(".hero-copy .eyebrow")?.textContent).toBe("TS for Business · macOS");
+    expect(document.querySelector(".hero-plat")?.textContent).toContain("Nothing is published, sent, or spent without your OK");
+    expect(document.querySelector("#capacidades .eyebrow")?.textContent).toBe("No technical skills or complex prompts required");
+    expect(document.querySelector("#capacidades h2")?.textContent).toBe("You don't need to know AI to run your business with AI. TS makes it easy.");
+    expect(document.querySelector("#capacidades .sub")?.textContent).toContain("Ask for what you need in plain language");
+    expect(document.querySelector(".final h2")?.textContent).toBe("You don't need to know AI to get started.");
+    expect(document.querySelector(".final .wrap > p")?.textContent).toBe("Download TS, open your first space, and ask in plain words.");
+    expect(document.querySelector('meta[property="og:site_name"]')?.content).toBe("TS");
+    expect(document.body.textContent).not.toMatch(/TerminalSync|Terminal Sync/);
     expect(document.querySelector("#windows h2")?.textContent).toBe("Windows is in active development.");
     expect(document.querySelector("#prospeccion h2")?.textContent).toBe("Find your next customer before your competition does.");
     expect(document.querySelector("#navegador .eyebrow")?.textContent).toBe("Built-in private browser");
@@ -60,27 +68,47 @@ describe("localized static Landing B artifacts", () => {
     expect(document.querySelector('[data-lhref="/casos-de-uso"]')?.getAttribute("href")).toBe("/en/casos-de-uso");
   });
 
+  it("keeps three synchronized headline-and-subtitle messages in each language", () => {
+    const dom = new JSDOM("<!doctype html><html lang=\"es\"><body></body></html>", { runScripts: "outside-only" });
+    dom.window.eval(i18nSource);
+    for (const locale of ["es", "en"]) {
+      expect(dom.window.TS_HERO_ROTATOR[locale]).toHaveLength(3);
+      for (const slide of dom.window.TS_HERO_ROTATOR[locale]) {
+        expect(slide.lead).not.toBe("");
+        expect(slide.accent).not.toBe("");
+        expect(slide.subtitle).not.toBe("");
+      }
+    }
+    dom.window.close();
+  });
+
   it("lets the explicit /en or /es URL override a contradictory saved preference at runtime", () => {
     expect(runtimeLocale("en", "es")).toEqual({
       lang: "en",
       savedLocale: "en",
-      heroLead: "Find leads across 100+ live sources",
-      heroSubtitle: "One built-in AI, 800+ app connectors, and dedicated memory per project. Run your entire business from one place — nothing is published, sent, or spent without your approval.",
+      heroLead: "Your AI business suite",
+      heroSubtitle: "Accounting, marketing, sales, messaging, research, development, and integrations for your entire team — with built-in AI under your approval.",
     });
     expect(runtimeLocale("es", "en")).toEqual({
       lang: "es",
       savedLocale: "es",
-      heroLead: "Encuentra clientes en +100 fuentes en vivo",
-      heroSubtitle: "Una sola IA incluida, +800 conectores para tus apps y memoria por proyecto. Opera toda tu empresa desde un solo lugar — nada se publica, se envía ni se mueve sin tu aprobación.",
+      heroLead: "Tu suite empresarial con IA",
+      heroSubtitle: "Contabilidad, marketing, ventas, mensajes, investigación, desarrollo e integraciones para todo tu equipo — con la IA ya incluida y bajo tu aprobación.",
     });
   });
 
   it("pre-renders /es as Spanish with its localized metadata", () => {
     const document = documentFor("es");
     expect(document.documentElement.lang).toBe("es");
-    expect(document.title).toBe("TerminalSync — una IA para operar toda tu empresa");
-    expect(document.querySelector("#heroHeadlineLead")?.textContent).toBe("Encuentra clientes en +100 fuentes en vivo");
+    expect(document.title).toBe("TS — tu suite empresarial con IA");
+    expect(document.querySelector("#heroHeadlineLead")?.textContent).toBe("Tu suite empresarial con IA");
     expect(document.querySelector("#windows h2")?.textContent).toBe("Windows está en desarrollo activo.");
+    expect(document.querySelector(".hero-copy .eyebrow")?.textContent).toBe("TS para empresas · macOS");
+    expect(document.querySelector("#capacidades .eyebrow")?.textContent).toBe("Sin conocimientos técnicos ni prompts complejos");
+    expect(document.querySelector("#capacidades h2")?.textContent).toBe("No necesitas saber de IA para manejar tu empresa con IA. TS lo hace fácil.");
+    expect(document.querySelector(".final h2")?.textContent).toBe("No necesitas saber de IA para empezar.");
+    expect(document.querySelector(".final .wrap > p")?.textContent).toBe("Descarga TS, abre tu primer espacio y pídele algo en tus palabras.");
+    expect(document.body.textContent).not.toMatch(/TerminalSync|Terminal Sync/);
     expect(document.querySelector('link[rel="canonical"]')?.href).toBe("https://terminalsync.ai/es");
     expect(document.querySelector('.lang a[data-lang="es"]')?.classList.contains("on")).toBe(true);
     expect(document.querySelector('.lang a[data-lang="en"]')?.getAttribute("href")).toBe("/en");
@@ -110,7 +138,7 @@ describe("localized static Landing B artifacts", () => {
         dom.window.close();
       }
     }
-  });
+  }, 30000);
 
   it("publishes a categorized connector catalog without provider metadata or internal engine names", () => {
     const catalog = sanitizeConnectorCatalog({
