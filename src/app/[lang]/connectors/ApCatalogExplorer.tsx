@@ -5,18 +5,14 @@ import { useEffect, useMemo, useState } from "react";
 type ApPiece = {
   name: string;
   pkg: string;
-  logo: string;
   description: { es: string; en: string };
+  category: string;
   soon?: boolean;
 };
 
 type Snapshot = { total: number; pieces: ApPiece[] };
 
-/**
- * Catálogo completo de integraciones (Activepieces + first-party dedupe) del
- * snapshot público /data/ap-catalog.json — el mismo que consume el marquee y
- * el buscador del landing (landing-b). Búsqueda client-side, sin backend.
- */
+/** Búsqueda client-side del catálogo público de conectores nativos. */
 export function ApCatalogExplorer({ lang }: { lang: string }) {
   const [data, setData] = useState<Snapshot | null>(null);
   const [q, setQ] = useState("");
@@ -24,7 +20,7 @@ export function ApCatalogExplorer({ lang }: { lang: string }) {
 
   useEffect(() => {
     let alive = true;
-    fetch("/data/ap-catalog.json")
+    fetch("/data/terminalsync-connectors.json")
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then((d: Snapshot) => {
         if (alive) setData(d);
@@ -55,16 +51,16 @@ export function ApCatalogExplorer({ lang }: { lang: string }) {
         <h2 className="text-[24px] md:text-[30px] font-semibold tracking-tight leading-tight">
           {data
             ? es
-              ? `${data.total} integraciones más, listas para conectar`
-              : `${data.total} more integrations, ready to connect`
+              ? "Más de 800 conectores nativos de TerminalSync, listos para conectar"
+              : "800+ native TerminalSync connectors, ready to connect"
             : es
               ? "Integraciones"
               : "Integrations"}
         </h2>
         <p className="mt-2 text-[15px] text-[var(--color-fg-muted)] max-w-2xl leading-relaxed">
           {es
-            ? "Automatizaciones conversacionales: le pides a la IA «cuando me llegue un correo de proveedor, mándalo a Sheets» y el flujo queda construido y verificado."
-            : "Conversational automations: ask the AI “when a supplier email arrives, send it to Sheets” and the flow is built and verified."}
+            ? "Conecta los servicios que ya usa tu empresa y pide a la IA que prepare el flujo en el espacio de trabajo correcto."
+            : "Connect the services your business already uses and ask AI to prepare the workflow in the right workspace."}
         </p>
         <input
           type="search"
@@ -85,14 +81,9 @@ export function ApCatalogExplorer({ lang }: { lang: string }) {
               title={p.name}
               className="flex items-center gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-panel-2)] px-3 py-2.5 min-w-0"
             >
-              <img
-                src={p.logo}
-                alt=""
-                width={28}
-                height={28}
-                loading="lazy"
-                className="rounded-md bg-white p-0.5 shrink-0"
-              />
+              <span aria-hidden="true" className="grid size-7 shrink-0 place-items-center rounded-md bg-[var(--color-accent-soft)] text-[12px] font-semibold text-[var(--color-accent)]">
+                {p.name.trim().slice(0, 1).toUpperCase()}
+              </span>
               <div className="min-w-0">
                 <div className="text-[13px] font-semibold truncate">{p.name}</div>
                 {p.soon ? (

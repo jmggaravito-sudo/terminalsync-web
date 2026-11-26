@@ -27,12 +27,13 @@ describe('Google verification public disclosures', () => {
 });
 
 describe('active standalone homepage', () => {
-  it('shows approved Gmail purpose between section title and integration columns', () => {
+  it('shows the approved Gmail purpose between the section title and connector cards', () => {
     const html = readFileSync('public/landing-b/index.html', 'utf8');
     const section = html.split('id="integraciones"')[1].split('</section>')[0];
-    expect(section).toContain('Terminal Sync organiza documentos y correos');
-    expect(section.indexOf('Terminal Sync organiza')).toBeGreaterThan(section.indexOf('</h2>'));
-    expect(section.indexOf('Terminal Sync organiza')).toBeLessThan(section.indexOf('class="tri"'));
+    const purpose = 'Terminal Sync organiza documentos y correos en espacios de trabajo con IA. Conecta Gmail en modo solo lectura y elige qué mensajes usar como contexto.';
+    expect(section).toContain(purpose);
+    expect(section.indexOf(purpose)).toBeGreaterThan(section.indexOf('</h2>'));
+    expect(section.indexOf(purpose)).toBeLessThan(section.indexOf('class="stack-cards"'));
     expect(readFileSync('public/landing-b/i18n.js', 'utf8')).toContain('Terminal Sync organizes documents and emails in AI workspaces.');
   });
 });

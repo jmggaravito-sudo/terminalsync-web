@@ -1,8 +1,8 @@
 /* ============================================================
    TS — i18n prototipo (ES ↔ EN)
    Walker de nodos de texto: traduce por contenido exacto (trim).
-   No requiere tocar el HTML. Persiste en localStorage.
-   En producción: usar el i18n real de Next.js ([lang] middleware).
+   Traduce por contenido exacto y persiste la selección para futuras visitas.
+   La home se genera por idioma; el locale del documento/ruta manda sobre localStorage.
    ============================================================ */
 (function () {
   // Diccionario: clave = texto español EXACTO (trim) → inglés.
@@ -893,6 +893,193 @@
     "Oscuro": "Dark"
   };
 
+  Object.assign(ES_EN, {
+    "TerminalSync para empresas · macOS": "TerminalSync for Business · macOS",
+    "Encuentra clientes en +100 fuentes en vivo": "Find leads across 100+ live sources",
+    "y llega antes que tu competencia.": "and reach them before your competition.",
+    "Un navegador privado para cada proyecto": "A private browser for every workspace",
+    "— ya logueado donde siempre trabajas.": "— signed in where you already are.",
+    "Crea y edita imágenes y videos por chat": "Create and edit images and videos by chat",
+    "— ves el precio antes de confirmar.": "— see the exact price before you confirm.",
+    "Arma y optimiza campañas en Meta Ads": "Build and optimize Meta Ads campaigns by chatting",
+    "— todo nace en pausa hasta tu OK.": "— everything starts paused until your OK.",
+    "Lleva tu contabilidad completa y concilia tus bancos": "Run complete double-entry accounting and reconcile banks",
+    "— sin ser contador.": "— without being an accountant.",
+    "Una sola IA incluida, +800 conectores para tus apps y memoria por proyecto. Opera toda tu empresa desde un solo lugar — nada se publica, se envía ni se mueve sin tu aprobación.": "One built-in AI, 800+ app connectors, and dedicated memory per project. Run your entire business from one place — nothing is published, sent, or spent without your approval.",
+    "Windows en desarrollo activo": "Windows in active development",
+    "+800 conectores": "800+ connectors",
+    "Prospección": "Prospecting",
+    "Inbox": "Inbox",
+    "Navegador privado": "Private browser",
+    "Estudio creativo": "Creative studio",
+    "Contabilidad": "Accounting",
+    "Tus archivos": "Your files",
+    "Memoria": "Memory",
+    "Precios": "Pricing",
+    "No te lo contamos. Te lo mostramos.": "Don't take our word for it. See it in action.",
+    "Prospección en vivo": "Live prospecting",
+    "Motor de prospección": "Prospecting engine",
+    "Navegador privado por espacio": "Private browser for every workspace",
+    "Imágenes y video con precio previo": "Images and video with upfront pricing",
+    "Meta Ads: todo nace en pausa": "Meta Ads: everything starts paused",
+    "Aprobación humana": "Human approval",
+    "Contabilidad de partida doble": "Double-entry accounting",
+    "TerminalSync para empresas · macOS": "TerminalSync for Business · macOS",
+    "Todo incluido en un solo lugar": "All-in-one business workspace",
+    "Una sola IA incluida. +800 conectores. Menos cuentas sueltas.": "One built-in AI. 800+ connectors. Fewer separate subscriptions.",
+    "Deja de pagar herramientas aisladas para prospectar, diseñar, automatizar y llevar tus números. La IA ya viene incluida en tu plan, con +800 conectores nativos de TerminalSync.": "Stop paying for disconnected tools to prospect, design, automate, and manage your books. AI is built into your plan, with 800+ native TerminalSync connectors.",
+    "Chats de IA genéricos": "Generic AI chats",
+    "IA incluida con memoria persistente por proyecto.": "AI included, with persistent memory for every project.",
+    "Buscadores de leads y scraping": "Lead search and scraping tools",
+    "Motor de prospección en +100 fuentes incluido.": "Prospecting across 100+ sources included.",
+    "Software contable tradicional": "Traditional accounting software",
+    "Contabilidad de partida doble y conciliación bancaria incluida.": "Double-entry accounting and bank reconciliation included.",
+    "Editores de imagen y video": "Image and video editors",
+    "Estudio creativo con cotización previa antes de generar.": "A creative studio with upfront pricing before generation.",
+    "Automatizadores complejos": "Complex automation tools",
+    "+800 conectores nativos de TerminalSync, listos sin configurar código.": "800+ native TerminalSync connectors, ready without code setup.",
+    "Explorar los +800 conectores disponibles →": "Explore 800+ available connectors →",
+    "La IA de TS busca en vivo en…": "TerminalSync searches live across…",
+    "Explorar las +100 fuentes disponibles →": "Explore 100+ available sources →",
+    "Explora los conectores disponibles": "Explore available connectors",
+    "+800 conectores nativos listos para conectar": "800+ native connectors ready to connect",
+    "Categorías de conectores": "Connector categories",
+    "Todos": "All",
+    "Comunicación": "Communication",
+    "Ventas y CRM": "Sales & CRM",
+    "Finanzas": "Finance",
+    "Productividad": "Productivity",
+    "Comercio": "Commerce",
+    "Desarrollo y datos": "Development & data",
+    "Otros": "Other",
+    "Busca por nombre: Slack, QuickBooks, Notion…": "Search by name: Slack, QuickBooks, Notion…",
+    "Buscar conector": "Search connectors",
+    "Resultados de búsqueda de conectores": "Connector search results",
+    "Ver el catálogo completo": "View the full catalog",
+    "Fuentes verificadas": "Verified sources",
+    "Explora las fuentes de inteligencia en vivo": "Explore live intelligence sources",
+    "Más de 100 fuentes agrupadas por lo que quieres descubrir.": "100+ sources grouped by what you want to discover.",
+    "Redes sociales y comunidades": "Social media & communities",
+    "Facebook · Instagram · TikTok · YouTube · LinkedIn · Reddit · X": "Facebook · Instagram · TikTok · YouTube · LinkedIn · Reddit · X",
+    "Empresas, empleos y contactos B2B": "Companies, jobs & B2B contacts",
+    "Directorios públicos · páginas de empresa · perfiles profesionales · vacantes": "Public directories · company pages · professional profiles · job listings",
+    "Buscadores y negocios locales": "Search engines & local businesses",
+    "Google Search · Google Maps · Yelp · mapas y directorios locales": "Google Search · Google Maps · Yelp · local maps and directories",
+    "Anuncios y espionaje competitivo": "Ads & competitive intelligence",
+    "Meta Ads · Meta Ad Library · campañas y publicaciones públicas": "Meta Ads · Meta Ad Library · public campaigns and posts",
+    "SEO y tráfico web": "SEO & website traffic",
+    "Palabras clave · tendencias · visibilidad y tráfico público": "Keywords · trends · public visibility and traffic",
+    "E-commerce y reseñas": "E-commerce & reviews",
+    "Amazon · eBay · Airbnb · Tripadvisor · reseñas públicas": "Amazon · eBay · Airbnb · Tripadvisor · public reviews",
+    "Prospección e inteligencia en tiempo real": "Real-time prospecting & market intelligence",
+    "Encuentra tu próximo cliente antes que tu competencia.": "Find your next customer before your competition does.",
+    "Solo chateando, rastrea clientes, tendencias y competencia en tiempo real en Facebook, Instagram, TikTok, YouTube, LinkedIn, Reddit, X, Google Maps, Amazon, Meta Ads y más de 100 fuentes verificadas — todo desde un solo buscador.": "Just by chatting, track leads, trends, and competitors in real time across Facebook, Instagram, TikTok, YouTube, LinkedIn, Reddit, X, Google Maps, Amazon, Meta Ads, and 100+ verified sources — from a single search.",
+    "Motor de prospección de TerminalSync": "TerminalSync Prospecting Engine",
+    "Contactos B2B directos": "Direct B2B decision-makers",
+    "Filtra empresas por sector, ciudad o tamaño y encuentra el correo y perfil público del dueño o gerente, sin intermediarios.": "Filter companies by industry, city, or size and find the owner's or manager's email and public profile directly.",
+    "Radar de oportunidades": "Growth & hiring radar",
+    "Detecta negocios que están creciendo, contratando o lanzando productos hoy para llegarles primero.": "Spot businesses growing, hiring, or launching products today so you can reach out first.",
+    "Mapas y mercados locales": "Global local-business maps",
+    "Mapea negocios de tu sector en cualquier ciudad, con ubicación, reputación y datos de contacto.": "Map businesses in your niche in any city, with location, reputation, and contact details.",
+    "Análisis competitivo": "Competitive ad & SEO intelligence",
+    "Mira anuncios públicos, palabras clave y opiniones de clientes para entender el mercado en tiempo real.": "See public ads, keywords, and customer reviews to understand the market in real time.",
+    "Inbox unificado con contexto": "Context-aware unified inbox",
+    "Tus correos y mensajes de redes, convertidos en trabajo.": "Your emails and social messages, turned into completed work.",
+    "Reúne correos, adjuntos y mensajes de tus canales conectados en el Inbox de TS. Llévalos al espacio correcto y pídele a tu IA que resuma, encuentre datos y prepare respuestas con contexto. Tú eliges qué puede usar.": "Bring emails, attachments, and messages from your connected channels into the TerminalSync Inbox. Route them to the right workspace and ask your AI to summarize, extract data, and draft context-aware replies. You choose what it can access.",
+    "Cada conversación llega al espacio que entiende su contexto.": "Every conversation reaches the workspace that understands its context.",
+    "Reúne lo importante.": "Bring the important things together.",
+    "Revisa correos, adjuntos y mensajes conectados en un solo inbox.": "Review connected emails, attachments, and messages in one inbox.",
+    "Enruta con intención.": "Route with purpose.",
+    "Lleva cada conversación al cliente, proyecto o área correcta.": "Send each conversation to the right client, project, or team.",
+    "Prepara, no envía por ti.": "Prepare — never send on your behalf.",
+    "La IA resume, extrae datos y redacta; tú decides qué usar y qué enviar.": "AI summarizes, extracts data, and drafts; you decide what to use and send.",
+    "Inbox de TerminalSync": "TerminalSync Inbox",
+    "Gmail · Proveedor · Factura de noviembre": "Gmail · Vendor · November invoice",
+    "Sin enviar": "Not sent",
+    "Instagram · Cliente · Consulta por disponibilidad": "Instagram · Customer · Availability question",
+    "En revisión": "In review",
+    "WhatsApp · Proyecto Norte · Cambio de fecha": "WhatsApp · Project North · Date change",
+    "Resumen listo para Proyecto Norte": "Summary ready for Project North",
+    "La respuesta espera tu aprobación.": "The reply is waiting for your approval.",
+    "Navegador privado integrado": "Built-in private browser",
+    "Tu navegador, dentro de cada workspace.": "A private browser for every workspace — signed in where you already are.",
+    "Cada espacio de trabajo tiene su propia ventana de navegación aislada, con el nombre del proyecto. Sin mezclar pestañas: cada workspace navega en su propio rincón.": "Every workspace gets its own isolated browser window, named after the project. No mixed tabs: each workspace browses in its own private space.",
+    "Entra donde ya tienes sesión.": "Sign in where you already are.",
+    "Usa tu perfil habitual con tus cuentas ya logueadas. TerminalSync nunca ve tus contraseñas ni tus cuentas.": "Use your regular browser profile with your active sessions. TerminalSync never sees your passwords or accounts.",
+    "Abre una página en un clic.": "Open any page in one click.",
+    "Las páginas de tu biblioteca se abren vivas en ese espacio, con barra de URL.": "Pages in your library open live in that workspace with a full URL bar.",
+    "Guarda lo que navegas como contexto.": "Save live pages straight to context.",
+    "Importa una página abierta directamente al espacio, sin copiar y pegar.": "Import an open webpage directly into the workspace without copy-pasting.",
+    "Busca describiendo, no adivinando.": "Search by describing, not guessing.",
+    "Di qué sitio buscas, el país y el idioma para encontrar candidatos.": "Describe the site, country, and language to find candidates.",
+    "Todo se cierra limpio.": "Closes completely clean.",
+    "Al cerrar el espacio, tu navegador principal queda exactamente como estaba.": "When you close the workspace, your main browser remains exactly as it was.",
+    "Proyecto Norte · ventana privada": "Project North · private window",
+    "Sesión activa": "Active session",
+    "Catálogo del proveedor": "Vendor catalog",
+    "Esta ventana pertenece solo a Proyecto Norte.": "This window belongs only to Project North.",
+    "Guardar en Contexto": "Save to Context",
+    "Imágenes y Video con aprobación previa": "Images & Video with upfront pricing",
+    "Crea, ajusta y guarda tus piezas visuales sin salir de TerminalSync.": "Create, refine, and save your visuals without leaving TerminalSync.",
+    "Describe lo que necesitas y TerminalSync te muestra proveedor y precio antes de crear. Genera piezas para redes, productos, campañas y presentaciones; guárdalas en Mis diseños, descárgalas o vuelve a modificarlas cuando quieras.": "Describe what you need and TerminalSync shows the provider and exact price before generating. Create assets for social media, products, campaigns, and decks — save them in My Designs, download, or re-edit anytime.",
+    "Imágenes y Mis diseños": "Images & My Designs",
+    "Abre cualquier imagen, toca Modificar y pide cambios naturales: colores, fondo, encuadre o detalles. Siempre ves proveedor y precio antes de confirmar; nada se crea ni se cobra sin tu aprobación.": "Open any image, click Modify, and request natural edits to colors, backgrounds, framing, or details. You always see the provider and price before confirming; nothing is created or billed without your approval.",
+    "Videos listos para publicar": "Ready-to-publish videos",
+    "Genera clips, anima imágenes, agrega o cambia textos y logos, adapta el formato para Reels o Stories y exporta el resultado con instrucciones simples como “hazlo vertical” o “cambia el logo”.": "Generate clips, animate images, add or change text and logos, adapt the format for Reels or Stories, and export with simple prompts like make it vertical or change the logo.",
+    "Vista previa · cotización antes de confirmar": "Preview · quote before you confirm",
+    "Modificar diseño · Formato vertical": "Modify design · Vertical format",
+    "Proveedor y precio exacto a la vista.": "Provider and exact price shown upfront.",
+    "Visible antes de confirmar": "Shown before confirming",
+    "Cotización previa": "Upfront quote",
+    "Confirmar creación": "Confirm creation",
+    "Arma y optimiza campañas en Meta Ads conversando": "Build and optimize Meta Ads campaigns by chatting",
+    "Todo nace en pausa hasta tu OK. La IA consulta, compara y deja la campaña lista para que revises cada detalle antes de publicar.": "Everything starts paused until your OK. AI checks, compares, and prepares the campaign so you can review every detail before publishing.",
+    "Revisa imágenes y videos en el estudio creativo antes de confirmar.": "Review images and videos in the creative studio before confirming.",
+    "14 días · fecha definida al aprobar": "14 days · date set when approved",
+    "TerminalSync Contabilidad": "TerminalSync Accounting",
+    "Tu contabilidad completa en un solo lugar — sin ser contador.": "Complete double-entry accounting in one place — without being an accountant.",
+    "Importa tus números, conecta tus bancos y entiende tu plata con partida doble real, cartera al día e inventario automático — todo cifrado en tu propio equipo.": "Import your numbers, connect your banks, and understand your cash flow with real double-entry bookkeeping, up-to-date receivables, and automatic inventory — encrypted on your own device.",
+    "Migra en minutos o empieza de cero": "Migrate in minutes or start fresh",
+    "Sube planillas de Excel o CSV sin duplicados, o trae tus saldos de QuickBooks o Alegra con un asiento de apertura. Si empiezas de cero, un asistente arma tu plan de cuentas en cinco preguntas.": "Import Excel or CSV sheets without duplicates, or bring opening balances from QuickBooks or Alegra. Starting from scratch? A five-question assistant builds your chart of accounts.",
+    "Cartera e inventario al día": "Receivables, payables & inventory",
+    "Sabe quién te debe —y cuántos días de atraso tiene— y a quién debes. Clientes, proveedores e inventario a costo promedio se actualizan con cada venta y compra.": "See who owes you — and how many days overdue — and who you owe. Customers, vendors, and average-cost inventory update with every sale and purchase.",
+    "Concilia tu banco sin dolor": "Painless bank reconciliation",
+    "Sube el extracto; las reglas aprendidas clasifican los movimientos y tú apruebas con un clic. Open Banking incluido en EE. UU. con Plaid; Colombia con Prometeo próximamente.": "Upload a statement; learned rules categorize transactions, and you approve with one click. Open Banking included in the US with Plaid; Prometeo for Colombia is coming soon.",
+    "Multiempresa, multimoneda y privada": "Multi-company, multi-currency & private",
+    "Separa empresas en pesos o dólares. Todo queda cifrado en tu equipo y puedes exportarlo a Excel cuando quieras.": "Keep companies in pesos or dollars separate. Everything is encrypted on your device and can be exported to Excel anytime.",
+    "Ningún robot mueve tu plata: toda conciliación bancaria la aprueba el dueño. Impuestos y nómina llegarán en próximas etapas.": "No bot ever moves your money: every bank reconciliation requires owner approval. Taxes and payroll are planned for future releases.",
+    "TerminalSync Team": "TerminalSync Team",
+    "Tu equipo conectado, sin perder su espacio privado.": "Your team connected, without losing its private spaces.",
+    "Con Team puedes invitar compañeros por su alias y compartirles acceso a un espacio. Cada persona decide qué invitaciones aceptar, mientras sus espacios privados permanecen separados.": "With Team, invite teammates by alias and grant access to specific workspaces. Everyone chooses which invitations to accept while keeping private workspaces separate.",
+    "Hoy permite conectar equipos y gestionar invitaciones; la transferencia de conversaciones y documentos y el checkout de Stripe llegarán en el lanzamiento.": "Currently supports connecting teams and managing workspace invitations; transferring conversations and documents and Stripe checkout are planned for launch.",
+    "$59 USD por empleado al mes. Pro y Max no cambian. Hoy Team permite conectar equipos y gestionar invitaciones; el checkout de Stripe llegará en el lanzamiento.": "$59 USD per employee per month. Pro and Max stay unchanged. Team currently supports connecting teams and managing invitations; Stripe checkout is planned for launch.",
+    "10 espacios con memoria y navegador privado integrado": "10 workspaces with memory and a built-in private browser",
+    "Motor de prospección de TerminalSync en +100 fuentes en vivo": "TerminalSync Prospecting Engine across 100+ live sources",
+    "+800 conectores nativos de TerminalSync": "800+ native TerminalSync connectors",
+    "Contabilidad de partida doble y conciliación bancaria": "Double-entry accounting and bank reconciliation",
+    "Imágenes en Mis diseños y Video con cotización previa": "Images in My Designs and Video with upfront pricing",
+    "Invita compañeros por alias y comparte acceso a espacios puntuales": "Invite teammates by alias and grant access to specific workspaces",
+    "Cada integrante conserva sus espacios privados separados": "Each member keeps their private workspaces separate",
+    "Control total de las invitaciones aceptadas": "Full control over accepted invitations",
+    "La transferencia de conversaciones y documentos llegará en el lanzamiento": "Conversation and document transfer is planned for launch",
+    "Checkout de Stripe previsto para el lanzamiento": "Stripe checkout is planned for launch",
+    "Disponible para conectar equipos y gestionar invitaciones.": "Available for connecting teams and managing invitations.",
+    "Windows está en desarrollo activo.": "Windows is in active development.",
+    "Windows está en desarrollo activo — déjanos tu correo y te avisamos el día del lanzamiento. macOS 13+ está disponible hoy para Apple Silicon e Intel. Nada más: no mandamos boletines.": "Windows is in active development — leave your email and we'll notify you on launch day. macOS 13+ is available today for Apple Silicon and Intel. No newsletters.",
+    "TerminalSync está disponible hoy para macOS. Windows está en desarrollo activo: déjanos tu correo y te avisamos el día del lanzamiento. Linux no está disponible actualmente.": "TerminalSync is available today for macOS. Windows is in active development: leave your email and we'll notify you on launch day. Linux is not currently available.",
+    "Apple Silicon e Intel · macOS 13+ ·": "Apple Silicon and Intel · macOS 13+ ·",
+    "Apple Silicon e Intel · macOS 13+ · Windows está en desarrollo activo": "Apple Silicon and Intel · macOS 13+ · Windows is in active development",
+    "/proyectos/Martínez": "/projects/Martínez",
+    "© 2026 TerminalSync": "© 2026 TerminalSync",
+    "Ver todas las integraciones": "View all integrations",
+    "Buscar integración": "Search integration",
+    "tu@correo.com": "you@email.com",
+    "Tu correo": "Your email",
+    "Avísenme": "Notify me",
+    "Cerrar": "Close",
+    "TerminalSync": "TerminalSync"
+  });
+
   // Construye el índice inverso EN→ES para poder volver.
   const EN_ES = {};
   Object.keys(ES_EN).forEach(function (es) { EN_ES[ES_EN[es]] = es; });
@@ -900,18 +1087,18 @@
   // Frases rotativas del hero (bilingüe), expuestas para app.js si las usa.
   window.TS_HERO_ROTATOR = {
     es: [
-      'Convierte tus ideas en <span class="grad">herramientas reales</span> hablando con IA.',
-      '¿Por qué conformarte con <span class="grad">una sola IA</span>?',
-      '<span class="grad">TS.</span> Una sola memoria.',
-      'Tu primer <span class="grad">equipo digital</span>. Sin contratar a nadie.',
-      'Trabaja con tu IA <span class="grad">sin perder el contexto</span>.'
+      'Encuentra clientes en +100 fuentes en vivo y llega antes que tu competencia.',
+      'Un navegador privado para cada proyecto — ya logueado donde siempre trabajas.',
+      'Crea y edita imágenes y videos por chat — ves el precio antes de confirmar.',
+      'Arma y optimiza campañas en Meta Ads — todo nace en pausa hasta tu OK.',
+      'Lleva tu contabilidad completa y concilia tus bancos — sin ser contador.'
     ],
     en: [
-      'Turn your ideas into <span class="grad">real tools</span> just by talking to AI.',
-      'Why settle for <span class="grad">a single AI</span>?',
-      '<span class="grad">TS.</span> One shared memory.',
-      'Your first <span class="grad">digital team</span>. Without hiring anyone.',
-      'Work with your AI <span class="grad">without losing context</span>.'
+      'Find leads across 100+ live sources and reach them before your competition.',
+      'A private browser for every workspace — signed in where you already are.',
+      'Create and edit images and videos by chat — see the exact price before you confirm.',
+      'Build and optimize Meta Ads campaigns by chatting — everything starts paused until your OK.',
+      'Run complete double-entry accounting and reconcile banks — without being an accountant.'
     ]
   };
 
@@ -926,25 +1113,33 @@
     }
     if (node.nodeType === 1) {
       var tag = node.tagName;
-      if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'IFRAME' || tag === 'CODE') return;
+      if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'CODE') return;
+      ['placeholder', 'aria-label', 'title', 'alt'].forEach(function (name) {
+        var raw = node.getAttribute(name);
+        var key = raw && raw.trim();
+        if (key && map[key]) node.setAttribute(name, raw.replace(key, map[key]));
+      });
+      if (tag === 'IFRAME') return;
       for (var i = 0; i < node.childNodes.length; i++) walk(node.childNodes[i], map);
     }
   }
 
-  var current = 'es';
+  var current = document.documentElement.lang === 'en' ? 'en' : 'es';
   function apply(lang) {
-    if (lang === current) return;
-    var map = lang === 'en' ? ES_EN : EN_ES;
-    walk(document.body, map);
-    current = lang;
+    var changed = lang !== current;
+    if (changed) {
+      var map = lang === 'en' ? ES_EN : EN_ES;
+      walk(document.body, map);
+      current = lang;
+    }
     document.documentElement.lang = lang;
     document.title = lang === 'en'
-      ? 'TS — a workspace for every project, AI included'
-      : 'TS — un espacio para cada proyecto, con IA incluida';
+      ? 'TerminalSync — one AI workspace for your business'
+      : 'TerminalSync — una IA para operar toda tu empresa';
     var description = document.querySelector('meta[name="description"]');
     if (description) description.content = lang === 'en'
-      ? 'Give every client, project, or department its own workspace. TS includes AI, with no separate AI subscription needed. For Mac.'
-      : 'Separa cada cliente, proyecto o área en su propio espacio, con sus archivos y contexto. TS incluye IA, sin pagar otra suscripción de IA. Para Mac.';
+      ? 'One built-in AI, 800+ connectors, and memory per project. Prospecting, a private browser, a creative studio, Meta Ads, and accounting with human approval.'
+      : 'Una sola IA incluida, más de 800 conectores y memoria por proyecto. Prospección, navegador privado, estudio creativo, Meta Ads y contabilidad con aprobación humana.';
     try { localStorage.setItem('ts_lang', lang); } catch (e) {}
     // toggle visual state
     document.querySelectorAll('.lang a[data-lang]').forEach(function (a) {
@@ -952,6 +1147,7 @@
     });
     // re-render hero rotator / dynamic bits
     window.dispatchEvent(new CustomEvent('ts-lang', { detail: { lang: lang } }));
+    if (!changed) return;
     // Reuse the current dashboard image as both hero cover and future video poster.
     var heroVideo = document.getElementById('heroVideo');
     var heroVideoSource = document.getElementById('heroVideoSource');
@@ -987,8 +1183,9 @@
   window.TS_getLang = function () { return current; };
 
   document.addEventListener('DOMContentLoaded', function () {
-    // wire toggles
-    // producción: el idioma lo manda la URL (/es o /en); ES/EN navega.
-    if (location.pathname.indexOf('/en') === 0) apply('en');
+    // The path wins over stored preferences; the document lang covers direct static-file access.
+    var pathLocale = location.pathname.match(/^\/(en|es)(?:\/|$)/);
+    var locale = pathLocale ? pathLocale[1] : document.documentElement.lang;
+    if (locale === 'en' || locale === 'es') apply(locale);
   });
 })();

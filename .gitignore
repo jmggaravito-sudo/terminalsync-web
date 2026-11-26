@@ -7,6 +7,10 @@ node_modules/
 .next/
 out/
 dist/
+# Generated locale-specific copies of the public landing.
+/public/landing-b/index-es.html
+/public/landing-b/index-en.html
+/public/data/terminalsync-connectors.json
 
 # Environment
 .env*.local
