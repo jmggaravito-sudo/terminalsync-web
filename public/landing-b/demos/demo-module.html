@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light" />
-  <title>TerminalSync · Demo interactivo</title>
+  <title>TS · Demo interactivo</title>
   <style>
     :root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#20212a;background:#f8f8fb;font-synthesis:none;text-rendering:optimizeLegibility}
     *{box-sizing:border-box}body{margin:0;padding:clamp(12px,3vw,28px);background:linear-gradient(145deg,#faf9ff,#f5f7fa 70%);min-height:100vh}
@@ -27,7 +27,7 @@
 <body>
   <div class="shell">
     <header class="top">
-      <div class="brand"><span class="monogram" aria-hidden="true">TS</span><div><strong>TerminalSync</strong><small id="workspaceLabel">Demo de producto</small></div></div>
+      <div class="brand"><span class="monogram" aria-hidden="true">TS</span><div><strong>TS</strong><small id="workspaceLabel">Demo de producto</small></div></div>
       <span class="status"><i class="dot" aria-hidden="true"></i><span id="statusText">Simulación interactiva</span></span>
     </header>
     <main>
@@ -46,19 +46,19 @@
       const copy={
         es:{
           common:{workspace:'Demo de producto',demoLabel:'Demostración de producto',status:'Simulación interactiva',disclaimer:'Demostración ilustrativa: no se contacta a nadie, no se publican anuncios, no se genera contenido de pago y no se mueve dinero.'},
-          prospecting:{eyebrow:'Motor de prospección de TerminalSync',title:'Encuentra oportunidades mientras conversas.',intro:'Describe el perfil de cliente que buscas. TerminalSync reúne señales públicas y organiza posibles contactos para que revises el siguiente paso.',toolbar:'Búsqueda · servicios locales',action:'Buscar oportunidades de muestra',result:'3 negocios con señales recientes',cards:[['Clínica del Parque','Bogotá · Salud · contratación reciente'],['Casa Nativa','Medellín · Hogar · nuevo punto de venta'],['Taller Norte','Cali · Servicios · opiniones recientes']],done:'Resultados de demostración listos. Revisa cada dato antes de contactar.'},
+          prospecting:{eyebrow:'Motor de prospección de TS',title:'Encuentra oportunidades mientras conversas.',intro:'Describe el perfil de cliente que buscas. TS reúne señales públicas y organiza posibles contactos para que revises el siguiente paso.',toolbar:'Búsqueda · servicios locales',action:'Buscar oportunidades de muestra',result:'3 negocios con señales recientes',cards:[['Clínica del Parque','Bogotá · Salud · contratación reciente'],['Casa Nativa','Medellín · Hogar · nuevo punto de venta'],['Taller Norte','Cali · Servicios · opiniones recientes']],done:'Resultados de demostración listos. Revisa cada dato antes de contactar.'},
           browser:{eyebrow:'Navegador privado integrado',title:'Una ventana aislada para cada workspace.',intro:'Abre una página dentro del espacio correcto, conserva la separación entre proyectos y guarda lo útil como contexto.',toolbar:'Proyecto Norte · ventana privada',action:'Guardar esta página en Contexto',row:'proveedor.example/catalogo',done:'Página guardada como contexto de Proyecto Norte. La ventana principal no cambia.'},
           creative:{eyebrow:'Estudio creativo · cotización previa',title:'Ve el proveedor y el precio antes de crear.',intro:'Pide un ajuste para una imagen o un clip. Esta demo muestra una cotización ilustrativa y espera tu decisión; no genera ni cobra nada.',toolbar:'Mis diseños · nueva solicitud',action:'Ver cotización de muestra',confirm:'Confirmar en esta demo',quoteLabel:'Cotización ilustrativa · no es un precio real',provider:'Proveedor de muestra',price:'USD $1.24',state:'Sin generar ni cobrar',done:'La cotización está visible. En un flujo real, confirmas el precio exacto antes de generar.'},
           ads:{eyebrow:'Meta Ads · aprobación humana',title:'La campaña queda en pausa hasta tu OK.',intro:'Revisa presupuesto, audiencia y contenido antes de publicar. La acción permanece pausada y no se gasta dinero en esta demostración.',toolbar:'Campaña de muestra · Meta Ads',action:'Revisar detalles de aprobación',campaign:'Mensajes · Bogotá · 14 días',budget:'Presupuesto de muestra: $40.000 COP / día',paused:'Preparada y en pausa · no publicada',done:'La revisión está abierta. No se publicó ningún anuncio ni se gastó dinero.'},
-          accounting:{eyebrow:'TerminalSync Contabilidad',title:'Cada movimiento tiene su contrapartida.',intro:'Revisa una conciliación ilustrativa con partida doble. Las reglas sugieren coincidencias; el dueño aprueba antes de registrar.',toolbar:'Conciliación bancaria · demostración',action:'Preparar conciliación de muestra',invoice:'Factura de proveedor',inventory:'Inventario recibido',entry:'Asiento balanceado',debit:'Débito',credit:'Crédito',match:'Coincidencia sugerida',done:'3 coincidencias sugeridas. La conciliación espera aprobación del dueño; no se movió dinero.'}
+          accounting:{eyebrow:'TS Contabilidad',title:'Cada movimiento tiene su contrapartida.',intro:'Revisa una conciliación ilustrativa con partida doble. Las reglas sugieren coincidencias; el dueño aprueba antes de registrar.',toolbar:'Conciliación bancaria · demostración',action:'Preparar conciliación de muestra',invoice:'Factura de proveedor',inventory:'Inventario recibido',entry:'Asiento balanceado',debit:'Débito',credit:'Crédito',match:'Coincidencia sugerida',done:'3 coincidencias sugeridas. La conciliación espera aprobación del dueño; no se movió dinero.'}
         },
         en:{
           common:{workspace:'Product demo',demoLabel:'Product demo',status:'Interactive simulation',disclaimer:'Illustrative demo: no one is contacted, no ads are published, no paid content is generated, and no money is moved.'},
-          prospecting:{eyebrow:'TerminalSync Prospecting Engine',title:'Find opportunities while you chat.',intro:'Describe the customer profile you want. TerminalSync gathers public signals and organizes potential contacts so you can review the next step.',toolbar:'Search · local services',action:'Find sample opportunities',result:'3 businesses with recent signals',cards:[['Parkside Clinic','Bogotá · Healthcare · recent hiring'],['Casa Nativa','Medellín · Home · new location'],['North Workshop','Cali · Services · recent reviews']],done:'Sample results are ready. Review each detail before reaching out.'},
+          prospecting:{eyebrow:'TS Prospecting Engine',title:'Find opportunities while you chat.',intro:'Describe the customer profile you want. TS gathers public signals and organizes potential contacts so you can review the next step.',toolbar:'Search · local services',action:'Find sample opportunities',result:'3 businesses with recent signals',cards:[['Parkside Clinic','Bogotá · Healthcare · recent hiring'],['Casa Nativa','Medellín · Home · new location'],['North Workshop','Cali · Services · recent reviews']],done:'Sample results are ready. Review each detail before reaching out.'},
           browser:{eyebrow:'Built-in private browser',title:'An isolated window for every workspace.',intro:'Open a page inside the right workspace, keep projects separate, and save useful pages as context.',toolbar:'Project North · private window',action:'Save this page to Context',row:'vendor.example/catalog',done:'Page saved as Project North context. Your main browser remains unchanged.'},
           creative:{eyebrow:'Creative studio · upfront quote',title:'See the provider and price before you create.',intro:'Request an edit to an image or clip. This demo shows an illustrative quote and waits for your decision; nothing is generated or billed.',toolbar:'My Designs · new request',action:'Show sample quote',confirm:'Confirm in this demo',quoteLabel:'Illustrative quote · not a real price',provider:'Sample provider',price:'USD $1.24',state:'Not generated or billed',done:'The quote is visible. In a live flow, you confirm the exact price before generating.'},
           ads:{eyebrow:'Meta Ads · human approval',title:'The campaign stays paused until your OK.',intro:'Review the budget, audience, and content before publishing. This action remains paused and spends nothing in this demo.',toolbar:'Sample campaign · Meta Ads',action:'Review approval details',campaign:'Messages · Bogotá · 14 days',budget:'Sample budget: COP 40,000 / day',paused:'Prepared and paused · not published',done:'Review details are open. No ad was published and no money was spent.'},
-          accounting:{eyebrow:'TerminalSync Accounting',title:'Every transaction has its counterpart.',intro:'Review an illustrative double-entry reconciliation. Rules suggest matches; the owner approves before anything is recorded.',toolbar:'Bank reconciliation · demo',action:'Prepare sample reconciliation',invoice:'Vendor invoice',inventory:'Inventory received',entry:'Balanced entry',debit:'Debit',credit:'Credit',match:'Suggested match',done:'3 suggested matches. Reconciliation is waiting for owner approval; no money was moved.'}
+          accounting:{eyebrow:'TS Accounting',title:'Every transaction has its counterpart.',intro:'Review an illustrative double-entry reconciliation. Rules suggest matches; the owner approves before anything is recorded.',toolbar:'Bank reconciliation · demo',action:'Prepare sample reconciliation',invoice:'Vendor invoice',inventory:'Inventory received',entry:'Balanced entry',debit:'Debit',credit:'Credit',match:'Suggested match',done:'3 suggested matches. Reconciliation is waiting for owner approval; no money was moved.'}
         }
       };
       const params=new URLSearchParams(location.search);
@@ -67,7 +67,7 @@
       const strings=copy[locale][key]||copy[locale].prospecting;
       document.documentElement.lang=locale;
       document.querySelector('.workspace').setAttribute('aria-label',copy[locale].common.demoLabel);
-      document.title='TerminalSync · '+strings.title;
+      document.title='TS · '+strings.title;
       document.getElementById('workspaceLabel').textContent=copy[locale].common.workspace;
       document.getElementById('statusText').textContent=copy[locale].common.status;
       document.getElementById('eyebrow').textContent=strings.eyebrow;

@@ -78,7 +78,7 @@
     "Las herramientas que ya usas,": "The tools you already use,",
     "ahora con la IA adentro": "now with the AI inside",
     "Las herramientas que ya usas, ahora con la IA adentro": "The tools you already use, now with the AI inside",
-    "Terminal Sync organiza documentos y correos en espacios de trabajo con IA. Conecta Gmail en modo solo lectura y elige qué mensajes usar como contexto.": "Terminal Sync organizes documents and emails in AI workspaces. Connect Gmail in read-only mode and choose which messages to use as context.",
+    "TS organiza documentos y correos en espacios de trabajo con IA. Conecta Gmail en modo solo lectura y elige qué mensajes usar como contexto.": "TS organizes documents and emails in AI workspaces. Connect Gmail in read-only mode and choose which messages to use as context.",
     "Conecta lo que tu empresa ya tiene abierto": "Connect what your company already has open",
     "Meta, Facebook, Instagram y WhatsApp. Gmail, Drive, Sheets, Notion, Stripe y decenas más en el": "Meta, Facebook, Instagram and WhatsApp. Gmail, Drive, Sheets, Notion, Stripe and dozens more in the",
     "catálogo": "catalog",
@@ -128,8 +128,8 @@
     "Todavía no. Hoy TS es una app para Mac, con Apple Silicon e Intel, desde macOS 13. Windows está en desarrollo: déjanos tu correo y te escribimos el día que salga.": "Not yet. Today TS is a Mac app, on Apple Silicon and Intel, from macOS 13. Windows is in development: leave us your email and we'll write you the day it ships.",
     "No. La app corre en tu computadora y sincroniza con tu propia nube. Lo que se guarda se cifra en tu equipo antes de salir. Lo que le escribes a la IA sí pasa por nuestro servidor para poder responderte, y no se usa para entrenar modelos.": "No. The app runs on your computer and syncs with your own cloud. What gets saved is encrypted on your machine before it leaves. What you write to the AI does pass through our server so it can answer you, and is not used to train models.",
     "Hoy TS es una app para Mac — Apple Silicon e Intel, desde macOS 13. Déjanos tu correo y te escribimos el día que salga la de Windows. Nada más: no mandamos boletines.": "Today TS is a Mac app — Apple Silicon and Intel, from macOS 13. Leave us your email and we'll write you the day the Windows one ships. That's all: no newsletters.",
-    "Empieza hoy. La IA ya viene adentro.": "Start today. The AI is already inside.",
-    "Descárgalo, abre tu primer espacio de trabajo y pídele algo. No hay nada que configurar.": "Download it, open your first workspace and ask it for something. There's nothing to set up.",
+    "No necesitas saber de IA para empezar.": "You don't need to know AI to get started.",
+    "Descarga TS, abre tu primer espacio y pídele algo en tus palabras.": "Download TS, open your first space, and ask in plain words.",
     "Hablar con nosotros": "Talk to us",
     "Apple Silicon e Intel · macOS 13+ · Windows en lista de espera": "Apple Silicon and Intel · macOS 13+ · Windows waitlist",
     "Contacto": "Contact",
@@ -894,18 +894,18 @@
   };
 
   Object.assign(ES_EN, {
-    "TerminalSync para empresas · macOS": "TerminalSync for Business · macOS",
-    "Encuentra clientes en +100 fuentes en vivo": "Find leads across 100+ live sources",
-    "y llega antes que tu competencia.": "and reach them before your competition.",
-    "Un navegador privado para cada proyecto": "A private browser for every workspace",
-    "— ya logueado donde siempre trabajas.": "— signed in where you already are.",
-    "Crea y edita imágenes y videos por chat": "Create and edit images and videos by chat",
-    "— ves el precio antes de confirmar.": "— see the exact price before you confirm.",
-    "Arma y optimiza campañas en Meta Ads": "Build and optimize Meta Ads campaigns by chatting",
-    "— todo nace en pausa hasta tu OK.": "— everything starts paused until your OK.",
-    "Lleva tu contabilidad completa y concilia tus bancos": "Run complete double-entry accounting and reconcile banks",
-    "— sin ser contador.": "— without being an accountant.",
-    "Una sola IA incluida, +800 conectores para tus apps y memoria por proyecto. Opera toda tu empresa desde un solo lugar — nada se publica, se envía ni se mueve sin tu aprobación.": "One built-in AI, 800+ app connectors, and dedicated memory per project. Run your entire business from one place — nothing is published, sent, or spent without your approval.",
+    "TS para empresas · macOS": "TS for Business · macOS",
+    "Tu suite empresarial con IA": "Your AI business suite",
+    "en un solo sitio.": "in one place.",
+    "Ahorra en software, gastos de IA": "Save on software, AI expenses",
+    "y mano de obra.": "and manual labor.",
+    "Trabaja por espacios, departamentos": "Work by spaces, departments",
+    "o clientes.": "or clients.",
+    "Contabilidad, marketing, ventas, mensajes, investigación, desarrollo e integraciones para todo tu equipo — con la IA ya incluida y bajo tu aprobación.": "Accounting, marketing, sales, messaging, research, development, and integrations for your entire team — with built-in AI under your approval.",
+    "Deja de pagar cuentas de IA por separado y suscripciones sueltas. Todo viene incluido en un solo lugar que ejecuta el trabajo operativo sin cobros sorpresa.": "Stop paying for separate AI accounts and disconnected subscriptions. Everything is built into one workspace that executes operational tasks with zero surprise charges.",
+    "Cada área tiene su propio hilo, archivos, navegador privado y memoria separada para que nada se cruce y la IA nunca empiece de cero.": "Every area gets its own thread, files, private browser, and dedicated memory so nothing gets mixed up and your AI never starts from scratch.",
+    "Nada se publica, se envía ni se mueve sin tu OK · Apple Silicon e Intel (macOS 13+) ·": "Nothing is published, sent, or spent without your OK · Apple Silicon & Intel (macOS 13+) ·",
+    "Windows en desarrollo": "Windows in development",
     "Windows en desarrollo activo": "Windows in active development",
     "+800 conectores": "800+ connectors",
     "Prospección": "Prospecting",
@@ -916,7 +916,9 @@
     "Tus archivos": "Your files",
     "Memoria": "Memory",
     "Precios": "Pricing",
-    "No te lo contamos. Te lo mostramos.": "Don't take our word for it. See it in action.",
+    "Sin conocimientos técnicos ni prompts complejos": "No technical skills or complex prompts required",
+    "No necesitas saber de IA para manejar tu empresa con IA. TS lo hace fácil.": "You don't need to know AI to run your business with AI. TS makes it easy.",
+    "Pide lo que necesitas en tus propias palabras — como hablar con alguien de tu equipo. TS organiza la información, prepara el trabajo y te lo deja listo para aprobar.": "Ask for what you need in plain language — just like talking to a teammate. TS organizes the context, prepares the work, and leaves it ready for your approval.",
     "Prospección en vivo": "Live prospecting",
     "Motor de prospección": "Prospecting engine",
     "Navegador privado por espacio": "Private browser for every workspace",
@@ -924,10 +926,10 @@
     "Meta Ads: todo nace en pausa": "Meta Ads: everything starts paused",
     "Aprobación humana": "Human approval",
     "Contabilidad de partida doble": "Double-entry accounting",
-    "TerminalSync para empresas · macOS": "TerminalSync for Business · macOS",
+    "TS para empresas · macOS": "TS for Business · macOS",
     "Todo incluido en un solo lugar": "All-in-one business workspace",
     "Una sola IA incluida. +800 conectores. Menos cuentas sueltas.": "One built-in AI. 800+ connectors. Fewer separate subscriptions.",
-    "Deja de pagar herramientas aisladas para prospectar, diseñar, automatizar y llevar tus números. La IA ya viene incluida en tu plan, con +800 conectores nativos de TerminalSync.": "Stop paying for disconnected tools to prospect, design, automate, and manage your books. AI is built into your plan, with 800+ native TerminalSync connectors.",
+    "Deja de pagar herramientas aisladas para prospectar, diseñar, automatizar y llevar tus números. La IA ya viene incluida en tu plan, con +800 conectores nativos de TS.": "Stop paying for disconnected tools to prospect, design, automate, and manage your books. AI is built into your plan, with 800+ native TS connectors.",
     "Chats de IA genéricos": "Generic AI chats",
     "IA incluida con memoria persistente por proyecto.": "AI included, with persistent memory for every project.",
     "Buscadores de leads y scraping": "Lead search and scraping tools",
@@ -937,9 +939,9 @@
     "Editores de imagen y video": "Image and video editors",
     "Estudio creativo con cotización previa antes de generar.": "A creative studio with upfront pricing before generation.",
     "Automatizadores complejos": "Complex automation tools",
-    "+800 conectores nativos de TerminalSync, listos sin configurar código.": "800+ native TerminalSync connectors, ready without code setup.",
+    "+800 conectores nativos de TS, listos sin configurar código.": "800+ native TS connectors, ready without code setup.",
     "Explorar los +800 conectores disponibles →": "Explore 800+ available connectors →",
-    "La IA de TS busca en vivo en…": "TerminalSync searches live across…",
+    "La IA de TS busca en vivo en…": "TS searches live across…",
     "Explorar las +100 fuentes disponibles →": "Explore 100+ available sources →",
     "Explora los conectores disponibles": "Explore available connectors",
     "+800 conectores nativos listos para conectar": "800+ native connectors ready to connect",
@@ -974,7 +976,7 @@
     "Prospección e inteligencia en tiempo real": "Real-time prospecting & market intelligence",
     "Encuentra tu próximo cliente antes que tu competencia.": "Find your next customer before your competition does.",
     "Solo chateando, rastrea clientes, tendencias y competencia en tiempo real en Facebook, Instagram, TikTok, YouTube, LinkedIn, Reddit, X, Google Maps, Amazon, Meta Ads y más de 100 fuentes verificadas — todo desde un solo buscador.": "Just by chatting, track leads, trends, and competitors in real time across Facebook, Instagram, TikTok, YouTube, LinkedIn, Reddit, X, Google Maps, Amazon, Meta Ads, and 100+ verified sources — from a single search.",
-    "Motor de prospección de TerminalSync": "TerminalSync Prospecting Engine",
+    "Motor de prospección de TS": "TS Prospecting Engine",
     "Contactos B2B directos": "Direct B2B decision-makers",
     "Filtra empresas por sector, ciudad o tamaño y encuentra el correo y perfil público del dueño o gerente, sin intermediarios.": "Filter companies by industry, city, or size and find the owner's or manager's email and public profile directly.",
     "Radar de oportunidades": "Growth & hiring radar",
@@ -985,7 +987,7 @@
     "Mira anuncios públicos, palabras clave y opiniones de clientes para entender el mercado en tiempo real.": "See public ads, keywords, and customer reviews to understand the market in real time.",
     "Inbox unificado con contexto": "Context-aware unified inbox",
     "Tus correos y mensajes de redes, convertidos en trabajo.": "Your emails and social messages, turned into completed work.",
-    "Reúne correos, adjuntos y mensajes de tus canales conectados en el Inbox de TS. Llévalos al espacio correcto y pídele a tu IA que resuma, encuentre datos y prepare respuestas con contexto. Tú eliges qué puede usar.": "Bring emails, attachments, and messages from your connected channels into the TerminalSync Inbox. Route them to the right workspace and ask your AI to summarize, extract data, and draft context-aware replies. You choose what it can access.",
+    "Reúne correos, adjuntos y mensajes de tus canales conectados en el Inbox de TS. Llévalos al espacio correcto y pídele a tu IA que resuma, encuentre datos y prepare respuestas con contexto. Tú eliges qué puede usar.": "Bring emails, attachments, and messages from your connected channels into the TS Inbox. Route them to the right workspace and ask your AI to summarize, extract data, and draft context-aware replies. You choose what it can access.",
     "Cada conversación llega al espacio que entiende su contexto.": "Every conversation reaches the workspace that understands its context.",
     "Reúne lo importante.": "Bring the important things together.",
     "Revisa correos, adjuntos y mensajes conectados en un solo inbox.": "Review connected emails, attachments, and messages in one inbox.",
@@ -993,7 +995,7 @@
     "Lleva cada conversación al cliente, proyecto o área correcta.": "Send each conversation to the right client, project, or team.",
     "Prepara, no envía por ti.": "Prepare — never send on your behalf.",
     "La IA resume, extrae datos y redacta; tú decides qué usar y qué enviar.": "AI summarizes, extracts data, and drafts; you decide what to use and send.",
-    "Inbox de TerminalSync": "TerminalSync Inbox",
+    "Inbox de TS": "TS Inbox",
     "Gmail · Proveedor · Factura de noviembre": "Gmail · Vendor · November invoice",
     "Sin enviar": "Not sent",
     "Instagram · Cliente · Consulta por disponibilidad": "Instagram · Customer · Availability question",
@@ -1005,7 +1007,7 @@
     "Tu navegador, dentro de cada workspace.": "A private browser for every workspace — signed in where you already are.",
     "Cada espacio de trabajo tiene su propia ventana de navegación aislada, con el nombre del proyecto. Sin mezclar pestañas: cada workspace navega en su propio rincón.": "Every workspace gets its own isolated browser window, named after the project. No mixed tabs: each workspace browses in its own private space.",
     "Entra donde ya tienes sesión.": "Sign in where you already are.",
-    "Usa tu perfil habitual con tus cuentas ya logueadas. TerminalSync nunca ve tus contraseñas ni tus cuentas.": "Use your regular browser profile with your active sessions. TerminalSync never sees your passwords or accounts.",
+    "Usa tu perfil habitual con tus cuentas ya logueadas. TS nunca ve tus contraseñas ni tus cuentas.": "Use your regular browser profile with your active sessions. TS never sees your passwords or accounts.",
     "Abre una página en un clic.": "Open any page in one click.",
     "Las páginas de tu biblioteca se abren vivas en ese espacio, con barra de URL.": "Pages in your library open live in that workspace with a full URL bar.",
     "Guarda lo que navegas como contexto.": "Save live pages straight to context.",
@@ -1020,8 +1022,8 @@
     "Esta ventana pertenece solo a Proyecto Norte.": "This window belongs only to Project North.",
     "Guardar en Contexto": "Save to Context",
     "Imágenes y Video con aprobación previa": "Images & Video with upfront pricing",
-    "Crea, ajusta y guarda tus piezas visuales sin salir de TerminalSync.": "Create, refine, and save your visuals without leaving TerminalSync.",
-    "Describe lo que necesitas y TerminalSync te muestra proveedor y precio antes de crear. Genera piezas para redes, productos, campañas y presentaciones; guárdalas en Mis diseños, descárgalas o vuelve a modificarlas cuando quieras.": "Describe what you need and TerminalSync shows the provider and exact price before generating. Create assets for social media, products, campaigns, and decks — save them in My Designs, download, or re-edit anytime.",
+    "Crea, ajusta y guarda tus piezas visuales sin salir de TS.": "Create, refine, and save your visuals without leaving TS.",
+    "Describe lo que necesitas y TS te muestra proveedor y precio antes de crear. Genera piezas para redes, productos, campañas y presentaciones; guárdalas en Mis diseños, descárgalas o vuelve a modificarlas cuando quieras.": "Describe what you need and TS shows the provider and exact price before generating. Create assets for social media, products, campaigns, and decks — save them in My Designs, download, or re-edit anytime.",
     "Imágenes y Mis diseños": "Images & My Designs",
     "Abre cualquier imagen, toca Modificar y pide cambios naturales: colores, fondo, encuadre o detalles. Siempre ves proveedor y precio antes de confirmar; nada se crea ni se cobra sin tu aprobación.": "Open any image, click Modify, and request natural edits to colors, backgrounds, framing, or details. You always see the provider and price before confirming; nothing is created or billed without your approval.",
     "Videos listos para publicar": "Ready-to-publish videos",
@@ -1036,7 +1038,7 @@
     "Todo nace en pausa hasta tu OK. La IA consulta, compara y deja la campaña lista para que revises cada detalle antes de publicar.": "Everything starts paused until your OK. AI checks, compares, and prepares the campaign so you can review every detail before publishing.",
     "Revisa imágenes y videos en el estudio creativo antes de confirmar.": "Review images and videos in the creative studio before confirming.",
     "14 días · fecha definida al aprobar": "14 days · date set when approved",
-    "TerminalSync Contabilidad": "TerminalSync Accounting",
+    "TS Contabilidad": "TS Accounting",
     "Tu contabilidad completa en un solo lugar — sin ser contador.": "Complete double-entry accounting in one place — without being an accountant.",
     "Importa tus números, conecta tus bancos y entiende tu plata con partida doble real, cartera al día e inventario automático — todo cifrado en tu propio equipo.": "Import your numbers, connect your banks, and understand your cash flow with real double-entry bookkeeping, up-to-date receivables, and automatic inventory — encrypted on your own device.",
     "Migra en minutos o empieza de cero": "Migrate in minutes or start fresh",
@@ -1048,14 +1050,14 @@
     "Multiempresa, multimoneda y privada": "Multi-company, multi-currency & private",
     "Separa empresas en pesos o dólares. Todo queda cifrado en tu equipo y puedes exportarlo a Excel cuando quieras.": "Keep companies in pesos or dollars separate. Everything is encrypted on your device and can be exported to Excel anytime.",
     "Ningún robot mueve tu plata: toda conciliación bancaria la aprueba el dueño. Impuestos y nómina llegarán en próximas etapas.": "No bot ever moves your money: every bank reconciliation requires owner approval. Taxes and payroll are planned for future releases.",
-    "TerminalSync Team": "TerminalSync Team",
+    "TS Team": "TS Team",
     "Tu equipo conectado, sin perder su espacio privado.": "Your team connected, without losing its private spaces.",
     "Con Team puedes invitar compañeros por su alias y compartirles acceso a un espacio. Cada persona decide qué invitaciones aceptar, mientras sus espacios privados permanecen separados.": "With Team, invite teammates by alias and grant access to specific workspaces. Everyone chooses which invitations to accept while keeping private workspaces separate.",
     "Hoy permite conectar equipos y gestionar invitaciones; la transferencia de conversaciones y documentos y el checkout de Stripe llegarán en el lanzamiento.": "Currently supports connecting teams and managing workspace invitations; transferring conversations and documents and Stripe checkout are planned for launch.",
     "$59 USD por empleado al mes. Pro y Max no cambian. Hoy Team permite conectar equipos y gestionar invitaciones; el checkout de Stripe llegará en el lanzamiento.": "$59 USD per employee per month. Pro and Max stay unchanged. Team currently supports connecting teams and managing invitations; Stripe checkout is planned for launch.",
     "10 espacios con memoria y navegador privado integrado": "10 workspaces with memory and a built-in private browser",
-    "Motor de prospección de TerminalSync en +100 fuentes en vivo": "TerminalSync Prospecting Engine across 100+ live sources",
-    "+800 conectores nativos de TerminalSync": "800+ native TerminalSync connectors",
+    "Motor de prospección de TS en +100 fuentes en vivo": "TS Prospecting Engine across 100+ live sources",
+    "+800 conectores nativos de TS": "800+ native TS connectors",
     "Contabilidad de partida doble y conciliación bancaria": "Double-entry accounting and bank reconciliation",
     "Imágenes en Mis diseños y Video con cotización previa": "Images in My Designs and Video with upfront pricing",
     "Invita compañeros por alias y comparte acceso a espacios puntuales": "Invite teammates by alias and grant access to specific workspaces",
@@ -1066,39 +1068,35 @@
     "Disponible para conectar equipos y gestionar invitaciones.": "Available for connecting teams and managing invitations.",
     "Windows está en desarrollo activo.": "Windows is in active development.",
     "Windows está en desarrollo activo — déjanos tu correo y te avisamos el día del lanzamiento. macOS 13+ está disponible hoy para Apple Silicon e Intel. Nada más: no mandamos boletines.": "Windows is in active development — leave your email and we'll notify you on launch day. macOS 13+ is available today for Apple Silicon and Intel. No newsletters.",
-    "TerminalSync está disponible hoy para macOS. Windows está en desarrollo activo: déjanos tu correo y te avisamos el día del lanzamiento. Linux no está disponible actualmente.": "TerminalSync is available today for macOS. Windows is in active development: leave your email and we'll notify you on launch day. Linux is not currently available.",
+    "TS está disponible hoy para macOS. Windows está en desarrollo activo: déjanos tu correo y te avisamos el día del lanzamiento. Linux no está disponible actualmente.": "TS is available today for macOS. Windows is in active development: leave your email and we'll notify you on launch day. Linux is not currently available.",
     "Apple Silicon e Intel · macOS 13+ ·": "Apple Silicon and Intel · macOS 13+ ·",
     "Apple Silicon e Intel · macOS 13+ · Windows está en desarrollo activo": "Apple Silicon and Intel · macOS 13+ · Windows is in active development",
     "/proyectos/Martínez": "/projects/Martínez",
-    "© 2026 TerminalSync": "© 2026 TerminalSync",
+    "© 2026 TS": "© 2026 TS",
     "Ver todas las integraciones": "View all integrations",
     "Buscar integración": "Search integration",
     "tu@correo.com": "you@email.com",
     "Tu correo": "Your email",
     "Avísenme": "Notify me",
     "Cerrar": "Close",
-    "TerminalSync": "TerminalSync"
+    "TS": "TS"
   });
 
   // Construye el índice inverso EN→ES para poder volver.
   const EN_ES = {};
   Object.keys(ES_EN).forEach(function (es) { EN_ES[ES_EN[es]] = es; });
 
-  // Frases rotativas del hero (bilingüe), expuestas para app.js si las usa.
+  // Mensajes rotativos del Hero: título y subtítulo sincronizados por idioma.
   window.TS_HERO_ROTATOR = {
     es: [
-      'Encuentra clientes en +100 fuentes en vivo y llega antes que tu competencia.',
-      'Un navegador privado para cada proyecto — ya logueado donde siempre trabajas.',
-      'Crea y edita imágenes y videos por chat — ves el precio antes de confirmar.',
-      'Arma y optimiza campañas en Meta Ads — todo nace en pausa hasta tu OK.',
-      'Lleva tu contabilidad completa y concilia tus bancos — sin ser contador.'
+      { lead: 'Tu suite empresarial con IA', accent: 'en un solo sitio.', subtitle: 'Contabilidad, marketing, ventas, mensajes, investigación, desarrollo e integraciones para todo tu equipo — con la IA ya incluida y bajo tu aprobación.' },
+      { lead: 'Ahorra en software, gastos de IA', accent: 'y mano de obra.', subtitle: 'Deja de pagar cuentas de IA por separado y suscripciones sueltas. Todo viene incluido en un solo lugar que ejecuta el trabajo operativo sin cobros sorpresa.' },
+      { lead: 'Trabaja por espacios, departamentos', accent: 'o clientes.', subtitle: 'Cada área tiene su propio hilo, archivos, navegador privado y memoria separada para que nada se cruce y la IA nunca empiece de cero.' }
     ],
     en: [
-      'Find leads across 100+ live sources and reach them before your competition.',
-      'A private browser for every workspace — signed in where you already are.',
-      'Create and edit images and videos by chat — see the exact price before you confirm.',
-      'Build and optimize Meta Ads campaigns by chatting — everything starts paused until your OK.',
-      'Run complete double-entry accounting and reconcile banks — without being an accountant.'
+      { lead: 'Your AI business suite', accent: 'in one place.', subtitle: 'Accounting, marketing, sales, messaging, research, development, and integrations for your entire team — with built-in AI under your approval.' },
+      { lead: 'Save on software, AI expenses', accent: 'and manual labor.', subtitle: 'Stop paying for separate AI accounts and disconnected subscriptions. Everything is built into one workspace that executes operational tasks with zero surprise charges.' },
+      { lead: 'Work by spaces, departments', accent: 'or clients.', subtitle: 'Every area gets its own thread, files, private browser, and dedicated memory so nothing gets mixed up and your AI never starts from scratch.' }
     ]
   };
 
@@ -1134,12 +1132,12 @@
     }
     document.documentElement.lang = lang;
     document.title = lang === 'en'
-      ? 'TerminalSync — one AI workspace for your business'
-      : 'TerminalSync — una IA para operar toda tu empresa';
+      ? 'TS — your AI business suite'
+      : 'TS — tu suite empresarial con IA';
     var description = document.querySelector('meta[name="description"]');
     if (description) description.content = lang === 'en'
-      ? 'One built-in AI, 800+ connectors, and memory per project. Prospecting, a private browser, a creative studio, Meta Ads, and accounting with human approval.'
-      : 'Una sola IA incluida, más de 800 conectores y memoria por proyecto. Prospección, navegador privado, estudio creativo, Meta Ads y contabilidad con aprobación humana.';
+      ? 'An AI business suite with 800+ connectors and memory per project for your team, with human approval.'
+      : 'Una suite empresarial con IA, +800 conectores y memoria por proyecto para tu equipo, con aprobación humana.';
     try { localStorage.setItem('ts_lang', lang); } catch (e) {}
     // toggle visual state
     document.querySelectorAll('.lang a[data-lang]').forEach(function (a) {
@@ -1159,8 +1157,8 @@
       heroVideo.hidden = false;
       heroVideo.poster = '/landing-b/assets/ts-corporate-poster-' + lang + '.jpg';
       heroVideo.setAttribute('aria-label', lang === 'en'
-        ? 'TerminalSync corporate video'
-        : 'Video corporativo de TerminalSync');
+        ? 'TS corporate video'
+        : 'Video corporativo de TS');
       heroVideo.load();
     }
     if (cov) {

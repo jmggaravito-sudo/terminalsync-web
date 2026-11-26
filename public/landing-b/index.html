@@ -172,6 +172,7 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 
 /* ── tarjetas de demo: el patrón de tarjeta con ventana adentro ── */
 .head-mark{display:flex;align-items:center;gap:14px;font-size:clamp(22px,2.55vw,38px);line-height:1.14;font-weight:600;margin-top:0;text-wrap:nowrap}
+.head-mark--simple{align-items:flex-start;white-space:normal;text-wrap:pretty}
 @media (max-width:560px){.head-mark{text-wrap:pretty}}
 .head-mark .mk{width:44px;height:44px;border-radius:13px;background:var(--violet-soft);color:var(--violet);display:grid;place-items:center;flex:none}
 .head-mark .mk--meta{background:var(--surface-2);border:1px solid var(--line)}
@@ -254,7 +255,7 @@ html.var-dark .theme-toggle .ic-moon{display:block}
 .tile:hover{transform:translateY(-3px);border-color:var(--fg-3)}
 .tile.edge{opacity:.38}
 @media (max-width:720px){.tile.edge{display:none}.tile{width:52px;height:52px;border-radius:13px}.tile img{width:23px;height:23px}.tiles-row{flex-wrap:wrap}}
-/* ── Catálogo de conectores nativos de TerminalSync ── */
+/* ── Catálogo de conectores nativos de TS ── */
 .ap-marquee{max-width:1080px;margin:34px auto 0;overflow:hidden;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
   mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
@@ -391,7 +392,7 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 
 <header class="nav">
   <div class="wrap nav-in">
-    <a href="#" class="logo" aria-label="TerminalSync"><img src="/landing-b/assets/logo.png" alt="" aria-hidden="true" /><span class="logo-wordmark" aria-hidden="true"><span class="logo-t">T</span><span class="logo-s">S</span></span></a>
+    <a href="#" class="logo" aria-label="TS"><img src="/landing-b/assets/logo.png" alt="" aria-hidden="true" /><span class="logo-wordmark" aria-hidden="true"><span class="logo-t">T</span><span class="logo-s">S</span></span></a>
     <nav class="nav-links">
       <a href="#capacidades">Explora los demos</a>
       <a href="#meta">Meta Ads</a>
@@ -414,18 +415,18 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 <section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy" id="heroCopy">
-      <span class="eyebrow">TerminalSync para empresas · macOS</span>
-      <h1 id="heroHeadline"><span id="heroHeadlineLead">Encuentra clientes en +100 fuentes en vivo</span> <em id="heroHeadlineAccent">y llega antes que tu competencia.</em></h1>
-      <p class="lede" id="heroSubtitle">Una sola IA incluida, +800 conectores para tus apps y memoria por proyecto. Opera toda tu empresa desde un solo lugar — nada se publica, se envía ni se mueve sin tu aprobación.</p>
+      <span class="eyebrow">TS para empresas · macOS</span>
+      <h1 id="heroHeadline"><span id="heroHeadlineLead">Tu suite empresarial con IA</span> <em id="heroHeadlineAccent">en un solo sitio.</em></h1>
+      <p class="lede" id="heroSubtitle">Contabilidad, marketing, ventas, mensajes, investigación, desarrollo e integraciones para todo tu equipo — con la IA ya incluida y bajo tu aprobación.</p>
       <div class="hero-cta">
         <a class="btn btn-primary" href="/api/download" data-cta="hero-b-primary">⤓ Descargar para Mac</a>
         <a class="btn btn-ghost" href="#capacidades">Explora los demos</a>
       </div>
-      <p class="hero-plat">Apple Silicon e Intel · macOS 13+ · <a href="#windows">Windows en desarrollo activo</a></p>
+      <p class="hero-plat">Nada se publica, se envía ni se mueve sin tu OK · Apple Silicon e Intel (macOS 13+) · <a href="#windows">Windows en desarrollo</a></p>
     </div>
     <div class="win hero-preview">
       <div class="win-shot hero-shot hero-shot-video">
-        <video id="heroVideo" class="hero-video" controls playsinline preload="metadata" poster="/landing-b/assets/ts-corporate-poster-es.jpg" aria-label="Video corporativo de TerminalSync">
+        <video id="heroVideo" class="hero-video" controls playsinline preload="metadata" poster="/landing-b/assets/ts-corporate-poster-es.jpg" aria-label="Video corporativo de TS">
           <source id="heroVideoSource" src="/landing-b/assets/ts-corporate-es.mp4" type="video/mp4" />
         </video>
         <img id="heroCover" hidden src="/landing-b/assets/dashboard-workspaces-video-poster-es.png" alt="Dashboard de TS con espacios separados para clientes, proyectos y departamentos." fetchpriority="high" />
@@ -476,8 +477,9 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 <section class="sec first" id="capacidades">
   <div class="wrap">
     <div class="head">
-      <h2 class="head-mark"><span class="mk"><i data-lucide="sparkles" width="22" height="22"></i></span>No te lo contamos. Te lo mostramos.</h2>
-      <p class="sub">Explora demos interactivos y descubre cómo trabajan tus espacios y agentes de IA en situaciones reales.</p>
+      <span class="eyebrow">Sin conocimientos técnicos ni prompts complejos</span>
+      <h2 class="head-mark head-mark--simple"><span class="mk"><i data-lucide="sparkles" width="22" height="22"></i></span>No necesitas saber de IA para manejar tu empresa con IA. TS lo hace fácil.</h2>
+      <p class="sub">Pide lo que necesitas en tus propias palabras — como hablar con alguien de tu equipo. TS organiza la información, prepara el trabajo y te lo deja listo para aprobar.</p>
     </div>
     <div class="dgrid">
       <a class="dcard" href="/landing-b/demos/demo-contexto.html">
@@ -521,7 +523,7 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
         <span class="dcard-pill"><i data-lucide="messages-square" width="13" height="13"></i>Pregunta a otro espacio</span>
       </a>
       <a class="dcard" href="/landing-b/demos/demo-module.html?module=prospecting&amp;lang=es" data-demo-module="prospecting">
-        <span class="dcard-win"><iframe src="/landing-b/demos/demo-module.html?module=prospecting&amp;lang=es" title="Prospección en vivo con TerminalSync." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+        <span class="dcard-win"><iframe src="/landing-b/demos/demo-module.html?module=prospecting&amp;lang=es" title="Prospección en vivo con TS." loading="lazy" tabindex="-1" scrolling="no"></iframe><span class="dcard-try" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
         <h3>Prospección en vivo</h3>
         <span class="dcard-pill"><i data-lucide="radar" width="13" height="13"></i>Motor de prospección</span>
       </a>
@@ -554,15 +556,15 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
     <div class="head center">
       <span class="eyebrow">Todo incluido en un solo lugar</span>
       <h2>Una sola IA incluida. +800 conectores. Menos cuentas sueltas.</h2>
-      <p>Deja de pagar herramientas aisladas para prospectar, diseñar, automatizar y llevar tus números. La IA ya viene incluida en tu plan, con +800 conectores nativos de TerminalSync.</p>
-      <p>Terminal Sync organiza documentos y correos en espacios de trabajo con IA. Conecta Gmail en modo solo lectura y elige qué mensajes usar como contexto.</p>
+      <p>Deja de pagar herramientas aisladas para prospectar, diseñar, automatizar y llevar tus números. La IA ya viene incluida en tu plan, con +800 conectores nativos de TS.</p>
+      <p>TS organiza documentos y correos en espacios de trabajo con IA. Conecta Gmail en modo solo lectura y elige qué mensajes usar como contexto.</p>
     </div>
     <div class="stack-cards">
       <div class="stack-card"><span>Chats de IA genéricos</span><b>IA incluida con memoria persistente por proyecto.</b></div>
       <div class="stack-card"><span>Buscadores de leads y scraping</span><b>Motor de prospección en +100 fuentes incluido.</b></div>
       <div class="stack-card"><span>Software contable tradicional</span><b>Contabilidad de partida doble y conciliación bancaria incluida.</b></div>
       <div class="stack-card"><span>Editores de imagen y video</span><b>Estudio creativo con cotización previa antes de generar.</b></div>
-      <div class="stack-card"><span>Automatizadores complejos</span><b>+800 conectores nativos de TerminalSync, listos sin configurar código.</b></div>
+      <div class="stack-card"><span>Automatizadores complejos</span><b>+800 conectores nativos de TS, listos sin configurar código.</b></div>
     </div>
     <div class="tiles-rows" id="ap-fallback">
       <div class="tiles-row">
@@ -623,7 +625,7 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 <dialog class="directory-dialog" id="connectorsDialog" aria-labelledby="connectorsDialogTitle">
   <div class="directory-inner">
     <div class="directory-head">
-      <div><span class="eyebrow">TerminalSync</span><h2 id="connectorsDialogTitle">Explora los conectores disponibles</h2></div>
+      <div><span class="eyebrow">TS</span><h2 id="connectorsDialogTitle">Explora los conectores disponibles</h2></div>
       <button class="directory-close" type="button" data-dialog-close aria-label="Cerrar">×</button>
     </div>
     <p class="ap-count" id="ap-count">+800 conectores nativos listos para conectar</p>
@@ -671,7 +673,7 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
       <span class="eyebrow">Prospección e inteligencia en tiempo real</span>
       <h2>Encuentra tu próximo cliente antes que tu competencia.</h2>
       <p class="sub">Solo chateando, rastrea clientes, tendencias y competencia en tiempo real en Facebook, Instagram, TikTok, YouTube, LinkedIn, Reddit, X, Google Maps, Amazon, Meta Ads y más de 100 fuentes verificadas — todo desde un solo buscador.</p>
-      <p class="product-label">Motor de prospección de TerminalSync</p>
+      <p class="product-label">Motor de prospección de TS</p>
     </div>
     <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))">
       <article class="card"><h3>Contactos B2B directos</h3><p>Filtra empresas por sector, ciudad o tamaño y encuentra el correo y perfil público del dueño o gerente, sin intermediarios.</p></article>
@@ -700,7 +702,7 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
         </ul>
       </div>
       <div class="win">
-        <div class="win-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">Inbox de TerminalSync</span></div>
+        <div class="win-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">Inbox de TS</span></div>
         <div style="padding:20px;display:grid;gap:11px">
           <div class="file"><span class="ext">G</span>Gmail · Proveedor · Factura de noviembre<span style="margin-left:auto;color:var(--violet-ink);font-size:11px">Sin enviar</span></div>
           <div class="file"><span class="ext">M</span>Instagram · Cliente · Consulta por disponibilidad<span style="margin-left:auto;color:var(--violet-ink);font-size:11px">En revisión</span></div>
@@ -723,7 +725,7 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
       <div class="split-tx">
         <p class="product-label">Navegador privado integrado</p>
         <ul class="split-list">
-          <li><b>Entra donde ya tienes sesión.</b> Usa tu perfil habitual con tus cuentas ya logueadas. TerminalSync nunca ve tus contraseñas ni tus cuentas.</li>
+          <li><b>Entra donde ya tienes sesión.</b> Usa tu perfil habitual con tus cuentas ya logueadas. TS nunca ve tus contraseñas ni tus cuentas.</li>
           <li><b>Abre una página en un clic.</b> Las páginas de tu biblioteca se abren vivas en ese espacio, con barra de URL.</li>
           <li><b>Guarda lo que navegas como contexto.</b> Importa una página abierta directamente al espacio, sin copiar y pegar.</li>
           <li><b>Busca describiendo, no adivinando.</b> Di qué sitio buscas, el país y el idioma para encontrar candidatos.</li>
@@ -747,8 +749,8 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
   <div class="wrap">
     <div class="head">
       <span class="eyebrow">Imágenes y Video con aprobación previa</span>
-      <h2>Crea, ajusta y guarda tus piezas visuales sin salir de TerminalSync.</h2>
-      <p class="sub">Describe lo que necesitas y TerminalSync te muestra proveedor y precio antes de crear. Genera piezas para redes, productos, campañas y presentaciones; guárdalas en Mis diseños, descárgalas o vuelve a modificarlas cuando quieras.</p>
+      <h2>Crea, ajusta y guarda tus piezas visuales sin salir de TS.</h2>
+      <p class="sub">Describe lo que necesitas y TS te muestra proveedor y precio antes de crear. Genera piezas para redes, productos, campañas y presentaciones; guárdalas en Mis diseños, descárgalas o vuelve a modificarlas cuando quieras.</p>
     </div>
     <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))">
       <article class="card"><h3>Imágenes y Mis diseños</h3><p>Abre cualquier imagen, toca Modificar y pide cambios naturales: colores, fondo, encuadre o detalles. Siempre ves proveedor y precio antes de confirmar; nada se crea ni se cobra sin tu aprobación.</p></article>
@@ -836,7 +838,7 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 <section class="sec alt" id="contabilidad">
   <div class="wrap">
     <div class="head center">
-      <span class="eyebrow">TerminalSync Contabilidad</span>
+      <span class="eyebrow">TS Contabilidad</span>
       <h2>Tu contabilidad completa en un solo lugar — sin ser contador.</h2>
       <p class="sub">Importa tus números, conecta tus bancos y entiende tu plata con partida doble real, cartera al día e inventario automático — todo cifrado en tu propio equipo.</p>
     </div>
@@ -903,7 +905,7 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 <section class="sec alt" id="team">
   <div class="wrap">
     <div class="head center">
-      <span class="eyebrow">TerminalSync Team</span>
+      <span class="eyebrow">TS Team</span>
       <h2>Tu equipo conectado, sin perder su espacio privado.</h2>
       <p class="sub">Con Team puedes invitar compañeros por su alias y compartirles acceso a un espacio. Cada persona decide qué invitaciones aceptar, mientras sus espacios privados permanecen separados.</p>
       <p class="price-note">Hoy permite conectar equipos y gestionar invitaciones; la transferencia de conversaciones y documentos y el checkout de Stripe llegarán en el lanzamiento.</p>
@@ -927,8 +929,8 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
         <ul>
           <li class="more">IA incluida. No necesitas pagar otra IA aparte.</li>
           <li>10 espacios con memoria y navegador privado integrado</li>
-          <li>Motor de prospección de TerminalSync en +100 fuentes en vivo</li>
-          <li>+800 conectores nativos de TerminalSync</li>
+          <li>Motor de prospección de TS en +100 fuentes en vivo</li>
+          <li>+800 conectores nativos de TS</li>
           <li>Meta Social + Meta Ads, con tu aprobación</li>
           <li>Contabilidad de partida doble y conciliación bancaria</li>
           <li>Imágenes en Mis diseños y Video con cotización previa</li>
@@ -983,7 +985,7 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
       <details><summary>¿Puedo enviar contexto a otro espacio?</summary><div class="a">Sí. Selecciona las fuentes que se pueden compartir y envíalas a otro espacio tuyo. En el destino deben aparecer como una copia utilizable; quitar la copia del destino no debe borrar la fuente original.</div></details>
       <details><summary>¿Qué queda protegido?</summary><div class="a">Tus secretos, credenciales, memoria y conversaciones se cifran en tu equipo antes de sincronizarse. Eso es distinto del procesamiento de una respuesta: si usas la IA incluida, el mensaje y el material de Contexto necesario se envían al proveedor de IA para generar la respuesta. Tus archivos de proyecto siguen la ruta de nube que configuraste; revisa la política de privacidad para ver qué ocurre en cada caso.</div></details>
       <details><summary>¿Qué es un conector y qué necesito para usarlo?</summary><div class="a">Un conector enlaza la IA con un servicio que ya usas, como correo, calendario, documentos, CRM o pagos. Se agrega desde Integraciones y puede requerir una API key, OAuth, inicio de sesión, una cuenta o permisos según el servicio. La pantalla debe decirte qué falta.</div></details>
-      <details><summary>¿En qué equipos está disponible ahora?</summary><div class="a">TerminalSync está disponible hoy para macOS. Windows está en desarrollo activo: déjanos tu correo y te avisamos el día del lanzamiento. Linux no está disponible actualmente.</div></details>
+      <details><summary>¿En qué equipos está disponible ahora?</summary><div class="a">TS está disponible hoy para macOS. Windows está en desarrollo activo: déjanos tu correo y te avisamos el día del lanzamiento. Linux no está disponible actualmente.</div></details>
       <div class="faq-extra" id="faqExtra" hidden>
       <details><summary>¿Cuántas fuentes puedo agregar a Contexto?</summary><div class="a">No tenemos aún un máximo documentado por categoría. Eso no significa que sea ilimitado: el número que puede usarse depende de la fuente, la selección y el espacio disponible para cada respuesta.</div></details>
       <details><summary>¿Qué tamaño puede tener una fuente?</summary><div class="a">Depende del tipo. PDF, DOCX, EPUB y texto se extraen hasta 60.000 caracteres; en archivos de texto, la lectura del archivo tiene además un tope de 16 MiB. Las páginas web se descargan hasta 5 MiB y su texto se limita a 60.000 caracteres. Los subtítulos de YouTube usan un tope de descarga de 5 MiB y hasta 60.000 caracteres de texto. El texto pegado tiene un máximo de 20.000 caracteres. Estos son topes de lectura o extracción, no el tamaño total admitido del archivo.</div></details>
@@ -1023,8 +1025,8 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 
 <section class="sec final">
   <div class="wrap">
-    <h2>Empieza hoy. La IA ya viene adentro.</h2>
-    <p>Descárgalo, abre tu primer espacio de trabajo y pídele algo. No hay nada que configurar.</p>
+    <h2>No necesitas saber de IA para empezar.</h2>
+    <p>Descarga TS, abre tu primer espacio y pídele algo en tus palabras.</p>
     <div class="cta">
       <a class="btn btn-primary" href="/api/download" data-cta="final-cta-download">⤓ Descargar para Mac</a>
       <a class="btn btn-ghost" href="mailto:hola@terminalsync.ai?subject=Quiero%20hablar%20con%20alguien">Hablar con nosotros</a>
@@ -1034,7 +1036,7 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 </section>
 
 <div class="wrap foot">
-  <span>© 2026 TerminalSync</span><span class="sp"></span>
+  <span>© 2026 TS</span><span class="sp"></span>
   <a href="/es/legal/privacy" data-lhref="/legal/privacy">Privacidad</a><a href="/es/legal/terms" data-lhref="/legal/terms">Términos</a><a href="/es/legal/cookies" data-lhref="/legal/cookies">Cookies</a><a href="#" data-cookie-settings>Configurar cookies</a><a href="/es/casos-de-uso" data-lhref="/casos-de-uso">Casos de uso</a><a href="/es/connectors" data-lhref="/connectors">Integraciones</a><a href="mailto:hola@terminalsync.ai">Contacto</a>
 </div>
 
@@ -1088,25 +1090,10 @@ html.var-dark .live-src .tile.dark-logo{background:#e8eaee;border-color:transpar
 if('scrollRestoration' in history)history.scrollRestoration='manual';
 /* Rotate the actual H1 and its companion sentence, not a separate card. */
 (function(){
-  const messages={
-    es:[
-      ['Encuentra clientes en +100 fuentes en vivo','y llega antes que tu competencia.'],
-      ['Un navegador privado para cada proyecto','— ya logueado donde siempre trabajas.'],
-      ['Crea y edita imágenes y videos por chat','— ves el precio antes de confirmar.'],
-      ['Arma y optimiza campañas en Meta Ads','— todo nace en pausa hasta tu OK.'],
-      ['Lleva tu contabilidad completa y concilia tus bancos','— sin ser contador.']
-    ],
-    en:[
-      ['Find leads across 100+ live sources','and reach them before your competition.'],
-      ['A private browser for every workspace','— signed in where you already are.'],
-      ['Create and edit images and videos by chat','— see the exact price before you confirm.'],
-      ['Build and optimize Meta Ads campaigns by chatting','— everything starts paused until your OK.'],
-      ['Run complete double-entry accounting and reconcile banks','— without being an accountant.']
-    ]
-  };
+  const messages=window.TS_HERO_ROTATOR;
   const box=document.getElementById('heroCopy');
   const title=document.getElementById('heroHeadline'),lead=document.getElementById('heroHeadlineLead');
-  const accent=document.getElementById('heroHeadlineAccent');
+  const accent=document.getElementById('heroHeadlineAccent'),subtitle=document.getElementById('heroSubtitle');
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   let index=0,timer=null;
   const language=()=>window.TS_getLang?window.TS_getLang():'es';
@@ -1116,17 +1103,29 @@ if('scrollRestoration' in history)history.scrollRestoration='manual';
     box.append(probe);
     probe.style.cssText='position:absolute;visibility:hidden;pointer-events:none;min-height:0;height:auto;width:'+title.getBoundingClientRect().width+'px';
     let maxHeadline=0;
-    for(const [first,highlight] of slides){
-      probe.firstElementChild.textContent=first;
-      probe.lastElementChild.textContent=highlight;
+    for(const slide of slides){
+      probe.firstElementChild.textContent=slide.lead;
+      probe.lastElementChild.textContent=slide.accent;
       maxHeadline=Math.max(maxHeadline,probe.getBoundingClientRect().height);
     }
     probe.remove();
     title.style.minHeight=Math.ceil(maxHeadline)+'px';
+    const subtitleProbe=document.createElement('p');
+    subtitleProbe.className=subtitle.className;
+    subtitleProbe.setAttribute('aria-hidden','true');
+    box.append(subtitleProbe);
+    subtitleProbe.style.cssText='position:absolute;visibility:hidden;pointer-events:none;min-height:0;height:auto;width:'+subtitle.getBoundingClientRect().width+'px';
+    let maxSubtitle=0;
+    for(const slide of slides){
+      subtitleProbe.textContent=slide.subtitle;
+      maxSubtitle=Math.max(maxSubtitle,subtitleProbe.getBoundingClientRect().height);
+    }
+    subtitleProbe.remove();
+    subtitle.style.minHeight=Math.ceil(maxSubtitle)+'px';
   }
   function render(){
-    const en=language()==='en',[first,highlight]=messages[en?'en':'es'][index];
-    lead.textContent=first;accent.textContent=highlight;
+    const en=language()==='en',slide=messages[en?'en':'es'][index];
+    lead.textContent=slide.lead;accent.textContent=slide.accent;subtitle.textContent=slide.subtitle;
   }
   function stop(){if(timer){clearInterval(timer);timer=null;}}
   function start(){
@@ -1203,7 +1202,7 @@ lucide.createIcons();
 <!-- Gestor de consentimiento. Vercel Web Analytics NO se carga aquí: lo inyecta
      consent.js solo si la persona acepta la categoría de analítica. -->
 <script>
-/* Directorios de conectores y fuentes de TerminalSync. */
+/* Directorios de conectores y fuentes de TS. */
 (function () {
   function lang() {
     var documentLocale = document.documentElement.lang;
