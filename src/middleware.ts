@@ -85,7 +85,8 @@ function route(req: NextRequest): NextResponse {
   // visual system through the legacy landing components.
   if (LANDING_B && /^\/(?:es|en)\/?$/.test(pathname)) {
     const url = req.nextUrl.clone();
-    url.pathname = "/landing-b/index.html";
+    const lang = pathname.startsWith("/en") ? "en" : "es";
+    url.pathname = `/landing-b/index-${lang}.html`;
     // Ya NO se fija aquí la cookie `tsync_landing`: es de atribución
     // (analítica) y no puede crearse antes del consentimiento. La crea
     // `public/consent.js` en la home estática, solo si se acepta la analítica.

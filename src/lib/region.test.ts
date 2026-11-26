@@ -107,6 +107,14 @@ describe("middleware: cookie ts_region", () => {
     expect(regionCookie(res)?.value).toBe("row");
   });
 
+  it("la URL /en o /es elige el HTML de su idioma por encima de cookies y Accept-Language", () => {
+    const en = middleware(req("/en", { "accept-language": "es-419,es;q=0.9", cookie: "ts_lang=es" }));
+    expect(en.headers.get("x-middleware-rewrite")).toBe("https://terminalsync.ai/landing-b/index-en.html");
+
+    const es = middleware(req("/es", { "accept-language": "en-US,en;q=0.9", cookie: "ts_lang=en" }));
+    expect(es.headers.get("x-middleware-rewrite")).toBe("https://terminalsync.ai/landing-b/index-es.html");
+  });
+
   it("no rompe el resto: rutas ya localizadas pasan sin redirigir", () => {
     const res = middleware(req("/es/connectors", { "x-vercel-ip-country": "AR" }));
     expect(res.headers.get("location")).toBeNull();
